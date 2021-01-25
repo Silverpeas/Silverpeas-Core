@@ -117,8 +117,8 @@ public class NodeEntity implements WebEntity {
     this.id = node.getNodePK().getId();
     this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
     if (this.getAttr().isSpecificRights() &&
-        (SilverpeasRole.admin == highestComponentUserRole ||
-            SilverpeasRole.admin.getName().equals(this.getAttr().getRole()))) {
+        (SilverpeasRole.ADMIN == highestComponentUserRole ||
+            SilverpeasRole.ADMIN.getName().equals(this.getAttr().getRole()))) {
       this.type = NodeType.FOLDER_WITH_RIGHTS;
     }
 

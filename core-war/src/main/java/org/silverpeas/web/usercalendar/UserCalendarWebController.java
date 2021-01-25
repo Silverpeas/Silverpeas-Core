@@ -78,7 +78,7 @@ public class UserCalendarWebController extends
     CalendarEventOccurrence userOccurrence = context.getCalendarEventOccurrenceById();
     if (userOccurrence != null &&
         !userOccurrence.getCalendarEvent().canBeModifiedBy(context.getUser())) {
-      context.getRequest().setAttribute("highestUserRole", SilverpeasRole.user);
+      context.getRequest().setAttribute("highestUserRole", SilverpeasRole.USER);
     }
     Calendar userMainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("userMainCalendar",
@@ -108,7 +108,7 @@ public class UserCalendarWebController extends
   @GET
   @Path("calendars/events/new")
   @RedirectToInternalJsp("occurrenceEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void newEvent(UserCalendarWebRequestContext context) {
     processNewEvent(context);
   }
@@ -134,7 +134,7 @@ public class UserCalendarWebController extends
   @GET
   @Path("calendars/occurrences/{occurrenceId}/edit")
   @RedirectToInternalJsp("occurrenceEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void editOccurrence(UserCalendarWebRequestContext context) {
     viewOccurrence(context);
   }

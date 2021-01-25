@@ -226,7 +226,7 @@ public abstract class CommentWidget extends TagSupport {
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());
     final boolean isAdmin;
     if (profiles != null) {
-      isAdmin = Arrays.asList(profiles).contains(SilverpeasRole.admin.name());
+      isAdmin = Arrays.asList(profiles).contains(SilverpeasRole.ADMIN.getName());
     } else {
       isAdmin = currentUser.isAccessAdmin();
     }

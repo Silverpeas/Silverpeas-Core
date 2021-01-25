@@ -50,8 +50,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.reader;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.READER;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.USER;
 import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
 import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
 
@@ -124,7 +124,7 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
     final SilverpeasRole userRole = highestUserRole != null ? highestUserRole : getHighestUserRole();
     return docs.stream()
         .map(d -> {
-            if (d.isVersioned() && !d.isPublic() && (userRole == user || userRole == reader)) {
+            if (d.isVersioned() && !d.isPublic() && (userRole == USER || userRole == READER)) {
               return d.getLastPublicVersion();
             }
             return d;

@@ -881,7 +881,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   public List<UserDetail> getSpaceAdmins(String spaceId) {
     List<UserDetail> admins = new ArrayList<>();
       SpaceProfile spaceProfile =
-          getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
+          getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.MANAGER);
       Set<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
       for (String userId : userIds) {
         admins.add(UserDetail.getById(userId));

@@ -29,8 +29,8 @@ import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import java.util.Collection;
 
 import static java.util.Collections.singleton;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.reader;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.READER;
 import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
 
 /**
@@ -40,6 +40,6 @@ public class WopiWebRequestContext extends WebComponentRequestContext<WopiWebCon
 
   @Override
   public Collection<SilverpeasRole> getUserRoles() {
-    return singleton(getCurrentRequester().isAccessAdmin() ? admin : reader);
+    return singleton(getCurrentRequester().isAccessAdmin() ? ADMIN : READER);
   }
 }

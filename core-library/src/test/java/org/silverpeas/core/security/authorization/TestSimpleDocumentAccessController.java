@@ -101,7 +101,7 @@ public class TestSimpleDocumentAccessController {
 
     // User has USER role on component
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user);
+    testContext.withComponentUserRoles(SilverpeasRole.USER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -109,7 +109,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher)
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -118,7 +118,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin)
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -127,8 +127,8 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher)
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -136,8 +136,8 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin)
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -145,7 +145,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user)
+    testContext.withComponentUserRoles(SilverpeasRole.USER)
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -154,7 +154,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher)
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -163,7 +163,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer)
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER)
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -172,7 +172,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user)
+    testContext.withComponentUserRoles(SilverpeasRole.USER)
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -181,7 +181,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher)
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -190,7 +190,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer)
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER)
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -199,7 +199,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user)
+    testContext.withComponentUserRoles(SilverpeasRole.USER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -208,7 +208,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher)
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -217,7 +217,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer)
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -235,7 +235,7 @@ public class TestSimpleDocumentAccessController {
 
     // User has USER role on component
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent();
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -243,7 +243,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -252,7 +252,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -261,8 +261,8 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -270,8 +270,8 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -279,7 +279,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -288,7 +288,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -297,7 +297,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -306,7 +306,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -315,7 +315,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -324,7 +324,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -333,7 +333,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -342,7 +342,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -351,7 +351,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized();
@@ -369,7 +369,7 @@ public class TestSimpleDocumentAccessController {
 
     // User has USER role on component
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToDirectory();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
@@ -380,7 +380,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
@@ -391,7 +391,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
@@ -402,9 +402,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfNodeAccessControllerGetUserRoles()
@@ -414,9 +414,9 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfNodeAccessControllerGetUserRoles()
@@ -426,7 +426,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
@@ -437,7 +437,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
@@ -448,7 +448,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyTwoCallsOfComponentAccessControllerIsUserAuthorized()
@@ -459,7 +459,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -471,7 +471,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -483,7 +483,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToDirectory().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -495,7 +495,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToDirectory()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -507,7 +507,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToDirectory()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -519,7 +519,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToDirectory()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -531,7 +531,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToDirectory()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -553,7 +553,7 @@ public class TestSimpleDocumentAccessController {
 
     // User has USER role on component
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -564,7 +564,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -575,7 +575,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -586,9 +586,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -598,9 +598,9 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -610,7 +610,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -621,7 +621,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -632,7 +632,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -643,7 +643,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -655,7 +655,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -667,7 +667,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -679,7 +679,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component (cowriting enabled)
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent().enableCoWriting()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent().enableCoWriting()
         .documentAttachedToPublication().onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -691,7 +691,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -703,7 +703,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -715,7 +715,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -727,7 +727,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document (cowriting enabled)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent().enableCoWriting()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent().enableCoWriting()
         .documentAttachedToPublication()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -750,7 +750,7 @@ public class TestSimpleDocumentAccessController {
 
     // User has USER role on component
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -761,7 +761,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -773,7 +773,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -785,9 +785,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -797,9 +797,9 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -809,7 +809,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -821,7 +821,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -833,7 +833,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -845,7 +845,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -857,7 +857,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -869,7 +869,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -881,7 +881,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -893,7 +893,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -905,7 +905,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -929,7 +929,7 @@ public class TestSimpleDocumentAccessController {
 
     // User has USER role on component
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -942,11 +942,11 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.reader);
+        .enableFileSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -957,12 +957,12 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component but it is anonymous
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .userIsAnonymous()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.reader);
+        .enableFileSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -973,7 +973,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing);
@@ -987,7 +987,7 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing);
@@ -1001,10 +1001,10 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1015,10 +1015,10 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.reader);
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1029,10 +1029,10 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1043,7 +1043,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
@@ -1057,7 +1057,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
@@ -1071,7 +1071,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
@@ -1085,7 +1085,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
@@ -1099,7 +1099,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
@@ -1113,7 +1113,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
@@ -1127,7 +1127,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
@@ -1141,7 +1141,7 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
@@ -1155,7 +1155,7 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on component
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
@@ -1180,7 +1180,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User has no role on directory
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory().withNodeUserRoles();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1196,9 +1196,9 @@ public class TestSimpleDocumentAccessController {
     // User has no role on directory
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory().withNodeUserRoles()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1213,9 +1213,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).onOperationsOf(AccessControlOperation.sharing);
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1228,9 +1228,9 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on directory
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.admin).onOperationsOf(AccessControlOperation.sharing);
+        .withNodeUserRoles(SilverpeasRole.ADMIN).onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1243,10 +1243,10 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).onOperationsOf(AccessControlOperation.sharing)
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1259,10 +1259,10 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on directory
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.admin).onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .withNodeUserRoles(SilverpeasRole.ADMIN).onOperationsOf(AccessControlOperation.sharing)
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1275,9 +1275,9 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on directory
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.user).onOperationsOf(AccessControlOperation.download);
+        .withNodeUserRoles(SilverpeasRole.USER).onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1290,9 +1290,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher)
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER)
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1306,9 +1306,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer).onOperationsOf(AccessControlOperation.download);
+        .withNodeUserRoles(SilverpeasRole.WRITER).onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1321,9 +1321,9 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.user).onOperationsOf(AccessControlOperation.download)
+        .withNodeUserRoles(SilverpeasRole.USER).onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1337,9 +1337,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).onOperationsOf(AccessControlOperation.download)
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1353,9 +1353,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer).onOperationsOf(AccessControlOperation.download)
+        .withNodeUserRoles(SilverpeasRole.WRITER).onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1369,9 +1369,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent().enableCoWriting()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent().enableCoWriting()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer).onOperationsOf(AccessControlOperation.download)
+        .withNodeUserRoles(SilverpeasRole.WRITER).onOperationsOf(AccessControlOperation.download)
         .forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1385,9 +1385,9 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.user)
+        .withNodeUserRoles(SilverpeasRole.USER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1401,9 +1401,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher)
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1417,9 +1417,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer)
+        .withNodeUserRoles(SilverpeasRole.WRITER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1433,9 +1433,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent().enableCoWriting()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent().enableCoWriting()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer)
+        .withNodeUserRoles(SilverpeasRole.WRITER)
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1461,7 +1461,7 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on component
     // User has no role on directory
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory().withNodeUserRoles()
         .userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
@@ -1477,10 +1477,10 @@ public class TestSimpleDocumentAccessController {
     // User has no role on directory
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory().withNodeUserRoles()
         .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing)
-        .enableFileSharingRole(SilverpeasRole.admin);
+        .enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1494,9 +1494,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1510,9 +1510,9 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on directory
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.admin).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.ADMIN).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.sharing);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1526,10 +1526,10 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1542,10 +1542,10 @@ public class TestSimpleDocumentAccessController {
     // User has ADMIN role on directory
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.admin).userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
+        .withNodeUserRoles(SilverpeasRole.ADMIN).userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1558,9 +1558,9 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on directory
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.user).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.USER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1574,9 +1574,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1590,9 +1590,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to download the document (but no download restriction on the document)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.WRITER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1606,9 +1606,9 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.user).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.USER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1622,9 +1622,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1638,9 +1638,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to download the document (download is forbidden for readers)
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.WRITER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.download).forbidDownloadForReaders();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1654,9 +1654,9 @@ public class TestSimpleDocumentAccessController {
     // User has USER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.user).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.USER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1670,9 +1670,9 @@ public class TestSimpleDocumentAccessController {
     // User has PUBLISHER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.publisher).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.PUBLISHER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1686,9 +1686,9 @@ public class TestSimpleDocumentAccessController {
     // User has WRITER role on directory
     // User is going to modify the document
     testContext.clear();
-    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .documentAttachedToPublication().withRightsActivatedOnDirectory()
-        .withNodeUserRoles(SilverpeasRole.writer).userIsThePublicationAuthor()
+        .withNodeUserRoles(SilverpeasRole.WRITER).userIsThePublicationAuthor()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1851,9 +1851,9 @@ public class TestSimpleDocumentAccessController {
       when(organizationController.getComponentParameterValue(anyString(), eq("useFileSharing")))
           .thenAnswer((Answer<String>) invocationOnMock -> {
             if (fileSharingRole != null) {
-              if (fileSharingRole.equals(SilverpeasRole.admin)) {
+              if (fileSharingRole.equals(SilverpeasRole.ADMIN)) {
                 return "1";
-              } else if (fileSharingRole.equals(SilverpeasRole.writer)) {
+              } else if (fileSharingRole.equals(SilverpeasRole.WRITER)) {
                 return "2";
               } else {
                 return "3";

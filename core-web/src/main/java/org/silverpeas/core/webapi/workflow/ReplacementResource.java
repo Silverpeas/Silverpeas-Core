@@ -111,7 +111,7 @@ public class ReplacementResource extends RESTWebService {
       stream = filterOnTheRequester(replacements.stream());
     } else {
       stream = process(() -> Replacement.getAll(workflowId).stream()).lowestAccessRole(
-          SilverpeasRole.supervisor).execute();
+          SilverpeasRole.SUPERVISOR).execute();
     }
     return encode(stream);
   }
@@ -256,7 +256,7 @@ public class ReplacementResource extends RESTWebService {
     boolean isSupervisor;
     try {
       isSupervisor =
-          Stream.of(userManager.getUsersInRole(SilverpeasRole.supervisor.name(), workflowId))
+          Stream.of(userManager.getUsersInRole(SilverpeasRole.SUPERVISOR.getName(), workflowId))
           .anyMatch(u -> u.getUserId().equals(getUser().getId()));
     } catch (WorkflowException e) {
       isSupervisor = false;

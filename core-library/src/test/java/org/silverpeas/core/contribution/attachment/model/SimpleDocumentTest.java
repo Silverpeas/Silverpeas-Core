@@ -409,12 +409,12 @@ public class SimpleDocumentTest {
 
   @Test
   public void testForbiddenDownload() {
-    UserDetailWithRoles adminUser = new UserDetailWithRoles("admin_user", SilverpeasRole.admin);
+    UserDetailWithRoles adminUser = new UserDetailWithRoles("admin_user", SilverpeasRole.ADMIN);
     UserDetailWithRoles adminReaderUser =
-        new UserDetailWithRoles("admin_reader_user", SilverpeasRole.reader, SilverpeasRole.admin);
-    UserDetailWithRoles readerUser = new UserDetailWithRoles("reader_user", SilverpeasRole.reader);
+        new UserDetailWithRoles("admin_reader_user", SilverpeasRole.READER, SilverpeasRole.ADMIN);
+    UserDetailWithRoles readerUser = new UserDetailWithRoles("reader_user", SilverpeasRole.READER);
     UserDetailWithRoles readerAndPrivilegedUser =
-        new UserDetailWithRoles("reader", SilverpeasRole.reader);
+        new UserDetailWithRoles("reader", SilverpeasRole.READER);
 
     SimpleDocument instance = new SimpleDocument();
     SimpleDocumentPK pk = new SimpleDocumentPK("dummyId", instanceId);
@@ -433,8 +433,8 @@ public class SimpleDocumentTest {
     assertThat(instance.getForbiddenDownloadForRoles(), nullValue());
 
     // Forbid writers
-    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer);
-    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.writer));
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.WRITER);
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.WRITER));
 
     assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
     assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
@@ -446,10 +446,10 @@ public class SimpleDocumentTest {
     // Forbid empty
     instance.addRolesForWhichDownloadIsForbidden();
     instance.addRolesForWhichDownloadIsAllowed();
-    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.writer));
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.WRITER));
 
     // Allow writers
-    instance.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer);
+    instance.addRolesForWhichDownloadIsAllowed(SilverpeasRole.WRITER);
     assertThat(instance.getForbiddenDownloadForRoles(), empty());
 
     assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
@@ -460,8 +460,8 @@ public class SimpleDocumentTest {
     assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(true));
 
     // Forbid readers
-    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
-    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER);
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.READER));
 
     assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
     assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
@@ -471,9 +471,9 @@ public class SimpleDocumentTest {
     assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(false));
 
     // Forbid writers
-    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer);
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.WRITER);
     assertThat(instance.getForbiddenDownloadForRoles(),
-        contains(SilverpeasRole.writer, SilverpeasRole.reader));
+        contains(SilverpeasRole.WRITER, SilverpeasRole.READER));
 
     assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
     assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
@@ -483,9 +483,9 @@ public class SimpleDocumentTest {
     assertThat(isDownloadAllowedForRolesFrom(instance, readerAndPrivilegedUser), is(false));
 
     // Forbid admin & Allow readers and writers
-    instance.addRolesForWhichDownloadIsAllowed(SilverpeasRole.reader, SilverpeasRole.writer);
-    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.admin);
-    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.admin));
+    instance.addRolesForWhichDownloadIsAllowed(SilverpeasRole.READER, SilverpeasRole.WRITER);
+    instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.ADMIN);
+    assertThat(instance.getForbiddenDownloadForRoles(), contains(SilverpeasRole.ADMIN));
 
     assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
     assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
@@ -517,7 +517,7 @@ public class SimpleDocumentTest {
         this.roles = new String[roles.length];
         int i = 0;
         for (SilverpeasRole role : roles) {
-          this.roles[i++] = role.name();
+          this.roles[i++] = role.getName();
         }
       }
     }

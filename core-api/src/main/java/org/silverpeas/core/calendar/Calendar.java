@@ -67,7 +67,7 @@ import java.util.Set;
 
 import static java.text.MessageFormat.format;
 import static java.time.Month.DECEMBER;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -556,7 +556,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
               AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
       return componentAccessControl.isUserAuthorized(roles) &&
           Optional.ofNullable(SilverpeasRole.getHighestFrom(roles))
-              .filter(r -> r.isGreaterThanOrEquals(admin)).isPresent();
+              .filter(r -> r.isGreaterThanOrEquals(ADMIN)).isPresent();
     });
   }
 

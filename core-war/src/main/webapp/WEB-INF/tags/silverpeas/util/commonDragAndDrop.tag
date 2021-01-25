@@ -70,7 +70,7 @@
               type="java.lang.String"
               description="Specify a class to change display of help access icon" %>
 
-<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 

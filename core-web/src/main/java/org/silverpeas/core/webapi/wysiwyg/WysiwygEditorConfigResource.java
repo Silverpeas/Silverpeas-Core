@@ -89,7 +89,7 @@ public class WysiwygEditorConfigResource extends RESTWebService {
       config.setObjectId(resourceId);
       setWysiwygEditorSessionContext(resourceType, resourceId, config);
       return Response.ok(params.applyOn(config).toJSON()).build();
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    }).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**

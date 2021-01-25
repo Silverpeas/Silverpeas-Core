@@ -65,7 +65,7 @@ public class VolatileCacheResource extends RESTWebService {
   @Produces(MediaType.TEXT_PLAIN)
   public String newVolatileStringIdentifier() {
     return process(() -> VolatileIdentifierProvider.newVolatileStringIdentifierOn(getComponentId()))
-        .lowestAccessRole(SilverpeasRole.writer).execute();
+        .lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   @Override

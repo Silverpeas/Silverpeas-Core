@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement,
@@ -492,7 +492,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
     Set<SilverpeasRole> silverpeasRoles =
         SilverpeasRole.from(getUserProfiles(user.getId(), componentInstanceIdentifier));
-    silverpeasRoles.remove(Manager);
+    silverpeasRoles.remove(MANAGER);
     return silverpeasRoles;
   }
 

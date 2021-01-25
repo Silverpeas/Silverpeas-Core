@@ -81,7 +81,7 @@ public class AttachmentPaneTag extends TagSupport {
   }
 
   private String getUserRole() {
-    final Mutable<SilverpeasRole> role = Mutable.of(SilverpeasRole.user);
+    final Mutable<SilverpeasRole> role = Mutable.of(SilverpeasRole.USER);
     if (!isReadOnly()) {
       String userId = getCurrentUserIdInSession();
       if (StringUtil.isDefined(userId)) {

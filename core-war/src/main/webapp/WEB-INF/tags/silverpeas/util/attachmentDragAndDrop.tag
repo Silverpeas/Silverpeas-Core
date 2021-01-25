@@ -76,9 +76,9 @@
 <c:set var="isHandledSubscriptionConfirmation"
        value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
-<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 <jsp:useBean id="publisherRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 

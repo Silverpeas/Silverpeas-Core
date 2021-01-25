@@ -277,7 +277,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
     if ("GET".equals(httpMethod)) {
       // No lowest role as the access of the component has been already computed
     } else {
-      process.lowestAccessRole(SilverpeasRole.writer);
+      process.lowestAccessRole(SilverpeasRole.WRITER);
     }
     return process;
   }

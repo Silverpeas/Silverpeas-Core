@@ -173,7 +173,7 @@ public class LinkDetail implements Serializable, Securable {
       // check if current user is admin of component
       Collection<SilverpeasRole> roles = OrganizationController.get()
           .getUserSilverpeasRolesOn(User.getCurrentRequester(), instanceId);
-      canBeModified = roles.contains(SilverpeasRole.admin);
+      canBeModified = roles.contains(SilverpeasRole.ADMIN);
     } else {
       canBeModified = user.getId().equals(userId);
     }

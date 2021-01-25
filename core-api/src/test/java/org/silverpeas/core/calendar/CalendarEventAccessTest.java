@@ -157,7 +157,7 @@ public class CalendarEventAccessTest {
   public void notModifiableWhenCalendarIsAccessibleAndUserRoleIsReader() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(user);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(USER);
 
     assertThatEventIsNotModifiable();
   }
@@ -166,7 +166,7 @@ public class CalendarEventAccessTest {
   public void modifiableWhenCalendarIsAccessibleAndUserRoleIsAdmin() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(admin);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(ADMIN);
 
     assertThatEventIsModifiable();
   }
@@ -176,7 +176,7 @@ public class CalendarEventAccessTest {
       throws MalformedURLException {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(admin);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(ADMIN);
 
     when(calendar.getExternalCalendarUrl()).thenReturn(new URL("http://silverpeas.org"));
     assertThatEventIsNotModifiable();
@@ -186,7 +186,7 @@ public class CalendarEventAccessTest {
   public void modifiableWhenCalendarIsAccessibleAndUserRoleIsPublisher() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(publisher);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(PUBLISHER);
 
     assertThatEventIsModifiable();
   }
@@ -195,7 +195,7 @@ public class CalendarEventAccessTest {
   public void notModifiableWhenCalendarIsAccessibleAndUserRoleIsWriterAndUserIsNotEventCreator() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(writer);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(WRITER);
 
     eventBuilder.withCreator(aUser());
     assertThatEventIsNotModifiable();
@@ -205,7 +205,7 @@ public class CalendarEventAccessTest {
   public void modifiableWhenCalendarIsAccessibleAndUserRoleIsWriterAndUserIsEventCreator() {
     calendarCanBeAccessed();
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(writer);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(WRITER);
 
     eventBuilder.withCreator(userTest);
     assertThatEventIsModifiable();
@@ -214,7 +214,7 @@ public class CalendarEventAccessTest {
   @Test
   public void notModifiableWhenCalendarIsNotAccessibleAndUserRoleIsWriterAndUserIsEventCreator() {
     SilverpeasComponentInstance componentInstance = onPrivateComponentInstance();
-    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(writer);
+    when(componentInstance.getHighestSilverpeasRolesFor(userTest)).thenReturn(WRITER);
 
     eventBuilder.withCreator(userTest);
     assertThatEventIsNotModifiable();

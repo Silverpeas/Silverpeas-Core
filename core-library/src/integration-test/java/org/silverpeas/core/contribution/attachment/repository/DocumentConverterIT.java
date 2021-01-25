@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.junit.Ignore;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.lang3.CharEncoding;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -147,8 +146,8 @@ public class DocumentConverterIT extends JcrIntegrationIT {
       assertThat(result, SimpleDocumentMatcher.matches(expectedResult));
 
       // Adding forbidden download for some roles
-      expectedResult.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer,
-          SilverpeasRole.reader);
+      expectedResult.addRolesForWhichDownloadIsForbidden(SilverpeasRole.WRITER,
+          SilverpeasRole.READER);
       documentNode.addMixin(SLV_DOWNLOADABLE_MIXIN);
       documentNode.setProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES, "writer,reader");
       result = instance.convertNode(documentNode, language);
@@ -328,8 +327,8 @@ public class DocumentConverterIT extends JcrIntegrationIT {
       assertThat(attachNode.hasNode(JCR_CONTENT), is(false));
 
       // Adding forbidden download for some roles
-      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.privilegedUser,
-          SilverpeasRole.privilegedUser, SilverpeasRole.publisher);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.PRIVILEGED_USER,
+          SilverpeasRole.PRIVILEGED_USER, SilverpeasRole.PUBLISHER);
       instance.fillNode(document, documentNode);
       assertThat(documentNode.getProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES).getString(),
           is("publisher,privilegedUser"));

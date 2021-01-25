@@ -93,14 +93,14 @@ public class TestWebComponentController extends ParentTestWebComponentController
   @POST
   @Path("lowerRoleAccess")
   @RedirectToInternal("/lowerRoleAccessOk")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.PUBLISHER)
   public void lowerRoleAccessMethod(TestWebComponentRequestContext context) {
   }
 
   @POST
   @Path("lowerRoleAccessRedirectToInternalJspOnError")
   @RedirectToInternal("/lowerRoleAccessOk")
-  @LowestRoleAccess(value = SilverpeasRole.publisher,
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER,
       onError = @RedirectTo(value = "error.jsp", type = RedirectToType.INTERNAL_JSP))
   public void lowerRoleAccessRedirectToInternalJspOnErrorMethod(
       TestWebComponentRequestContext context) {
@@ -109,7 +109,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
   @POST
   @Path("lowerRoleAccessRedirectToInternalOnError")
   @RedirectToInternal("/lowerRoleAccessOk")
-  @LowestRoleAccess(value = SilverpeasRole.publisher,
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER,
       onError = @RedirectTo(value = "error", type = RedirectToType.INTERNAL))
   public void lowerRoleAccessRedirectToInternalOnErrorMethod(
       TestWebComponentRequestContext context) {
@@ -118,7 +118,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
   @POST
   @Path("lowerRoleAccessRedirectToOnError")
   @RedirectToInternal("/lowerRoleAccessOk")
-  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("error"))
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER, onError = @RedirectTo("error"))
   public void lowerRoleAccessRedirectToOnErrorMethod(TestWebComponentRequestContext context) {
   }
 

@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import javax.inject.Singleton;
 
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
 
 /**
  * @author silveryocha
@@ -45,12 +45,12 @@ public class DefaultInstancePublicationAccessControlExtension
       final String instanceId, final String userId, final SilverpeasRole userRole,
       final AccessControlContext context) {
     final boolean authorized;
-    if (userRole.isGreaterThan(SilverpeasRole.writer)) {
+    if (userRole.isGreaterThan(SilverpeasRole.WRITER)) {
       authorized = publication == null
                    || !publication.isDraft()
                    || publication.isPublicationEditor(userId)
                    || isCoWritingEnabled(instanceId, context) && isDraftVisibleWithCoWriting();
-    } else if (writer == userRole) {
+    } else if (WRITER == userRole) {
       if (publication != null) {
         if (publication.isPublicationEditor(userId)) {
           authorized = true;

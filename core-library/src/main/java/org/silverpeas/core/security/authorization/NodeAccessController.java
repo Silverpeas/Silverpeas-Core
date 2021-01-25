@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonMap;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.isSharingActionFrom;
 
 /**
@@ -105,12 +105,12 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     final Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
     final MemoizedSupplier<SilverpeasRole> highestRole = new MemoizedSupplier<>(() -> {
       final SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
-      return highestUserRole != null ? highestUserRole : SilverpeasRole.reader;
+      return highestUserRole != null ? highestUserRole : SilverpeasRole.READER;
     });
     final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
     boolean authorized = isUserAuthorized(userRoles);
     if (authorized && componentDataManager.isTopicTrackerSupported(nodePK.getInstanceId()) && nodePK.isTrash()) {
-      authorized = highestRole.get().isGreaterThanOrEquals(writer);
+      authorized = highestRole.get().isGreaterThanOrEquals(WRITER);
     }
     if (authorized && isSharingActionFrom(context.getOperations())) {
       final SilverpeasRole highestUserRole = highestRole.get();

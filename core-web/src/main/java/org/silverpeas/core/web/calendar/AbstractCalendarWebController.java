@@ -115,7 +115,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @POST
   @Path("calendars/events/users/participation")
   @RedirectTo("{userPanelUri}")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void viewParticipationOfUsers(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
@@ -143,7 +143,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @POST
   @Path("calendars/events/attendees/select")
   @RedirectTo("{userPanelUri}")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void modifyAttendees(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');

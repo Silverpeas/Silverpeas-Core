@@ -1150,23 +1150,23 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
 
     // Adding roles that adds technically the downloadable mixin to the SimpleDocument node
     documentUpdated
-        .addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader, SilverpeasRole.writer);
+        .addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER, SilverpeasRole.WRITER);
     instance.updateAttachment(documentUpdated, false, false);
     SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
     assertThat(result, is(notNullValue()));
     assertThat(result, not(sameInstance(documentUpdated)));
     assertThat(result.getForbiddenDownloadForRoles(),
-        contains(SilverpeasRole.writer, SilverpeasRole.reader));
+        contains(SilverpeasRole.WRITER, SilverpeasRole.READER));
 
     // Allowing writers here updates the list of forbidden roles
-    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer);
+    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.WRITER);
     instance.updateAttachment(documentUpdated, false, false);
     result = instance.searchDocumentById(existingFrDoc, null);
-    assertThat(result.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+    assertThat(result.getForbiddenDownloadForRoles(), contains(SilverpeasRole.READER));
 
     // Allowing readers here cleans up the list of forbidden roles and technically removes the
     // downloadable mixin from the SimpleDocument node
-    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.reader);
+    documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.READER);
     instance.updateAttachment(documentUpdated, false, false);
     result = instance.searchDocumentById(existingFrDoc, null);
     assertThat(result.getForbiddenDownloadForRoles(), nullValue());
@@ -1187,7 +1187,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(result, is(notNullValue()));
     assertThat(result, not(sameInstance(documentUpdated)));
     assertThat(result.getForbiddenDownloadForRoles(),
-        contains(SilverpeasRole.user, SilverpeasRole.reader));
+        contains(SilverpeasRole.USER, SilverpeasRole.READER));
 
     // Allow download for readers
     instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), true);

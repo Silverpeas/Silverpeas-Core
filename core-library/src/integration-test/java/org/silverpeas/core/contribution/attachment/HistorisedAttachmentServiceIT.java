@@ -704,14 +704,14 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
       documentOfResult = instance.searchDocumentById(documentPK, "fr");
       assertThat(documentOfResult, notNullValue());
       assertThat(documentOfResult.getForbiddenDownloadForRoles(),
-          contains(SilverpeasRole.user, SilverpeasRole.reader));
+          contains(SilverpeasRole.USER, SilverpeasRole.READER));
 
       // Forbidding again readers (but nothing is saved in JCR)
       instance.switchAllowingDownloadForReaders(documentPK, false);
       documentOfResult = instance.searchDocumentById(documentPK, "fr");
       assertThat(documentOfResult, notNullValue());
       assertThat(documentOfResult.getForbiddenDownloadForRoles(),
-          contains(SilverpeasRole.user, SilverpeasRole.reader));
+          contains(SilverpeasRole.USER, SilverpeasRole.READER));
 
       // Allowing readers
       instance.switchAllowingDownloadForReaders(documentPK, true);

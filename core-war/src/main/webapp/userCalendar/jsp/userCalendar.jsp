@@ -48,7 +48,7 @@
 <jsp:useBean id="userMainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
 <c:set var="nextEventViewLimit" value='<%=ResourceLocator.getSettingBundle("org.silverpeas.calendar.settings.calendar").getInteger("calendar.nextEvents.limit")%>'/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 
 <fmt:message key="usercalendar.name" var="userCalendarLabel"/>
 <fmt:message key="GML.print" var="printLabel" bundle="${calendarBundle}"/>

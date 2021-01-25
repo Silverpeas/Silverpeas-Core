@@ -195,7 +195,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
     if (highestUserRole == null) {
       highestUserRole = SilverpeasRole.getHighestFrom(getUserRoles());
       if (highestUserRole == null) {
-        highestUserRole = SilverpeasRole.reader;
+        highestUserRole = SilverpeasRole.READER;
       }
     }
     return highestUserRole;

@@ -45,8 +45,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   private String contentLanguage;
   private String currentProfile = null;
-  public static final String ADMIN = SilverpeasRole.admin.toString();
-  public static final String PUBLISHER = SilverpeasRole.publisher.toString();
+  public static final String ADMIN = SilverpeasRole.ADMIN.toString();
+  public static final String PUBLISHER = SilverpeasRole.PUBLISHER.toString();
 
   public String getProfile() {
     if (!StringUtil.isDefined(this.currentProfile)) {

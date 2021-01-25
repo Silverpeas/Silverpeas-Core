@@ -3476,7 +3476,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       /*
       Test starts here
        */
-      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer, SilverpeasRole.admin);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.WRITER, SilverpeasRole.ADMIN);
       documentRepository.saveForbiddenDownloadForRoles(session, document);
 
       doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
@@ -3494,13 +3494,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getVersionIndex(), is(3));
       assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
       assertThat(doc.getForbiddenDownloadForRoles(),
-          contains(SilverpeasRole.admin, SilverpeasRole.writer));
+          contains(SilverpeasRole.ADMIN, SilverpeasRole.WRITER));
       for (SimpleDocumentVersion version : doc.getHistory()) {
         assertThat(version.getForbiddenDownloadForRoles(),
-            contains(SilverpeasRole.admin, SilverpeasRole.writer));
+            contains(SilverpeasRole.ADMIN, SilverpeasRole.WRITER));
       }
 
-      document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer, SilverpeasRole.admin);
+      document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.WRITER, SilverpeasRole.ADMIN);
       documentRepository.saveForbiddenDownloadForRoles(session, document);
 
       doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
@@ -3883,9 +3883,9 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
 
         // Functional version number is not incremented (but still the technical)
         if (i % 2 == 0) {
-          document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer, SilverpeasRole.admin);
+          document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.WRITER, SilverpeasRole.ADMIN);
         } else {
-          document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.writer, SilverpeasRole.admin);
+          document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.WRITER, SilverpeasRole.ADMIN);
         }
         documentRepository.saveForbiddenDownloadForRoles(session, document);
       }

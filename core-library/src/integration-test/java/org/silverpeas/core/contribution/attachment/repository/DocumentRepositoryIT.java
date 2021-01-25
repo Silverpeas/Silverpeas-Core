@@ -289,7 +289,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       Date creationDate = attachment.getCreated();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
-      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader, SilverpeasRole.user);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER, SilverpeasRole.USER);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
@@ -299,7 +299,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getOldSilverpeasId(), is(not(0L)));
       assertThat(doc.getCreated(), is(creationDate));
       assertThat(doc.getForbiddenDownloadForRoles(),
-          contains(SilverpeasRole.user, SilverpeasRole.reader));
+          contains(SilverpeasRole.USER, SilverpeasRole.READER));
       checkEnglishSimpleDocument(doc);
     }
   }
@@ -537,7 +537,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getForbiddenDownloadForRoles(), nullValue());
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
-      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER);
       documentRepository.updateDocument(session, document, true);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
@@ -545,7 +545,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getOrder(), is(15));
       assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(doc.getSize(), is(28L));
-      assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+      assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.READER));
 
     }
   }
@@ -569,11 +569,11 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getForbiddenDownloadForRoles(), nullValue());
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
-      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
+      document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER);
       documentRepository.saveForbiddenDownloadForRoles(session, document);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
-      assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+      assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.READER));
     }
   }
 

@@ -114,7 +114,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   boolean canBeModified(UserDetail user) {
-    return (userRole != null && userRole.isGreaterThanOrEquals(SilverpeasRole.writer)) &&
+    return (userRole != null && userRole.isGreaterThanOrEquals(SilverpeasRole.WRITER)) &&
         attachment.canBeModifiedBy(user);
   }
 

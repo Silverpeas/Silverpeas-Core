@@ -1284,10 +1284,10 @@ class DefaultAdministration implements Administration {
       currentSpace = getSpaceInstById(subSpace.getDomainFatherId());
     }
 
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.admin);
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.publisher);
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.writer);
-    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.reader);
+    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.ADMIN);
+    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.PUBLISHER);
+    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.WRITER);
+    setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.READER);
 
     if (persist) {
       for (SpaceProfileInst profile : subSpace.getInheritedProfiles()) {
@@ -2019,21 +2019,21 @@ class DefaultAdministration implements Administration {
       String componentName) {
     List<String> roles = new ArrayList<>();
 
-    String role = spaceRole2ComponentRole(SilverpeasRole.admin.toString(), componentName);
+    String role = spaceRole2ComponentRole(SilverpeasRole.ADMIN.toString(), componentName);
     if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.admin.toString());
+      roles.add(SilverpeasRole.ADMIN.toString());
     }
-    role = spaceRole2ComponentRole(SilverpeasRole.publisher.toString(), componentName);
+    role = spaceRole2ComponentRole(SilverpeasRole.PUBLISHER.toString(), componentName);
     if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.publisher.toString());
+      roles.add(SilverpeasRole.PUBLISHER.toString());
     }
-    role = spaceRole2ComponentRole(SilverpeasRole.writer.toString(), componentName);
+    role = spaceRole2ComponentRole(SilverpeasRole.WRITER.toString(), componentName);
     if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.writer.toString());
+      roles.add(SilverpeasRole.WRITER.toString());
     }
-    role = spaceRole2ComponentRole(SilverpeasRole.reader.toString(), componentName);
+    role = spaceRole2ComponentRole(SilverpeasRole.READER.toString(), componentName);
     if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.reader.toString());
+      roles.add(SilverpeasRole.READER.toString());
     }
     return roles;
   }
@@ -3510,7 +3510,7 @@ class DefaultAdministration implements Administration {
       spaceProfile.setProfile(profile);
     }
 
-    if (role == SilverpeasRole.Manager) {
+    if (role == SilverpeasRole.MANAGER) {
       // get groups and users implicitly inherited from space parents
       boolean root = space.isRoot();
       String parentId = space.getDomainFatherId();

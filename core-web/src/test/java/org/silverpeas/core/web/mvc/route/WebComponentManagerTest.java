@@ -146,7 +146,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerAccessRoleSuccess() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setHighestUserRole(SilverpeasRole.publisher).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.PUBLISHER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -160,7 +160,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerAccessRoleWithUserThatHasNotEnoughRights() throws Exception {
     TestResult testResult =
-        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
     verify(testResult.requestContext.getResponse(), times(1))
@@ -183,7 +183,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalJspOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -195,7 +195,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerRoleAccessRedirectToInternalOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -207,7 +207,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerRoleAccessRedirectToOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());

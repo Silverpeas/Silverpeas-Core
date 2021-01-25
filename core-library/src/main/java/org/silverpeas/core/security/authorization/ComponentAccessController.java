@@ -130,12 +130,12 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
       // Personal space or user tool
       if (isTool.test(componentId)) {
-        userRoles.add(SilverpeasRole.admin);
+        userRoles.add(SilverpeasRole.ADMIN);
         return;
       }
       if (Administration.Constants.ADMIN_COMPONENT_ID.equals(componentId)) {
         if (user.isAccessAdmin()) {
-          userRoles.add(SilverpeasRole.admin);
+          userRoles.add(SilverpeasRole.ADMIN);
         }
         return;
       }
@@ -151,12 +151,12 @@ public class ComponentAccessController extends AbstractAccessController<String>
           // Taking into account the case where the user has only specific profiles.
           // In that case, even the user is an admin one (indicated by a specific profile)
           // it is considered as a simple user.
-          userRoles.add(SilverpeasRole.user);
+          userRoles.add(SilverpeasRole.USER);
         }
       }
     } finally {
       if (AccessControlOperation.isPersistActionFrom(context.getOperations())) {
-        userRoles.remove(SilverpeasRole.user);
+        userRoles.remove(SilverpeasRole.USER);
       }
     }
   }
@@ -176,13 +176,13 @@ public class ComponentAccessController extends AbstractAccessController<String>
       if (AccessControlOperation.isPersistActionFrom(operations) ||
           AccessControlOperation.isDownloadActionFrom(operations) ||
           AccessControlOperation.isSharingActionFrom(operations)) {
-        userRoles.remove(SilverpeasRole.user);
+        userRoles.remove(SilverpeasRole.USER);
       }
       return true;
     }
 
     if (componentInstance.isPublic() || dataManager.isPublicFilesEnabled(componentId)) {
-      userRoles.add(SilverpeasRole.user);
+      userRoles.add(SilverpeasRole.USER);
     }
     return false;
   }
@@ -307,9 +307,9 @@ public class ComponentAccessController extends AbstractAccessController<String>
       }
       final String value = getComponentParameterValue(componentId, parameterName);
       if ("1".equals(value)) {
-        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
       } else if ("2".equals(value)) {
-        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
+        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.WRITER);
       }
       return "3".equals(value);
     }

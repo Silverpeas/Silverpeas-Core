@@ -128,7 +128,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
     SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
     if (highestUserRole == null) {
-      highestUserRole = SilverpeasRole.reader;
+      highestUserRole = SilverpeasRole.READER;
     }
 
     boolean downloadOperation = isDownloadActionFrom(context.getOperations());
@@ -173,16 +173,16 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     final boolean authorized;
     if (isNodeAttachmentCase) {
       if (downloadOperation) {
-        authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
+        authorized = highestUserRole.isGreaterThan(SilverpeasRole.WRITER);
       } else {
-        authorized = highestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+        authorized = highestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
       }
     } else {
-      if (SilverpeasRole.writer.equals(highestUserRole)) {
+      if (SilverpeasRole.WRITER.equals(highestUserRole)) {
         final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
         authorized = userId.equals(foreignUserAuthor) || componentDataManager.isCoWritingEnabled(object.getInstanceId());
       } else {
-        authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
+        authorized = highestUserRole.isGreaterThan(SilverpeasRole.WRITER);
       }
     }
     return authorized;

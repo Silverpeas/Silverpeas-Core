@@ -210,7 +210,7 @@
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage")).stream()
       .map(a -> {
-        if (a.isVersioned() && SilverpeasRole.user.getName().equals(userProfileForLambda)) {
+        if (a.isVersioned() && SilverpeasRole.USER.getName().equals(userProfileForLambda)) {
           return a.getLastPublicVersion();
         }
         return a;

@@ -49,12 +49,12 @@ public class ClassConstantInspector {
   public ClassConstantInspector(String constantPath) throws ClassNotFoundException,
       NoSuchFieldException {
     FieldPathParser parser = new FieldPathParser(constantPath);
-    Class currentClass = Class.forName(parser.getDeclaringClassName());
-    Map<String, Class> innerClasses = null;
+    Class<?> currentClass = Class.forName(parser.getDeclaringClassName());
+    Map<String, Class<?>> innerClasses = null;
     for (String fieldOrClassName : parser.getFieldOrClassNames()) {
       if (innerClasses == null) {
-        innerClasses = new HashMap<String, Class>();
-        for (Class innerClass : currentClass.getClasses()) {
+        innerClasses = new HashMap<>();
+        for (Class<?> innerClass : currentClass.getClasses()) {
           innerClasses.put(innerClass.getSimpleName(), innerClass);
         }
       }

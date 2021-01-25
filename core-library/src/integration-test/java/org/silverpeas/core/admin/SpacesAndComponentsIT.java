@@ -430,7 +430,7 @@ public class SpacesAndComponentsIT {
     // set user2 as simple reader on space
     profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
-    profile.setName(SilverpeasRole.reader.name());
+    profile.setName(SilverpeasRole.READER.getName());
     profile.addUser("2");
     profileId = adminController.addSpaceProfileInst(profile, "1");
     assertThat(profileId, is("8"));
@@ -632,16 +632,16 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(3));
     assertThat(fullSpace.getProfiles(), hasSize(2));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(1));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.publisher.name()).getNumUser(), is(1));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.reader.name()).getNumUser(), is(1));
-    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.publisher.name()).getNumUser(),
+    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(), is(1));
+    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.READER.getName()).getNumUser(), is(1));
+    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(1));
 
     // check GED rights
     String componentId = "kmelia1";
     ComponentInst component = adminController.getComponentInst(componentId);
     assertThat(component.getAllProfilesInst(), hasSize(2));
-    assertThat(component.getInheritedProfileInst(SilverpeasRole.publisher.name()).getNumUser(),
+    assertThat(component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(2));
     assertThat(adminController.isComponentAvailable(componentId, "2"), is(true));
     assertThat(adminController.isComponentAvailable(componentId, "1"), is(true));
@@ -668,7 +668,7 @@ public class SpacesAndComponentsIT {
     String componentId = "kmelia210";
     ComponentInst component = adminController.getComponentInst(componentId);
     assertThat(component.getAllProfilesInst(), hasSize(0));
-    assertThat(component.getInheritedProfileInst(SilverpeasRole.publisher.name()), is(nullValue()));
+    assertThat(component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
     assertThat(adminController.isComponentAvailable(componentId, "2"), is(false));
     assertThat(adminController.isComponentAvailable(componentId, "1"), is(false));
     String[] roles = organizationController.getUserProfiles("1", componentId);
@@ -694,14 +694,14 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(1));
     assertThat(fullSpace.getProfiles(), hasSize(0));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(1));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.publisher.name()), is(nullValue()));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.reader.name()), is(nullValue()));
-    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.publisher.name()).getNumUser(),
+    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
+    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
+    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(1));
     // check GED rights
     component = adminController.getComponentInst(componentId);
     assertThat(component.getAllProfilesInst(), hasSize(1));
-    assertThat(component.getInheritedProfileInst(SilverpeasRole.publisher.name()).getNumUser(),
+    assertThat(component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(1));
     assertThat(adminController.isComponentAvailable(componentId, "2"), is(true));
     assertThat(adminController.isComponentAvailable(componentId, "1"), is(false));
@@ -722,15 +722,15 @@ public class SpacesAndComponentsIT {
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(0));
     assertThat(fullSpace.getProfiles(), hasSize(0));
     assertThat(fullSpace.getInheritedProfiles(), hasSize(0));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.publisher.name()), is(nullValue()));
-    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.reader.name()), is(nullValue()));
-    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.publisher.name()),
+    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()), is(nullValue()));
+    assertThat(fullSpace.getSpaceProfileInst(SilverpeasRole.READER.getName()), is(nullValue()));
+    assertThat(fullSpace.getInheritedSpaceProfileInst(SilverpeasRole.PUBLISHER.getName()),
         is(nullValue()));
 
     // check GED rights
     component = adminController.getComponentInst(componentId);
     assertThat(component.getAllProfilesInst(), hasSize(1));
-    assertThat(component.getInheritedProfileInst(SilverpeasRole.publisher.name()).getNumUser(),
+    assertThat(component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName()).getNumUser(),
         is(0));
     assertThat(adminController.isComponentAvailable(componentId, "2"), is(false));
     assertThat(adminController.isComponentAvailable(componentId, "1"), is(false));
@@ -756,7 +756,7 @@ public class SpacesAndComponentsIT {
     assertThat(dest.getAllComponentsInst().size(), is(2));
 
     ComponentInst component = admin.getComponentInst(componentId);
-    ProfileInst profile = component.getInheritedProfileInst(SilverpeasRole.publisher.name());
+    ProfileInst profile = component.getInheritedProfileInst(SilverpeasRole.PUBLISHER.getName());
     assertThat(profile.getAllUsers().size(), is(1));
 
     boolean accessAllowed = admin.isComponentAvailableToUser(componentId, "1");

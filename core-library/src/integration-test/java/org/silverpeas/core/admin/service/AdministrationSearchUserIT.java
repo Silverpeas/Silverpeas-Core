@@ -54,7 +54,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.*;
 import static org.silverpeas.core.admin.user.constant.UserState.*;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.truncate;
 
@@ -720,13 +720,13 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // searching for personal instance and a right role name
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(personalComponentInstanceId)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertSortedUserIds(users, aUser.getId());
     // searching for personal instance and a wrong role name
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(personalComponentInstanceId)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .build());
     assertThat(users, notNullValue());
     assertThat(users, empty());
@@ -876,20 +876,20 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
   public void componentIdAndRoleNameCriteria() throws AdminException {
     // searching for role name id without specifying a component id performs no resource id filtering
     SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertSortedUserIds(users, ALL_NOT_DELETED_USER_IDS_SORTED_BY_NAME);
     // searching for blog instance and wrong role name returns no users
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.supervisor.getName())
+        .withRoleNames(SilverpeasRole.SUPERVISOR.getName())
         .build());
     assertThat(users, notNullValue());
     assertThat(users, empty());
     // searching for blog instance and wrong role name and a group id returns no users
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.supervisor.getName())
+        .withRoleNames(SilverpeasRole.SUPERVISOR.getName())
         .withGroupIds(GROUP_SP_1_ID)
         .build());
     assertThat(users, notNullValue());
@@ -901,7 +901,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertSortedUserIds(users,
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
@@ -916,7 +916,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(GROUP_MIX_1_ID)
         .build());
     assertSortedUserIds(users, USER_SPU2_1002_ID_BLOCKED);
@@ -927,7 +927,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
         .build());
     assertSortedUserIds(users,
@@ -941,7 +941,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(GROUP_MIX_2_ID)
         .build());
     assertThat(users, notNullValue());
@@ -952,7 +952,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // filtering on DELETED and REMOVED users. (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .withGroupIds(GROUP_MIX_2_ID)
         .build());
     assertSortedUserIds(users,
@@ -966,7 +966,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .build());
     assertSortedUserIds(users,
         USER_SPU1_1001_ID_VALID,
@@ -986,7 +986,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .withGroupIds(GROUP_SP_1_ID)
         .build());
     assertThat(users, notNullValue());
@@ -998,7 +998,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName(), writer.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .build());
     assertSortedUserIds(users,
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
@@ -1019,7 +1019,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     //
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName(), writer.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .withGroupIds(GROUP_SP_1_ID, GROUP_SQL_1_ID)
         .build());
     assertSortedUserIds(users,
@@ -1034,7 +1034,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName(), writer.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .withGroupIds(GROUP_SP_1_ID, GROUP_SQL_11_ID)
         .build());
     assertSortedUserIds(users,
@@ -1051,7 +1051,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ROOT_FOLDER_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertThat(users, notNullValue());
     assertThat(users, empty());
@@ -1060,7 +1060,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertThat(users, notNullValue());
     assertThat(users, empty());
@@ -1069,7 +1069,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(GROUP_SP_2_ID)
         .build());
     assertThat(users, notNullValue());
@@ -1079,7 +1079,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
         .build());
     assertThat(users, notNullValue());
@@ -1089,7 +1089,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .build());
     assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a right role
@@ -1097,7 +1097,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .withGroupIds(GROUP_SP_2_ID)
         .build());
     assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
@@ -1106,7 +1106,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
         .build());
     assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
@@ -1115,7 +1115,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.admin.getName(), writer.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .build());
     assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and several role
@@ -1123,7 +1123,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.admin.getName(), writer.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .withGroupIds(GROUP_SQL_1_ID)
         .build());
     assertThat(users, notNullValue());
@@ -1139,7 +1139,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // (BE AWARE of that users of groups are also retrieved)
     SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
-        .withRoleNames(SilverpeasRole.admin.getName(), writer.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .withUserIds(USER_SPU2_1002_ID_BLOCKED, USER_SQLU4_2004_ID_VALID, USER_SPU13_1013_ID_VALID)
         .build());
     assertSortedUserIds(users, USER_SPU2_1002_ID_BLOCKED, USER_SQLU4_2004_ID_VALID);
@@ -1216,7 +1216,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     assertThat(userIds.size(), is(DEFAULT_MASSIVE_NB_USERS));
     SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertSortedUserIds(users, Stream.concat(Stream.of(
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
@@ -1232,7 +1232,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     // on writer right
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
-        .withRoleNames(writer.getName())
+        .withRoleNames(WRITER.getName())
         .build());
     assertSortedUserIds(users,
         USER_SPU1_1001_ID_VALID,
@@ -1255,14 +1255,14 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.admin.getName())
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
     assertThat(users, notNullValue());
     assertThat(users, empty());
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
-        .withRoleNames(SilverpeasRole.writer.getName())
+        .withRoleNames(SilverpeasRole.WRITER.getName())
         .build());
     assertSortedUserIds(users, Stream.concat(Stream.of(
         USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID), userIds.stream())

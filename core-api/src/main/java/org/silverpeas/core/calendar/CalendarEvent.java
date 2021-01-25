@@ -1153,11 +1153,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         final SilverpeasRole highestUserSilverpeas =
             SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).get()
                 .getHighestSilverpeasRolesFor(u);
-        if (highestUserSilverpeas == SilverpeasRole.writer) {
+        if (highestUserSilverpeas == SilverpeasRole.WRITER) {
           return u.getId().equals(getCreator().getId());
         }
         return highestUserSilverpeas != null &&
-            highestUserSilverpeas.isGreaterThanOrEquals(SilverpeasRole.publisher);
+            highestUserSilverpeas.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
       }
       return false;
     });

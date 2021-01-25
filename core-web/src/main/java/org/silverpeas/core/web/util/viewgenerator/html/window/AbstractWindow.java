@@ -172,8 +172,8 @@ public abstract class AbstractWindow implements Window {
         OrganizationControllerProvider.getOrganisationController();
     MainSessionController msc = getGEF().getMainSessionController();
     String[] profiles = organizationController.getUserProfiles(msc.getUserId(), componentId);
-    return ArrayUtil.contains(profiles, SilverpeasRole.admin.getName()) ||
-        ArrayUtil.contains(profiles, SilverpeasRole.supervisor.getName()) ||
+    return ArrayUtil.contains(profiles, SilverpeasRole.ADMIN.getName()) ||
+        ArrayUtil.contains(profiles, SilverpeasRole.SUPERVISOR.getName()) ||
         ArrayUtil.contains(profiles, "Administrator") ||
         ArrayUtil.contains(profiles, "Admin");
   }

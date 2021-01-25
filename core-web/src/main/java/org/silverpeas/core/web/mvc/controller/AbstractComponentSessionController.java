@@ -321,7 +321,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
             .get(currentKey);
     if (roles == null) {
       roles = SilverpeasRole.from(context.getCurrentProfile());
-      roles.remove(SilverpeasRole.Manager);
+      roles.remove(SilverpeasRole.MANAGER);
       CacheServiceProvider.getRequestCacheService().getCache().put(currentKey, roles);
     }
     return roles;
@@ -331,7 +331,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   public SilverpeasRole getHighestSilverpeasUserRole() {
     SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(getSilverpeasUserRoles());
     if (highestUserRole == null) {
-      highestUserRole = SilverpeasRole.reader;
+      highestUserRole = SilverpeasRole.READER;
     }
     return highestUserRole;
   }

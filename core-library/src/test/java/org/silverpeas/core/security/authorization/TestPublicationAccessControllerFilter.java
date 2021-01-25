@@ -503,7 +503,7 @@ public class TestPublicationAccessControllerFilter {
       when(user.isAnonymous()).thenReturn(false);
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
-          .then(new Returns(singleton(SilverpeasRole.user)));
+          .then(new Returns(singleton(SilverpeasRole.USER)));
       when(componentAccessController.isUserAuthorized(anySet())).then(new Returns(true));
       when(organizationController.getComponentInstance(anyString()))
           .thenAnswer(a -> {
@@ -528,7 +528,7 @@ public class TestPublicationAccessControllerFilter {
       when(organizationController.getUserProfilesByComponentId(anyString(), anyCollection())).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
         final Map<String, Set<String>> result = new HashMap<>(instanceIds.size());
-        instanceIds.forEach(i -> result.put(i, CollectionUtil.asSet(SilverpeasRole.user.getName())));
+        instanceIds.forEach(i -> result.put(i, CollectionUtil.asSet(SilverpeasRole.USER.getName())));
         return result;
       });
       when(organizationController
@@ -541,7 +541,7 @@ public class TestPublicationAccessControllerFilter {
             .filter(n -> profiledObjectIds.contains(String.valueOf(n.getId())))
             .map(NodeDetail::getNodePK)
             .forEach(p -> result.put(Pair.of(p.getInstanceId(), Integer.parseInt(p.getId())),
-                CollectionUtil.asSet(SilverpeasRole.user.getName())));
+                CollectionUtil.asSet(SilverpeasRole.USER.getName())));
         return result;
       });
       when(organizationController.getAvailableComponentsByUser(anyString()))

@@ -153,7 +153,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
       final boolean rightOnTopicsEnabled = componentDataManager.isRightOnTopicsEnabled(pubPk.getInstanceId());
       final boolean noSpecificRightsAndCanPutInTrash = !rightOnTopicsEnabled && canPublicationBePersistedOrDeleted.getAsBoolean();
       final boolean specificRightsAndAdminOrAuthorNotUser = rightOnTopicsEnabled
-          && (safeHighestUserRole == SilverpeasRole.admin || publicationDetail.isPublicationEditor(userId));
+          && (safeHighestUserRole == SilverpeasRole.ADMIN || publicationDetail.isPublicationEditor(userId));
       authorized.set(noSpecificRightsAndCanPutInTrash || specificRightsAndAdminOrAuthorNotUser);
     } else {
       // Verifying simple access
@@ -192,7 +192,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
     SilverpeasRole safeHighestUserRole = SilverpeasRole.getHighestFrom(userRoles);
     if (safeHighestUserRole == null) {
       // Preventing from technical errors by using a role which is giving no authorization
-      safeHighestUserRole = SilverpeasRole.reader;
+      safeHighestUserRole = SilverpeasRole.READER;
     }
     return safeHighestUserRole;
   }
@@ -295,7 +295,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
           final Set<SilverpeasRole> nodeUserRoles = nodeAccessController.getUserRoles(userId, location, context);
           if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
             // In case of alias, only user role is taken into account
-            userRoles.add(SilverpeasRole.user);
+            userRoles.add(SilverpeasRole.USER);
             break;
           }
         }

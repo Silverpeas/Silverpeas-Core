@@ -34,32 +34,34 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-
 public enum SilverpeasRole {
-  admin, supervisor, Manager, publisher, writer, privilegedUser, user, reader;
+  ADMIN("admin"),
+  SUPERVISOR("supervisor"),
+  MANAGER("Manager"),
+  PUBLISHER("publisher"),
+  WRITER("writer"),
+  PRIVILEGED_USER("privilegedUser"),
+  USER("user"),
+  READER("reader");
+
+  private final String name;
 
   // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
-  public static final Set<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);
+  public static final Set<SilverpeasRole> READER_ROLES = EnumSet.of(USER, READER);
+
+  SilverpeasRole(final String name) {
+    this.name = name;
+  }
 
   @JsonCreator
   public static SilverpeasRole from(String name) {
-    if (name == null) {
+    if (StringUtil.isNotDefined(name)) {
       return null;
     }
     String trimmedName = name.trim();
-    try {
-      return valueOf(trimmedName);
-    } catch (Exception e) {
-      // Safe mode method (but less efficient)
-      for (SilverpeasRole role : values()) {
-        if (role.getName().equalsIgnoreCase(trimmedName)) {
-          return role;
-        }
-      }
-      SilverLogger.getLogger(SilverpeasRole.class).warn(unknown("silverpeas role", name), e);
-      return null;
-    }
+    return Arrays.stream(values()).filter(r -> r.getName().equalsIgnoreCase(trimmedName))
+        .findFirst()
+        .orElse(null);
   }
 
   public static boolean exists(String name) {
@@ -103,7 +105,7 @@ public enum SilverpeasRole {
       if (sb.length() > 0) {
         sb.append(",");
       }
-      sb.append(role.name());
+      sb.append(role.getName());
     }
     return sb.toString();
   }
@@ -135,7 +137,7 @@ public enum SilverpeasRole {
 
   @JsonValue
   public String getName() {
-    return name();
+    return this.name;
   }
 
   /**
@@ -169,5 +171,10 @@ public enum SilverpeasRole {
       SilverLogger.getLogger(SilverpeasRole.class).warn(ex);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return getName();
   }
 }

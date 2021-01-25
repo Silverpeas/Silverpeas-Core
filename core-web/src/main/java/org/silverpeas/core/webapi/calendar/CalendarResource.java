@@ -82,8 +82,8 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.USER;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder.CALENDAR_EVENT_USER_NOTIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -644,11 +644,11 @@ public class CalendarResource extends AbstractCalendarResource {
             .orElseThrow(() -> new WebApplicationException(INTERNAL_SERVER_ERROR))
             .getHighestSilverpeasRolesFor(getUser());
     if (calendarEntity.isUserPersonal() ||
-        (highestCalendarRole != null && highestCalendarRole.isGreaterThanOrEquals(admin))) {
+        (highestCalendarRole != null && highestCalendarRole.isGreaterThanOrEquals(ADMIN))) {
       calendarEntity
           .withICalPublicURI(uri().ofICalPublic(calendar))
           .withICalPrivateURI(uri().ofICalPrivate(calendar));
-    } else if (highestCalendarRole != null && highestCalendarRole.isGreaterThanOrEquals(user)) {
+    } else if (highestCalendarRole != null && highestCalendarRole.isGreaterThanOrEquals(USER)) {
       calendarEntity.withICalPublicURI(uri().ofICalPublic(calendar));
     } else {
       calendarEntity.setExternalUrl(null);

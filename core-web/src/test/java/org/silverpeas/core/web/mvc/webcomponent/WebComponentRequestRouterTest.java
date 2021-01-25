@@ -148,7 +148,7 @@ public abstract class WebComponentRequestRouterTest {
     when(mainSessionController.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext componentContext = mock(ComponentContext.class);
     when(componentContext.getCurrentProfile())
-        .thenReturn(highestUserRole != null ? new String[]{highestUserRole.name()} : null);
+        .thenReturn(highestUserRole != null ? new String[]{highestUserRole.getName()} : null);
     when(componentContext.getCurrentComponentName()).thenReturn("componentName");
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
     when(componentContext.getCurrentComponentId()).thenReturn("componentName26");

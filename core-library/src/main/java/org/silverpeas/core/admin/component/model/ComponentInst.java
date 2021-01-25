@@ -45,7 +45,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 @XmlRootElement
@@ -475,7 +475,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
     Set<SilverpeasRole> silverpeasRoles =
         SilverpeasRole.from(OrganizationController.get().getUserProfiles(user.getId(), getId()));
-    silverpeasRoles.remove(Manager);
+    silverpeasRoles.remove(MANAGER);
     return silverpeasRoles;
   }
 }

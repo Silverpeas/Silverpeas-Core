@@ -75,7 +75,7 @@ public class WopiWebController extends
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("wopi.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void home(WopiWebRequestContext context) {
     mergeSelectedItems(context);
     setCommons(context);
@@ -84,7 +84,7 @@ public class WopiWebController extends
   @POST
   @Path("enable")
   @RedirectToInternalJsp("wopi.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void enable(WopiWebRequestContext context) {
     getManager().enable(true);
     setCommons(context);
@@ -93,7 +93,7 @@ public class WopiWebController extends
   @POST
   @Path("disable")
   @RedirectToInternalJsp("wopi.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void disable(WopiWebRequestContext context) {
     getManager().enable(false);
     setCommons(context);
@@ -102,7 +102,7 @@ public class WopiWebController extends
   @POST
   @Path("revokeSelected")
   @RedirectToInternalJsp("wopi.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void revokeSelected(WopiWebRequestContext context) {
     mergeSelectedItems(context);
     getAllUsers().stream()
@@ -119,7 +119,7 @@ public class WopiWebController extends
   @POST
   @Path("revokeAll")
   @RedirectToInternalJsp("wopi.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void revokeAll(WopiWebRequestContext context) {
     getAllUsers().forEach(getManager()::revokeUser);
     getAllFiles().forEach(getManager()::revokeFile);

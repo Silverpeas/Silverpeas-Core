@@ -34,7 +34,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 <c:set var="componentInstance" value="<%=PersonalComponentInstance.from(User.getCurrentRequester(), PersonalComponent.getByName(UserCalendarSettings.COMPONENT_NAME).orElse(null))%>"/>
 <jsp:useBean id="componentInstance" type="org.silverpeas.core.admin.component.model.PersonalComponentInstance"/>
 <c:url var="componentUriBase" value="<%=URLUtil.getComponentInstanceURL(componentInstance.getId())%>"/>

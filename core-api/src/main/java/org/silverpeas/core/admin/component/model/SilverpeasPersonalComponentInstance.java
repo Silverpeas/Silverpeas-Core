@@ -62,9 +62,9 @@ public interface SilverpeasPersonalComponentInstance extends SilverpeasComponent
   default Collection<SilverpeasRole> getSilverpeasRolesFor(User user) {
     final Collection<SilverpeasRole> roles;
     if (getUser().getId().equals(user.getId())) {
-      roles = EnumSet.of(SilverpeasRole.admin);
+      roles = EnumSet.of(SilverpeasRole.ADMIN);
     } else if (isPublic()) {
-      roles = EnumSet.of(SilverpeasRole.user);
+      roles = EnumSet.of(SilverpeasRole.USER);
     } else {
       roles = EnumSet.noneOf(SilverpeasRole.class);
     }
