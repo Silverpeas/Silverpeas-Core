@@ -141,15 +141,22 @@ public class LoggerConfigurationManager {
     Map<String, LoggerConfiguration> loggerConfigurations = getLoggerConfigurations();
     if (loggerConfigurations.containsKey(configuration.getNamespace()) &&
         configuration.hasConfigurationFile()) {
-      try(InputStream input = new FileInputStream(configuration.getConfigurationFile());
-          OutputStream output = new FileOutputStream(configuration.getConfigurationFile())) {
         Properties properties = new Properties();
+
+      try (InputStream input = new FileInputStream(configuration.getConfigurationFile())) {
         properties.load(input);
+      } catch (IOException e) {
+        java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
+            .log(java.util.logging.Level.WARNING, e.getMessage(), e);
+      }
+
         if (configuration.getLevel() == null) {
           properties.remove(LOGGER_LEVEL);
         } else {
           properties.setProperty(LOGGER_LEVEL, configuration.getLevel().name());
         }
+
+      try (OutputStream output = new FileOutputStream(configuration.getConfigurationFile())) {
         properties.store(output, null);
       } catch (IOException e) {
         java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
