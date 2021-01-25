@@ -56,8 +56,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.modification;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
 
 /**
  * @author silveryocha
@@ -141,7 +141,7 @@ public class TestComponentAccessControllerFilter {
 
   @Test
   public void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS, search);
+    executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS, SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
 
@@ -151,7 +151,7 @@ public class TestComponentAccessControllerFilter {
 
   @Test
   public void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS, modification);
+    executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS, MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches();
   }
 

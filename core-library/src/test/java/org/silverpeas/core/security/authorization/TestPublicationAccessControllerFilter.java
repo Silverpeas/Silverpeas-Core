@@ -69,8 +69,8 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.modification;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
 
 /**
  * @author silveryocha
@@ -346,11 +346,12 @@ public class TestPublicationAccessControllerFilter {
 
   @Test
   public void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, search);
+    executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
-    executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), search);
+    executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
-    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), search);
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE),
+        SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
 
@@ -389,11 +390,13 @@ public class TestPublicationAccessControllerFilter {
 
   @Test
   public void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
-    executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, modification);
+    executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(false);
-    executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), modification);
+    executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE),
+        MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(true);
-    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), modification);
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE),
+        MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(true);
   }
 

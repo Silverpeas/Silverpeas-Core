@@ -25,10 +25,9 @@ package org.silverpeas.core.persistence.jdbc.bean;
 
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.beans.BeanInfo;
@@ -43,6 +42,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,16 +50,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Deprecated
+/**
+ * Implementation of the previous custom persistence layer (before JPA).
+ * @param <T> the concrete type of the persistent bean in Silverpeas.
+ * @deprecated
+ */
+@Deprecated(forRemoval = false)
 public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements SilverpeasBeanDAO<T> {
 
   private final List<PropertyDescriptor> validProperties;
   private Class<T> silverpeasBeanClass;
   // how to make connection with the database
-  private int connectionType = CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  private String datasourceName = null;
+  private int connectionType;
   private JdbcData jdbcConnectionParameters = null;
-  private String tableName = null;
+  private String tableName;
 
   @SuppressWarnings("unchecked")
   public SilverpeasBeanDAOImpl(String beanClassName) throws PersistenceException {
@@ -68,10 +72,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       T object = silverpeasBeanClass.newInstance();
 
       if (!(object instanceof SilverpeasBean)) {
-        throw new PersistenceException(
-            "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-            SilverpeasException.ERROR, "persistence.EX_ISNOT_SILVERPEASBEAN",
-            "classe= " + beanClassName, null);
+        throw new PersistenceException("{0} isn't a Silverpeas persistent bean", beanClassName);
       }
       BeanInfo infos = Introspector.getBeanInfo(silverpeasBeanClass);
       validProperties = Arrays.stream(infos.getPropertyDescriptors()).filter(p -> {
@@ -84,47 +85,23 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         }
         if (object instanceof Contribution && p.getWriteMethod() == null) {
           // Since some SilverpeasBean implements Contribution, some properties mus be skipped...
-          SilverLogger.getLogger(this).warn(
-              "as {0} is a method from an interface without SQL table name behind, property is " +
-                  "not taken into account for {1}", p.getName(),
-              silverpeasBeanClass.getSimpleName());
+          SilverLogger.getLogger(this)
+              .warn(
+                  "as {0} is a method from an interface without SQL table name behind, property " +
+                      "is " + "not taken into account for {1}", p.getName(),
+                  silverpeasBeanClass.getSimpleName());
           return false;
         }
         return true;
       }).collect(Collectors.toList());
 
       connectionType = object._getConnectionType();
-      switch (connectionType) {
-        case CONNECTION_TYPE_DATASOURCE: {
-          datasourceName = object._getDatasourceName();
-          break;
-        }
-        case CONNECTION_TYPE_JDBC_CLASSIC: {
-          jdbcConnectionParameters = object._getJdbcData();
-          break;
-        }
+      if (connectionType == CONNECTION_TYPE_JDBC_CLASSIC) {
+        jdbcConnectionParameters = object._getJdbcData();
       }
       tableName = object._getTableName();
-    } catch (IntrospectionException ex) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS",
-          "classe= " + beanClassName, ex);
-    } catch (ClassNotFoundException ex) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS",
-          "classe= " + beanClassName, ex);
-    } catch (InstantiationException ex) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS",
-          "classe= " + beanClassName, ex);
-    } catch (IllegalAccessException ex) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS",
-          "classe= " + beanClassName, ex);
+    } catch (IntrospectionException | IllegalAccessException | InstantiationException | ClassNotFoundException ex) {
+      throw new PersistenceException("Cannot initialize bean " + beanClassName, ex);
     }
   }
 
@@ -135,27 +112,16 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
   @Override
   public void remove(Connection connection, WAPrimaryKey pk) throws PersistenceException {
-    Connection con;
-    if (connection == null) {
-      con = getConnection();
-    } else {
-      con = connection;
-    }
-    PreparedStatement prepStmt = null;
-    try {
-      String updateStatement = "delete from " + getTableName(pk) + " where id = ?";
-      prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setInt(1, Integer.parseInt(pk.getId()));
-      prepStmt.executeUpdate();
-    } catch (SQLException e) {
-      throw new PersistenceException("SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_REMOVE_OBJECT", "", e);
-    } finally {
-      DBUtil.close(prepStmt);
-      if (connection == null) {
-        DBUtil.close(con);
+    final String updateStatement = "delete from " + getTableName(pk) + " where id = ?";
+    perform(connection, con -> {
+      try (PreparedStatement prepStmt = con.prepareStatement(updateStatement)) {
+        prepStmt.setInt(1, Integer.parseInt(pk.getId()));
+        prepStmt.executeUpdate();
+      } catch (SQLException e) {
+        throw new PersistenceException(
+            "Cannot remove bean with id (" + pk.getId() + ", " + pk.getInstanceId() + ")", e);
       }
-    }
+    });
   }
 
   @Override
@@ -166,28 +132,15 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
   @Override
   public void removeWhere(Connection connection, WAPrimaryKey pk, String whereClause)
       throws PersistenceException {
-    Connection con;
-    if (connection == null) {
-      con = getConnection();
-    } else {
-      con = connection;
-    }
-    PreparedStatement prepStmt = null;
-    try {
-      String updateStatement = "delete from " + getTableName(pk) + " where " + whereClause;
-
-      prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.executeUpdate();
-    } catch (Exception e) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.removeWhere(WAPrimaryKey pk, String p_WhereClause)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_REMOVE_OBJECT", "", e);
-    } finally {
-      DBUtil.close(prepStmt);
-      if (connection == null) {
-        DBUtil.close(con);
+    String updateStatement = "delete from " + getTableName(pk) + " where " + whereClause;
+    perform(connection, con -> {
+      try (PreparedStatement prepStmt = con.prepareStatement(updateStatement)) {
+        prepStmt.executeUpdate();
+      } catch (Exception e) {
+        throw new PersistenceException(
+            "Cannot remove bean with id (" + pk.getId() + ", " + pk.getInstanceId() + ")", e);
       }
-    }
+    });
   }
 
   @Override
@@ -197,44 +150,29 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
   @Override
   public void update(Connection connection, T bean) throws PersistenceException {
-    Connection con;
-    if (connection == null) {
-      con = getConnection();
-    } else {
-      con = connection;
-    }
-    PreparedStatement prepStmt = null;
-
-    try {
-      String statement = null;
-      for (PropertyDescriptor property : validProperties) {
-        if (statement == null) {
-          statement = property.getName() + " = ? ";
-        } else {
-          statement += ", " + property.getName() + " = ? ";
-        }
+    StringBuilder statement = new StringBuilder();
+    for (PropertyDescriptor property : validProperties) {
+      if (statement.length() > 0) {
+        statement.append(", ");
       }
-
-      String updateStatement =
-          "UPDATE " + getTableName(bean.getPK()) + " SET " + statement + " WHERE id = ?";
-
-      prepStmt = con.prepareStatement(updateStatement);
-      int count = prepareStatementSetProperties(prepStmt, bean);
-
-      // for the where clause
-      prepStmt.setInt(count, Integer.parseInt(bean.getPK().getId()));
-      prepStmt.executeUpdate();
-
-    } catch (Exception e) {
-      throw new PersistenceException("SilverpeasBeanDAOImpl.update(SilverpeasBean bean) ",
-          SilverpeasException.ERROR, "persistence.EX_CANT_UPDATE_OBJECT", "", e);
-    } finally {
-      DBUtil.close(prepStmt);
-      if (connection == null) {
-        DBUtil.close(con);
-      }
+      statement.append(property.getName()).append(" = ?");
     }
+    String updateStatement =
+        "UPDATE " + getTableName(bean.getPK()) + " SET " + statement + " WHERE id = ?";
 
+    perform(connection, con -> {
+      try (PreparedStatement prepStmt = con.prepareStatement(updateStatement)) {
+        int count = prepareStatementSetProperties(prepStmt, bean);
+        // for the where clause
+        prepStmt.setInt(count, Integer.parseInt(bean.getPK().getId()));
+        prepStmt.executeUpdate();
+
+      } catch (Exception e) {
+        throw new PersistenceException(
+            "Cannot update bean with id (" + bean.getPK().getId() + ", " +
+                bean.getPK().getInstanceId() + ")", e);
+      }
+    });
   }
 
   @Override
@@ -244,48 +182,36 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
   @Override
   public WAPrimaryKey add(Connection connection, T bean) throws PersistenceException {
-    Connection con;
-    if (connection == null) {
-      con = getConnection();
-    } else {
-      con = connection;
-    }
-    PreparedStatement prepStmt = null;
-    try {
-      String columns = null;
-      String statement = null;
-      for (PropertyDescriptor property : validProperties) {
-        if (columns == null) {
-          columns = property.getName();
-          statement = " ? ";
-        } else {
-          columns += ", " + property.getName();
-          statement += ", ? ";
-        }
+    StringBuilder columns = new StringBuilder();
+    StringBuilder values = new StringBuilder();
+    for (PropertyDescriptor property : validProperties) {
+      if (columns.length() > 0) {
+        columns.append(", ");
+        values.append(", ");
       }
-      columns += ", id";
-      statement += ", ? ";
-      String insertStatement =
-          "INSERT INTO " + getTableName(bean.getPK()) + " (" + columns + ") " + " values (" +
-              statement + ")";
-      prepStmt = con.prepareStatement(insertStatement);
-      int count = prepareStatementSetProperties(prepStmt, bean);
-      // for the where clause
-      int id = DBUtil.getNextId(getTableName(bean.getPK()), "id");
-      prepStmt.setInt(count, id);
-      prepStmt.executeUpdate();
-      bean.getPK().setId(id + "");
-      return bean.getPK();
-
-    } catch (Exception e) {
-      throw new PersistenceException("SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_ADD_OBJECT", "", e);
-    } finally {
-      DBUtil.close(prepStmt);
-      if (connection == null) {
-        DBUtil.close(con);
-      }
+      columns.append(property.getName());
+      values.append("?");
     }
+    columns.append(", id");
+    values.append(", ? ");
+    String insertStatement =
+        "INSERT INTO " + getTableName(bean.getPK()) + " (" + columns + ") " + " values (" + values +
+            ")";
+    final Mutable<WAPrimaryKey> pk = Mutable.empty();
+    perform(connection, con -> {
+      try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
+        int count = prepareStatementSetProperties(prepStmt, bean);
+        // for the where clause
+        int id = DBUtil.getNextId(getTableName(bean.getPK()), "id");
+        prepStmt.setInt(count, id);
+        prepStmt.executeUpdate();
+        bean.getPK().setId(id + "");
+        pk.set(bean.getPK());
+      } catch (Exception e) {
+        throw new PersistenceException("Cannot save bea", e);
+      }
+    });
+    return pk.get();
   }
 
   @Override
@@ -295,34 +221,24 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
   @Override
   public T findByPrimaryKey(Connection connection, WAPrimaryKey pk) throws PersistenceException {
-    PreparedStatement prepStmt = null;
-    Connection con;
-    if (connection == null) {
-      con = getConnection();
-    } else {
-      con = connection;
-    }
-    ResultSet rs = null;
-    try {
-      String selectStatement =
-          "SELECT  " + getColumnNames() + " FROM " + getTableName(pk) + " WHERE id = ?";
-
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, Integer.parseInt(pk.getId()));
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        return getSilverpeasBeanFromResultSet(pk, rs);
+    String selectStatement =
+        "SELECT  " + getColumnNames() + " FROM " + getTableName(pk) + " WHERE id = ?";
+    Mutable<T> entity = Mutable.empty();
+    perform(connection, con -> {
+      try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
+        prepStmt.setInt(1, Integer.parseInt(pk.getId()));
+        try (ResultSet rs = prepStmt.executeQuery()) {
+          if (rs.next()) {
+            T result = getSilverpeasBeanFromResultSet(pk, rs);
+            entity.set(result);
+          }
+        }
+      } catch (Exception e) {
+        throw new PersistenceException(
+            "Cannot find bean with id (" + pk.getId() + ", " + pk.getInstanceId() + ")", e);
       }
-      return null;
-    } catch (Exception e) {
-      throw new PersistenceException("SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_FIND_OBJECT", "", e);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-      if (connection == null) {
-        DBUtil.close(con);
-      }
-    }
+    });
+    return entity.orElse(null);
   }
 
   @Override
@@ -334,182 +250,211 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
   @Override
   public Collection<T> findByWhereClause(Connection connection, WAPrimaryKey pk, String whereClause)
       throws PersistenceException {
-    PreparedStatement prepStmt = null;
-    Connection con;
-    if (connection == null) {
-      con = getConnection();
-    } else {
-      con = connection;
+    StringBuilder selectStatement =
+        new StringBuilder("SELECT DISTINCT " + getColumnNames() + " FROM " + getTableName(pk));
+    if (whereClause != null) {
+      selectStatement.append(" WHERE " + whereClause);
     }
-    ResultSet rs = null;
-    try {
-      String selectStatement = "SELECT DISTINCT " + getColumnNames() + " FROM " + getTableName(pk);
-      if (whereClause != null) {
-        selectStatement += " WHERE " + whereClause;
+    Mutable<List<T>> entities = Mutable.of(new ArrayList<>());
+    perform(connection, con -> {
+      try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString());
+           ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          T bean = getSilverpeasBeanFromResultSet(pk, rs);
+          entities.get().add(bean);
+        }
+      } catch (Exception e) {
+        throw new PersistenceException("Cannot find any beans satisfying the clause " + whereClause,
+            e);
       }
-
-      prepStmt = con.prepareStatement(selectStatement);
-
-      rs = prepStmt.executeQuery();
-      List<T> list = new ArrayList<T>();
-      while (rs.next()) {
-        T bean = getSilverpeasBeanFromResultSet(pk, rs);
-        list.add(bean);
-      }
-      return list;
-    } catch (Exception e) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.findByWhereClause(WAPrimaryKey pk, String whereClause)",
-          SilverpeasException.ERROR, "persistence.EX_CANT_FIND_OBJECT", "", e);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-      if (connection == null) {
-        DBUtil.close(con);
-      }
-    }
-
+    });
+    return entities.get();
   }
 
   /*--------------------------------------------------------------------------------------------------------------------*/
 
-  /**
-   * getConnection
-   */
-  private Connection getConnection() throws PersistenceException {
+  @FunctionalInterface
+  private interface DataSourceTask {
+    void execute(final Connection connection) throws PersistenceException;
+  }
+
+  private void perform(final Connection connection, final DataSourceTask task)
+      throws PersistenceException {
+    Connection con = getConnection(connection);
     try {
-      Connection con;
-      switch (connectionType) {
-        case CONNECTION_TYPE_DATASOURCE: {
-          con = DBUtil.openConnection();
-          break;
-        }
-        case CONNECTION_TYPE_JDBC_CLASSIC: {
-          System.out.println("WARNING COMMECTION TYPE JDBC BASIC");
-          Class.forName(jdbcConnectionParameters.JDBCdriverName);
-          con = DriverManager
-              .getConnection(jdbcConnectionParameters.JDBCurl, jdbcConnectionParameters.JDBClogin,
-                  jdbcConnectionParameters.JDBCpassword);
-          break;
-        }
-        case CONNECTION_TYPE_DATASOURCE_SILVERPEAS: {
-          con = DBUtil.openConnection();
-          break;
-        }
-        default: {
-          con = DBUtil.openConnection();
-          break;
-        }
+      task.execute(con);
+    } finally {
+      if (connection == null) {
+        DBUtil.close(con);
+      }
+    }
+  }
+
+  private Connection getConnection(final Connection connection) throws PersistenceException {
+    if (connection != null) {
+      return connection;
+    }
+    try {
+      final Connection con;
+      if (connectionType == CONNECTION_TYPE_JDBC_CLASSIC) {
+        SilverLogger.getLogger(this).warn("CONNECTION TYPE BASIC JDBC!");
+        Class.forName(jdbcConnectionParameters.JDBCdriverName);
+        con = DriverManager.getConnection(jdbcConnectionParameters.JDBCurl,
+            jdbcConnectionParameters.JDBClogin, jdbcConnectionParameters.JDBCpassword);
+      } else {
+        con = DBUtil.openConnection();
       }
       return con;
-    } catch (Exception e) {
-      throw new PersistenceException("SilverpeasBeanDAOImpl.getConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "", e);
+    } catch (ClassNotFoundException | SQLException e) {
+      throw new PersistenceException("Datasource connection opening failure!", e);
     }
   }
 
   /**
    * getColumnNames
    */
-  private String getColumnNames() throws Exception {
-
-    String statement = null;
-
+  private String getColumnNames() {
+    StringBuilder statement = new StringBuilder();
     for (PropertyDescriptor property : validProperties) {
-      if (statement == null) {
-        statement = property.getName();
-      } else {
-        statement += ", " + property.getName();
+      if (statement.length() > 0) {
+        statement.append(", ");
       }
+      statement.append(property.getName());
     }
-    statement += ", id";
-    return statement;
+    statement.append(", id");
+    return statement.toString();
   }
 
   /**
    * getSilverpeasBeanFromResultSet
    */
-  private T getSilverpeasBeanFromResultSet(WAPrimaryKey pk, ResultSet rs) throws Exception {
+  private T getSilverpeasBeanFromResultSet(WAPrimaryKey pk, ResultSet rs)
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+      InstantiationException, SQLException, ParseException {
 
-    T bean = silverpeasBeanClass.newInstance();
+    Constructor<T> constructor = silverpeasBeanClass.getDeclaredConstructor();
+    T bean = constructor.newInstance();
     int count = 1;
-
     for (PropertyDescriptor property : validProperties) {
       String type = property.getPropertyType().getName();
+      Object[] parameters;
       if (isInteger(type)) {
-        int value = rs.getInt(count);
-        if (!rs.wasNull()) {
-          Object[] parameters = new Integer[]{value};
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getIntParams(rs, count);
         count++;
       } else if (isLong(type)) {
-        long value = rs.getLong(count);
-        if (!rs.wasNull()) {
-          Object[] parameters = new Long[]{value};
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getLongParams(rs, count);
         count++;
       } else if (isBoolean(type)) {
-        boolean value = rs.getBoolean(count);
-        if (!rs.wasNull()) {
-          Object[] parameters = new Boolean[]{value};
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getBooleanParams(rs, count);
         count++;
       } else if (isString(type)) {
-        String value = rs.getString(count);
-        if (value != null) {
-          Object[] parameters = new String[1];
-          parameters[0] = value;
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getStringParams(rs, count);
         count++;
       } else if (isDate(type)) {
-        String value = rs.getString(count);
-        if (value != null) {
-          Object[] parameters = new Date[1];
-          try {
-            parameters[0] = DateUtil.parse(value);
-          } catch (Exception e) {
-            SilverTrace.error("persistence",
-                "SilverpeasBeanDAOImpl.getSilverpeasBeanFromResultSet(WAPrimaryKey pk, " +
-                    "ResultSet rs)", "root.EX_CANT_PARSE_DATE",
-                "property Name = " + property.getName() + ", date= " + value);
-            throw e;
-          }
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getDateParams(rs, count);
         count++;
       } else if (isFloat(type)) {
-        float value = rs.getFloat(count);
-        if (!rs.wasNull()) {
-          Object[] parameters = new Float[]{value};
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getFloatParams(rs, count);
         count++;
       } else if (isDouble(type)) {
-        double value = rs.getDouble(count);
-        if (!rs.wasNull()) {
-          Object[] parameters = new Double[]{value};
-          property.getWriteMethod().invoke(bean, parameters);
-        }
+        parameters = getDoubleParams(rs, count);
         count++;
+      } else {
+        parameters = null;
       }
-
+      if (parameters != null) {
+        property.getWriteMethod().invoke(bean, parameters);
+      }
     }
 
+    setBeanPK(pk, rs, bean, count);
+    return bean;
+  }
+
+  private Object[] getDoubleParams(final ResultSet rs, final int idx)
+      throws SQLException {
+    Object[] parameters = null;
+    double value = rs.getDouble(idx);
+    if (!rs.wasNull()) {
+      parameters = new Double[]{value};
+    }
+    return parameters;
+  }
+
+  private Object[] getFloatParams(final ResultSet rs, final int idx)
+      throws SQLException {
+    Object[] parameters = null;
+    float value = rs.getFloat(idx);
+    if (!rs.wasNull()) {
+      parameters = new Float[]{value};
+    }
+    return parameters;
+  }
+
+  private Object[] getDateParams(final ResultSet rs, final int idx)
+      throws SQLException, ParseException {
+    Object[] parameters = null;
+    String value = rs.getString(idx);
+    if (value != null) {
+      parameters = new Date[] {DateUtil.parse(value)};
+    }
+    return parameters;
+  }
+
+  private Object[] getStringParams(final ResultSet rs, final int idx)
+      throws SQLException {
+    Object[] parameters = null;
+    String value = rs.getString(idx);
+    if (value != null) {
+      parameters = new String[] {value};
+    }
+    return parameters;
+  }
+
+  private Object[] getBooleanParams(final ResultSet rs, final int idx)
+      throws SQLException {
+    Object[] parameters = null;
+    boolean value = rs.getBoolean(idx);
+    if (!rs.wasNull()) {
+      parameters = new Boolean[]{value};
+    }
+    return parameters;
+  }
+
+  private Object[] getLongParams(final ResultSet rs, final int idx)
+      throws SQLException {
+    Object[] parameters = null;
+    long value = rs.getLong(idx);
+    if (!rs.wasNull()) {
+      parameters = new Long[]{value};
+    }
+    return parameters;
+  }
+
+  private Object[] getIntParams(final ResultSet rs, final int idx)
+      throws SQLException {
+    Object[] parameters = null;
+    int value = rs.getInt(idx);
+    if (!rs.wasNull()) {
+      parameters = new Integer[]{value};
+    }
+    return parameters;
+  }
+
+  private void setBeanPK(final WAPrimaryKey pk, final ResultSet rs, final T bean, final int count)
+      throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+      InvocationTargetException {
     Class<? extends WAPrimaryKey> pkClass = pk.getClass();
     String id = rs.getInt(count) + "";
-    Class<?> types[] = new Class[2];
+    Class<?>[] types = new Class[2];
     types[0] = String.class;
-    types[1] = WAPrimaryKey.class; // pkClass;
+    types[1] = WAPrimaryKey.class;
     Constructor<? extends WAPrimaryKey> construct = pkClass.getConstructor(types);
     Object[] parameters = new Object[2];
     parameters[0] = id;
     parameters[1] = pk;
     WAPrimaryKey maPk = construct.newInstance(parameters);
     bean.setPK(maPk);
-    return bean;
   }
 
   private boolean isInteger(String type) {
@@ -568,67 +513,106 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
   private int prepareStatementSetProperties(PreparedStatement prepStmt, T bean)
       throws IllegalAccessException, SQLException, InvocationTargetException {
     int count = 1;
-
     for (PropertyDescriptor property : validProperties) {
       String type = property.getPropertyType().getName();
       if (isInteger(type)) {
-        Integer integer = (Integer) property.getReadMethod().invoke(bean);
-        if (integer == null) {
-          prepStmt.setInt(count, -1);
-        } else {
-          prepStmt.setInt(count, integer);
-        }
+        setInt(prepStmt, bean, count, property);
         count++;
       } else if (isLong(type)) {
         Long l = (Long) property.getReadMethod().invoke(bean);
-        if (l == null) {
-          prepStmt.setLong(count, 0);
-        } else {
-          prepStmt.setLong(count, l);
-        }
+        setLong(prepStmt, count, l);
         count++;
       } else if (isBoolean(type)) {
         Boolean l = (Boolean) property.getReadMethod().invoke(bean);
-        if (l == null) {
-          prepStmt.setBoolean(count, false);
-        } else {
-          prepStmt.setBoolean(count, l);
-        }
+        setBoolean(prepStmt, count, l);
         count++;
       } else if (isString(type)) {
-        String string = (String) property.getReadMethod().invoke(bean);
-        if (string == null) {
-          prepStmt.setNull(count, Types.VARCHAR);
-        } else {
-          prepStmt.setString(count, string);
-        }
+        setString(prepStmt, bean, count, property);
         count++;
       } else if (isDate(type)) {
-        Date date = (Date) property.getReadMethod().invoke(bean);
-        if (date == null) {
-          prepStmt.setNull(count, Types.VARCHAR);
-        } else {
-          prepStmt.setString(count, DateUtil.date2SQLDate(date));
-        }
+        setDate(prepStmt, bean, count, property);
         count++;
       } else if (isFloat(type)) {
-        Float f = (Float) property.getReadMethod().invoke(bean);
-        if (f == null) {
-          prepStmt.setFloat(count, 0);
-        } else {
-          prepStmt.setFloat(count, f);
-        }
+        setFloat(prepStmt, bean, count, property);
         count++;
       } else if (isDouble(type)) {
-        Double d = (Double) property.getReadMethod().invoke(bean);
-        if (d == null) {
-          prepStmt.setDouble(count, 0);
-        } else {
-          prepStmt.setDouble(count, d);
-        }
+        setDouble(prepStmt, bean, count, property);
         count++;
       }
     }
     return count;
+  }
+
+  private void setDouble(final PreparedStatement prepStmt, final T bean, final int count,
+      final PropertyDescriptor property)
+      throws IllegalAccessException, InvocationTargetException, SQLException {
+    Double d = (Double) property.getReadMethod().invoke(bean);
+    if (d == null) {
+      prepStmt.setDouble(count, 0);
+    } else {
+      prepStmt.setDouble(count, d);
+    }
+  }
+
+  private void setFloat(final PreparedStatement prepStmt, final T bean, final int count,
+      final PropertyDescriptor property)
+      throws IllegalAccessException, InvocationTargetException, SQLException {
+    Float f = (Float) property.getReadMethod().invoke(bean);
+    if (f == null) {
+      prepStmt.setFloat(count, 0);
+    } else {
+      prepStmt.setFloat(count, f);
+    }
+  }
+
+  private void setDate(final PreparedStatement prepStmt, final T bean, final int count,
+      final PropertyDescriptor property)
+      throws IllegalAccessException, InvocationTargetException, SQLException {
+    Date date = (Date) property.getReadMethod().invoke(bean);
+    if (date == null) {
+      prepStmt.setNull(count, Types.VARCHAR);
+    } else {
+      prepStmt.setString(count, DateUtil.date2SQLDate(date));
+    }
+  }
+
+  private void setString(final PreparedStatement prepStmt, final T bean, final int count,
+      final PropertyDescriptor property)
+      throws IllegalAccessException, InvocationTargetException, SQLException {
+    String string = (String) property.getReadMethod().invoke(bean);
+    if (string == null) {
+      prepStmt.setNull(count, Types.VARCHAR);
+    } else {
+      prepStmt.setString(count, string);
+    }
+  }
+
+  private void setBoolean(final PreparedStatement prepStmt, final int count, final Boolean l)
+      throws SQLException {
+    if (l == null) {
+      prepStmt.setBoolean(count, false);
+    } else {
+      prepStmt.setBoolean(count, l);
+    }
+  }
+
+  private void setLong(final PreparedStatement prepStmt, final int count, final Long l)
+      throws SQLException {
+    if (l == null) {
+      prepStmt.setLong(count, 0);
+    } else {
+      prepStmt.setLong(count, l);
+    }
+  }
+
+  private void setInt(final PreparedStatement prepStmt, final T bean, final int count,
+      final PropertyDescriptor property)
+      throws IllegalAccessException, InvocationTargetException, SQLException {
+    Integer integer = (Integer) property.getReadMethod().invoke(bean);
+    if (integer == null) {
+      prepStmt.setInt(count, -1);
+    } else {
+      prepStmt.setInt(count, integer);
+    }
   }
 }

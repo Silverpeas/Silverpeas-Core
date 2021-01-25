@@ -36,7 +36,7 @@ import java.lang.reflect.Field;
  * Validator of the {@link OnlyByCreator} constraint.
  * @author mmoquillon
  */
-public class OnlyByCreatorValidator implements ConstraintValidator<OnlyByCreator, Entity> {
+public class OnlyByCreatorValidator implements ConstraintValidator<OnlyByCreator, Entity<?, ?>> {
   private String owner;
 
   @Override
@@ -45,10 +45,10 @@ public class OnlyByCreatorValidator implements ConstraintValidator<OnlyByCreator
   }
 
   @Override
-  public boolean isValid(final Entity entity, final ConstraintValidatorContext context) {
+  public boolean isValid(final Entity<?, ?> entity, final ConstraintValidatorContext context) {
     User requester = User.getCurrentRequester();
     if (requester != null) {
-      Entity concerned = getConcernedEntity(entity);
+      Entity<?, ?> concerned = getConcernedEntity(entity);
       if (StringUtil.isDefined(concerned.getCreatorId())) {
         return requester.isAccessAdmin() || requester.getId().equals(concerned.getCreatorId());
       }
@@ -56,13 +56,13 @@ public class OnlyByCreatorValidator implements ConstraintValidator<OnlyByCreator
     return true;
   }
 
-  private Entity getConcernedEntity(final Entity entity) {
-    Entity entityOwner;
+  private Entity<?, ?> getConcernedEntity(final Entity<?, ?> entity) {
+    Entity<?, ?> entityOwner;
     if (!owner.isEmpty()) {
       try {
         Field ownerField = entity.getClass().getDeclaredField(owner);
-        ownerField.setAccessible(true);
-        entityOwner = (Entity) ownerField.get(entity);
+        ownerField.trySetAccessible();
+        entityOwner = (Entity<?, ?>) ownerField.get(entity);
       } catch (NoSuchFieldException | IllegalAccessException e) {
         throw new SilverpeasRuntimeException(e.getMessage(), e);
       }

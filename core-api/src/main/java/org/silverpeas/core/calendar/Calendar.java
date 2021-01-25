@@ -553,7 +553,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
       final ComponentAccessControl componentAccessControl = ComponentAccessControl.get();
       final Set<SilverpeasRole> roles = componentAccessControl
           .getUserRoles(u.getId(), getComponentInstanceId(),
-              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
       return componentAccessControl.isUserAuthorized(roles) &&
           Optional.ofNullable(SilverpeasRole.getHighestFrom(roles))
               .filter(r -> r.isGreaterThanOrEquals(ADMIN)).isPresent();

@@ -24,6 +24,7 @@
 package org.silverpeas.core.io.media;
 
 import org.apache.tika.Tika;
+import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.mime.MediaType;
@@ -99,7 +100,7 @@ public class MetadataExtractor {
    * @return a {@link MetaData} instance that handles the metadata extracted from the given file.
    */
   private MetaData adjust(final File file, Metadata metaData) {
-    String contentType = metaData.get(Metadata.CONTENT_TYPE);
+    String contentType = metaData.get(HttpHeaders.CONTENT_TYPE);
     MediaType mediaType = MediaType.parse(contentType);
     adjustMp4Duration(metaData, mediaType);
     return new MetaData(file, metaData);

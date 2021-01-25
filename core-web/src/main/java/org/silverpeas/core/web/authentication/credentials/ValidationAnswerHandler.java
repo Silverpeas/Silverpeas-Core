@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -61,7 +60,7 @@ public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler
         return performQuestionAnswerError(request, getGeneral().getString("userLoginQuestionPage"),
             userDetail);
       }
-    } catch (AdminException e) {
+    } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("validation answer error with login {0}", new String[]{login}, e);
       return "/Login?ErrorCode=2";

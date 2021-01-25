@@ -73,7 +73,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getComponentName;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 
 @Service
@@ -2047,7 +2047,7 @@ public class GlobalPdcManager implements PdcManager {
         .filter(o -> o.getInstanceId().startsWith(KMELIA_COMPONENT_NAME) )
         .map(o -> new PublicationPK(o.getObjectId(), o.getInstanceId()))
         .collect(toList());
-    final AccessControlContext context = AccessControlContext.init().onOperationsOf(search);
+    final AccessControlContext context = AccessControlContext.init().onOperationsOf(SEARCH);
     final Set<String> accessiblePks = PublicationAccessControl.get()
         .filterAuthorizedByUser(pks, userId, context)
         .map(p -> p.getInstanceId() + "@" + p.getId())

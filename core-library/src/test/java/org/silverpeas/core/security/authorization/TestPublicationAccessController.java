@@ -242,7 +242,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -252,7 +252,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -265,7 +265,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
         .withDraftStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -278,7 +278,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
         .withToValidateStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -291,7 +291,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
         .withRefusedStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -304,7 +304,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
         .notVisible()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -316,7 +316,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
         .userIsAnonymous()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -327,7 +327,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -337,7 +337,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -347,7 +347,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -357,7 +357,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.READER);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -369,7 +369,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .withDraftStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -382,7 +382,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .withToValidateStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -395,7 +395,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .withRefusedStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -408,7 +408,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
         .notVisible()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.READER);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -419,7 +419,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -431,7 +431,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
         .withDraftStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -444,7 +444,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
         .withToValidateStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -457,7 +457,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
         .withRefusedStatus()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -470,7 +470,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN)
         .notVisible()
-        .onOperationsOf(AccessControlOperation.sharing)
+        .onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -511,7 +511,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -520,7 +520,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -529,7 +529,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.WRITER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -581,7 +581,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .publicationIdIsNull().onOperationsOf(AccessControlOperation.sharing);
+        .publicationIdIsNull().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -590,7 +590,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent().publicationIdIsNull()
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -599,7 +599,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .publicationIdIsNull().onOperationsOf(AccessControlOperation.sharing)
+        .publicationIdIsNull().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -609,7 +609,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent().publicationIdIsNull()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -655,7 +655,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent().publicationIdIsNull()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -665,7 +665,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .publicationIdIsNull()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -674,7 +674,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent().publicationIdIsNull()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -683,7 +683,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent().publicationIdIsNull()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -736,7 +736,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.sharing);
+        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -745,7 +745,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.sharing);
+        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
@@ -754,7 +754,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.sharing)
+        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -764,7 +764,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.sharing)
+        .publicationIdHasWrongFormat().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
@@ -815,7 +815,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .publicationIdHasWrongFormat()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -825,7 +825,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .publicationIdHasWrongFormat()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -835,7 +835,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .publicationIdHasWrongFormat()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -845,7 +845,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .publicationIdHasWrongFormat()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -883,7 +883,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.sharing);
+        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -893,7 +893,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.sharing);
+        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
@@ -903,7 +903,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.sharing)
+        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -914,7 +914,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.sharing)
+        .publicationIsNotExisting().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -970,7 +970,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .publicationIsNotExisting()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -981,7 +981,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .publicationIsNotExisting()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -992,7 +992,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
         .publicationIsNotExisting()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -1003,7 +1003,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .publicationIsNotExisting()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -1034,7 +1034,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.onGEDComponent().withAliasUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
@@ -1046,7 +1046,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.onGEDComponent().withAliasUserRoles(SilverpeasRole.ADMIN)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
@@ -1324,7 +1324,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1336,7 +1336,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1348,7 +1348,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1360,7 +1360,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1434,7 +1434,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -1444,7 +1444,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -1454,7 +1454,7 @@ public class TestPublicationAccessController {
     // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.WRITER).onGEDComponent()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -1796,7 +1796,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing);
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1808,7 +1808,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing);
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -1820,7 +1820,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing)
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1833,7 +1833,7 @@ public class TestPublicationAccessController {
     // User rights are verified for sharing action on the document, sharing is enabled
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing)
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -1887,7 +1887,7 @@ public class TestPublicationAccessController {
       testContext.clear();
       testContext.withComponentUserRoles(role).onGEDComponent()
           .userIsThePublicationAuthor()
-          .onOperationsOf(AccessControlOperation.search);
+          .onOperationsOf(AccessControlOperation.SEARCH);
       testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
           .verifyCallOfComponentAccessControllerIsUserAuthorized()
           .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
@@ -2188,7 +2188,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2202,7 +2202,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2216,7 +2216,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.PUBLISHER).onGEDComponent()
         .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2230,7 +2230,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2275,7 +2275,7 @@ public class TestPublicationAccessController {
       testContext.clear();
       testContext.withComponentUserRoles(role).onGEDComponent()
           .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
-          .onOperationsOf(AccessControlOperation.search);
+          .onOperationsOf(AccessControlOperation.SEARCH);
       testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
           .verifyCallOfComponentAccessControllerIsUserAuthorized()
           .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -2852,7 +2852,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2868,7 +2868,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2883,7 +2883,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.ADMIN)
-        .onOperationsOf(AccessControlOperation.sharing);
+        .onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2898,7 +2898,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -2913,7 +2913,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.ADMIN)
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -3005,7 +3005,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.USER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3019,7 +3019,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.PUBLISHER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3033,7 +3033,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.WRITER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3048,7 +3048,7 @@ public class TestPublicationAccessController {
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .enableCoWriting()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.WRITER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3063,7 +3063,7 @@ public class TestPublicationAccessController {
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .enableCoWriting().draftVisibleWithCoWriting()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.WRITER)
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3515,7 +3515,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.ADMIN).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles().userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.ADMIN);
+        .onOperationsOf(AccessControlOperation.SHARING).enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -3531,7 +3531,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.PUBLISHER)
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing);
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -3546,7 +3546,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.ADMIN)
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing);
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
@@ -3561,7 +3561,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.PUBLISHER)
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing)
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -3577,7 +3577,7 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.ADMIN)
-        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.sharing)
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING)
         .enablePublicationSharingRole(SilverpeasRole.ADMIN);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
@@ -3642,7 +3642,7 @@ public class TestPublicationAccessController {
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.USER)
         .userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3657,7 +3657,7 @@ public class TestPublicationAccessController {
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.PUBLISHER)
         .userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
@@ -3672,7 +3672,7 @@ public class TestPublicationAccessController {
     testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
         .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.WRITER)
         .userIsThePublicationAuthor()
-        .onOperationsOf(AccessControlOperation.search);
+        .onOperationsOf(AccessControlOperation.SEARCH);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()

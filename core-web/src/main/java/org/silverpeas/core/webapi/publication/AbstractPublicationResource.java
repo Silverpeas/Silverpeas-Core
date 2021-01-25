@@ -133,7 +133,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     if (isUserDefined()) {
       final User user = getUser();
       authorized = SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), attachment,
-          AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+          AccessControlContext.init().onOperationsOf(AccessControlOperation.DOWNLOAD));
     } else {
       authorized = attachment.isDownloadAllowedForReaders();
     }

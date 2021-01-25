@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -612,7 +613,7 @@ public class IndexManager {
   private String buildStringForFacets(List<String> fieldsForFacets) {
     String fieldsForFacet = "";
     if (fieldsForFacets != null && !fieldsForFacets.isEmpty()) {
-      fieldsForFacet = StringUtil.join(fieldsForFacets, ',');
+      fieldsForFacet = StringUtils.join(fieldsForFacets, ',');
     }
     return fieldsForFacet;
   }

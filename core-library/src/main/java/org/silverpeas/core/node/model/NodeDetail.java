@@ -475,11 +475,11 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   @Override
   public boolean canBeModifiedBy(final User user) {
     return NodeAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
   }
 
   public boolean canBeSharedBy(final User user) {
-    final AccessControlContext context = AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing);
+    final AccessControlContext context = AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING);
     return NodeAccessControl.get().isUserAuthorized(user.getId(), this, context);
   }
 }

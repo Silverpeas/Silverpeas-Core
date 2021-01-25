@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.node.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
@@ -295,7 +296,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         // change data
         String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
         node.setPath(newPath);
-        node.setLevel(StringUtil.countMatches(newPath, "/"));
+        node.setLevel(StringUtils.countMatches(newPath, "/"));
         node.getNodePK().setComponentName(toNode.getInstanceId());
         node.setRightsDependsOn(root.getRightsDependsOn());
         node.setUseId(true);

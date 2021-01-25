@@ -39,24 +39,24 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  * Date: 30/12/13
  */
 public enum AccessControlOperation {
-  unknown, creation, modification, deletion, download, sharing, search;
+  UNKNOWN, CREATION, MODIFICATION, DELETION, DOWNLOAD, SHARING, SEARCH;
 
-  public static final Set<AccessControlOperation> PERSIST_ACTIONS =
-      EnumSet.of(creation, modification, deletion);
+  protected static final Set<AccessControlOperation> PERSIST_ACTIONS =
+      EnumSet.of(CREATION, MODIFICATION, DELETION);
 
   @JsonValue
   public String getName() {
-    return name();
+    return name().toLowerCase();
   }
 
   @JsonCreator
   public static AccessControlOperation from(String name) {
     try {
-      return valueOf(name);
+      return valueOf(name.toUpperCase());
     } catch (Exception e) {
       SilverLogger.getLogger(AccessControlOperation.class)
           .warn(unknown("access control operation", name), e);
-      return unknown;
+      return UNKNOWN;
     }
   }
 
@@ -79,7 +79,7 @@ public enum AccessControlOperation {
   public static boolean isSharingActionFrom(
       Collection<AccessControlOperation> accessControlOperations) {
     return CollectionUtil.isNotEmpty(accessControlOperations) &&
-        accessControlOperations.contains(sharing);
+        accessControlOperations.contains(SHARING);
   }
 
   /**
@@ -90,7 +90,7 @@ public enum AccessControlOperation {
   public static boolean isDownloadActionFrom(
       Collection<AccessControlOperation> accessControlOperations) {
     return CollectionUtil.isNotEmpty(accessControlOperations) &&
-        accessControlOperations.contains(download);
+        accessControlOperations.contains(DOWNLOAD);
   }
 
   /**
@@ -105,6 +105,6 @@ public enum AccessControlOperation {
   public static boolean isSearchActionFrom(
       Collection<AccessControlOperation> accessControlOperations) {
     return CollectionUtil.isNotEmpty(accessControlOperations) &&
-        accessControlOperations.contains(search);
+        accessControlOperations.contains(SEARCH);
   }
 }

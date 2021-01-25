@@ -52,13 +52,12 @@ public class SilverpeasJcrSchemaRegistering implements Initialization {
   @Override
   public void init() throws Exception {
     Session session = null;
-    try {
+    try(InputStreamReader reader =
+            new InputStreamReader(getClass().getResourceAsStream(SILVERPEAS_JCR_SCHEMA),
+                StandardCharsets.UTF_8)) {
       SilverLogger.getLogger(this)
           .info("Silverpeas specific JCR schema loading...");
       session = repository.login(JcrSystemCredentialsProvider.getJcrSystemCredentials());
-      InputStreamReader reader =
-          new InputStreamReader(getClass().getResourceAsStream(SILVERPEAS_JCR_SCHEMA),
-              StandardCharsets.UTF_8);
       CndImporter.registerNodeTypes(reader, session);
     } finally {
       if (session != null) {

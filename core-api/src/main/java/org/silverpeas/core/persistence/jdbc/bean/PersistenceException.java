@@ -23,38 +23,21 @@
  */
 package org.silverpeas.core.persistence.jdbc.bean;
 
-import org.silverpeas.core.exception.SilverpeasException;
-
-/**
- * Title: Description: Copyright: Copyright (c) 2001 Company:
- * @author cbonin
- * @version 1.0
- */
+import org.silverpeas.core.SilverpeasException;
 
 public class PersistenceException extends SilverpeasException {
 
-  private static final long serialVersionUID = -3169410580528156650L;
+  private static final long serialVersionUID = 2060093769759868064L;
 
-  public PersistenceException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public PersistenceException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public PersistenceException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public PersistenceException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public PersistenceException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public PersistenceException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "persistence";
+  public PersistenceException(final Throwable cause) {
+    super(cause);
   }
 }

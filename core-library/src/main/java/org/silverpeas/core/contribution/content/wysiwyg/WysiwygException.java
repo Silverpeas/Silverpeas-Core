@@ -23,33 +23,21 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class WysiwygException extends SilverpeasException {
 
-  private static final long serialVersionUID = -2342836745839231341L;
+  private static final long serialVersionUID = -4166653925614576653L;
 
-  public WysiwygException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public WysiwygException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public WysiwygException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public WysiwygException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public WysiwygException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public WysiwygException(final Throwable cause) {
+    super(cause);
   }
-
-  public WysiwygException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "wysiwyg";
-  }
-
 }

@@ -49,7 +49,7 @@ public class NotificationSender implements java.io.Serializable {
 
   private static final long serialVersionUID = 4165938893905145809L;
 
-  private NotificationManager notificationManager;
+  private transient NotificationManager notificationManager;
   private int instanceId;
 
   /**

@@ -118,44 +118,41 @@ public class CollectionUtil {
   @SuppressWarnings("unchecked")
   public static <T> Collection<Collection<T>> split(final Collection<T> collection,
       final int collectionSizeMax) {
-    Collection<Collection<T>> result = null;
+    if (isEmpty(collection)) {
+      return new ArrayList<>();
+    }
 
+    Collection<Collection<T>> result;
     try {
-      if (isNotEmpty(collection)) {
-        if (collectionSizeMax > 0 && collection.size() > collectionSizeMax) {
+      if (collectionSizeMax > 0 && collection.size() > collectionSizeMax) {
 
-          // Guessing the result size and initializing the result
-          int size = collection.size() / collectionSizeMax;
-          if ((collection.size() % collectionSizeMax) != 0) {
-            size++;
-          }
-          result = new ArrayList<>(size);
-
-          // Browsing the collection
-          Collection<T> curLot = null;
-          for (final T element : collection) {
-
-            // If necessary, initializing a lot
-            if (curLot == null || curLot.size() >= collectionSizeMax) {
-              curLot = new ArrayList<>(collectionSizeMax);
-
-              // Adding the new lot
-              result.add(curLot);
-            }
-
-            // Adding an element into the current lot
-            curLot.add(element);
-          }
-        } else {
-          result = Collections.singletonList(collection);
+        // Guessing the result size and initializing the result
+        int size = collection.size() / collectionSizeMax;
+        if ((collection.size() % collectionSizeMax) != 0) {
+          size++;
         }
+        result = new ArrayList<>(size);
+
+        // Browsing the collection
+        Collection<T> curLot = null;
+        for (final T element : collection) {
+
+          // If necessary, initializing a lot
+          if (curLot == null || curLot.size() >= collectionSizeMax) {
+            curLot = new ArrayList<>(collectionSizeMax);
+
+            // Adding the new lot
+            result.add(curLot);
+          }
+
+          // Adding an element into the current lot
+          curLot.add(element);
+        }
+      } else {
+        result = Collections.singletonList(collection);
       }
     } catch (final Exception e) {
       throw new SilverpeasRuntimeException(e);
-    } finally {
-      if (result == null) {
-        result = new ArrayList<>();
-      }
     }
 
     // Returning the result
@@ -201,9 +198,8 @@ public class CollectionUtil {
    * @param <T> the type of the items in the list.
    * @return the union between the two lists.
    */
-  @SuppressWarnings("unchecked")
   public static <T> List<T> union(List<T> list1, List<T> list2) {
-    return new ArrayList<T>(union(list1, (Collection) list2));
+    return new ArrayList<>(union(list1, (Collection<T>) list2));
   }
 
   /**

@@ -186,11 +186,11 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
       final User user, SimpleDocument doc) {
     AccessControlContext context = AccessControlContext.init();
     if (HttpMethod.PUT.equals(request.getMethod())) {
-      context.onOperationsOf(AccessControlOperation.creation);
+      context.onOperationsOf(AccessControlOperation.CREATION);
     } else if (HttpMethod.POST.equals(request.getMethod())) {
-      context.onOperationsOf(AccessControlOperation.modification);
+      context.onOperationsOf(AccessControlOperation.MODIFICATION);
     } else if (HttpMethod.DELETE.equals(request.getMethod())) {
-      context.onOperationsOf(AccessControlOperation.deletion);
+      context.onOperationsOf(AccessControlOperation.DELETION);
     }
     if (!documentAccessController.isUserAuthorized(user.getId(), doc, context)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);

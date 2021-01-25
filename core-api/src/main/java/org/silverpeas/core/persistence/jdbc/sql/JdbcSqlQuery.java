@@ -589,46 +589,47 @@ public class JdbcSqlQuery {
 
   private void addListOfParameters(Collection<?> parameters,
       final boolean addToParameters) {
-    if (parameters != null) {
-      // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
-      // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
-      final int threshold = 1000;
-      int end = -1;
-      String negation = StringUtil.EMPTY;
-      if (parameters.size() > threshold) {
-        end = sqlQuery.lastIndexOf(NOT_IN_OPERATOR);
-        negation = " NOT ";
-        if ((end + NOT_IN_OPERATOR.length()) < sqlQuery.length()) {
-          end = sqlQuery.lastIndexOf(IN_OPERATOR);
-          negation = "";
-          if ((end + IN_OPERATOR.length()) < sqlQuery.length()) {
-            end = -1;
-          }
+    if (parameters == null) {
+      return;
+    }
+    // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
+    // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
+    final int threshold = 1000;
+    int end = -1;
+    String negation = StringUtil.EMPTY;
+    if (parameters.size() > threshold) {
+      end = sqlQuery.lastIndexOf(NOT_IN_OPERATOR);
+      negation = " NOT ";
+      if ((end + NOT_IN_OPERATOR.length()) < sqlQuery.length()) {
+        end = sqlQuery.lastIndexOf(IN_OPERATOR);
+        negation = "";
+        if ((end + IN_OPERATOR.length()) < sqlQuery.length()) {
+          end = -1;
         }
       }
-      if (end > -1) {
-        int from = end - 1;
-        while (sqlQuery.charAt(from) != ' ') {
-          from--;
-        }
-        String currentSqlPart = sqlQuery.substring(from + 1, end);
-        sqlQuery.delete(from + 1, sqlQuery.length()).append(negation).append("(");
+    }
+    if (end > -1) {
+      int from = end - 1;
+      while (sqlQuery.charAt(from) != ' ') {
+        from--;
+      }
+      String currentSqlPart = sqlQuery.substring(from + 1, end);
+      sqlQuery.delete(from + 1, sqlQuery.length()).append(negation).append("(");
 
-        List<?> listOfParameters = new ArrayList<>(parameters);
-        for (int i = 0; i < listOfParameters.size(); i += threshold) {
-          String params = sublistOfParameters(i, i + threshold, listOfParameters);
-          sqlQuery.append(currentSqlPart).append(" IN (").append(params).append(") OR ");
-        }
-        final int lengthOfORLink = 4;
-        sqlQuery.replace(sqlQuery.length() - lengthOfORLink, sqlQuery.length(), ")");
+      List<?> listOfParameters = new ArrayList<>(parameters);
+      for (int i = 0; i < listOfParameters.size(); i += threshold) {
+        String params = sublistOfParameters(i, i + threshold, listOfParameters);
+        sqlQuery.append(currentSqlPart).append(" IN (").append(params).append(") OR ");
+      }
+      final int lengthOfORLink = 4;
+      sqlQuery.replace(sqlQuery.length() - lengthOfORLink, sqlQuery.length(), ")");
 
-      } else {
-        String params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
-        sqlQuery.append(" (").append(params).append(")");
-      }
-      if (addToParameters) {
-        allParameters.addAll(parameters);
-      }
+    } else {
+      String params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
+      sqlQuery.append(" (").append(params).append(")");
+    }
+    if (addToParameters) {
+      allParameters.addAll(parameters);
     }
   }
 

@@ -194,7 +194,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
 
   private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment) {
     return SimpleDocumentAccessControl.get().isUserAuthorized(userId, attachment,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.DOWNLOAD));
   }
 
   @Override

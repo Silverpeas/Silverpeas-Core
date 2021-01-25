@@ -29,6 +29,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
 import org.silverpeas.core.annotation.Bean;
@@ -115,9 +116,9 @@ public class IndexSearcher {
         ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
     int paramOperand = settings.getInteger("defaultOperand", 0);
     if (paramOperand == 0) {
-      defaultOperator = QueryParser.OR_OPERATOR;
+      defaultOperator = QueryParserBase.OR_OPERATOR;
     } else {
-      defaultOperator = QueryParser.AND_OPERATOR;
+      defaultOperator = QueryParserBase.AND_OPERATOR;
     }
 
     maxNumberResult = settings.getInteger("maxResults", DEFAULT_MAX_RESULT);
@@ -341,7 +342,7 @@ public class IndexSearcher {
       query = parser.parse(toParse);
     } catch (org.apache.lucene.queryparser.classic.ParseException e) {
       try {
-        query = parser.parse(QueryParser.escape(toParse));
+        query = parser.parse(QueryParserBase.escape(toParse));
       } catch (org.apache.lucene.queryparser.classic.ParseException pe) {
         throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
       }

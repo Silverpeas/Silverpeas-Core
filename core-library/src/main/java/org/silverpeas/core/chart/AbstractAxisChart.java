@@ -96,7 +96,7 @@ public abstract class AbstractAxisChart<X, Y, I extends
       Class<I> itemClass = ((Class<I>) ((ParameterizedType) this.getClass().
           getGenericSuperclass()).getActualTypeArguments()[2]);
       Constructor<I> constructor = itemClass.getDeclaredConstructor(xClass);
-      constructor.setAccessible(true);
+      constructor.trySetAccessible();
       return constructor.newInstance(x);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);

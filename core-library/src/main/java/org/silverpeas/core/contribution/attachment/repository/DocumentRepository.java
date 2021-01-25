@@ -246,10 +246,11 @@ public class DocumentRepository {
       WAPrimaryKey destination) throws RepositoryException {
     try {
       prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
-      SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
       List<SimpleDocument> history = new ArrayList<>(document.getHistory());
       Collections.reverse(history);
       history.add(document);
+
+      SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
       SimpleDocument targetDoc = new HistorisedDocument(history.remove(0));
       FirstVersionManager.computeIfAbsent(new DocumentVersion(targetDoc));
       targetDoc.setNodeName(null);
@@ -260,53 +261,23 @@ public class DocumentRepository {
       targetDoc.computeNodeName();
       pk = createDocument(session, targetDoc);
       if (I18NHelper.isI18nContentEnabled()) {
-        // The first version can have several language contents.
-        Set<String> checkedLanguages = new HashSet<>();
-        checkedLanguages.add(targetDoc.getLanguage());
-        for (String language : I18NHelper.getAllSupportedLanguages()) {
-          if (!checkedLanguages.contains(language)) {
-            HistorisedDocument temp = (HistorisedDocument) findDocumentById(session, document.getPk(), language);
-            List<SimpleDocumentVersion> versions = temp.getHistory();
-            if (!versions.isEmpty()) {
-              SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
-              if (!checkedLanguages.contains(firstVersion.getLanguage())) {
-                addContent(session, targetDoc.getPk(), firstVersion.getAttachment());
-              }
-            }
-            checkedLanguages.add(language);
-          }
-        }
+        addAttachmentInSupportedLanguages(session, document, targetDoc);
       }
       unlock(session, targetDoc, false);
       VersionManager versionManager = session.getWorkspace().getVersionManager();
       String previousVersion = targetDoc.getVersion();
       for (SimpleDocument doc : history) {
-        if (I18NHelper.isI18nContentEnabled()) {
-          // One language content is aimed by a version. So the first step here is to search the
-          // language content updated.
-          Set<String> checkedLanguages = new HashSet<>();
-          checkedLanguages.add(doc.getLanguage());
-          for (String language : I18NHelper.getAllSupportedLanguages()) {
-            if (!checkedLanguages.contains(language)) {
-              SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
-              if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
-                  temp.getUpdated().after(doc.getUpdated())) {
-                doc = temp;
-              }
-              checkedLanguages.add(language);
-            }
-          }
-        }
-        HistorisedDocument targetHistorisedDoc = new HistorisedDocument(doc);
+        SimpleDocument docToConsider = searchDocumentWithUpdatedContent(session, doc);
+        HistorisedDocument targetHistorisedDoc = new HistorisedDocument(docToConsider);
         targetHistorisedDoc.setPK(pk);
         targetHistorisedDoc.setForeignId(destination.getId());
         targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
         // The reservation is not copied.
         targetHistorisedDoc.release();
         Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
-        if (!previousVersion.equals(doc.getVersion())) {
+        if (!previousVersion.equals(docToConsider.getVersion())) {
           // In this case, a functional version is performed, so the common tools are used
-          lock(session, targetDoc, doc.getUpdatedBy());
+          lock(session, targetDoc, docToConsider.getUpdatedBy());
           converter.fillNode(targetHistorisedDoc, masterDocumentNode);
           unlock(session, targetHistorisedDoc, false);
           previousVersion = targetHistorisedDoc.getVersion();
@@ -325,10 +296,53 @@ public class DocumentRepository {
     }
   }
 
+  private SimpleDocument searchDocumentWithUpdatedContent(final Session session,
+      final SimpleDocument doc) throws RepositoryException {
+    SimpleDocument updated = doc;
+    if (I18NHelper.isI18nContentEnabled()) {
+      // One language content is aimed by a version. So the first step here is to search the
+      // language content updated.
+      Set<String> checkedLanguages = new HashSet<>();
+      checkedLanguages.add(doc.getLanguage());
+      for (String language : I18NHelper.getAllSupportedLanguages()) {
+        if (!checkedLanguages.contains(language)) {
+          SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
+          if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
+              temp.getUpdated().after(doc.getUpdated())) {
+            updated = temp;
+          }
+          checkedLanguages.add(language);
+        }
+      }
+    }
+    return updated;
+  }
+
+  private void addAttachmentInSupportedLanguages(final Session session,
+      final HistorisedDocument document, final SimpleDocument targetDoc)
+      throws RepositoryException {
+    // The first version can have several language contents.
+    Set<String> checkedLanguages = new HashSet<>();
+    checkedLanguages.add(targetDoc.getLanguage());
+    for (String language : I18NHelper.getAllSupportedLanguages()) {
+      if (!checkedLanguages.contains(language)) {
+        HistorisedDocument temp =
+            (HistorisedDocument) findDocumentById(session, document.getPk(), language);
+        List<SimpleDocumentVersion> versions = temp.getHistory();
+        if (!versions.isEmpty()) {
+          SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
+          if (!checkedLanguages.contains(firstVersion.getLanguage())) {
+            addContent(session, targetDoc.getPk(), firstVersion.getAttachment());
+          }
+        }
+        checkedLanguages.add(language);
+      }
+    }
+  }
+
   /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
-   *
    * @param session
    * @param document
    * @param updateLastModifiedData

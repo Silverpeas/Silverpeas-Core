@@ -27,7 +27,6 @@ import org.silverpeas.core.util.StringUtil;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -49,12 +48,10 @@ import org.silverpeas.core.util.logging.SilverLogger;
  */
 @Entity
 @Table(name = "st_dateReminder")
-@NamedQueries({
-    @NamedQuery(name = "getResource", query = "from PersistentResourceDateReminder where " +
-        "resourceType = :type and resourceId = :resourceId"),
-    @NamedQuery(name = "getListResourceByDeadLine", query = "from PersistentResourceDateReminder " +
+@NamedQuery(name = "getResource", query = "from PersistentResourceDateReminder where " +
+        "resourceType = :type and resourceId = :resourceId")
+@NamedQuery(name = "getListResourceByDeadLine", query = "from PersistentResourceDateReminder " +
         "where processStatus = 0 and dateReminder <= :dateReminder")
-})
 public class PersistentResourceDateReminder
     extends SilverpeasJpaEntity<PersistentResourceDateReminder, UuidIdentifier> {
 
@@ -82,7 +79,7 @@ public class PersistentResourceDateReminder
   private int processStatus; //0 || 1
 
   public PersistentResourceDateReminder() {
-
+    // nothing to initialize
   }
 
   /**
@@ -151,7 +148,7 @@ public class PersistentResourceDateReminder
    *
    * @param resource an identifier of the resource for which this dateReminder is.
    */
-  public void setResource(final EntityReference resource) {
+  public void setResource(final EntityReference<?> resource) {
     if (resource != null) {
       this.resourceType = resource.getType();
       this.resourceId = resource.getId();
@@ -222,4 +219,13 @@ public class PersistentResourceDateReminder
         + resourceId + '\'' + ", dateReminder ='" + dateReminder + '\'' + ", message ='" + message + '\'' + '}';
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
 }

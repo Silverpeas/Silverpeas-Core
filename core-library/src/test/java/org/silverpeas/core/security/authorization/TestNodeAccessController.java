@@ -198,7 +198,7 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     AccessControlContext context = AccessControlContext.init();
-    context.onOperationsOf(AccessControlOperation.sharing);
+    context.onOperationsOf(AccessControlOperation.SHARING);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(false));
     verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
@@ -216,7 +216,7 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     AccessControlContext context = AccessControlContext.init();
-    context.onOperationsOf(AccessControlOperation.sharing);
+    context.onOperationsOf(AccessControlOperation.SHARING);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(false));
     verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
@@ -234,7 +234,7 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     AccessControlContext context = AccessControlContext.init();
-    context.onOperationsOf(AccessControlOperation.sharing);
+    context.onOperationsOf(AccessControlOperation.SHARING);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(false));
     verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
@@ -252,7 +252,7 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     AccessControlContext context = AccessControlContext.init();
-    context.onOperationsOf(AccessControlOperation.sharing);
+    context.onOperationsOf(AccessControlOperation.SHARING);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(true));
     verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());

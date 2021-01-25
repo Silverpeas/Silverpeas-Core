@@ -26,89 +26,21 @@
 
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: SubscribeRuntimeException.java,v 1.1.1.1 2002/08/06 14:47:53 nchaix Exp $
- *
- * $Log: SubscribeRuntimeException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.3  2002/01/22 10:07:43  mguillem
- * Stabilisation Lot2
- * Reorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.2  2001/12/26 14:27:42  nchaix
- * no message
- *
- */
-
-/**
- * Class declaration
- * @author
- */
 public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 
-  /**
-   * -------------------------------------------------------------------------- constructors
-   * constructors
-   */
-  public SubscribeRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = -6456505346169744791L;
+
+  public SubscribeRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public SubscribeRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public SubscribeRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public SubscribeRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public SubscribeRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public SubscribeRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String getModule() {
-    return "subscribe";
-  }
-
 }

@@ -42,14 +42,14 @@ import java.util.Date;
  * <li>entity last user updater (if "last updated by" is a known user id)</li>
  * <li>entity last update date</li>
  * </ul>
- * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
+ * @param <E> specify the class name of the entity itself which is handled by a repository
  * manager.
- * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
+ * @param <I> the identifier class name used by {@link E} for its primary key
  * definition.
  * @author Yohann Chastagnier
  */
-public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
-    IDENTIFIER_TYPE extends EntityIdentifier> extends IdentifiableEntity {
+public interface Entity<E extends Entity<E, I>,
+    I extends EntityIdentifier> extends IdentifiableEntity {
 
   /**
    * Gets the date of the entity creation (in the persistence environment).
@@ -81,7 +81,7 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
    * @param creator the creator of this entity.
    * @return itself.
    */
-  ENTITY createdBy(User creator);
+  E createdBy(User creator);
 
   /**
    * sets the user who has created the entity (in the persistence environment) with the date of the
@@ -95,7 +95,7 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
    * @param creationDate the date at which the entity is created.
    * @return itself.
    */
-  ENTITY createdBy(User creator, Date creationDate);
+  E createdBy(User creator, Date creationDate);
 
   /**
    * Gets the last date and time of the entity update (in the persistence context). If the entity
@@ -129,7 +129,7 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
    * @param updater the last updater to set.
    * @return itself.
    */
-  ENTITY updatedBy(User updater);
+  E updatedBy(User updater);
 
   /**
    * sets the user who has updated the entity (in the persistence context) with the date of the
@@ -143,7 +143,7 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
    * @param updateDate the date at which the entity is updated.
    * @return itself.
    */
-  ENTITY updatedBy(User updater, Date updateDate);
+  E updatedBy(User updater, Date updateDate);
 
   /**
    * Gets the version of the entity (in the persistence context).

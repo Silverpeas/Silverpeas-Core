@@ -41,35 +41,35 @@ class AccessControlOperationTest {
 
   @Test
   void testGeneralities() {
-    assertThat(from(null), is(AccessControlOperation.unknown));
-    assertThat(from("toto"), is(AccessControlOperation.unknown));
+    assertThat(from(null), is(AccessControlOperation.UNKNOWN));
+    assertThat(from("toto"), is(AccessControlOperation.UNKNOWN));
 
-    assertThat(from("modification"), is(AccessControlOperation.modification));
-    assertThat(from("modifiCation"), is(AccessControlOperation.unknown));
+    assertThat(from("modification"), is(AccessControlOperation.MODIFICATION));
+    assertThat(from("modifiCation"), is(AccessControlOperation.MODIFICATION));
   }
 
   @Test
   void testIsPersistActionFrom() {
     assertThat(isPersistActionFrom(null), is(false));
     assertThat(isPersistActionFrom(EnumSet.noneOf(AccessControlOperation.class)), is(false));
-    assertThat(isPersistActionFrom(EnumSet.of(sharing)), is(false));
-    assertThat(isPersistActionFrom(EnumSet.of(sharing, download)), is(false));
+    assertThat(isPersistActionFrom(EnumSet.of(SHARING)), is(false));
+    assertThat(isPersistActionFrom(EnumSet.of(SHARING, DOWNLOAD)), is(false));
     Set<AccessControlOperation> allExceptingPersistOperations =
         EnumSet.allOf(AccessControlOperation.class);
-    allExceptingPersistOperations.remove(creation);
-    allExceptingPersistOperations.remove(modification);
-    allExceptingPersistOperations.remove(deletion);
+    allExceptingPersistOperations.remove(CREATION);
+    allExceptingPersistOperations.remove(MODIFICATION);
+    allExceptingPersistOperations.remove(DELETION);
     assertThat(isPersistActionFrom(allExceptingPersistOperations), is(false));
 
-    assertThat(isPersistActionFrom(EnumSet.of(sharing, download, creation)), is(true));
-    assertThat(isPersistActionFrom(EnumSet.of(sharing, download, modification)), is(true));
-    assertThat(isPersistActionFrom(EnumSet.of(sharing, download, deletion)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(SHARING, DOWNLOAD, CREATION)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(SHARING, DOWNLOAD, MODIFICATION)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(SHARING, DOWNLOAD, DELETION)), is(true));
 
-    assertThat(isPersistActionFrom(EnumSet.of(creation)), is(true));
-    assertThat(isPersistActionFrom(EnumSet.of(modification)), is(true));
-    assertThat(isPersistActionFrom(EnumSet.of(deletion)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(CREATION)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(MODIFICATION)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(DELETION)), is(true));
 
-    assertThat(isPersistActionFrom(EnumSet.of(creation, modification, deletion)), is(true));
+    assertThat(isPersistActionFrom(EnumSet.of(CREATION, MODIFICATION, DELETION)), is(true));
   }
 
   @Test
@@ -77,11 +77,11 @@ class AccessControlOperationTest {
     assertThat(isSharingActionFrom(null), is(false));
     assertThat(isSharingActionFrom(EnumSet.noneOf(AccessControlOperation.class)), is(false));
     Set<AccessControlOperation> allExceptingSharing = EnumSet.allOf(AccessControlOperation.class);
-    allExceptingSharing.remove(sharing);
+    allExceptingSharing.remove(SHARING);
     assertThat(isSharingActionFrom(allExceptingSharing), is(false));
 
-    assertThat(isSharingActionFrom(EnumSet.of(creation, sharing)), is(true));
-    assertThat(isSharingActionFrom(EnumSet.of(sharing)), is(true));
+    assertThat(isSharingActionFrom(EnumSet.of(CREATION, SHARING)), is(true));
+    assertThat(isSharingActionFrom(EnumSet.of(SHARING)), is(true));
   }
 
   @Test
@@ -89,10 +89,10 @@ class AccessControlOperationTest {
     assertThat(isDownloadActionFrom(null), is(false));
     assertThat(isDownloadActionFrom(EnumSet.noneOf(AccessControlOperation.class)), is(false));
     Set<AccessControlOperation> allExceptingDownload = EnumSet.allOf(AccessControlOperation.class);
-    allExceptingDownload.remove(download);
+    allExceptingDownload.remove(DOWNLOAD);
     assertThat(isDownloadActionFrom(allExceptingDownload), is(false));
 
-    assertThat(isDownloadActionFrom(EnumSet.of(creation, download)), is(true));
-    assertThat(isDownloadActionFrom(EnumSet.of(download)), is(true));
+    assertThat(isDownloadActionFrom(EnumSet.of(CREATION, DOWNLOAD)), is(true));
+    assertThat(isDownloadActionFrom(EnumSet.of(DOWNLOAD)), is(true));
   }
 }

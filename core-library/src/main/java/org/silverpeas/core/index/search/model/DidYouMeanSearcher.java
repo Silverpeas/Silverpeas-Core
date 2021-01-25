@@ -25,6 +25,7 @@ package org.silverpeas.core.index.search.model;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
@@ -62,79 +63,72 @@ public class DidYouMeanSearcher {
     uploadIndexDir =  new File(IndexFileManager.getIndexUpLoadPath());
   }
 
-  /**
-   * @param queryDescription
-   * @return
-   * @throws org.silverpeas.core.index.search.model.ParseException
-   * @throws ParseException
-   */
   public String[] suggest(QueryDescription queryDescription)
       throws org.silverpeas.core.index.search.model.ParseException, IOException {
     spellCheckers.clear();
 
-    String[] suggestions = null;
+    if (StringUtil.isNotDefined(queryDescription.getQuery())) {
+      return ArrayUtil.emptyStringArray();
+    }
+
     // The variable field is only used to parse the query String and to obtain the words that will
     // be used for the search
     final String field = "content";
-    if (StringUtil.isDefined(queryDescription.getQuery())) {
+    // parses the query string to prepare the search
+    Analyzer analyzer = indexManager.getAnalyzer(queryDescription.getRequestedLanguage());
+    QueryParser queryParser = new QueryParser(field, analyzer);
 
-      // parses the query string to prepare the search
-      Analyzer analyzer = indexManager.getAnalyzer(queryDescription.getRequestedLanguage());
-      QueryParser queryParser = new QueryParser(field, analyzer);
-
-      Query parsedQuery;
+    Query parsedQuery;
+    try {
+      parsedQuery = queryParser.parse(queryDescription.getQuery());
+    } catch (org.apache.lucene.queryparser.classic.ParseException exception) {
       try {
-        parsedQuery = queryParser.parse(queryDescription.getQuery());
-      } catch (org.apache.lucene.queryparser.classic.ParseException exception) {
-        try {
-          parsedQuery = queryParser.parse(QueryParser.escape(queryDescription.getQuery()));
-        } catch (org.apache.lucene.queryparser.classic.ParseException pe) {
-          throw new org.silverpeas.core.index.search.model.ParseException("DidYouMeanSearcher", pe);
-        }
+        parsedQuery = queryParser.parse(QueryParserBase.escape(queryDescription.getQuery()));
+      } catch (org.apache.lucene.queryparser.classic.ParseException pe) {
+        throw new org.silverpeas.core.index.search.model.ParseException("DidYouMeanSearcher", pe);
       }
+    }
 
-      // splits the query to realize a separated search with each word
-      this.query = parsedQuery.toString(field);
-      StringTokenizer tokens = new StringTokenizer(query);
+    // splits the query to realize a separated search with each word
+    this.query = parsedQuery.toString(field);
+    StringTokenizer tokens = new StringTokenizer(query);
 
-      // gets spelling index paths
-      Set<String> spellIndexPaths =
-          indexSearcher.getIndexPathSet(queryDescription.getWhereToSearch());
+    // gets spelling index paths
+    Set<String> spellIndexPaths =
+        indexSearcher.getIndexPathSet(queryDescription.getWhereToSearch());
 
-      try {
-        while (tokens.hasMoreTokens()) {
-          SpellChecker spellCheck = new SpellChecker(FSDirectory.open(uploadIndexDir.toPath()));
-          spellCheckers.add(spellCheck);
-          String token = tokens.nextToken().replace("\"", "");
-          for (String path : spellIndexPaths) {
+    try {
+      while (tokens.hasMoreTokens()) {
+        SpellChecker spellCheck = new SpellChecker(FSDirectory.open(uploadIndexDir.toPath()));
+        spellCheckers.add(spellCheck);
+        String token = tokens.nextToken().replace("\"", "");
+        for (String path : spellIndexPaths) {
 
-            // create a file object with given path
-            File file = new File(path + "Spell");
+          // create a file object with given path
+          File file = new File(path + "Spell");
 
-            if (file.exists()) {
+          if (file.exists()) {
 
-              // create a spellChecker with the file object
-              FSDirectory directory = FSDirectory.open(file.toPath());
-              spellCheck.setSpellIndex(directory);
+            // create a spellChecker with the file object
+            FSDirectory directory = FSDirectory.open(file.toPath());
+            spellCheck.setSpellIndex(directory);
 
-              // if the word exist in the dictionary, we stop the current treatment and search the
-              // next word because the suggestSimilar method will return the same word than the given word
-              if (spellCheck.exist(token)) {
-                continue;
-              }
-              spellCheck.suggestSimilar(token, 1);
-
+            // if the word exist in the dictionary, we stop the current treatment and search the
+            // next word because the suggestSimilar method will return the same word than the
+            // given word
+            if (spellCheck.exist(token)) {
+              continue;
             }
+            spellCheck.suggestSimilar(token, 1);
+
           }
         }
-      } catch (IOException e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
-
-      suggestions = buildFinalResult();
-
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return suggestions;
+
+    return buildFinalResult();
   }
 
   private String[] buildFinalResult() throws IOException {

@@ -34,6 +34,8 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHRINK;
@@ -91,6 +93,7 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
           parameters = new ResizingParameters(imageSource, imageDestination, width, height);
         }
       } catch (NumberFormatException ignore) {
+        // ignore
       }
     }
     return parameters;
@@ -99,35 +102,38 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
   private void removeResizedImagesOf(final File originaImage) {
     List<String> resizedImagePaths = ImageCache.getImages(originaImage.getAbsolutePath());
     for (String resizedImage : resizedImagePaths) {
-      if (!(new File(resizedImage)).delete()) {
-        SilverLogger.getLogger(this).warn(
-            "The resized image {0} for the in deletion original image {1} cannot be deleted!",
-            resizedImage, originaImage.getAbsolutePath());
+      try {
+        Files.delete(Path.of(resizedImage));
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .warn("The resized image {0} for the in deletion original image {1} cannot be deleted!",
+                resizedImage, originaImage.getAbsolutePath());
       }
     }
   }
 
   private String resizeImage(final String path) {
+    if (!FileUtil.isImage(path)) {
+      return path;
+    }
     String imagePath = path;
-    if (FileUtil.isImage(imagePath)) {
-      File sourceImage = new File(imagePath);
-      if (!sourceImage.exists()) {
-        ResizingParameters parameters = computeResizingParameters(sourceImage);
-        if (parameters.isDefined()) {
-          sourceImage = parameters.getSourceImage();
-          File resizedImage = parameters.getDestinationImage();
-          imagePath = resizedImage.getPath();
-          if (sourceImage.exists() && (!resizedImage.exists() ||
-              sourceImage.lastModified() >= resizedImage.lastModified())) {
-            if (!resizedImage.getParentFile().exists()) {
-              resizedImage.getParentFile().mkdirs();
-            }
-            final DimensionOption dimension =
-                DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
-            final OrientationOption auto = OrientationOption.auto();
-            imageTool.convert(sourceImage, resizedImage, asSet(dimension, auto), GEOMETRY_SHRINK);
-            ImageCache.putImage(sourceImage.getAbsolutePath(), resizedImage.getAbsolutePath());
+    File sourceImage = new File(imagePath);
+    if (!sourceImage.exists()) {
+      ResizingParameters parameters = computeResizingParameters(sourceImage);
+      if (parameters.isDefined()) {
+        sourceImage = parameters.getSourceImage();
+        File resizedImage = parameters.getDestinationImage();
+        imagePath = resizedImage.getPath();
+        if (sourceImage.exists() &&
+            (!resizedImage.exists() || sourceImage.lastModified() >= resizedImage.lastModified())) {
+          if (!resizedImage.getParentFile().exists()) {
+            resizedImage.getParentFile().mkdirs();
           }
+          final DimensionOption dimension =
+              DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
+          final OrientationOption auto = OrientationOption.auto();
+          imageTool.convert(sourceImage, resizedImage, asSet(dimension, auto), GEOMETRY_SHRINK);
+          ImageCache.putImage(sourceImage.getAbsolutePath(), resizedImage.getAbsolutePath());
         }
       }
     }
@@ -136,7 +142,8 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
 
   private static class ResizingParameters {
 
-    private static ResizingParameters NO_RESIZING = new ResizingParameters(null, null, -1, -1);
+    private static final ResizingParameters NO_RESIZING =
+        new ResizingParameters(null, null, -1, -1);
 
     private Integer width;
     private Integer height;

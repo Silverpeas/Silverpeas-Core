@@ -146,24 +146,24 @@ public abstract class AbstractForm implements Form {
 
       out.append(Util.getJavascriptIncludes(language))
           .append("\n<script type=\"text/javascript\">\n")
-          .append("	var errorNb = 0;\n")
-          .append("	var errorMsg = \"\";\n")
+          .append("  var errorNb = 0;\n")
+          .append("  var errorMsg = \"\";\n")
           .append("function addXMLError(message) {\n")
-          .append("	errorMsg+=\"  - \"+message+\"\\n\";\n")
-          .append("	errorNb++;\n")
+          .append("  errorMsg+=\"  - \"+message+\"\\n\";\n")
+          .append("  errorNb++;\n")
           .append("}\n")
           .append("function getXMLField(fieldName) {\n")
-          .append("	return document.getElementById(fieldName);\n")
+          .append("  return document.getElementById(fieldName);\n")
           .append("}\n");
 
       printJavascriptIgnoreMandatorySnippet(out);
       printJavascriptSkippableSnippet(out);
 
       out.append("function ifCorrectFormExecute(callback) {\n")
-          .append("	errorMsg = \"\";\n")
-          .append("	errorNb = 0;\n")
-          .append("	var field;\n")
-          .append("	\n\n");
+          .append("  errorMsg = \"\";\n")
+          .append("  errorNb = 0;\n")
+          .append("  var field;\n")
+          .append("\n\n");
 
       out.append("if (ignoreForm) {\n").append("callback.call(this);return;\n").append("}\n");
 
@@ -173,67 +173,34 @@ public abstract class AbstractForm implements Form {
           String fieldType = fieldTemplate.getTypeName();
           String fieldName = fieldTemplate.getFieldName();
           boolean mandatory = fieldTemplate.isMandatory();
-          FieldDisplayer fieldDisplayer;
-          try {
-            if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-
-            if (fieldDisplayer != null) {
-              int nbFieldsToDisplay = fieldTemplate.getMaximumNumberOfOccurrences();
-              for (int i=0; i<nbFieldsToDisplay; i++) {
-                String currentFieldName = Util.getFieldOccurrenceName(fieldName, i);
-                ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
-                if (i > 0) {
-                  ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
-                }
-                out.append("	field = document.getElementById(\"").append(currentFieldName).append("\");\n");
-                out.append("	if (field == null) {\n");
-                // try to find field by name
-                out.append("  var $field = $(\"input[name=").append(currentFieldName).append("]\");\n");
-                out.append("  field = $field.length ? $field[0] : null;\n");
-                out.println("}");
-                out.append(" if (field != null) {\n");
-                fieldDisplayer.displayScripts(out, fieldTemplate, pc);
-                out.println("}");
-                pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
-              }
-
-              // set original data
-              ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
-              ((GenericFieldTemplate) fieldTemplate).setMandatory(mandatory);
-            }
-          } catch (FormException e) {
-            SilverLogger.getLogger(this).error(e.getMessage(), e);
-          }
+          displayFieldTemplate(out, pc, fieldTemplate, fieldDisplayerName, fieldType, fieldName, mandatory);
         }
       }
 
-      out.append("	\n\n")
-          .append("	switch(errorNb)\n")
-          .append("	{\n")
-          .append("	case 0 :\n")
-          .append("		callback.call(this);\n")
-          .append("		break;\n")
-          .append("	case 1 :\n")
-          .append("		errorMsg = \"")
+      out.append("\n\n")
+          .append("  switch(errorNb)\n")
+          .append("  {\n")
+          .append("  case 0 :\n")
+          .append("    callback.call(this);\n")
+          .append("    break;\n")
+          .append("  case 1 :\n")
+          .append("    errorMsg = \"")
           .append(Util.getString("GML.ThisFormContains", language))
           .append(" 1 ")
           .append(Util.getString("GML.error", language))
           .append(" : \\n \" + errorMsg;\n")
-          .append("		jQuery.popup.error(errorMsg);\n")
-          .append("		break;\n")
-          .append("	default :\n")
-          .append("		errorMsg = \"")
+          .append("   jQuery.popup.error(errorMsg);\n")
+          .append("   break;\n")
+          .append("  default :\n")
+          .append("   errorMsg = \"")
           .append(Util.getString("GML.ThisFormContains", language))
           .append(" \" + errorNb + \" ")
           .append(Util.getString("GML.errors", language))
           .append(" :\\n \" + errorMsg;\n")
-          .append("		jQuery.popup.error(errorMsg);\n")
-          .append("	}\n")
+          .append("   jQuery.popup.error(errorMsg);\n")
+          .append(" }\n")
           .append("}\n")
-          .append("	\n\n");
+          .append("\n\n");
 
       out.append("function showOneMoreField(fieldName) {\n");
       out.append("$('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + ":first').removeClass('" +
@@ -247,6 +214,45 @@ public abstract class AbstractForm implements Form {
       out.flush();
       jw.write(sw.toString());
     } catch (java.io.IOException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
+  private void displayFieldTemplate(final PrintWriter out, final PagesContext pc,
+      final FieldTemplate fieldTemplate, String fieldDisplayerName, final String fieldType,
+      final String fieldName, final boolean mandatory) throws java.io.IOException {
+    FieldDisplayer<? extends Field> fieldDisplayer;
+    try {
+      if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
+        fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+      }
+      fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+
+      if (fieldDisplayer != null) {
+        int nbFieldsToDisplay = fieldTemplate.getMaximumNumberOfOccurrences();
+        for (int i=0; i<nbFieldsToDisplay; i++) {
+          String currentFieldName = Util.getFieldOccurrenceName(fieldName, i);
+          ((GenericFieldTemplate) fieldTemplate).setFieldName(currentFieldName);
+          if (i > 0) {
+            ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
+          }
+          out.append("  field = document.getElementById(\"").append(currentFieldName).append("\");\n");
+          out.append("  if (field == null) {\n");
+          // try to find field by name
+          out.append("  var $field = $(\"input[name=").append(currentFieldName).append("]\");\n");
+          out.append("  field = $field.length ? $field[0] : null;\n");
+          out.println("}");
+          out.append(" if (field != null) {\n");
+          fieldDisplayer.displayScripts(out, fieldTemplate, pc);
+          out.println("}");
+          pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+        }
+
+        // set original data
+        ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
+        ((GenericFieldTemplate) fieldTemplate).setMandatory(mandatory);
+      }
+    } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
@@ -302,25 +308,7 @@ public abstract class AbstractForm implements Form {
     for (FieldTemplate fieldTemplate : fieldTemplates) {
       // Have to check if field is not readonly, if so no need to update
       if (!fieldTemplate.isReadOnly()) {
-        String fieldName = fieldTemplate.getFieldName();
-        String fieldType = fieldTemplate.getTypeName();
-        String fieldDisplayerName = fieldTemplate.getDisplayerName();
-        try {
-          if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
-            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-          }
-          if (!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg) {
-            FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              for (int occ=0; occ<fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
-                attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName, occ),
-                    fieldTemplate, pagesContext));
-              }
-            }
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
+        updateField(items, record, pagesContext, updateWysiwyg, attachmentIds, fieldTemplate);
       } else {
         SilverLogger.getLogger(this).debug("Field {0} is ignored as it is read only",
             fieldTemplate.getFieldName());
@@ -328,6 +316,30 @@ public abstract class AbstractForm implements Form {
 
     }
     return attachmentIds;
+  }
+
+  private void updateField(final List<FileItem> items, final DataRecord record,
+      final PagesContext pagesContext, final boolean updateWysiwyg,
+      final List<String> attachmentIds, final FieldTemplate fieldTemplate) {
+    String fieldName = fieldTemplate.getFieldName();
+    String fieldType = fieldTemplate.getTypeName();
+    String fieldDisplayerName = fieldTemplate.getDisplayerName();
+    try {
+      if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
+        fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+      }
+      if (!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg) {
+        FieldDisplayer<Field> fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+        if (fieldDisplayer != null) {
+          for (int occ = 0; occ< fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
+            attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName, occ),
+                fieldTemplate, pagesContext));
+          }
+        }
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
   }
 
   /**
@@ -343,28 +355,34 @@ public abstract class AbstractForm implements Form {
       PagesContext pagesContext) {
     List<String> attachmentIds = new ArrayList<>();
     for (FieldTemplate fieldTemplate : fieldTemplates) {
-      FieldDisplayer fieldDisplayer;
-      if (fieldTemplate != null) {
-        String fieldName = fieldTemplate.getFieldName();
-        String fieldType = fieldTemplate.getTypeName();
-        String fieldDisplayerName = fieldTemplate.getDisplayerName();
-        try {
-          if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
-            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-          }
-          if ("wysiwyg".equals(fieldDisplayerName)) {
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
-                  fieldTemplate, pagesContext));
-            }
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
-      }
+      updateWysiwygField(items, record, pagesContext, attachmentIds, fieldTemplate);
     }
     return attachmentIds;
+  }
+
+  private void updateWysiwygField(final List<FileItem> items, final DataRecord record,
+      final PagesContext pagesContext, final List<String> attachmentIds,
+      final FieldTemplate fieldTemplate) {
+    FieldDisplayer<Field> fieldDisplayer;
+    if (fieldTemplate != null) {
+      String fieldName = fieldTemplate.getFieldName();
+      String fieldType = fieldTemplate.getTypeName();
+      String fieldDisplayerName = fieldTemplate.getDisplayerName();
+      try {
+        if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
+          fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+        }
+        if ("wysiwyg".equals(fieldDisplayerName)) {
+          fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+          if (fieldDisplayer != null) {
+            attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
+                fieldTemplate, pagesContext));
+          }
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+    }
   }
 
   /**
@@ -379,32 +397,38 @@ public abstract class AbstractForm implements Form {
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     boolean isEmpty = true;
     for (FieldTemplate fieldTemplate : fieldTemplates) {
-      FieldDisplayer fieldDisplayer;
       if (fieldTemplate != null) {
-        String fieldType = fieldTemplate.getTypeName();
-        String fieldDisplayerName = fieldTemplate.getDisplayerName();
-        try {
-          if (!StringUtil.isDefined(fieldDisplayerName)) {
-            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-          }
-          fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-          if (fieldDisplayer != null) {
-            String itemName = fieldTemplate.getFieldName();
-            FileItem item = getParameter(items, itemName);
-            if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
-              isEmpty = false;
-            } else {
-              String itemValue = getParameterValue(items, itemName, pagesContext.getEncoding());
-              isEmpty = !StringUtil.isDefined(itemValue);
-            }
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
+        isEmpty = checkFieldIsEmpty(items, pagesContext, isEmpty, fieldTemplate);
       }
       if (!isEmpty) {
         break;
       }
+    }
+    return isEmpty;
+  }
+
+  private boolean checkFieldIsEmpty(final List<FileItem> items, final PagesContext pagesContext,
+      boolean isEmpty, final FieldTemplate fieldTemplate) {
+    FieldDisplayer<? extends Field> fieldDisplayer;
+    String fieldType = fieldTemplate.getTypeName();
+    String fieldDisplayerName = fieldTemplate.getDisplayerName();
+    try {
+      if (!StringUtil.isDefined(fieldDisplayerName)) {
+        fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+      }
+      fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+      if (fieldDisplayer != null) {
+        String itemName = fieldTemplate.getFieldName();
+        FileItem item = getParameter(items, itemName);
+        if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
+          isEmpty = false;
+        } else {
+          String itemValue = getParameterValue(items, itemName, pagesContext.getEncoding());
+          isEmpty = !StringUtil.isDefined(itemValue);
+        }
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return isEmpty;
   }
@@ -486,7 +510,7 @@ public abstract class AbstractForm implements Form {
     return this.viewForm;
   }
 
-  protected FieldDisplayer getFieldDisplayer(FieldTemplate fieldTemplate) {
+  protected <T extends Field> FieldDisplayer<T> getFieldDisplayer(FieldTemplate fieldTemplate) {
     try {
       String fieldDisplayerName = fieldTemplate.getDisplayerName();
       String fieldType = fieldTemplate.getTypeName();

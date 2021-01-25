@@ -208,7 +208,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   private static final String INSERT_USERROLE = "insert into"
       + " ST_UserRole(id,instanceId,name,roleName,description,isInherited,objectId,objectType)"
-      + " values     (? ,?         ,?   ,?       ,?			 ,?			 ,?		  ,?)";
+      + " values (?, ?, ?, ?, ?, ? ,? ,?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, UserRoleRow row) throws

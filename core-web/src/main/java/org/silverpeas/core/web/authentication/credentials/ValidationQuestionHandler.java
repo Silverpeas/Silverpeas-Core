@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -67,7 +66,7 @@ public class ValidationQuestionHandler extends FunctionHandler {
         return getGeneral().getString("userLoginForcePasswordChangePage");
       }
       return sessionOpenener.openSession((HttpRequest) request, key);
-    } catch (AdminException e) {
+    } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "/Login?ErrorCode=2";
     }

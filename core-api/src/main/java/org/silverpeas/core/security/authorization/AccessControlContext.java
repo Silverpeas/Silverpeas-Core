@@ -67,7 +67,7 @@ public class AccessControlContext {
    */
   public Set<AccessControlOperation> getOperations() {
     if (operations.isEmpty()) {
-      return Collections.unmodifiableSet(Collections.singleton(AccessControlOperation.unknown));
+      return Collections.unmodifiableSet(Collections.singleton(AccessControlOperation.UNKNOWN));
     }
     return Collections.unmodifiableSet(operations);
   }

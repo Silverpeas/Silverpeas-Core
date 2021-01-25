@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionService;
@@ -68,8 +67,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new SubscribeRuntimeException(e);
     }
   }
 
@@ -91,8 +89,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       }
     } catch (SQLException e) {
       DBUtil.rollback(con);
-      throw new SubscribeRuntimeException("SubscriptionService.subscribe()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_ADD_SUBSCRIBE", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -113,8 +110,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       }
     } catch (SQLException e) {
       DBUtil.rollback(con);
-      throw new SubscribeRuntimeException("SubscriptionService.unsubscribe()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_SUBSCRIBE", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -137,8 +133,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       }
     } catch (SQLException e) {
       DBUtil.rollback(con);
-      throw new SubscribeRuntimeException("SubscriptionService.unsubscribe()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_USER_SUBSCRIBES", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -160,8 +155,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       }
     } catch (SQLException e) {
       DBUtil.rollback(con);
-      throw new SubscribeRuntimeException("SubscriptionService.unsubscribe()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_NODE_SUBSCRIBES", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -175,8 +169,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       con = getConnection();
       return subscriptionDao.existsSubscription(con, subscription);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getByResource()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -197,8 +190,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       con = getConnection();
       return subscriptionDao.getSubscriptionsByResource(con, resource, method);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getByResource()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -206,8 +198,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
 
   @Override
   public SubscriptionList getByUserSubscriber(final String userId) {
-    SilverTrace
-        .info("subscribe", "SubscriptionService.getByUserSubscriber", "root.MSG_GEN_ENTER_METHOD");
     SubscriptionList subscriptions =
         getBySubscriber(UserSubscriptionSubscriber.from(userId));
     for (String groupId : organisationController.getAllGroupIdsOfUser(userId)) {
@@ -223,8 +213,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       con = getConnection();
       return subscriptionDao.getSubscriptionsBySubscriber(con, subscriber);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getBySubscriber()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -239,9 +228,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       con = getConnection();
       return subscriptionDao.getSubscriptionsBySubscriberAndComponent(con, subscriber, instanceId);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getBySubscriberAndComponent()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT",
-          e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -256,9 +243,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       con = getConnection();
       return subscriptionDao.getSubscriptionsBySubscriberAndResource(con, subscriber, resource);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getBySubscriberAndResource()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT",
-          e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -272,15 +257,12 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
   @Override
   public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource,
       final SubscriptionMethod method) {
-    SilverTrace
-        .info("subscribe", "SubscriptionService.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
       return subscriptionDao.getSubscribers(con, resource, method);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getSubscribers()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_SUBSCRIBERS", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -300,8 +282,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
       con = getConnection();
       return subscriptionDao.getSubscribers(con, resources, method);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscriptionService.getSubscribers()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_SUBSCRIBERS", e);
+      throw new SubscribeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -331,7 +312,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
     try(Connection connection = getConnection()) {
       subscriptionDao.removeByInstanceId(connection, componentInstanceId);
     } catch (SQLException ex) {
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 }

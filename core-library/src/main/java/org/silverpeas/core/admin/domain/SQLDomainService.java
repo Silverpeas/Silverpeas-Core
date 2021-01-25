@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.domain;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
 import org.silverpeas.core.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.DomainConflictException;
@@ -123,7 +124,7 @@ public class SQLDomainService extends AbstractDomainService {
 
     // The technical name is the addition of the part of the domain id and the part of the
     // normalized (and resized) domain name. The domain name is unique by this way
-    return domain.getId() + StringUtil.left(fileDomainName, maxLength);
+    return domain.getId() + StringUtils.left(fileDomainName, maxLength);
   }
 
   @Transactional

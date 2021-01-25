@@ -24,8 +24,6 @@
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -46,7 +44,6 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.service.WysiwygContentRepository;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -83,6 +80,9 @@ import java.util.regex.Pattern;
 @Service
 public class WysiwygManager implements WysiwygContentRepository {
 
+  private static final String COMPONENT_ID = "/componentId/";
+  private static final String ATTACHMENT_ID = "/attachmentId/";
+
   protected WysiwygManager() {
     // hidden constructor
   }
@@ -90,9 +90,9 @@ public class WysiwygManager implements WysiwygContentRepository {
   @Inject
   private WysiwygEventNotifier notifier;
 
-  public final static String WYSIWYG_CONTEXT = DocumentType.wysiwyg.name();
-  public final static String WYSIWYG_IMAGES = "Images";
-  public final static String WYSIWYG_WEBSITES = "webSites";
+  public static final String WYSIWYG_CONTEXT = DocumentType.wysiwyg.name();
+  public static final String WYSIWYG_IMAGES = "Images";
+  public static final String WYSIWYG_WEBSITES = "webSites";
 
   /**
    * This method loads the content of the WYSIWYG file directly from the filesystem for backward
@@ -178,8 +178,7 @@ public class WysiwygManager implements WysiwygContentRepository {
       }
       return images;
     } catch (Exception e) {
-      throw new WysiwygException("WebSiteSessionController.getWebsiteImages()",
-          SilverpeasException.ERROR, "wysisyg.EX_GET_ALL_IMAGES_FAIL", e);
+      throw new WysiwygException(e);
     }
   }
 
@@ -207,8 +206,7 @@ public class WysiwygManager implements WysiwygContentRepository {
       }
       return pages;
     } catch (org.silverpeas.core.util.UtilException e) {
-      throw new WysiwygException("WebSiteSessionController.getWebsitePages()",
-          SilverpeasException.ERROR, "wysisyg.EX_GET_ALL_PAGES_FAIL", e);
+      throw new WysiwygException(e);
     }
   }
 
@@ -531,23 +529,24 @@ public class WysiwygManager implements WysiwygContentRepository {
         AttachmentServiceProvider.getAttachmentService().deleteAttachment(document, false);
       }
     } catch (Exception exc) {
-      throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
-          SilverpeasException.ERROR, "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
+      throw new WysiwygException(exc);
     }
   }
 
   private String loadContent(SimpleDocument document, String lang) {
+    String content = "";
     if (isEmptyWysiwygContent(document, lang)) {
-      return "";
+      return content;
     }
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    try {
+
+    try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
       AttachmentServiceProvider.getAttachmentService()
           .getBinaryContent(buffer, document.getPk(), lang);
-      return new String(buffer.toByteArray(), Charsets.UTF_8);
-    } finally {
-      IOUtils.closeQuietly(buffer);
+      content = new String(buffer.toByteArray(), Charsets.UTF_8);
+    } catch (IOException e) {
+      // nothing to do
     }
+    return content;
   }
 
   /**
@@ -559,15 +558,14 @@ public class WysiwygManager implements WysiwygContentRepository {
    */
   private boolean isEmptyWysiwygContent(SimpleDocument document, String lang) {
     if (document.getDocumentType() == DocumentType.wysiwyg) {
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      try {
+      try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
         AttachmentServiceProvider.getAttachmentService()
             .getBinaryContent(buffer, document.getPk(), lang, 0, 1);
         if (buffer.size() == 0) {
           return true;
         }
-      } finally {
-        IOUtils.closeQuietly(buffer);
+      } catch (IOException e) {
+        // nothing to do
       }
     }
     return false;
@@ -677,8 +675,7 @@ public class WysiwygManager implements WysiwygContentRepository {
       return "";
     } catch (org.silverpeas.core.util.UtilException e) {
       // There is no document
-      throw new WysiwygException("WysiwygController.loadFileWebsite()", SilverpeasException.WARNING,
-          "wysiwyg.NO_WYSIWYG_DOCUMENT_ASSOCIATED");
+      throw new WysiwygException(e);
     }
   }
 
@@ -740,15 +737,6 @@ public class WysiwygManager implements WysiwygContentRepository {
     return FileUtils.getFile(directory, fileName);
   }
 
-  /**
-   * Method declaration
-   * @param oldComponentId
-   * @param oldObjectId
-   * @param componentId
-   * @param objectId
-   * @param userId
-   *
-   */
   public Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
       String objectId, String userId) {
 
@@ -767,26 +755,12 @@ public class WysiwygManager implements WysiwygContentRepository {
         if (!isEmptyWysiwygContent(doc, doc.getLanguage())) {
           doc.getAttachment().setCreatedBy(userId);
           if (copy == null) {
-            SimpleDocumentPK pk =
-                AttachmentServiceProvider.getAttachmentService().copyDocument(doc, targetPk);
-            copy = AttachmentServiceProvider.getAttachmentService()
-                .searchDocumentById(pk, doc.getLanguage());
-            List<SimpleDocument> images = AttachmentServiceProvider.getAttachmentService().
-                listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
-            for (SimpleDocument image : images) {
-              SimpleDocumentPK imageCopyPk =
-                  AttachmentServiceProvider.getAttachmentService().copyDocument(image, targetPk);
-              fileIds.put(image.getId(), imageCopyPk.getId());
-              oldNewImagePkMapping.add(Pair.of(image.getPk(), imageCopyPk));
-            }
+            copy = getCopy(foreignKey, targetPk, oldNewImagePkMapping, fileIds, doc);
           }
           copy.setLanguage(language);
           String content =
-              replaceInternalImagesPath(loadContent(copy, doc.getLanguage()), oldComponentId,
-                  oldObjectId, componentId, objectId);
-          for (Pair<SimpleDocumentPK, SimpleDocumentPK> oldNewPk : oldNewImagePkMapping) {
-            content = replaceInternalImageId(content, oldNewPk.getLeft(), oldNewPk.getRight());
-          }
+              updateCopyContent(oldComponentId, oldObjectId, componentId, objectId, copy,
+                  oldNewImagePkMapping, doc);
           AttachmentServiceProvider.getAttachmentService()
               .updateAttachment(copy, new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
                   false, false);
@@ -802,6 +776,38 @@ public class WysiwygManager implements WysiwygContentRepository {
       }
     }
     return fileIds;
+  }
+
+  private String updateCopyContent(final String oldComponentId, final String oldObjectId,
+      final String componentId, final String objectId, final SimpleDocument copy,
+      final List<Pair<SimpleDocumentPK, SimpleDocumentPK>> oldNewImagePkMapping,
+      final SimpleDocument doc) {
+    String content =
+        replaceInternalImagesPath(loadContent(copy, doc.getLanguage()), oldComponentId, oldObjectId,
+            componentId, objectId);
+    for (Pair<SimpleDocumentPK, SimpleDocumentPK> oldNewPk : oldNewImagePkMapping) {
+      content = replaceInternalImageId(content, oldNewPk.getLeft(), oldNewPk.getRight());
+    }
+    return content;
+  }
+
+  private SimpleDocument getCopy(final ResourceReference foreignKey,
+      final ResourceReference targetPk,
+      final List<Pair<SimpleDocumentPK, SimpleDocumentPK>> oldNewImagePkMapping,
+      final Map<String, String> fileIds, final SimpleDocument doc) {
+    SimpleDocumentPK pk =
+        AttachmentServiceProvider.getAttachmentService().copyDocument(doc, targetPk);
+    SimpleDocument copy =
+        AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk, doc.getLanguage());
+    List<SimpleDocument> images = AttachmentServiceProvider.getAttachmentService().
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
+    for (SimpleDocument image : images) {
+      SimpleDocumentPK imageCopyPk =
+          AttachmentServiceProvider.getAttachmentService().copyDocument(image, targetPk);
+      fileIds.put(image.getId(), imageCopyPk.getId());
+      oldNewImagePkMapping.add(Pair.of(image.getPk(), imageCopyPk));
+    }
+    return copy;
   }
 
   public void move(String fromComponentId, String fromObjectId, String componentId,
@@ -820,11 +826,10 @@ public class WysiwygManager implements WysiwygContentRepository {
 
   String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,
       SimpleDocumentPK newPK) {
-    String from = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getId() + "/";
+    String from = COMPONENT_ID + oldPK.getInstanceId() + ATTACHMENT_ID + oldPK.getId() + "/";
     String fromOldId =
-        "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getOldSilverpeasId() +
-            "/";
-    String to = "/componentId/" + newPK.getInstanceId() + "/attachmentId/" + newPK.getId() + "/";
+        COMPONENT_ID + oldPK.getInstanceId() + ATTACHMENT_ID + oldPK.getOldSilverpeasId() + "/";
+    String to = COMPONENT_ID + newPK.getInstanceId() + ATTACHMENT_ID + newPK.getId() + "/";
     return wysiwygContent.replaceAll(from, to).replaceAll(fromOldId, to);
   }
 
@@ -978,7 +983,7 @@ public class WysiwygManager implements WysiwygContentRepository {
         SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
             searchDocumentById(new SimpleDocumentPK(attachmentId), null);
         if (attachment != null) {
-          indexEntry.addLinkedFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,
+          indexEntry.addLinkedFileContent(attachment.getAttachmentPath(), Charsets.UTF_8.toString(),
               attachment.getContentType(), attachment.getLanguage());
           indexEntry.addLinkedFileId(attachmentId);
         }
@@ -1016,8 +1021,7 @@ public class WysiwygManager implements WysiwygContentRepository {
    */
   private void checkPath(String path) throws WysiwygException {
     if (path.contains("..")) {
-      throw new WysiwygException(WysiwygManager.class.getSimpleName() + ".checkPath",
-          SilverpeasException.ERROR, "peasCore.RESOURCE_ACCESS_FORBIDDEN");
+      throw new WysiwygException("Forbidden access to " + path);
     }
   }
 }

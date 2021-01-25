@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
+import org.apache.commons.codec.binary.Hex;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,9 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.silverpeas.core.util.Charsets;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
 
 /**
  * The MD5 algorithm (Message Digest 5).
@@ -49,23 +47,24 @@ import org.apache.commons.io.IOUtils;
  */
 public class CryptMD5 {
 
+  private CryptMD5() {
+
+  }
+
   /**
    * Encrypts the specified text in MD5.
    *
    * @param original the text to encrypt
    * @return the digest of the text in a 32-bits hexadecimal.
-   * @throws UtilException
+   * @throws SilverpeasRuntimeException if an error occurs.
    */
-  public static String encrypt(String original) throws UtilException {
+  public static String encrypt(String original) throws SilverpeasRuntimeException {
     byte[] uniqueKey = original.getBytes(Charsets.UTF_8);
     try {
       byte[] hash = MessageDigest.getInstance("MD5").digest(uniqueKey);
       return Hex.encodeHexString(hash);
     } catch (NoSuchAlgorithmException e) {
-      // TODO utiliser le CryptoException
-      // throw new CryptoException
-      throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
-          "root.EX_NO_MESSAGE", e);
+      throw new SilverpeasRuntimeException(e);
     }
 
   }
@@ -74,12 +73,11 @@ public class CryptMD5 {
    * Computes the MD5 hash of a file.
    * @param file the file to be MD5 hashed.
    * @return the MD5 hash as a String.
+   * @throws SilverpeasRuntimeException if an error occurs.
    */
-  public static String encrypt(File file) throws UtilException {
-    InputStream fileInputStream = null;
-    try {
+  public static String encrypt(File file) throws SilverpeasRuntimeException {
+    try(InputStream fileInputStream = new FileInputStream(file)) {
       MessageDigest digest = MessageDigest.getInstance("MD5");
-      fileInputStream = new FileInputStream(file);
       byte[] buffer = new byte[8];
       int c = 0;
       while ((c = fileInputStream.read(buffer)) != -1) {
@@ -87,16 +85,8 @@ public class CryptMD5 {
       }
       byte[] signature = digest.digest();
       return Hex.encodeHexString(signature);
-    } catch (NoSuchAlgorithmException e) {
-      throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
-          "root.EX_NO_MESSAGE", e);
-    } catch (IOException e) {
-      throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
-          "root.EX_NO_MESSAGE", e);
-    } finally {
-      if (fileInputStream != null) {
-        IOUtils.closeQuietly(fileInputStream);
-      }
+    } catch (NoSuchAlgorithmException | IOException e) {
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

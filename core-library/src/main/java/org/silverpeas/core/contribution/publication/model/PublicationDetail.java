@@ -1244,7 +1244,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   @Override
   public boolean canBeModifiedBy(final User user) {
     return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
   }
 
   /**
@@ -1337,7 +1337,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
     // Access is verified for sharing context
     return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING));
   }
 
   @Override

@@ -49,7 +49,7 @@ public class NotificationData implements Serializable {
   private String mTargetChannel;
   private String mTargetReceipt;
   private String mTargetName;
-  private Map<String, Object> mTargetParam = null;
+  private transient Map<String, Object> mTargetParam = null;
   private String mPrioritySpeed;
   private String mReportToSenderStatus;
   private String mReportToSenderTargetChannel;
@@ -265,92 +265,37 @@ public class NotificationData implements Serializable {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    NotificationData that = (NotificationData) o;
-    if (!mAnswerAllowed == that.mAnswerAllowed) {
-      return false;
-    }
-    if (!Objects.equals(mComment, that.mComment)) {
-      return false;
-    }
-    if (!Objects.equals(mLoginPassword, that.mLoginPassword)) {
-      return false;
-    }
-    if (!Objects.equals(mLoginUser, that.mLoginUser)) {
-      return false;
-    }
-    if (!Objects.equals(mMessage, that.mMessage)) {
-      return false;
-    }
-    if (!Objects.equals(mPrioritySpeed, that.mPrioritySpeed)) {
-      return false;
-    }
-    if (!Objects.equals(mReportToLogStatus, that.mReportToLogStatus)) {
-      return false;
-    }
-    if (!Objects.equals(mReportToSenderStatus, that.mReportToSenderStatus)) {
-      return false;
-    }
-    if (!Objects.equals(mReportToSenderTargetChannel, that.mReportToSenderTargetChannel)) {
-      return false;
-    }
-    if (!Objects.equals(mReportToSenderTargetParam, that.mReportToSenderTargetParam)) {
-      return false;
-    }
-    if (!Objects.equals(mReportToSenderTargetReceipt, that.mReportToSenderTargetReceipt)) {
-      return false;
-    }
-    if (!Objects.equals(mSenderId, that.mSenderId)) {
-      return false;
-    }
-    if (!Objects.equals(mSenderName, that.mSenderName)) {
-      return false;
-    }
-    if (!Objects.equals(mTargetChannel, that.mTargetChannel)) {
-      return false;
-    }
-    if (!Objects.equals(mTargetName, that.mTargetName)) {
-      return false;
-    }
-    if (!Objects.equals(mTargetParam, that.mTargetParam)) {
-      return false;
-    }
-    return Objects.equals(mTargetReceipt, that.mTargetReceipt);
+    final NotificationData that = (NotificationData) o;
+    return mNotificationId == that.mNotificationId && mAnswerAllowed == that.mAnswerAllowed &&
+        Objects.equals(mLoginUser, that.mLoginUser) &&
+        Objects.equals(mLoginPassword, that.mLoginPassword) &&
+        Objects.equals(mMessage, that.mMessage) && Objects.equals(mSenderId, that.mSenderId) &&
+        Objects.equals(mSenderName, that.mSenderName) && Objects.equals(mComment, that.mComment) &&
+        Objects.equals(mTargetChannel, that.mTargetChannel) &&
+        Objects.equals(mTargetReceipt, that.mTargetReceipt) &&
+        Objects.equals(mTargetName, that.mTargetName) &&
+        Objects.equals(mTargetParam, that.mTargetParam) &&
+        Objects.equals(mPrioritySpeed, that.mPrioritySpeed) &&
+        Objects.equals(mReportToSenderStatus, that.mReportToSenderStatus) &&
+        Objects.equals(mReportToSenderTargetChannel, that.mReportToSenderTargetChannel) &&
+        Objects.equals(mReportToSenderTargetReceipt, that.mReportToSenderTargetReceipt) &&
+        Objects.equals(mReportToSenderTargetParam, that.mReportToSenderTargetParam) &&
+        Objects.equals(mReportToLogStatus, that.mReportToLogStatus);
   }
 
   @Override
   public int hashCode() {
-    int hash = 5;
-    hash = 83 * hash + (this.mLoginUser != null ? this.mLoginUser.hashCode() : 0);
-    hash = 83 * hash + (this.mLoginPassword != null ? this.mLoginPassword.hashCode() : 0);
-    hash = 83 * hash + (this.mMessage != null ? this.mMessage.hashCode() : 0);
-    hash = 83 * hash + (this.mSenderId != null ? this.mSenderId.hashCode() : 0);
-    hash = 83 * hash + (this.mSenderName != null ? this.mSenderName.hashCode() : 0);
-    hash = 83 * hash + (this.mAnswerAllowed ? 1 : 0);
-    hash = 83 * hash + (this.mComment != null ? this.mComment.hashCode() : 0);
-    hash = 83 * hash + (this.mTargetChannel != null ? this.mTargetChannel.hashCode() : 0);
-    hash = 83 * hash + (this.mTargetReceipt != null ? this.mTargetReceipt.hashCode() : 0);
-    hash = 83 * hash + (this.mTargetName != null ? this.mTargetName.hashCode() : 0);
-    hash = 83 * hash + (this.mTargetParam != null ? this.mTargetParam.hashCode() : 0);
-    hash = 83 * hash + (this.mPrioritySpeed != null ? this.mPrioritySpeed.hashCode() : 0);
-    hash = 83 * hash +
-        (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
-    hash = 83 * hash +
-        (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel.hashCode() :
-            0);
-    hash = 83 * hash +
-        (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt.hashCode() :
-            0);
-    hash = 83 * hash +
-        (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode() : 0);
-    hash = 83 * hash + (this.mReportToLogStatus != null ? this.mReportToLogStatus.hashCode() : 0);
-    return hash;
+    return Objects.hash(mLoginUser, mLoginPassword, mMessage, mNotificationId, mSenderId,
+        mSenderName, mAnswerAllowed, mComment, mTargetChannel, mTargetReceipt, mTargetName,
+        mTargetParam, mPrioritySpeed, mReportToSenderStatus, mReportToSenderTargetChannel,
+        mReportToSenderTargetReceipt, mReportToSenderTargetParam, mReportToLogStatus);
   }
 
   @Override

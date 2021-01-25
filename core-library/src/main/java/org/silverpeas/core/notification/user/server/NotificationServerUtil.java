@@ -46,6 +46,9 @@ import java.util.stream.Stream;
 public class NotificationServerUtil {
 
   private static final SAXParserFactory parserFactory;
+  private static final String DATE_TYPEID = "#DATE#";
+  private static final String BOOLEAN_TYPEID = "#BOOLEAN#";
+  private static final String LIST_TYPEID = "#LIST#";
 
   static {
     parserFactory = SAXParserFactory.newInstance();
@@ -53,161 +56,150 @@ public class NotificationServerUtil {
     parserFactory.setValidating(false);
   }
 
-  public static String convertNotificationDataToXML(NotificationData p_Data) {
+  private NotificationServerUtil() {
+
+  }
+
+  public static String convertNotificationDataToXML(NotificationData data) {
     StringBuilder xml = new StringBuilder();
 
-    if (p_Data != null) {
+    if (data != null) {
       xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
       xml.append("<NOTIFY>");
-      xml.append("	<LOGIN>");
-      xml.append("		<USER><![CDATA[");
-      xml.append(p_Data.getLoginUser());
+      xml.append("  <LOGIN>");
+      xml.append("    <USER><![CDATA[");
+      xml.append(data.getLoginUser());
       xml.append("]]></USER>");
-      xml.append("		<PASSWORD><![CDATA[");
-      xml.append(p_Data.getLoginPassword());
+      xml.append("    <PASSWORD><![CDATA[");
+      xml.append(data.getLoginPassword());
       xml.append("]]></PASSWORD>");
-      xml.append("	</LOGIN>");
-      xml.append("	<MESSAGE><![CDATA[");
-      xml.append(p_Data.getMessage());
+      xml.append("  </LOGIN>");
+      xml.append("  <MESSAGE><![CDATA[");
+      xml.append(data.getMessage());
       xml.append("]]></MESSAGE>");
-      xml.append("	<SENDER>");
-      xml.append("		<ID><![CDATA[");
-      xml.append(p_Data.getSenderId());
+      xml.append("  <SENDER>");
+      xml.append("    <ID><![CDATA[");
+      xml.append(data.getSenderId());
       xml.append("]]></ID>");
-      xml.append("		<NAME><![CDATA[");
-      xml.append(p_Data.getSenderName());
+      xml.append("    <NAME><![CDATA[");
+      xml.append(data.getSenderName());
       xml.append("]]></NAME>");
-      xml.append("		<ANSWERALLOWED>");
-      xml.append(p_Data.isAnswerAllowed());
+      xml.append("    <ANSWERALLOWED>");
+      xml.append(data.isAnswerAllowed());
       xml.append("</ANSWERALLOWED>");
-      xml.append("	</SENDER>");
-      xml.append("	<COMMENT><![CDATA[");
-      xml.append(p_Data.getComment());
+      xml.append("  </SENDER>");
+      xml.append("  <COMMENT><![CDATA[");
+      xml.append(data.getComment());
       xml.append("]]></COMMENT>");
-      xml.append("	<TARGET CHANNEL=\"");
-      xml.append(p_Data.getTargetChannel());
+      xml.append("  <TARGET CHANNEL=\"");
+      xml.append(data.getTargetChannel());
       xml.append("\">");
-      xml.append("		<NAME><![CDATA[");
-      xml.append(p_Data.getTargetName());
+      xml.append("    <NAME><![CDATA[");
+      xml.append(data.getTargetName());
       xml.append("]]></NAME>");
-      xml.append("		<RECEIPT><![CDATA[");
-      xml.append(p_Data.getTargetReceipt());
+      xml.append("    <RECEIPT><![CDATA[");
+      xml.append(data.getTargetReceipt());
       xml.append("]]></RECEIPT>");
-      xml.append("		<PARAM><![CDATA[");
-      xml.append(packKeyValues(p_Data.getTargetParam()));
+      xml.append("    <PARAM><![CDATA[");
+      xml.append(packKeyValues(data.getTargetParam()));
       xml.append("]]></PARAM>");
-      xml.append("	</TARGET>");
-      xml.append("	<PRIORITY SPEED=\"");
-      xml.append(p_Data.getPrioritySpeed());
+      xml.append("  </TARGET>");
+      xml.append("  <PRIORITY SPEED=\"");
+      xml.append(data.getPrioritySpeed());
       xml.append("\"/>");
-      xml.append("	<REPORT>");
-      xml.append("	</REPORT>");
+      xml.append("  <REPORT>");
+      xml.append("  </REPORT>");
       xml.append("</NOTIFY>");
     }
 
     return xml.toString();
   }
 
-  /**
-   * @param p_XML
-   * @return
-   * @throws NotificationServerException
-   */
-  public static NotificationData convertXMLToNotificationData(String p_XML)
+  public static NotificationData convertXMLToNotificationData(String xml)
       throws NotificationServerException {
     NotificationData data = new NotificationData();
-    InputStream xml = new ByteArrayInputStream(p_XML.getBytes(Charsets.UTF_8));
+    InputStream input = new ByteArrayInputStream(xml.getBytes(Charsets.UTF_8));
     try {
       SAXParser parser = parserFactory.newSAXParser();
       DefaultHandler handler = new NotifyContentHandler(data, parser.getXMLReader());
-      parser.parse(xml, handler);
+      parser.parse(input, handler);
     } catch (SAXException | IOException | ParserConfigurationException e) {
       throw new NotificationServerException(e);
     }
     return data;
   }
 
-  /**
-   * @param keyvaluestring
-   * @return
-   */
-  static public Map<String, Object> unpackKeyValues(String keyvaluestring) {
+  public static Map<String, Object> unpackKeyValues(String keyValueString) {
     Map<String, Object> result = new HashMap<>();
-    char c;
     StringBuilder key = new StringBuilder();
     StringBuilder value = new StringBuilder();
-    StringBuilder sb;
 
-    if (keyvaluestring != null) {
-      sb = key;
-      for (int i = 0; i < keyvaluestring.length(); i++) {
-        c = keyvaluestring.charAt(i);
-        if (c == ';') {
-          if (((i + 1) < keyvaluestring.length())
-              && (keyvaluestring.charAt(i + 1) == ';')) { // Two ; -> just take
-            // one and append it
-            // to the current
-            // value
-            sb.append(c);
-            i++;
-          } else { // the ; is the Key/Values pairs separator
-            String strValue = value.toString();
-            if (strValue.startsWith("#DATE#")) {
-              strValue = strValue.substring(6);
-              result.put(key.toString(), new Date(Long.valueOf(strValue)));
-            } else if (strValue.startsWith("#BOOLEAN#")) {
-              strValue = strValue.substring(9);
-              result.put(key.toString(), new Boolean(strValue));
-            } else if (strValue.startsWith("#LIST#")) {
-              strValue = strValue.substring(6);
-              List<String> listValue = Stream.of(strValue.split(",")).collect(Collectors.toList());
-              result.put(key.toString(), listValue);
-            } else {
-              result.put(key.toString(), strValue);
-            }
+    if (keyValueString != null) {
+      parseKeyValueString(keyValueString, result, key, value);
 
-            key.setLength(0);
-            value.setLength(0);
-            sb = key;
-          }
-        } else if (c == '=') {
-          if (((i + 1) < keyvaluestring.length())
-              && (keyvaluestring.charAt(i + 1) == '=')) { // Two = -> just take
-            // one and append it
-            // to the current
-            // value
-            sb.append(c);
-            i++;
-          } else { // the = is the Key/Value separator
-            sb = value;
-          }
-        } else {
-          sb.append(c);
-        }
-      }
-      String strValue = value.toString();
-      if (strValue.startsWith("#DATE#")) {
-        strValue = strValue.substring(6);
-        result.put(key.toString(), new Date(Long.valueOf(strValue)));
-      } else if (strValue.startsWith("#BOOLEAN#")) {
-        strValue = strValue.substring(9);
-        result.put(key.toString(), new Boolean(strValue));
-      } else if (strValue.startsWith("#LIST#")) {
-        strValue = strValue.substring(6);
-        List<String> listValue = Stream.of(strValue.split(",")).collect(Collectors.toList());
-        result.put(key.toString(), listValue);
-      } else {
-        result.put(key.toString(), strValue);
-      }
+      decodeValue(result, key, value);
     }
     return result;
   }
 
-  /**
-   * @param theValue
-   * @return
-   */
-  static protected String doubleSeparators(String theValue) {
+  private static void parseKeyValueString(final String keyValueString,
+      final Map<String, Object> result, final StringBuilder key, final StringBuilder value) {
+    char c;
+    StringBuilder sb = key;
+    int i = 0;
+    while (i < keyValueString.length()) {
+      c = keyValueString.charAt(i);
+      if (c == ';') {
+        if (((i + 1) < keyValueString.length()) &&
+            (keyValueString.charAt(i + 1) == ';')) { // Two ; -> just take
+          // one and append it
+          // to the current
+          // value
+          sb.append(c);
+          i++;
+        } else { // the ; is the Key/Values pairs separator
+          decodeValue(result, key, value);
+          key.setLength(0);
+          value.setLength(0);
+          sb = key;
+        }
+      } else if (c == '=') {
+        if (((i + 1) < keyValueString.length()) &&
+            (keyValueString.charAt(i + 1) == '=')) { // Two = -> just take
+          // one and append it
+          // to the current
+          // value
+          sb.append(c);
+          i++;
+        } else { // the = is the Key/Value separator
+          sb = value;
+        }
+      } else {
+        sb.append(c);
+      }
+      i++;
+    }
+  }
+
+  private static void decodeValue(final Map<String, Object> result, final StringBuilder key,
+      final StringBuilder value) {
+    String strValue = value.toString();
+    if (strValue.startsWith(DATE_TYPEID)) {
+      strValue = strValue.substring(6);
+      result.put(key.toString(), new Date(Long.parseLong(strValue)));
+    } else if (strValue.startsWith(BOOLEAN_TYPEID)) {
+      strValue = strValue.substring(9);
+      result.put(key.toString(), Boolean.valueOf(strValue));
+    } else if (strValue.startsWith(LIST_TYPEID)) {
+      strValue = strValue.substring(6);
+      List<String> listValue = Stream.of(strValue.split(",")).collect(Collectors.toList());
+      result.put(key.toString(), listValue);
+    } else {
+      result.put(key.toString(), strValue);
+    }
+  }
+
+  protected static String doubleSeparators(String theValue) {
     if (theValue == null) {
       return "";
     }
@@ -217,28 +209,21 @@ public class NotificationServerUtil {
     for (i = 0; i < chars.length; i++) {
       char c = chars[i];
       switch (c) {
-        case '=': {
+        case '=':
           sb.append("==");
           break;
-        }
-        case ';': {
+        case ';':
           sb.append(";;");
           break;
-        }
-        default: {
+        default:
           sb.append(c);
           break;
-        }
       }
     }
     return sb.toString();
   }
 
-  /**
-   * @param keyValues
-   * @return
-   */
-  static public String packKeyValues(Map<String, Object> keyValues) {
+  public static String packKeyValues(Map<String, Object> keyValues) {
     StringBuilder sb = new StringBuilder();
     boolean bNotTheFirst = false;
 
@@ -249,56 +234,63 @@ public class NotificationServerUtil {
           sb.append(';');
         }
 
-        String keyValue = "";
-        boolean success = true;
-
-        // try first to treat the value as a String
-        try {
-          keyValue = (String) keyValues.get(theKey);
-        } catch (ClassCastException cce) {
-          success = false;
-        }
-
-        // if first attempt failed, try to treat it as a Date
-        if (!success) {
-          try {
-            Date date = (Date) keyValues.get(theKey);
-            keyValue = "#DATE#" + date.getTime();
-            success = true;
-          } catch (ClassCastException cce) {
-            success = false;
-          }
-        }
-
-        //then, try to treat it as a Boolean
-        if (!success) {
-          try {
-            Boolean bool = (Boolean) keyValues.get(theKey);
-            keyValue = "#BOOLEAN#" + bool;
-            success = true;
-          } catch (ClassCastException cce) {
-            success = false;
-          }
-        }
-
-        if (!success) {
-          try {
-            Collection<String> collection = (Collection<String>) keyValues.get(theKey);
-            if (!collection.isEmpty()) {
-              keyValue = "#LIST#" + collection.stream().collect(Collectors.joining(","));
-              success = true;
-            }
-          } catch (ClassCastException cce) {
-            success = false;
-          }
-        }
-
-        if (success) {
-          sb.append(doubleSeparators(theKey)).append('=').append(doubleSeparators(keyValue));
-          bNotTheFirst = true;
-        }
+        bNotTheFirst = formatInString(theKey, keyValues, sb, bNotTheFirst);
       }
     }
     return sb.toString();
+  }
+
+  private static boolean formatInString(final String theKey, final Map<String, Object> keyValues,
+      final StringBuilder sb, boolean bNotTheFirst) {
+    String keyValue = "";
+    boolean success = true;
+    boolean result = bNotTheFirst;
+
+    // try first to treat the value as a String
+    try {
+      keyValue = (String) keyValues.get(theKey);
+    } catch (ClassCastException cce) {
+      success = false;
+    }
+
+    // if first attempt failed, try to treat it as a Date
+    if (!success) {
+      try {
+        Date date = (Date) keyValues.get(theKey);
+        keyValue = DATE_TYPEID + date.getTime();
+        success = true;
+      } catch (ClassCastException cce) {
+        success = false;
+      }
+    }
+
+    //then, try to treat it as a Boolean
+    if (!success) {
+      try {
+        Boolean bool = (Boolean) keyValues.get(theKey);
+        keyValue = BOOLEAN_TYPEID + bool;
+        success = true;
+      } catch (ClassCastException cce) {
+        success = false;
+      }
+    }
+
+    if (!success) {
+      try {
+        Collection<String> collection = (Collection<String>) keyValues.get(theKey);
+        if (!collection.isEmpty()) {
+          keyValue = LIST_TYPEID + collection.stream().collect(Collectors.joining(","));
+          success = true;
+        }
+      } catch (ClassCastException cce) {
+        success = false;
+      }
+    }
+
+    if (success) {
+      sb.append(doubleSeparators(theKey)).append('=').append(doubleSeparators(keyValue));
+      result = true;
+    }
+    return result;
   }
 }

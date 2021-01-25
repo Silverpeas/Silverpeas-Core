@@ -69,12 +69,12 @@ public class GoToDocument extends GoTo {
     if (isLoggedIn) {
       SimpleDocumentAccessControl accessController = SimpleDocumentAccessControl.get();
       boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), version,
-          AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+          AccessControlContext.init().onOperationsOf(AccessControlOperation.DOWNLOAD));
       if (!isAccessAuthorized) {
         SimpleDocument lastPublicVersion = version.getLastPublicVersion();
         if (lastPublicVersion != null) {
           isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), lastPublicVersion,
-              AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.DOWNLOAD));
           if (isAccessAuthorized) {
             return URLUtil.getServerURL(req) + lastPublicVersion.getUniversalURL();
           }

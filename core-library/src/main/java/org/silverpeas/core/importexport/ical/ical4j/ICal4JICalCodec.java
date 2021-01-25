@@ -33,14 +33,15 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.HtmlProperty;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
 
@@ -94,83 +95,88 @@ public class ICal4JICalCodec implements ICalCodec {
     for (CalendarEvent event : events) {
       Date startDate = iCal4JDateCodec.encode(event.getStartDate());
       Date endDate = iCal4JDateCodec.encode(event.getEndDate());
-      VEvent iCalEvent;
-      if (event.isOnAllDay() && startDate.equals(endDate)) {
-        iCalEvent = new VEvent(startDate, event.getTitle());
-      } else {
-        iCalEvent = new VEvent(startDate, endDate, event.getTitle());
-      }
-
-      // Generate UID
-      iCalEvent.getProperties().add(generateUid(event));
-
-      // Add recurring data if any
-      if (event.isRecurrent()) {
-        Recur recur = iCal4JRecurrenceCodec.encode(event);
-        iCalEvent.getProperties().add(new RRule(recur));
-        iCalEvent.getProperties()
-            .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
-      }
-
-      // Add Description if any
-      if (StringUtil.isDefined(event.getDescription())) {
-        HtmlCleaner cleaner = new HtmlCleaner();
-        String plainText = "";
-        try {
-          plainText = cleaner.cleanHtmlFragment(event.getDescription());
-        } catch (Exception e) {
-          // do nothing
-        }
-        iCalEvent.getProperties().add(new Description(plainText));
-        iCalEvent.getProperties().add(new HtmlProperty(event.getDescription()));
-      }
-
-      // Add Classification
-      iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
-      // Add Priority
-      iCalEvent.getProperties().add(new Priority(event.getPriority().getICalLevel()));
-
-      // Add location if any
-      Optional<String> location = Optional.ofNullable(event.getLocation());
-      location.ifPresent(s -> iCalEvent.getProperties().add(new Location(s)));
-
-      // Add event URL if any
-      Optional<String> url = event.getAttributes().get("url");
-      if (url.isPresent()) {
-        try {
-          iCalEvent.getProperties().add(new Url(new URI(url.get())));
-        } catch (URISyntaxException ex) {
-          throw new EncodingException(ex.getMessage(), ex);
-        }
-      }
-
-      // Add Categories
-      TextList categoryList = new TextList(event.getCategories().asArray());
-      if (!categoryList.isEmpty()) {
-        iCalEvent.getProperties().add(new Categories(categoryList));
-      }
-      // Add attendees
-      event.getAttendees().forEach(a -> {
-        try {
-          iCalEvent.getProperties().add(new Attendee(a.getId()));
-        } catch (URISyntaxException ex) {
-          throw new EncodingException("Malformed attendee URI: " + a, ex);
-        }
-      });
-
+      VEvent iCalEvent = getICalEvent(event, startDate, endDate);
       iCalEvents.add(iCalEvent);
     }
     calendarIcs.getComponents().addAll(iCalEvents);
     CalendarOutputter outputter = new CalendarOutputter();
     try {
       outputter.output(calendarIcs, output);
-      return output.toString(CharEncoding.UTF_8);
+      return output.toString(Charsets.UTF_8);
     } catch (Exception ex) {
       throw new EncodingException("The encoding of the events in iCal formatted text has failed!",
           ex);
     } finally {
       IOUtils.closeQuietly(output);
     }
+  }
+
+  @NotNull
+  private VEvent getICalEvent(final CalendarEvent event, final Date startDate, final Date endDate) {
+    VEvent iCalEvent;
+    if (event.isOnAllDay() && startDate.equals(endDate)) {
+      iCalEvent = new VEvent(startDate, event.getTitle());
+    } else {
+      iCalEvent = new VEvent(startDate, endDate, event.getTitle());
+    }
+    // Generate UID
+    iCalEvent.getProperties().add(generateUid(event));
+
+    // Add recurring data if any
+    if (event.isRecurrent()) {
+      Recur recur = iCal4JRecurrenceCodec.encode(event);
+      iCalEvent.getProperties().add(new RRule(recur));
+      iCalEvent.getProperties()
+          .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
+    }
+
+    // Add Description if any
+    if (StringUtil.isDefined(event.getDescription())) {
+      HtmlCleaner cleaner = new HtmlCleaner();
+      String plainText = "";
+      try {
+        plainText = cleaner.cleanHtmlFragment(event.getDescription());
+      } catch (Exception e) {
+        // do nothing
+      }
+      iCalEvent.getProperties().add(new Description(plainText));
+      iCalEvent.getProperties().add(new HtmlProperty(event.getDescription()));
+    }
+
+    // Add Visibility
+    iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
+    // Add Priority
+    iCalEvent.getProperties().add(new Priority(event.getPriority().getICalLevel()));
+
+    // Add location if any
+    Optional<String> location = Optional.ofNullable(event.getLocation());
+    location.ifPresent(s -> iCalEvent.getProperties().add(new Location(s)));
+
+    // Add event URL if any
+    Optional<String> url = event.getAttributes().get("url");
+    if (url.isPresent()) {
+      try {
+        iCalEvent.getProperties().add(new Url(new URI(url.get())));
+      } catch (URISyntaxException ex) {
+        throw new EncodingException(ex.getMessage(), ex);
+      }
+    }
+
+    // Add Categories
+    TextList categoryList = new TextList(event.getCategories().asArray());
+    if (!categoryList.isEmpty()) {
+      iCalEvent.getProperties().add(new Categories(categoryList));
+    }
+    // Add attendees
+    event.getAttendees().forEach(a -> {
+      try {
+        iCalEvent.getProperties().add(new Attendee(a.getId()));
+      } catch (URISyntaxException ex) {
+        throw new EncodingException("Malformed attendee URI: " + a, ex);
+      }
+    });
+
+    return iCalEvent;
   }
 
   private Uid generateUid(CalendarEvent event) {

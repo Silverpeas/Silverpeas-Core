@@ -92,7 +92,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   private final Map<String, PublicationTemplateImpl> templates = new HashMap<>();
   private String templateDir;
   private String defaultTemplateDir;
-  private JAXBContext JAXB_CONTEXT = null;
+  private JAXBContext jaxbContext = null;
 
   @PostConstruct
   private void setup() {
@@ -102,7 +102,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     defaultTemplateDir =
         SystemWrapper.get().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
     try {
-      JAXB_CONTEXT = JAXBContext.newInstance(PublicationTemplateImpl.class);
+      jaxbContext = JAXBContext.newInstance(PublicationTemplateImpl.class);
     } catch (JAXBException e) {
       SilverLogger.getLogger(this).error("can not initialize JAXB_CONTEXT", e);
     }
@@ -158,8 +158,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
           .createRecordSet(externalId, recordTemplate, fileName, thePubTemplate.isDataEncrypted());
     } catch (FormException e) {
       throw new PublicationTemplateException(
-          "PublicationTemplateManager.addDynamicPublicationTemplate", "form.EXP_INSERT_FAILED",
-          "externalId=" + externalId + ", templateFileName=" + templateFileName, e);
+          "Fail to add dynamic publication template " + templateFileName + " for " + externalId, e);
     }
   }
 
@@ -187,8 +186,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
           currentTemplateFileName = template.getTemplateName();
         } catch (Exception e) {
           throw new PublicationTemplateException(
-              "PublicationTemplateManager.getPublicationTemplate", "form.EXP_INSERT_FAILED",
-              "externalId=" + externalId + ", templateFileName=" + templateFileName, e);
+              "Fail to get publication template " + templateFileName + " for " + externalId, e);
         }
       }
       thePubTemplate = loadPublicationTemplate(currentTemplateFileName);
@@ -208,8 +206,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     try {
       getGenericRecordSetManager().removeRecordSet(externalId);
     } catch (FormException e) {
-      throw new PublicationTemplateException("PublicationTemplateManager.removePublicationTemplate",
-          "form.EXP_DELETE_FAILED", "externalId=" + externalId, e);
+      throw new PublicationTemplateException(
+          "Fail to remove publication template for " + externalId, e);
     }
   }
 
@@ -256,7 +254,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         return null;
       }
 
-      Unmarshaller unmarshaller = JAXB_CONTEXT.createUnmarshaller();
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
       publicationTemplate = (PublicationTemplateImpl) unmarshaller.unmarshal(xmlFile);
       publicationTemplate.setFileName(xmlFileName);
 
@@ -264,9 +262,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
       return publicationTemplate.basicClone();
     } catch (JAXBException e) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, e);
+      throw new PublicationTemplateException("Fail to load publication template " + xmlFileName, e);
     }
   }
 
@@ -298,34 +294,31 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     try {
       // Format this URL
       String xmlFilePath = makePath(xmlFileName);
-      Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
+      Marshaller marshaller = jaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       marshaller.marshal(template, new File(xmlFilePath));
 
     } catch (JAXBException e) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, e);
+      throw new PublicationTemplateException("Fail to save publication template " + xmlFileName, e);
     }
   }
 
   /**
    * Retrieve Publication Templates
-   * @param onlyVisibles only visible templates boolean
+   * @param onlyVisible only visible templates boolean
    * @return only visible PublicationTemplates if onlyVisible is true, all the publication templates
    * else if
    * @throws PublicationTemplateException
    */
-  public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
+  public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisible)
       throws PublicationTemplateException {
     List<PublicationTemplate> publicationTemplates = new ArrayList<>();
     Collection<File> templateNames;
     try {
       templateNames = FileFolderManager.getAllFile(templateDir);
     } catch (UtilException e1) {
-      throw new PublicationTemplateException("PublicationTemplateManager.getPublicationTemplates",
-          "form.EX_ERR_LOAD_PUBLICATION_TEMPLATES", e1);
+      throw new PublicationTemplateException("Fail to get publication templates", e1);
     }
     for (File templateFile : templateNames) {
       String fileName = templateFile.getName();
@@ -334,7 +327,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         if ("xml".equalsIgnoreCase(extension)) {
           PublicationTemplate template = loadPublicationTemplate(
               fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length()));
-          if (onlyVisibles) {
+          if (onlyVisible) {
             if (template.isVisible()) {
               publicationTemplates.add(template);
             }
@@ -417,24 +410,30 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         return true;
       }
     } else {
-      OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-      boolean allowed = true;
-      if (template.isRestrictedVisibilityToApplication()) {
-        if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
-          allowed = false;
-        }
-      }
-      if (allowed) {
-        if (!template.isRestrictedVisibilityToSpace()) {
-          return true;
-        } else {
-          if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
-            return true;
-          }
-        }
+      if (isAllowed(template, globalContext)) {
+        return true;
       }
     }
 
+    return false;
+  }
+
+  private boolean isAllowed(final PublicationTemplate template, final GlobalContext globalContext) {
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
+    boolean allowed = true;
+    if (template.isRestrictedVisibilityToApplication() &&
+        !isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
+      allowed = false;
+    }
+    if (allowed) {
+      if (!template.isRestrictedVisibilityToSpace()) {
+        return true;
+      } else {
+        if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
+          return true;
+        }
+      }
+    }
     return false;
   }
 

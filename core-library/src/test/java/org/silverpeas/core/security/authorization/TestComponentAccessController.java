@@ -260,7 +260,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForSpecificRole(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForSpecificRole(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -268,7 +268,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForSpecificRole(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForSpecificRole(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForSpecificRole(
@@ -319,7 +319,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForAdmin(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForAdmin(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -327,7 +327,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForAdmin(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForAdmin(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForAdmin(final AccessControlOperation operation) {
@@ -374,7 +374,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForWriter(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForWriter(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -382,7 +382,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForWriter(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForWriter(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForWriter(
@@ -430,7 +430,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForReader(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForReader(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -438,7 +438,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForReader(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForReader(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForReader(
@@ -489,7 +489,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForBlockedReader(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForBlockedReader(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -497,7 +497,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForBlockedReader(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForBlockedReader(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForBlockedReader(
@@ -548,7 +548,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForExpiredReader(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForExpiredReader(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -556,7 +556,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForExpiredReader(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForExpiredReader(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForExpiredReader(
@@ -607,7 +607,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndAnonymousUserButExpiredAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForAnonymous(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForAnonymous(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -615,7 +615,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndAnonymousUserButExpiredAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForAnonymous(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForAnonymous(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForAnonymous(
@@ -663,7 +663,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForDeletedReader(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForDeletedReader(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -671,7 +671,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForDeletedReader(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForDeletedReader(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForDeletedReader(
@@ -712,7 +712,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -720,7 +720,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(
@@ -761,7 +761,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesWithoutUserAndDownloadContext() {
-    assertGetUserRolesAndIsUserAuthorizedWithoutUser(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedWithoutUser(AccessControlOperation.DOWNLOAD);
   }
 
   /**
@@ -769,7 +769,7 @@ public class TestComponentAccessController {
    */
   @Test
   public void testGetUserRolesWithoutUserAndSharingContext() {
-    assertGetUserRolesAndIsUserAuthorizedWithoutUser(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedWithoutUser(AccessControlOperation.SHARING);
   }
 
   private void assertGetUserRolesAndIsUserAuthorizedWithoutUser(

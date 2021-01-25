@@ -81,11 +81,11 @@ public class TicketFactory {
     } else if (Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
       return NodeAccessControl.get().isUserAuthorized(creatorId,
           new NodePK(String.valueOf(sharedObjectId), componentId),
-              AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING));
     } else if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
       return PublicationAccessControl.get().isUserAuthorized(creatorId,
           new PublicationPK(String.valueOf(sharedObjectId), componentId),
-            AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+            AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING));
     }
     return false;
   }

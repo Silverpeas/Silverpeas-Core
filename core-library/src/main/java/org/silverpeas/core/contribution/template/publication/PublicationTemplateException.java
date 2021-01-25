@@ -23,50 +23,24 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
  * Thrown by the form components.
  */
 public class PublicationTemplateException extends SilverpeasException {
 
-  private static final long serialVersionUID = 6950156686943300437L;
+  private static final long serialVersionUID = -8776132888138083932L;
 
-  /**
-   * Returns the module name (as known by SilverTrace).
-   */
-  public String getModule() {
-    return "form";
+  public PublicationTemplateException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Set the caller and the error message
-   */
-  public PublicationTemplateException(String caller, String message) {
-    super(caller, SilverpeasException.ERROR, message);
+  public PublicationTemplateException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Set the caller, the error message and the nested exception.
-   */
-  public PublicationTemplateException(String caller, String message,
-      Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, nestedException);
-  }
-
-  /**
-   * Set the caller, infos and the error message
-   */
-  public PublicationTemplateException(String caller, String message,
-      String infos) {
-    super(caller, SilverpeasException.ERROR, message, infos);
-  }
-
-  /**
-   * Set the caller, the error message, infos and the nested exception.
-   */
-  public PublicationTemplateException(String caller, String message,
-      String infos, Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, infos, nestedException);
+  public PublicationTemplateException(final Throwable cause) {
+    super(cause);
   }
 }

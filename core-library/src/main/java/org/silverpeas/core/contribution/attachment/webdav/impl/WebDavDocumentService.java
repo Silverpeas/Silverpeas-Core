@@ -42,6 +42,7 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 @Service
 public class WebDavDocumentService implements WebdavService {
 
+  private static final String DOCUMENT_NOT_FOUND = "Document not found";
   @Inject
   private WebdavRepository webdavRepository;
 
@@ -60,7 +61,7 @@ public class WebDavDocumentService implements WebdavService {
     try(JcrSession session = openSystemSession()) {
       return webdavRepository.getContentEditionLanguage(session, document);
     } catch (RepositoryException ex) {
-      throw new AttachmentException("Document not found", ex);
+      throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
     }
   }
 
@@ -69,7 +70,7 @@ public class WebDavDocumentService implements WebdavService {
     try(JcrSession session = openSystemSession()) {
       return webdavRepository.getContentEditionSize(session, document);
     } catch (RepositoryException ex) {
-      throw new AttachmentException("Document not found", ex);
+      throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
     }
   }
 
@@ -78,7 +79,7 @@ public class WebDavDocumentService implements WebdavService {
     try(JcrSession session = openSystemSession()) {
       return webdavRepository.getDescriptor(session, document);
     } catch (RepositoryException ex) {
-      throw new AttachmentException("Document not found", ex);
+      throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
     }
   }
 
@@ -88,7 +89,7 @@ public class WebDavDocumentService implements WebdavService {
     try(JcrSession session = openSystemSession()) {
       webdavRepository.updateContentFrom(session, document, input);
     } catch (RepositoryException ex) {
-      throw new AttachmentException("Document not found", ex);
+      throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
     }
   }
 
@@ -98,7 +99,7 @@ public class WebDavDocumentService implements WebdavService {
     try(JcrSession session = openSystemSession()) {
       webdavRepository.loadContentInto(session, document, output);
     } catch (RepositoryException ex) {
-      throw new AttachmentException("Document not found", ex);
+      throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
     }
   }
 }

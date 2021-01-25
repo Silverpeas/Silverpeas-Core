@@ -29,6 +29,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -88,24 +89,28 @@ class ImageCache {
       String entryName = hash(anOriginalImage);
       File entry = new File(IMAGE_CACHE_TABLE, entryName);
       if (entry.exists()) {
-        try {
-          List<String> lines = FileUtils.readLines(entry, defaultCharset());
-          for (String resizedImagePath : lines.subList(1, lines.size())) {
-            File resizedImage = new File(resizedImagePath);
-            if (resizedImage.exists() && !resizedImage.delete()) {
-              SilverLogger.getLogger(ImageCache.class)
-                  .warn("Cannot remove {0} from the cache entry {1}",
-                      resizedImage.getAbsolutePath(), entry.getAbsolutePath());
-            }
-          }
-          if (!entry.delete()) {
-            SilverLogger.getLogger(ImageCache.class)
-                .warn("Cannot delete the cache entry {0}", entry.getAbsolutePath());
-          }
-        } catch (IOException ex) {
-          SilverLogger.getLogger(ImageCache.class).error(ex.getMessage(), ex.getMessage());
+        removeEachImageIn(entry);
+      }
+    }
+  }
+
+  private static void removeEachImageIn(final File entry) {
+    try {
+      List<String> lines = FileUtils.readLines(entry, defaultCharset());
+      for (String resizedImagePath : lines.subList(1, lines.size())) {
+        File resizedImage = new File(resizedImagePath);
+        if (resizedImage.exists() && !Files.deleteIfExists(resizedImage.toPath())) {
+          SilverLogger.getLogger(ImageCache.class)
+              .warn("Cannot remove {0} from the cache entry {1}",
+                  resizedImage.getAbsolutePath(), entry.getAbsolutePath());
         }
       }
+      if (!Files.deleteIfExists(entry.toPath())) {
+        SilverLogger.getLogger(ImageCache.class)
+            .warn("Cannot delete the cache entry {0}", entry.getAbsolutePath());
+      }
+    } catch (IOException ex) {
+      SilverLogger.getLogger(ImageCache.class).error(ex.getMessage(), ex.getMessage());
     }
   }
 

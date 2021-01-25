@@ -809,7 +809,7 @@ public class SimpleDocument implements Serializable, Securable {
 
     // Access is verified for sharing context
     return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), getVersionMaster(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING));
   }
 
   /**
@@ -830,7 +830,7 @@ public class SimpleDocument implements Serializable, Securable {
   @Override
   public boolean canBeModifiedBy(final User user) {
     return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
   }
 
   /**
@@ -855,7 +855,7 @@ public class SimpleDocument implements Serializable, Securable {
 
     // Otherwise access is verified for download context
     return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), getVersionMaster(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.DOWNLOAD));
   }
 
   /**

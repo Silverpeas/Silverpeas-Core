@@ -44,7 +44,6 @@ import org.silverpeas.core.contribution.content.form.record.Label;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.content.form.record.ParameterValue;
 import org.silverpeas.core.contribution.content.form.record.Repeatable;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -78,6 +77,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationTemplateImpl implements PublicationTemplate {
 
+  private static final String HTML_EXTENSION = ".html";
   @XmlElement(required = true)
   private String name = "";
   @XmlElement
@@ -140,17 +140,16 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String viewLayerFileName = "";
   private String updateLayerFileName = "";
 
-  private static JAXBContext JAXB_CONTEXT = null;
+  private static JAXBContext jaxbContext = null;
   static {
     try {
-      JAXB_CONTEXT =
+      jaxbContext =
           JAXBContext.newInstance(GenericRecordTemplate.class,
               GenericFieldTemplate.class,
               Label.class, Parameter.class,
               ParameterValue.class,
               Repeatable.class);
     } catch (JAXBException e) {
-      System.out.println("JAXB : "+e.getMessage());
       SilverLogger.getLogger(PublicationTemplateImpl.class).error(e.getMessage(), e);
     }
   }
@@ -201,8 +200,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       }
       return rs;
     } catch (FormException e) {
-      throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
-          "form.EX_CANT_GET_RECORDSET", null, e);
+      throw new PublicationTemplateException(e);
     }
   }
 
@@ -223,7 +221,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
    */
   @Override
   public XmlForm getUpdateFormAsXMLOne() throws PublicationTemplateException {
-    return (XmlForm) getForm(updateFileName.replaceAll(".html", ".xml"), "xml");
+    return (XmlForm) getForm(updateFileName.replaceAll(HTML_EXTENSION, ".xml"), "xml");
   }
 
   /**
@@ -258,14 +256,14 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * Returns the RecordTemplate of the publication view item.
    */
-  public RecordTemplate getViewTemplate() throws PublicationTemplateException {
+  public RecordTemplate getViewTemplate() {
     return viewTemplate;
   }
 
   /**
    * Returns the RecordTemplate of the publication update item.
    */
-  public RecordTemplate getUpdateTemplate() throws PublicationTemplateException {
+  public RecordTemplate getUpdateTemplate() {
     return updateTemplate;
   }
 
@@ -282,8 +280,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         searchForm = new XmlSearchForm(templateForm);
         searchForm.setFormName(FilenameUtils.getBaseName(this.fileName));
       } catch (FormException e) {
-        throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
-            "form.EX_CANT_GET_FORM", null, e);
+        throw new PublicationTemplateException(e);
       }
     }
     return searchForm;
@@ -310,13 +307,12 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       try {
         form = new XmlForm(templateForm, viewForm);
       } catch (FormException e) {
-        throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
-            "form.EX_CANT_GET_FORM", null, e);
+        throw new PublicationTemplateException(e);
       }
     } else {
       PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
       String htmlFileName = templateManager.makePath(currentFileName);
-      currentFileName = currentFileName.replaceAll(".html", ".xml");
+      currentFileName = currentFileName.replaceAll(HTML_EXTENSION, ".xml");
       templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
       try {
@@ -324,8 +320,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         viewFormHtml.setFileName(htmlFileName);
         form = viewFormHtml;
       } catch (FormException e) {
-        throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
-            "form.EX_CANT_GET_FORM", null, e);
+        throw new PublicationTemplateException(e);
       }
     }
     form.setFormName(FilenameUtils.getBaseName(this.fileName));
@@ -342,7 +337,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private void mergeTemplate(RecordTemplate formTemplate) throws PublicationTemplateException {
     RecordTemplate dataTemplate = getRecordTemplate();
     if (formTemplate != null && dataTemplate != null) {
-      String fieldNames[] = formTemplate.getFieldNames();
+      String[] fieldNames = formTemplate.getFieldNames();
       GenericFieldTemplate formFieldTemplate;
       GenericFieldTemplate dataFieldTemplate;
       for (String fieldName : fieldNames) {
@@ -353,8 +348,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           formFieldTemplate.setParametersObj(dataFieldTemplate.getParametersObj());
           formFieldTemplate.setLabelsObj(dataFieldTemplate.getLabelsObj());
         } catch (FormException e) {
-          SilverTrace.error("form", "PublicationTemplateImpl.mergeTemplates",
-              "form.EXP_UNKNOWN_FIELD", null, e);
+          SilverLogger.getLogger(this).error(e);
         }
       }
     }
@@ -460,14 +454,13 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     String filePath = templateManager.makePath(xmlFileName);
 
     try {
-      Unmarshaller unmarshaller = JAXB_CONTEXT.createUnmarshaller();
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
       GenericRecordTemplate recordTemplate = (GenericRecordTemplate) unmarshaller.unmarshal(new File(filePath));
       recordTemplate.setTemplateName(fileName.substring(0, fileName.lastIndexOf('.')));
       return recordTemplate;
     } catch (JAXBException e) {
-      System.out.println("JAXB : "+e.getMessage());
-      throw new PublicationTemplateException("PublicationTemplateImpl.loadRecordTemplate",
-          "form.EX_ERR_LOAD_XML_MAPPING", "Publication Template FileName : " + xmlFileName, e);
+      throw new PublicationTemplateException(
+          "Fail to unmarshal publication template " + xmlFileName, e);
     }
 
 
@@ -515,15 +508,14 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
       String xmlFilePath = templateManager.makePath(subDir + xmlFileName);
 
-      Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
+      Marshaller marshaller = jaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       marshaller.marshal(recordTemplate, new File(xmlFilePath));
 
     } catch (JAXBException e) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, e);
+      throw new PublicationTemplateException(
+          "Fail to marshall publication template " + xmlFileName, e);
     }
   }
 
@@ -706,8 +698,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("form", "PublicationTemplateImpl.getFieldsForFacets",
-          "form.CANT_GET_FIELDS_FOR_FACETS", e);
+      SilverLogger.getLogger(this).warn(e);
     }
     return fieldNames;
   }
@@ -843,11 +834,11 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   @Override
   public boolean isViewLayerExist() {
-    return getViewFileName().endsWith(".html");
+    return getViewFileName().endsWith(HTML_EXTENSION);
   }
 
   @Override
   public boolean isUpdateLayerExist() {
-    return getUpdateFileName().endsWith(".html");
+    return getUpdateFileName().endsWith(HTML_EXTENSION);
   }
 }

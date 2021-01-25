@@ -501,8 +501,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
       FileUtils.moveFileToDirectory(new File(filePath), new File(dir), false);
     } catch (IOException ioe) {
-      throw new PublicationTemplateException("PublicationTemplateImpl.saveLayer()",
-          "form.EX_ERR_CANT_SAVE_LAYER", "Publication Template FileName : " + filePath, ioe);
+      throw new PublicationTemplateException("Cannot save layer " + filePath, ioe);
     }
   }
 
@@ -510,9 +509,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     try {
       FileUtils.forceDelete(file);
     } catch (IOException ioe) {
-      throw new PublicationTemplateException("PublicationTemplateImpl.removeLayer()",
-          "form.EX_ERR_CANT_REMOVE_LAYER",
-          "Publication Template FileName : " + file.getAbsolutePath(), ioe);
+      throw new PublicationTemplateException("Cannot remove layer " + file.getAbsolutePath(), ioe);
     }
   }
 

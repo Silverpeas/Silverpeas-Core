@@ -101,7 +101,7 @@ public class PublicationResource extends AbstractPublicationResource {
 
     //Checking publication is modified by user
     if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
-        .init().onOperationsOf(AccessControlOperation.modification))) {
+        .init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 

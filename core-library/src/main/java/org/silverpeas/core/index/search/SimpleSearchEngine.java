@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -189,7 +189,7 @@ public class SimpleSearchEngine implements SearchEngine {
         .collect(Collectors.toList());
     if (CollectionUtil.isNotEmpty(processedItems)) {
       componentAuthorization
-          .filter(processedItems, itemAsContributionIdentifier, userId, search)
+          .filter(processedItems, itemAsContributionIdentifier, userId, SEARCH)
           .forEach(FilterMatchingIndexEntryItem::keep);
     }
     return otherItems;
