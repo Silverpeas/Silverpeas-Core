@@ -78,7 +78,7 @@ public class CommonAPI4Test implements TestRule {
   public <T> T injectIntoMockedBeanContainer(T bean, Annotation... qualifiers) {
     final Class<T> clazz;
     if (MockUtil.isMock(bean) || MockUtil.isSpy(bean)) {
-      clazz = MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
+      clazz = (Class<T>) MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
     } else {
       clazz = (Class<T>) bean.getClass();
     }

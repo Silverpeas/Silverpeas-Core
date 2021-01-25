@@ -23,17 +23,19 @@
  */
 package org.silverpeas.core.web.export;
 
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -51,12 +53,11 @@ public class ExportServlet extends HttpServlet {
     Optional<ExportCSVBuilder> csvBuilder = ExportCSVBuilder.getFrom(HttpRequest.decorate(request));
     if (!csvBuilder.isPresent()) {
       // Get the session
-      final HttpSession session = request.getSession(true);
       final String type = request.getParameter("type");
       final String name = request.getParameter("name");
 
       if (TYPE_ARRAYPANE.equals(type)) {
-        csvBuilder = exportArrayPane(name, session);
+        csvBuilder = exportArrayPane(name);
       }
     }
     if (csvBuilder.isPresent()) {
@@ -65,12 +66,13 @@ public class ExportServlet extends HttpServlet {
   }
 
   @SuppressWarnings("unchecked")
-  private Optional<ExportCSVBuilder> exportArrayPane(final String name, final HttpSession session)
-      throws IOException {
+  private Optional<ExportCSVBuilder> exportArrayPane(final String name) throws IOException {
     ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     if (StringUtil.isDefined(name)) {
-      // Retrieve ArrayPane data in session
-      final List<ArrayColumn> columns = (List<ArrayColumn>) session.getAttribute(name + "_columns");
+      // Retrieve ArrayPane data in session cache
+      SimpleCache cache = CacheServiceProvider.getSessionCacheService().getCache();
+      final List<ArrayColumn> columns =
+          (List<ArrayColumn>) cache.get(name + ArrayPane.CACHE_COLUMNS_KEY_SUFFIX);
 
       CSVRow header = new CSVRow();
       for (ArrayColumn curCol : columns) {
@@ -78,7 +80,8 @@ public class ExportServlet extends HttpServlet {
       }
       csvBuilder.setHeader(header);
 
-      final List<ArrayLine> lines = (List<ArrayLine>) session.getAttribute(name + "_lines");
+      final List<ArrayLine> lines =
+          (List<ArrayLine>) cache.get(name + ArrayPane.CACHE_LINES_KEY_SUFFIX);
       for (ArrayLine curLine : lines) {
         CSVRow row = new CSVRow();
         for (ArrayColumn curCol : columns) {

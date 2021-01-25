@@ -67,6 +67,8 @@ public interface ArrayPane extends SimpleGraphicElement {
   String ACTION_PARAMETER_NAME = "ArrayPaneAction";
   String TARGET_PARAMETER_NAME = "ArrayPaneTarget";
   String COLUMN_PARAMETER_NAME = "ArrayPaneColumn";
+  String CACHE_COLUMNS_KEY_SUFFIX = "_columns";
+  String CACHE_LINES_KEY_SUFFIX = "_lines";
 
   /**
    * Gets order by from given request and possible orderBies. The name of the array can be

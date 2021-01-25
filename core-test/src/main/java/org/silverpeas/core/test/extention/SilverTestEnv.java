@@ -385,7 +385,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   private <T> T registerInBeanContainer(T bean, Annotation... qualifiers) {
     final Class<T> clazz;
     if (MockUtil.isMock(bean) || MockUtil.isSpy(bean)) {
-      clazz = MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
+      clazz = (Class<T>) MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
     } else {
       clazz = (Class<T>) bean.getClass();
     }

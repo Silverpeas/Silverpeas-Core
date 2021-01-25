@@ -24,6 +24,8 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
@@ -170,6 +172,11 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
             "\"><span class=\"export csv\">");
         result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
         result.append("</div>");
+        // Be careful we only put a unique name in the session, so we cannot export two ArrayPanes
+        // which are displayed in the same page (use this.name instead of "arraypane")
+        SimpleCache cache = CacheServiceProvider.getSessionCacheService().getCache();
+        cache.put("Silverpeas_arraypane" + CACHE_COLUMNS_KEY_SUFFIX, getColumns());
+        cache.put("Silverpeas_arraypane" + CACHE_LINES_KEY_SUFFIX, getLines());
         result.append("</div>");
       }
       result.append("</td>\n");
