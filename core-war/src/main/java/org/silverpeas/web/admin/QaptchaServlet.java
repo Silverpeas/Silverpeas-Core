@@ -25,8 +25,8 @@ package org.silverpeas.web.admin;
 
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,35 +39,39 @@ public class QaptchaServlet extends HttpServlet {
    *
    */
   private static final long serialVersionUID = -3745690351420954550L;
+  private static final String QAPTCHA_KEY = "qaptcha_key";
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     processRequest(req, resp);
   }
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     processRequest(req, resp);
   }
 
-  private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  private void processRequest(HttpServletRequest req, HttpServletResponse resp) {
     HttpSession session = req.getSession(true);
 
     String action = req.getParameter("action");
-    String key = req.getParameter("qaptcha_key");
+    String key = req.getParameter(QAPTCHA_KEY);
     boolean error;
     if ("qaptcha".equals(action) && StringUtil.isDefined(key)) {
-      session.setAttribute("qaptcha_key", key);
+      session.setAttribute(QAPTCHA_KEY, key);
       error = false;
     }
     else {
-      session.removeAttribute("qaptcha_key");
+      session.removeAttribute(QAPTCHA_KEY);
       error = true;
     }
     String result = JSONCodec.encodeObject(o -> o.put("error", error));
-    resp.getWriter().append(result);
+    try {
+      resp.getWriter().append(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
 }
