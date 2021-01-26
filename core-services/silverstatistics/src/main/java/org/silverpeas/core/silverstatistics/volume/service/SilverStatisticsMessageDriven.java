@@ -24,7 +24,7 @@
 package org.silverpeas.core.silverstatistics.volume.service;
 
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -70,13 +70,11 @@ public class SilverStatisticsMessageDriven implements MessageListener {
 
           getSilverStatistics().putStats(StatType.valueOf(typeOfStats), stat);
         } else {
-          SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
-              "Wrong message", msg);
+          SilverLogger.getLogger(this).error("Wrong message: {0}", msg);
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
-          "Probleme jms ", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 

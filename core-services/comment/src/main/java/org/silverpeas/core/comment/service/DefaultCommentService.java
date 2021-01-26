@@ -40,10 +40,10 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -372,8 +372,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
       indexEntry.addTextContent(commentMessage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {
-      SilverTrace.warn("comment", getClass().getSimpleName() + ".createIndex()",
-          "root.EX_INDEX_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -384,9 +383,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
           + comment.getCommentPK().getId(), comment.getForeignKey().getId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     } catch (Exception e) {
-      SilverTrace.warn("comment",
-          getClass().getSimpleName() + ".deleteIndex(CommentPK pk)",
-          "root.EX_INDEX_DELETE_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 

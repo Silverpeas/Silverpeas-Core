@@ -28,13 +28,13 @@ import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -63,8 +63,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         try {
           parameters = request.getFileItems();
         } catch (UtilException e) {
-          SilverTrace.error("thumbnail", "ThumbnailRequestRouter.getAction",
-              "root.MSG_GEN_PARAM_VALUE", e);
+          SilverLogger.getLogger(this).error(e);
         }
         action = FileUploadUtil.getParameter(parameters, "Action");
       }
@@ -161,9 +160,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     try {
       result = ThumbnailController.getCompleteThumbnail(thumbToUpdate);
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("thumbnail",
-          "ThumbnailRequestRouter.updateThumbnail",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return result;
   }
@@ -188,9 +185,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       ThumbnailController.updateThumbnail(thumbToUpdate);
       return null;
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("thumbnail",
-          "ThumbnailRequestRouter.updateThumbnail",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return "error";
 
@@ -221,9 +216,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
           .parseInt(thumbnailHeight));
       return null;
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("thumbnail",
-          "ThumbnailRequestRouter.updateThumbnail",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return "error";
 
@@ -262,8 +255,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       }
       return "error";
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("thumbnail", "ThumbnailRequestRouter.addThumbnail",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
       // need remove the file on disk
       try {
         ThumbnailController.deleteThumbnail(thumb);

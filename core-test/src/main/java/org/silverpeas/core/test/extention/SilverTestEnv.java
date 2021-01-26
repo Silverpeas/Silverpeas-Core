@@ -36,11 +36,9 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.test.util.lang.TestSystemWrapper;
-import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
@@ -71,8 +69,7 @@ import static org.mockito.Mockito.*;
  * Prepares the environment specific to Silverpeas to run unit tests.
  * <p>Firstly, it mocks the container of beans and set ups it for the tests with some of the
  * common beans in Silverpeas: {@link UserProvider}, {@link GroupProvider}, {@link SystemWrapper},
- * {@link ManagedThreadPool}, {@link org.silverpeas.core.silvertrace.SilverTrace}, and the logging
- * system.
+ * {@link ManagedThreadPool}, and the logging system.
  * </p>
  * <p>
  * Secondly it scans for fields and parameters annotated with {@link TestManagedBean} and
@@ -350,10 +347,6 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   }
 
   private void mockLoggingSystem() {
-    when(
-        TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class)).thenReturn(
-        new TestSilverpeasTrace());
-
     StubbedLoggerConfigurationManager configurationManager =
         new StubbedLoggerConfigurationManager();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(LoggerConfigurationManager.class))

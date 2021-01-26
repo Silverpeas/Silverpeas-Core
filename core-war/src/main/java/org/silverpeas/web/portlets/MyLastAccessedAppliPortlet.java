@@ -23,12 +23,12 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
-import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasDAOAccesVolume;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.portlets.FormNames;
+import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasDAOAccesVolume;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -57,7 +57,7 @@ public class MyLastAccessedAppliPortlet extends GenericPortlet implements FormNa
       listApplis = SilverStatisticsPeasDAOAccesVolume.getLastAccessedComponentsUser(
           UserDetail.getCurrentRequester().getId(), nbApplis);
     } catch (SQLException e) {
-      SilverTrace.error("portlet", "MyLastAccessedAppliPortlet", "portlet.ERROR", e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     request.setAttribute("Applications", listApplis);

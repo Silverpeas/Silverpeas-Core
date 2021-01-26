@@ -24,10 +24,10 @@
 package org.silverpeas.core.index.indexing;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 
@@ -69,9 +69,7 @@ public class IndexEngineInitialize implements Initialization {
     } else {
       if (theFile.isFile() && isLockFile(theFile.getName())) {
         if (!theFile.delete()) {
-          SilverTrace.error("indexing",
-              "IndexEngineInitialize.removeLockFiles",
-              "util.EX_DELETE_FILE_ERROR", theFile.getPath());
+          SilverLogger.getLogger(this).error("Cannot delete file " + theFile.getPath());
         }
       }
     }

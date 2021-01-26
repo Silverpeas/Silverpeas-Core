@@ -35,29 +35,6 @@ package org.silverpeas.core.web.util.viewgenerator.html.monthcalendar;
 import java.util.Calendar;
 import java.util.Date;
 
-/*
- * CVS Informations
- *
- * $Id: Day.java,v 1.2 2006/03/21 12:09:52 neysseri Exp $
- *
- * $Log: Day.java,v $
- * Revision 1.2  2006/03/21 12:09:52  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.5  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
-/**
- * Class declaration
- * @author
- */
 class Day {
 
   private Date date;

@@ -41,7 +41,6 @@ import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -184,8 +183,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
                 }
               }
             } catch (Exception e) {
-              SilverTrace.error("form", "AbstractForm.update",
-                  "form.EXP_UNKNOWN_FIELD", null, e);
+              SilverLogger.getLogger(this).error(e);
             }
           }
         }
@@ -283,8 +281,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
             }
           }
         } catch (FormException fe) {
-          SilverTrace
-              .error("form", "GenericRecordSet.getWYSIWYGFieldNames", "form.EXP_UNKNOWN_FIELD", fe);
+          SilverLogger.getLogger(this).error(fe);
         }
       }
     }
@@ -300,7 +297,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     try {
       wysiwygDisplayer.move(fromPK, toPK);
     } catch (IOException e) {
-      SilverTrace.error("form", "GenericRecordSet.move", "form.CANT_MOVE_WYSIWYG_FIELD_CONTENT", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     // move files, images and video of form
@@ -331,7 +328,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     try {
       wysiwygDisplayer.cloneContents(fromPK, toPK, oldAndNewFileIds);
     } catch (Exception e) {
-      SilverTrace.error("form", "GenericRecordSet.copy", "form.EX_CLONE_FAILURE", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     // copy files, images and videos
@@ -381,7 +378,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     try {
       wysiwygDisplayer.cloneContents(fromPK, toPK, attachmentIds);
     } catch (Exception e) {
-      SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     // clone images and videos
@@ -418,7 +415,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     try {
       wysiwygDisplayer.mergeContents(fromComponentId, fromExternalId, toComponentId, toExternalId);
     } catch (Exception e) {
-      SilverTrace.error("form", "AbstractForm.clone", "form.EX_MERGE_FAILURE", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     // merge images and videos

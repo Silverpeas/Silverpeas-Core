@@ -23,42 +23,27 @@
  */
 package org.silverpeas.core.importexport.report;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.a;
-import org.apache.ecs.xhtml.b;
-import org.apache.ecs.xhtml.body;
-import org.apache.ecs.xhtml.br;
-import org.apache.ecs.xhtml.div;
-import org.apache.ecs.xhtml.h1;
-import org.apache.ecs.xhtml.head;
-import org.apache.ecs.xhtml.html;
-import org.apache.ecs.xhtml.i;
-import org.apache.ecs.xhtml.li;
-import org.apache.ecs.xhtml.link;
-import org.apache.ecs.xhtml.meta;
-import org.apache.ecs.xhtml.p;
-import org.apache.ecs.xhtml.ul;
-
+import org.apache.ecs.xhtml.*;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.importexport.model.PublicationType;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.importexport.attachment.AttachmentDetail;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
+import org.silverpeas.core.importexport.model.PublicationType;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.importexport.attachment.AttachmentDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.List;
 
 /**
  * Classe générant le code html d'une publication exportée
@@ -178,8 +163,7 @@ public class HtmlExportPublicationGenerator {
         return htmlResult;
       }
     } catch (Exception e) {
-      SilverTrace.error("form", "HtmlExportPublicationGenerator.toHtmlXMLModel",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return null;
   }

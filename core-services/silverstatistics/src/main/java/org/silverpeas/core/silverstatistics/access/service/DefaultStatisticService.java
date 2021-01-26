@@ -41,7 +41,6 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
 import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -243,8 +242,6 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
 
   @Override
   public void moveStat(ResourceReference toResourceReference, int actionType, String objectType) {
-    SilverTrace
-        .info("statistic", "DefaultStatisticService.deleteHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       HistoryObjectDAO.move(con, toResourceReference, actionType, objectType);

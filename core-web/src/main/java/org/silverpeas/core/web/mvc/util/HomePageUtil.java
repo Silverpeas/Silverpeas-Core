@@ -26,9 +26,9 @@
 
 package org.silverpeas.core.web.mvc.util;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.exception.FromModule;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -124,7 +124,7 @@ public class HomePageUtil {
   }
 
   /**
-   * Trace the exception in SilverTrace
+   * Trace the exception
    * @param exception
    */
   public static void traceException(Throwable exception) {
@@ -155,8 +155,7 @@ public class HomePageUtil {
           }
         }
         if (bFound == false) {
-          SilverTrace.error("util", "HomePageUtil.traceException()",
-              "util.MSG_EXCEPTION_NOT_EMBEDED", "", exception);
+          SilverLogger.getLogger(HomePageUtil.class).error(exception);
         }
       }
     }

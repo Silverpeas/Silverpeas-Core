@@ -26,7 +26,6 @@ package org.silverpeas.core.silverstatistics.volume.service;
 import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -60,13 +59,7 @@ public final class SilverStatisticsSender {
     JMSOperation.realize(context -> {
       TextMessage textMsg = context.createTextMessage();
       textMsg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);
-      try {
-        context.createProducer().send(queue, textMsg);
-      } catch (Exception exc) {
-        SilverTrace.error("silverstatistics", "SilverStatisticsSender.send",
-            "SilverStatisticsSender.EX_CANT_SEND_TO_JSM_QUEUE", exc);
-        throw exc;
-      }
+      context.createProducer().send(queue, textMsg);
     });
   }
 }

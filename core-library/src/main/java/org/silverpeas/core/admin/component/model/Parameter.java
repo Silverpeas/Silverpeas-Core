@@ -27,9 +27,9 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -435,8 +435,7 @@ public class Parameter implements Cloneable {
         options.add(option);
       }
     } catch (PublicationTemplateException ex) {
-      SilverTrace.error("admin", "Parameters.loadXmlTemplates",
-          "root.EX_IGNORED", "ParameterName=" + name, ex);
+      SilverLogger.getLogger(this).error("Error in loading XML templates. Parameter: " + name, ex);
     }
   }
 

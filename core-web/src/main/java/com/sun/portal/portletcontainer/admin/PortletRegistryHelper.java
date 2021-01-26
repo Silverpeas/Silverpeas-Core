@@ -23,13 +23,13 @@
  */
 package com.sun.portal.portletcontainer.admin;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryTags;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -133,8 +133,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
         try {
           output.close();
         } catch (IOException ex) {
-          SilverTrace.warn("portlet", PortletRegistryHelper.class.getSimpleName() + ".writeFile()",
-              "root.EX_NO_MESSAGE", ex);
+          SilverLogger.getLogger(PortletRegistryHelper.class).error(ex);
         }
       }
     }

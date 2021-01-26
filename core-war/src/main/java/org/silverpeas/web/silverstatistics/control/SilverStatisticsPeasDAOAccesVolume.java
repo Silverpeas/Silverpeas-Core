@@ -23,18 +23,16 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -83,8 +81,13 @@ public class SilverStatisticsPeasDAOAccesVolume {
           "WHERE userId = ? ) " + "UNION " + "(SELECT componentId, countAccess, datestat " +
           "FROM sb_stat_accesscumul " + "WHERE userId = ? ) " +
           "ORDER BY dateStat DESC, countAccess DESC";
+  private static final String COMPONENT_ID = "componentId";
 
-  public static Collection<String> getVolumeYears() throws SQLException, UtilException {
+  private SilverStatisticsPeasDAOAccesVolume() {
+
+  }
+
+  public static Collection<String> getVolumeYears() throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -92,7 +95,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_VOLUME_YEARS);
       rs = stmt.executeQuery();
-      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      LinkedHashSet<String> years = new LinkedHashSet<>();
       while (rs.next()) {
         String currentYear = extractYearFromDate(rs.getString("dateStat"));
         if (!years.contains(currentYear)) {
@@ -106,7 +109,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     }
   }
 
-  public static Collection<String> getAccessYears() throws SQLException, UtilException {
+  public static Collection<String> getAccessYears() throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -114,7 +117,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_YEARS);
       rs = stmt.executeQuery();
-      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      LinkedHashSet<String> years = new LinkedHashSet<>();
       while (rs.next()) {
         String currentYear = extractYearFromDate(rs.getString("dateStat"));
         if (!years.contains(currentYear)) {
@@ -142,39 +145,19 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   public static Map<String, String[]> getStatsUserVentil(String dateStat, String filterIdGroup,
       String filterIdUser) throws SQLException {
-    Map<String, String[]> resultat = new HashMap<String, String[]>();
-    // key=componentId,value = new String[3] {tout, groupe, user}
-
+    Map<String, String[]> resultat = new HashMap<>();
     Map<String, String> hashTout = selectAccessForAllComponents(dateStat);
     filterVisibleComponents(resultat, hashTout);
 
     // Query Groupe
     if (StringUtil.isDefined(filterIdGroup)) {
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        componentStatistic.getValue()[1] = "0";
-      }
-
-      Map<String, String> e = selectAccessForGroup(dateStat, filterIdGroup);
-
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        if (componentStatistic.getValue() != null) {
-          componentStatistic.getValue()[1] = e.get(componentStatistic.getKey());
-        }
-      }
+      filterById(resultat, 1, selectAccessForGroup(dateStat, filterIdGroup));
     }
 
     // Query User
     if (StringUtil.isDefined(filterIdUser)) {
 
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        componentStatistic.getValue()[2] = "0";
-      }
-      Map<String, String> hashUser = selectAccessForUser(dateStat, filterIdUser);
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        if (componentStatistic.getValue() != null) {
-          componentStatistic.getValue()[2] = hashUser.get(componentStatistic.getKey());
-        }
-      }
+      filterById(resultat, 2, selectAccessForUser(dateStat, filterIdUser));
     }
 
     return resultat;
@@ -191,9 +174,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   public static List<String[]> getStatsUserEvolution(String entite, String entiteId,
       String filterIdGroup, String filterIdUser) throws SQLException, ParseException {
-    SilverTrace
-        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOAccessVolume.getStatsUserEvolution",
-            "root.MSG_GEN_ENTER_METHOD");
     if ("SPACE".equals(entite)) {
       if (StringUtil.isDefined(filterIdUser)) {
         return selectUserAccessEvolutionForSpace(entiteId, filterIdUser);
@@ -250,7 +230,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
   public static List<String[]> selectGroupAccessEvolutionForSpace(String spaceId, String groupId)
       throws SQLException, ParseException {
     UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
-    Map<String, String[]> allAccesses = new HashMap<String, String[]>();
+    Map<String, String[]> allAccesses = new HashMap<>();
     for (UserDetail user : users) {
       List<String[]> userStats = selectUserAccessEvolutionForSpace(spaceId, user.getId());
       for (String[] stats : userStats) {
@@ -263,9 +243,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
         }
       }
     }
-    List<String> dates = new ArrayList<String>(allAccesses.keySet());
+    List<String> dates = new ArrayList<>(allAccesses.keySet());
     Collections.sort(dates);
-    List<String[]> result = new ArrayList<String[]>(dates.size());
+    List<String[]> result = new ArrayList<>(dates.size());
     for (String date : dates) {
       result.add(allAccesses.get(date));
     }
@@ -310,7 +290,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
   public static List<String[]> selectGroupAccessEvolutionForComponent(String componentId,
       String groupId) throws SQLException, ParseException {
     UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
-    Map<String, String[]> allAccesses = new HashMap<String, String[]>();
+    Map<String, String[]> allAccesses = new HashMap<>();
     for (UserDetail user : users) {
       List<String[]> userStats = selectUserAccessEvolutionForComponent(componentId, user.getId());
       for (String[] stats : userStats) {
@@ -323,9 +303,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
         }
       }
     }
-    List<String> dates = new ArrayList<String>(allAccesses.keySet());
+    List<String> dates = new ArrayList<>(allAccesses.keySet());
     Collections.sort(dates);
-    List<String[]> result = new ArrayList<String[]>(dates.size());
+    List<String[]> result = new ArrayList<>(dates.size());
     for (String date : dates) {
       result.add(allAccesses.get(date));
     }
@@ -342,7 +322,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   private static List<String[]> getStatsUserFromResultSet(ResultSet rs)
       throws SQLException, ParseException {
-    List<String[]> myList = new ArrayList<String[]>();
+    List<String[]> myList = new ArrayList<>();
     Calendar calDateRef = null;
 
     while (rs.next()) {
@@ -350,14 +330,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
       long count = rs.getLong(2);
 
       if (calDateRef == null) {// initialisation
-        calDateRef = GregorianCalendar.getInstance();
+        calDateRef = Calendar.getInstance();
         calDateRef.setTime(DateUtil.parseISO8601Date(date));
         calDateRef.set(Calendar.HOUR, 0);
         calDateRef.set(Calendar.MINUTE, 0);
         calDateRef.set(Calendar.SECOND, 0);
         calDateRef.set(Calendar.MILLISECOND, 0);
       }
-      Calendar currentDate = GregorianCalendar.getInstance();
+      Calendar currentDate = Calendar.getInstance();
       currentDate.setTime(DateUtil.parseISO8601Date(date));
       currentDate.set(Calendar.HOUR, 0);
       currentDate.set(Calendar.MINUTE, 0);
@@ -393,40 +373,35 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   public static Map<String, String[]> getStatsPublicationsVentil(String dateStat,
       String filterIdGroup, String filterIdUser) throws SQLException {
-    // key=componentId, value=new String[3] {tout, groupe, user}
     Map<String, String[]> resultat = new HashMap<>();
     Map<String, String> hashTout = selectVolumeForAllComponents(dateStat);
     filterVisibleComponents(resultat, hashTout);
 
     // Query Group
     if (StringUtil.isDefined(filterIdGroup)) {
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        componentStatistic.getValue()[1] = "0";
-      }
-
-      Map<String, String> e = selectVolumeForGroup(dateStat, filterIdGroup);
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        if (componentStatistic.getValue() != null) {
-          componentStatistic.getValue()[1] = e.get(componentStatistic.getKey());
-        }
-      }
+      filterById(resultat, 1, selectVolumeForGroup(dateStat, filterIdGroup));
     }
 
     // Query User
     if (StringUtil.isDefined(filterIdUser)) {
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        componentStatistic.getValue()[2] = "0";
-      }
-
-      Map<String, String> hashUser = selectVolumeForUser(dateStat, filterIdUser);
-      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
-        if (componentStatistic.getValue() != null) {
-          componentStatistic.getValue()[2] = hashUser.get(componentStatistic.getKey());
-        }
-      }
+      filterById(resultat, 2, selectVolumeForUser(dateStat, filterIdUser));
     }
 
     return resultat;
+  }
+
+  public static void filterById(final Map<String, String[]> resultat, final int valueIdx,
+      final Map<String, String> volume) {
+    for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+      componentStatistic.getValue()[valueIdx] = "0";
+    }
+
+    Map<String, String> e = volume;
+    for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+      if (componentStatistic.getValue() != null) {
+        componentStatistic.getValue()[valueIdx] = e.get(componentStatistic.getKey());
+      }
+    }
   }
 
   static Map<String, String> selectVolumeForUser(String dateStat, String filterIdUser)
@@ -440,9 +415,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt.setString(1, dateStat);
       stmt.setInt(2, Integer.parseInt(filterIdUser));
       rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<String, String>();
+      Map<String, String> result = new HashMap<>();
       while (rs.next()) {
-        addNewStatistic(result, rs.getString("componentId"), rs.getLong("volume"));
+        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("volume"));
       }
       return result;
     } finally {
@@ -460,9 +435,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_ALL_COMPONENTS);
       stmt.setString(1, dateStat);
       rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<String, String>();
+      Map<String, String> result = new HashMap<>();
       while (rs.next()) {
-        addNewStatistic(result, rs.getString("componentId"), rs.getLong("accesses"));
+        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("accesses"));
       }
       return result;
     } finally {
@@ -482,9 +457,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt.setString(1, dateStat);
       stmt.setInt(2, Integer.parseInt(filterIdUser));
       rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<String, String>();
+      Map<String, String> result = new HashMap<>();
       while (rs.next()) {
-        addNewStatistic(result, rs.getString("componentId"), rs.getLong("accesses"));
+        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("accesses"));
       }
       return result;
     } finally {
@@ -496,7 +471,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
   static Map<String, String> selectAccessForGroup(String dateStat, String groupId)
       throws SQLException {
     UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
-    Map<String, String> allAccesses = new HashMap<String, String>();
+    Map<String, String> allAccesses = new HashMap<>();
     for (UserDetail user : users) {
       Map<String, String> userStats = selectAccessForUser(dateStat, user.getId());
       for (Map.Entry<String, String> stat : userStats.entrySet()) {
@@ -515,7 +490,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
   static Map<String, String> selectVolumeForGroup(String dateStat, String groupId)
       throws SQLException {
     UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
-    Map<String, String> allVolumes = new HashMap<String, String>();
+    Map<String, String> allVolumes = new HashMap<>();
     for (UserDetail user : users) {
       Map<String, String> userStats = selectVolumeForUser(dateStat, user.getId());
       for (Map.Entry<String, String> stat : userStats.entrySet()) {
@@ -539,9 +514,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt = myCon.prepareStatement(SELECT_VOLUME_FOR_ALL_COMPONENTS);
       stmt.setString(1, dateStat);
       rs = stmt.executeQuery();
-      Map<String, String> result = new HashMap<String, String>();
+      Map<String, String> result = new HashMap<>();
       while (rs.next()) {
-        addNewStatistic(result, rs.getString("componentId"), rs.getLong("volume"));
+        addNewStatistic(result, rs.getString(COMPONENT_ID), rs.getLong("volume"));
       }
       return result;
     } finally {
@@ -552,10 +527,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   static void filterVisibleComponents(Map<String, String[]> resultat,
       Map<String, String> hashTout) {
-    for (String cmpId : hashTout.keySet()) {
+    for (Map.Entry<String, String> cmp : hashTout.entrySet()) {
       boolean ok = false;
       AdminController myAdminController = getAdminController();
-      ComponentInst compInst = myAdminController.getComponentInst(cmpId);
+      ComponentInst compInst = myAdminController.getComponentInst(cmp.getKey());
       String spaceId = compInst.getDomainFatherId();
       UserDetail currentUser = UserDetail.getCurrentRequester();
       String[] tabManageableSpaceIds =
@@ -569,8 +544,8 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       if (ok) {
         String[] values = new String[3];
-        values[0] = hashTout.get(cmpId);
-        resultat.put(cmpId, values);
+        values[0] = cmp.getValue();
+        resultat.put(cmp.getKey(), values);
       }
     }
   }
@@ -587,7 +562,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Connection myCon = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;
-    Collection<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
+    Collection<ComponentInstLight> result = new ArrayList<>();
     OrganizationController orgaController =
         OrganizationControllerProvider.getOrganisationController();
     AdminController adminController = getAdminController();
@@ -599,9 +574,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt.setInt(1, Integer.parseInt(currentUserId));
       stmt.setInt(2, Integer.parseInt(currentUserId));
       rs = stmt.executeQuery();
-      Set<String> performedIds = new HashSet<String>(nbObjects * 2);
+      Set<String> performedIds = new HashSet<>(nbObjects * 2);
       while (rs.next() && performedIds.size() < nbObjects) {
-        String componentId = rs.getString("componentId");
+        String componentId = rs.getString(COMPONENT_ID);
         //If id is already performed, then it is skipped
         if (orgaController.isComponentExist(componentId) && performedIds.add(componentId)) {
           ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId);

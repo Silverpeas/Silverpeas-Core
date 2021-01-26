@@ -24,9 +24,8 @@
 package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.web.silverstatistics.vo.AccessPublicationVO;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.web.silverstatistics.vo.AccessPublicationVO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,6 +41,10 @@ import java.util.List;
 public class SilverStatisticsPeasDAO {
   private static final String STATS_GET_LIST_PUBLI_ACCESS =
       "SELECT componentid, resourceid, count(*) FROM sb_statistic_history WHERE datestat >= ? AND datestat <= ? GROUP BY resourceid, componentid ORDER BY componentid, resourceid";
+
+  private SilverStatisticsPeasDAO() {
+
+  }
 
   public static List<AccessPublicationVO> getListPublicationAccess(String startDate, String endDate)
       throws SQLException {
@@ -71,7 +74,7 @@ public class SilverStatisticsPeasDAO {
    * @throws SQLException
    */
   private static List<AccessPublicationVO> getPublicationAccess(ResultSet rs) throws SQLException {
-    List<AccessPublicationVO> list = new ArrayList<AccessPublicationVO>();
+    List<AccessPublicationVO> list = new ArrayList<>();
     String componentId = "";
     String objectId = "";
     int nbAccess = 0;
@@ -90,19 +93,9 @@ public class SilverStatisticsPeasDAO {
   /**
    * Method declaration
    * @return a new connection
-   *
    */
-  private static Connection getConnection() {
-
-
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-    } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAO.getConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-    }
-    return con;
+  private static Connection getConnection() throws SQLException {
+    return DBUtil.openConnection();
   }
 
 }

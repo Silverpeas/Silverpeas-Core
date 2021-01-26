@@ -27,12 +27,12 @@
 package org.silverpeas.web.interests.servlets;
 
 import org.silverpeas.core.pdc.interests.model.Interests;
-import org.silverpeas.web.interests.control.InterestCenterSessionController;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.interests.control.InterestCenterSessionController;
 
 import java.util.List;
 
@@ -109,8 +109,7 @@ public class InterestCenterPeasRequestRouter
         destination = "iCenterList.jsp";
       }
     } catch (Exception e) {
-      SilverTrace.error("interestCenterPeas", "InterestCenterPeasRequestRouter.getDestination",
-          "pdcPeas.EX_GET_DESTINATION_ERROR", "", e);
+      SilverLogger.getLogger(this).error(e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }

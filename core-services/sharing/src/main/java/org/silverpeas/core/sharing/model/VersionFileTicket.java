@@ -26,12 +26,12 @@ package org.silverpeas.core.sharing.model;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.sharing.security.ShareableVersionDocument;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -70,7 +70,7 @@ public class VersionFileTicket extends Ticket {
       return (HistorisedDocument) AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(pk, null);
     } catch (AttachmentException e) {
-      SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return null;
   }
@@ -87,7 +87,7 @@ public class VersionFileTicket extends Ticket {
             (HistorisedDocument) doc.getLastPublicVersion());
       }
     } catch (AttachmentException e) {
-      SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return null;
 

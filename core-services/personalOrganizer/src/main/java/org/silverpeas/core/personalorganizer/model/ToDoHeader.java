@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.personalorganizer.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import static org.silverpeas.core.util.DateUtil.*;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import static org.silverpeas.core.util.DateUtil.formatDate;
+import static org.silverpeas.core.util.DateUtil.parseDate;
 
 public class ToDoHeader extends Schedulable implements Cloneable {
 
@@ -92,8 +94,7 @@ public class ToDoHeader extends Schedulable implements Cloneable {
     try {
       completedDate = parseDate(day);
     } catch (Exception e) {
-      SilverTrace.warn("calendar", "ToDoHeader.setCompletedDay(String day)",
-          "calendar_MSG_NOT_PARSE_DATE", "return => completedDate=null");
+      SilverLogger.getLogger(this).error(e);
       completedDate = null;
     }
   }
@@ -134,8 +135,7 @@ public class ToDoHeader extends Schedulable implements Cloneable {
     try {
       return (ToDoHeader) this.clone();
     } catch (Exception e) {
-      SilverTrace.warn("calendar", "ToDoHeader.getCopy",
-          "calendar_MSG_NOT_Get_COPY", "return => Schedulable=null");
+      SilverLogger.getLogger(this).error(e);
       return null;
     }
   }

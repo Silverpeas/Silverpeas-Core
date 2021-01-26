@@ -122,7 +122,6 @@ import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.DefaultReminderRepository;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.stub.StubbedOrganizationController;
@@ -151,7 +150,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   protected <T> WarBuilder4LibCore(final Class<T> test) {
     super(test);
-    addClasses(SilverTrace.class, DefaultReminderRepository.class);
+    addClasses(DefaultReminderRepository.class);
     addServiceProviderFeatures();
     addBundleBaseFeatures();
     addClasses(EntityReference.class);
@@ -169,7 +168,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <ul>
    * <li>the resources located in the same package of the specified test class,</li>
    * <li>{@link ServiceProvider} features.</li>
-   * <li>the SilverTrace subsystem subbed,</li>
    * <li>the base i18n bundle loaded.</li>
    * </ul>
    * @return the instance of the war archive builder.

@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -85,7 +84,7 @@ public abstract class FunctionHandler {
   }
 
   protected String forgottenPasswordError(HttpServletRequest request, ForgottenPasswordException fpe) {
-    String error = SilverTrace.getTraceMessage(fpe.getMessage()) + " - " + fpe.getExtraInfos();
+    String error = fpe.getMessage() + " - " + fpe.getExtraInfos();
     ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
     parameters.setError(error);
     getForgottenPasswordMailManager().sendErrorMail(parameters);

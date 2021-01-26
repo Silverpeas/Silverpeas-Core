@@ -23,12 +23,13 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.personalorganizer.model.ToDoHeader;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.web.todo.control.ToDoAccess;
 import org.silverpeas.web.todo.control.TodoException;
-import org.silverpeas.core.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -37,18 +38,18 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class MyTodosPortlet extends GenericPortlet implements FormNames {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    List todos = new ArrayList();
+    Collection<ToDoHeader> todos = new ArrayList<>();
     try {
-      todos = (List) ToDoAccess.getNotCompletedToDos(UserDetail.getCurrentRequester().getId());
+      todos = ToDoAccess.getNotCompletedToDos(UserDetail.getCurrentRequester().getId());
     } catch (TodoException e) {
-      SilverTrace.error("portlet", "MyTodosPortlet", "portlet.ERROR", e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     request.setAttribute("Todos", todos.iterator());

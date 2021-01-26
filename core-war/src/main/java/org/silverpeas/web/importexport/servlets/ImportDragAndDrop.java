@@ -23,6 +23,8 @@
  */
 package org.silverpeas.web.importexport.servlets;
 
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.importexport.control.ImportSettings;
 import org.silverpeas.core.importexport.control.MassiveDocumentImport;
 import org.silverpeas.core.importexport.model.ImportExportException;
@@ -30,18 +32,16 @@ import org.silverpeas.core.importexport.report.ComponentReport;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
+import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -71,8 +71,7 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace
-          .fatal("importExportPeas", "ImportDragAndDrop.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverLogger.getLogger(this).error(se);
     }
   }
 

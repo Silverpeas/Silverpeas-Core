@@ -23,27 +23,27 @@
  */
 package org.silverpeas.web.formtemplate.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.web.form.FormTemplateSessionController;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.web.form.FormTemplateSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -256,8 +256,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
       doc.setXmlFormId(xmlFormName);
       AttachmentServiceProvider.getAttachmentService().addXmlForm(pk, language, xmlFormName);
     } catch (AttachmentException e) {
-      SilverTrace.error("attachment", getClass().getSimpleName() + ".attachXmlForm",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     AttachmentServiceProvider.getAttachmentService().createIndex(doc);
   }

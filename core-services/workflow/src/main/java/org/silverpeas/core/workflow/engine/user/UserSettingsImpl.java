@@ -29,8 +29,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
 
@@ -132,18 +132,16 @@ public class UserSettingsImpl extends BasicJpaEntity<UserSettingsImpl, UniqueInt
         try {
           Field field = data.getField(fieldNames[i]);
           if (field == null) {
-            SilverTrace.warn("workflowEngine", "UserSettingsImpl.update",
-                "workflowEngine.EX_ERR_GET_FIELD", fieldNames[i]);
+            SilverLogger.getLogger(this).warn("Cannot get field {0}", fieldNames[i]);
           } else {
-            userInfo = (UserInfoImpl) userInfos.get(index);
+            userInfo = userInfos.get(index);
             String value = userInfo.getValue();
             if (value != null) {
               field.setStringValue(value);
             }
           }
         } catch (FormException e) {
-          SilverTrace.warn("workflowEngine", "UserSettingsImpl.update",
-              "workflowEngine.EX_ERR_GET_FIELD", fieldNames[i]);
+          SilverLogger.getLogger(this).error(e);
         }
       }
     }

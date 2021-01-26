@@ -33,7 +33,7 @@ public class FormException extends SilverpeasException {
   private static final long serialVersionUID = 1937108365995722235L;
 
   /**
-   * Returns the module name (as known by SilverTrace).
+   * Returns the module name.
    */
   public String getModule() {
     return "form";

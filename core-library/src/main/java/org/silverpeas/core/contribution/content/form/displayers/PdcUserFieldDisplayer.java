@@ -31,10 +31,9 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.PdcUserField;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -113,13 +112,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
 
     String fieldName = template.getFieldName();
 
-
-    if (!field.getTypeName().equals(PdcUserField.TYPE)) {
-      SilverTrace
-          .info("form", "PdcUserFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", PdcUserField.TYPE + ", type courant=" + field.getTypeName());
-
-    } else {
+    if (field.getTypeName().equals(PdcUserField.TYPE)) {
       userCardIds = field.getUserCardIds();
     }
 

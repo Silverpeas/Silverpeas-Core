@@ -23,25 +23,25 @@
  */
 package org.silverpeas.web.agenda.servlets;
 
-import org.silverpeas.core.web.calendar.ical.ImportIcalManager;
-import org.silverpeas.core.web.calendar.ical.PasswordEncoder;
-import org.silverpeas.core.web.calendar.ical.StringUtils;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
-import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.calendar.ical.ImportIcalManager;
+import org.silverpeas.core.web.calendar.ical.PasswordEncoder;
+import org.silverpeas.core.web.calendar.ical.StringUtils;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
+import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -423,8 +423,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
       }
     } catch (Exception e) {
       // Other exception
-      SilverTrace.warn("agenda", "AgendaRequestRouter.processFormUpload()",
-          "root.EX_LOAD_ATTACHMENT_FAILED", e);
+      SilverLogger.getLogger(this).warn(e);
     }
     return fileUploaded;
   }

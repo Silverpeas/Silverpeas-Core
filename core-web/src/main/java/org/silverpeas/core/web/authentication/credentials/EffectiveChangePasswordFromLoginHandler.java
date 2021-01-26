@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
@@ -31,6 +30,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,8 +63,7 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
         request.setAttribute("emailAddress", email);
       }
       // Error : go back to page
-      SilverTrace.error("peasCore", "ChangePasswordFromLoginHandler.doAction()",
-          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login, e);
+      SilverLogger.getLogger(this).error(e);
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
       return performUrlChangePasswordError(request,

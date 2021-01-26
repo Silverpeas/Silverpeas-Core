@@ -34,11 +34,11 @@ import org.silverpeas.core.mail.extractor.Extractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.mail.extractor.MailExtractor;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.mail.internet.InternetAddress;
 import java.io.File;
@@ -104,9 +104,7 @@ public class PublicationImportExport {
           descriptionST.setAttributes(attributes);
           description = descriptionST.toString();
         } catch (Exception e) {
-          SilverTrace
-              .error("importExport", "PublicationImportExport.convertFileInfoToPublicationDetail",
-                  "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+          SilverLogger.getLogger(PublicationImportExport.class).error(e);
         }
       } else {
         // it's a classical file (not an email)

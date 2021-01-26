@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A PdcUserField stores a the users references
@@ -127,8 +127,7 @@ public class PdcUserField extends AbstractField {
 
       return names.toString();
     } catch (Exception e) {
-      SilverTrace.error("form", "PdcUserField.getValue",
-          "root.MSG_GEN_PARAM_VALUE", "", e);
+      SilverLogger.getLogger(this).error(e);
       return null;
     }
   }

@@ -23,10 +23,9 @@
  */
 package org.silverpeas.core.util.exec;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
@@ -131,8 +130,7 @@ public class ExternalExecution {
      * Initializes a config with default values:
      * <ul>
      * <li>the code value of a successful exit status is <b>0</b></li>
-     * <li>the exception errors are traced by {@link SilverTrace#error(String, String,
-     * String)}</li>
+     * <li>the exception errors are traced by {@link SilverLogger#error(Throwable)}</li>
      * </ul>
      * @return an instance of {@link ExternalExecution.Config} initialized with default values.
      */

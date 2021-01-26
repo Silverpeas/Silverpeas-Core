@@ -32,7 +32,7 @@ public class WorkflowException extends SilverpeasException {
   private static final long serialVersionUID = -1912189634294138350L;
 
   /**
-   * Returns the module name (as known by SilverTrace).
+   * Returns the module name.
    */
   public String getModule() {
     return "workflowEngine";

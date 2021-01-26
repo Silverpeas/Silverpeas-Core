@@ -27,8 +27,8 @@ import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.ParseException;
 
@@ -84,8 +84,7 @@ public abstract class DateField extends AbstractField {
          */
         value = DateUtil.getInputDate(value, language);
       } catch (ParseException pe) {
-        SilverTrace.error("form", "DateField", "form.EX_CANT_PARSE_DATE",
-            "typeName = [" + getTypeName() + "]", pe);
+        SilverLogger.getLogger(this).error(pe);
       }
     }
     return value;
@@ -102,8 +101,7 @@ public abstract class DateField extends AbstractField {
        */
       dateBD = DateUtil.date2SQLDate(newValue, language);
     } catch (ParseException pe) {
-      SilverTrace.error("form", "DateField", "form.EX_CANT_PARSE_DATE",
-          "typeName = [" + getTypeName() + "]", pe);
+      SilverLogger.getLogger(this).error(pe);
     }
     return dateBD;
   }

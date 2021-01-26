@@ -35,11 +35,11 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -370,8 +370,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       try {
         con.rollback();
       } catch (Exception e) {
-        SilverTrace.error("pdcPeas", "rollbackConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }
@@ -381,8 +380,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       try {
         con.commit();
       } catch (Exception e) {
-        SilverTrace.error("pdcPeas", "commitConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }

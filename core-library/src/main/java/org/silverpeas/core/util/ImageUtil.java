@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.util;
 
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.IOUtils;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class ImageUtil {
 
@@ -67,10 +65,8 @@ public class ImageUtil {
         in = new BufferedInputStream(new FileInputStream(image));
          return getWidthAndHeightByWidth(in, widthParam);
       } catch (Exception e) {
-        if (image != null) {
-          SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR",
-              "File not found : " + image.getAbsolutePath());
-        }
+        SilverLogger.getLogger(ImageUtil.class)
+            .error("Image not found: {0}", image.getAbsolutePath());
       } finally {
         IOUtils.closeQuietly(in);
       }
@@ -108,9 +104,7 @@ public class ImageUtil {
 
       return result;
     } catch (Exception e) {
-      if (image != null) {
-        SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
-      }
+      SilverLogger.getLogger(ImageUtil.class).error(e);
     }
     result[0] = "";
     result[1] = "";
@@ -125,10 +119,8 @@ public class ImageUtil {
         in = new BufferedInputStream(new FileInputStream(image));
         return getWidthAndHeightByHeight(in, heightParam);
       } catch (Exception e) {
-        if (image != null) {
-          SilverTrace.error("util", "ImageUtil.getWidthAndHeightByHeight", "root.MSG_GEN_ERROR",
-              "File not found : " + image.getAbsolutePath());
-        }
+        SilverLogger.getLogger(ImageUtil.class)
+            .error("File not found: {0}", image.getAbsolutePath());
       } finally {
         IOUtils.closeQuietly(in);
       }
@@ -166,7 +158,7 @@ public class ImageUtil {
 
       return result;
     } catch (Exception e) {
-      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByHeight", "root.MSG_GEN_ERROR", e);
+      SilverLogger.getLogger(ImageUtil.class).error(e);
     }
     return result;
   }
@@ -186,9 +178,7 @@ public class ImageUtil {
 
       return result;
     } catch (Exception e) {
-      if (image != null) {
-        SilverTrace.error("util", "ImageUtil.getWidthAndHeightByHeight", "root.MSG_GEN_ERROR", e);
-      }
+      SilverLogger.getLogger(ImageUtil.class).error(e);
     }
     result[0] = "";
     result[1] = "";
@@ -203,10 +193,8 @@ public class ImageUtil {
         in = new BufferedInputStream(new FileInputStream(image));
         return getWidthAndHeight(in);
       } catch (Exception e) {
-        if (image != null) {
-          SilverTrace.error("util", "ImageUtil.getWidthAndHeight", "root.MSG_GEN_ERROR",
-              "File not found : " + image.getAbsolutePath());
-        }
+        SilverLogger.getLogger(ImageUtil.class)
+            .error("Image not found: {0}", image.getAbsolutePath());
       } finally {
         IOUtils.closeQuietly(in);
       }

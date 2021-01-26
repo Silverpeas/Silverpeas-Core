@@ -23,6 +23,18 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.FormRuntimeException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.encryption.EncryptionContentIterator;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,19 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
-
-import org.silverpeas.core.contribution.content.form.FormRuntimeException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.security.encryption.EncryptionContentIterator;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 public class FormEncryptionContentIterator implements EncryptionContentIterator {
 
@@ -110,8 +109,7 @@ public class FormEncryptionContentIterator implements EncryptionContentIterator 
 
   @Override
   public void onError(Map<String, String> content, CryptoException ex) {
-    SilverTrace.error("form", this.getClass().getName() + ".onError()",
-        "form.ERROR_DURING_ENCRYPTION", ex);
+    SilverLogger.getLogger(this).error(ex);
     rollbackConnection();
     throw new FormRuntimeException("FormEncryptionContentIterator", SilverpeasException.ERROR,
         "form.ERROR_DURING_ENCRYPTION", ex);

@@ -24,10 +24,10 @@
 package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,8 +56,7 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
         title += message.getString("silverStatisticsPeas.FromSpace") + " [" + space.getName() + "]";
       }
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "DocSizePieChartBuilder.getChartTitle()",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     return title;
@@ -73,9 +72,8 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
     try {
       return SilverStatisticsPeasDAOVolumeServer.getStatsSizeVentil();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "DocSizePieChartBuilder.getCmpStats()",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
-    return new HashMap<String, String[]>(0);
+    return new HashMap<>(0);
   }
 }

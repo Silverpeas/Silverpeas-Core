@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.exception;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasRuntimeException}
@@ -43,9 +43,9 @@ import org.silverpeas.core.silvertrace.SilverTrace;
  public abstract class SilverpeasRuntimeException extends RuntimeException implements WithNested,
     FromModule {
 
-  public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
-  public static final int ERROR = SilverTrace.TRACE_LEVEL_ERROR;
-  public static final int WARNING = SilverTrace.TRACE_LEVEL_WARN;
+  public static final int FATAL = 0x00000005;
+  public static final int ERROR = 0x00000004;
+  public static final int WARNING = 0x00000003;
   private int errorLevel = ERROR;
   private Throwable nested = null;
   private String extraParams = "";
@@ -74,9 +74,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
     this.nested = nested;
     // Trace the exception as INFO or FATAL
     if (errorLevel == FATAL) {
-      SilverTrace.fatal(getModule(), callingClass, message, extraParams, this);
-    } else {
-
+      SilverLogger.getLogger(this).error(this);
     }
   }
 
@@ -94,34 +92,30 @@ import org.silverpeas.core.silvertrace.SilverTrace;
   /**
    * This function must be defined by the Classes that herit from this one
    *
-   * @return The SilverTrace's module name
+   * @return The module name
    *
    */
 
   @Override
   public String getMessageLang() {
-    return SilverTrace.getTraceMessage(getMessage());
+    return getMessage();
   }
 
   @Override
   public String getMessageLang(String language) {
-    return SilverTrace.getTraceMessage(getMessage(), language);
+    return getMessage();
   }
 
   @Override
   public void traceException() {
     switch (errorLevel) {
-      case FATAL:
-        SilverTrace.fatal(getModule(), callingClass, getMessage(), extraParams,
-            this);
-        break;
-      case ERROR:
-        SilverTrace.error(getModule(), callingClass, getMessage(), extraParams,
-            this);
+      case FATAL | ERROR:
+        SilverLogger.getLogger(this).error(this);
         break;
       case WARNING:
-        SilverTrace.warn(getModule(), callingClass, getMessage(), extraParams,
-            this);
+        SilverLogger.getLogger(this).warn(this);
+        break;
+      default:
         break;
     }
   }

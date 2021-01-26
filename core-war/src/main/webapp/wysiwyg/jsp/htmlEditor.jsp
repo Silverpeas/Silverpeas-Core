@@ -34,7 +34,6 @@
 <%@ page import="org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
-<%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
@@ -130,8 +129,6 @@
       wysiwygTextValue = codeWysiwyg;
       if (isWebSiteCase) {
         collectionPages = WysiwygController.getWebsitePages(path, componentId);
-        SilverTrace.info("wysiwyg", "Wysiwyg.htmlEditorJSP", "root.MSG_GEN_PARAM_VALUE",
-            "nb collectionPages = " + collectionPages.length);
       }
     }
     if ("SaveHtmlAndExit".equals(actionWysiwyg)) {
@@ -218,8 +215,6 @@
 
     if (isWebSiteCase) {
       collectionPages = WysiwygController.getWebsitePages(path, componentId);
-      SilverTrace.info("wysiwyg", "Wysiwyg.htmlEditorJSP", "root.MSG_GEN_PARAM_VALUE",
-          "nb collectionPages = " + collectionPages.length);
       specificURL = "/website/" + componentId + "/" + objectId + "/";
     } else {
       specificURL = context;

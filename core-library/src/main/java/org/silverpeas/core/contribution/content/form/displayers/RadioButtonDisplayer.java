@@ -31,8 +31,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -147,8 +147,8 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
         cols = Integer.valueOf(parameters.get("cols"));
       }
     } catch (NumberFormatException nfe) {
-      SilverTrace.error("form", "RadioButtonDisplayer.display",
-          "form.EX_ERR_ILLEGAL_PARAMETER_COL", parameters.get("cols"));
+      SilverLogger.getLogger(this)
+          .error("Illegal parameter column: " + parameters.get("cols"), nfe);
       cols = 1;
     }
 
@@ -179,10 +179,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     String optValue;
     int nbTokens = getNbHtmlObjectsDisplayed(template, pageContext);
 
-    if (stKeys.countTokens() != stValues.countTokens()) {
-      SilverTrace.error("form", "RadioButtonDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
-          "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
-    } else {
+    if (stKeys.countTokens() == stValues.countTokens()) {
       html += "<table border=\"0\">";
       int col = 0;
       for (int i = 0; i < nbTokens; i++) {

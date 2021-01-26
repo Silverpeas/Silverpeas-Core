@@ -34,7 +34,7 @@ package org.silverpeas.core.exception;
 public interface FromModule {
   /**
    * This function must be defined by the Classes that herit from this one
-   * @return The SilverTrace's module name
+   * @return The module name
    **/
   String getModule();
 

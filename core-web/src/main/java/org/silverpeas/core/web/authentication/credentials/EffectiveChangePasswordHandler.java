@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -65,14 +65,12 @@ public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandle
         return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="
             + domainId;
       } catch (AuthenticationException e) {
-        SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
-            "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
+        SilverLogger.getLogger(this).error(e);
         return performUrlChangePasswordError(request, forcePasswordChangeHandler.doAction(request),
             ud);
       }
     } catch (AdminException e) {
-      SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
+      SilverLogger.getLogger(this).error(e);
       return forcePasswordChangeHandler.doAction(request);
     }
   }

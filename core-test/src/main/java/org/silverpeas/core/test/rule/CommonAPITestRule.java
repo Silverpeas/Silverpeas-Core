@@ -33,10 +33,8 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.util.lang.TestSystemWrapper;
-import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
@@ -96,7 +94,6 @@ public class CommonAPITestRule implements TestRule {
     groupProvider();
     systemWrapper();
     loggerConfigurationManager();
-    silverTrace();
     managedThreadFactory();
   }
 
@@ -167,11 +164,6 @@ public class CommonAPITestRule implements TestRule {
       }
     }
     return bean;
-  }
-
-  private void silverTrace() {
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
-        .thenReturn(new TestSilverpeasTrace());
   }
 
   private void userProvider() {

@@ -32,7 +32,6 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
@@ -231,8 +230,6 @@ public class HistoryObjectDAO {
 
   public static void deleteStatsOfComponent(Connection con, String componentId)
       throws SQLException {
-    SilverTrace
-        .info("statistic", "HistoryObjectDAO.deleteStatsOfComponent", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(QUERY_STATISTIC_DELETE_BY_COMPONENT);

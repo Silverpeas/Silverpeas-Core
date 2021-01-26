@@ -588,7 +588,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       // récupération des données du formulaire (via le DataRecord)
       pub = getPublicationTemplate(externalId);
     } catch (Exception e) {
-      SilverLogger.getLogger(this).warn("This template is not yet registered", e);
+      SilverLogger.getLogger(this)
+          .warn("This template is not yet registered. Error: " + e.getMessage());
       try {
         addDynamicPublicationTemplate(externalId, shortName);
         pub = getPublicationTemplate(externalId);

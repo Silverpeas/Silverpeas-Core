@@ -38,12 +38,12 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.SafeContentRedirect;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
@@ -193,8 +193,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
           InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
         }
       } catch (Exception e) {
-        SilverTrace.error("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
-            "Portlets exception !", e);
+        SilverLogger.getLogger(this).error(e);
       } finally {
         ServletContextThreadLocalizer.set(null);
       }

@@ -142,7 +142,8 @@ public class DataRecordUtil {
         value = "";
       }
     } catch (FormException e) {
-      SilverLogger.getLogger(DataRecordUtil.class).warn("Field '" + fieldName + "' is unknown", e);
+      SilverLogger.getLogger(DataRecordUtil.class).warn("Field '" + fieldName +
+          "' is unknown. Error: " + e.getMessage());
       value = VARIABLE_PREFIX + fieldName + VARIABLE_SUFFIX;
     }
     return value;

@@ -68,8 +68,7 @@ import static org.mockito.Mockito.*;
  * Prepares the environment specific to Silverpeas to run unit tests.
  * <p>Firstly, it mocks the container of beans and set ups it for the tests with some of the
  * common beans in Silverpeas: {@link UserProvider}, {@link GroupProvider}, {@link SystemWrapper},
- * {@link ManagedThreadPool}, {@link org.silverpeas.core.silvertrace.SilverTrace}, and the logging
- * system.
+ * {@link ManagedThreadPool}, and the logging system.
  * </p>
  * <p>
  * Secondly it scans for fields and parameters annotated with {@link TestManagedBean} and

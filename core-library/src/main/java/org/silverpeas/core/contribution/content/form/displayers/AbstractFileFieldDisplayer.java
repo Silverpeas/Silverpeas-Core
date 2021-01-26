@@ -23,13 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.Util;
-import org.silverpeas.core.contribution.content.form.field.FileField;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -38,10 +31,17 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -205,7 +205,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       // Add, update, delete or no value
       return attachmentId;
     } catch (IOException ex) {
-      SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
+      SilverLogger.getLogger(this).error(ex);
     }
     return null;
   }

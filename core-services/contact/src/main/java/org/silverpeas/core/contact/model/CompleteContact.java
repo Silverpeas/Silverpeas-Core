@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.contact.model;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -37,12 +40,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -215,8 +215,7 @@ public class CompleteContact implements Contact, Serializable {
         form.setData(data);
       }
     } catch (Exception e) {
-      SilverTrace.
-          error("yellowpages", getClass().getSimpleName() + ".setForm()", "root.NO_EX_MESSAGE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return form;
   }
@@ -289,7 +288,7 @@ public class CompleteContact implements Contact, Serializable {
         RecordSet set = pub.getRecordSet();
         set.indexRecord(contactDetail.getPK().getId(), getFormName(), indexEntry);
       } catch (Exception e) {
-        SilverTrace.error("contact", "CompleteContact.indexForm", "", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }
@@ -319,8 +318,8 @@ public class CompleteContact implements Contact, Serializable {
         pub = PublicationTemplateManager.getInstance().getPublicationTemplate(getFullTemplateId());
         data = pub.getRecordSet().getRecord(getPK().getId());
       } catch (Exception e) {
-        SilverTrace.warn("contact", "CompleteContact.getFormValues", "CANT_GET_FORM_RECORD",
-            "id = " + getPK().getId() + "infoId = " + getModelId());
+        SilverLogger.getLogger(this)
+            .warn("Cannot get form " + getPK().getId() + " with info " + getModelId());
       }
 
       if (data != null) {
@@ -342,8 +341,7 @@ public class CompleteContact implements Contact, Serializable {
               formValues.put(fieldName, sw.toString());
             }
           } catch (Exception e) {
-            SilverTrace.warn("contact", "CompleteContact.getFormValues", "CANT_GET_FIELD_VALUE",
-                "id = " + getPK().getId() + "fieldName = " + fieldName, e);
+            SilverLogger.getLogger(this).error(e);
           }
         }
       }

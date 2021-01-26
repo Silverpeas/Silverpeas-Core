@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.personalorganizer.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -252,8 +252,8 @@ public abstract class Schedulable implements java.io.Serializable {
       return Schedulable.hourMinuteToString((int) ((ms / MILLIS_IN_MINUTE) % SECONDS_IN_MINUTE),
           (int) (ms / MILLIS_IN_HOUR));
     } catch (ParseException e) {
-      SilverTrace.warn("calendar", "Schedulable.getStringDuration", "calendar_MSG_NOT_SCEDULE",
-          "return = 00:00");
+      SilverLogger.getLogger(this)
+          .warn("Error while parsing the time. Return 00:00. Error is: " + e.getMessage());
       return "00:00";
     }
   }
@@ -265,8 +265,8 @@ public abstract class Schedulable implements java.io.Serializable {
       long ms = anEndDate.getTime() - aStartDate.getTime();
       return (int) (ms / MILLIS_IN_MINUTE);
     } catch (ParseException e) {
-      SilverTrace.warn("calendar", "Schedulable.getMinuteDuration() ", "calendar_MSG_NOT_SCEDULE",
-          "return = 0");
+      SilverLogger.getLogger(this)
+          .warn("Error while parsing the minutes. Return 0. Error is: " + e.getMessage());
       return 0;
     }
   }

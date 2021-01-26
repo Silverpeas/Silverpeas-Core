@@ -23,16 +23,16 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
-import org.silverpeas.web.portlets.portal.DesktopMessages;
-import org.silverpeas.core.web.portlets.portal.PortletWindowData;
-import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
+import org.silverpeas.web.portlets.portal.DesktopMessages;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -353,7 +353,7 @@ public class AdminServlet extends HttpServlet {
 
       portletAdminData.movePortletWindows(windows);
     } catch (Exception e) {
-      SilverTrace.error("portlet", "AdminServlet.movePortletWindow()", "root.EX_NO_MESSAGE", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
