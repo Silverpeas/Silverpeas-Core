@@ -30,9 +30,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -43,27 +43,31 @@ public class FormLayerServlet extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 1013565640540446129L;
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    final String pathInfo = request.getPathInfo();
-    final String form = pathInfo.substring(1);
-    if (User.getCurrentRequester().isAccessAdmin()) {
-      final String filename = checkPath(request.getParameter("Layer"));
-      String dir = PublicationTemplateManager.getInstance().makePath(form);
-      File file = new File(dir, filename);
-      response.setContentType(FileUtil.getMimeType(filename));
-      response.setHeader("Content-Disposition", "inline; filename=\"" + filename + '"');
-      response.setHeader("Content-Length", String.valueOf(file.length()));
-      FileUtils.copyFile(file, response.getOutputStream());
-      response.getOutputStream().flush();
-    } else {
-      response.sendRedirect(URLUtil.getApplicationURL() +
-          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      final String pathInfo = request.getPathInfo();
+      final String form = pathInfo.substring(1);
+      if (User.getCurrentRequester().isAccessAdmin()) {
+        final String filename = checkPath(request.getParameter("Layer"));
+        String dir = PublicationTemplateManager.getInstance().makePath(form);
+        File file = new File(dir, filename);
+        response.setContentType(FileUtil.getMimeType(filename));
+        response.setHeader("Content-Disposition", "inline; filename=\"" + filename + '"');
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        FileUtils.copyFile(file, response.getOutputStream());
+        response.getOutputStream().flush();
+      } else {
+        response.sendRedirect(URLUtil.getApplicationURL() +
+            ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
     doPost(request, response);
   }
 
