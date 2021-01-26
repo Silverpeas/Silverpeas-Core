@@ -23,12 +23,12 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
-import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,33 +39,38 @@ import java.io.PrintWriter;
 public class JSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = -843491398398079951L;
+  private static final String STATUS = "status";
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    HttpSession session = request.getSession();
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if (mainSessionCtrl == null) {
-      PrintWriter out = response.getWriter();
-      out.println(JSONCodec.encodeObject(json -> json.put("status", "silverpeastimeout")));
-      return;
-    }
-    String userId = mainSessionCtrl.getUserId();
-    String action = request.getParameter("Action");
-    if ("updateStatus".equalsIgnoreCase(action)) {
-      SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
-      String status = request.getParameter("status");
-      // if status is empty or set with a text, update it (an empty status means no status)
-      if (status != null) {
-        status = socialNetworkService.changeStatus(status);
-      } else {
-        // if status equal null don't do update status and do get Last status
-        status = Encode.forHtml(socialNetworkService.getLastStatus());
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      HttpSession session = request.getSession();
+      MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+          MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      if (mainSessionCtrl == null) {
+        PrintWriter out = response.getWriter();
+        out.println(JSONCodec.encodeObject(json -> json.put(STATUS, "silverpeastimeout")));
+        return;
       }
-      final String jsonStatus = status;
-      PrintWriter out = response.getWriter();
-      out.println(JSONCodec.encodeObject(json -> json.put("status", jsonStatus)));
+      String userId = mainSessionCtrl.getUserId();
+      String action = request.getParameter("Action");
+      if ("updateStatus".equalsIgnoreCase(action)) {
+        SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
+        String status = request.getParameter(STATUS);
+        // if status is empty or set with a text, update it (an empty status means no status)
+        if (status != null) {
+          status = socialNetworkService.changeStatus(status);
+        } else {
+          // if status equal null don't do update status and do get Last status
+          status = Encode.forHtml(socialNetworkService.getLastStatus());
+        }
+        final String jsonStatus = status;
+        PrintWriter out = response.getWriter();
+        out.println(JSONCodec.encodeObject(json -> json.put(STATUS, jsonStatus)));
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 }
