@@ -35,12 +35,12 @@ import org.silverpeas.core.util.JSONCodec.JSONArray;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,14 +71,12 @@ public class AjaxActionServlet extends HttpServlet {
   private static final String DEFAULT_JSP_FRAM = "silverpeas-main.jsp";
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     String action = getAction(req);
 
     String result;
@@ -93,8 +91,13 @@ public class AjaxActionServlet extends HttpServlet {
     }
 
     // Send response
-    Writer writer = res.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = res.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**

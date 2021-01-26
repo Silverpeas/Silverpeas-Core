@@ -23,20 +23,18 @@
  */
 package org.silverpeas.web.look;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * <pre>
@@ -66,24 +64,23 @@ public class AjaxServletRSS extends HttpServlet {
   private static final long serialVersionUID = -4380591383319611597L;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     String enc = getEncodingParameter(req);
     res.setContentType("text/xml;charset=" + enc);
     String loadedUrl = WebEncodeHelper.htmlStringToJavaString(req.getParameter("loadedUrl"));
-    InputStream rss = null;
     try {
       URL url = new URL(loadedUrl);
-      rss = url.openStream();
-      IOUtils.copy(rss, res.getOutputStream());
-    } finally {
-      IOUtils.closeQuietly(rss);
+      try (InputStream rss = url.openStream()) {
+        IOUtils.copy(rss, res.getOutputStream());
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -94,11 +91,11 @@ public class AjaxServletRSS extends HttpServlet {
   private String getEncodingParameter(HttpServletRequest req) {
     String encodingParam = req.getParameter("encoding");
     if (!StringUtil.isDefined(encodingParam)) {
-      encodingParam = CharEncoding.UTF_8;
+      encodingParam = Charsets.UTF_8.toString();
     } else {
-      if (!CharEncoding.UTF_8.equalsIgnoreCase(encodingParam) && !CharEncoding.ISO_8859_1
-          .equalsIgnoreCase(encodingParam)) {
-        encodingParam = CharEncoding.UTF_8;
+      if (!Charsets.UTF_8.toString().equalsIgnoreCase(encodingParam) &&
+          !Charsets.ISO_8859_1.toString().equalsIgnoreCase(encodingParam)) {
+        encodingParam = Charsets.UTF_8.toString();
       }
     }
     return encodingParam;

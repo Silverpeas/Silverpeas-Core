@@ -23,14 +23,14 @@
  */
 package org.silverpeas.web.token;
 
+import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.token.TokenSettingTemplate;
-import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
-import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.web.token.TokenSettingTemplate.Parameter;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,27 +60,24 @@ public class ProtectedWebPageUpdater extends HttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
     response.setContentType("application/javascript");
-    PrintWriter out = response.getWriter();
-    try {
+    try(PrintWriter out = response.getWriter()) {
       String script = applyTemplate(new TokenSettingTemplate(), request);
       out.println(script);
-    } finally {
-      out.close();
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
   protected String applyTemplate(TokenSettingTemplate template, HttpServletRequest request) {
     String result = "";
-    List<Parameter> parameters = new ArrayList<Parameter>(4);
+    List<Parameter> parameters = new ArrayList<>(4);
     Token token = tokenService.getSessionToken(request);
     if (token.isDefined()) {
       parameters.add(new TokenSettingTemplate.Parameter(
@@ -112,12 +109,9 @@ public class ProtectedWebPageUpdater extends HttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
@@ -126,13 +120,10 @@ public class ProtectedWebPageUpdater extends HttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
   }
 
   /**

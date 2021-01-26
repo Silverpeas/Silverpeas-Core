@@ -23,9 +23,6 @@
  */
 package org.silverpeas.web.servlets;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,8 +40,9 @@ public abstract class AbstractRestServlet extends HttpServlet {
     return getInitParameter("request_path");
   }
 
+  @Override
   protected void service(HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
+      HttpServletResponse response) {
     RestRequest restRequest = new RestRequest(request, getServletRequestPath());
     switch (restRequest.getAction()) {
       case CREATE:
@@ -69,12 +67,9 @@ public abstract class AbstractRestServlet extends HttpServlet {
    * @param request the rest request.
    * @param response - the HttpServletResponse object that contains the response the servlet returns
    * to the client
-   * @throws ServletException - if the HTTP request cannot be handled.
-   * @throws IOException - if an input or output error occurs while the servlet is handling the HTTP
-   * request .
    */
   protected abstract void delete(RestRequest request,
-      HttpServletResponse response) throws ServletException, IOException;
+      HttpServletResponse response);
 
   /**
    * Dispatches client requests to the protected create method if it is a creation. This method must
@@ -82,12 +77,9 @@ public abstract class AbstractRestServlet extends HttpServlet {
    * @param request the rest request.
    * @param response - the HttpServletResponse object that contains the response the servlet returns
    * to the client
-   * @throws ServletException - if the HTTP request cannot be handled.
-   * @throws IOException - if an input or output error occurs while the servlet is handling the HTTP
-   * request .
    */
   protected abstract void create(RestRequest request,
-      HttpServletResponse response) throws ServletException, IOException;
+      HttpServletResponse response);
 
   /**
    * Dispatches client requests to the protected update method if it is an update. This method must
@@ -95,12 +87,9 @@ public abstract class AbstractRestServlet extends HttpServlet {
    * @param request the rest request.
    * @param response - the HttpServletResponse object that contains the response the servlet returns
    * to the client
-   * @throws ServletException - if the HTTP request cannot be handled.
-   * @throws IOException - if an input or output error occurs while the servlet is handling the HTTP
-   * request .
    */
   protected abstract void update(RestRequest request,
-      HttpServletResponse response) throws ServletException, IOException;
+      HttpServletResponse response);
 
   /**
    * Dispatches client requests to the protected find method if it is a search. This method must be
@@ -108,10 +97,6 @@ public abstract class AbstractRestServlet extends HttpServlet {
    * @param request the rest request.
    * @param response - the HttpServletResponse object that contains the response the servlet returns
    * to the client
-   * @throws ServletException - if the HTTP request cannot be handled.
-   * @throws IOException - if an input or output error occurs while the servlet is handling the HTTP
-   * request .
    */
-  protected abstract void find(RestRequest request, HttpServletResponse response)
-      throws ServletException, IOException;
+  protected abstract void find(RestRequest request, HttpServletResponse response);
 }

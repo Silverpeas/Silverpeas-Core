@@ -27,6 +27,7 @@ import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,14 +54,10 @@ public class AutocompleteServlet extends HttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
     response.setContentType(SERVLET_HTML_CONTENT_TYPE);
-    PrintWriter out = response.getWriter();
-    try {
+    try(PrintWriter out = response.getWriter()) {
       SettingBundle resourceSearchEngine =
           ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
       if (resourceSearchEngine.getBoolean("enableAutocompletion", false)) {
@@ -69,8 +66,9 @@ public class AutocompleteServlet extends HttpServlet {
         String json = JSONCodec.encode(suggestions);
         out.write(json);
       }
-    } finally {
-      out.close();
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
   }
@@ -87,8 +85,7 @@ public class AutocompleteServlet extends HttpServlet {
    * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
@@ -102,8 +99,7 @@ public class AutocompleteServlet extends HttpServlet {
    * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 

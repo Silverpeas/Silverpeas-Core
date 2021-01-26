@@ -23,31 +23,28 @@
  */
 package org.silverpeas.web.templatedesigner.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
+import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
-import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
+import java.io.IOException;
+import java.io.Writer;
 
 public class TemplateDesignerAJAXServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse res) {
     HttpSession session = req.getSession(true);
 
     TemplateDesignerSessionController designer =
@@ -65,7 +62,12 @@ public class TemplateDesignerAJAXServlet extends HttpServlet {
       }
     }
 
-    Writer writer = res.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = res.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 }

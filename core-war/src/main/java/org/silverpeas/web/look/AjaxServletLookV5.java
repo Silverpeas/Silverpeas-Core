@@ -40,7 +40,6 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -57,7 +56,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,6 +71,9 @@ import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSha
 public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private static final String PDC_START_TAG = "<pdc>";
+  private static final String PDC_END_TAG = "</pdc>";
+  private static final String NAME = "\" name=\"";
 
   @Inject
   private OrganizationController organisationController;
@@ -82,14 +83,12 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
   private UserFavoriteSpaceService userFavoriteSpaceService;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession(true);
     MainSessionController mainSessionController = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -145,91 +144,95 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     }
     helper.setDisplayUserMenu(displayMode);
 
-    // Retrieve current look
-    String defaultLook = gef.getDefaultLookName();
-    response.setContentType("text/xml");
-    response.setHeader("charset", "UTF-8");
+    try {
+      // Retrieve current look
+      String defaultLook = gef.getDefaultLookName();
+      response.setContentType("text/xml");
+      response.setHeader("charset", "UTF-8");
 
-    Writer writer = response.getWriter();
-    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    writer.write("<ajax-response>");
-    writer.write("<response type=\"object\" id=\"" + responseId + "\">");
+      Writer writer = response.getWriter();
+      writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      writer.write("<ajax-response>");
+      writer.write("<response type=\"object\" id=\"" + responseId + "\">");
 
-    if ("1".equals(init)) {
-      if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(componentId)) {
-        displayFirstLevelSpaces(userId, preferences.getLanguage(), defaultLook, helper, writer,
-            listUserFS, displayMode);
-      } else {
-        // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
+      if ("1".equals(init)) {
+        if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(componentId)) {
+          displayFirstLevelSpaces(userId, preferences.getLanguage(), defaultLook, helper, writer,
+              listUserFS, displayMode);
+        } else {
+          // First get space's path cause it can be a subspace
+          List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
 
-        // space transverse
-        displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
-            defaultLook, displayPDC, true, helper, writer, listUserFS, displayMode, restrictedPath);
+          // space transverse
+          displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
+              defaultLook, displayPDC, true, helper, writer, listUserFS, displayMode, restrictedPath);
 
-        // other spaces
-        displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(), defaultLook,
-            helper, writer, listUserFS, displayMode);
+          // other spaces
+          displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(), defaultLook,
+              helper, writer, listUserFS, displayMode);
 
+          displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
+        }
+      } else if (StringUtil.isDefined(axisId) && StringUtil.isDefined(valuePath)) {
+        try {
+          writer.write(PDC_START_TAG);
+          getPertinentValues(spaceId, componentId, userId, axisId, valuePath, displayContextualPDC,
+              mainSessionController, writer);
+          writer.write(PDC_END_TAG);
+        } catch (PdcException e) {
+          SilverLogger.getLogger(this).error(e);
+        }
+      } else if (StringUtil.isDefined(spaceId)) {
+        if (isPersonalSpace(spaceId)) {
+          // Affichage de l'espace perso
+          SettingBundle settings = gef.getFavoriteLookSettings();
+          LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+              "org.silverpeas.homePage.multilang.homePageBundle", preferences.getLanguage());
+          serializePersonalSpace(writer, userId, preferences.getLanguage(), helper, settings,
+              message);
+        } else {
+          // First get space's path cause it can be a subspace
+          List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
+          displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
+              defaultLook, displayPDC, false, helper, writer, listUserFS, displayMode,
+              restrictedPath);
+          displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
+        }
+      } else if (StringUtil.isDefined(componentId)) {
         displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
+      } else if (StringUtil.isDefined(pdc)) {
+        displayNotContextualPDC(userId, mainSessionController, writer);
       }
-    } else if (StringUtil.isDefined(axisId) && StringUtil.isDefined(valuePath)) {
-      try {
-        writer.write("<pdc>");
-        getPertinentValues(spaceId, componentId, userId, axisId, valuePath, displayContextualPDC,
-            mainSessionController, writer);
-        writer.write("</pdc>");
-      } catch (PdcException e) {
-        SilverTrace.error("lookSilverpeasV5", "Ajax", "root.ERROR");
-      }
-    } else if (StringUtil.isDefined(spaceId)) {
-      if (isPersonalSpace(spaceId)) {
-        // Affichage de l'espace perso
-        SettingBundle settings = gef.getFavoriteLookSettings();
-        LocalizationBundle message = ResourceLocator
-            .getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle",
-                preferences.getLanguage());
-        serializePersonalSpace(writer, userId, preferences.getLanguage(), helper, settings,
-            message);
-      } else {
-        // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
-        displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
-            defaultLook, displayPDC, false, helper, writer, listUserFS, displayMode,
-            restrictedPath);
-        displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
-      }
-    } else if (StringUtil.isDefined(componentId)) {
-      displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
-    } else if (StringUtil.isDefined(pdc)) {
-      displayNotContextualPDC(userId, mainSessionController, writer);
+      writer.write("</response>");
+      writer.write("</ajax-response>");
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-    writer.write("</response>");
-    writer.write("</ajax-response>");
 
   }
 
   private void displayNotContextualPDC(String userId, MainSessionController mainSC, Writer writer)
       throws IOException {
     try {
-      writer.write("<pdc>");
+      writer.write(PDC_START_TAG);
       getPertinentAxis(null, null, userId, mainSC, writer);
-      writer.write("</pdc>");
+      writer.write(PDC_END_TAG);
     } catch (PdcException e) {
-      SilverTrace.error("lookSilverpeasV5", "Ajax", "root.ERROR");
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
   private void displayPDC(boolean displayPDC, String spaceId, String componentId, String userId,
       MainSessionController mainSC, Writer writer) throws IOException {
     try {
-      writer.write("<pdc>");
+      writer.write(PDC_START_TAG);
       if (displayPDC) {
         getPertinentAxis(spaceId, componentId, userId, mainSC, writer);
       }
-      writer.write("</pdc>");
+      writer.write(PDC_END_TAG);
     } catch (PdcException e) {
-      SilverTrace.error("lookSilverpeasV5", "Ajax", "root.ERROR");
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -403,7 +406,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       attributeType = "spaceTransverse";
     }
 
-    return "id=\"" + space.getId() + "\" name=\"" +
+    return "id=\"" + space.getId() + NAME +
         WebEncodeHelper.escapeXml(space.getName(language)) + "\" description=\"" +
         WebEncodeHelper.escapeXml(space.getDescription()) + "\" type=\"" + attributeType +
         "\" kind=\"space\" level=\"" + space.getLevel() + "\" look=\"" + spaceLook +
@@ -565,7 +568,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       for (SearchAxis primaryAxi : primaryAxis) {
         axis = primaryAxi;
         if (axis != null && axis.getNbObjects() > 0) {
-          out.write("<axis id=\"" + axis.getAxisId() + "\" name=\"" +
+          out.write("<axis id=\"" + axis.getAxisId() + NAME +
               WebEncodeHelper.escapeXml(axis.getAxisName()) +
               "\" description=\"\" level=\"0\" open=\"false\" nbObjects=\"" + axis.getNbObjects() +
               "\"/>");
@@ -629,7 +632,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       for (Value daughter : daughters) {
         value = daughter;
         if (value != null && value.getMotherId().equals(valueId)) {
-          out.write("<value id=\"" + value.getFullPath() + "\" name=\"" +
+          out.write("<value id=\"" + value.getFullPath() + NAME +
               WebEncodeHelper.escapeXml(value.getName()) + "\" description=\"\" level=\"" +
               value.getLevelNumber() + "\" open=\"false\" nbObjects=\"" + value.getNbObjects() +
               "\"/>");
@@ -857,7 +860,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
     void write(Writer writer) throws IOException {
       writer.write(
-          "<item id=\"" + id + "\" name=\"" + WebEncodeHelper.escapeXml(label) + "\" description=\"" +
+          "<item id=\"" + id + NAME + WebEncodeHelper.escapeXml(label) + "\" description=\"" +
               WebEncodeHelper.escapeXml(description) + "\" type=\"" + component + "\" kind=\"" + kind +
               "\" level=\"" + level + "\" open=\"" + open + "\" " + "url=\"" + componentUrl + "\"/>");
     }

@@ -23,23 +23,20 @@
  */
 package org.silverpeas.web.agenda.servlets;
 
-import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 public class SubscribeAgenda extends HttpServlet {
 
@@ -48,24 +45,17 @@ public class SubscribeAgenda extends HttpServlet {
   @Inject
   private AdminController adminController;
 
-  HttpSession session;
-  PrintWriter out;
-
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-
+  @Override
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     String userId = getUserId(req);
     String login = getLogin(req);
     String password = getPassword(req);
-    FileInputStream fs = null;
     try {
-
-
       // Check login/pwd must be a identified user
       UserFull user = adminController.getUserFull(userId);
       if (user != null && login.equals(user.getLogin())
@@ -76,23 +66,21 @@ public class SubscribeAgenda extends HttpServlet {
         res.setContentType("text/calendar");
         res.setHeader("Content-Disposition", "attachment;filename=calendar"
             + userId + ".ics");
-        OutputStream os = res.getOutputStream();
-        fs = new FileInputStream(filePath);
-        // Stream data back to the client
-        int i;
-        while (((i = fs.read()) != -1)) {
-          os.write(i);
+        try (OutputStream os = res.getOutputStream();
+             FileInputStream fs = new FileInputStream(filePath)) {
+          // Stream data back to the client
+          int i;
+          while (((i = fs.read()) != -1)) {
+            os.write(i);
+          }
+          os.flush();
+          res.getOutputStream();
         }
-        os.flush();
-        os.close();
-        res.getOutputStream();
       } else {
-        objectNotFound(req, res);
+        objectNotFound(res);
       }
     } catch (Exception e) {
-      objectNotFound(req, res);
-    } finally {
-      IOUtils.closeQuietly(fs);
+      objectNotFound(res);
     }
 
   }
@@ -113,13 +101,17 @@ public class SubscribeAgenda extends HttpServlet {
     return (UserDetail.getCurrentRequester() != null);
   }
 
-  private void objectNotFound(HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
+  private void objectNotFound(HttpServletResponse res) {
     boolean isLoggedIn = isUserLoggedIn();
-    if (!isLoggedIn) {
-      res.sendRedirect("/weblib/notFound.html");
-    } else {
-      res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+    try {
+      if (!isLoggedIn) {
+        res.sendRedirect("/weblib/notFound.html");
+      } else {
+        res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 

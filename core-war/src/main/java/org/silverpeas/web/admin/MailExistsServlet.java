@@ -23,13 +23,12 @@
  */
 package org.silverpeas.web.admin;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,29 +41,29 @@ public class MailExistsServlet extends HttpServlet {
   private Administration admin;
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     processRequest(req, resp);
   }
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     processRequest(req, resp);
   }
 
-  private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  private void processRequest(HttpServletRequest req, HttpServletResponse resp) {
     resp.setContentType("text/html");
-    PrintWriter out = resp.getWriter();
-
     String email = req.getParameter("email");
     if (StringUtil.isDefined(email)) {
       try {
         if (admin.isEmailExisting(email)) {
+          PrintWriter out = resp.getWriter();
           out.print("MailExists");
         }
       } catch (AdminException e) {
-        SilverTrace.error("admin", "MailExistsServlet", "root.CANT_CHECK_EMAIL", "email : "+email, e );
+        SilverLogger.getLogger(this).error(e);
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).error(e);
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       }
     }
   }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.calendar;
 
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.personalorganizer.model.Classification;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
@@ -35,7 +34,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,21 +65,16 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   private SilverpeasCalendar calendar;
 
   public List<CalendarEntry> read(InputStream in) {
-    try {
-      CalendarEntry[] entries = JSONCodec.decode(in, CalendarEntry[].class);
-      return Arrays.asList(entries);
-    } finally {
-      IOUtils.closeQuietly(in);
-    }
+    CalendarEntry[] entries = JSONCodec.decode(in, CalendarEntry[].class);
+    return Arrays.asList(entries);
   }
 
   @Override
-  protected void service(HttpServletRequest request, HttpServletResponse response) throws
-      ServletException, IOException {
+  protected void service(HttpServletRequest request, HttpServletResponse response) {
     String report = "";
-    try {
+    try (InputStream input = new BufferedInputStream(request.getInputStream())) {
       // read the serialized JournalHeader list from applet
-      List<CalendarEntry> entries = read(new BufferedInputStream(request.getInputStream()));
+      List<CalendarEntry> entries = read(input);
 
       // continue the process for registering the student object
       int nbEventsUpdated = 0;
@@ -134,11 +127,9 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
     }
 
     // send back report to applet
-    OutputStream out = response.getOutputStream();
-    try {
+    try (OutputStream out = response.getOutputStream()) {
       out.write(report.getBytes(Charsets.UTF_8));
       out.flush();
-      out.close();
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

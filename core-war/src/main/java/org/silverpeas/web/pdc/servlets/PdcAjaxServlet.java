@@ -24,8 +24,8 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,36 +46,31 @@ public class PdcAjaxServlet extends HttpServlet {
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request The HTPP request.
    * @param response The HTTP response.
-   * @throws ServletException if a servlet-specific error occurs.
-   * @throws IOException if an I/O error occurs.
    */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
     String fieldName = request.getParameter("fieldName");
     String positions = request.getParameter("positions");
     String language = request.getParameter("language");
     response.setContentType(SERVLET_HTML_CONTENT_TYPE);
-    PrintWriter out = response.getWriter();
 
     PdcFieldDisplayer displayer = new PdcFieldDisplayer();
     String content = displayer.getPositionsDivContent(fieldName, positions, language);
 
-    try {
+    try(PrintWriter out = response.getWriter()) {
       out.println(content);
-    } finally {
-      out.close();
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 

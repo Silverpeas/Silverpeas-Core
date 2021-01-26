@@ -23,31 +23,28 @@
  */
 package org.silverpeas.web.jobdomain.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import java.io.IOException;
+import java.io.Writer;
 
 public class JobDomainPeasAjaxServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
     HttpSession session = req.getSession(true);
 
@@ -61,8 +58,13 @@ public class JobDomainPeasAjaxServlet extends HttpServlet {
       result = checkUser(req, sc);
     }
 
-    Writer writer = resp.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   private String getAction(HttpServletRequest req) {

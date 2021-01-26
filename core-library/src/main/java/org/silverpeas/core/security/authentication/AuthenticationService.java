@@ -84,7 +84,6 @@ public class AuthenticationService {
   public static final String ERROR_AUTHENTICATION_FAILURE = "Error_2";
   public static final String ERROR_PASSWORD_NOT_AVAILABLE = "Error_5";
   public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "Error_6";
-
   private static final String DATA_SOURCE_JNDI_NAME;
   private static final String DOMAIN_TABLE_NAME;
   private static final String DOMAIN_ID_COLUMN_NAME;
