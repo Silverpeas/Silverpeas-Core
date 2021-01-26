@@ -25,18 +25,18 @@ package org.silverpeas.web.attachment;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -55,14 +55,12 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
   private AttachmentService attachmentService;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse resp) {
     HttpRequest req = HttpRequest.decorate(request);
 
     String action = getAction(req);
@@ -78,8 +76,13 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
       result = sort(req);
     }
 
-    Writer writer = resp.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   private String getAction(HttpRequest req) {
