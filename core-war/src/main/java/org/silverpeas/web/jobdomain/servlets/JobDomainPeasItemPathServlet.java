@@ -28,9 +28,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,14 +45,12 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
   private static final String SEPARATOR = " > ";
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
     HttpSession session = req.getSession(true);
 
@@ -70,8 +68,14 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
     } else if (StringUtil.isDefined(componentId)) {
       result = getComponentPath(sc, componentId);
     }
-    Writer writer = resp.getWriter();
-    writer.write(result);
+
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   private String getGroupPath(JobDomainPeasSessionController sc, String groupId) {
