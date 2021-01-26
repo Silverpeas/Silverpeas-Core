@@ -29,16 +29,15 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -55,79 +54,77 @@ public class FileServer extends AbstractFileSender {
   private OrganizationController organizationController;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
-  /**
-   * Method declaration
-   *
-   * @param req
-   * @param res
-   * @throws IOException
-   * @throws ServletException
-   *
-   */
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    try {
+      String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
 
-    String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
+      HttpSession session = req.getSession(true);
+      MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+          MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
+        SilverLogger.getLogger(this)
+            .warn("Session timeout after {1}. New session id: {0}", session.getId(),
+                ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+        res.sendRedirect(URLUtil.getApplicationURL() +
+            ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+        return;
+      }
 
-    HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
-      SilverTrace.warn("util", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLUtil.getApplicationURL() +
-              ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
-      res.sendRedirect(URLUtil.getApplicationURL() +
-          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
-      return;
-    }
+      String mimeType = req.getParameter(MIME_TYPE_PARAMETER);
+      String sourceFile = req.getParameter(SOURCE_FILE_PARAMETER);
+      String archiveIt = req.getParameter(ARCHIVE_IT_PARAMETER);
+      String dirType = req.getParameter(DIR_TYPE_PARAMETER);
+      String userId = req.getParameter(USER_ID_PARAMETER);
+      String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
+      String size = req.getParameter(SIZE_PARAMETER);
 
-    String mimeType = req.getParameter(MIME_TYPE_PARAMETER);
-    String sourceFile = req.getParameter(SOURCE_FILE_PARAMETER);
-    String archiveIt = req.getParameter(ARCHIVE_IT_PARAMETER);
-    String dirType = req.getParameter(DIR_TYPE_PARAMETER);
-    String userId = req.getParameter(USER_ID_PARAMETER);
-    String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
-    String size = req.getParameter(SIZE_PARAMETER);
+      if (StringUtil.isDefined(size)) {
+        sourceFile = size + File.separatorChar + sourceFile;
+      }
 
-    if (StringUtil.isDefined(size)) {
-      sourceFile = size + File.separatorChar + sourceFile;
-    }
-
-    SilverpeasFileDescriptor descriptor =
-        new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
-    if (typeUpload != null) {
-      descriptor.absolutePath();
-    } else {
-      if (dirType != null) {
-        if (dirType.equals(
-            ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
-          descriptor = descriptor.temporaryFile();
-        }
+      SilverpeasFileDescriptor descriptor =
+          new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
+      if (typeUpload != null) {
+        descriptor.absolutePath();
       } else {
-        String directory = req.getParameter(DIRECTORY_PARAMETER);
-        descriptor = descriptor.parentDirectory(directory);
+        if (dirType != null) {
+          if (dirType.equals(
+              ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
+            descriptor = descriptor.temporaryFile();
+          }
+        } else {
+          String directory = req.getParameter(DIRECTORY_PARAMETER);
+          descriptor = descriptor.parentDirectory(directory);
+        }
       }
-    }
-    SilverpeasFile file = SilverpeasFileProvider.getFile(descriptor);
-    sendFile(req, res, file);
+      SilverpeasFile file = SilverpeasFileProvider.getFile(descriptor);
+      sendFile(req, res, file);
 
-    if (StringUtil.isDefined(archiveIt)) {
-      String nodeId = req.getParameter(NODE_ID_PARAMETER);
-      String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
-      ResourceReference pubPK = new ResourceReference(pubId, componentId);
-      try {
-        StatisticService statisticService = StatisticService.get();
-        statisticService.addStat(userId, pubPK, 1, "Publication");
-      } catch (Exception ex) {
-        SilverTrace.warn("util", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
-            "pubPK = " + pubPK + " and nodeId = " + nodeId, ex);
+      if (StringUtil.isDefined(archiveIt)) {
+        String nodeId = req.getParameter(NODE_ID_PARAMETER);
+        String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
+        ResourceReference pubPK = new ResourceReference(pubId, componentId);
+        addStatistic(userId, nodeId, pubPK);
       }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private void addStatistic(final String userId, final String nodeId,
+      final ResourceReference pubPK) {
+    try {
+      StatisticService statisticService = StatisticService.get();
+      statisticService.addStat(userId, pubPK, 1, "Publication");
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this)
+          .error("Cannot write statistics about publication " + pubPK + " in node " + nodeId, ex);
     }
   }
 
@@ -138,8 +135,8 @@ public class FileServer extends AbstractFileSender {
       // Personal space
       isAllowed = true;
     } else {
-      if ("yes"
-          .equalsIgnoreCase(controller.getComponentParameterValue(componentId, "publicFiles"))) {
+      if ("yes".equalsIgnoreCase(
+          controller.getComponentParameterValue(componentId, "publicFiles"))) {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
