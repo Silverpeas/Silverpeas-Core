@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -30,9 +31,9 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
 import static org.silverpeas.core.util.StringUtil.*;
@@ -70,33 +72,45 @@ public class AutoRedirectServlet extends HttpServlet {
    * @param response servlet response
    * @throws IOException if an I/O error occurs
    */
-  private void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+  private void processRequest(HttpServletRequest request, HttpServletResponse response) {
     prepareResponseHeader(response);
     final HttpRequest httpRequest = HttpRequest.decorate(request);
     final Context context = new Context(httpRequest, response).init();
     final MainSessionController mainController = context.getMainSessionController();
     final GraphicElementFactory gef = context.getGraphicElementFactory();
 
-    // The user is either not connected or as the anonymous user. He comes back to the login page.
-    if (mainController == null ||
-        (gef != null && UserDetail.isAnonymousUser(mainController.getUserId()) && context.notExistsGoto())) {
-      loginPageRedirection(context);
-    } else {
-      if (isAccessComponentForbidden(context.getComponentId(), mainController) ||
-          isAccessSpaceForbidden(context.getSpaceId(), mainController)) {
-        if (httpRequest.isWithinAnonymousUserSession()) {
-          loginPageRedirection(context);
-        } else {
-          forbiddenPageRedirection(context);
-        }
-      } else if (isAppInMaintenance() && !mainController.getCurrentUserDetail().isAccessAdmin()) {
-        appInMaintenancePageRedirection(context);
-      } else if (gef != null) {
-        mainPageRedirection(context);
-      } else {
+    try {
+
+      // The user is either not connected or as the anonymous user. He comes back to the login page.
+      if (mainController == null ||
+          (gef != null && UserDetail.isAnonymousUser(mainController.getUserId()) && context.notExistsGoto())) {
         loginPageRedirection(context);
+      } else {
+        redirect(httpRequest, context, mainController, gef);
       }
+
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(SC_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private void redirect(final HttpRequest httpRequest, final Context context,
+      final MainSessionController mainController, final GraphicElementFactory gef)
+      throws IOException {
+    if (isAccessComponentForbidden(context.getComponentId(), mainController) ||
+        isAccessSpaceForbidden(context.getSpaceId(), mainController)) {
+      if (httpRequest.isWithinAnonymousUserSession()) {
+        loginPageRedirection(context);
+      } else {
+        forbiddenPageRedirection(context);
+      }
+    } else if (isAppInMaintenance() && !mainController.getCurrentUserDetail().isAccessAdmin()) {
+      appInMaintenancePageRedirection(context);
+    } else if (gef != null) {
+      mainPageRedirection(context);
+    } else {
+      loginPageRedirection(context);
     }
   }
 
@@ -141,9 +155,10 @@ public class AutoRedirectServlet extends HttpServlet {
         SilverpeasComponentInstance.getById(componentId)
             .ifPresent(i -> isPersonalComponent.set(i.isPersonal()));
       }
+      boolean isPersoComp = isPersonalComponent.get();
       sendJsonResponse(context, JSONCodec.encodeObject(o ->
           o.put("contentUrl", context.getGotoUrl())
-           .put(isPersonalComponent.get() ? "RedirectToPersonalComponentId" : REDIRECT_TO_COMPONENT_ID_ATTR, componentId)
+           .put(isPersoComp ? "RedirectToPersonalComponentId" : REDIRECT_TO_COMPONENT_ID_ATTR, componentId)
            .put(REDIRECT_TO_SPACE_ID_ATTR, spaceId)));
     } else {
       String mainFrame = context.getGraphicElementFactory().getLookFrame();
@@ -183,7 +198,7 @@ public class AutoRedirectServlet extends HttpServlet {
 
   private boolean isAccessComponentForbidden(String componentId,
       MainSessionController mainController) {
-    return isDefined(componentId) && !StringUtil.isAlpha(componentId) &&
+    return isDefined(componentId) && !StringUtils.isAlpha(componentId) &&
         !ComponentAccessControl.get().isUserAuthorized(mainController.getUserId(), componentId);
   }
 
@@ -195,8 +210,7 @@ public class AutoRedirectServlet extends HttpServlet {
    * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
@@ -208,8 +222,7 @@ public class AutoRedirectServlet extends HttpServlet {
    * @throws IOException if an I/O error occurs
    */
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
@@ -255,8 +268,8 @@ public class AutoRedirectServlet extends HttpServlet {
 
     private static boolean isSilverpeasIdValid(String silverpeasId) {
       return isDefined(silverpeasId)
-          && !StringUtil.isAlpha(silverpeasId)
-          && StringUtil.isAlphanumeric(silverpeasId.replaceAll("[-_]",""));
+          && !StringUtils.isAlpha(silverpeasId)
+          && StringUtils.isAlphanumeric(silverpeasId.replaceAll("[-_]",""));
     }
 
     private void setIntoSession(String name, Serializable value) {
