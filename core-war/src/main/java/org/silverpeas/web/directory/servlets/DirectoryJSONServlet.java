@@ -23,15 +23,14 @@
  */
 package org.silverpeas.web.directory.servlets;
 
-import org.silverpeas.web.directory.control.DirectorySessionController;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.web.directory.control.DirectorySessionController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,42 +43,51 @@ public class DirectoryJSONServlet extends HttpServlet {
   private static final long serialVersionUID = 3351692741655439410L;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
-    HttpSession session = req.getSession(true);
-    DirectorySessionController dsc = (DirectorySessionController) session.getAttribute(
-        "Silverpeas_directory");
-    if (dsc == null) {
-      MainSessionController msc = (MainSessionController) session.getAttribute(
-          MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      if (msc != null) {
-        dsc = new DirectorySessionController(msc, msc.createComponentContext(null, null));
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    try {
+      HttpSession session = req.getSession(true);
+      DirectorySessionController dsc =
+          (DirectorySessionController) session.getAttribute("Silverpeas_directory");
+      if (dsc == null) {
+        MainSessionController msc = (MainSessionController) session.getAttribute(
+            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        if (msc != null) {
+          dsc = new DirectorySessionController(msc, msc.createComponentContext(null, null));
+        }
       }
-    }
-    res.setContentType("application/json");
-    String action = req.getParameter("Action");
-    Writer writer = res.getWriter();
-    String jsonStatus = "";
-    if ("SendMessage".equals(action) && dsc != null) {
-      try {
-        UserRecipient[] selectedUsers = new UserRecipient[1];
-        selectedUsers[0] = new UserRecipient(req.getParameter("TargetUserId"));
-        String title = req.getParameter("Title");
-        String message = Encode.forHtml(req.getParameter("Message"));
-        dsc.sendMessage(null, title, message, selectedUsers);
-        jsonStatus = JSONCodec.encodeObject(o -> o.put("success", true));
-      } catch (NotificationException ex) {
-        SilverTrace.error("directory", "DirectoryRequestRouter.sendMessage", "ERROR", ex);
-        jsonStatus =
-            JSONCodec.encodeObject(o -> o.put("success", false).put("error", ex.toString()));
+      res.setContentType("application/json");
+      String action = req.getParameter("Action");
+      Writer writer = res.getWriter();
+      String jsonStatus = "";
+      if ("SendMessage".equals(action) && dsc != null) {
+        jsonStatus = sendMessage(req, dsc);
       }
+      writer.write(jsonStatus);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-    writer.write(jsonStatus);
+  }
+
+  private String sendMessage(final HttpServletRequest req, final DirectorySessionController dsc) {
+    String jsonStatus;
+    try {
+      UserRecipient[] selectedUsers = new UserRecipient[1];
+      selectedUsers[0] = new UserRecipient(req.getParameter("TargetUserId"));
+      String title = req.getParameter("Title");
+      String message = Encode.forHtml(req.getParameter("Message"));
+      dsc.sendMessage(null, title, message, selectedUsers);
+      jsonStatus = JSONCodec.encodeObject(o -> o.put("success", true));
+    } catch (NotificationException ex) {
+      SilverLogger.getLogger(this).error(ex);
+      jsonStatus =
+          JSONCodec.encodeObject(o -> o.put("success", false).put("error", ex.toString()));
+    }
+    return jsonStatus;
   }
 }

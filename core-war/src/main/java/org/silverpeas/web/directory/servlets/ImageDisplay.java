@@ -38,24 +38,26 @@ public class ImageDisplay extends HttpServlet {
   private static final long serialVersionUID = -5179071528136683667L;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     SilverLogger logger = SilverLogger.getLogger(this);
     String avatarPath = getAvatar(req);
     ImageProfil profile = new ImageProfil(avatarPath);
-    if (!profile.exist()) {
-      logger.warn("The image {0} doesn't exist", avatarPath);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
-    } else {
-      res.setContentType(profile.getMimeType());
-      res.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-      res.setHeader("Pragma", "no-cache");
-      res.setDateHeader("Expires", -1);
-      try (InputStream in = profile.getImage(); OutputStream out = res.getOutputStream()) {
-        IOUtils.copy(in, out);
-      } catch (IOException e) {
-        logger.error("Error while getting image {0}", avatarPath);
-        throw e;
+    try {
+      if (!profile.exist()) {
+        logger.warn("The image {0} doesn't exist", avatarPath);
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      } else {
+        res.setContentType(profile.getMimeType());
+        res.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+        res.setHeader("Pragma", "no-cache");
+        res.setDateHeader("Expires", -1);
+        try (InputStream in = profile.getImage(); OutputStream out = res.getOutputStream()) {
+          IOUtils.copy(in, out);
+        }
       }
+    } catch (IOException e) {
+      logger.error("Error while getting image {0}", avatarPath);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
