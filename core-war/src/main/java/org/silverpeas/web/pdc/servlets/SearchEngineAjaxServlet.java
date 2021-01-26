@@ -23,10 +23,10 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
-import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,42 +47,40 @@ public class SearchEngineAjaxServlet extends HttpServlet {
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-   * @param req The HTPP request.
+   * @param req The HTTP request.
    * @param resp The HTTP response.
-   * @throws ServletException if a servlet-specific error occurs.
-   * @throws IOException if an I/O error occurs.
    */
-  protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void processRequest(HttpServletRequest req, HttpServletResponse resp) {
 
     String action = getAction(req);
 
-    String result = null;
+    String result;
     if (ACTION_MARK_AS_READ.equals(action)) {
       result = markAsRead(req);
     } else {
       result = "{success:false, message:'Unknown action servlet'}";
     }
 
-    // Prepare response
-    // resp.setContentType("application/json;charset=UTF-8");
     resp.setContentType("text");
     resp.setHeader("charset", "UTF-8");
 
     // Send response
-    Writer writer = resp.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     processRequest(request, response);
   }
 
