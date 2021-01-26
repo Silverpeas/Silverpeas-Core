@@ -35,10 +35,8 @@ import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServl
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.MissingResourceException;
 
 /**
@@ -57,8 +55,7 @@ public class ChatUserRegistrationServlet extends SilverpeasAuthenticatedHttpServ
   private ChatUsersRegistration registration;
 
   @Override
-  protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) {
     final User requester = User.getCurrentRequester();
     final LocalizationBundle messages =
         getLocalizedBundle(requester.getUserPreferences().getLanguage());
@@ -67,7 +64,8 @@ public class ChatUserRegistrationServlet extends SilverpeasAuthenticatedHttpServ
         registerAllUsers();
         notify(requester, SUCCESS_MESSAGE);
       } catch (MissingResourceException e) {
-        throw e;
+        SilverLogger.getLogger(this).error(e);
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       } catch (Exception e) {
         SilverLogger.getLogger(ChatUserRegistrationServlet.class).error(e);
         notify(requester, FAILURE_MESSAGE);
