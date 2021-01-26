@@ -75,8 +75,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @throws IOException
    */
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
     MainSessionController mainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -100,8 +99,6 @@ public class NewsFeedJSONServlet extends HttpServlet {
       session.setAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE, LocalDate.now());
     }
 
-    Map<Date, List<SocialInformation>> map = new LinkedHashMap<>();
-
     try {
       // recover the type
       SocialInformationType type = SocialInformationType.valueOf(request.getParameter("type"));
@@ -120,7 +117,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
 
       Period period = getPeriod(session, settings);
 
-      map = getInformation(view, userId, type, anotherUserId, period);
+      Map<Date, List<SocialInformation>> map = getInformation(view, userId, type, anotherUserId, period);
 
       int nbTries = 0;
       while (getNumberOfInformations(map) < minNbDataBeforeNewTry && nbTries < maxNbTries) {
@@ -130,13 +127,14 @@ public class NewsFeedJSONServlet extends HttpServlet {
         nbTries++;
       }
 
+      response.setCharacterEncoding("UTF-8");
+      response.setContentType("application/json");
+      PrintWriter out = response.getWriter();
+      out.println(toJsonS(map, multilang));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-    response.setCharacterEncoding("UTF-8");
-    response.setContentType("application/json");
-    PrintWriter out = response.getWriter();
-    out.println(toJsonS(map, multilang));
   }
 
   private Period getPeriod(HttpSession session, SettingBundle settings) {
