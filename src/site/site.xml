@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2020 Silverpeas
+    Copyright (C) 2000 - 2021 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,9 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd">
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd">
   <bannerLeft>
     <name>Silverpeas</name>
     <src>images/logo-silverpeas.png</src>
@@ -36,12 +38,12 @@
   <version position="right" />
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans" href="http://netbeans.org/downloads/index.html" img="https://www.silverpeas.org/images/logos/logo_netBeans.gif" />
-    <logo name="Eclipse"  href="http://www.eclipse.org" img="https://www.silverpeas.org/images/logos/logo_eclipse.png" />
-    <logo name="Maven" href="http://maven.apache.org/" img="https://www.silverpeas.org/images/logos/logo_maven.png" />
-    <logo name="Izpack" href="http://izpack.org/" img="https://www.silverpeas.org/images/logos/logo_izPack.png" />
-    <logo name="Subshell Toromiro" href="http://www.subshell.com/en/toromiro/" img="https://www.silverpeas.org/images/logos/toromiro-logo.png" />
-    <logo name="Yourkit" href="http://www.yourkit.com" img="https://www.silverpeas.org/images/logos/yourkit-logo.png" />
+    <logo name="Netbeans" href="https://netbeans.apache.org/download/index.html" img="images/logos/logo_netBeans.gif" />
+    <logo name="Eclipse"  href="https://www.eclipse.org" img="images/logos/logo_eclipse.png" />
+    <logo name="Maven" href="https://maven.apache.org/" img="images/logos/logo_maven.png" />
+    <logo name="Izpack" href="https://izpack.org/" img="images/logos/logo_izPack.png" />
+    <logo name="Subshell Toromiro" href="https://www.subshell.com/en/toromiro/" img="images/logos/toromiro-logo.png" />
+    <logo name="Yourkit" href="https://www.yourkit.com" img="images/logos/yourkit-logo.png" />
   </poweredBy>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
@@ -50,68 +52,67 @@
   </skin>
   <body>
     <breadcrumbs>
-      <item name="Silverpeas" href="http://www.silverpeas.org"/>
-      <item name="Silverpeas Core" href="index.html"/>
+      <item name="Silverpeas" href="https://www.silverpeas.org"/>
     </breadcrumbs>
     <menu name="Silverpeas" inherit="top">
-      <item name="About" href="../../intro.html" collapse="false"/>
-      <item name="Key Features" href="../../product/features.html" collapse="true"/>
-      <item name="Applications" href="../../product/applications.html" collapse="true">
-        <item name="Social Network" href="../../product/social_network.html" collapse="true"/>
-        <item name="Electronic Documentation Management" href="../../product/documentation_management.html" collapse="true"/>
-        <item name="Content Management" href="../../product/content_management.html" collapse="true"/>
-        <item name="Data Collection" href="../../product/data_collection.html" collapse="true"/>
-        <item name="Pictures Management" href="../../product/gallery.html" collapse="true"/>
-        <item name="Knowledge Management" href="../../product/knowledge_management.html" collapse="true"/>
-        <item name="Project Documentation" href="../../product/project_documentation.html" collapse="true"/>
+      <item name="About" href="/intro.html" collapse="false"/>
+      <item name="Key Features" href="/product/features.html" collapse="true"/>
+      <item name="Applications" href="/product/applications.html" collapse="true">
+        <item name="Social Network" href="product/social_network.html" collapse="true"/>
+        <item name="Electronic Documentation Management" href="/product/documentation_management.html" collapse="true"/>
+        <item name="Content Management" href="/product/content_management.html" collapse="true"/>
+        <item name="Data Collection" href="/product/data_collection.html" collapse="true"/>
+        <item name="Pictures Management" href="/product/gallery.html" collapse="true"/>
+        <item name="Knowledge Management" href="/product/knowledge_management.html" collapse="true"/>
+        <item name="Project Documentation" href="/product/project_documentation.html" collapse="true"/>
       </item>
-      <item name="Screenshots" href="../../screenshots.html" collapse="true"/>
-      <item name="Install Silverpeas" href="../../installation/index.html" collapse="true">
-        <item name="Try Silverpeas" href="../../installation/izpack.html" collapse="false"/>
-        <item name="Installation of Silverpeas 6" href="../../installation/installationV6.html" collapse="false"/>
-        <item name="Silverpeas in the Cloud" href="../../installation/cloud.html" collapse="false" />
-        <item name="Online Edition of Documents" href="../../installation/webdav.html" collapse="false"/>
+      <item name="Screenshots" href="/screenshots.html" collapse="true"/>
+      <item name="Install Silverpeas" href="/installation/index.html" collapse="true">
+        <item name="Try Silverpeas" href="/installation/izpack.html" collapse="false"/>
+        <item name="Installation of Silverpeas 6" href="/installation/installationV6.html" collapse="false"/>
+        <item name="Silverpeas in the Cloud" href="/installation/cloud.html" collapse="false" />
+        <item name="Online Edition of Documents" href="/installation/webdav.html" collapse="false"/>
       </item>
       <item name="Our versions" href="#" collapse="true">
-        <item name="Roadmap" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1" collapse="false"/>
+        <item name="Roadmap" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap" collapse="false"/>
         <item name="Changelog" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
-        <item name="Release Notes" href="releasenotes.html" collapse="false"/>
+        <item name="Release Notes" href="/releasenotes.html" collapse="false"/>
       </item>
+      <item name="Source Code" href="/source-repository.html" collapse="true"/>
       <item name="Some Configuration Tips" href="#" collapse="true">
-        <item name="LDAP Synchronization" href="../../configuration/ldap.html" collapse="false"/>
-        <item name="Configuring a reverse-proxy" href="../../configuration/proxy.html"  collapse="true"/>
+        <item name="LDAP Synchronization" href="/configuration/ldap.html" collapse="false"/>
+        <item name="Configuring a reverse-proxy" href="/configuration/proxy.html"  collapse="true"/>
       </item>
-      <item name="FAQ" href="../../faq.html" collapse="true"/>
-      <item name="Blog" href="http://www.silverpeas.org/blog" collapse="true"/>
+      <item name="FAQ" href="/faq.html" collapse="true"/>
     </menu>
     <menu name="Silverpeas Projects" inherit="top">
       <item name="Global information" href="#" collapse="true">
-        <item name="About Silverpeas" href="../../intro.html"/>
-        <item name="Team" href="../../team-list.html"/>
-        <item name="Mailing List" href="../../mail-lists.html"/>
-        <item name="Issue Tracking" href="../../issue-tracking.html"/>
-        <item name="Source Repository" href="../../source-repository.html"/>
-        <item name="Continuous Integration" href="../../integration.html"/>
+        <item name="About Silverpeas" href="/intro.html"/>
+        <item name="Team" href="/team-list.html"/>
+        <item name="Mailing List" href="/mail-lists.html"/>
+        <item name="Issue Tracking" href="/issue-tracking.html"/>
+        <item name="Source Repository" href="/source-repository.html"/>
+        <item name="Continuous Integration" href="/integration.html"/>
       </item>
-      <item name="Silverpeas Core" href="index.html"/>
-      <item name="Silverpeas Applications" href="../components/index.html"/>
+      <item name="Sivlerpeas Core" href="/docs/core/index.html"/>
+      <item name="Silverpeas Applications" href="/docs/components/index.html"/>
     </menu>
-    <menu name="How to contribute" inherit="top">
-      <item name="Contribution" href="../../dev/collaboration.html" collapse="true"/>
-      <item name="Code Quality" href="../../dev/quality.html" collapse="true"/>
-      <item name="Testing the LDAP code" href="../../dev/ldap_testing.html" collapse="true"/>
+    <menu name="How to contribute" inherit="none">
+      <item name="Contribution" href="/dev/collaboration.html" collapse="true"/>
+      <item name="Code Quality" href="/dev/quality.html" collapse="true"/>
+      <item name="Testing the LDAP code" href="/dev/ldap_testing.html" collapse="true"/>
     </menu>
-    <menu name="Licensing" inherit="top">
-      <item name="License" href="../../legal/licensing_gnu_affero.html" collapse="true"/>
-      <item name="Licensing FAQ" href="../../legal/licensing_faq.html" collapse="true"/>
-      <item name="FLOSS Exception" href="../../legal/floss_exception.html" collapse="true"/>
-      <item name="Silverpeas Trade Mark" href="../../legal/trademark.html" collapse="true"/>
+    <menu name="Licensing" inherit="none">
+      <item name="License" href="/legal/licensing_gnu_affero.html" collapse="true"/>
+      <item name="Licensing FAQ" href="/legal/licensing_faq.html" collapse="true"/>
+      <item name="FLOSS Exception" href="/legal/floss_exception.html" collapse="true"/>
+      <item name="Silverpeas Trade Mark" href="/legal/trademark.html" collapse="true"/>
     </menu>
     <menu name="Silverpeas Core Documentation" ref="reports"/>
     <footer>
       <![CDATA[
       <div class="license">
-        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>.
+        <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>.
       </div>
       ]]>
     </footer>
