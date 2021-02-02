@@ -85,14 +85,11 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
         String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();
         String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
         SilverpeasJcrWebdavContext silverpeasJcrWebdavContext = createWebdavContext(documentUrl, token);
-        if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
-          response.setContentType("application/javascript");
-          response.setHeader("Content-Disposition", "inline; filename=launch.js");
-          String webDavUrl = silverpeasJcrWebdavContext.getWebDavUrl().replaceFirst("^http", WebDavProtocol.WEBDAV_SCHEME);
-          response.getWriter().append("window.location.href='").append(webDavUrl).append("';");
-        } else {
-          response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
+        response.setContentType("application/javascript");
+        response.setHeader("Content-Disposition", "inline; filename=launch.js");
+        String webDavUrl = silverpeasJcrWebdavContext.getWebDavUrl()
+            .replaceFirst("^http", WebDavProtocol.WEBDAV_SCHEME);
+        response.getWriter().append("window.location.href='").append(webDavUrl).append("';");
       }
     } catch (ServletException | IOException e) {
       SilverLogger.getLogger(this).error(e);

@@ -83,7 +83,6 @@
   <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
   <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
   <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
-  <view:settings var="onlineEditingWithCustomProtocol" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="attachment.onlineEditing.customProtocol" />
   <view:settings var="onlineEditingWithCustomProtocolAlert" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${true}" key="attachment.onlineEditing.customProtocol.alert" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
   <c:set var="dndDisabledLocally" value="${silfn:isDefined(param.dnd) and not silfn:booleanValue(param.dnd)}" scope="page"/>
@@ -505,13 +504,8 @@
             $worker.css({'visibility':'visible'});
             if (edit) {
               if (!wopi) {
-                <c:if test="${onlineEditingWithCustomProtocol}">
                 // display alert popin
                 showInformationAboutOnlineEditingWithCustomProtocol(id, lang);
-                </c:if>
-                <c:if test="${not onlineEditingWithCustomProtocol}">
-                window.open(getOnlineEditionLauncherURL(id, lang), '_self');
-                </c:if>
               } else {
                 openWebBrowserEdition();
               }
