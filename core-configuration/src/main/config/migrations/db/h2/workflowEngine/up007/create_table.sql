@@ -14,10 +14,8 @@ CREATE TABLE SB_Workflow_Replacements (
   CONSTRAINT PK_REPLACEMENT PRIMARY KEY (id)
 );
 
-CREATE INDEX IDX_INCUMBENT
-  ON SB_Workflow_Replacements (incumbentId, workflowId);
-CREATE INDEX IDX_SUBSTITUTE
-  ON SB_Workflow_Replacements (substituteId, workflowId);
+CREATE INDEX IDX_INCUMBENT ON SB_Workflow_Replacements(incumbentId, workflowId);
+CREATE INDEX IDX_SUBSTITUTE ON SB_Workflow_Replacements(substituteId, workflowId);
 
 ALTER TABLE sb_workflow_historystep
-  ADD COLUMN substituteId VARCHAR(40);
+  ADD COLUMN substituteId VARCHAR(40) NULL;

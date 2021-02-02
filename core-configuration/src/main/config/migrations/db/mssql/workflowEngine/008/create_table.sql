@@ -22,6 +22,7 @@ CREATE TABLE SB_Workflow_HistoryStep
   instanceId    int NOT NULL,
   id            int NOT NULL,
   userId        varchar(50),
+  substituteId  varchar(40) NULL,
   userRoleName  varchar(50),
   action        varchar(50),
   actionDate    datetime,
