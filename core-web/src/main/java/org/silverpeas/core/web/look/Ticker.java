@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
