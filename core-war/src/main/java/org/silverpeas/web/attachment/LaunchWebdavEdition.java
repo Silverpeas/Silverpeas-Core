@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.webdav.WebdavWopiFile;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -37,7 +37,7 @@ import org.silverpeas.core.web.attachment.WebDavProtocol;
 import org.silverpeas.core.web.attachment.WebDavTokenProducer;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
-import org.silverpeas.core.webapi.wopi.WebWopiFileEdition;
+import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -77,9 +77,9 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
       }
 
     try {
-      final Optional<String> wopiEditorUrl = Optional.of(wbe).filter(w -> w).flatMap(w -> WebWopiFileEdition.get().initializeWith(request, new WebdavWopiFile(document)));
-      if (wopiEditorUrl.isPresent()) {
-        final RequestDispatcher requestDispatcher = request.getRequestDispatcher(wopiEditorUrl.get());
+      final Optional<String> wbeEditorUrl = Optional.of(wbe).filter(w -> w).flatMap(w -> WbeFileEdition.get().initializeWith(request, new WebdavWbeFile(document)));
+      if (wbeEditorUrl.isPresent()) {
+        final RequestDispatcher requestDispatcher = request.getRequestDispatcher(wbeEditorUrl.get());
         requestDispatcher.forward(request, response);
       } else {
         String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();

@@ -28,13 +28,13 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.webdav.WebdavWopiFile;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.wopi.WopiFileEditionManager;
+import org.silverpeas.core.wbe.WbeHostManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -140,7 +140,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     final String userId = user.getId();
     final String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     final boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
-    final boolean webBrowserEdition = useWebDAV && WopiFileEditionManager.get().isHandled(new WebdavWopiFile(attachment));
+    final boolean webBrowserEdition = useWebDAV && WbeHostManager.get().isHandled(new WebdavWbeFile(attachment));
     final boolean editableSimultaneously = webBrowserEdition && attachment.editableSimultaneously().orElse(false);
     StringBuilder builder = new StringBuilder(HTML_BUFFER_CAPACITY);
 

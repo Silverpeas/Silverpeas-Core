@@ -73,7 +73,7 @@ function openGalleryFileManager(editorName, componentId) {
     componentId = document.getElementById("galleryFile").options[index].value;
   }
 	if (componentId) {
-		var url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&amp;Language="+getUserLanguage();
+		var url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language="+getUserLanguage();
 		var windowName = "galleryWindow";
 		var larg = "820";
 		var haut = "600";

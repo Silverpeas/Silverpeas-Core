@@ -478,7 +478,7 @@
   <c:if test="${contextualMenuEnabled}" >
     var pageMustBeReloadingAfterSorting = false;
 
-    function checkout(id, oldId, webdav, wopi, edit, download, lang) {
+    function checkout(id, oldId, webdav, wbe, edit, download, lang) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
         $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(formattedDateTimeData) {
@@ -503,7 +503,7 @@
             $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> " + formattedDateTimeData);
             $worker.css({'visibility':'visible'});
             if (edit) {
-              if (!wopi) {
+              if (!wbe) {
                 // display alert popin
                 showInformationAboutOnlineEditingWithCustomProtocol(id, lang);
               } else {
@@ -513,7 +513,7 @@
               let url = $('#url_' + oldId).attr('href');
               window.open(url);
             }
-          } else if(wopi) {
+          } else if(wbe) {
             openWebBrowserEdition();
           } else {
             SilverpeasError.add('<fmt:message key="attachment.dialog.checkout.nok"/>').show().then(function() {
@@ -530,8 +530,8 @@
       checkout(id, oldId, webdav, false, false, true);
     }
 
-    function checkoutAndEdit(id, oldId, lang, wopi) {
-      checkout(id, oldId, true, wopi, true, false, lang);
+    function checkoutAndEdit(id, oldId, lang, wbe) {
+      checkout(id, oldId, true, wbe, true, false, lang);
     }
 
     function switchState(id, isVersioned, isLastPublicVersion) {

@@ -22,44 +22,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.attachment.webdav;
-
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.wbe.WbeHostManager;
+package org.silverpeas.core.wbe;
 
 /**
- * Handles the Web Browser Edition releasing on attachment manipulations.
+ * Represents the preparation of a Web Browser Edition.
+ * <p>
+ *   This object provides the following data:
+ *   <ul>
+ *     <li>a {@link WbeFile}, the aimed file by the edition</li>
+ *     <li>a {@link WbeUser}, the editor</li>
+ *   </ul>
+ * </p>
  * @author silveryocha
  */
-@Bean
-public class AttachmentWebdavListener extends CDIResourceEventListener<AttachmentEvent> {
+public abstract class WbeEdition {
 
+  private WbeFile file;
+  private WbeUser user;
 
-  @Override
-  public void onUpdate(final AttachmentEvent event) {
-    final AttachmentRef attachment = event.getTransition().getBefore();
-    release(attachment);
+  protected WbeEdition(final WbeFile file, final WbeUser user) {
+    this.file = file;
+    this.user = user;
   }
 
-  @Override
-  public void onUnlock(final AttachmentEvent event) {
-    onUpdate(event);
+  /**
+   * Gets the WBE file of the edition.
+   * @return a {@link WbeFile} instance.
+   */
+  public WbeFile getFile() {
+    return file;
   }
 
-  @Override
-  public void onRemoving(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onDeletion(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  private void release(final AttachmentRef attachment) {
-    WbeHostManager.get().revokeFile(new WebdavWbeFile(attachment.getId(), null));
+  /**
+   * Gets the WBE user which is editing the file.
+   * @return a {@link WbeUser} instance.
+   */
+  public WbeUser getUser() {
+    return user;
   }
 }
