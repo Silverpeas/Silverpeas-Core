@@ -78,9 +78,6 @@
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
     <next.release>6.3</next.release>
-    <sonar.projectKey>Silverpeas_Silverpeas-Core</sonar.projectKey>
-    <sonar.organization>silverpeas</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
 
   <dependencies>
