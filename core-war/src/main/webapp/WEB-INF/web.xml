@@ -123,12 +123,12 @@
     <async-supported>true</async-supported>
   </filter>
   <filter>
-    <!-- WopiFilter Filter -->
+    <!-- WebBrowserEditionFilter Filter -->
     <description>
-      To manage for each incoming request, the life-cycle of a WOPI host.
+      To manage for each incoming request, the life-cycle of a Web Browser Edition as HOST.
     </description>
-    <filter-name>WopiServerFilter</filter-name>
-    <filter-class>org.silverpeas.core.webapi.wopi.WopiServerFilter</filter-class>
+    <filter-name>WebBrowserEditionFilter</filter-name>
+    <filter-class>org.silverpeas.core.webapi.wbe.WbeFilter</filter-class>
     <async-supported>true</async-supported>
   </filter>
   <filter>
@@ -195,8 +195,8 @@
     <url-pattern>/services/domains/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>WopiServerFilter</filter-name>
-    <url-pattern>/services/wopi/*</url-pattern>
+    <filter-name>WebBrowserEditionFilter</filter-name>
+    <url-pattern>/services/wbe/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>SessionSynchronizerTokenValidator</filter-name>
@@ -681,12 +681,12 @@
     <servlet-class>org.silverpeas.web.variables.VariablesRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <display-name>WopiRequestRouter</display-name>
-    <servlet-name>WopiRequestRouter</servlet-name>
+    <display-name>WbeRequestRouter</display-name>
+    <servlet-name>WbeRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
     <init-param>
       <param-name>WebComponentController</param-name>
-      <param-value>org.silverpeas.web.wopi.WopiWebController</param-value>
+      <param-value>org.silverpeas.web.wbe.WbeWebController</param-value>
     </init-param>
   </servlet>
 
@@ -1131,8 +1131,8 @@
     <url-pattern>/Rvariables/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>WopiRequestRouter</servlet-name>
-    <url-pattern>/Rwopi/*</url-pattern>
+    <servlet-name>WbeRequestRouter</servlet-name>
+    <url-pattern>/Rwbe/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

@@ -22,44 +22,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.attachment.webdav;
+package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.wbe.WbeHostManager;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.wbe.WbeFile;
+import org.silverpeas.core.wbe.WbeUser;
+
+import java.util.StringJoiner;
 
 /**
- * Handles the Web Browser Edition releasing on attachment manipulations.
+ * Handles the edition context of a file.
  * @author silveryocha
  */
-@Bean
-public class AttachmentWebdavListener extends CDIResourceEventListener<AttachmentEvent> {
+public class WbeFileEditionContext {
 
+  private final WbeUser user;
 
-  @Override
-  public void onUpdate(final AttachmentEvent event) {
-    final AttachmentRef attachment = event.getTransition().getBefore();
-    release(attachment);
+  private final WbeFileWrapper file;
+
+  protected WbeFileEditionContext(final WbeUser user, final WbeFileWrapper file) {
+    this.user = user;
+    this.file = file;
+  }
+
+  /**
+   * Gets the initiator of the edition
+   * @return a {@link User} representing the initiator of the edition.
+   */
+  public WbeUser getUser() {
+    return user;
+  }
+
+  /**
+   * Gets the WBE file the context is linked to.
+   * @return a {@link WbeFile} instance.
+   */
+  public WbeFile getFile() {
+    return file;
   }
 
   @Override
-  public void onUnlock(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onRemoving(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onDeletion(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  private void release(final AttachmentRef attachment) {
-    WbeHostManager.get().revokeFile(new WebdavWbeFile(attachment.getId(), null));
+  public String toString() {
+    return new StringJoiner(", ", WbeFileEditionContext.class.getSimpleName() + "[", "]")
+        .add("user=" + user).add("file=" + file).toString();
   }
 }

@@ -27,10 +27,10 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.wbe.WbeSettings;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.wopi.WopiSettings;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.JobManagerSettings;
 
@@ -123,8 +123,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + "/silverpeasinfos.jsp", null, false);
     JobManagerService variables = new JobManagerService("51", "JDV", LEVEL_OPERATION, webContext
         + "/Rvariables/jsp/Main", null, false);
-    JobManagerService wopi = new JobManagerService("52", "JWO", LEVEL_OPERATION, webContext
-        + "/Rwopi/jsp/Main", null, false);
+    JobManagerService wbe = new JobManagerService("52", "JWBE", LEVEL_OPERATION, webContext
+        + "/Rwbe/jsp/Main", null, false);
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
@@ -187,9 +187,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           ids.add(portletDeployer.getId());
           services.put(portletDeployer.getId(), portletDeployer);
         }
-        if (WopiSettings.isEnabled()) {
-          ids.add(wopi.getId());
-          services.put(wopi.getId(), wopi);
+        if (WbeSettings.isEnabled()) {
+          ids.add(wbe.getId());
+          services.put(wbe.getId(), wbe);
         }
         ids.add(jst.getId());
         services.put(jst.getId(), jst);
@@ -307,7 +307,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   // 2 => action
   // 3 => acteur
   public JobManagerService[] getServices(int level) {
-    List<JobManagerService> listServices = new ArrayList<JobManagerService>(services.size());
+    List<JobManagerService> listServices = new ArrayList<>(services.size());
     for (JobManagerService jms : services.values()) {
       if (jms.getLevel() == level) {
         listServices.add(jms);
@@ -318,7 +318,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
     String[] idSubServices = jmsParent.getIdSubServices();
-    List<JobManagerService> listChild = new ArrayList<JobManagerService>(idSubServices.length);
+    List<JobManagerService> listChild = new ArrayList<>(idSubServices.length);
     for (String idSubService : idSubServices) {
       JobManagerService jmsChild = services.get(idSubService);
       if (jmsChild != null) {

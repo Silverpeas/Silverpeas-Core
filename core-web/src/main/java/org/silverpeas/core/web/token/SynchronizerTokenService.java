@@ -65,7 +65,7 @@ public class SynchronizerTokenService {
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String UNPROTECTED_URI_RULE =
-      "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rselectionpeaswrapper/|rusernotification/|services/wopi/|services/usernotifications/|blockingNews|services/password/)).*";
+      "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rselectionpeaswrapper/|rusernotification/|services/usernotifications/|blockingNews|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
   private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");

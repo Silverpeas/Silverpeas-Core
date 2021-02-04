@@ -22,44 +22,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.attachment.webdav;
+package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.wbe.WbeHostManager;
+import org.silverpeas.core.webapi.base.SilverpeasRequestContext;
+
+import javax.enterprise.context.RequestScoped;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * Handles the Web Browser Edition releasing on attachment manipulations.
+ * The WBE host request context which handles the domain identifier data in addition to the data
+ * handled by  {@link SilverpeasRequestContext}.
  * @author silveryocha
  */
-@Bean
-public class AttachmentWebdavListener extends CDIResourceEventListener<AttachmentEvent> {
+@RequestScoped
+public class WbeRequestContext extends SilverpeasRequestContext {
 
+  private String accessToken;
 
-  @Override
-  public void onUpdate(final AttachmentEvent event) {
-    final AttachmentRef attachment = event.getTransition().getBefore();
-    release(attachment);
+  public String getAccessToken() {
+    return defaultStringIfNotDefined(accessToken);
   }
 
-  @Override
-  public void onUnlock(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onRemoving(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onDeletion(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  private void release(final AttachmentRef attachment) {
-    WbeHostManager.get().revokeFile(new WebdavWbeFile(attachment.getId(), null));
+  void setAccessToken(final String accessToken) {
+    this.accessToken = accessToken;
   }
 }
