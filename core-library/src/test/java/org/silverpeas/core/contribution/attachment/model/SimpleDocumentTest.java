@@ -523,7 +523,7 @@ public class SimpleDocumentTest {
     }
 
     public Set<SilverpeasRole> getRoles() {
-      return SilverpeasRole.from(roles);
+      return SilverpeasRole.fromStrings(roles);
     }
   }
 }

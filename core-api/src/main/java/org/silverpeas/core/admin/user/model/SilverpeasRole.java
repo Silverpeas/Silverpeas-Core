@@ -61,13 +61,15 @@ public enum SilverpeasRole {
 
   /**
    * Gets the {@link SilverpeasRole} instance that matches the specified role name.
-   *
+   * <p>About the {@link SilverpeasRole} decoding from WEB services, @{@link JsonCreator} is used
+   * by jackson APIs, whereas RestEasy is looking at a static method called like this method.<br/>
+   * So, this method is compatible with both mechanisms</p>
    * @param name the name of a predefined user role in Silverpeas.
    * @return the {@link SilverpeasRole} instance having as name the specified role name or null if
    * no such role exists.
    */
   @JsonCreator
-  public static SilverpeasRole from(String name) {
+  public static SilverpeasRole fromString(String name) {
     if (StringUtil.isNotDefined(name)) {
       return null;
     }
@@ -88,7 +90,7 @@ public enum SilverpeasRole {
    * @return true if the role name matches a {@link SilverpeasRole} instance. False otherwise.
    */
   public static boolean exists(String name) {
-    return from(name) != null;
+    return fromString(name) != null;
   }
 
   /**
@@ -100,7 +102,7 @@ public enum SilverpeasRole {
    * skipped.
    */
   public static Set<SilverpeasRole> listFrom(String roles) {
-    return from(StringUtil.isDefined(roles) ? StringUtil.split(roles, ",") : null);
+    return fromStrings(StringUtil.isDefined(roles) ? StringUtil.split(roles, ",") : null);
   }
 
   /**
@@ -110,11 +112,11 @@ public enum SilverpeasRole {
    * @return a set of {@link SilverpeasRole} instance matching each of the specified role names. If
    * one of the role name doesn't match a {@link SilverpeasRole} instance, then it is skipped.
    */
-  public static Set<SilverpeasRole> from(String[] roles) {
+  public static Set<SilverpeasRole> fromStrings(String[] roles) {
     Set<SilverpeasRole> result = EnumSet.noneOf(SilverpeasRole.class);
     if (roles != null) {
       for (String role : roles) {
-        SilverpeasRole silverpeasRole = from(role);
+        SilverpeasRole silverpeasRole = fromString(role);
         if (silverpeasRole != null) {
           result.add(silverpeasRole);
         }
@@ -217,7 +219,7 @@ public enum SilverpeasRole {
   public boolean isInRole(String... roles) {
     try {
       for (String aRole : roles) {
-        if (this == from(aRole)) {
+        if (this == fromString(aRole)) {
           return true;
         }
       }

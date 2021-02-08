@@ -78,7 +78,7 @@ public class ListNodeResource extends RESTWebService {
     String[] profiles = getOrganisationController().getUserProfiles(getUser().getId(),
         getComponentId());
     for (String profile : profiles) {
-      if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile))) {
+      if (SilverpeasRole.ADMIN.equals(SilverpeasRole.fromString(profile))) {
         return true;
       }
     }

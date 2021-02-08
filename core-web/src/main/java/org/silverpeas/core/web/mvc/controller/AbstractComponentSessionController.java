@@ -320,7 +320,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
             .getCache()
             .get(currentKey);
     if (roles == null) {
-      roles = SilverpeasRole.from(context.getCurrentProfile());
+      roles = SilverpeasRole.fromStrings(context.getCurrentProfile());
       roles.remove(SilverpeasRole.MANAGER);
       CacheServiceProvider.getRequestCacheService().getCache().put(currentKey, roles);
     }

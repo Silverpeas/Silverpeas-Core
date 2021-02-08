@@ -491,7 +491,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return personalComponentInstance.get().getSilverpeasRolesFor(user);
     }
     Set<SilverpeasRole> silverpeasRoles =
-        SilverpeasRole.from(getUserProfiles(user.getId(), componentInstanceIdentifier));
+        SilverpeasRole.fromStrings(getUserProfiles(user.getId(), componentInstanceIdentifier));
     silverpeasRoles.remove(MANAGER);
     return silverpeasRoles;
   }

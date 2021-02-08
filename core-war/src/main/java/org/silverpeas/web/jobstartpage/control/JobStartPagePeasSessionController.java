@@ -657,7 +657,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public SpaceProfile getCurrentSpaceProfile(String role) throws AdminException {
     return getOrganisationController()
-        .getSpaceProfile(getManagedSpaceId(), SilverpeasRole.from(role));
+        .getSpaceProfile(getManagedSpaceId(), SilverpeasRole.fromString(role));
   }
 
   // user panel de selection de n groupes et n users

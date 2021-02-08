@@ -143,7 +143,7 @@ public class ComponentResource extends AbstractAdminResource {
               getUserPreferences().getLanguage());
       UsersAndGroupsRoleEntity roleEntity;
       for (ProfileInst profile : profiles) {
-        SilverpeasRole role = SilverpeasRole.from(profile.getName());
+        SilverpeasRole role = SilverpeasRole.fromString(profile.getName());
         if (role != null && (aimedRoles.isEmpty() || aimedRoles.contains(role.getName()))) {
           roleEntity = result.get(role);
           if (roleEntity == null) {

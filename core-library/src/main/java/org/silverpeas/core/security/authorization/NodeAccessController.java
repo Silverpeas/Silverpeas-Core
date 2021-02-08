@@ -175,7 +175,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
         userRoles.addAll(componentUserRoles);
         return;
       }
-      userRoles.addAll(SilverpeasRole.from(dataManager.getUserProfiles(userId, node)));
+      userRoles.addAll(SilverpeasRole.fromStrings(dataManager.getUserProfiles(userId, node)));
     }
   }
 

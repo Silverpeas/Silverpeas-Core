@@ -640,7 +640,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute(SPACE_EXTRA_INFOS_ATTR, jobStartPageSC.getManagedSpace());
       request.setAttribute("Role", role);
 
-      if (SilverpeasRole.MANAGER == SilverpeasRole.from(role)) {
+      if (SilverpeasRole.MANAGER == SilverpeasRole.fromString(role)) {
         request.setAttribute(INHERITANCE_ATTR, true);
       } else {
         request.setAttribute(INHERITANCE_ATTR, JobStartPagePeasSettings.isInheritanceEnable);

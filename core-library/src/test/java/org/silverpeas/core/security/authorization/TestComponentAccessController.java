@@ -845,7 +845,7 @@ public class TestComponentAccessController {
 
   private void prepareUser(final UserDetail user, final String componentRoleAsString, final UserState userState) {
     currentUserId = user.getId();
-    final SilverpeasRole componentRole = SilverpeasRole.from(componentRoleAsString);
+    final SilverpeasRole componentRole = SilverpeasRole.fromString(componentRoleAsString);
     if (SilverpeasRole.ADMIN == componentRole) {
       user.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     } else {

@@ -343,7 +343,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   @Override
   public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
     Set<SilverpeasRole> silverpeasRoles =
-        SilverpeasRole.from(OrganizationController.get().getUserProfiles(user.getId(), getId()));
+        SilverpeasRole.fromStrings(OrganizationController.get().getUserProfiles(user.getId(), getId()));
     silverpeasRoles.remove(MANAGER);
     return silverpeasRoles;
   }

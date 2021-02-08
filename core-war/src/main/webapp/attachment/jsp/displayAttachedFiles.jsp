@@ -105,7 +105,7 @@
     <c:set var="userProfile" value="user"/>
   </c:if>
   <jsp:useBean id="userProfile" type="java.lang.String"/>
-  <c:set var="highestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
+  <c:set var="highestUserRole" value='<%=SilverpeasRole.fromString(request.getParameter("Profile"))%>' scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
   <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
   <c:choose>

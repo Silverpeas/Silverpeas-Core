@@ -146,7 +146,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
       if (dataManager.isComponentAvailableToUser(componentId, userId)) {
         final String[] userProfiles = dataManager.getUserProfiles(componentId, userId);
-        userRoles.addAll(SilverpeasRole.from(userProfiles));
+        userRoles.addAll(SilverpeasRole.fromStrings(userProfiles));
         if (userRoles.isEmpty() && userProfiles != null && userProfiles.length > 0) {
           // Taking into account the case where the user has only specific profiles.
           // In that case, even the user is an admin one (indicated by a specific profile)

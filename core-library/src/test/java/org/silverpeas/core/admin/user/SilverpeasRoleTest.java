@@ -37,25 +37,25 @@ import static org.hamcrest.Matchers.*;
  * Date: 17/12/13
  */
 @EnableSilverTestEnv
-public class SilverpeasRoleTest {
+class SilverpeasRoleTest {
 
   @Test
-  public void fromOneRoleAsString() {
-    assertThat(SilverpeasRole.from((String) null), nullValue());
-    assertThat(SilverpeasRole.from(""), nullValue());
-    assertThat(SilverpeasRole.from(" "), nullValue());
-    assertThat(SilverpeasRole.from(" admin "), is(SilverpeasRole.ADMIN));
-    assertThat(SilverpeasRole.from("admin"), is(SilverpeasRole.ADMIN));
-    assertThat(SilverpeasRole.from("AdmiN"), is(SilverpeasRole.ADMIN));
-    assertThat(SilverpeasRole.from("Manager"), is(SilverpeasRole.MANAGER));
-    assertThat(SilverpeasRole.from("manager"), is(SilverpeasRole.MANAGER));
+  void fromOneRoleAsString() {
+    assertThat(SilverpeasRole.fromString((String) null), nullValue());
+    assertThat(SilverpeasRole.fromString(""), nullValue());
+    assertThat(SilverpeasRole.fromString(" "), nullValue());
+    assertThat(SilverpeasRole.fromString(" admin "), is(SilverpeasRole.ADMIN));
+    assertThat(SilverpeasRole.fromString("admin"), is(SilverpeasRole.ADMIN));
+    assertThat(SilverpeasRole.fromString("AdmiN"), is(SilverpeasRole.ADMIN));
+    assertThat(SilverpeasRole.fromString("Manager"), is(SilverpeasRole.MANAGER));
+    assertThat(SilverpeasRole.fromString("manager"), is(SilverpeasRole.MANAGER));
     for (final SilverpeasRole role : SilverpeasRole.values()) {
-      assertThat(SilverpeasRole.from(role.getName()), is(role));
+      assertThat(SilverpeasRole.fromString(role.getName()), is(role));
     }
   }
 
   @Test
-  public void exists() {
+  void exists() {
     assertThat(SilverpeasRole.exists(null), is(false));
     assertThat(SilverpeasRole.exists(""), is(false));
     assertThat(SilverpeasRole.exists(" "), is(false));
@@ -70,23 +70,23 @@ public class SilverpeasRoleTest {
   }
 
   @Test
-  public void fromSeveralRolesAsStringWithMalformedParameter() {
+  void fromSeveralRolesAsStringWithMalformedParameter() {
     assertThat(SilverpeasRole.listFrom("a dmin"), empty());
   }
 
   @Test
-  public void fromSeveralRolesAsStringWithMalformedParameter2() {
+  void fromSeveralRolesAsStringWithMalformedParameter2() {
     assertThat(SilverpeasRole.listFrom("admin, admin"), contains(SilverpeasRole.ADMIN));
   }
 
   @Test
-  public void fromSeveralRolesAsStringWithMalformedParameter3() {
+  void fromSeveralRolesAsStringWithMalformedParameter3() {
     assertThat(SilverpeasRole.listFrom("admin,manager"),
         contains(SilverpeasRole.ADMIN, SilverpeasRole.MANAGER));
   }
 
   @Test
-  public void fromSeveralRolesAsString() {
+  void fromSeveralRolesAsString() {
     assertThat(SilverpeasRole.listFrom(null), empty());
     assertThat(SilverpeasRole.listFrom(" "), empty());
     assertThat(SilverpeasRole.listFrom("admin"), contains(SilverpeasRole.ADMIN));
@@ -98,35 +98,35 @@ public class SilverpeasRoleTest {
 
 
   @Test
-  public void fromSeveralRolesAsStringArrayWithMalformedParameter() {
-    assertThat(SilverpeasRole.from(new String[]{"a dmin"}), empty());
+  void fromSeveralRolesAsStringArrayWithMalformedParameter() {
+    assertThat(SilverpeasRole.fromStrings(new String[]{"a dmin"}), empty());
   }
 
   @Test
-  public void fromSeveralRolesAsStringArrayWithMalformedParameter2() {
-    assertThat(SilverpeasRole.from(new String[]{"admin", " admin"}),
+  void fromSeveralRolesAsStringArrayWithMalformedParameter2() {
+    assertThat(SilverpeasRole.fromStrings(new String[]{"admin", " admin"}),
         contains(SilverpeasRole.ADMIN));
   }
 
   @Test
-  public void fromSeveralRolesAsStringArrayWithMalformedParameter3() {
-    assertThat(SilverpeasRole.from(new String[]{"admin", "manager"}),
+  void fromSeveralRolesAsStringArrayWithMalformedParameter3() {
+    assertThat(SilverpeasRole.fromStrings(new String[]{"admin", "manager"}),
         contains(SilverpeasRole.ADMIN, SilverpeasRole.MANAGER));
   }
 
   @Test
-  public void fromSeveralRolesAsStringArray() {
-    assertThat(SilverpeasRole.from((String[]) null), empty());
-    assertThat(SilverpeasRole.from(new String[]{}), empty());
-    assertThat(SilverpeasRole.from(new String[]{" "}), empty());
-    assertThat(SilverpeasRole.from(new String[]{"admin"}), contains(SilverpeasRole.ADMIN));
-    assertThat(SilverpeasRole.from(new String[]{"admin", "admin"}), contains(SilverpeasRole.ADMIN));
-    assertThat(SilverpeasRole.from(new String[]{"admin", "admin", "Manager", "reader"}),
+  void fromSeveralRolesAsStringArray() {
+    assertThat(SilverpeasRole.fromStrings((String[]) null), empty());
+    assertThat(SilverpeasRole.fromStrings(new String[]{}), empty());
+    assertThat(SilverpeasRole.fromStrings(new String[]{" "}), empty());
+    assertThat(SilverpeasRole.fromStrings(new String[]{"admin"}), contains(SilverpeasRole.ADMIN));
+    assertThat(SilverpeasRole.fromStrings(new String[]{"admin", "admin"}), contains(SilverpeasRole.ADMIN));
+    assertThat(SilverpeasRole.fromStrings(new String[]{"admin", "admin", "Manager", "reader"}),
         contains(SilverpeasRole.ADMIN, SilverpeasRole.MANAGER, SilverpeasRole.READER));
   }
 
   @Test
-  public void asString() {
+  void asString() {
     assertThat(SilverpeasRole.asString(null), nullValue());
     assertThat(SilverpeasRole.asString(EnumSet.noneOf(SilverpeasRole.class)), is(""));
     assertThat(SilverpeasRole.asString(EnumSet.of(SilverpeasRole.ADMIN)), is("admin"));
@@ -137,7 +137,7 @@ public class SilverpeasRoleTest {
   }
 
   @Test
-  public void isGreaterThan() {
+  void isGreaterThan() {
     StringBuilder sb = new StringBuilder();
     SilverpeasRole[] roles = SilverpeasRole.values();
     for (int i = 1; i < roles.length; i++) {
@@ -157,14 +157,14 @@ public class SilverpeasRoleTest {
   }
 
   @Test
-  public void isGreaterThanOrEquals() {
+  void isGreaterThanOrEquals() {
     assertThat(SilverpeasRole.PUBLISHER.isGreaterThanOrEquals(SilverpeasRole.WRITER), is(true));
     assertThat(SilverpeasRole.PUBLISHER.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER), is(true));
     assertThat(SilverpeasRole.PUBLISHER.isGreaterThanOrEquals(SilverpeasRole.ADMIN), is(false));
   }
 
   @Test
-  public void getHighestFrom() {
+  void getHighestFrom() {
     assertThat(SilverpeasRole.getHighestFrom(), nullValue());
     assertThat(SilverpeasRole.getHighestFrom(SilverpeasRole.WRITER, SilverpeasRole.ADMIN),
         is(SilverpeasRole.ADMIN));
