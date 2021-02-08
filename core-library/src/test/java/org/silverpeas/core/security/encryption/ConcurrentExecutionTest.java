@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.encryption;
 
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
@@ -33,9 +33,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -55,7 +55,7 @@ class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
   }
 
   private void generateKeyFile() throws Exception {
-    Assume.assumeTrue(sufficientAvailableProcessors());
+    Assumptions.assumeTrue(sufficientAvailableProcessors());
     key = generateAESKey();
     createKeyFileWithTheActualKey(key);
   }
@@ -83,8 +83,13 @@ class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
     });
 
     executor.submit(() -> {
+      EncryptionContentIterator iterator = null;
       try {
-        EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
+        iterator = getEncryptionContentIteratorForDecryption();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+      try {
         getContentEncryptionService().encryptContents(iterator);
         fail("An error should be thrown");
       } catch (Exception e) {
@@ -242,8 +247,13 @@ class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
     });
 
     executor.submit(() -> {
+      EncryptionContentIterator iterator = null;
       try {
-        EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
+        iterator = getEncryptionContentIteratorForDecryption();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+      try {
         getContentEncryptionService().encryptContents(iterator);
         fail("An error should be thrown");
       } catch (Exception e) {
