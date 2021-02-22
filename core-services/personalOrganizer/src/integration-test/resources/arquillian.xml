@@ -34,16 +34,5 @@
     <property name="deploymentExportPath">target/deployments</property>
   </engine>
   -->
-  <container qualifier="wildfly-managed" default="true">
-    <configuration>
-      <property name="serverConfig">standalone-full.xml</property>
-      <property name="startupTimeoutInSeconds">300</property>
-      <property name="allowConnectingToRunningServer">false</property>
-      <property name="javaVmArguments">-Xms512M -Xmx2G -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m</property>
-      <!-- uncomment it for debugging integration test -->
-      <!--
-      <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=y</property>
-      -->
-    </configuration>
-  </container>
+  <container qualifier="wildfly-remote" default="true"></container>
 </arquillian>

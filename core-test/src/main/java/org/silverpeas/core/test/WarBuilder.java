@@ -282,7 +282,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       war.addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
           "META-INF/services/org.silverpeas.core.util.BeanContainer");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
+      //war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
       // Resources
       war.addAsResource("maven.properties");
       return war;

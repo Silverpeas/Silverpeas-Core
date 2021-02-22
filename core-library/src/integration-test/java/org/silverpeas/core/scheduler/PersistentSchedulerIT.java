@@ -69,8 +69,7 @@ import static org.junit.Assert.fail;
 public class PersistentSchedulerIT {
 
   @Rule
-  public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("/org/silverpeas/core/scheduler/create_quartz_tables.sql");
+  public DbSetupRule dbSetupRule = DbSetupRule.createDefaultTables();
 
   private static final String JOB_NAME = "persistent-test";
   @Inject
@@ -83,9 +82,8 @@ public class PersistentSchedulerIT {
         .addCommonBasicUtilities()
         .addSchedulerFeatures()
         .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.initialization");
-        })
+        .testFocusedOn((warBuilder) ->
+            warBuilder.addPackages(true, "org.silverpeas.core.initialization"))
         .build();
   }
 
@@ -115,7 +113,7 @@ public class PersistentSchedulerIT {
    */
   @Test
   public void emptyTest() {
-
+    assertThat(true, is(true));
   }
 
   @Test
@@ -298,14 +296,7 @@ public class PersistentSchedulerIT {
   @Test
   public void unscheduleANonScheduledJobShouldDoesNothing() throws Exception {
     scheduler.unscheduleJob(JOB_NAME);
-  }
-
-  /**
-   * Is a job was fired at a given time?
-   * @return true if a job was fired.
-   */
-  private Callable<Boolean> jobIsFired() {
-    return () -> eventHandler.isJobFired();
+    assertThat(true, is(true));
   }
 
   /**
@@ -313,7 +304,7 @@ public class PersistentSchedulerIT {
    * @return true if a job was executed.
    */
   private Callable<Boolean> jobIsExecuted() {
-    return () -> isJobExecuted();
+    return this::isJobExecuted;
   }
 
   /**
