@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -462,7 +461,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     WysiwygRouting.WysiwygRoutingContext context =
         WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(sc)
             .withContributionId(id)
-            .withLanguage(I18NHelper.DEFAULT_LANGUAGE)
+            .withLanguage(sc.getLanguage())
             .withComeBackUrl(returnURL)
             .withBrowseInfo(sc.getMultilang().getString("GML.operations.editComponentIntro"));
 
