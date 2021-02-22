@@ -56,6 +56,7 @@ import java.util.stream.Stream;
  * A {@link CmisObjectsTreeWalker} object that knows how to walk the subtree rooted to a
  * collaborative space in Silverpeas. It takes care of the virtual root node in the CMIS objects
  * tree that represents the virtual container of all of the root spaces in Silverpeas.
+ *
  * @author mmoquillon
  */
 @Service
@@ -181,14 +182,15 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   @NotNull
   private Stream<LocalizedResource> getAllowedChildrenOfSpace(final ResourceIdentifier spaceId,
       final User user) {
-    String[] subSpaceIds = getController().getAllowedSubSpaceIds(user.getId(), spaceId.asString());
-    String[] compInstIds = Stream.of(getController().getAllComponentIds(spaceId.asString()))
-        .filter(c -> componentAccessControl.isUserAuthorized(user.getId(), c))
-        .toArray(String[]::new);
+    String[] allowedSubSpaceIds =
+        getController().getAllowedSubSpaceIds(user.getId(), spaceId.asString());
+    String[] compInstIds = getController().getAllComponentIds(spaceId.asString());
+    Stream<String> allowedCompInstIds =
+        componentAccessControl.filterAuthorizedByUser(List.of(compInstIds), user.getId());
+
     // we browse first the subspaces and then the component instances that are supported by our CMIS
     // implementation
-    return Stream.concat(Stream.of(subSpaceIds),
-        Stream.of(compInstIds).filter(AbstractCmisObjectsTreeWalker::supports))
+    return Stream.concat(Stream.of(allowedSubSpaceIds), allowedCompInstIds)
         .map(BasicIdentifier::new)
         .map(id -> {
           AbstractCmisObjectsTreeWalker walker =
@@ -201,8 +203,8 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   protected ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging) {
     User user = filtering.getCurrentUser();
-    List<LocalizedResource> ids = getAllowedChildrenOfSpace(object.getIdentifier(), user)
-        .collect(Collectors.toList());
+    List<LocalizedResource> ids =
+        getAllowedChildrenOfSpace(object.getIdentifier(), user).collect(Collectors.toList());
     return buildObjectInFolderList(ids, filtering, paging);
   }
 

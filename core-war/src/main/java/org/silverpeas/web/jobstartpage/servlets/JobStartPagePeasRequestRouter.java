@@ -917,7 +917,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       componentInst.setName(componentName);
     }
 
-    ParameterList parameters = component.getAllParameters().clone();
+    ParameterList parameters = new ParameterList(component.getAllParameters());
     for (Parameter parameter : parameters) {
       String value = request.getParameter(parameter.getName());
       if (parameter.isCheckbox() && !StringUtil.isDefined(value)) {

@@ -28,12 +28,13 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.I18nContribution;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
 /**
  * A provider of user contributions in order to be exposed through the Silverpeas implementation of
- * the CMIS objects tree. Each application that has to exposed some of its contributions must
+ * the CMIS objects tree. Each application that has to expose some of its contributions must
  * implements this interface by a CDI managed bean. The bean will be then discovered by the CMIS
  * system in order to get some of the contributions managed by the application. For doing, the
  * bean has to be annotated with the @{@link javax.inject.Named} qualifier with as value the name
@@ -52,10 +53,20 @@ public interface CmisContributionsProvider {
   }
 
   /**
+   * Gets a provider of user contributions managed by the specified application.
+   * @param appId the unique identifier of an application in Silverpeas.
+   * @return a {@link CmisContributionsProvider} instance.
+   */
+  static CmisContributionsProvider getById(final String appId) {
+    return ServiceProvider.getServiceByComponentInstanceAndNameSuffix(appId,
+        CmisContributionsProvider.Constants.NAME_SUFFIX);
+  }
+
+  /**
    * Gets the contributions that are rooted at the specified application and that are accessible to
    * the given user. For applications using {@link org.silverpeas.core.contribution.model.Folder}s
    * to categorize the content, the root contributions are those that are contained directly in the
-   * root folder (id est the folder representation of the application).
+   * root folder (in other words, the folder representation of the application).
    * @param appId the unique identifier of a component instance. Should throw
    * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException} exception
    * if there is no such application.

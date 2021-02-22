@@ -49,6 +49,7 @@ import java.util.stream.Stream;
 /**
  * A {@link CmisObjectsTreeWalker} object that knows how to walk the subtree rooted to an
  * application instance in Silverpeas.
+ *
  * @author mmoquillon
  */
 @Service
@@ -79,7 +80,7 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
   @Override
   protected boolean isSupported(final String objectId) {
     try {
-      CmisContributionsProvider provider = getContributionsProvider(objectId);
+      CmisContributionsProvider provider = CmisContributionsProvider.getById(objectId);
       return provider != null;
     } catch (IllegalStateException e) {
       return false;
@@ -125,7 +126,8 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
   @SuppressWarnings("unchecked")
   private List<LocalizedResource> getAllowedRootContributions(final ResourceIdentifier appId,
       final User user) {
-    CmisContributionsProvider contributionsProvider = getContributionsProvider(appId.asString());
+    CmisContributionsProvider contributionsProvider =
+        CmisContributionsProvider.getById(appId.asString());
     List<? extends LocalizedResource> contributions =
         contributionsProvider.getAllowedRootContributions(appId, user);
     return (List<LocalizedResource>) contributions;

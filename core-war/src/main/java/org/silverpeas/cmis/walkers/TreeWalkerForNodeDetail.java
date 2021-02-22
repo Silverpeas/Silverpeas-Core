@@ -52,11 +52,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A {@link CmisObjectsTreeWalker} object that knows how to walk down the subtree rooted to a
- * node in a given Silverpeas application. The node is a technical representation in Silverpeas of
- * a folding container that can accept as elements one or more nodes and/or one or more other types
- * of user contribution. It is used to represent an album in a media gallery, a category in a blog
- * or a topic (folder) in an EDM.
+ * A {@link CmisObjectsTreeWalker} object that knows how to walk down the subtree rooted to a node
+ * in a given Silverpeas application. The node is a technical representation in Silverpeas of a
+ * folding container that can accept as elements one or more nodes and/or one or more other types of
+ * user contribution. It is used to represent an album in a media gallery, a category in a blog or a
+ * topic (folder) in an EDM.
+ *
  * @author mmoquillon
  */
 @Service
@@ -87,7 +88,8 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
 
   @Override
   @SuppressWarnings("unchecked")
-  protected ContributionFolder createCmisObject(final LocalizedResource resource, final String language) {
+  protected ContributionFolder createCmisObject(final LocalizedResource resource,
+      final String language) {
     return getObjectFactory().createContributionFolder((NodeDetail) resource, language);
   }
 
@@ -124,8 +126,8 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
     NodeDetail node = (NodeDetail) object;
     String language = filtering.getLanguage();
     // root folder is the node representation of the application
-    String fatherId = node.getFatherPK().isRoot() ?
-        node.getIdentifier().getComponentInstanceId() : asFolderId(node.getFatherPK());
+    String fatherId = node.getFatherPK().isRoot() ? node.getIdentifier().getComponentInstanceId() :
+        asFolderId(node.getFatherPK());
     AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(fatherId);
     LocalizedResource parent = walker.getSilverpeasObjectById(fatherId);
     final CmisFolder cmisParent = walker.createCmisObject(parent, language);
@@ -136,7 +138,8 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
 
   private Stream<LocalizedResource> getAllowedChildrenOfNode(final ContributionIdentifier nodeId,
       final User user) {
-    CmisContributionsProvider provider = getContributionsProvider(nodeId.getComponentInstanceId());
+    CmisContributionsProvider provider =
+        CmisContributionsProvider.getById(nodeId.getComponentInstanceId());
     return provider.getAllowedContributionsInFolder(nodeId, user)
         .stream()
         .filter(isNotBinNeitherUnclassified)

@@ -865,7 +865,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   private LocalizedParameterList getUngroupedParameters(WAComponent component, boolean creation) {
-    ParameterList parameterList = new ParameterList(component.getParameters()).clone();
+    ParameterList parameterList = new ParameterList(component.getParameters());
     parameterList.sort();
     setParameterOptions(parameterList, component.getName());
     setParameterValues(parameterList);
@@ -886,9 +886,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   private List<LocalizedGroupOfParameters> getGroupsOfParameters(WAComponent component) {
     List<GroupOfParameters> groups = component.getSortedGroupsOfParameters();
-    List<LocalizedGroupOfParameters> localizedGroups = new ArrayList<LocalizedGroupOfParameters>();
+    List<LocalizedGroupOfParameters> localizedGroups = new ArrayList<>();
     for (GroupOfParameters group : groups) {
-      GroupOfParameters clonedGroup = group.clone();
+      GroupOfParameters clonedGroup = new GroupOfParameters(group);
       ParameterList parameters = clonedGroup.getParameterList();
       parameters.sort();
       setParameterOptions(parameters, component.getName());

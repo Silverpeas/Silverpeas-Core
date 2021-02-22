@@ -40,7 +40,6 @@ import org.silverpeas.cmis.util.CmisDateConverter;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
@@ -575,17 +574,6 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    */
   protected final CmisObjectFactory getObjectFactory() {
     return objectFactory;
-  }
-
-  /**
-   * Gets the provider of the user contributions managed by the specified application.
-   * @param appId the unique identifier of a component instance, id est of an application in
-   * Silverpeas.
-   * @return a {@link CmisContributionsProvider} instance.
-   */
-  protected CmisContributionsProvider getContributionsProvider(final String appId) {
-    return ServiceProvider.getServiceByComponentInstanceAndNameSuffix(appId,
-        CmisContributionsProvider.Constants.NAME_SUFFIX);
   }
 }
   

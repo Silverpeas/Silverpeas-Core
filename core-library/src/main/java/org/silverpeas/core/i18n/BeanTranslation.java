@@ -39,10 +39,22 @@ public class BeanTranslation implements ResourceTranslation, Serializable {
   private String description = "";
 
   /**
-   * Required for copy
+   * Constructs an empty translation.
    */
   protected BeanTranslation() {
     // Nothing is done
+  }
+
+  /**
+   * Constructs a new translation of a bean by copying the specified one. Only the identifier isn't
+   * copied as it should be unique.
+   * @param translation the bean translation to copy.
+   */
+  protected BeanTranslation(final BeanTranslation translation) {
+    objectId = translation.objectId;
+    language = translation.language;
+    name = translation.name;
+    description = translation.description;
   }
 
   protected BeanTranslation(String lang, String name, String description) {
@@ -56,14 +68,6 @@ public class BeanTranslation implements ResourceTranslation, Serializable {
   protected BeanTranslation(String id, String lang, String name, String description) {
     this(lang, name, description);
     setId(id);
-  }
-
-  public BeanTranslation(BeanTranslation otherTranslation) {
-    setId(otherTranslation.getId());
-    setObjectId(otherTranslation.getObjectId());
-    setLanguage(otherTranslation.getLanguage());
-    setName(otherTranslation.getName());
-    setDescription(otherTranslation.getDescription());
   }
 
   public final String getId() {
@@ -108,27 +112,31 @@ public class BeanTranslation implements ResourceTranslation, Serializable {
 
   /**
    * Copies this bean into another one. This method expects the classes extending the
-   * {@link BeanTranslation} class has a public or protected default constructor, otherwise a
-   * {@link SilverpeasRuntimeException} exception is thrown.
+   * {@link BeanTranslation} class having a public or a protected default constructor, otherwise a
+   * {@link SilverpeasRuntimeException} exception is thrown. The difference between this copy method
+   * with the copy constructor is that it can be used against any child of the
+   * {@link BeanTranslation} class without explicitly having a copy constructor or overriding this
+   * method.
    * @return a copy of this bean.
    */
-  protected BeanTranslation copy() {
+  @SuppressWarnings("unchecked")
+  protected <T extends BeanTranslation> T copy() {
     try {
       Constructor<? extends BeanTranslation> constructor = getClass().getDeclaredConstructor();
       if (!constructor.canAccess(null)) {
         constructor.trySetAccessible();
       }
       BeanTranslation copy = constructor.newInstance();
-
       copy.id = id;
       copy.objectId = objectId;
       copy.language = language;
       copy.name = name;
       copy.description = description;
-      return copy;
+      return (T) copy;
     } catch (NoSuchMethodException | InstantiationException | InvocationTargetException |
         IllegalAccessException e) {
       throw new SilverpeasRuntimeException(e);
     }
   }
+
 }

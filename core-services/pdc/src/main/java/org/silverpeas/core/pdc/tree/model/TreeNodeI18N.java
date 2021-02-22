@@ -41,7 +41,18 @@ public class TreeNodeI18N extends BeanTranslation implements java.io.Serializabl
     setObjectId(nodeId);
   }
 
+  public TreeNodeI18N(final TreeNodeI18N translation) {
+    super(translation);
+  }
+
+  /**
+   * Constructs a {@link TreeNodeI18N} representation of the specified {@link AxisHeaderI18N}
+   * instance. They are two different presentations of the same bean translation and as such share
+   * the same identifier.
+   * @param otherTranslation an {@link AxisHeaderI18N} instance.
+   */
   public TreeNodeI18N(final AxisHeaderI18N otherTranslation) {
     super(otherTranslation);
+    setId(otherTranslation.getId());
   }
 }

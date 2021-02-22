@@ -68,8 +68,7 @@ public abstract class CmisObject extends ObjectDataImpl {
   private String lastModifier;
   private long creationDate;
   private long lastModificationDate;
-  private Function<User, List<Ace>> aclSupplier = u -> Collections.emptyList();
-  private Function<User, Set<Action>> actionsSupplier = u -> Collections.emptySet();
+  private transient Function<User, List<Ace>> aclSupplier = u -> Collections.emptyList();
   private final String language;
 
   /**
@@ -260,6 +259,7 @@ public abstract class CmisObject extends ObjectDataImpl {
    */
   @Override
   public void setAcl(final Acl acl) {
+    // to add javadoc explaining what this method does.
     super.setAcl(acl);
   }
 
@@ -297,6 +297,7 @@ public abstract class CmisObject extends ObjectDataImpl {
    */
   @Override
   public Acl getAcl() {
+    // to add javadoc explaining what this method does.
     return super.getAcl();
   }
 
@@ -312,6 +313,7 @@ public abstract class CmisObject extends ObjectDataImpl {
    */
   @Override
   public AllowableActions getAllowableActions() {
+    // to add javadoc explaining what this method does.
     return super.getAllowableActions();
   }
 

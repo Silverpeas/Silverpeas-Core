@@ -5360,7 +5360,7 @@ class DefaultAdministration implements Administration {
       // cannot paste component on root
       return null;
     }
-    ComponentInst newCompo = getComponentInst(pasteDetail.getFromComponentId()).copy();
+    ComponentInst newCompo = new ComponentInst(getComponentInst(pasteDetail.getFromComponentId()));
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
     String lang = newCompo.getLanguage();
@@ -5539,7 +5539,7 @@ class DefaultAdministration implements Administration {
   @NotNull
   private SpaceInst createPasteSpace(final PasteDetail pasteDetail, final SpaceInst oldSpace,
       final String toSpaceId) throws AdminException {
-    SpaceInst newSpace = oldSpace.copy();
+    SpaceInst newSpace = new SpaceInst(oldSpace);
     newSpace.setLocalId(-1);
     List<String> newBrotherIds;
     if (StringUtil.isDefined(toSpaceId)) {

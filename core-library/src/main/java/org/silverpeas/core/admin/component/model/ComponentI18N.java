@@ -34,6 +34,10 @@ public class ComponentI18N extends BeanTranslation {
     super();
   }
 
+  public ComponentI18N(final ComponentI18N translation) {
+    super(translation);
+  }
+
   public ComponentI18N(String lang, String name, String description) {
     super(lang, name, description);
   }

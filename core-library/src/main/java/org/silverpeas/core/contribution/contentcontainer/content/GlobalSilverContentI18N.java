@@ -34,6 +34,10 @@ public class GlobalSilverContentI18N extends SilverContentI18N implements java.i
   protected GlobalSilverContentI18N() {
   }
 
+  public GlobalSilverContentI18N(final GlobalSilverContentI18N translation) {
+    super(translation);
+  }
+
   public GlobalSilverContentI18N(String language, String name, String description) {
     super(language, name, description);
   }

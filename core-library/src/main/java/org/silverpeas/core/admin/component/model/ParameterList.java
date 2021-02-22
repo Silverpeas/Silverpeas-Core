@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.component.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ParameterList extends ArrayList<Parameter> {
@@ -33,8 +32,12 @@ public class ParameterList extends ArrayList<Parameter> {
     super();
   }
 
+  public ParameterList(final ParameterList parameters) {
+    parameters.stream().map(Parameter::new).forEach(this::add);
+  }
+
   public ParameterList(List<Parameter> parameters) {
-    super(parameters);
+    parameters.stream().map(Parameter::new).forEach(this::add);
   }
 
   public void setValues(List<Parameter> parameters) {
@@ -50,7 +53,7 @@ public class ParameterList extends ArrayList<Parameter> {
   }
 
   public List<Parameter> getVisibleParameters() {
-    List<Parameter> parameters = new ArrayList<Parameter>();
+    List<Parameter> parameters = new ArrayList<>();
     for (Parameter parameter : this) {
       if (parameter.isVisible()) {
         parameters.add(parameter);
@@ -60,7 +63,7 @@ public class ParameterList extends ArrayList<Parameter> {
   }
 
   public List<Parameter> getHiddenParameters() {
-    List<Parameter> parameters = new ArrayList<Parameter>();
+    List<Parameter> parameters = new ArrayList<>();
     for (Parameter parameter : this) {
       if (parameter.isHidden()) {
         parameters.add(parameter);
@@ -70,7 +73,7 @@ public class ParameterList extends ArrayList<Parameter> {
   }
 
   public void sort() {
-    Collections.sort(this, new ParameterSorter());
+    this.sort(new ParameterSorter());
   }
 
   private Parameter getParameterByName(String name) {
@@ -98,14 +101,4 @@ public class ParameterList extends ArrayList<Parameter> {
     }
     return localized;
   }
-
-  public ParameterList clone() {
-    ParameterList clone = (ParameterList) super.clone();
-    clone.clear();
-    for (Parameter param : this) {
-      clone.add(param.clone());
-    }
-    return clone;
-  }
-
 }

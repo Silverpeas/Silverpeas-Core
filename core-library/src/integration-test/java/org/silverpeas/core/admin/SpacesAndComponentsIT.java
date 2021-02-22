@@ -47,6 +47,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.index.indexing.IndexingLogger;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
@@ -70,6 +71,8 @@ public class SpacesAndComponentsIT {
 
   @Inject
   private WAComponentRegistry registry;
+  @Inject
+  private IndexingLogger indexingLogger;
   @Inject
   private AdminController adminController;
   @Inject

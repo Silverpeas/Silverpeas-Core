@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -39,7 +38,7 @@ import java.util.Map;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GroupOfParametersType", propOrder = { "label", "description", "help", "order", "parameters" })
-public class GroupOfParameters implements Cloneable {
+public class GroupOfParameters {
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
@@ -59,6 +58,18 @@ public class GroupOfParameters implements Cloneable {
   @XmlElementWrapper(name = "parameters")
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
+
+  public GroupOfParameters() {
+
+  }
+
+  public GroupOfParameters(final GroupOfParameters groupOfParameters) {
+    setLabel(new HashMap<>(groupOfParameters.getLabel()));
+    setDescription(new HashMap<>(groupOfParameters.getDescription()));
+    setHelp(new HashMap<>(groupOfParameters.getHelp()));
+    setOrder(groupOfParameters.getOrder());
+    setParameters(new ParameterList(groupOfParameters.getParameterList()));
+  }
 
   /**
    * Gets the value of the label property.
@@ -151,7 +162,7 @@ public class GroupOfParameters implements Cloneable {
    */
   public List<Parameter> getParameters() {
     if (parameters == null) {
-      parameters = new ArrayList<Parameter>();
+      parameters = new ArrayList<>();
     }
     return parameters;
   }
@@ -174,21 +185,6 @@ public class GroupOfParameters implements Cloneable {
 
   public LocalizedGroupOfParameters localize(String lang) {
     return new LocalizedGroupOfParameters(this, lang);
-  }
-
-  public GroupOfParameters clone() {
-    GroupOfParameters clone;
-    try {
-      clone = (GroupOfParameters) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
-    clone.setLabel(new HashMap<>(getLabel()));
-    clone.setDescription(new HashMap<>(getDescription()));
-    clone.setHelp(new HashMap<>(getHelp()));
-    clone.setOrder(getOrder());
-    clone.setParameters(getParameterList().clone());
-    return clone;
   }
 
 }

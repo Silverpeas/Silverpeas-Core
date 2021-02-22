@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -101,7 +101,7 @@ import java.util.Map;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ParameterType", propOrder = { "name", "label", "order", "mandatory", "value",
     "options", "type", "size", "updatable", "help", "warning", "personalSpaceValue" })
-public class Parameter implements Cloneable {
+public class Parameter {
 
   @XmlElement(required = true)
   protected String name;
@@ -126,6 +126,33 @@ public class Parameter implements Cloneable {
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected Map<String, String> warning;
   protected String personalSpaceValue;
+
+  public Parameter() {
+  }
+
+  /**
+   * Constructs a new parameter by copying the specified one.
+   * @param param the paramater to copy.
+   */
+  public Parameter(final Parameter param) {
+    this.name = param.name;
+    this.order = param.order;
+    this.mandatory = param.mandatory;
+    this.value = param.value;
+    this.type = param.type;
+    this.size = param.size;
+    this.updatable = param.updatable;
+    this.personalSpaceValue = param.personalSpaceValue;
+
+    this.setHelp(new HashMap<>(param.getHelp()));
+    this.setWarning(new HashMap<>(param.getWarning()));
+    this.setLabel(new HashMap<>(param.getLabel()));
+    if (param.options == null) {
+      this.options = new ArrayList<>();
+    } else {
+      this.options = param.options.stream().map(Option::new).collect(Collectors.toList());
+    }
+  }
 
   /**
    * Gets the value of the name property.
@@ -232,7 +259,7 @@ public class Parameter implements Cloneable {
     if (isXmlTemplate() && CollectionUtil.isEmpty(options)) {
       loadXmlTemplates();
     } else if (options == null) {
-      options = new ArrayList<Option>();
+      options = new ArrayList<>();
     }
     return this.options;
   }
@@ -395,30 +422,6 @@ public class Parameter implements Cloneable {
 
   public boolean isXmlTemplate() {
     return ParameterInputType.xmltemplates == ParameterInputType.valueOf(getType());
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public Parameter clone() {
-    Parameter param;
-    try {
-      param = (Parameter) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
-    param.setHelp(new HashMap<>(getHelp()));
-    param.setWarning(new HashMap<>(getWarning()));
-    param.setLabel(new HashMap<>(getLabel()));
-    if (options == null) {
-      param.setOptions(new ArrayList<>());
-    } else {
-      List<Option> newOptions = new ArrayList<>(options.size());
-      for (Option option : options) {
-        newOptions.add(option.clone());
-      }
-      param.setOptions(newOptions);
-    }
-    return param;
   }
 
   private void loadXmlTemplates() {

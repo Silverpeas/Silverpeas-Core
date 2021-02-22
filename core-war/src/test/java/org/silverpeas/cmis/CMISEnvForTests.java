@@ -29,7 +29,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.cmis.security.AccessControllerRegister;
 import org.silverpeas.cmis.walkers.CmisObjectTreeWalkerDelegator;
 import org.silverpeas.cmis.walkers.TreeWalkerForComponentInst;
 import org.silverpeas.cmis.walkers.TreeWalkerForNodeDetail;
@@ -95,9 +94,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -171,7 +170,7 @@ public abstract class CMISEnvForTests {
 
   @TestManagedBean
   Class<?>[] supplyRequiredManagedBeanTypes() {
-    return new Class<?>[]{AccessControllerRegister.class, TreeWalkerForComponentInst.class,
+    return new Class<?>[]{TreeWalkerForComponentInst.class,
         TreeWalkerForSpaceInst.class, TreeWalkerForNodeDetail.class,
         TreeWalkerForPublicationDetail.class, TreeWalkerForSimpleDocument.class,
         TreeWalkerSelector.class, CmisObjectTreeWalkerDelegator.class};
@@ -249,6 +248,11 @@ public abstract class CMISEnvForTests {
     when(componentAccessControl.isUserAuthorized(anyString(),
         any(ResourceIdentifier.class))).thenReturn(true);
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.filterAuthorizedByUser(anyCollection(), anyString())).then(
+        (Answer<Stream<String>>) invocation -> {
+          Collection<String> compInstIds = invocation.getArgument(0);
+          return compInstIds.stream();
+        });
     when(nodeAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
         true);
     when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);

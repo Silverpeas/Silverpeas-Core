@@ -56,11 +56,10 @@ import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
@@ -120,13 +119,13 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private String look = null;
 
   /* Collection of components Instances */
-  private List<ComponentInst> components;
+  private final List<ComponentInst> components = new ArrayList<>();
 
   /* Collection of subspaces Instances */
-  private List<SpaceInst> subSpaces = new ArrayList<>();
+  private final List<SpaceInst> subSpaces = new ArrayList<>();
 
   /* Collection of space profiles Instances */
-  private ArrayList<SpaceProfileInst> spaceProfiles;
+  private final List<SpaceProfileInst> spaceProfiles = new ArrayList<>();
 
   /* Array of space ids that are children of this space */
   private int level;
@@ -148,11 +147,44 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     firstPageType = 0;
     firstPageExtraParam = "";
     orderNum = 0;
-    components = new ArrayList<>();
-    spaceProfiles = new ArrayList<>();
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
+  }
+
+  /**
+   * Constructs a new collaboration space by copying the specified one. Only the identifier isn't
+   * copied as it should be unique.
+   * @param si the collaboration space to copy.
+   */
+  public SpaceInst(final SpaceInst si) {
+    super(si);
+    setDescription(si.getDescription());
+    setDisplaySpaceFirst(si.displaySpaceFirst);
+    setFirstPageExtraParam(si.firstPageExtraParam);
+    setFirstPageType(si.firstPageType);
+    setInheritanceBlocked(si.inheritanceBlocked);
+    setLook(si.look);
+    setName(si.getName());
+    setLanguage(si.getLanguage());
+    setPersonalSpace(si.isPersonalSpace);
+
+    si.getProfiles().stream()
+        .map(SpaceProfileInst::new)
+        .forEach(this::addSpaceProfileInst);
+
+    si.getTranslations().values()
+        .forEach(this::addTranslation);
+
+    List<ComponentInst> allComponents = si.getAllComponentsInst();
+    for (ComponentInst component : allComponents) {
+      ComponentInst ciCopy = new ComponentInst(component);
+      ciCopy.setLocalId(component.getLocalId());
+      addComponentInst(ciCopy);
+    }
+
+    // clone subspace ids
+    setSubSpaces(si.getSubSpaces());
   }
 
   @Override
@@ -286,11 +318,12 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public List<SpaceInst> getSubSpaces() {
-    return Collections.unmodifiableList(subSpaces);
+    return List.copyOf(subSpaces);
   }
 
   public void setSubSpaces(List<SpaceInst> subSpaces) {
-    this.subSpaces = new ArrayList<>(subSpaces);
+    this.subSpaces.clear();
+    this.subSpaces.addAll(subSpaces);
   }
 
   /**
@@ -322,7 +355,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     components.stream()
         .filter(c -> c.getName().equals(componentInst.getName()))
         .findFirst()
-        .ifPresent(c -> components.remove(c));
+        .ifPresent(components::remove);
   }
 
   /**
@@ -334,7 +367,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return The components in that space
    */
   public List<ComponentInst> getAllComponentsInst() {
-    return components;
+    return List.copyOf(components);
   }
 
   /**
@@ -344,7 +377,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   public List<SilverpeasComponentInstance> getAllComponentInstances() {
     if (!isPersonalSpace()) {
       return components.stream()
-          .map(c -> (SilverpeasComponentInstance) c)
+          .map(SilverpeasComponentInstance.class::cast)
           .collect(Collectors.toList());
     }
     final List<SilverpeasComponentInstance> componentInstances = new ArrayList<>(components);
@@ -358,7 +391,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * database, only in that spaceInst object !!!)
    */
   public void removeAllComponentsInst() {
-    components = new ArrayList<>();
+    components.clear();
   }
 
   /**
@@ -368,14 +401,10 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @param componentName component instance to be added
    */
   public ComponentInst getComponentInst(String componentName) {
-    if (!components.isEmpty()) {
-      for (ComponentInst component : components) {
-        if (component.getName().equals(componentName)) {
-          return component;
-        }
-      }
-    }
-    return null;
+    return components.stream()
+        .filter(c -> c.getName().equals(componentName))
+        .findFirst()
+        .orElse(null);
   }
 
   /**
@@ -420,7 +449,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     spaceProfiles.stream()
         .filter(p -> p.getId().equals(spaceProfileInst.getId()))
         .findFirst()
-        .ifPresent(p -> spaceProfiles.remove(p));
+        .ifPresent(spaceProfiles::remove);
   }
 
   /**
@@ -429,7 +458,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return The space profiles of that space
    */
   public List<SpaceProfileInst> getAllSpaceProfilesInst() {
-    return spaceProfiles;
+    return List.copyOf(spaceProfiles);
   }
 
   /**
@@ -437,7 +466,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * removed from database, only from that spaceInst object !!!)
    */
   public void removeAllSpaceProfilesInst() {
-    spaceProfiles = new ArrayList<>();
+    spaceProfiles.clear();
   }
 
   /**
@@ -455,12 +484,11 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   private SpaceProfileInst getSpaceProfileInst(String spaceProfileName, boolean inherited) {
-    for (SpaceProfileInst profile : spaceProfiles) {
-      if (profile.isInherited() == inherited && profile.getName().equals(spaceProfileName)) {
-        return profile;
-      }
-    }
-    return null;
+    return spaceProfiles.stream()
+        .filter(p -> p.isInherited() == inherited)
+        .filter(p -> p.getName().equals(spaceProfileName))
+        .findFirst()
+        .orElse(null);
   }
 
   /**
@@ -474,25 +502,20 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public List<SpaceProfileInst> getInheritedProfiles() {
-    List<SpaceProfileInst> profiles = new ArrayList<>();
-    for (SpaceProfileInst profile : spaceProfiles) {
-      if (profile.isInherited()) {
-        profiles.add(profile);
-      }
-    }
-
-    return profiles;
+    return spaceProfiles.stream()
+        .filter(SpaceProfileInst::isInherited)
+        .collect(Collectors.toList());
   }
 
+  /**
+   * Gets the specific right profiles of this space instance (that is to say all the non
+   * inherited profiles)
+   * @return the specific right profiles of this space instance;
+   */
   public List<SpaceProfileInst> getProfiles() {
-    List<SpaceProfileInst> profiles = new ArrayList<>();
-    for (SpaceProfileInst profile : spaceProfiles) {
-      if (!profile.isInherited()) {
-        profiles.add(profile);
-      }
-    }
-
-    return profiles;
+    return spaceProfiles.stream()
+        .filter(Predicate.not(SpaceProfileInst::isInherited))
+        .collect(Collectors.toList());
   }
 
   public void setLevel(int level) {
@@ -788,50 +811,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
         creatorUserId, getDescription(), domainFatherId, firstPageExtraParam, getName());
   }
 
-  public SpaceInst copy() {
-    SpaceInst copy = new SpaceInst();
-
-    // clone basic information
-    copy.setDescription(getDescription());
-    copy.setDisplaySpaceFirst(displaySpaceFirst);
-    copy.setFirstPageExtraParam(firstPageExtraParam);
-    copy.setFirstPageType(firstPageType);
-    copy.setInheritanceBlocked(inheritanceBlocked);
-    copy.setLook(look);
-    copy.setName(getName());
-    copy.setLanguage(getLanguage());
-    copy.setPersonalSpace(isPersonalSpace);
-
-    // clone profiles
-    List<SpaceProfileInst> profiles = getProfiles();
-    for (SpaceProfileInst profile : profiles) {
-      copy.addSpaceProfileInst(profile.copy());
-    }
-
-    for (Map.Entry<String, SpaceI18N> translation : getTranslations().entrySet()) {
-      copy.addTranslation(translation.getValue());
-    }
-
-    // clone components
-    List<ComponentInst> allComponents = getAllComponentsInst();
-    for (ComponentInst component : allComponents) {
-      copy.addComponentInst(component.copy());
-    }
-
-    // clone subspace ids
-    copy.setSubSpaces(getSubSpaces());
-
-    return copy;
-  }
-
   public void removeInheritedProfiles() {
-    ArrayList<SpaceProfileInst> newProfiles = new ArrayList<>();
-    for (SpaceProfileInst profile : spaceProfiles) {
-      if (!profile.isInherited()) {
-        newProfiles.add(profile);
-      }
-    }
-    spaceProfiles = newProfiles;
+    spaceProfiles.removeIf(SpaceProfileInst::isInherited);
   }
 
   public String getPermalink() {
@@ -847,14 +828,14 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId());
   }
 
+  /**
+   * Is the user can modify this collaboration space?
+   * @param user a user in Silverpeas.
+   * @return true if the user can both access this collaboration space and has management privilege
+   * on this space (by being either an administrator or a space manager)
+   */
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
-        && (user.isAccessAdmin() || user.isAccessSpaceManager());
-  }
-
-  @Override
-  public boolean canBeDeletedBy(final User user) {
     return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
         && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }

@@ -38,8 +38,29 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
   private String label = "";
   private String description = "";
   private boolean isInherited = false;
-  private List<String> groups = new ArrayList<>();
-  private List<String> users = new ArrayList<>();
+  private final List<String> groups = new ArrayList<>();
+  private final List<String> users = new ArrayList<>();
+
+  /**
+   * Creates an empty profile of rights access.
+   */
+  public BaseRightProfile() {
+
+  }
+
+  /**
+   * Creates a profile as a copy of the specified one. The identifier isn't copied as it should be
+   * unique.
+   * @param profile the rights profile to copy.
+   */
+  public BaseRightProfile(final BaseRightProfile profile) {
+    name = profile.name;
+    description = profile.description;
+    label = profile.label;
+    isInherited = profile.isInherited;
+    groups.addAll(profile.groups);
+    users.addAll(profile.users);
+  }
 
   /**
    * Sets a unique identifier to this profile. Shouldn't be used. Reserved to the persistence

@@ -33,6 +33,10 @@ public class SpaceI18N extends BeanTranslation {
   public SpaceI18N() {
   }
 
+  public SpaceI18N(final SpaceI18N translation) {
+    super(translation);
+  }
+
   public SpaceI18N(String lang, String name, String description) {
     super(lang, name, description);
   }

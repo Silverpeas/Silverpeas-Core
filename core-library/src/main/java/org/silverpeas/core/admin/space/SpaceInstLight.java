@@ -323,14 +323,14 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId());
   }
 
+  /**
+   * Is the user can modify this collaboration space?
+   * @param user a user in Silverpeas.
+   * @return true if the user can both access this collaboration space and has management privilege
+   * on this space (by being either an administrator or a space manager)
+   */
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
-        && (user.isAccessAdmin() || user.isAccessSpaceManager());
-  }
-
-  @Override
-  public boolean canBeDeletedBy(final User user) {
     return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
         && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }

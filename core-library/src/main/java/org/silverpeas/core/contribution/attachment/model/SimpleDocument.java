@@ -216,6 +216,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     getAttachment().setFilename(filename);
   }
 
+  @Override
   public String getLanguage() {
     return getAttachment().getLanguage();
   }
@@ -237,6 +238,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     getAttachment().setTitle(title);
   }
 
+  @Override
   public String getDescription() {
     return getAttachment().getDescription();
   }

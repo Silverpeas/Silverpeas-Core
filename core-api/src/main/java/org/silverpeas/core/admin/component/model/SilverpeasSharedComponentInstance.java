@@ -50,6 +50,7 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   BasicIdentifier getIdentifier();
 
   @Override
@@ -57,13 +58,14 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
     return ComponentAccessControl.get().isUserAuthorized(user.getId(), getIdentifier());
   }
 
+  /**
+   * Is the user can modify this component instance?
+   * @param user a user in Silverpeas.
+   * @return true if the user can both access this component instance and has management privilege
+   * on this component instance (by being either an administrator or a space manager)
+   */
   @Override
   default boolean canBeModifiedBy(User user) {
-    return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
-  }
-
-  @Override
-  default boolean canBeDeletedBy(User user) {
     return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }
 }

@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A publication in an application in Silverpeas. A publication is a contribution of a user that
+ * A publication in Silverpeas. A publication is a contribution of a user that
  * gathers one or more contents on a similar topic. Such content can be a WYSIWYG text or a form,
  * and one or more attached documents. A publication, in our CMIS implementation, is always
  * contained into a contribution folder that can be, for some applications that don't organize their

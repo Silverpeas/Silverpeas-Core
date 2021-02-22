@@ -61,12 +61,12 @@ public class SilverpeasCmisSettings {
 
   @PostConstruct
   private void load() {
-    final InputStream stream = getClass().getResourceAsStream("/repository.properties");
+    final InputStream stream = getClass().getResourceAsStream("/cmis-repository.properties");
     try {
       defaultSettings.load(stream);
     } catch (IOException e) {
       SilverLogger.getLogger(this)
-          .error("Unable to load the repository.properties CMIS configuration file", e);
+          .error("Unable to load the cmis-cmis-repository.properties CMIS configuration file", e);
     }
   }
 

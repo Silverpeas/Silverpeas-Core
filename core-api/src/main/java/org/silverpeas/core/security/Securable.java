@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.user.model.User;
 public interface Securable {
 
   /**
-   * Indicates if the given user can access the data managed by the object instance.
+   * Indicates if the given user can access this resource.
    * @param user a user in Silverpeas.
    * @return true if the user can access the data managed by this instance, false otherwise.
    */
@@ -42,7 +42,8 @@ public interface Securable {
   }
 
   /**
-   * Indicates if the given user can modify the data managed by the object instance.
+   * Indicates if the given user can modify this resource. By default, if the user can access this
+   * securable resource, then it can also modify it.
    * @param user a user in Silverpeas.
    * @return true if the user can modify the data managed by this instance, false otherwise.
    */
@@ -51,7 +52,8 @@ public interface Securable {
   }
 
   /**
-   * Indicates if the given user can delete the data managed by the object instance.
+   * Indicates if the given user can delete this resource. By default, if the user can modify this
+   * securable resource, then it can also delete it.
    * @param user a user in Silverpeas.
    * @return true if the user can delete the data managed by this instance, false otherwise.
    */
