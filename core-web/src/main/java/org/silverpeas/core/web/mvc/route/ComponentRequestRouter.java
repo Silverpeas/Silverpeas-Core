@@ -41,6 +41,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -53,7 +54,6 @@ import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.SilverpeasTransverseWebErrorUtil;
-import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
@@ -420,19 +420,22 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    * @param req current HttpServletRequest
    * @param componentId the component identifier
    */
+  @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
   private void setGefSpaceId(HttpServletRequest req, String componentId, String spaceId) {
     HttpSession session = req.getSession(true);
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    LookHelper helper = LookHelper.getLookHelper(session);
+    final LookHelper helper = LookHelper.getLookHelper(session);
     if (isDefined(componentId)) {
       if (gef != null && helper != null) {
-        helper.setComponentIdAndSpaceIds(null, null, componentId);
-        String helperSpaceId = helper.getSubSpaceId();
-        if (!isDefined(helperSpaceId)) {
-          helperSpaceId = helper.getSpaceId();
+        synchronized (helper) {
+          helper.setComponentIdAndSpaceIds(null, null, componentId);
+          String helperSpaceId = helper.getSubSpaceId();
+          if (!isDefined(helperSpaceId)) {
+            helperSpaceId = helper.getSpaceId();
+          }
+          gef.setSpaceIdForCurrentRequest(helperSpaceId);
         }
-        gef.setSpaceIdForCurrentRequest(helperSpaceId);
       }
     } else if (isDefined(spaceId) && gef != null && helper != null) {
       helper.setSpaceId(spaceId);
