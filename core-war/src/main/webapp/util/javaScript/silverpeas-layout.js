@@ -937,7 +937,10 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
     window.spServerEventSource = new SilverpeasEventSource(webContext + '/sse/common');
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();
-    spLayout.getBody().load(bodyLoadParameters).then(function() {
+    const options = extendsObject({
+      "Login" : "1"
+    }, bodyLoadParameters)
+    spLayout.getBody().load(options).then(function() {
       window.spWindow = new SilverpeasWindow();
     });
   }
