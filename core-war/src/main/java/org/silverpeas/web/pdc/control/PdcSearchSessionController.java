@@ -72,6 +72,7 @@ import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeExcepti
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
@@ -2117,6 +2118,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     String title = request.getParameter("TitleNotInXMLForm");
     getQueryParameters().setXmlTitle(title);
+
+    String updatedFor = request.getParameter("stdFieldUpdatedFor");
+    if (StringUtil.isDefined(updatedFor)) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.add(Calendar.DAY_OF_MONTH, 0-Integer.parseInt(updatedFor));
+      getQueryParameters().setAfterUpdateDate(DateUtil.toLocalDate(calendar.getTime()));
+    }
 
     PublicationTemplateImpl template;
     String templateFileName = request.getParameter("xmlSearchSelectedForm");
