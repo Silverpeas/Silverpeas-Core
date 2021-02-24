@@ -155,7 +155,7 @@ public class CommentUserNotification
 
   @Override
   protected String getComponentInstanceId() {
-    return comment.getCommentPK().getInstanceId();
+    return comment.getIdentifier().getComponentInstanceId();
   }
 
   @Override

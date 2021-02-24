@@ -25,12 +25,11 @@ package org.silverpeas.core.comment.dao;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.date.Period;
 
 import java.util.List;
 
@@ -44,66 +43,75 @@ public interface CommentDAO {
 
   /**
    * Saves the specified comment into the underlying data source.
+   *
    * @param cmt the comment to save.
-   * @return the primary key of the comment in the data source.
+   * @return the effectively saved comment.
    */
-  CommentPK saveComment(final Comment cmt);
+  Comment saveComment(final Comment cmt);
 
   /**
    * Deletes all the comments on the publication identified by the resource type and the specified
    * foreign key.
+   *
    * @param resourceType type of the commented publication.
-   * @param pk the foreign key refering the publication in the data source
+   * @param resourceRef  the foreign key refering the publication in the data source
    */
-  void removeAllCommentsByForeignPk(final String resourceType, final ResourceReference pk);
+  void removeAllCommentsByForeignPk(final String resourceType, final ResourceReference resourceRef);
 
   /**
    * Deletes the comment identified by the specified primary key
-   * @param pk
+   *
+   * @param commentId
    */
-  void removeComment(final CommentPK pk);
+  void removeComment(final CommentId commentId);
 
   /**
    * Gets all the comments of the publication identified by the resource type and the specified
    * foreign key.
+   *
    * @param resourceType type of the commented publication.
-   * @param pk the foreign key refering the publication in the data source.
+   * @param resourceRef  the foreign key refering the publication in the data source.
    * @return a list with all of the publication comments. If the publication isn't commented, then
    * an empty list is returned.
    */
-  List<Comment> getAllCommentsByForeignKey(final String resourceType, final ResourceReference pk);
+  List<Comment> getAllCommentsByForeignKey(final String resourceType,
+      final ResourceReference resourceRef);
 
   /**
    * Gets the comment identified by the specified primary key. If no comment exist with a such
    * primary key, then a CommentRuntimeException is thrown.
-   * @param pk the primary key of the comment to get.
+   *
+   * @param commentId the primary key of the comment to get.
    * @return the comment.
    */
-  Comment getComment(final CommentPK pk);
+  Comment getComment(final CommentId commentId);
 
   /**
    * Gets the number of comments on the publication identified by the resource type and the
    * specified foreign key.
+   *
    * @param resourceType type of the commented publication.
-   * @param pk the foreign key refering the publication.
+   * @param resourceRef  the foreign key refering the publication.
    * @return the number of the publication comments.
    */
-  int getCommentsCountByForeignKey(final String resourceType, final ResourceReference pk);
+  int getCommentsCountByForeignKey(final String resourceType, final ResourceReference resourceRef);
 
   /**
    * Among all the publications identified by the resource type and the specified primary keys, gets
    * the most commented ones.
+   *
    * @param resourceType type of the commented publication.
-   * @param pks a list of primary keys refering some publications.
+   * @param resourceRefs a list of primary keys refering some publications.
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).
    */
   List<CommentedPublicationInfo> getMostCommentedPublications(final String resourceType,
-      final List<? extends WAPrimaryKey> pks);
+      final List<ResourceReference> resourceRefs);
 
   /**
    * Among all available commented publications of the specified type, gets the moste commented
    * ones.
+   *
    * @param resourceType the type of the publication.
    * @return a list of information about the most commented publication sorted in descendent order.
    */
@@ -111,6 +119,7 @@ public interface CommentDAO {
 
   /**
    * Among all available commented publications, gets the most commented ones.
+   *
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).
    */
@@ -119,20 +128,23 @@ public interface CommentDAO {
   /**
    * Moves all the comments from the publication identified by the resource type and the specified
    * foreign key to the publication identified by the second specified foreign key.
+   *
    * @param resourceType type of source and destination publication.
-   * @param fromPK the foreign key refering the source publication.
-   * @param toPK the foreign key refering the destination publication.
+   * @param fromPK       the foreign key refering the source publication.
+   * @param toPK         the foreign key refering the destination publication.
    */
-  void moveComments(final String resourceType, final ResourceReference fromPK, final ResourceReference toPK);
+  void moveComments(final String resourceType, final ResourceReference fromPK,
+      final ResourceReference toPK);
 
   /**
    * Moves all the comments from the publication identified by the resource type and the specified
    * foreign key to the publication identified by the second resource type and specified foreign
    * key.
+   *
    * @param fromResourceType source type the source publication.
-   * @param fromPK the foreign key refering the source publication.
-   * @param toResourceType type of the destination publication.
-   * @param toPK the foreign key refering the destination publication.
+   * @param fromPK           the foreign key refering the source publication.
+   * @param toResourceType   type of the destination publication.
+   * @param toPK             the foreign key refering the destination publication.
    */
   void moveComments(final String fromResourceType, final ResourceReference fromPK,
       final String toResourceType, final ResourceReference toPK);
@@ -140,23 +152,27 @@ public interface CommentDAO {
   /**
    * Updates the comment in the data source identified by the specified one with the values carried
    * by the specified comment.
+   *
    * @param cmt the comment to update in the data source.
    */
   void updateComment(final Comment cmt);
 
   /**
    * Gets the last comments posted to the publications in the specified component instance.
+   *
    * @param instanceId the unique identifier of the component instance.
-   * @param count the maximum number of comments to fetch. Lesser or equal to 0 means no limit.
+   * @param count      the maximum number of comments to fetch. Lesser or equal to 0 means no
+   *                   limit.
    * @return a list of the last comments.
    */
   List<Comment> getLastComments(String instanceId, int count);
 
   /**
    * Get the list of SocialInformationComment added by userId in a period
+   *
    * @param resourceTypes the aimed resources types.
-   * @param userId the author of comments.
-   * @param period the period into which the comment has been created or modified.
+   * @param userId        the author of comments.
+   * @param period        the period into which the comment has been created or modified.
    * @return List of {@link SocialInformation}
    */
   List<SocialInformationComment> getSocialInformationCommentsListByUserId(
@@ -164,10 +180,11 @@ public interface CommentDAO {
 
   /**
    * Gets the list of SocialInformationComment added by myContactsIds in a period
+   *
    * @param resourceTypes the aimed resources types.
    * @param myContactsIds the aimed user identifiers of contacts.
-   * @param instanceIds the aimed identifiers of component instances.
-   * @param period the period into which the comment has been created or modified.
+   * @param instanceIds   the aimed identifiers of component instances.
+   * @param period        the period into which the comment has been created or modified.
    * @return List of {@link SocialInformation}
    */
   List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(

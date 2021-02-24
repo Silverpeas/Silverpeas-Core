@@ -306,8 +306,8 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
-      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
-      List<Integer> contentIds = contentMgtEngine.getSilverContentIdByInstanceId(componentInstanceId);
+      ContentManagementEngine engine = ContentManagementEngineProvider.getContentManagementEngine();
+      List<Integer> contentIds = engine.getSilverContentIdByInstanceId(componentInstanceId);
       for (Integer contentId : contentIds) {
         classifyEngine.unclassifySilverObject(connection, contentId);
       }

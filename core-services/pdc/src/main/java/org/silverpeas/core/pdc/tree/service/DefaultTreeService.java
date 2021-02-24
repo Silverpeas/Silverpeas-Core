@@ -139,7 +139,7 @@ public class DefaultTreeService implements TreeService {
         nodeHasMoved = false;
       }
 
-      TreeNode oldNode = getNode(con, (TreeNodePK) node.getPK(), treeId);
+      TreeNode oldNode = getNode(con, node.getPK(), treeId);
       if (node.isRemoveTranslation()) {
         applyTranslationDeletion(con, treeId, oldNode, node, true);
       } else {
@@ -277,7 +277,7 @@ public class DefaultTreeService implements TreeService {
             treeId);
 
         // remove node index
-        deleteIndex((TreeNodePK) nodeToDelete.getPK(), nodeToDelete.getTreeId());
+        deleteIndex(nodeToDelete.getPK(), nodeToDelete.getTreeId());
       }
     } catch (Exception e) {
       throw new TreeManagerException(e);
@@ -311,7 +311,7 @@ public class DefaultTreeService implements TreeService {
 
     // Remove all index of nodes of the tree
     for (TreeNode nodeToDelete : tree) {
-      deleteIndex((TreeNodePK) nodeToDelete.getPK(), treeId);
+      deleteIndex(nodeToDelete.getPK(), treeId);
     }
 
     TreeCache.unvalidateTree(treeId);
@@ -621,8 +621,7 @@ public class DefaultTreeService implements TreeService {
     if (order == -1) {
       // the order is not specified. We are going to insert the new node
       // following the alphabetical order
-      List<TreeNode> brothers = getSonsToNode(con, (TreeNodePK) father
-          .getPK(), treeId);
+      List<TreeNode> brothers = getSonsToNode(con, father.getPK(), treeId);
       TreeNode brother;
       String brotherName;
       boolean placeFind = false;
@@ -800,8 +799,7 @@ public class DefaultTreeService implements TreeService {
 
   private void createIndex(Connection con, TreeNode node)
       throws TreeManagerException {
-    TreeNode nodeToIndex = getNode(con, (TreeNodePK) node.getPK(), node
-        .getTreeId());
+    TreeNode nodeToIndex = getNode(con, node.getPK(), node.getTreeId());
 
     createIndex(nodeToIndex);
   }

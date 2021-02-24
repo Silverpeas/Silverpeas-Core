@@ -25,7 +25,7 @@ package org.silverpeas.core.comment.test;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
 
 import java.util.Date;
 
@@ -54,29 +54,18 @@ public class CommentBuilder {
    */
   public Comment buildWith(final String author, final String text) {
     Date now = new Date();
-    return new Comment(new CommentPK(String.valueOf(i++), COMPONENT_ID), RESOURCE_TYPE,
-        new CommentPK(RESOURCE_ID, SPACE_ID, COMPONENT_ID), 1, author, text, now, now);
+    Comment comment = new Comment(new CommentId(COMPONENT_ID, String.valueOf(i++)), author,
+        RESOURCE_TYPE, new ResourceReference(RESOURCE_ID, COMPONENT_ID), now);
+    comment.setMessage(text);
+    return comment;
   }
 
   /**
-   * Builds a comment with the specified author and with the specified comment text. The publication
-   * on which the comment is is not set; the comment is orphelan.
-   * @param author the author of the comment.
-   * @param text the text of the comment.
-   * @return a Comment instance.
-   */
-  public Comment buildOrphelanWith(final String author, final String text) {
-    Date now = new Date();
-    return new Comment(new CommentPK(String.valueOf(i++)), RESOURCE_TYPE,
-        new CommentPK(RESOURCE_ID), 1, author, text, now, now);
-  }
-
-  /**
-   * Gets the unique identifier of the resource to which comments are built by all of the
+   * Gets a reference to the resource to which comments are built by all of the
    * CommentBuilder instances.
    * @return the primary key of the commented resource.
    */
-  public static ResourceReference getResourcePrimaryPK() {
+  public static ResourceReference getResourceReference() {
     return new ResourceReference(RESOURCE_ID, COMPONENT_ID);
   }
 

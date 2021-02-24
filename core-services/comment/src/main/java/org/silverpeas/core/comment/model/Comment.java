@@ -23,89 +23,69 @@
  */
 package org.silverpeas.core.comment.model;
 
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 import java.util.Date;
 
 /**
- * This object contains the description of document
- * @author Georgy Shakirin
- * @version 1.0
+ * A comment on a given user contribution.
  */
 public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
   public static final String CONTRIBUTION_TYPE = "Comment";
-  private CommentPK pk;
+  private CommentId id;
   private String resourceType;
-  private WAPrimaryKey foreign_key;
-  private int owner_id;
+  private ResourceReference resource;
   private String message;
-  private Date creation_date;
-  private Date modification_date;
-  private User ownerDetail;
+  private Date creationDate;
+  private Date updateDate;
+  private String authorId;
 
-  private void init(CommentPK pk, String resourceType, WAPrimaryKey foreign_key, int owner_id,
-      String message, Date creation_date, Date modification_date) {
-    this.pk = pk;
+  /**
+   * Constructs a comment about the given resource and written by the specified author at the given
+   * date.
+   * @param id the unique identifier of the comment.
+   * @param authorId the unique identifier of the author.
+   * @param resourceType the type of the commented resource.
+   * @param resource a reference to the commented resource.
+   * @param creationDate the date at which the comment has been written.
+   */
+  public Comment(CommentId id, String authorId, String resourceType, ResourceReference resource,
+      Date creationDate) {
+    this.id = id;
     this.resourceType = resourceType;
-    this.foreign_key = foreign_key;
-    this.owner_id = owner_id;
-    this.message = message;
-    this.creation_date = new Date(creation_date.getTime());
-    if (modification_date != null) {
-      this.modification_date = new Date(modification_date.getTime());
-    }
+    this.resource = resource;
+    this.authorId = authorId;
+    this.creationDate = creationDate;
+    this.updateDate = creationDate;
   }
 
-  public Comment(CommentPK pk, String resourceType, WAPrimaryKey foreign_key, int owner_id,
-      String owner, String message, Date creation_date,
-      Date modification_date) {
-    init(pk, resourceType, foreign_key, owner_id, message, creation_date,
-        modification_date);
+  @Override
+  public CommentId getIdentifier() {
+    return this.id;
   }
 
-  public Comment(CommentPK pk, String resourceType, WAPrimaryKey contentPk, String authorId,
-      String message, Date creationDate, Date modificationDate) {
-    init(pk, resourceType, contentPk, Integer.valueOf(authorId), message, creationDate,
-        modificationDate);
-  }
-
-  public void setCommentPK(CommentPK pk) {
-    this.pk = pk;
-  }
-
-  public CommentPK getCommentPK() {
-    return this.pk;
-  }
-
-  public void setResourceType(String resourceType) {
-    this.resourceType = resourceType;
-  }
-
+  /**
+   * Gets the type of the resource commented out by this comment.
+   * @return the type of the commented resource.
+   */
   public String getResourceType() {
     return resourceType;
   }
 
-  public void setForeignKey(WAPrimaryKey foreign_key) {
-    this.foreign_key = foreign_key;
+  /**
+   * Gets a reference to the resource commented out by this comment.
+   * @return a reference to the commented resource.
+   */
+  public ResourceReference getResourceReference() {
+    return resource;
   }
 
-  public WAPrimaryKey getForeignKey() {
-    return this.foreign_key;
-  }
-
-  public int getOwnerId() {
-    return this.owner_id;
-  }
-
-  public String getOwner() {
-    if (getOwnerDetail() != null) {
-      return getOwnerDetail().getDisplayedName();
-    }
-    return "";
+  public String getCreatorId() {
+    return this.authorId;
   }
 
   public void setMessage(String message) {
@@ -116,17 +96,20 @@ public class Comment implements SilverpeasContent {
     return this.message;
   }
 
-  public void setCreationDate(Date creation_date) {
-    this.creation_date = new Date(creation_date.getTime());
+  @Override
+  public Date getCreationDate() {
+    return this.creationDate == null ? new Date() : new Date(this.creationDate.getTime());
+  }
+
+  public void setLastUpdateDate(Date modificationDate) {
+    if (modificationDate != null) {
+      this.updateDate = new Date(modificationDate.getTime());
+    }
   }
 
   @Override
-  public Date getCreationDate() {
-    return new Date(this.creation_date.getTime());
-  }
-
-  public void setModificationDate(Date modification_date) {
-    this.modification_date = new Date(modification_date.getTime());
+  public Date getLastUpdateDate() {
+    return this.updateDate;
   }
 
   @Override
@@ -135,47 +118,8 @@ public class Comment implements SilverpeasContent {
   }
 
   @Override
-  public Date getLastUpdateDate() {
-    Date date = null;
-    if (this.modification_date != null) {
-      date = new Date(this.modification_date.getTime());
-    }
-    return date;
-  }
-
-  public User getOwnerDetail() {
-    return getCreator();
-  }
-
-  public void setOwnerDetail(User ownerDetail) {
-    this.ownerDetail = ownerDetail;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder str = new StringBuilder();
-    str.append("getCommentPK() = ").append(getCommentPK().toString()).append(
-        ", \n");
-    str.append("getResourceType() = ").append(getResourceType()).append(
-        ", \n");
-    str.append("getForeignKey() = ").append(getForeignKey().toString()).append(
-        ", \n");
-    str.append("getOwnerId() = ").append(getOwnerId()).append(", \n");
-    str.append("getMessage() = ").append(getMessage())
-        .append(", \n");
-    str.append("getCreationDate() = ").append(getCreationDate())
-        .append(", \n");
-    str.append("getModificationDate() = ").append(
-        getLastUpdateDate());
-    return str.toString();
-  }
-
-  @Override
   public User getCreator() {
-    if (ownerDetail == null || !ownerDetail.isFullyDefined()) {
-      ownerDetail = User.getById(String.valueOf(owner_id));
-    }
-    return ownerDetail;
+    return User.getById(String.valueOf(authorId));
   }
 
   @Override
@@ -190,12 +134,12 @@ public class Comment implements SilverpeasContent {
 
   @Override
   public String getId() {
-    return pk.getId();
+    return id.getLocalId();
   }
 
   @Override
   public String getComponentInstanceId() {
-    return pk.getInstanceId();
+    return id.getComponentInstanceId();
   }
 
   @Override

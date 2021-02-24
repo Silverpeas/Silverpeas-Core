@@ -57,7 +57,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
 
   private static final long serialVersionUID = -1401884517616404337L;
   private static final String UNKNOWN = "unknown";
-  public static final String DEFAULT_TYPE = "default";
+  public static final String DEFAULT_NODE_TYPE = "default";
   public static final String TYPE = "Node";
   public static final String FILE_LINK_TYPE = "file_link";
   public static final String STATUS_VISIBLE = "Visible";
@@ -74,7 +74,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   private NodePK fatherPK;
   @XmlElement(name = "topic")
   private Collection<NodeDetail> childrenDetails;
-  private String type = DEFAULT_TYPE;
+  private String nodeType = DEFAULT_NODE_TYPE;
   private int order = 0;
   private String rightsDependsOn = NO_RIGHTS_DEPENDENCY;
   // No persistence - useful to store nb objects contained by this node
@@ -101,7 +101,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
     if (other.childrenDetails != null) {
       this.childrenDetails = new ArrayList<>(other.childrenDetails);
     }
-    this.type = other.type;
+    this.nodeType = other.nodeType;
     this.order = other.order;
     this.rightsDependsOn = other.rightsDependsOn;
     this.nbObjects = other.nbObjects;
@@ -182,7 +182,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
 
   @Override
   public String getContributionType() {
-    return getType().equals(DEFAULT_TYPE) ? TYPE : getType();
+    return getNodeType().equals(DEFAULT_NODE_TYPE) ? TYPE : getNodeType();
   }
 
   /**
@@ -428,16 +428,16 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   public String toString() {
     return "(pk = " + getNodePK().toString() + ", name = " + getName()
         + ", path = " + getPath() + ", level = " + getLevel() + ", fatherPK = "
-        + getFatherPK().toString() + ", type = " + type + ", order = "
+        + getFatherPK().toString() + ", type = " + nodeType + ", order = "
         + getOrder() + ")";
   }
 
-  public String getType() {
-    return type;
+  public String getNodeType() {
+    return nodeType;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setNodeType(String nodeType) {
+    this.nodeType = nodeType;
   }
 
   @Override

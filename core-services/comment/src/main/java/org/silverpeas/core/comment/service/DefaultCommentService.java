@@ -24,23 +24,21 @@
 package org.silverpeas.core.comment.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.service.notification.CommentEventNotifier;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -85,267 +83,114 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     return commentDAO;
   }
 
-  /**
-   * Creates the specified comment into the business layer. Once created, the comment is saved in
-   * this layer and can be uniquely identified by an identifier (a primary key). All callback
-   * interested by the adding of a comment will be invoked through the CallBackManager. The callback
-   * will recieve as invocation parameters respectively the identifier of the commented publication,
-   * the component instance name, and the new comment.
-   *
-   * @param cmt the comment to save.
-   */
   @Override
-  public void createComment(final Comment cmt) {
-    CommentPK newPK = getCommentDAO().saveComment(cmt);
-    cmt.setCommentPK(newPK);
-    notifier.notifyEventOn(ResourceEvent.Type.CREATION, cmt);
+  public Comment createComment(final Comment cmt) {
+    Comment comment = getCommentDAO().saveComment(cmt);
+    notifier.notifyEventOn(ResourceEvent.Type.CREATION, comment);
+    return comment;
   }
 
-  /**
-   * Creates and indexes the specified comment into the business layer. Once created, the comment is
-   * saved in this layer and can be uniquely identified by an identifier (a primary key). It is
-   * indexed so that it can be easily retrieved by the search engine of Silverpeas. All callback
-   * interested by the adding of a comment will be invoked through the CallBackManager. The callback
-   * will recieve as invocation parameters respectively the identifier of the commented publication,
-   * the component instance name, and the new comment.
-   *
-   * @param cmt the comment to save.
-   */
   @Override
-  public void createAndIndexComment(final Comment cmt) {
-    createComment(cmt);
-    createIndex(cmt);
+  public Comment createAndIndexComment(final Comment cmt) {
+    Comment comment = createComment(cmt);
+    createIndex(comment);
+    return comment;
   }
 
-  /**
-   * Deletes the comment identified by the specified identifier. Any indexes on it are removed. All
-   * callback interested by the deletion of a comment will be invoked through the CallBackManager.
-   * The callback will recieve as invocation parameters respectively the identifier of the commented
-   * publication, the component instance name, and the deleted comment. If no such comment exists
-   * with the specified identifier, then a CommentRuntimeException is thrown.
-   *
-   * @param pk the unique identifier of the comment to remove from the business layer (the primary
-   * key).
-   */
   @Override
-  public void deleteComment(final CommentPK pk) {
-    Comment comment = getComment(pk);
+  public void deleteComment(final CommentId commentId) {
+    Comment comment = getComment(commentId);
     deleteComment(comment);
   }
 
-  /**
-   * Deletes all of the comments on the publication identified by the resource type and the
-   * specified identifier. Any indexes on it are removed. All callback interested by the deletion of
-   * a comment will be invoked through the CallBackManager. The callback will recieve as invocation
-   * parameters respectively the identifier of the commented publication, the component instance
-   * name, and the deleted comment. If no such publication exists with the specified identifier,
-   * then a CommentRuntimeException is thrown.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication the comments are on.
-   */
   @Override
-  public void deleteAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(resourceType, new ResourceReference(
-        pk));
+  public void deleteAllCommentsOnResource(final String resourceType,
+      final ResourceReference resourceRef) {
+    List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(resourceType, resourceRef);
     for (Comment comment : comments) {
       deleteComment(comment);
     }
   }
 
-  /**
-   * Deletes the specified comment. Any indexes on it are removed. If no such comment exists with
-   * the specified identifier, then a CommentRuntimeException is thrown. All callback interested by
-   * the deletion of a comment will be invoked through the CallBackManager. The callback will
-   * receive as invocation parameters respectively the identifier of the commented publication, the
-   * component instance name, and the deleted comment.
-   *
-   * @param comment the comment to remove.
-   */
   @Override
   public void deleteComment(final Comment comment) {
     deleteIndex(comment);
-    getCommentDAO().removeComment(comment.getCommentPK());
+    getCommentDAO().removeComment(comment.getIdentifier());
     notifier.notifyEventOn(ResourceEvent.Type.DELETION, comment);
   }
 
-  /**
-   * Moves the comments on the specified publication to the another specified publication. The
-   * resulting operation is that the comments will be on the another publication and all the
-   * previous indexes on them are removed. If at least one of the publications doesn't exist with
-   * the specified identifier, then a CommentRuntimeException is thrown.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param fromPK the identifier of the source publication.
-   * @param toPK the identifier of the destination publication.
-   */
   @Override
-  public void moveComments(final String resourceType, final WAPrimaryKey fromPK,
-      final WAPrimaryKey toPK) {
-    unindexAllCommentsOnPublication(resourceType, fromPK);
-    getCommentDAO().moveComments(resourceType, new ResourceReference(fromPK), new ResourceReference(toPK));
+  public void moveComments(final String resourceType, final ResourceReference fromResource,
+      final ResourceReference toResource) {
+    unindexAllCommentsOnPublication(resourceType, fromResource);
+    getCommentDAO().moveComments(resourceType, fromResource, toResource);
   }
 
-  /**
-   * Moves the comments on the specified publication to the another specified publication and
-   * reindexes them. The resulting operation is that the comments are on the another publication and
-   * they are reindexed (or simply indexed if not already) accordingly to the new publication. If at
-   * least one of the publications doesn't exist with the specified identifier, then a
-   * CommentRuntimeException is thrown.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param fromPK the identifier of the source publication.
-   * @param toPK the identifier of the destination publication.
-   */
   @Override
-  public void moveAndReindexComments(final String resourceType, final WAPrimaryKey fromPK,
-      final WAPrimaryKey toPK) {
-    moveComments(resourceType, fromPK, toPK);
-    indexAllCommentsOnPublication(resourceType, toPK);
+  public void moveAndReindexComments(final String resourceType,
+      final ResourceReference fromResource, final ResourceReference toResource) {
+    moveComments(resourceType, fromResource, toResource);
+    indexAllCommentsOnPublication(resourceType, toResource);
   }
 
-  /**
-   * Updates the specified comment in the business layer. The comment to update is identified by its
-   * unique identifier and the update information are carried by the given Comment instance.
-   *
-   * @param cmt the updated comment.
-   */
   @Override
   public void updateComment(final Comment cmt) {
     getCommentDAO().updateComment(cmt);
   }
 
-  /**
-   * Updates and indexes the specified comment in the business layer. The comment to update in the
-   * business layer is identified by its unique identifier and the update information are carried by
-   * the given Comment instance.
-   *
-   * @param cmt the comment to update and to index.
-   */
   @Override
   public void updateAndIndexComment(final Comment cmt) {
     updateComment(cmt);
     createIndex(cmt);
   }
 
-  /**
-   * Gets the comment that identified by the specified identifier. If no such comment exists with
-   * the specified identifier, then a CommentRuntimeException is thrown.
-   *
-   * @param pk the identifier of the comment in the business layer.
-   * @return the comment.
-   */
   @Override
-  public Comment getComment(final CommentPK pk) {
-    Comment newComment = null;
-    newComment = getCommentDAO().getComment(pk);
-    setOwnerDetail(newComment);
-    return newComment;
+  public Comment getComment(final CommentId commentId) {
+    return getCommentDAO().getComment(commentId);
   }
 
-  /**
-   * Gets all of the comments on the publication identified by the resource type and the specified
-   * identifier. If no such publication exists with the specified identifier, then a
-   * CommentRuntimeException is thrown.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication.
-   * @return a list of the comments on the given publication. The list is empty if the publication
-   * isn't commented.
-   */
   @Override
-  public List<Comment> getAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
-        new ResourceReference(pk));
-    for (Comment comment : vComments) {
-      setOwnerDetail(comment);
-    }
-    return vComments;
+  public List<Comment> getAllCommentsOnResource(final String resourceType,
+      final ResourceReference resourceRef) {
+    return getCommentDAO().getAllCommentsByForeignKey(resourceType,
+        new ResourceReference(resourceRef));
   }
 
-  /**
-   * Gets information about the commented publications among the specified ones. The publication
-   * information are returned ordered down to the lesser comment publication.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param pks a collection of primary keys refering the publications to get information and to
-   * order by comments count.
-   * @return an ordered list of information about the most commented publication. The list is sorted
-   * by their comments count in a descendent order.
-   */
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType,
-      final List<? extends WAPrimaryKey> pks) {
-    return getCommentDAO().getMostCommentedPublications(resourceType, pks);
+      final List<ResourceReference> resourceRefs) {
+    return getCommentDAO().getMostCommentedPublications(resourceType, resourceRefs);
   }
 
-  /**
-   * Gets information about the most commented publications of the specified type. The publication
-   * information are returned ordered down to the lesser comment publication.
-   *
-   * @param resourceType the type of the commented publication.
-   * @return an ordered list of information about the most commented publication. The list is sorted
-   * by their comments count in a descendent order.
-   */
   @Override
-  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType) {
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(
+      final String resourceType) {
     return getCommentDAO().getMostCommentedPublications(resourceType);
   }
 
-  /**
-   * Gets information about all the commented publications in Silverpeas. The publication
-   * information are returned ordered down to the lesser comment publication.
-   *
-   * @return an ordered list of information about the most commented publication. The list is sorted
-   * by their comments count in a descendent order.
-   */
   @Override
   public List<CommentedPublicationInfo> getAllMostCommentedPublicationsInfo() {
     return getCommentDAO().getAllMostCommentedPublications();
   }
 
-  /**
-   * Gets the count of comments on the publication identified by the resource type and the specified
-   * identifier.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication.
-   * @return the number of comments on the publication.
-   */
   @Override
-  public int getCommentsCountOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    return getCommentDAO().getCommentsCountByForeignKey(resourceType, new ResourceReference(pk));
+  public int getCommentsCountOnResource(final String resourceType, final ResourceReference ref) {
+    return getCommentDAO().getCommentsCountByForeignKey(resourceType, ref);
   }
 
-  /**
-   * Indexes all the comments on the publication identified by the resource type and the specified
-   * identifier. If no such publication exists with the specified identifier, then a
-   * CommentRuntimeException is thrown.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication.
-   */
   @Override
-  public void indexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
-        new ResourceReference(pk));
+  public void indexAllCommentsOnPublication(final String resourceType,
+      final ResourceReference ref) {
+    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType, ref);
     for (Comment comment : vComments) {
       createIndex(comment);
     }
   }
 
-  /**
-   * Removes the indexes on all the comments of the publication identified by the resource type and
-   * the specified identifier. If no such publication exists with the specified identifier, then a
-   * CommentRuntimeException is thrown.
-   *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication.
-   */
   @Override
-  public void unindexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
-        new ResourceReference(pk));
+  public void unindexAllCommentsOnPublication(final String resourceType,
+      final ResourceReference ref) {
+    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType, ref);
     for (Comment comment : vComments) {
       deleteIndex(comment);
     }
@@ -359,16 +204,16 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
       commentTitle = commentTitle.substring(0, titleLength) + "...";
     }
 
-    String component = cmt.getCommentPK().getComponentName();
-    String fk = cmt.getForeignKey().getId();
+    String component = cmt.getIdentifier().getComponentInstanceId();
+    String fk = cmt.getResourceReference().getLocalId();
 
     try {
-      FullIndexEntry indexEntry = new FullIndexEntry(component, "Comment"
-          + cmt.getCommentPK().getId(), fk);
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(component, "Comment" + cmt.getIdentifier().getLocalId(), fk);
       indexEntry.setTitle(commentTitle);
       indexEntry.setPreview(commentMessage);
       indexEntry.setCreationDate(cmt.getCreationDate());
-      indexEntry.setCreationUser(String.valueOf(cmt.getOwnerId()));
+      indexEntry.setCreationUser(String.valueOf(cmt.getCreatorId()));
       indexEntry.addTextContent(commentMessage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {
@@ -377,19 +222,15 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   }
 
   private void deleteIndex(final Comment comment) {
-    String component = comment.getCommentPK().getComponentName();
+    String component = comment.getIdentifier().getComponentInstanceId();
     try {
-      IndexEntryKey indexEntry = new IndexEntryKey(component, "Comment"
-          + comment.getCommentPK().getId(), comment.getForeignKey().getId());
+      IndexEntryKey indexEntry =
+          new IndexEntryKey(component, "Comment" + comment.getIdentifier().getLocalId(),
+              comment.getResourceReference().getLocalId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
-  }
-
-  private void setOwnerDetail(Comment comment) {
-    comment.setOwnerDetail(getOrganisationController().getUserDetail(
-        Integer.toString(comment.getOwnerId())));
   }
 
   /**
@@ -411,44 +252,24 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
     return getCommentDAO().getLastComments(resourceType, count);
   }
 
-  /**
-   * Get the list of SocialInformationComment added by userId in a period
-   * @param resourceTypes the aimed resources types.
-   * @param userId the author of comments.
-   * @param period the period into which the comment has been created or modified.
-   * @return List of {@link SocialInformation}
-   */
   @Override
   public List<SocialInformationComment> getSocialInformationCommentsListByUserId(
       List<String> resourceTypes, String userId, Period period) {
     return getCommentDAO().getSocialInformationCommentsListByUserId(resourceTypes, userId, period);
   }
 
-  /**
-   * Gets the list of SocialInformationComment added by myContactsIds in a period
-   * @param resourceTypes the aimed resources types.
-   * @param myContactsIds the aimed user identifiers of contacts.
-   * @param instanceIds the aimed identifiers of component instances.
-   * @param period the period into which the comment has been created or modified.
-   * @return List of {@link SocialInformation}
-   */
   @Override
   public List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
       List<String> resourceTypes, List<String> myContactsIds, List<String> instanceIds,
       Period period) {
-    return getCommentDAO()
-        .getSocialInformationCommentsListOfMyContacts(resourceTypes, myContactsIds, instanceIds,
-            period);
+    return getCommentDAO().getSocialInformationCommentsListOfMyContacts(resourceTypes,
+        myContactsIds, instanceIds, period);
   }
 
-  /**
-   * Deletes all of the comments related to the specified the component instance. If there is no
-   * comments for the specified component instance, then nothing is done.
-   * @param componentInstanceId the identifier of the component instance that is in deletion.
-   */
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
-    getCommentDAO().removeAllCommentsByForeignPk(null, new ResourceReference(null, componentInstanceId));
+    getCommentDAO().removeAllCommentsByForeignPk(null,
+        new ResourceReference(null, componentInstanceId));
   }
 }

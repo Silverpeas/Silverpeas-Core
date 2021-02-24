@@ -40,7 +40,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +68,8 @@ public class ContentManagementEngine implements Serializable {
   // Container peas
   private final Map<String, String> mapBetweenComponentIdAndInstanceId = new HashMap<>();
   // Association SilverContentId (the key) internalContentId (the value) (cache)
-  private final Map<String, String> mapBetweenSilverContentIdAndInternalComponentId = new HashMap<>();
+  private final Map<String, String> mapBetweenSilverContentIdAndInternalComponentId =
+      new HashMap<>();
 
   private ContentManagementEngine() {
 
@@ -107,10 +107,12 @@ public class ContentManagementEngine implements Serializable {
   }
 
   /**
-   * return a list of identifiers of the resources matching the specified identifiers of
-   * {@link SilverContent} objects.
+   * return a list of identifiers of the resources matching the specified identifiers of {@link
+   * SilverContent} objects.
+   *
    * @param contentIds a list of identifiers of
-   * {@link org.silverpeas.core.contribution.contentcontainer.content.SilverContent} objects.
+   * {@link org.silverpeas.core.contribution.contentcontainer.content.SilverContent}
+   *                   objects.
    * @return a list of resource identifiers.
    */
   public List<String> getResourcesMatchingContents(final List<Integer> contentIds) {
@@ -130,6 +132,7 @@ public class ContentManagementEngine implements Serializable {
   /**
    * When a generic component is instanciate, this function is called to register the association
    * between container and content
+   *
    * @param connection
    * @param sComponentId
    * @param sContainerType
@@ -191,10 +194,11 @@ public class ContentManagementEngine implements Serializable {
   /**
    * When a generic component instance is finalized, this function is called to unregister the
    * association between the container and its contents.
-   * @param connection a connection to the database in which is stored the mapping.
-   * @param sComponentId the unique identifier of the component instance.
+   *
+   * @param connection     a connection to the database in which is stored the mapping.
+   * @param sComponentId   the unique identifier of the component instance.
    * @param sContainerType the type of the content container.
-   * @param sContentType the type of the contents in the content container.
+   * @param sContentType   the type of the contents in the content container.
    * @throws ContentManagerException if an error occurs while unregister the content instance.
    */
   public void unregisterNewContentInstance(Connection connection, String sComponentId,
@@ -210,8 +214,7 @@ public class ContentManagementEngine implements Serializable {
 
       final String contentDeletion = DELETE_FROM + SILVER_CONTENT_TABLE + " WHERE " +
           "contentInstanceId IN (SELECT instanceId from " + INSTANCE_TABLE +
-          " WHERE componentId = ? AND " +
-          "containerType = ? AND contentType = ?)";
+          " WHERE componentId = ? AND " + "containerType = ? AND contentType = ?)";
 
       final String instanceDeletion = DELETE_FROM + INSTANCE_TABLE + " WHERE componentId = ?" +
           " AND containerType = ? AND contentType = ?";
@@ -237,6 +240,7 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given componentId
+   *
    * @param sComponentId
    * @return
    * @throws ContentManagerException
@@ -248,6 +252,7 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given component
+   *
    * @param componentName
    * @return
    * @throws ContentManagerException
@@ -346,35 +351,36 @@ public class ContentManagementEngine implements Serializable {
     }
   }
 
-  private int getSilverContentId(Statement stmt, String sInternalContentId, String sComponentId,
+  private int getSilverContentId(Connection connection, String sInternalContentId, String sComponentId,
       boolean isGlobalSearch) throws ContentManagerException {
-    ResultSet resSet = null;
     int nSilverContentId = -1;
+    String sSQLStatement = "SELECT silverContentId FROM " + SILVER_CONTENT_TABLE +
+        " WHERE internalContentId = ? AND contentInstanceId = ";
+    int iComponentId;
+    if (isGlobalSearch) {
+      sSQLStatement += "(select instanceId from " + INSTANCE_TABLE + " where componentId = ?)";
+      iComponentId = -1;
+    } else {
+      sSQLStatement += "?";
+      iComponentId = getContentInstanceId(sComponentId);
+    }
 
-    try {
-      // Get the SilverContentId
-      String sSQLStatement =
-          "SELECT silverContentId FROM " + SILVER_CONTENT_TABLE + " WHERE (internalContentId = '" +
-              sInternalContentId + "') AND (contentInstanceId = ";
+    try(PreparedStatement stmt = connection.prepareStatement(sSQLStatement)) {
+      stmt.setString(1, sInternalContentId);
       if (isGlobalSearch) {
-        sSQLStatement +=
-            " (select instanceId from " + INSTANCE_TABLE + " where componentId='" + sComponentId +
-                "') ) ";
+        stmt.setString(2, sComponentId);
       } else {
-        sSQLStatement += this.getContentInstanceId(sComponentId) + ") ";
+        stmt.setInt(2, iComponentId);
       }
 
-      // Execute the search
-      resSet = stmt.executeQuery(sSQLStatement);
-      // Fetch the result
-
-      if (resSet.next()) {
-        nSilverContentId = resSet.getInt(1);
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          nSilverContentId = rs.getInt(1);
+        }
       }
+
     } catch (SQLException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-    } finally {
-      DBUtil.close(resSet);
     }
 
     return nSilverContentId;
@@ -386,21 +392,10 @@ public class ContentManagementEngine implements Serializable {
    */
   public int getSilverContentId(String sInternalContentId, String sComponentId)
       throws ContentManagerException {
-    Connection connection = null;
-    Statement stmt = null;
-    int silverContentId;
-    try {
-      // Open connection
-      connection = DBUtil.openConnection();
-      stmt = connection.createStatement();
-      silverContentId = getSilverContentId(stmt, sInternalContentId, sComponentId, false);
-
-      return silverContentId;
+    try(Connection connection = DBUtil.openConnection()) {
+      return getSilverContentId(connection, sInternalContentId, sComponentId, false);
     } catch (Exception e) {
       throw new ContentManagerException(failureOnGetting(CONTENT, sInternalContentId), e);
-    } finally {
-      DBUtil.close(stmt);
-      closeConnection(connection);
     }
   }
 
@@ -414,15 +409,14 @@ public class ContentManagementEngine implements Serializable {
     String sInternalContentId = "";
     String sComponentId = "";
     int silverContentId;
-    try(final Connection connection = DBUtil.openConnection();
-      final Statement stmt = connection.createStatement()) {
+    try (final Connection connection = DBUtil.openConnection()) {
       // main loop to build sql queries
       for (int i = 0; i < documentFeature.size(); i = i + 2) {
         // Get the internamContentId and theinstanceId from the list
         sInternalContentId = documentFeature.get(i);
         sComponentId = documentFeature.get(i + 1);
         // Get the SilverContentId
-        silverContentId = getSilverContentId(stmt, sInternalContentId, sComponentId, true);
+        silverContentId = getSilverContentId(connection, sInternalContentId, sComponentId, true);
 
         // add the result into the sortedSet
         if (silverContentId != -1) {
@@ -462,8 +456,9 @@ public class ContentManagementEngine implements Serializable {
         connection = DBUtil.openConnection();
 
         // Get the InternalContentId
-        String sSQLStatement = "SELECT internalContentId FROM " + SILVER_CONTENT_TABLE +
-            " WHERE (silverContentId = " + nSilverContentId + ")";
+        String sSQLStatement =
+            "SELECT internalContentId FROM " + SILVER_CONTENT_TABLE + " WHERE (silverContentId = " +
+                nSilverContentId + ")";
 
         // Execute the search
 
@@ -548,6 +543,7 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * retourne une liste d'instanceID a partir d'une Liste de silvercontentId
+   *
    * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
@@ -555,11 +551,13 @@ public class ContentManagementEngine implements Serializable {
       throws ContentManagerException {
     try {
       final List<ResourceReference> result = new ArrayList<>();
-      JdbcSqlQuery.executeBySplittingOn(alSilverContentId, (idBatch, ignore) ->
-          JdbcSqlQuery.createSelect("C.internalcontentid, I.componentId ")
+      JdbcSqlQuery.executeBySplittingOn(alSilverContentId,
+          (idBatch, ignore) -> JdbcSqlQuery.createSelect("C.internalcontentid, I.componentId ")
               .from(INSTANCE_TABLE + " I")
-              .join(SILVER_CONTENT_TABLE + " C").on("I.instanceId = C.contentInstanceId")
-              .where("C.silverContentId").in(idBatch)
+              .join(SILVER_CONTENT_TABLE + " C")
+              .on("I.instanceId = C.contentInstanceId")
+              .where("C.silverContentId")
+              .in(idBatch)
               .execute(r -> {
                 final ResourceReference ref = new ResourceReference(r.getString(1), r.getString(2));
                 result.add(ref);
@@ -575,6 +573,7 @@ public class ContentManagementEngine implements Serializable {
   /**
    * Cette méthode retourne une liste de SilverContentId qui se trouve sous une instance de
    * jobPeas.
+   *
    * @param instanceId - l'id de l'instance (trucsAstuces978)
    * @return une liste de silvercontentId
    */
@@ -589,8 +588,7 @@ public class ContentManagementEngine implements Serializable {
       con = DBUtil.openConnection();
 
       String sSQLStatement =
-          "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE +
-              " C ";
+          "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE + " C ";
       sSQLStatement += " where I.instanceId = C.contentInstanceId ";
       sSQLStatement += " and I.componentId like ? ";
 
@@ -751,7 +749,7 @@ public class ContentManagementEngine implements Serializable {
   private void deleteMappingInDS(PreparedStatement deletion, String... parameters)
       throws SQLException {
     for (int i = 0; i < parameters.length; i++) {
-      deletion.setString(i+1, parameters[i]);
+      deletion.setString(i + 1, parameters[i]);
     }
     deletion.execute();
   }

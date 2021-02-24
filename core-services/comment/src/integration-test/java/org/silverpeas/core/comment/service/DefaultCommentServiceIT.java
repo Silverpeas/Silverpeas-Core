@@ -95,9 +95,9 @@ public class DefaultCommentServiceIT {
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
-  public void subscribersShouldBeInvokedAtCommentAdding() throws Exception {
+  public void subscribersShouldBeInvokedAtCommentAdding() {
     getCommentService()
-        .createComment(CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"));
+        .createComment(CommentBuilder.getBuilder().buildWith("10", "Vu à la télé"));
     assertThat(listener.isInvoked(), is(true));
     assertThat(1, is(listener.getInvocationCount()));
     assertThat(listener.isCommentAdded(), is(true));
@@ -109,11 +109,11 @@ public class DefaultCommentServiceIT {
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
-  public void subscribersShouldBeInvokedAtCommentDeletion() throws Exception {
+  public void subscribersShouldBeInvokedAtCommentDeletion() {
     CommentService commentController = getCommentService();
-    List<Comment> allComments = commentController.getAllCommentsOnPublication(TEST_RESOURCE_TYPE,
-        CommentBuilder.getResourcePrimaryPK());
-    commentController.deleteComment(allComments.get(0).getCommentPK());
+    List<Comment> allComments = commentController.getAllCommentsOnResource(TEST_RESOURCE_TYPE,
+        CommentBuilder.getResourceReference());
+    commentController.deleteComment(allComments.get(0).getIdentifier());
     assertThat(listener.isInvoked(), is(true));
     assertThat(1, is(listener.getInvocationCount()));
     assertThat(listener.isCommentAdded(), is(false));
@@ -126,12 +126,12 @@ public class DefaultCommentServiceIT {
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
-  public void subscribersShouldBeInvokedAtSeveralCommentsDeletion() throws Exception {
+  public void subscribersShouldBeInvokedAtSeveralCommentsDeletion() {
     CommentService service = getCommentService();
-    List<Comment> allComments = service.getAllCommentsOnPublication(TEST_RESOURCE_TYPE,
-        CommentBuilder.getResourcePrimaryPK());
-    service.deleteAllCommentsOnPublication(TEST_RESOURCE_TYPE,
-        CommentBuilder.getResourcePrimaryPK());
+    List<Comment> allComments = service.getAllCommentsOnResource(TEST_RESOURCE_TYPE,
+        CommentBuilder.getResourceReference());
+    service.deleteAllCommentsOnResource(TEST_RESOURCE_TYPE,
+        CommentBuilder.getResourceReference());
     assertThat(listener.isInvoked(), is(true));
     assertThat(allComments.size(), is(listener.getInvocationCount()));
     assertThat(listener.isCommentAdded(), is(false));

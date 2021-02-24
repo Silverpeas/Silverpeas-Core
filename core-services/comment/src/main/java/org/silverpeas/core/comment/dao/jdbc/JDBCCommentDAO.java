@@ -25,14 +25,13 @@ package org.silverpeas.core.comment.dao.jdbc;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -59,27 +58,27 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public CommentPK saveComment(final Comment cmt) {
-    CommentPK commentPK;
+  public Comment saveComment(final Comment cmt) {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      commentPK = requester.saveComment(con, cmt);
-      if (commentPK == null) {
-        throw new SilverpeasRuntimeException("Cannot save comment for resource " +
-            cmt.getForeignKey().getId() + " of type " + cmt.getResourceType() +
-            IN_COMPONENT_INSTANCE + cmt.getComponentInstanceId());
+      Comment comment = requester.saveComment(con, cmt);
+      if (comment == null) {
+        throw new SilverpeasRuntimeException(
+            "Cannot save comment for resource " + cmt.getResourceReference().getLocalId() +
+                " of type " + cmt.getResourceType() + IN_COMPONENT_INSTANCE +
+                cmt.getComponentInstanceId());
       }
-      return commentPK;
+      return comment;
     } catch (Exception re) {
       throw new SilverpeasRuntimeException(re.getMessage(), re);
     }
   }
 
   @Override
-  public void removeComment(final CommentPK pk) {
+  public void removeComment(final CommentId commentId) {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      requester.deleteComment(con, pk);
+      requester.deleteComment(con, commentId);
     } catch (Exception re) {
       throw new SilverpeasRuntimeException(re.getMessage(), re);
     }
@@ -96,13 +95,15 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public Comment getComment(final CommentPK pk) {
+  public Comment getComment(final CommentId commentId) {
     Comment comment;
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      comment = requester.getComment(con, pk);
+      comment = requester.getComment(con, commentId);
       if (comment == null) {
-        throw new SilverpeasRuntimeException("Cannot get comment " + pk.getId() + IN_COMPONENT_INSTANCE + pk.getInstanceId());
+        throw new SilverpeasRuntimeException(
+            "Cannot get comment " + commentId.getLocalId() + IN_COMPONENT_INSTANCE +
+                commentId.getComponentInstanceId());
       }
       return comment;
     } catch (Exception re) {
@@ -122,12 +123,12 @@ public class JDBCCommentDAO implements CommentDAO {
 
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublications(final String resourceType,
-      final List<? extends WAPrimaryKey> pks) {
+      final List<ResourceReference> resourceRefs) {
     List<CommentedPublicationInfo> commentedPubs = null;
     JDBCCommentRequester requester = getRequester();
-    if (pks != null && !pks.isEmpty()) {
+    if (resourceRefs != null && !resourceRefs.isEmpty()) {
       try (Connection con = openConnection()) {
-        commentedPubs = requester.getMostCommentedPublications(con, pks);
+        commentedPubs = requester.getMostCommentedPublications(con, resourceRefs);
       } catch (Exception e) {
         throw new SilverpeasRuntimeException(e.getMessage(), e);
       }
@@ -136,11 +137,12 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public int getCommentsCountByForeignKey(final String resourceType, final ResourceReference foreignPk) {
+  public int getCommentsCountByForeignKey(final String resourceType,
+      final ResourceReference resourceRef) {
     int publicationCommentsCount = 0;
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      publicationCommentsCount = requester.getCommentsCount(con, resourceType, foreignPk);
+      publicationCommentsCount = requester.getCommentsCount(con, resourceType, resourceRef);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
@@ -149,14 +151,15 @@ public class JDBCCommentDAO implements CommentDAO {
 
   @Override
   public List<Comment> getAllCommentsByForeignKey(final String resourceType,
-      final ResourceReference foreignPk) {
+      final ResourceReference resourceRef) {
     List<Comment> vRet;
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      vRet = requester.getAllComments(con, resourceType, foreignPk);
+      vRet = requester.getAllComments(con, resourceType, resourceRef);
       if (vRet == null) {
-        throw new SilverpeasRuntimeException("Cannot get all comments for resource " + foreignPk.getId() +
-            " of type " + resourceType + IN_COMPONENT_INSTANCE + foreignPk.getInstanceId());
+        throw new SilverpeasRuntimeException(
+            "Cannot get all comments for resource " + resourceRef.getLocalId() + " of type " +
+                resourceType + IN_COMPONENT_INSTANCE + resourceRef.getComponentInstanceId());
       }
       return vRet;
     } catch (Exception e) {
@@ -165,10 +168,11 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public void removeAllCommentsByForeignPk(final String resourceType, final ResourceReference foreignPk) {
+  public void removeAllCommentsByForeignPk(final String resourceType,
+      final ResourceReference resourceRef) {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      requester.deleteAllComments(con, resourceType, foreignPk);
+      requester.deleteAllComments(con, resourceType, resourceRef);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
@@ -228,8 +232,8 @@ public class JDBCCommentDAO implements CommentDAO {
       Period period) {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getRequester();
-      return requester
-          .getSocialInformationComments(con, resourceTypes, myContactsIds, instanceIds, period);
+      return requester.getSocialInformationComments(con, resourceTypes, myContactsIds, instanceIds,
+          period);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }

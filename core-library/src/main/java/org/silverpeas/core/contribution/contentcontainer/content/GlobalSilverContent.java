@@ -40,7 +40,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private static final String CONTENT_TYPE = "ClassifiedContent";
   private String url = "";
   private String location = "";
   private String id = "";

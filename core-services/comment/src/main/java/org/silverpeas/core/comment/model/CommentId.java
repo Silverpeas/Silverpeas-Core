@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,22 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.comment.model;
 
-package org.silverpeas.core;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
 /**
- * Identifier of a resource managed by a component instance in Silverpeas (an application instance
- * or a user personal component). A resource managed by a Silverpeas component instance is defined
- * by a unique identifier local to that component and by the identifier of the component instance.
- * @author mmoquillon
+ * The unique identifier of a comment in Silverpeas.
  */
-public interface ComponentResourceIdentifier extends ResourceIdentifier {
+public class CommentId extends ContributionIdentifier  {
 
-  String getLocalId();
+  private static final long serialVersionUID = 3246647638847423692L;
 
-  String getComponentInstanceId();
-
-  default ResourceReference toReference() {
-    return new ResourceReference(getLocalId(), getComponentInstanceId());
+  public CommentId(final String instanceId, final String localId) {
+    super(instanceId, localId, Comment.CONTRIBUTION_TYPE);
   }
+
 }

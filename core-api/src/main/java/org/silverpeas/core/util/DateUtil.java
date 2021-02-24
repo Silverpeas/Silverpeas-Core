@@ -25,6 +25,7 @@ package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -438,12 +440,23 @@ public class DateUtil {
   }
 
   /**
+   * Converts the specified date to a SQL formatted date
    * @param date the date to transform
    * @return a String representing the given date in a yyyy/MM/dd format or null if given date is
    * null
    */
   public static String date2SQLDate(Date date) {
     return formatDate(date);
+  }
+
+  /**
+   * Converts the specified date to a SQL formatted date
+   * @param temporal the temporal object to transform
+   * @return a String representing the given date in a yyyy/MM/dd format or null if given date is
+   * null
+   */
+  public static String temporal2SQLDate(Temporal temporal) {
+    return formatDate(TemporalConverter.asDate(temporal));
   }
 
   public static String date2SQLDate(String date, String language) throws ParseException {

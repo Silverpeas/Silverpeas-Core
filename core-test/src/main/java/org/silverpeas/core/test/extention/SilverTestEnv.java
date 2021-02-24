@@ -151,13 +151,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       }
       Method[] methods = type.getDeclaredMethods();
       for (Method method : methods) {
-        if (method.isAnnotationPresent(TestManagedBean.class)) {
-          method.setAccessible(true);
-          Class<?>[] classes = (Class<?>[]) method.invoke(testInstance);
-          for (Class<?> clazz : classes) {
-            constructAndRegisterBean(clazz);
-          }
-        }
+        processTestManagedBeanAnnotation(method, testInstance);
       }
     });
   }
@@ -231,7 +225,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
     Method requesterProvider = recursivelyFindRequesterProvider(test);
     if (requesterProvider != null) {
-      requesterProvider.setAccessible(true);
+      requesterProvider.trySetAccessible();
       User requester = (User) requesterProvider.invoke(context.getRequiredTestInstance());
       when(mock.getCurrentRequester()).thenReturn(requester);
     }
@@ -272,7 +266,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       } else {
         bean = spy(field.getType());
       }
-      field.setAccessible(true);
+      field.trySetAccessible();
       field.set(testInstance, bean);
       registerInBeanContainer(bean);
       if (field.isAnnotationPresent(Named.class)) {
@@ -291,9 +285,20 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     }
   }
 
+  private void processTestManagedBeanAnnotation(final Method method, final Object testInstance)
+      throws ReflectiveOperationException {
+    if (method.isAnnotationPresent(TestManagedBean.class)) {
+      method.trySetAccessible();
+      Class<?>[] classes = (Class<?>[]) method.invoke(testInstance);
+      for (Class<?> clazz : classes) {
+        constructAndRegisterBean(clazz);
+      }
+    }
+  }
+
   private Object setupInstanceField(final Field field, final Object testInstance)
       throws ReflectiveOperationException {
-    field.setAccessible(true);
+    field.trySetAccessible();
     Object bean = field.get(testInstance);
     if (bean == null) {
       bean = instantiate(field.getType());
@@ -330,7 +335,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
               mock = mock(dependency.getType());
             }
           }
-          dependency.setAccessible(true);
+          dependency.trySetAccessible();
           dependency.set(bean, mock);
         }
       }
@@ -341,7 +346,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     T bean;
     try {
       Constructor<? extends T> constructor = beanType.getDeclaredConstructor();
-      constructor.setAccessible(true);
+      constructor.trySetAccessible();
       bean = constructor.newInstance();
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
         IllegalAccessException e) {
@@ -416,7 +421,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     try {
       Constructor<ManagedThreadPool> managedThreadPoolConstructor =
           ManagedThreadPool.class.getDeclaredConstructor();
-      managedThreadPoolConstructor.setAccessible(true);
+      managedThreadPoolConstructor.trySetAccessible();
       ManagedThreadPool managedThreadPool = managedThreadPoolConstructor.newInstance();
       ManagedThreadFactory managedThreadFactory = Thread::new;
       FieldUtils.writeField(managedThreadPool, "managedThreadFactory", managedThreadFactory, true);
@@ -487,7 +492,6 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       Annotation... qualifiers) {
     Set existing = TestBeanContainer.getMockedBeanContainer().getAllBeansByType(type, qualifiers);
     if (!existing.isEmpty()) {
-      //if (!type.isAnnotationPresent(Singleton.class)) { I don't know why such an assumption!
       final HashSet all = new HashSet<>(existing);
       all.add(bean);
       when(TestBeanContainer.getMockedBeanContainer()
@@ -496,7 +500,6 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
         when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenThrow(
             new AmbiguousResolutionException("A bean of type " + type + " already exist!"));
       }
-      //}
     } else {
       when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenReturn(
           bean);
@@ -572,6 +575,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
 
     @Override
     public void destroy(final T instance) {
+      // nothing to do
     }
 
     @NotNull

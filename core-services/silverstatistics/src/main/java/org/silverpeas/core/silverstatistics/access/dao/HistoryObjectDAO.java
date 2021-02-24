@@ -24,7 +24,6 @@
 package org.silverpeas.core.silverstatistics.access.dao;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -270,16 +269,16 @@ public class HistoryObjectDAO {
     }
   }
 
-  public static int getCountByPeriod(Connection con, WAPrimaryKey primaryKey, String objectType,
-      Date startDate, Date endDate) throws SQLException {
+  public static int getCountByPeriod(Connection con, ResourceReference resourceRef,
+      String objectType, Date startDate, Date endDate) throws SQLException {
     int nb = 0;
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(QUERY_STATISTIC_COUNT_BY_PERIOD);
-      prepStmt.setString(1, primaryKey.getId());
-      prepStmt.setString(2, primaryKey.getInstanceId());
+      prepStmt.setString(1, resourceRef.getLocalId());
+      prepStmt.setString(2, resourceRef.getComponentInstanceId());
       prepStmt.setString(3, objectType);
       prepStmt.setString(4, date2SQLDate(startDate));
       prepStmt.setString(5, date2SQLDate(endDate));

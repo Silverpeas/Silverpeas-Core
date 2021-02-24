@@ -48,7 +48,7 @@ public class CommentDeleter implements ContributionDeletion {
     if (!contribution.getContributionType().equals(Comment.CONTRIBUTION_TYPE)) {
       try {
         final ResourceReference ref = ResourceReference.to(contribution.getIdentifier());
-        commentService.deleteAllCommentsOnPublication(contribution.getContributionType(), ref);
+        commentService.deleteAllCommentsOnResource(contribution.getContributionType(), ref);
       } catch (Exception e) {
         throw new SilverpeasRuntimeException(e);
       }

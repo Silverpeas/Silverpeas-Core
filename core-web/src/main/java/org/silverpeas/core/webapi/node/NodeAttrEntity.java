@@ -24,12 +24,10 @@
 package org.silverpeas.core.webapi.node;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -41,7 +39,6 @@ import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
 
 @XmlRootElement
 public class NodeAttrEntity {
-
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -83,7 +80,7 @@ public class NodeAttrEntity {
   }
 
   public static NodeAttrEntity fromNodeDetail(final NodeDetail node, String uri, String lang) {
-    return fromNodeDetail(node, getURI(uri), lang);
+    return fromNodeDetail(node, toURI(uri), lang);
   }
 
   private NodeAttrEntity(final NodeDetail node, URI uri, String lang) {
@@ -107,7 +104,7 @@ public class NodeAttrEntity {
     }
   }
 
-  private static URI getURI(String uri) {
+  private static URI toURI(String uri) {
     try {
       return new URI(uri);
     } catch (URISyntaxException ex) {

@@ -90,6 +90,6 @@ public class ComponentInstanceDeletionIT {
   }
 
   private List<Comment> getAllCommentsFor(String instanceId) {
-    return service.getAllCommentsOnPublication(null, new ResourceReference(null, instanceId));
+    return service.getAllCommentsOnResource(null, new ResourceReference(null, instanceId));
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +38,10 @@ import java.util.Set;
  * @author Yohann Chastagnier
  */
 public class MapUtil {
+
+  private MapUtil() {
+
+  }
 
   /**
    * Centralizes the map adding that containing collections
@@ -79,14 +84,15 @@ public class MapUtil {
       Map<K, Collection<V>> map, final K key, final V value) {
 
     if (map == null) {
-      map = new LinkedHashMap<K, Collection<V>>();
+      map = new LinkedHashMap<>();
     }
 
     // Old value
     Collection<V> result = map.get(key);
     if (result == null) {
       try {
-        result = collectionClass.newInstance();
+        Constructor<? extends Collection> constructor = collectionClass.getDeclaredConstructor();
+        result = constructor.newInstance();
       } catch (final Exception myException) {
         throw new IllegalArgumentException(myException);
       }
@@ -197,14 +203,15 @@ public class MapUtil {
       Map<K, List<V>> map, final K key, final V value) {
 
     if (map == null) {
-      map = new LinkedHashMap<K, List<V>>();
+      map = new LinkedHashMap<>();
     }
 
     // Old value
     List<V> result = map.get(key);
     if (result == null) {
       try {
-        result = listClass.newInstance();
+        Constructor<? extends List> constructor = listClass.getDeclaredConstructor();
+        result = constructor.newInstance();
       } catch (final Exception myException) {
         throw new IllegalArgumentException(myException);
       }
@@ -260,14 +267,15 @@ public class MapUtil {
       final K key, final V value) {
 
     if (map == null) {
-      map = new LinkedHashMap<K, Set<V>>();
+      map = new LinkedHashMap<>();
     }
 
     // Old value
     Set<V> result = map.get(key);
     if (result == null) {
       try {
-        result = setClass.newInstance();
+        Constructor<? extends Set> constructor = setClass.getDeclaredConstructor();
+        result = constructor.newInstance();
       } catch (final Exception myException) {
         throw new IllegalArgumentException(myException);
       }
@@ -334,7 +342,7 @@ public class MapUtil {
 
   public static <K, V> boolean areEqual(Map<? extends K, ? extends V> left,
       Map<? extends K, ? extends V> right) {
-    Map<K, V> onlyOnRight = new HashMap<K, V>(right);
+    Map<K, V> onlyOnRight = new HashMap<>(right);
     for (Map.Entry<? extends K, ? extends V> entry : left.entrySet()) {
       K leftKey = entry.getKey();
       V leftValue = entry.getValue();

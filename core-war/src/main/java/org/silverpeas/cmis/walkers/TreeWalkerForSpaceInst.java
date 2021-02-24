@@ -112,7 +112,7 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
 
   @Override
   public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
-    if (CmisFolder.PATH_SEPARATOR.equals(path)) {
+    if (CmisFile.PATH_SEPARATOR.equals(path)) {
       final CmisFile rootSpace = getObjectFactory().createRootSpace();
       setObjectDataFields(rootSpace, filtering);
       return rootSpace;

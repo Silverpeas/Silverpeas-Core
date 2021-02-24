@@ -30,8 +30,7 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialPublicationCommentProvider;
@@ -61,16 +60,17 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
   }
 
   @SuppressWarnings("unchecked")
-  private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
+  private List<SocialInformation> decorate(
+      List<SocialInformationComment> listSocialInformation) {
     for (SocialInformationComment socialInformation : listSocialInformation) {
-      String resourceId = socialInformation.getComment().getForeignKey().getId();
+      String resourceId = socialInformation.getComment().getResourceReference().getLocalId();
       String instanceId = socialInformation.getComment().getComponentInstanceId();
       PublicationPK pubPk = new PublicationPK(resourceId, instanceId);
       PublicationDetail pubDetail = getService().getDetail(pubPk);
 
       //set URL, title and description of the publication
-      socialInformation.setUrl(URLUtil
-          .getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getId(), pubDetail.getComponentInstanceId(),
+      socialInformation.setUrl(
+          URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getId(), pubDetail.getInstanceId(),
               false));
       socialInformation.setTitle(pubDetail.getTitle());
     }
@@ -78,34 +78,18 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
     return (List) listSocialInformation;
   }
 
-  /**
-   * get list of SocialInformation
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List<SocialInformation>
-   * @throws SilverpeasException
-   */
   @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin,
+      Date end) {
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
-                Period.from(begin, end));
+                Period.between(begin.toInstant(), end.toInstant()));
 
     return decorate(listSocialInformation);
   }
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformation>
-   * @throws SilverpeasException
-   */
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) {
@@ -114,10 +98,9 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
 
-    List<SocialInformationComment> socialComments =
-        CommentServiceProvider.getCommentService()
-            .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
-                instanceIds, Period.from(begin, end));
+    List<SocialInformationComment> socialComments = CommentServiceProvider.getCommentService()
+        .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
+            instanceIds, Period.between(begin.toInstant(), end.toInstant()));
 
     // Even if the data has been found by filtering on instanceIds that the user can access, it
     // could exists more precise right rules to apply.
@@ -127,8 +110,10 @@ public class SocialPublicationComment implements SocialPublicationCommentProvide
       String instanceId = socialComment.getComment().getComponentInstanceId();
 
       if (!myId.equals(socialComment.getAuthor()) && instanceId.startsWith("kmelia") &&
-          !PublicationAccessControl.get().isUserAuthorized(myId,
-              new PublicationPK(socialComment.getComment().getForeignKey().getId(), instanceId))) {
+          !PublicationAccessControl.get()
+              .isUserAuthorized(myId,
+                  new PublicationPK(socialComment.getComment().getResourceReference().getLocalId(),
+                      instanceId))) {
 
         // On Kmelia application, if the user has not access right to the publication, then the
         // associated comments are removed from the result

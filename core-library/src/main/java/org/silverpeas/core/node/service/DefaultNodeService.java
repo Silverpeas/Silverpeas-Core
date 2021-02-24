@@ -136,7 +136,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public NodeDetail getDetail(NodePK pk) {
     try {
       NodeDetail nodeDetail = findNode(pk);
-      if (!NodeDetail.FILE_LINK_TYPE.equals(nodeDetail.getType())) {
+      if (!NodeDetail.FILE_LINK_TYPE.equals(nodeDetail.getNodeType())) {
         nodeDetail.setChildrenDetails(getChildrenDetails(pk));
       }
 
@@ -573,7 +573,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   @Override
   public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail) {
     try {
-      if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) {
+      if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getNodeType())) {
         nd.setPath(fatherDetail.getPath() + fatherDetail.getNodePK().getId() + "/");
       }
       nd.setLevel(fatherDetail.getLevel() + 1);
@@ -655,10 +655,10 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     if (detail.getStatus() != null) {
       currentNode.setStatus(detail.getStatus());
     }
-    if (detail.getType() != null) {
-      currentNode.setType(detail.getType());
+    if (detail.getNodeType() != null) {
+      currentNode.setNodeType(detail.getNodeType());
     }
-    if (NodeDetail.FILE_LINK_TYPE.equals(detail.getType())) {
+    if (NodeDetail.FILE_LINK_TYPE.equals(detail.getNodeType())) {
       currentNode.setPath(detail.getPath());
     }
     if (detail.getFatherPK() != null

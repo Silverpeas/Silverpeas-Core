@@ -37,8 +37,10 @@ import java.util.Date;
  * @deprecated use instead {@link org.silverpeas.core.contribution.model.Contribution} and
  * {@link org.silverpeas.core.contribution.model.ContributionContent} interfaces.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public interface SilverContentInterface extends SilverpeasContent {
+
+  @Override
   String getName();
 
   String getName(String language);

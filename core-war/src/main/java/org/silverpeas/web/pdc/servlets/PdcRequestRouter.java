@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
-import org.silverpeas.core.pdc.pdc.model.AxisPK;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -299,9 +298,8 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         // axe
 
         // create the axe
-        AxisHeader axisHeader = new AxisHeader(new AxisPK("unknown"), axeName,
-            axeType, (Integer.parseInt(axeOrder)), null, null, -1,
-            axeDescription);
+        AxisHeader axisHeader = new AxisHeader("unknown", axeName,
+            axeType, Integer.parseInt(axeOrder), -1, axeDescription);
 
 
         // ajout de la langue
@@ -356,8 +354,6 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         // the
         // axe
 
-        AxisPK currentAxisPK = new AxisPK(axeId);
-
         // axeOrder is not null then the user has no change the order
         int order = -1;
         if (axeOrder != null) {
@@ -365,8 +361,8 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         }
 
         // update axis
-        AxisHeader axisHeader = new AxisHeader(currentAxisPK, axeName, axeType,
-            order, null, null, -1, axeDescription);
+        AxisHeader axisHeader = new AxisHeader(axeId, axeName, axeType,
+            order, -1, axeDescription);
 
         // récupération des traductions
         I18NHelper.setI18NInfo(axisHeader, request);

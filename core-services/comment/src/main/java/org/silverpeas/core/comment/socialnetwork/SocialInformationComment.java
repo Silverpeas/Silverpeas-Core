@@ -39,13 +39,13 @@ public class SocialInformationComment extends AbstractSocialInformation {
    */
   public SocialInformationComment(Comment comment) {
     this.comment = comment;
-    setAuthor(comment.getCreator().getId());
-    if (comment.getLastUpdateDate() != null) {
-      setDate(comment.getLastUpdateDate());
-      setUpdated(true);
-    } else {
+    setAuthor(comment.getCreatorId());
+    if (comment.getLastUpdateDate().equals(comment.getCreationDate())) {
       setDate(comment.getCreationDate());
       setUpdated(false);
+    } else {
+      setDate(comment.getLastUpdateDate());
+      setUpdated(true);
     }
     String instanceId = comment.getComponentInstanceId();
     SocialInformationType type = SocialInformationType.COMMENTPUBLICATION;

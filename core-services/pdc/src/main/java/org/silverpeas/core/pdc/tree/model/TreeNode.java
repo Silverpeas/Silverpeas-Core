@@ -26,10 +26,8 @@
 
 package org.silverpeas.core.pdc.tree.model;
 
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -49,7 +47,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
 
   private static final long serialVersionUID = 4644891370102942728L;
 
-  private WAPrimaryKey pk;
+  private TreeNodePK pk;
 
   private String treeId;
   private String creationDate;
@@ -120,7 +118,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   }
 
   public TreeNode(TreeNodePersistence persistence) {
-    this.pk = persistence.getPK();
+    this.pk = (TreeNodePK) persistence.getPK();
     this.treeId = persistence.getTreeId();
     setName(persistence.getName());
     setDescription(persistence.getDescription());
@@ -133,11 +131,11 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
     setLanguage(persistence.getLang());
   }
 
-  public WAPrimaryKey getPK() {
+  public TreeNodePK getPK() {
     return pk;
   }
 
-  public void setPK(WAPrimaryKey value) {
+  public void setPK(TreeNodePK value) {
     pk = value;
   }
 
@@ -261,26 +259,8 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
     this.orderNumber = orderNumber;
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String toString() {
-    return "(pk = " + getPK().toString() + ", treeId = " + treeId + ", name = "
-        + getName() + ", path = " + getPath() + ", levelNumber = "
-        + getLevelNumber() + ", fatherId = " + getFatherId() + ")";
-  }
-
-  /**
-   * determine the connection type to the database
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
   public void setTranslationsFrom(Map<String, AxisHeaderI18N> translations) {
-    Map<String, TreeNodeI18N> treeNodeTranslations = new HashMap<String, TreeNodeI18N>();
+    Map<String, TreeNodeI18N> treeNodeTranslations = new HashMap<>();
     for (Map.Entry<String, AxisHeaderI18N> entry : translations.entrySet()) {
       treeNodeTranslations.put(entry.getKey(), new TreeNodeI18N(entry.getValue()));
     }

@@ -50,14 +50,17 @@ import java.util.Map;
  */
 public class AnnotationUtil {
 
+  private AnnotationUtil() {
+
+  }
+
   /**
    * Provides a centralized way to extract annotation of a method.
    * @param invocationContext the context of invocation.
    * @return the map with keys of Annotation class and values of object list.
-   * @throws Exception
    */
   public static <A extends Annotation> Map<Class<A>, A> extractMethodAnnotations(
-      InvocationContext invocationContext) throws Exception {
+      InvocationContext invocationContext) {
     return extractMethodAnnotations(getInterceptedMethodFromContext(invocationContext));
   }
 
@@ -66,11 +69,9 @@ public class AnnotationUtil {
    * @param method the intercepted method that will be invoked.
    * @param <A> the type of an annotation.
    * @return the map with keys of Annotation class and values of object list.
-   * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private static <A extends Annotation> Map<Class<A>, A> extractMethodAnnotations(Method method)
-      throws Exception {
+  private static <A extends Annotation> Map<Class<A>, A> extractMethodAnnotations(Method method) {
 
     // Initializing the results
     Map<Class<? extends Annotation>, Annotation> results = new LinkedHashMap<>();
@@ -86,10 +87,9 @@ public class AnnotationUtil {
    * Provides a centralized way to extract annotated method parameter values.
    * @param invocationContext the context of invocation.
    * @return the map with keys of Annotation class and values of object list.
-   * @throws Exception
    */
   public static Map<Class<Annotation>, List<Object>> extractMethodAnnotatedParameterValues(
-      InvocationContext invocationContext) throws Exception {
+      InvocationContext invocationContext) {
     return extractMethodAnnotatedParameterValues(getInterceptedMethodFromContext(invocationContext),
         invocationContext.getParameters());
   }
@@ -98,11 +98,10 @@ public class AnnotationUtil {
    * Provides a centralized way to extract annotated method parameter values.
    * @param method the intercepted method that will be invoked.
    * @return the map with keys of Annotation class and values of object list.
-   * @throws Exception
    */
   @SuppressWarnings("unchecked")
   private static Map<Class<Annotation>, List<Object>> extractMethodAnnotatedParameterValues(
-      Method method, Object[] parameterValues) throws Exception {
+      Method method, Object[] parameterValues) {
 
     // Initializing the results
     Map<Class<? extends Annotation>, List<Object>> results = new LinkedHashMap<>();
@@ -110,41 +109,44 @@ public class AnnotationUtil {
     Annotation[][] annotations = method.getParameterAnnotations();
     for (int i = 0; i < annotations.length; i++) {
       Annotation[] parameterAnnotations = annotations[i];
-      if (parameterAnnotations.length > 0) {
-        for (Annotation parameterAnnotation : parameterAnnotations) {
-          Object parameterValue = parameterValues[i];
-          if (parameterValue != null) {
-
-            if (parameterAnnotation.annotationType().isAssignableFrom(SourcePK.class) ||
-                parameterAnnotation.annotationType().isAssignableFrom(TargetPK.class)) {
-
-              if (parameterValue instanceof Collection) {
-                for (Object value : ((Collection) parameterValue)) {
-                  addPKParameterValue(results, parameterAnnotation.annotationType(), value);
-                }
-              } else {
-                addPKParameterValue(results, parameterAnnotation.annotationType(), parameterValue);
-              }
-
-            } else if (parameterAnnotation.annotationType().isAssignableFrom(Language.class)) {
-
-              String language = null;
-              if (parameterValue instanceof String) {
-                language = (String) parameterValue;
-              } else if (parameterValue instanceof Locale) {
-                language = ((Locale) parameterValue).getLanguage();
-              }
-              MapUtil.putAddList(results, parameterAnnotation.annotationType(), language);
-
-            } else {
-              MapUtil.putAddList(results, parameterAnnotation.annotationType(), parameterValue);
-            }
-          }
+      for (Annotation parameterAnnotation : parameterAnnotations) {
+        Object parameterValue = parameterValues[i];
+        if (parameterValue == null) {
+          continue;
         }
+        processAnnotations(results, parameterAnnotation, parameterValue);
       }
     }
 
     return (Map) results;
+  }
+
+  private static void processAnnotations(final Map<Class<? extends Annotation>, List<Object>> results,
+      final Annotation parameterAnnotation, final Object parameterValue) {
+    if (parameterAnnotation.annotationType().isAssignableFrom(SourcePK.class) ||
+        parameterAnnotation.annotationType().isAssignableFrom(TargetPK.class)) {
+
+      if (parameterValue instanceof Collection) {
+        for (Object value : ((Collection) parameterValue)) {
+          addPKParameterValue(results, parameterAnnotation.annotationType(), value);
+        }
+      } else {
+        addPKParameterValue(results, parameterAnnotation.annotationType(), parameterValue);
+      }
+
+    } else if (parameterAnnotation.annotationType().isAssignableFrom(Language.class)) {
+
+      String language = null;
+      if (parameterValue instanceof String) {
+        language = (String) parameterValue;
+      } else if (parameterValue instanceof Locale) {
+        language = ((Locale) parameterValue).getLanguage();
+      }
+      MapUtil.putAddList(results, parameterAnnotation.annotationType(), language);
+
+    } else {
+      MapUtil.putAddList(results, parameterAnnotation.annotationType(), parameterValue);
+    }
   }
 
   /**
@@ -164,38 +166,39 @@ public class AnnotationUtil {
   private static void addPKParameterValue(
       Map<Class<? extends Annotation>, List<Object>> parameterValues,
       Class<? extends Annotation> annotationClass, Object object) {
-    WAPrimaryKey waPrimaryKey = null;
+    ResourceReference resourceRef;
     if (object instanceof Contribution) {
       ContributionIdentifier contributionIdentifier = ((Contribution) object).getIdentifier();
-      waPrimaryKey =
+      resourceRef =
           new ResourceReference(contributionIdentifier.getLocalId(), contributionIdentifier.getComponentInstanceId());
     } else if (object instanceof SilverpeasContent) {
       SilverpeasContent silverpeasContent = (SilverpeasContent) object;
-      waPrimaryKey =
+      resourceRef =
           new ResourceReference(silverpeasContent.getId(), silverpeasContent.getComponentInstanceId());
     } else if (object instanceof SilverContentInterface) {
       SilverContentInterface silverContentInterface = (SilverContentInterface) object;
-      waPrimaryKey =
+      resourceRef =
           new ResourceReference(silverContentInterface.getId(), silverContentInterface.getInstanceId());
     } else if (object instanceof PasteDetailFromToPK) {
       PasteDetailFromToPK pasteDetail = (PasteDetailFromToPK) object;
       if (SourcePK.class.equals(annotationClass)) {
-        waPrimaryKey = pasteDetail.getFromPK();
+        resourceRef = new ResourceReference(pasteDetail.getFromPK());
       } else {
-        waPrimaryKey = pasteDetail.getToPK();
+        resourceRef = new ResourceReference(pasteDetail.getToPK());
       }
     } else if (object instanceof WAPrimaryKey) {
-      waPrimaryKey = (WAPrimaryKey) object;
+      resourceRef = new ResourceReference((WAPrimaryKey) object);
     } else if (object instanceof SimpleDocument) {
-      waPrimaryKey = ((SimpleDocument) object).getPk();
+      resourceRef = new ResourceReference(((SimpleDocument) object).getPk());
     } else {
+      resourceRef = null;
       if (object != null) {
         throw new NotImplementedException("");
       }
     }
 
-    if (waPrimaryKey != null) {
-      MapUtil.putAddList(parameterValues, annotationClass, waPrimaryKey);
+    if (resourceRef != null) {
+      MapUtil.putAddList(parameterValues, annotationClass, resourceRef);
     }
   }
 
@@ -225,10 +228,8 @@ public class AnnotationUtil {
    * Provides a centralized way to find the method that has been intercepted.
    * @param invocationContext the context of invocation.
    * @return the method that has been intercepted.
-   * @throws Exception
    */
-  private static Method getInterceptedMethodFromContext(InvocationContext invocationContext)
-      throws Exception {
+  private static Method getInterceptedMethodFromContext(InvocationContext invocationContext) {
     return invocationContext.getMethod();
   }
 }

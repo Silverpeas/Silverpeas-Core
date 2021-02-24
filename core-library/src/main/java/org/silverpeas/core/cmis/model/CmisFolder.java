@@ -73,6 +73,7 @@ public abstract class CmisFolder extends CmisFile implements Folding {
    * @return either the unique identifier of a folder, parent of it, or null if this folder is a
    * root one in the CMIS objects tree.
    */
+  @Override
   public CmisFolder setParentId(final String parentId) {
     super.setParentId(parentId);
     return this;
