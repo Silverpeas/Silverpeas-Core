@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,8 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Arrays;
@@ -50,6 +52,15 @@ public class ContributionFolder extends CmisFolder {
   }
 
   private final ContributionIdentifier id;
+
+  /**
+   * Gets the virtual root contribution folder of the specified application.
+   * @param applicationId the unique identifier of an application.
+   * @return the {@link ContributionIdentifier} of the root folder.
+   */
+  public static ContributionIdentifier getRootFolderId(final String applicationId) {
+    return ContributionIdentifier.from(applicationId, NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
+  }
 
   /**
    * Constructs a new folder of contributions with the specified identifier, name and language.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.cmis.walkers.CmisObjectTreeWalkerDelegator;
+import org.silverpeas.cmis.walkers.CmisObjectsTreeWalkerDelegator;
 import org.silverpeas.cmis.walkers.TreeWalkerForComponentInst;
 import org.silverpeas.cmis.walkers.TreeWalkerForNodeDetail;
 import org.silverpeas.cmis.walkers.TreeWalkerForPublicationDetail;
@@ -170,10 +170,10 @@ public abstract class CMISEnvForTests {
 
   @TestManagedBean
   Class<?>[] supplyRequiredManagedBeanTypes() {
-    return new Class<?>[]{TreeWalkerForComponentInst.class,
+    return new Class<?>[]{TreeWalkerSelector.class, TreeWalkerForComponentInst.class,
         TreeWalkerForSpaceInst.class, TreeWalkerForNodeDetail.class,
         TreeWalkerForPublicationDetail.class, TreeWalkerForSimpleDocument.class,
-        TreeWalkerSelector.class, CmisObjectTreeWalkerDelegator.class};
+        CmisObjectsTreeWalkerDelegator.class};
   }
 
   /**

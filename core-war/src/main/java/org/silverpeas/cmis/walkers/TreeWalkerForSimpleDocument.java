@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -164,7 +164,7 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
     ContributionIdentifier parentId = document.getSourceContribution();
     LocalizedResource parent = findContribution(parentId.getLocalId(),
         parentId.getComponentInstanceId());
-    CmisFolder cmisParent = AbstractCmisObjectsTreeWalker.getCmisObject(parent, language);
+    CmisFolder cmisParent = getCmisObject(parent, language);
     CmisObject cmisObject = createCmisObject(document, language);
     ObjectParentData parentData = buildObjectParentData(cmisParent, cmisObject, filtering);
     return Collections.singletonList(parentData);

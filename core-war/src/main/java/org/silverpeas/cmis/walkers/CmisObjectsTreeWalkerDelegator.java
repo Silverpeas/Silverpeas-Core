@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,44 +38,47 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
+ * A dummy tree walker to be used as a delegator of {@link CmisObjectsTreeWalker}'s method
+ * invocations to the correct {@link CmisObjectsTreeWalker} objects able to answer this invocation.
+ *
  * @author mmoquillon
  */
-public class CmisObjectTreeWalkerDelegator implements CmisObjectsTreeWalker {
+public class CmisObjectsTreeWalkerDelegator implements CmisObjectsTreeWalker {
 
   @Inject
   private TreeWalkerSelector selector;
 
   @Override
   public CmisObject getObjectData(final String objectId, final Filtering filtering) {
-    return selector.selectByObjectId(objectId).getObjectData(objectId, filtering);
+    return selector.selectByObjectIdOrFail(objectId).getObjectData(objectId, filtering);
   }
 
   @Override
   public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
-    return selector.selectByObjectId(Space.ROOT_ID.asString()).getObjectDataByPath(path, filtering);
+    return selector.selectByObjectIdOrFail(Space.ROOT_ID.asString()).getObjectDataByPath(path, filtering);
   }
 
   @Override
   public List<ObjectParentData> getParentsData(final String objectId, final Filtering filtering) {
-    return selector.selectByObjectId(objectId).getParentsData(objectId, filtering);
+    return selector.selectByObjectIdOrFail(objectId).getParentsData(objectId, filtering);
   }
 
   @Override
   public ObjectInFolderList getChildrenData(final String folderId, final Filtering filtering,
       final Paging paging) {
-    return selector.selectByObjectId(folderId).getChildrenData(folderId, filtering, paging);
+    return selector.selectByObjectIdOrFail(folderId).getChildrenData(folderId, filtering, paging);
   }
 
   @Override
   public List<ObjectInFolderContainer> getSubTreeData(final String folderId,
       final Filtering filtering, final long depth) {
-    return selector.selectByObjectId(folderId).getSubTreeData(folderId, filtering, depth);
+    return selector.selectByObjectIdOrFail(folderId).getSubTreeData(folderId, filtering, depth);
   }
 
   @Override
   public ContentStream getContentStream(final String objectId, final String language,
       final long offset, final long length) {
-    return selector.selectByObjectId(objectId).getContentStream(objectId, language, offset, length);
+    return selector.selectByObjectIdOrFail(objectId).getContentStream(objectId, language, offset, length);
   }
 }
   

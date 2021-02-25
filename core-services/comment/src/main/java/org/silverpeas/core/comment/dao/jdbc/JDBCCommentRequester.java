@@ -73,6 +73,9 @@ public class JDBCCommentRequester {
   private static final String SQL_COMMENT_QUERY =
       "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, " +
           "commentComment, resourceType, resourceId, instanceId FROM " + COMMENT_TABLE;
+  private static final String SELECT_COMMENT_COUNT =
+      "SELECT COUNT(commentId) as nb_comment, resourceType, resourceId, instanceId FROM " +
+          COMMENT_TABLE;
 
   protected JDBCCommentRequester() {
   }
@@ -81,7 +84,6 @@ public class JDBCCommentRequester {
    * Saves the specified comment with the specified connection onto a data source. Once saved, the
    * comment passed as argument isn't updated with the persistence information and hence the
    * returned comment instance should be used for further handling.
-   *
    * @param con the connection to a data source.
    * @param cmt the comment to save.
    * @return the comment that is saved into the data source with its unique identifier.
@@ -117,9 +119,8 @@ public class JDBCCommentRequester {
   /**
    * Deletes the comment identified by the specified primary key from the data source onto which the
    * given connection is opened.
-   *
    * @param con the connection to the data source.
-   * @param id  the unique identifier of the comment in the data source.
+   * @param id the unique identifier of the comment in the data source.
    * @throws SQLException if an error occurs while removing the comment from the data source.
    */
   public void deleteComment(Connection con, CommentId id) throws SQLException {
@@ -132,7 +133,6 @@ public class JDBCCommentRequester {
 
   /**
    * Updates the comment representation in the data source by the specified one.
-   *
    * @param con the connection to the data source.
    * @param cmt the updated comment.
    * @throws SQLException if an error occurs while updating the comment in the data source.
@@ -156,13 +156,11 @@ public class JDBCCommentRequester {
   /**
    * Moves all the comments from the resource they commented to another resource as they comment
    * this new resource instead of the previous one.
-   *
-   * @param con              the connection to the data source.
+   * @param con the connection to the data source.
    * @param fromResourceType the source type of the commented resource
-   * @param fromResource     the source unique identifier of the comment in the data source.
-   * @param toResourceType   the destination type of the commented resource
-   * @param toResource       the destination unique identifier of another comment in the data
-   *                         source.
+   * @param fromResource the source unique identifier of the comment in the data source.
+   * @param toResourceType the destination type of the commented resource
+   * @param toResource the destination unique identifier of another comment in the data source.
    * @throws SQLException if an error occurs during the operation.
    */
   public void moveComments(Connection con, String fromResourceType, ResourceReference fromResource,
@@ -183,8 +181,7 @@ public class JDBCCommentRequester {
 
   /**
    * Gets the comment identified by the specified identifier.
-   *
-   * @param con       the connection to use for getting the comment.
+   * @param con the connection to use for getting the comment.
    * @param commentId the identifier of the comment in the data source.
    * @return the comment or null if no such comment is found.
    * @throws SQLException if an error occurs during the comment fetching.
@@ -204,23 +201,28 @@ public class JDBCCommentRequester {
 
   public List<CommentedPublicationInfo> getMostCommentedAllPublications(Connection con,
       String resType) throws SQLException {
-    String resourceTypeQuery =
-        (StringUtil.isDefined(resType) ? "where resourceType = '" + resType + "'" : "");
-    String selectQuery =
-        "SELECT COUNT(commentId) as nb_comment, resourceType, resourceId, instanceId FROM " +
-            "sb_comment_comment " + resourceTypeQuery +
-            " GROUP BY resourceType, resourceId, instanceId ORDER BY nb_comment desc;";
-    try (Statement prepStmt = con.createStatement();
-         ResultSet rs = prepStmt.executeQuery(selectQuery)) {
-      return fetchCommentedPublicationInfos(rs);
+    if (StringUtil.isDefined(resType)) {
+      String selectQuery = SELECT_COMMENT_COUNT + " WHERE resourceType = ?" +
+          " GROUP BY resourceType, resourceId, instanceId ORDER BY nb_comment desc;";
+      try (PreparedStatement stmt = con.prepareStatement(selectQuery)) {
+        stmt.setString(1, resType);
+        try (ResultSet rs = stmt.executeQuery()) {
+          return fetchCommentedPublicationInfos(rs);
+        }
+      }
+    } else {
+      String selectQuery = SELECT_COMMENT_COUNT + " GROUP BY resourceType, resourceId, instanceId" +
+          " ORDER BY nb_comment desc;";
+      try (Statement prepStmt = con.createStatement();
+           ResultSet rs = prepStmt.executeQuery(selectQuery)) {
+        return fetchCommentedPublicationInfos(rs);
+      }
     }
   }
 
   public List<CommentedPublicationInfo> getMostCommentedPublications(Connection con,
       final List<ResourceReference> pubRefs) throws SQLException {
-    String query =
-        "SELECT COUNT(commentId) as nb_comment, resourceType, resourceId, instanceId FROM " +
-            COMMENT_TABLE;
+    String query = SELECT_COMMENT_COUNT;
     List<String> resourceIds = new ArrayList<>(pubRefs.size());
     List<String> instanceIds = new ArrayList<>(pubRefs.size());
     for (ResourceReference ref : pubRefs) {

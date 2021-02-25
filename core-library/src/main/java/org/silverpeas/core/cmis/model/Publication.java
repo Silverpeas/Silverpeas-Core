@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@
 package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.node.model.NodePath;
 
@@ -32,12 +33,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A publication in Silverpeas. A publication is a contribution of a user that
- * gathers one or more contents on a similar topic. Such content can be a WYSIWYG text or a form,
- * and one or more attached documents. A publication, in our CMIS implementation, is always
- * contained into a contribution folder that can be, for some applications that don't organize their
- * publications in folder, a virtual one for convenience of this constrain (in that case, the
- * virtual folder is the root one of the application).
+ * A publication in Silverpeas. A publication is a contribution of a user that gathers one or more
+ * contents on a similar topic. Such content can be a WYSIWYG text or a form, and one or more
+ * attached documents.
+ * <p>
+ * A publication, in our CMIS implementation, is contained either into a contribution folder (for
+ * applications categorizing their resources) or directly at the root level of the application. For
+ * applications using the {@link ContributionFolder}s to categorize the publications, usually a root
+ * virtual folder is used to represent the application itself; in that case, for publications
+ * organized into such a folder, their parent is then considered to be the application itself.
+ * </p>
+ *
  * @author mmoquillon
  */
 public class Publication extends CmisFolder {
@@ -52,9 +58,10 @@ public class Publication extends CmisFolder {
 
   /**
    * Constructs a new publication with the specified identifier, name and language.
-   * @param id the {@link ContributionIdentifier} instance identifying the publication in
-   * Silverpeas.
-   * @param name the name of the publication.
+   *
+   * @param id       the {@link ContributionIdentifier} instance identifying the publication in
+   *                 Silverpeas.
+   * @param name     the name of the publication.
    * @param language the language in which is written the publication.
    */
   Publication(final ContributionIdentifier id, final String name, final String language) {
@@ -68,12 +75,20 @@ public class Publication extends CmisFolder {
 
   @Override
   public String getPath() {
-    // the parent of a publication must be always a folder in our implementation of the CMIS objects
-    // tree
-    ContributionIdentifier folderId = ContributionIdentifier.decode(getParentId());
-    String folderPath =
-        NodePath.getPath(folderId).format(getLanguage(), true, PATH_SEPARATOR);
-    return PATH_SEPARATOR + folderPath + PATH_SEPARATOR + getName();
+    ContributionIdentifier parentId;
+    if (ContributionIdentifier.isValid(getParentId())) {
+      // the parent is a contribution folder
+      parentId = ContributionIdentifier.decode(getParentId());
+    } else if (getApplicationId().equals(getParentId())) {
+      // the parent is the application itself
+      parentId = ContributionFolder.getRootFolderId(getParentId());
+    } else {
+      throw new CmisConstraintException(String.format(
+          "The parent %s of the publication isn't a contribution folder neither an application",
+          getParentId()));
+    }
+    return PATH_SEPARATOR + NodePath.getPath(parentId).format(getLanguage(), true, PATH_SEPARATOR) +
+        PATH_SEPARATOR + getName();
   }
 
   @Override

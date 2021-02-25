@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -144,8 +144,7 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
     PublicationDetail pub = (PublicationDetail) object;
     String language = filtering.getLanguage();
     String folderId = getFolder(pub).asString();
-    AbstractCmisObjectsTreeWalker walker =
-        AbstractCmisObjectsTreeWalker.selectInstance(folderId);
+    AbstractCmisObjectsTreeWalker walker = getTreeWalkerSelector().selectByObjectIdOrFail(folderId);
     LocalizedResource folder = walker.getSilverpeasObjectById(folderId);
     CmisFolder cmisParent = walker.createCmisObject(folder, language);
     CmisObject cmisObject = createCmisObject(pub, language);

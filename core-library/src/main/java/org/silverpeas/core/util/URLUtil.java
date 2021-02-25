@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -105,8 +106,9 @@ public class URLUtil {
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
+   *
    * @param componentName - le nom du jobPeas
-   * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
+   * @param sComponentId  - l'id de l'instance de composant (trucsAstuces1042)
    */
   private static String buildStandardURL(String componentName, String sComponentId) {
     return '/' + AdministrationServiceProvider.getAdminService().getRequestRouter(componentName) +
@@ -123,8 +125,8 @@ public class URLUtil {
 
   /**
    * @param sComponentName - the componentName (ie kmelia, bookmark...)
-   * @param sSpace - the space id
-   * @param sComponentId - the componentId (ie kmelia12, bookmark578...)
+   * @param sSpace         - the space id
+   * @param sComponentId   - the componentId (ie kmelia12, bookmark578...)
    * @return an String like '/RcomponentName/componentId/'
    */
   public static String getURL(String sComponentName, String sSpace, String sComponentId) {
@@ -145,11 +147,11 @@ public class URLUtil {
   }
 
   /**
-   * @deprecated
    * @param sComponentName the name of a component.
    * @return the URL to the component.
+   * @deprecated
    */
-  @Deprecated
+  @Deprecated(since = "5.15")
   public static String getURL(String sComponentName) {
     return getURL(sComponentName, null, null);
   }
@@ -165,7 +167,7 @@ public class URLUtil {
   /**
    * Retourne l'URL pour les nouveaux composants lors de la recherche globale
    *
-   * @param spaceId - l'id de l'espace (WA151)
+   * @param spaceId     - l'id de l'espace (WA151)
    * @param componentId - l'id de l'instance de composant (trucsAstuces1042)
    * @return la nouvelle URL
    */
@@ -190,6 +192,7 @@ public class URLUtil {
   /**
    * Gets the absolute application URL when the treatment is executed into the context of a HTTP
    * request.
+   *
    * @return the absolute application URL as string.
    */
   public static String getAbsoluteApplicationURL() {
@@ -199,6 +202,7 @@ public class URLUtil {
   /**
    * Gets the absolute local application URL when the treatment is executed into the context of a
    * HTTP request.
+   *
    * @return the absolute local application URL as string.
    */
   public static String getAbsoluteLocalApplicationURL() {
@@ -211,9 +215,9 @@ public class URLUtil {
     getRequestCache().put(CURRENT_SERVER_URL_CACHE_KEY, serverUrl);
     getRequestCache().put(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, localServerUrl);
     getAppCache().computeIfAbsent(CURRENT_SERVER_URL_CACHE_KEY, String.class, 0, 0,
-      () -> serverUrl);
+        () -> serverUrl);
     getAppCache().computeIfAbsent(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class, 0, 0,
-      () -> localServerUrl);
+        () -> localServerUrl);
   }
 
   public static String getCurrentServerURL() {
@@ -221,11 +225,13 @@ public class URLUtil {
     if (serverUrl != null) {
       return serverUrl;
     }
-    return defaultStringIfNotDefined(getServerURL(null), getAppCache().get(CURRENT_SERVER_URL_CACHE_KEY, String.class));
+    return defaultStringIfNotDefined(getServerURL(null),
+        getAppCache().get(CURRENT_SERVER_URL_CACHE_KEY, String.class));
   }
 
   public static String getCurrentLocalServerURL() {
-    final String localServerUrl = getRequestCache().get(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class);
+    final String localServerUrl =
+        getRequestCache().get(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class);
     if (localServerUrl != null) {
       return localServerUrl;
     }
@@ -318,22 +324,24 @@ public class URLUtil {
     return getSimpleURL(type, id, "", appendContext);
   }
 
-  public static String getSearchResultURL(SilverpeasContent content) {
+  public static String getSearchResultURL(Contribution content) {
     String url = null;
     if (content instanceof SilverpeasToolContent) {
       url = ((SilverpeasToolContent) content).getURL();
     }
     if (!isDefined(url)) {
-      url = getURL(null, null, content.getComponentInstanceId()) + "searchResult?Type=" + content.
-          getContributionType() + "&Id=" + content.getId();
+      url = getURL(null, null, content.getIdentifier().getComponentInstanceId()) +
+          "searchResult?Type=" + content.getContributionType() + "&Id=" +
+          content.getIdentifier().getLocalId();
     }
     return url;
   }
 
   /**
-   * Translates a string into <code>application/x-www-form-urlencoded</code>
-   * format using a specific encoding scheme. The specified string is  expected to be in the UTF-8
-   * charset, otherwise it is returned as such.
+   * Translates a string into <code>application/x-www-form-urlencoded</code> format using a specific
+   * encoding scheme. The specified string is  expected to be in the UTF-8 charset, otherwise it is
+   * returned as such.
+   *
    * @param url an UTF-8 string representing an URL of a resource in Silverpeas.
    * @return the encoded URL.
    */
@@ -349,7 +357,8 @@ public class URLUtil {
 
   /**
    * Gets the permalink according to the specified parameters.
-   * @param permalink the permalink type.
+   *
+   * @param permalink  the permalink type.
    * @param resourceId the identifier of the resource.
    * @return the permalink string.
    */
@@ -370,11 +379,11 @@ public class URLUtil {
 
   public static void setSilverpeasVersion(String version) {
     silverpeasVersion = version;
-    silverpeasVersionMin = StringUtil.remove(StringUtil.remove(version, '.'), '-');
+    silverpeasVersionMin = StringUtils.remove(StringUtils.remove(version, '.'), '-');
     silverpeasFingerprintVersion = "." + silverpeasVersionMin.toLowerCase();
   }
 
-  public static String getSilverpeasVersionFingerprint(){
+  public static String getSilverpeasVersionFingerprint() {
     return silverpeasFingerprintVersion;
   }
 
@@ -395,7 +404,8 @@ public class URLUtil {
         // Query string method
         fingerprintedUrl = addVersionByQueryStringMethod(url);
       } else {
-        fingerprintedUrl = url.substring(0, lastIndex) + silverpeasFingerprintVersion + url.substring(lastIndex);
+        fingerprintedUrl =
+            url.substring(0, lastIndex) + silverpeasFingerprintVersion + url.substring(lastIndex);
       }
     } else {
       // Query string method
@@ -418,6 +428,7 @@ public class URLUtil {
   /**
    * If activated (web.resource.js.minify = true and/or web.resource.css.minify = true) the given
    * url is modified in order to target the minified version of js or css.
+   *
    * @param url the url of js or css.
    * @return if activated, the url of minified js or css resource, the given url otherwise.
    */
@@ -425,7 +436,8 @@ public class URLUtil {
     String minifiedUrl = url;
     if (!minifiedUrl.matches(".*[-.]min[-.].*") && !MINIFY_FILTER.matcher(url).matches()) {
       final String suffix = minifiedUrl.endsWith("js") ? "js" : "css";
-      if (getGeneralSettingBundle().getBoolean("web.resource." + suffix + ".get.minified.enabled")) {
+      if (getGeneralSettingBundle().getBoolean(
+          "web.resource." + suffix + ".get.minified.enabled")) {
         minifiedUrl = minifiedUrl.replaceAll("[.]" + suffix + "$", "-min." + suffix);
       }
     }
@@ -433,11 +445,17 @@ public class URLUtil {
   }
 
   public enum Permalink {
-    PUBLICATION(URL_PUBLI, "/Publication/"), SPACE(URL_SPACE, "/Space/"),
-    COMPONENT(URL_COMPONENT, "/Component/"), FOLDER(URL_TOPIC, "/Topic/"), FILE(URL_FILE, "/File/"),
-    DOCUMENT(URL_DOCUMENT, "/Document/"), VERSION(URL_VERSION, "/Version/"),
-    SURVEY(URL_SURVEY, "/Survey/"), QUESTION(URL_QUESTION, "/Question/"),
-    FORUM_MESSAGE(URL_MESSAGE, "/ForumsMessage/"), MEDIA(URL_MEDIA, "/Media/"),
+    PUBLICATION(URL_PUBLI, "/Publication/"),
+    SPACE(URL_SPACE, "/Space/"),
+    COMPONENT(URL_COMPONENT, "/Component/"),
+    FOLDER(URL_TOPIC, "/Topic/"),
+    FILE(URL_FILE, "/File/"),
+    DOCUMENT(URL_DOCUMENT, "/Document/"),
+    VERSION(URL_VERSION, "/Version/"),
+    SURVEY(URL_SURVEY, "/Survey/"),
+    QUESTION(URL_QUESTION, "/Question/"),
+    FORUM_MESSAGE(URL_MESSAGE, "/ForumsMessage/"),
+    MEDIA(URL_MEDIA, "/Media/"),
     NEWSLETTER(URL_NEWSLETTER, "/Newsletter/");
     private int type;
     private String urlPrefix;

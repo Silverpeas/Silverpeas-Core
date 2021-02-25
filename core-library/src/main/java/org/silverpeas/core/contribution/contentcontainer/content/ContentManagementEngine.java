@@ -63,6 +63,7 @@ public class ContentManagementEngine implements Serializable {
   private static final String SILVER_CONTENT_TABLE = "SB_ContentManager_Content";
   private static final String CONTENT = "content";
   private static final String DELETE_FROM = "DELETE FROM ";
+  private static final String WHERE_SILVER_CONTENT_ID_IS_SET = " WHERE silverContentId = ?";
 
   private final transient List<ContentPeas> acContentPeas = new ArrayList<>();
   // Container peas
@@ -109,10 +110,9 @@ public class ContentManagementEngine implements Serializable {
   /**
    * return a list of identifiers of the resources matching the specified identifiers of {@link
    * SilverContent} objects.
-   *
    * @param contentIds a list of identifiers of
    * {@link org.silverpeas.core.contribution.contentcontainer.content.SilverContent}
-   *                   objects.
+   * objects.
    * @return a list of resource identifiers.
    */
   public List<String> getResourcesMatchingContents(final List<Integer> contentIds) {
@@ -132,7 +132,6 @@ public class ContentManagementEngine implements Serializable {
   /**
    * When a generic component is instanciate, this function is called to register the association
    * between container and content
-   *
    * @param connection
    * @param sComponentId
    * @param sContainerType
@@ -194,11 +193,10 @@ public class ContentManagementEngine implements Serializable {
   /**
    * When a generic component instance is finalized, this function is called to unregister the
    * association between the container and its contents.
-   *
-   * @param connection     a connection to the database in which is stored the mapping.
-   * @param sComponentId   the unique identifier of the component instance.
+   * @param connection a connection to the database in which is stored the mapping.
+   * @param sComponentId the unique identifier of the component instance.
    * @param sContainerType the type of the content container.
-   * @param sContentType   the type of the contents in the content container.
+   * @param sContentType the type of the contents in the content container.
    * @throws ContentManagerException if an error occurs while unregister the content instance.
    */
   public void unregisterNewContentInstance(Connection connection, String sComponentId,
@@ -214,7 +212,7 @@ public class ContentManagementEngine implements Serializable {
 
       final String contentDeletion = DELETE_FROM + SILVER_CONTENT_TABLE + " WHERE " +
           "contentInstanceId IN (SELECT instanceId from " + INSTANCE_TABLE +
-          " WHERE componentId = ? AND " + "containerType = ? AND contentType = ?)";
+          " WHERE componentId = ? AND containerType = ? AND contentType = ?)";
 
       final String instanceDeletion = DELETE_FROM + INSTANCE_TABLE + " WHERE componentId = ?" +
           " AND containerType = ? AND contentType = ?";
@@ -240,7 +238,6 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given componentId
-   *
    * @param sComponentId
    * @return
    * @throws ContentManagerException
@@ -252,7 +249,6 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given component
-   *
    * @param componentName
    * @return
    * @throws ContentManagerException
@@ -305,16 +301,17 @@ public class ContentManagementEngine implements Serializable {
       // Insert the silverContent
       String sSQLStatement = "INSERT INTO " + SILVER_CONTENT_TABLE +
           "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, " +
-          "beginDate, endDate, isVisible) ";
-      sSQLStatement +=
-          "VALUES (" + newSilverContentId + ",'" + sInternalContentId + "'," + nContentInstanceId +
-              "," + Integer.parseInt(sAuthorId) + ",?, ? , ? , ? )";
+          "beginDate, endDate, isVisible) VALUES (?, ?, ?, ?, ?, ? , ? , ? )";
 
       prepStmt = conn.prepareStatement(sSQLStatement);
-      prepStmt.setDate(1, systemDate);
-      prepStmt.setString(2, visibility.getBeginDate());
-      prepStmt.setString(3, visibility.getEndDate());
-      prepStmt.setInt(4, visibility.isVisible());
+      prepStmt.setInt(1, newSilverContentId);
+      prepStmt.setString(2, sInternalContentId);
+      prepStmt.setInt(3, nContentInstanceId);
+      prepStmt.setInt(4, Integer.parseInt(sAuthorId));
+      prepStmt.setDate(5, systemDate);
+      prepStmt.setString(6, visibility.getBeginDate());
+      prepStmt.setString(7, visibility.getEndDate());
+      prepStmt.setInt(8, visibility.isVisible());
       prepStmt.executeUpdate();
 
       return newSilverContentId;
@@ -337,12 +334,11 @@ public class ContentManagementEngine implements Serializable {
     PreparedStatement prepStmt = null;
     try {
       // delete the silverContent
-      String sSQLStatement =
-          DELETE_FROM + SILVER_CONTENT_TABLE + " WHERE (silverContentId = " + nSilverContentId +
-              ")";
+      String sSQLStatement = DELETE_FROM + SILVER_CONTENT_TABLE + WHERE_SILVER_CONTENT_ID_IS_SET;
 
       // Execute the delete
       prepStmt = connection.prepareStatement(sSQLStatement);
+      prepStmt.setInt(1, nSilverContentId);
       prepStmt.executeUpdate();
     } catch (Exception e) {
       throw new ContentManagerException(failureOnDeleting(CONTENT, nSilverContentId), e);
@@ -351,8 +347,8 @@ public class ContentManagementEngine implements Serializable {
     }
   }
 
-  private int getSilverContentId(Connection connection, String sInternalContentId, String sComponentId,
-      boolean isGlobalSearch) throws ContentManagerException {
+  private int getSilverContentId(Connection connection, String sInternalContentId,
+      String sComponentId, boolean isGlobalSearch) throws ContentManagerException {
     int nSilverContentId = -1;
     String sSQLStatement = "SELECT silverContentId FROM " + SILVER_CONTENT_TABLE +
         " WHERE internalContentId = ? AND contentInstanceId = ";
@@ -365,7 +361,7 @@ public class ContentManagementEngine implements Serializable {
       iComponentId = getContentInstanceId(sComponentId);
     }
 
-    try(PreparedStatement stmt = connection.prepareStatement(sSQLStatement)) {
+    try (PreparedStatement stmt = connection.prepareStatement(sSQLStatement)) {
       stmt.setString(1, sInternalContentId);
       if (isGlobalSearch) {
         stmt.setString(2, sComponentId);
@@ -392,7 +388,7 @@ public class ContentManagementEngine implements Serializable {
    */
   public int getSilverContentId(String sInternalContentId, String sComponentId)
       throws ContentManagerException {
-    try(Connection connection = DBUtil.openConnection()) {
+    try (Connection connection = DBUtil.openConnection()) {
       return getSilverContentId(connection, sInternalContentId, sComponentId, false);
     } catch (Exception e) {
       throw new ContentManagerException(failureOnGetting(CONTENT, sInternalContentId), e);
@@ -457,12 +453,13 @@ public class ContentManagementEngine implements Serializable {
 
         // Get the InternalContentId
         String sSQLStatement =
-            "SELECT internalContentId FROM " + SILVER_CONTENT_TABLE + " WHERE (silverContentId = " +
-                nSilverContentId + ")";
+            "SELECT internalContentId FROM " + SILVER_CONTENT_TABLE +
+                WHERE_SILVER_CONTENT_ID_IS_SET;
 
         // Execute the search
 
         prepStmt = connection.prepareStatement(sSQLStatement);
+        prepStmt.setInt(1, nSilverContentId);
         resSet = prepStmt.executeQuery();
 
         // Fetch the result
@@ -543,7 +540,6 @@ public class ContentManagementEngine implements Serializable {
 
   /**
    * retourne une liste d'instanceID a partir d'une Liste de silvercontentId
-   *
    * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
@@ -573,7 +569,6 @@ public class ContentManagementEngine implements Serializable {
   /**
    * Cette méthode retourne une liste de SilverContentId qui se trouve sous une instance de
    * jobPeas.
-   *
    * @param instanceId - l'id de l'instance (trucsAstuces978)
    * @return une liste de silvercontentId
    */
@@ -588,9 +583,8 @@ public class ContentManagementEngine implements Serializable {
       con = DBUtil.openConnection();
 
       String sSQLStatement =
-          "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE + " C ";
-      sSQLStatement += " where I.instanceId = C.contentInstanceId ";
-      sSQLStatement += " and I.componentId like ? ";
+          "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE +
+              " C  where I.instanceId = C.contentInstanceId and I.componentId like ?";
 
       // Execute the search
       prepStmt = con.prepareStatement(sSQLStatement);
@@ -620,13 +614,14 @@ public class ContentManagementEngine implements Serializable {
       // update the silverContent
       String sSQLStatement =
           "UPDATE " + SILVER_CONTENT_TABLE + " SET beginDate = ? , endDate = ? , isVisible = ? " +
-              " WHERE silverContentId = " + silverObjectId;
+              WHERE_SILVER_CONTENT_ID_IS_SET;
 
       try (Connection con = DBUtil.openConnection();
            PreparedStatement prepStmt = con.prepareStatement(sSQLStatement)) {
         prepStmt.setString(1, scv.getBeginDate());
         prepStmt.setString(2, scv.getEndDate());
         prepStmt.setInt(3, scv.isVisible());
+        prepStmt.setInt(4, silverObjectId);
         prepStmt.executeUpdate();
       } catch (Exception e) {
         throw new ContentManagerException(failureOnUpdate("silverpeas content", silverObjectId), e);
@@ -646,12 +641,13 @@ public class ContentManagementEngine implements Serializable {
 
     // Get the SilverContentVisibility
     String sSQLStatement = "SELECT beginDate, endDate, isVisible FROM " + SILVER_CONTENT_TABLE +
-        " WHERE silverContentId = '" + silverObjectId + "'";
+        WHERE_SILVER_CONTENT_ID_IS_SET;
     try {
       // Open connection
       connection = DBUtil.openConnection();
 
       prepStmt = connection.prepareStatement(sSQLStatement);
+      prepStmt.setString(1, String.valueOf(silverObjectId));
       resSet = prepStmt.executeQuery();
 
       // Fetch the result

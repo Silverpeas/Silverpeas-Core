@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -43,6 +43,7 @@ import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -192,11 +193,10 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
     // implementation
     return Stream.concat(Stream.of(allowedSubSpaceIds), allowedCompInstIds)
         .map(BasicIdentifier::new)
-        .map(id -> {
-          AbstractCmisObjectsTreeWalker walker =
-              AbstractCmisObjectsTreeWalker.selectInstance(id.asString());
-          return walker.getSilverpeasObjectById(id.asString());
-        });
+        .map(BasicIdentifier::asString)
+        .map(id -> Pair.of(id, getTreeWalkerSelector().selectByObjectId(id)))
+        .filter(p -> p.getSecond().isPresent())
+        .map(p -> p.getSecond().get().getSilverpeasObjectById(p.getFirst()));
   }
 
   @Override

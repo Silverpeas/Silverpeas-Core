@@ -129,6 +129,17 @@ public class ContributionIdentifier implements ComponentResourceIdentifier, Seri
   }
 
   /**
+   * Is the specified identifier a valid contribution identifier?
+   * @param id the textual format of an identifier of a resource in Silverpeas.
+   * @return true if the given parameter represents correctly the identifier of a contribution in
+   * Silverpeas, false otherwise.
+   */
+  public static boolean isValid(String id) {
+    final Matcher matcher = ABSOLUTE_ID_PATTERN.matcher(id);
+    return matcher.matches();
+  }
+
+  /**
    * Constructs a new contribution identifier from the specified Silverpeas resource identifier.
    * If the resource identifier is actually a {@link ContributionIdentifier} instance, then returns
    * it as such, otherwise decode it from its {@link String} representation (though its
