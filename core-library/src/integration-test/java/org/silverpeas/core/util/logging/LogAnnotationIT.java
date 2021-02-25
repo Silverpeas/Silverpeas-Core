@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,19 +32,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.LoggerReaderRule;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.text.MessageFormat.format;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -56,6 +57,9 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Arquillian.class)
 public class LogAnnotationIT {
+
+  @Rule
+  public LoggerReaderRule loggerReaderRule = new LoggerReaderRule();
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
@@ -123,32 +127,29 @@ public class LogAnnotationIT {
       await().pollDelay(1, TimeUnit.SECONDS)
           .atMost(2, TimeUnit.SECONDS)
           .untilTrue(new AtomicBoolean(true));
-      assertThat(Files.lines(getLogFile())
-          .filter(line -> line.contains(record1) || line.contains(record2))
-          .count(), is(greaterThanOrEqualTo(2l)));
+      final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
+      assertThat(format("Searching {0} or {1} into \n{2}", record1, record2, lines),
+          lines.stream().filter(line -> line.contains(record1) || line.contains(record2)).count(),
+          is(greaterThanOrEqualTo(2L)));
     } catch (IOException e) {
       fail(e.getMessage());
     }
   }
 
   private void assertThatLogContainsTheExpectedRecordWith(String message) {
-    String record =
-        MessageFormat.format(LogAnnotationProcessor.SYSTEM_PATTERN, message);
+    String record = format(LogAnnotationProcessor.SYSTEM_PATTERN, message);
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
       await().pollDelay(1, TimeUnit.SECONDS)
           .atMost(2, TimeUnit.SECONDS)
           .untilTrue(new AtomicBoolean(true));
-      assertThat(Files.lines(getLogFile()).filter(line -> line.contains(record))
-          .count(), is(greaterThanOrEqualTo(1l)));
+      final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
+      assertThat(format("Searching {0} into \n{1}", record, lines),
+          lines.stream().filter(line -> line.contains(record)).count(),
+          is(greaterThanOrEqualTo(1L)));
     } catch (IOException e) {
       fail(e.getMessage());
     }
-  }
-
-  private Path getLogFile() {
-    return Paths.get(mavenTargetDirectoryRule.getWildflyHomeFile().getPath(), "standalone", "log",
-        "server.log");
   }
 }

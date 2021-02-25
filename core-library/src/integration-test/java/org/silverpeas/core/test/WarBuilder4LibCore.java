@@ -125,6 +125,7 @@ import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
+import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
 import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComparator;
@@ -347,6 +348,18 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(ContentManagerProvider.class);
     addClasses(ContentPeas.class);
     addClasses(SilverContentVisibility.class);
+    return this;
+  }
+
+  /**
+   * Add office features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addOfficeFeatures() {
+    addWebListener(OfficeServiceInitializationListener.class);
+    addMavenDependencies("org.apache.commons:commons-exec", "org.jodconverter:jodconverter-local");
+    addPackages(true, "org.silverpeas.core.contribution.converter");
+    addAsResource("org/silverpeas/converter");
     return this;
   }
 
@@ -678,6 +691,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       // Exclusions
       applyManually(war -> war.deleteClass(StubbedAdministration.class));
       // Centralized features
+      addProcessFeatures();
       addDatabaseToolFeatures();
       addJpaPersistenceFeatures();
       addQuotaBasesFeatures();
@@ -824,6 +838,5 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(StubbedOrganizationController.class);
     return this;
   }
-
 
 }

@@ -25,6 +25,7 @@ package org.silverpeas.core.test;
 
 import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
 import org.silverpeas.core.calendar.ical4j.HtmlProperty;
+import org.silverpeas.core.calendar.notification.AbstractNotifier;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder;
 import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
@@ -50,6 +51,7 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addJpaPersistenceFeatures();
     addNotificationFeatures();
     addPublicationTemplateFeatures();
+    addClasses(AbstractNotifier.class);
     addPackages(true, "org.silverpeas.core.notification.user.delayed.model");
     addClasses(CalendarEventOccurrenceBuilder.class, StubbedWysiwygContentRepository.class,
         HtmlProperty.class);

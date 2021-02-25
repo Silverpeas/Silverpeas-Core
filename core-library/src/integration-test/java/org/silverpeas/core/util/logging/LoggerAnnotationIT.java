@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.LoggerReaderRule;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
@@ -38,14 +40,14 @@ import org.silverpeas.core.util.toto.ABasicClass;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
+import static java.text.MessageFormat.format;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
+import static org.silverpeas.core.util.StringUtil.like;
 
 /**
  * Integration test on the use of the Logger annotation.
@@ -53,6 +55,9 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Arquillian.class)
 public class LoggerAnnotationIT {
+
+  @Rule
+  public LoggerReaderRule loggerReaderRule = new LoggerReaderRule();
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
@@ -100,19 +105,16 @@ public class LoggerAnnotationIT {
   }
 
   private void assertThatLogContainsTheMessage(final String message) {
-    final String record = "INFOS: " + message;
+    final String record = "% INFO % " + message;
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
-      assertThat(Files.lines(getLogFile()).filter(line -> line.contains(record))
-          .count(), is(greaterThanOrEqualTo(1l)));
+      final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
+      assertThat(format("Searching {0} into \n{1}", record, lines),
+          lines.stream().filter(line -> like(line, record)).count(),
+          is(greaterThanOrEqualTo(1L)));
     } catch (IOException e) {
       fail(e.getMessage());
     }
-  }
-
-  private Path getLogFile() {
-    return Paths.get(mavenTargetDirectoryRule.getWildflyHomeFile().getPath(), "standalone", "log",
-        "server.log");
   }
 }

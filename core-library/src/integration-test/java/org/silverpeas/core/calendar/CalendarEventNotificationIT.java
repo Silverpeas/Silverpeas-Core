@@ -94,7 +94,6 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(CalendarEventNotificationIT.class)
-        .addClasses(AbstractNotifier.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();

@@ -23,34 +23,19 @@
  */
 package org.silverpeas.core.admin.component.notification;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.component.model.ComponentI18N;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.i18n.BeanTranslation;
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.notification.system.ResourceEventNotifier;
-import org.silverpeas.core.util.BeanContainer;
-import org.silverpeas.core.util.CDIContainer;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.notification.system.StateTransition;
-import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.i18n.I18NBean;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.CREATION;
 
 /**
@@ -69,26 +54,16 @@ public class ComponentInstanceEventNotificationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            Translation.class, SilverpeasRuntimeException.class,
-            BeanTranslation.class, ComponentInstanceI18NRow.class, StateTransition.class,
-            ComponentI18N.class, AbstractI18NBean.class, I18NBean.class,
-            SilverpeasComponentInstance.class, SilverpeasSharedComponentInstance.class,
-            ComponentInst.class, ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
-            TestComponentInstanceEventObserver.class)
-        .addPackages(true, "org.silverpeas.core.cache")
-        .addClass(SilverpeasRuntimeException.class)
-        .addPackage("org.silverpeas.core.notification.system")
-        .addPackages(true, "org.silverpeas.core.cache")
-        .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
-            "services/org.silverpeas.core.util.BeanContainer")
-        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    return WarBuilder4LibCore.onWarForTestClass(ComponentInstanceEventNotificationIT.class)
+        .addAdministrationFeatures()
+        .addClasses(TestComponentInstanceEventObserver.class)
+        .build();
   }
 
   @Test
   public void emptyTest() {
     // just to test the deployment into wildfly works fine.
+    assertThat(true, is(true));
   }
 
   @Test

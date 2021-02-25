@@ -25,14 +25,9 @@ package org.silverpeas.core.contribution.converter;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.silverpeas.core.contribution.converter.openoffice.OpenOfficeService;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -42,7 +37,7 @@ import java.nio.file.Paths;
  * Conversion API.
  * @author mmoquillon
  */
-public class AbstractConverterIntegrationTest {
+public abstract class AbstractConverterIntegrationTest {
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
@@ -54,11 +49,7 @@ public class AbstractConverterIntegrationTest {
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
-        .addMavenDependencies("org.apache.commons:commons-exec")
-        .testFocusedOn(warBuilder ->
-            warBuilder.addMavenDependencies("org.jodconverter:jodconverter-local")
-                .addPackages(true, "org.silverpeas.core.contribution.converter")
-                .addAsResource("org/silverpeas/converter"))
+        .testFocusedOn(w -> ((WarBuilder4LibCore) w).addOfficeFeatures())
         .build();
   }
 
@@ -66,17 +57,5 @@ public class AbstractConverterIntegrationTest {
     File resourceTestDir = mavenTargetDirectoryRule.getResourceTestDirFile();
     return Paths.get(resourceTestDir.getPath(), "org", "silverpeas", "core", "contribution",
         "converter", name).toFile();
-  }
-
-  @Before
-  public void startOpenOfficeService() throws Exception {
-    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
-    service.init();
-  }
-
-  @After
-  public void stopOpenOfficeService() throws Exception {
-    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
-    service.release();
   }
 }

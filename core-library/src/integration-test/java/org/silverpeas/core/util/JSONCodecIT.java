@@ -36,6 +36,7 @@ import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -65,7 +66,7 @@ public class JSONCodecIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(JSONCodecIT.class)
+    return WarBuilder4LibCore.onWarForTestClass(JSONCodecIT.class)
         .addClasses(DefaultReminderRepository.class)
         .testFocusedOn(war -> war.addClasses(TestSerializableBean.class, TestBean.class,
             DecodingException.class, EncodingException.class, JSONCodec.class))
