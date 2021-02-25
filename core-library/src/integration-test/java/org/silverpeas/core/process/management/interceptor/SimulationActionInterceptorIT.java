@@ -23,29 +23,23 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.test.util.SilverProperties;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.rule.LoggerReaderRule;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -58,7 +52,7 @@ import static org.junit.Assert.fail;
 public class SimulationActionInterceptorIT {
 
   @Rule
-  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
+  public LoggerReaderRule loggerReaderRule = new LoggerReaderRule();
 
   @Inject
   private EjbService ejbService;
@@ -69,18 +63,8 @@ public class SimulationActionInterceptorIT {
   @Inject
   private SimpleService simpleService;
 
-  private static Path logFile;
-
-  static {
-    final SilverProperties props =
-        MavenTargetDirectoryRule.loadPropertiesForTestClass(SimulationActionInterceptorIT.class);
-    final File wildflyHome = MavenTargetDirectoryRule.getWildflyHomeFile(props);
-    logFile = Paths.get(wildflyHome.getPath(), "standalone", "log", "server.log");
-  }
-
-  private SimulationActionTestFileCheck checkTest = new SimulationActionTestFileCheck();
-  private SimulationActionTestDummyFileElementConverter converter =
-      new SimulationActionTestDummyFileElementConverter();
+  private final SimulationActionTestFileCheck checkTest = new SimulationActionTestFileCheck();
+  private final SimulationActionTestDummyFileElementConverter converter = new SimulationActionTestDummyFileElementConverter();
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -95,9 +79,6 @@ public class SimulationActionInterceptorIT {
 
   @Before
   public void setup() {
-    SystemWrapper.get()
-        .getenv()
-        .put("SILVERPEAS_HOME", mavenTargetDirectoryRule.getBuildDirFile().getAbsolutePath());
     checkTest.init();
     converter.init();
   }
@@ -108,25 +89,19 @@ public class SimulationActionInterceptorIT {
     converter.release();
   }
 
-  @AfterClass
-  public static void clearLogs() throws IOException {
-    Files.deleteIfExists(getLogFile());
-  }
-
-
   @Test
-  public void testThatEjbProxyInstances() {
+  public void thatEjbProxyInstances() {
     // That is just to validate that it is so easy to create an EJB today.
     assertThat(ejbService, not(sameInstance(ejbServiceSameInstance)));
   }
 
   @Test(expected = EJBException.class)
-  public void testInterceptorIsHandledForEjbServicesOnDeleteMethodWithMissingActionAnnotation() {
+  public void interceptorIsHandledForEjbServicesOnDeleteMethodWithMissingActionAnnotation() {
     ejbService.delete(new InterceptorTestFile("FromEJB"), new ResourceReference("id", "instanceId"));
   }
 
   @Test
-  public void testInterceptorIsHandledForEjbServicesOnMoveMethodWithMissingSourceAnnotation() {
+  public void interceptorIsHandledForEjbServicesOnMoveMethodWithMissingSourceAnnotation() {
     ejbService.move(new ResourceReference("id", "instanceId"), new ResourceReference("id", "instanceId"));
     assertCheckNotCalled();
     assertThatLogContainsTheMessage(Level.WARNING, "Intercepted method " +
@@ -136,7 +111,7 @@ public class SimulationActionInterceptorIT {
   }
 
   @Test
-  public void testInterceptorIsHandledForSimpleServicesOnDeleteMethodWithMissingTargetAnnotation() {
+  public void interceptorIsHandledForSimpleServicesOnDeleteMethodWithMissingTargetAnnotation() {
     simpleService.delete(new InterceptorTestFile("FromService"), new ResourceReference("id", "instanceId"));
     assertCheckNotCalled();
     assertThatLogContainsTheMessage(Level.WARNING, "Intercepted method " +
@@ -146,14 +121,14 @@ public class SimulationActionInterceptorIT {
   }
 
   @Test
-  public void testInterceptorIsHandledForEjbServicesOnCreateMethod() {
+  public void interceptorIsHandledForEjbServicesOnCreateMethod() {
     ejbService.create(new InterceptorTestFile("FromEJB"), new ResourceReference("id", "instanceId"));
     assertCheckCalled();
     assertThatLogContainsTheMessage(Level.INFO, "InterceptorTest@DefaultEjbService@create called");
   }
 
   @Test
-  public void testInterceptorIsHandledForSimpleServicesOnCreateMethod() {
+  public void interceptorIsHandledForSimpleServicesOnCreateMethod() {
     simpleService.create(new InterceptorTestFile("FromSimple"), new ResourceReference("id", "instanceId"));
     assertCheckCalled();
     assertThatLogContainsTheMessage(Level.INFO, "InterceptorTest@DefaultSimpleService@create called");
@@ -171,15 +146,11 @@ public class SimulationActionInterceptorIT {
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
-      assertThat(Files.lines(getLogFile())
+      assertThat(IOUtils.readLines(loggerReaderRule.getReader()).stream()
           .filter(line -> line.contains(level.name()) && line.contains(message))
-          .count(), is(greaterThanOrEqualTo(1l)));
+          .count(), is(greaterThanOrEqualTo(1L)));
     } catch (IOException e) {
       fail(e.getMessage());
     }
-  }
-
-  private static Path getLogFile() {
-    return logFile;
   }
 }

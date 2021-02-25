@@ -26,12 +26,9 @@ package org.silverpeas.core.util;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import javax.enterprise.util.AnnotationLiteral;
 
@@ -49,23 +46,17 @@ public class ServiceProviderIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addClass(ServiceProvider.class)
+    return WarBuilder4LibCore.onWarForTestClass(ServiceProviderIT.class)
         .addPackages(true, "org.silverpeas.core.cache")
-        .addClass(SilverpeasRuntimeException.class)
-        .addClass(BeanContainer.class)
-        .addClass(CDIContainer.class)
-        .addClass(TestQualifier.class)
-        .addClass(org.silverpeas.core.util.Test.class)
-        .addClass(TestManagedBean.class)
-        .addClass(TestManagedAndQualifiedBean.class)
-        .addClass(TestApplicationScopedBean.class)
+        .addClasses(TestQualifier.class)
+        .addClasses(org.silverpeas.core.util.Test.class)
+        .addClasses(TestManagedBean.class)
+        .addClasses(TestManagedAndQualifiedBean.class)
+        .addClasses(TestApplicationScopedBean.class)
         .addClasses(TestNamedAndScopedManagedBean.class, TestFirstNamedAndScopedManagedBean.class,
             TestSecondNamedAndScopedManagedBean.class)
         .addClasses(AnotherTest.class, TestAnotherManagedBean1.class, TestAnotherManagedBean2.class)
-        .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
-            "services/org.silverpeas.core.util.BeanContainer")
-        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        .build();
   }
 
   @Test

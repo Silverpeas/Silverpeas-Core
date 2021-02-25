@@ -23,9 +23,6 @@
  */
 package org.silverpeas.core.mail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
@@ -35,11 +32,10 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.contribution.converter.openoffice.OpenOfficeService;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.ByteArrayInputStream;
@@ -51,10 +47,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 
 /**
  * User: Yohann Chastagnier Date: 21/01/13
@@ -75,9 +71,7 @@ public class MsgMailExtractorIT {
     return WarBuilder4LibCore.onWarForTestClass(MsgMailExtractorIT.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
-        .addMavenDependencies("org.apache.commons:commons-exec", "org.jodconverter:jodconverter-local")
-        .addPackages(true, "org.silverpeas.core.contribution.converter")
-        .addAsResource("org/silverpeas/converter")
+        .addOfficeFeatures()
         .testFocusedOn(warBuilder -> {
           warBuilder
               .addMavenDependencies("org.apache.poi:poi-scratchpad")
@@ -85,18 +79,6 @@ public class MsgMailExtractorIT {
               .addPackages(true, "org.silverpeas.core.mail")
               .addAsResource("org/silverpeas/core/mail/mailWithAttachments.msg");
         }).build();
-  }
-
-  @Before
-  public void startOpenOfficeService() throws Exception {
-    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
-    service.init();
-  }
-
-  @After
-  public void stopOpenOfficeService() throws Exception {
-    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
-    service.release();
   }
 
   /**

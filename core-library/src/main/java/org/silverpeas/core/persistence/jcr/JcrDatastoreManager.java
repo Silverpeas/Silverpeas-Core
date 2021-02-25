@@ -39,7 +39,6 @@ import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -48,6 +47,7 @@ import javax.jcr.RepositoryException;
 import java.time.OffsetDateTime;
 
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 import static org.silverpeas.core.util.ServiceProvider.getSingleton;
 
 /**
@@ -81,7 +81,7 @@ public class JcrDatastoreManager {
   static class GarbageCollectorJob extends Job implements Initialization {
     private static final Object MUTEX = new Object();
     private static final int DELAY_OF_ONE_DAY = 60 * 24;
-    private static final int DELAY_OF_FIVE_DAYS = DELAY_OF_ONE_DAY * 5;
+    private static final int INACTIVE_BY_DEFAULT = 0;
 
     private GarbageCollectorJob() {
       super("GarbageCollectorJob_JOB_NAME");
@@ -129,9 +129,8 @@ public class JcrDatastoreManager {
     }
 
     private int getDelayInMinutes() {
-      final SettingBundle settings = ResourceLocator
-          .getSettingBundle("org.silverpeas.util.attachment.Attachment");
-      return settings.getInteger("jcr.datastore.garbage.collector.delay", DELAY_OF_FIVE_DAYS);
+      final SettingBundle settings = getSettingBundle("org.silverpeas.util.attachment.Attachment");
+      return settings.getInteger("jcr.datastore.garbage.collector.delay", INACTIVE_BY_DEFAULT);
     }
 
     private boolean mustDelayBeResetAfterEachDataSave(final int delay) {
