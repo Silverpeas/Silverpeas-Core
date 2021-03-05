@@ -107,7 +107,7 @@ function ifCorrectFormExecute(callback) {
 
   if(!continuousTicket)
   {
-    if (nb > 10000 || nb < nbMin) {
+    if (nb != 0 && (nb > 10000 || nb < nbMin)) {
       errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax'/>' <fmt:message key='sharing.maxValue'/> " +
         nbMin + " <fmt:message key='GML.and'/> 10000\n";
       errorNb++;
