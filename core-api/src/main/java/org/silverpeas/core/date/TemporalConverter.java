@@ -288,9 +288,16 @@ public class TemporalConverter {
   }
 
   /**
-   * Converts the specified temporal in a Date instance. If the temporal is a date then it is
-   * converted into a datetime in UTC/Greenwich. If the temporal is a local datetime, then the time
-   * is set in UTC/Greenwich.
+   * Converts the specified temporal in a Date instance. The {@link Date} instance is created from
+   * the number of milliseconds of the temporal from the epoch of 1970-01-01T00:00:00Z.
+   * <p>
+   * Before getting the number of milliseconds from the epoch of 1970-01-01T00:00:00Z, some timezone
+   * conversions can be required. If the temporal is a date then it is converted into a datetime
+   * in UTC/Greenwich. If the temporal is a local datetime, therefore the time is considered
+   * expressed in the default timezone and hence the time is converted in UTC/Greenwich. For any
+   * others temporal value, their timezone is taken into account to convert the time in
+   * UTC/Greenwich.
+   * </p>
    * @param temporal a date or a datetime.
    * @return a {@link Date} instance.
    */
@@ -309,7 +316,7 @@ public class TemporalConverter {
     if (t.equals(LocalDate.MAX)) {
       return Long.MAX_VALUE;
     }
-    return t.atStartOfDay().atOffset(ZoneOffset.UTC).toInstant().toEpochMilli();
+    return t.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
   };
 
   private static Function<LocalDateTime, Long> localDateTime2EpochMilli = t -> {
@@ -319,7 +326,8 @@ public class TemporalConverter {
     if (t.equals(LocalDateTime.MAX)) {
       return Long.MAX_VALUE;
     }
-    return t.toInstant(ZoneOffset.UTC).toEpochMilli();
+    ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(t);
+    return t.toInstant(offset).toEpochMilli();
   };
 
   private static Function<OffsetDateTime, Long> offsetDateTime2EpochMilli = t -> {
