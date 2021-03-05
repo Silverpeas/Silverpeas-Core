@@ -461,8 +461,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     WysiwygRouting routing = new WysiwygRouting();
     WysiwygRouting.WysiwygRoutingContext context =
         WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(sc)
-            .withContributionId(id)
-            .withLanguage(I18NHelper.defaultLanguage)
+            .withContributionId(id)            
+	    .withLanguage(sc.getLanguage())
             .withComeBackUrl(returnURL)
             .withBrowseInfo(sc.getMultilang().getString("GML.operations.editComponentIntro"));
 
