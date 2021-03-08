@@ -37,8 +37,8 @@
   <container qualifier="wildfly-managed" default="true">
     <configuration>
       <property name="serverConfig">standalone-full.xml</property>
-      <property name="startupTimeoutInSeconds">120</property>
-      <property name="allowConnectingToRunningServer">true</property>
+      <property name="startupTimeoutInSeconds">300</property>
+      <property name="allowConnectingToRunningServer">false</property>
       <property name="javaVmArguments">-Xms512M -Xmx2G -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m</property>
       <!-- uncomment it for debugging integration test -->
       <!--
