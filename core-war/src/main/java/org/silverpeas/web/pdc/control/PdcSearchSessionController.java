@@ -2119,11 +2119,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String title = request.getParameter("TitleNotInXMLForm");
     getQueryParameters().setXmlTitle(title);
 
-    String updatedFor = request.getParameter("stdFieldUpdatedFor");
+    String updatedFor = request.getParameter(XmlSearchForm.EXTRA_FIELD_PERIOD);
     if (StringUtil.isDefined(updatedFor)) {
       Calendar calendar = Calendar.getInstance();
       calendar.add(Calendar.DAY_OF_MONTH, 0-Integer.parseInt(updatedFor));
       getQueryParameters().setAfterUpdateDate(DateUtil.toLocalDate(calendar.getTime()));
+    }
+
+    String limitedToSpace = request.getParameter(XmlSearchForm.EXTRA_FIELD_SPACE);
+    if (StringUtil.isDefined(limitedToSpace)) {
+      getQueryParameters().setSpaceId(limitedToSpace);
+      buildComponentListWhereToSearch(limitedToSpace, null);
     }
 
     PublicationTemplateImpl template;
