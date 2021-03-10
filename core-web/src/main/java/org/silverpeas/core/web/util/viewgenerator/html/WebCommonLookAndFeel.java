@@ -250,7 +250,7 @@ class WebCommonLookAndFeel {
             url = fromUri(url).queryParam(LOOK_CONTEXT_MANAGER_COMPONENT_ID, componentId).build().toString();
           }
           if (!url.startsWith(URLUtil.getApplicationURL())) {
-            url = URLUtil.getApplicationURL() + url;
+            url = URLUtil.getApplicationURL() + (url.startsWith("/") ? url : "/" + url);
           }
           return url;
         })
