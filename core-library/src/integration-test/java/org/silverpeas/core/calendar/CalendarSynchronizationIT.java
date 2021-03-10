@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
@@ -42,13 +43,12 @@ import org.silverpeas.core.test.util.SQLRequester;
 import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -87,13 +87,7 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
    * event was updated in the external calendar for some of the synchronization tests below. This
    * date time takes into account the actual datetime of the event in the external calendar (ics).
    */
-  private static final OffsetDateTime UPDATE_DATETIME = OffsetDateTime.parse("2017-06-11T13:51:54Z");
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
+  private static final Instant UPDATE_DATETIME = Instant.parse("2017-06-11T13:51:54Z");
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule =
@@ -136,7 +130,7 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
 
     calendar = Calendar.getById(calendar.getId());
     assertThat(calendar.getLastSynchronizationDate().isPresent(), is(true));
-    assertThat(calendar.getLastSynchronizationDate().get().toLocalDate(), is(LocalDate.now()));
+    assertThat(toLocalDate(calendar.getLastSynchronizationDate().get()), is(LocalDate.now()));
     assertThat(calendar.isEmpty(), is(true));
   }
 
@@ -151,7 +145,7 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
 
     final Calendar synchronizedCalendar = Calendar.getById(CALENDAR_ID);
     assertThat(synchronizedCalendar.getLastSynchronizationDate().isPresent(), is(true));
-    assertThat(synchronizedCalendar.getLastSynchronizationDate().get().toLocalDate(),
+    assertThat(toLocalDate(synchronizedCalendar.getLastSynchronizationDate().get()),
         is(LocalDate.now()));
     assertThat(synchronizedCalendar.isEmpty(), is(false));
 
@@ -160,15 +154,14 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
         .stream()
         .collect(Collectors.toList());
     assertThat(events.size(), is(2));
-    events.forEach(e -> {
-      assertThat(e.getLastSynchronizationDate().toLocalDate(), is(LocalDate.now()));
-    });
+    events.forEach(e ->
+        assertThat(toLocalDate(e.getLastSynchronizationDate()), is(LocalDate.now())));
   }
 
   @Test
   public void synchronizeASecondTimeFromANonEmptyCalendarShouldDoesNothing() throws Exception {
     Calendar calendar = prepareSynchronizedCalendar();
-    OffsetDateTime lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
 
     ICalendarImportResult result = calendar.synchronize();
     assertThat(result.isEmpty(), is(true));
@@ -183,15 +176,14 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
         .stream()
         .collect(Collectors.toList());
     assertThat(events.size(), is(2));
-    events.forEach(e -> {
-      assertThat(e.getLastSynchronizationDate().toLocalDate(), is(LocalDate.now()));
-    });
+    events.forEach(e ->
+        assertThat(toLocalDate(e.getLastSynchronizationDate()), is(LocalDate.now())));
   }
 
   @Test
-  public void testEventUpdateAfterSynchronization() throws Exception {
+  public void eventUpdateAfterSynchronization() throws Exception {
     final Calendar calendar = prepareSynchronizedCalendar();
-    OffsetDateTime lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().orElse(null);
 
     CalendarEvent event =
         Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream().findFirst().get();
@@ -208,9 +200,9 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
   }
 
   @Test
-  public void testEventDeletionAfterSynchronization() throws Exception {
+  public void eventDeletionAfterSynchronization() throws Exception {
     final Calendar calendar = prepareSynchronizedCalendar();
-    OffsetDateTime lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
 
     CalendarEvent nextDeletedEvent = addExternalEventIn(calendar);
 
@@ -228,9 +220,9 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
   }
 
   @Test
-  public void testEventAddingUpdateAndDeletionAfterSynchronization() throws Exception {
+  public void eventAddingUpdateAndDeletionAfterSynchronization() throws Exception {
     final Calendar calendar = prepareSynchronizedCalendar();
-    OffsetDateTime lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
 
     List<CalendarEvent> events = Calendar.getEvents()
         .filter(f -> f.onCalendar(calendar))
@@ -256,9 +248,8 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
         .stream()
         .collect(Collectors.toList());
     assertThat(events.size(), is(2));
-    events.forEach(e -> {
-      assertThat(e.getLastSynchronizationDate().toLocalDate(), is(LocalDate.now()));
-    });
+    events.forEach(e ->
+        assertThat(toLocalDate(e.getLastSynchronizationDate()), is(LocalDate.now())));
   }
 
   @Test
@@ -307,15 +298,13 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     return calendar;
   }
 
-  private Calendar prepareSynchronizedCalendar()
-      throws MalformedURLException, ImportException, InterruptedException {
+  private Calendar prepareSynchronizedCalendar() throws MalformedURLException, ImportException  {
     Calendar calendar = prepareCalendarWithExternal(externalUrl);
     calendar.synchronize();
     return calendar;
   }
 
-  private void updateLastUpdateDate(final CalendarEvent event, final OffsetDateTime dateTime)
-      throws SQLException {
+  private void updateLastUpdateDate(final CalendarEvent event, final Instant dateTime) {
     final String componentId = event.asCalendarComponent().getId();
     Transaction.performInOne(() -> {
       JdbcSqlQuery.createUpdateFor("sb_cal_components")
@@ -326,17 +315,16 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     });
   }
 
-  private CalendarEvent addExternalEventIn(final Calendar calendar) throws SQLException {
+  private CalendarEvent addExternalEventIn(final Calendar calendar) {
     CalendarEvent event = CalendarEvent.on(LocalDate.now().minusMonths(2))
         .withExternalId(UUID.randomUUID().toString())
         .withTitle("next deleted event")
         .withDescription("This event will be deleted at the next synchronization");
-    event.setLastSynchronizationDate(OffsetDateTime.now().minusDays(2));
+    event.setLastSynchronizationDate(OffsetDateTime.now().minusDays(2).toInstant());
     return event.planOn(calendar);
   }
 
-  private void updateExternalId(final CalendarEvent event, final String externalId)
-      throws SQLException {
+  private void updateExternalId(final CalendarEvent event, final String externalId) {
     Transaction.performInOne(() -> {
       JdbcSqlQuery.createUpdateFor("sb_cal_event")
           .addUpdateParam("externalId", externalId)
@@ -351,9 +339,13 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
   }
 
   private String getFilePath(String pattern, String filename) {
-    return FilenameUtils.normalize(MessageFormat
-            .format(pattern, mavenTargetDirectoryRule.getResourceTestDirFile().getPath(), filename),
-        true);
+    return FilenameUtils.normalize(
+        MessageFormat.format(pattern, mavenTargetDirectoryRule.getResourceTestDirFile().getPath(),
+            filename), true);
+  }
+
+  private LocalDate toLocalDate(final Instant instant) {
+    return TemporalConverter.asLocalDate(instant, ZoneId.systemDefault());
   }
 }
   

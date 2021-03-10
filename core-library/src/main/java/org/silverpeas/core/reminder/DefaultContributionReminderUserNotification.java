@@ -148,8 +148,7 @@ public class DefaultContributionReminderUserNotification
    */
   protected Temporal normalizeTemporal(final Temporal temporal) {
     return new FilterByType(temporal)
-        .matchFirst(LocalDate.class::equals,
-            d -> (Temporal) d)
+        .matchFirst(LocalDate.class::equals, Temporal.class::cast)
         .matchFirst(OffsetDateTime.class::equals,
             d -> ((OffsetDateTime) d).atZoneSameInstant(getZoneIdForNormalization()))
         .matchFirst(ZonedDateTime.class::equals,

@@ -42,10 +42,12 @@ import org.silverpeas.core.util.filter.Filter;
 import javax.persistence.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -65,13 +67,12 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "reminderType")
 @Table(name = "sb_reminder")
-@NamedQueries(
-    {@NamedQuery(name = "remindersByUserId", query = "select r from Reminder r where r.userId = :userId"),
-        @NamedQuery(name = "remindersByContributionId",
-            query = "select r from Reminder r where r.contributionId = :contributionId"),
-        @NamedQuery(name = "remindersByContributionIdAndUserId",
-            query = "select r from Reminder r where r.userId = :userId and r.contributionId = " +
-                ":contributionId")})
+@NamedQuery(name = "remindersByUserId",
+    query = "select r from Reminder r where r.userId = :userId")
+@NamedQuery(name = "remindersByContributionId",
+    query = "select r from Reminder r where r.contributionId = :contributionId")
+ @NamedQuery(name = "remindersByContributionIdAndUserId",
+    query = "select r from Reminder r where r.userId = :userId and r.contributionId = :contributionId")
 public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifier> {
   private static final long serialVersionUID = -7921844697973849535L;
 
@@ -86,7 +87,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   @Column(name = "triggered")
   private boolean triggered;
   @Column(name = "trigger_datetime", nullable = false)
-  private OffsetDateTime triggerDateTime;
+  private Instant triggerDateTime;
   @Column(name = "trigger_prop")
   private String contributionProperty;
   @Transient
@@ -255,12 +256,12 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
 
   /**
    * Gets the datetime at which this reminder is scheduled. If this reminder isn't yet scheduled,
-   * the datetime returned is null, even if its triggering rule is set. The datetime is based upon
-   * the timezone of the user behind this reminder.
-   * @return a {@link OffsetDateTime} value or null if no yet scheduled is set.
+   * the datetime returned is null, even if its triggering rule is set. The datetime is in
+   * UTC/Greenwich.
+   * @return a {@link OffsetDateTime} value or null if the reminder isn't yet scheduled.
    */
   public OffsetDateTime getScheduledDateTime() {
-    return this.triggerDateTime;
+    return this.triggerDateTime.atOffset(ZoneOffset.UTC);
   }
 
   /**
@@ -313,15 +314,16 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    */
   @SuppressWarnings("unchecked")
   public <T extends Reminder> T schedule() {
-    this.triggerDateTime = computeTriggeringDate();
-    checkTriggeringDate(this.triggerDateTime);
+    OffsetDateTime triggeringDateTime = computeTriggeringDate();
+    checkTriggeringDate(triggeringDateTime);
+    this.triggerDateTime = triggeringDateTime.toInstant();
     Scheduler scheduler = getScheduler();
     return Transaction.performInOne(() -> {
       if (isPersisted() && isScheduledWith(scheduler)) {
         scheduler.unscheduleJob(getJobName());
       }
       Reminder me = ReminderRepository.get().save(this);
-      JobTrigger trigger = JobTrigger.triggerAt(this.triggerDateTime);
+      JobTrigger trigger = JobTrigger.triggerAt(triggeringDateTime);
       scheduler.scheduleJob(getJobName(), trigger, ReminderProcess.get());
       return (T) me;
     });
@@ -419,6 +421,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
     final ZonedDateTime platformZonedTriggeringDate =
         filter.matchFirst(Date.class::isAssignableFrom,
             d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), platformZoneId))
+            .matchFirst(Instant.class::equals,
+                d -> ZonedDateTime.ofInstant((Instant) d, platformZoneId))
             .matchFirst(OffsetDateTime.class::equals,
                 d -> ((OffsetDateTime) d).atZoneSameInstant(platformZoneId))
             .matchFirst(LocalDate.class::equals,

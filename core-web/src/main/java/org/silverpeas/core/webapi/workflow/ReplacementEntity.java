@@ -62,7 +62,7 @@ public class ReplacementEntity implements WebEntity {
   private String workflowId;
 
 
-  ReplacementEntity(final Replacement replacement) {
+  <T extends Replacement<T>> ReplacementEntity(final Replacement<T> replacement) {
     this.incumbent = new UserEntity(asUserDetail(replacement.getIncumbent()));
     this.substitute = new UserEntity(asUserDetail(replacement.getSubstitute()));
     this.startDate = replacement.getPeriod().getStartDate().toString();
@@ -74,7 +74,7 @@ public class ReplacementEntity implements WebEntity {
     // for the JSON/XML unmarshaller
   }
 
-  public static ReplacementEntity asWebEntity(final Replacement replacement, final URI uri) {
+  public static ReplacementEntity asWebEntity(final Replacement<?> replacement, final URI uri) {
     ReplacementEntity entity = new ReplacementEntity(replacement);
     entity.uri = uri;
     return entity;

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.date;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -42,6 +44,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author mmoquillon
  */
 public class PeriodTest {
+
+  private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getDefault();
+
+  @BeforeAll
+  static void setTimeZone() {
+    // we set explicitly a time zone different of UTC to check the datetime are correctly
+    // converted in UTC in our API
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
+  }
+
+  @AfterAll
+  static void restoreTimeZone() {
+    TimeZone.setDefault(DEFAULT_TIME_ZONE);
+  }
 
   @Test
   public void periodBetweenTwoDates() {
@@ -64,6 +80,18 @@ public class PeriodTest {
     assertThat(period.endsAtMaxDate(), is(false));
     assertThat(period.getStartDate(), is(yesterday.withOffsetSameInstant(ZoneOffset.UTC)));
     assertThat(period.getEndDate(), is(tomorrow.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(period.isInDays(), is(false));
+  }
+
+  @Test
+  public void periodBetweenTwoZonedDateTimes() {
+    ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
+    ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1);
+    Period period = Period.between(yesterday, tomorrow);
+    assertThat(period.startsAtMinDate(), is(false));
+    assertThat(period.endsAtMaxDate(), is(false));
+    assertThat(period.getStartDate(), is(yesterday.toOffsetDateTime().withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(period.getEndDate(), is(tomorrow.toOffsetDateTime().withOffsetSameInstant(ZoneOffset.UTC)));
     assertThat(period.isInDays(), is(false));
   }
 
@@ -362,21 +390,6 @@ public class PeriodTest {
       Temporal end = LocalDate.now().plusDays(1);
       Period.between(start, end);
     });
-  }
-
-  @Test
-  public void periodWithDifferentZonedDateTime() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      Temporal start = ZonedDateTime.now().minusDays(1);
-      Temporal end = ZonedDateTime.now().plusDays(1);
-      Period.between(start, end);
-    });
-  }
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
   }
 }
   

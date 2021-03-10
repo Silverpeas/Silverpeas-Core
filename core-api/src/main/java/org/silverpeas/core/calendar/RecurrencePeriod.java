@@ -31,6 +31,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * A period of a recurrence. It defines the recurrence of a {@link Plannable} object in a calendar
@@ -39,7 +40,7 @@ import javax.validation.constraints.NotNull;
  * period cannot be less that the day.
  */
 @Embeddable
-public class RecurrencePeriod {
+public class RecurrencePeriod implements Serializable {
 
   @Column(name = "recur_periodInterval", nullable = false)
   @NotNull

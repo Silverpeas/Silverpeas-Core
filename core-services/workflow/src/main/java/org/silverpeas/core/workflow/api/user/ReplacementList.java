@@ -43,10 +43,10 @@ import static org.silverpeas.core.util.CollectionUtil.intersection;
  * to filter on functional data about replacement by using the {@link Stream} API.
  * @author silveryocha
  */
-public class ReplacementList <T extends Replacement> extends ArrayList<T> {
+public class ReplacementList <T extends Replacement<T>> extends ArrayList<T> {
   private static final long serialVersionUID = 7833770055928190293L;
 
-  private Map<String, List<String>> userRoleCache;
+  private final Map<String, List<String>> userRoleCache;
 
   ReplacementList(final List<T> source)  {
     super(source);

@@ -26,7 +26,9 @@ package org.silverpeas.core.calendar;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
@@ -69,11 +71,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
   private static final String AN_ATTRIBUTE_VALUE = "L'agence de Grenoble, en Isère (France)";
   private static final String USER_ID = "1";
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
+  private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getDefault();
 
   @Deployment
   public static Archive<?> createTestArchive() {

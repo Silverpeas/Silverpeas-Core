@@ -62,12 +62,6 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
 
   private static final String CALENDAR_ID = "ID_CAL_WITHOUT_EVENT";
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
-
   @Inject
   private ICalendarEventImportProcessor importProcessor;
   private Calendar calendar;

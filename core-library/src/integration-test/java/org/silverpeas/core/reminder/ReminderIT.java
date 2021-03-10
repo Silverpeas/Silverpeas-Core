@@ -152,6 +152,7 @@ public class ReminderIT {
   @Test
   public void emptyTest() {
     // empty test to check the testing environment is working
+    assertThat(true, is(true));
   }
 
   @Test

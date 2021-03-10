@@ -33,32 +33,21 @@ import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.RightProfile;
-import org.silverpeas.core.admin.StubbedAdministration;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
-import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.RightRecover;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
@@ -68,7 +57,10 @@ import org.silverpeas.core.admin.user.DefaultUserProvider;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.admin.user.model.UserLog;
 import org.silverpeas.core.cache.VolatileResourceCleaner;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
@@ -533,29 +525,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
-   * Sets stubbed administration features.
-   * @return the instance of the war builder.
-   */
-  public WarBuilder4LibCore addStubbedAdministrationFeatures() {
-    if (!contains(StubbedAdministration.class)) {
-      addClasses(StubbedAdministration.class);
-      addCommonUserBeans();
-      addClasses(AdministrationServiceProvider.class, Administration.class, Parameter.class,
-          PasteDetail.class, WAComponent.class, ComponentInst.class, RightProfile.class,
-          ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
-          QuotaException.class, ProfileInst.class, SpaceProfileInst.class, ProfiledObjectId.class,
-          ProfiledObjectIds.class, BaseRightProfile.class,
-          Group.class, GroupProfileInst.class, SearchCriteria.class, ProfiledObjectType.class,
-          UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
-      addClasses(RightRecover.class, AdminException.class);
-      addPackages(true, "org.silverpeas.core.i18n");
-      // Exclusions
-      applyManually(war -> war.deleteClass("org.silverpeas.core.admin.service.Admin"));
-    }
-    return this;
-  }
-
-  /**
    * Adds common administration utilities.
    * @return the instance of the war builder.
    */
@@ -686,8 +655,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.clipboard");
       addAsResource("xmlcomponents");
       addAsResource("org/silverpeas/admin");
-      // Exclusions
-      applyManually(war -> war.deleteClass(StubbedAdministration.class));
+
       // Centralized features
       addProcessFeatures();
       addDatabaseToolFeatures();

@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.net.URI;
 
 /**
@@ -66,7 +67,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserEntity {
+public class UserEntity implements Serializable {
 
   @XmlElement(required = true)
   private URI uri;

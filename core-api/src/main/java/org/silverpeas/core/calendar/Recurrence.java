@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.persistence.*;
@@ -105,7 +106,7 @@ public class Recurrence implements Serializable {
   @Column(name = "recur_exceptionDate")
   private Set<OffsetDateTime> exceptionDates = new HashSet<>();
   @Transient
-  private Temporal startDate;
+  private transient Temporal startDate;
 
   /**
    * Constructs an empty recurrence for the persistence engine.
@@ -550,8 +551,9 @@ public class Recurrence implements Serializable {
     OffsetDateTime dateTime = asOffsetDateTime(temporal);
     if (this.startDate != null) {
       return TemporalConverter.applyByType(this.startDate,
-          t -> dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC)),
-          t -> dateTime.with(t.toOffsetTime()));
+          Conversion.of(LocalDate.class, t ->
+              dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC))),
+          Conversion.of(OffsetDateTime.class, t -> dateTime.with(t.toOffsetTime())));
     }
     return dateTime;
   }

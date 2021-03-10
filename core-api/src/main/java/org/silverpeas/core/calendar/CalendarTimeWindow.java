@@ -39,7 +39,8 @@ import java.util.function.Consumer;
 public class CalendarTimeWindow {
 
   private CalendarEventFilter filter = new CalendarEventFilter();
-  private final LocalDate startDate, endDate;
+  private final LocalDate startDate;
+  private final LocalDate endDate;
   private List<CalendarEvent> events;
 
   CalendarTimeWindow(final LocalDate startDate, final LocalDate endDate) {
@@ -101,8 +102,8 @@ public class CalendarTimeWindow {
   public List<CalendarEvent> getEvents() {
     if (events == null) {
       events = CalendarEventRepository.get()
-          .getAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
-              endDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime());
+          .getAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toInstant(),
+              endDate.atStartOfDay(ZoneOffset.UTC).toInstant());
     }
     return events;
   }

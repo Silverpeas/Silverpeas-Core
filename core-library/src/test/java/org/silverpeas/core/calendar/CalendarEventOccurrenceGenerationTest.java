@@ -844,10 +844,4 @@ public class CalendarEventOccurrenceGenerationTest {
   private static OffsetDateTime dateTimeOnParis(int year, int month, int day, int hour, int minute) {
     return ZonedDateTime.of(year, month, day, hour, minute, 0, 0, PARIS_ZONE_ID).toOffsetDateTime();
   }
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(UTC_ZONE_ID));
-  }
 }

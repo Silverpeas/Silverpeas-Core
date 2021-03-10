@@ -76,18 +76,17 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
  */
 @Entity
 @Table(name = "sb_cal_occurrences")
-@NamedQueries({
-    @NamedQuery(name = "occurrenceByEventsAndByPeriod", query =
-        "SELECT o FROM CalendarEventOccurrence o WHERE o.event in :events AND " +
-            "((o.component.period.startDateTime <= :startDateTime AND " +
-            "  o.component.period.endDateTime > :startDateTime) OR " +
-            "(o.component.period.startDateTime >= :startDateTime AND " +
-            "  o.component.period.startDateTime < :endDateTime))"),
-    @NamedQuery(name = "occurrenceByEventSince", query =
-        "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event AND " +
-            "o.component.period.startDateTime >= :date"),
-    @NamedQuery(name = "occurrenceByEvent", query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event " +
-        "= :event")})
+@NamedQuery(name = "occurrenceByEventsAndByPeriod",
+    query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event in :events AND " +
+        "((o.component.period.startDateTime <= :startDateTime AND " +
+        "  o.component.period.endDateTime > :startDateTime) OR " +
+        "(o.component.period.startDateTime >= :startDateTime AND " +
+        "  o.component.period.startDateTime < :endDateTime))")
+@NamedQuery(name = "occurrenceByEventSince",
+    query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event AND " +
+        "o.component.period.startDateTime >= :date")
+@NamedQuery(name = "occurrenceByEvent",
+    query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event")
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
     implements IdentifiableEntity, Occurrence, Contribution, WithReminder {
@@ -624,6 +623,16 @@ public class CalendarEventOccurrence
     }
 
     return this.asCalendarComponent().isModifiedSince(previous.asCalendarComponent());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 
   /**

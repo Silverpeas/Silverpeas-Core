@@ -300,7 +300,7 @@ class ReplacementListTest {
     writeField(replacement, "incumbentId", incumbentId, true);
     writeField(replacement, "substituteId", substituteId, true);
     writeField(replacement, "workflowId", "w3", true);
-    writeField(replacement, "period", Period.between(start, end.plusDays(1)), true);
+    replacement.setPeriod(Period.between(start, end.plusDays(1)));
     return replacement;
   }
 

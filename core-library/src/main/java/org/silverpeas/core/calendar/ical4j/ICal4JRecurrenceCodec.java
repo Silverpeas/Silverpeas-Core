@@ -76,7 +76,7 @@ public class ICal4JRecurrenceCodec {
 
   /**
    * Converts the exception dates from a calendar event with a recurrence rule.
-   *
+   * <p>
    * The presence of an exception date must be verified before calling this method.
    * @param event a recurrent calendar event.
    * @return the converted exception dates.
@@ -86,27 +86,28 @@ public class ICal4JRecurrenceCodec {
     if (recurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("The event isn't recurrent!");
     }
-    return recurrence.getExceptionDates().stream()
-      .map(date ->
-        TemporalConverter.applyByType(date, iCal4JDateCodec::encode, iCal4JDateCodec::encode))
-      .sorted()
-      .collect(Collectors.toCollection(() -> {
-        Value type = event.isOnAllDay() ? Value.DATE : Value.DATE_TIME;
-        final DateList list = new DateList(type);
-        if (iCal4JDateCodec
-            .isEventDateToBeEncodedIntoUtc(event.isRecurrent(), event.asCalendarComponent())) {
-          list.setUtc(true);
-        } else {
-          list.setUtc(false);
-          list.setTimeZone(iCal4JDateCodec.getTimeZone(event.getCalendar().getZoneId()));
-        }
-        return list;
-      }));
+    return recurrence.getExceptionDates()
+        .stream()
+        .map(date -> TemporalConverter.applyByType(date, iCal4JDateCodec.localDateConversion(),
+            iCal4JDateCodec.offsetDateTimeConversion()))
+        .sorted()
+        .collect(Collectors.toCollection(() -> {
+          Value type = event.isOnAllDay() ? Value.DATE : Value.DATE_TIME;
+          final DateList list = new DateList(type);
+          if (iCal4JDateCodec.isEventDateToBeEncodedIntoUtc(event.isRecurrent(),
+              event.asCalendarComponent())) {
+            list.setUtc(true);
+          } else {
+            list.setUtc(false);
+            list.setTimeZone(iCal4JDateCodec.getTimeZone(event.getCalendar().getZoneId()));
+          }
+          return list;
+        }));
   }
 
   /**
    * Encodes the recurrence of the specified Silverpeas calendar event into an iCal4J recurrence.
-   *
+   * <p>
    * The presence of the recurrence rule must be verified before calling this method.
    * @param event a recurrent calendar event.
    * @return the encoded iCal4J recurrence.
@@ -219,7 +220,8 @@ public class ICal4JRecurrenceCodec {
           dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC).toLocalDate();
         } else {
           final ZoneId zoneId = startDateTime.getTimeZone() != null ?
-              TimeZoneUtil.toZoneId(startDateTime.getTimeZone().getID()) : defaultZoneId;
+              TimeZoneUtil.toZoneId(startDateTime.getTimeZone().getID()) :
+              defaultZoneId;
           dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, zoneId).toLocalDate();
         }
       }
@@ -252,8 +254,8 @@ public class ICal4JRecurrenceCodec {
         freq = Recur.Frequency.YEARLY;
         break;
       default:
-        throw new SilverpeasRuntimeException("Recurrence frequency not supported: " +
-            period.getUnit());
+        throw new SilverpeasRuntimeException(
+            "Recurrence frequency not supported: " + period.getUnit());
     }
     return freq;
   }

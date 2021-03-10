@@ -185,11 +185,5 @@ public class ReminderTestContext {
         new AnnotationLiteral<PersistentScheduling>() {
         });
   }
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
 }
   

@@ -45,6 +45,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -57,7 +58,6 @@ import java.util.stream.Collectors;
 @Singleton
 public class ICal4JDateCodec {
 
-  static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
   private static final String ICAL_LOCAL_PATTERN = "yyyyMMdd'T'HHmmss";
   private static final String ICAL_UTC_PATTERN = ICAL_LOCAL_PATTERN + "'Z'";
   private static final String ICAL_DATE_PATTERN = "yyyyMMdd";
@@ -77,14 +77,16 @@ public class ICal4JDateCodec {
    * Encodes a temporal data into an iCal4J date.
    * @param eventRecurrent true if event is recurrent, false otherwise.
    * @param component the component data to use to encode the given temporal.
-   * @param aTemporal the temporal data to encode which have to be extracted from the given component.
+   * @param aTemporal the temporal data to encode which have to be extracted from the given
+   * component.
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
   public Date encode(final boolean eventRecurrent, final CalendarComponent component,
       final java.time.temporal.Temporal aTemporal) {
     final java.time.temporal.Temporal temporal =
-        isEventDateToBeEncodedIntoUtc(eventRecurrent, component) ? aTemporal :
+        isEventDateToBeEncodedIntoUtc(eventRecurrent, component) ?
+            aTemporal :
             OffsetDateTime.from(aTemporal).atZoneSameInstant(component.getCalendar().getZoneId());
     return encode(temporal);
   }
@@ -95,8 +97,9 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws IllegalArgumentException if the encoding fails.
    */
-  public Date encode(final java.time.temporal.Temporal aTemporal) {
-    return TemporalConverter.applyByType(aTemporal, this::encode, this::encode, this::encode);
+  public Date encode(final Temporal aTemporal) {
+    return TemporalConverter.applyByType(aTemporal, localDateConversion(),
+        offsetDateTimeConversion(), zonedDateTimeConversion());
   }
 
   /**
@@ -105,7 +108,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public DateList encode(final Collection<? extends java.time.temporal.Temporal> temporals) {
+  public DateList encode(final Collection<? extends Temporal> temporals) {
     return temporals.stream().map(this::encode).sorted().collect(Collectors.toCollection(() -> {
       final DateList list = new DateList();
       list.setUtc(true);
@@ -137,8 +140,8 @@ public class ICal4JDateCodec {
    */
   public DateTime encode(final ZonedDateTime dateTime) {
     try {
-      return new DateTime(
-          DateTimeFormatter.ofPattern(ICAL_LOCAL_PATTERN).format(dateTime), getTimeZone(dateTime));
+      return new DateTime(DateTimeFormatter.ofPattern(ICAL_LOCAL_PATTERN).format(dateTime),
+          getTimeZone(dateTime));
     } catch (ParseException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
@@ -152,11 +155,37 @@ public class ICal4JDateCodec {
    */
   public Date encode(final LocalDate date) {
     try {
-      return new Date(
-          DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).format(date));
+      return new Date(DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).format(date));
     } catch (ParseException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
+  }
+
+  /**
+   * Gets the conversion function of an {@link OffsetDateTime} instance to an iCal4J date object.
+   * The function will throw a {@link SilverpeasRuntimeException} if the conversion fails.
+   * @return a conversion of a {@link OffsetDateTime} to an iCal4J {@link DateTime} value.
+   */
+  public TemporalConverter.Conversion<OffsetDateTime, Date> offsetDateTimeConversion() {
+    return TemporalConverter.Conversion.of(OffsetDateTime.class, this::encode);
+  }
+
+  /**
+   * Gets the conversion function of a {@link ZonedDateTime} instance to an iCal4J date object. The
+   * function will throw a {@link SilverpeasRuntimeException} if the conversion fails.
+   * @return a conversion of a {@link ZonedDateTime} to an iCal4J {@link DateTime} value.
+   */
+  public TemporalConverter.Conversion<ZonedDateTime, Date> zonedDateTimeConversion() {
+    return TemporalConverter.Conversion.of(ZonedDateTime.class, this::encode);
+  }
+
+  /**
+   * Gets the conversion function of a {@link LocalDate} instance to an iCal4J date object. The
+   * function will throw a {@link SilverpeasRuntimeException} if the conversion fails.
+   * @return a conversion of a {@link LocalDate} to an iCal4J {@link Date} value.
+   */
+  public TemporalConverter.Conversion<LocalDate, Date> localDateConversion() {
+    return TemporalConverter.Conversion.of(LocalDate.class, this::encode);
   }
 
   private TimeZone getTimeZone(final ZonedDateTime date) {
@@ -201,7 +230,9 @@ public class ICal4JDateCodec {
     } else {
       zoneId = isUtc ? ZoneOffset.UTC : defaultZoneId;
     }
-    return LocalDateTime.from(temporalAccessor).atZone(zoneId).toOffsetDateTime()
+    return LocalDateTime.from(temporalAccessor)
+        .atZone(zoneId)
+        .toOffsetDateTime()
         .withOffsetSameInstant(ZoneOffset.UTC);
   }
 

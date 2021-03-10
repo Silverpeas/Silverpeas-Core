@@ -24,7 +24,9 @@
 package org.silverpeas.core.calendar;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
@@ -33,7 +35,9 @@ import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.test.util.SQLRequester.ResultLine;
 
 import java.sql.SQLException;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

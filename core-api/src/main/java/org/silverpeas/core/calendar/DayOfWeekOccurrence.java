@@ -30,6 +30,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.DayOfWeek;
 
 /**
@@ -38,7 +39,7 @@ import java.time.DayOfWeek;
  * in the month.
  */
 @Embeddable
-public class DayOfWeekOccurrence {
+public class DayOfWeekOccurrence implements Serializable {
 
   /**
    * A constant that defines a specific value for all the occurrences of the represented day of

@@ -62,12 +62,6 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
   private CalendarEvent event;
   private List<CalendarEventOccurrence> expectedOccurrences = new ArrayList<>();
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
-
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(

@@ -43,6 +43,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.PreDestroy;
 import java.lang.reflect.InvocationTargetException;
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -262,9 +263,12 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   }
 
   @Override
+  @PreDestroy
   public void shutdown() throws SchedulerException {
     try {
-      this.quartz.shutdown();
+      if (!this.quartz.isShutdown()) {
+        this.quartz.shutdown();
+      }
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The scheduler shutdown failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);

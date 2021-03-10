@@ -31,9 +31,10 @@ import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,8 +70,9 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
           filter.getParticipants().stream().map(User::getId).collect(Collectors.toList()));
       namedQuery += byParticipants;
     }
-    if (filter.getSynchronizationDateLimit().isPresent()) {
-      parameters.add("synchronizationDateLimit", filter.getSynchronizationDateLimit().get());
+    Optional<Instant> optionalSynchroDate = filter.getSynchronizationDateLimit();
+    if (optionalSynchroDate.isPresent()) {
+      parameters.add("synchronizationDateLimit", optionalSynchroDate.get());
       if (namedQuery.contains(byParticipants)) {
         throw new UnsupportedOperationException(
             "The filter on both participants and synchronization date isn't yet supported!");
@@ -89,7 +91,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
 
   @Override
   public List<CalendarEvent> getAllBetween(final CalendarEventFilter filter,
-      final OffsetDateTime startDateTime, final OffsetDateTime endDateTime) {
+      final Instant startDateTime, final Instant endDateTime) {
     String namedQuery = "calendarEvents";
     NamedParameters parameters = newNamedParameters();
     if (!filter.getCalendars().isEmpty()) {

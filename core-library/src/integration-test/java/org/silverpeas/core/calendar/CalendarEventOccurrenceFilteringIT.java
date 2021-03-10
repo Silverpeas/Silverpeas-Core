@@ -48,12 +48,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(Arquillian.class)
 public class CalendarEventOccurrenceFilteringIT extends BaseCalendarTest {
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
-
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(
