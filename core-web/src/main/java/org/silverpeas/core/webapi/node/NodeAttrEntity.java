@@ -99,7 +99,8 @@ public class NodeAttrEntity {
       this.creator = UserProfileEntity.fromUser(user);
     }
     this.creationDate = node.getCreationDate();
-    if (!this.id.equalsIgnoreCase("tovalidate")) {
+    if (!this.id.equalsIgnoreCase(NodeType.TO_VALIDATE.value()) &&
+        !this.id.equalsIgnoreCase(NodeType.NOT_VISIBLE_CONTRIBUTIONS.value())) {
       this.specificRights = node.haveLocalRights();
     }
   }

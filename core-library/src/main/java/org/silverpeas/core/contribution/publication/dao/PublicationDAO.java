@@ -841,6 +841,7 @@ public class PublicationDAO extends AbstractDAO {
     final Set<Integer> includedNodeIds = criteria.getIncludedNodeIds();
     final Set<Integer> excludedNodeIds = criteria.getExcludedNodeIds();
     final OffsetDateTime visibilityDate = criteria.getVisibilityDate();
+    final OffsetDateTime invisibilityDate = criteria.getInvisibilityDate();
     final OffsetDateTime updatedSince = criteria.getLastUpdatedSince();
     String conjunction = WHERE_CONJUNCTION;
     if (!criteria.getStatuses().isEmpty()) {
@@ -865,6 +866,8 @@ public class PublicationDAO extends AbstractDAO {
     }
     if (visibilityDate != null) {
       dateFilters(query, conjunction, visibilityDate);
+    } else if (invisibilityDate != null) {
+      nonVisibleFilter(query, conjunction, invisibilityDate);
     }
   }
 
@@ -878,6 +881,17 @@ public class PublicationDAO extends AbstractDAO {
       .or("(? = P.pubBeginDate", dateNow).and("? < P.pubEndDate", dateNow).and("? > P.pubBeginHour)", hourNow)
       .or("(? > P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? < P.pubEndHour)", hourNow)
       .or("(? = P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? > P.pubBeginHour", hourNow).and("? < P.pubEndHour))", hourNow);
+  }
+
+  private static void nonVisibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
+      final OffsetDateTime invisibilityDate) {
+    final java.util.Date asDateType = TemporalConverter.asDate(invisibilityDate);
+    final String dateNow =  formatDate(asDateType);
+    final String hourNow = DateUtil.formatTime(asDateType);
+    sqlQuery
+        .addSqlPart(conjunction + "((? < P.pubBeginDate", dateNow).or("? > P.pubEndDate)", dateNow)
+        .or("(? = P.pubBeginDate", dateNow).and("? < P.pubBeginHour)", hourNow)
+        .or("(? = P.pubEndDate", dateNow).and("? > P.pubEndHour))", hourNow);
   }
 
   private static void configureOrderingByCriteria(final JdbcSqlQuery query,

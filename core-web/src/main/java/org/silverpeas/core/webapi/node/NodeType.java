@@ -47,7 +47,9 @@ public enum NodeType {
   @XmlEnumValue("bin")
   BIN("bin"),
   @XmlEnumValue("tovalidate")
-  TO_VALIDATE("tovalidate");
+  TO_VALIDATE("tovalidate"),
+  @XmlEnumValue("notvisibleContributions")
+  NOT_VISIBLE_CONTRIBUTIONS("notvisibleContributions");
 
   private final String name;
 

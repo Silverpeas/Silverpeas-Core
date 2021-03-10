@@ -84,6 +84,7 @@ public class PublicationCriteria {
   private boolean mustHaveAtLeastOneNodeFather = false;
   private boolean takingAliasesIntoAccount = false;
   private OffsetDateTime visibilityDate = null;
+  private OffsetDateTime invisibilityDate = null;
   private OffsetDateTime lastUpdatedSince = null;
   private PaginationPage pagination;
 
@@ -226,6 +227,16 @@ public class PublicationCriteria {
   }
 
   /**
+   * The local date from which the publication are not visible.
+   * @param invisibilityDate a local date.
+   * @return itself.
+   */
+  public PublicationCriteria nonVisibleAt(final OffsetDateTime invisibilityDate) {
+    this.invisibilityDate = invisibilityDate;
+    return this;
+  }
+
+  /**
    * The local date from which the publication have been updated.
    * @param lastUpdatedSince a local date.
    * @return itself.
@@ -309,6 +320,10 @@ public class PublicationCriteria {
     return visibilityDate;
   }
 
+  OffsetDateTime getInvisibilityDate() {
+    return invisibilityDate;
+  }
+
   OffsetDateTime getLastUpdatedSince() {
     return lastUpdatedSince;
   }
@@ -332,6 +347,7 @@ public class PublicationCriteria {
         .add("componentInstanceIds=" + componentInstanceIds).add("statuses=" + statuses)
         .add("includedNodeIds=" + includedNodeIds).add("excludedNodeIds=" + excludedNodeIds)
         .add("orderByList=" + orderByList).add("visibilityDate=" + visibilityDate)
+        .add("invisibilityDate=" + invisibilityDate)
         .add("lastUpdatedSince=" + lastUpdatedSince).add("pagination=" + pagination).toString();
   }
 }
