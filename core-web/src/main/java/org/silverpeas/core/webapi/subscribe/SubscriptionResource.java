@@ -148,10 +148,10 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    */
   @GET
   @Path("{subscriptionType}/" + SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SubscriberEntity> getSubscribers(@PathParam("subscriptionType") String subscriptionType,
+  public Response getSubscribers(@PathParam("subscriptionType") String subscriptionType,
       @PathParam("id") String resourceId) {
-    return getSubscribers(decodeSubscriptionResourceType(subscriptionType), resourceId);
+    return Response.ok(getSubscribers(decodeSubscriptionResourceType(subscriptionType), resourceId),
+        MediaType.APPLICATION_JSON).build();
   }
 
   private Collection<SubscriberEntity> getSubscribers(
