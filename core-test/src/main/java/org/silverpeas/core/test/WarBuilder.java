@@ -34,7 +34,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.test.integration.SilverpeasLoggerInitializationListener;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
 import java.io.InputStream;
@@ -74,10 +77,10 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   protected Collection<String> webParts = new HashSet<>();
 
-  private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
+  private final WebArchive war;
 
   private final Class<?> classOfTest;
-  private MavenTargetDirectoryRule testCoreClassMavenTargetDirectoryRule;
+  private final MavenTargetDirectoryRule testCoreClassMavenTargetDirectoryRule;
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
@@ -86,12 +89,16 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * @param <U> the type of the test.
    */
   protected <U> WarBuilder(Class<U> classOfTest) {
+    this.war = ShrinkWrap.create(WebArchive.class, "test-" + classOfTest.getSimpleName() + ".war");
     this.classOfTest = classOfTest;
+    logInfo("Building archive for " + classOfTest.getSimpleName());
     testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
     String resourcePath = classOfTest.getPackage().getName().replace('.', '/');
     logInfo("Adding resources from path: " + resourcePath);
     war.addAsResource(resourcePath);
     war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+    logInfo("Adding initialization listener");
+    addWebListener(SilverpeasLoggerInitializationListener.class);
   }
 
   /**
@@ -158,6 +165,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    */
   @SuppressWarnings("unchecked")
   public WarBuilder<T> addWebListener(Class<? extends EventListener> webListenerClass) {
+    war.addClass(webListenerClass);
     webParts.add(
         "<listener><listener-class>" + webListenerClass.getName() + "</listener-class></listener>");
     return this;
@@ -235,17 +243,17 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     try {
       if (!jarLibForPersistence.isEmpty()) {
         String persistenceXmlContent;
-        try (InputStream is = WarBuilder.class
-            .getResourceAsStream("/META-INF/core-test-persistence.xml")) {
-          persistenceXmlContent = IOUtils.toString(is);
+        try (InputStream is = WarBuilder.class.getResourceAsStream(
+            "/META-INF/core-test-persistence.xml")) {
+          persistenceXmlContent = IOUtils.toString(is, Charsets.UTF_8);
         }
-        File persistenceXml = FileUtils
-            .getFile(classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(),
-                "META-INF", "dynamic-test-persistence.xml");
+        File persistenceXml = FileUtils.getFile(
+            classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(), "META-INF",
+            "dynamic-test-persistence.xml");
         logInfo("Setting persistence xml descriptor: " + persistenceXml.getPath());
-        persistenceXmlContent = persistenceXmlContent
-            .replace("<!-- @JAR_FILES@ -->", String.join("\n", jarLibForPersistence));
-        FileUtils.writeStringToFile(persistenceXml, persistenceXmlContent);
+        persistenceXmlContent = persistenceXmlContent.replace("<!-- @JAR_FILES@ -->",
+            String.join("\n", jarLibForPersistence));
+        FileUtils.writeStringToFile(persistenceXml, persistenceXmlContent, Charsets.UTF_8);
         logInfo(
             "Filling '" + persistenceXml.getPath() + "'\nwith content:\n" + persistenceXmlContent);
         logInfo("Adding completed META-INF/persistence.xml");
@@ -256,14 +264,14 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       if (!webParts.isEmpty()) {
         String webXmlContent;
         try (InputStream is = WarBuilder.class.getResourceAsStream("/META-INF/core-web-test.xml")) {
-          webXmlContent = IOUtils.toString(is);
+          webXmlContent = IOUtils.toString(is, Charsets.UTF_8);
         }
         File webXml = FileUtils
             .getFile(classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(),
                 "META-INF", "dynamic-test-web.xml");
         logInfo("Setting web xml descriptor: " + webXml.getPath());
         webXmlContent = webXmlContent.replace("<!-- @WEB_PARTS@ -->", String.join("\n", webParts));
-        FileUtils.writeStringToFile(webXml, webXmlContent);
+        FileUtils.writeStringToFile(webXml, webXmlContent, Charsets.UTF_8);
         logInfo("Filling '" + webXml.getPath() + "'\nwith content:\n" + webXmlContent);
         logInfo("Adding completed web.xml");
         war.setWebXML(webXml);
@@ -279,8 +287,9 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       war.addAsResource("maven.properties");
       return war;
     } catch (Exception e) {
-      Logger.getAnonymousLogger().log(Level.SEVERE, "WAR BUILD PROBLEM...", e);
-      throw new RuntimeException(e);
+      final String message = "WAR BUILD PROBLEM...";
+      Logger.getAnonymousLogger().log(Level.SEVERE, message, e);
+      throw new SilverpeasRuntimeException(message, e);
     }
   }
 
@@ -318,7 +327,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * interface.
    * @return the instance of the war builder.
    */
-  @SuppressWarnings("unchecked")
+  @Override
   public final WarBuilder<T> applyManually(OnShrinkWrapWar onShrinkWrapWar) {
     onShrinkWrapWar.applyManually(war);
     return this;

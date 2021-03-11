@@ -52,8 +52,8 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class WysiwygControllerIT extends JcrIntegrationIT {

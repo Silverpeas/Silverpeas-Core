@@ -28,8 +28,8 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.util.AnnotationLiteral;
 import java.util.Comparator;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -42,10 +42,11 @@ public class SilverpeasServiceInitialization {
   private SilverpeasServiceInitialization() {
   }
 
-  public static void start() {
+  @SafeVarargs
+  public static void start(final Predicate<Initialization>... filters) {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Initialization...");
-    getAllInitializations().forEach(i -> {
+    getAllInitializations(filters).forEach(i -> {
       String simpleClassName = i.getClass().getSimpleName();
       try {
         logger.info(" -> {0} initialization...", simpleClassName);
@@ -58,10 +59,11 @@ public class SilverpeasServiceInitialization {
     });
   }
 
-  public static void stop() {
+  @SafeVarargs
+  public static void stop(final Predicate<Initialization>... filters) {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Release...");
-    getAllInitializations().forEach(i -> {
+    getAllInitializations(filters).forEach(i -> {
       try {
         i.release();
       } catch (Exception ex) {
@@ -70,9 +72,11 @@ public class SilverpeasServiceInitialization {
     });
   }
 
-  private static Stream<Initialization> getAllInitializations() {
-    return ServiceProvider.getAllServices(Initialization.class, new AnnotationLiteral<Any>() {})
+  @SafeVarargs
+  private static Stream<Initialization> getAllInitializations(final Predicate<Initialization>... filters) {
+    return ServiceProvider.getAllServices(Initialization.class, Any.Literal.INSTANCE)
         .stream()
+        .filter(Stream.of(filters).reduce(Predicate::and).orElse(x -> true))
         .sorted(Comparator.comparing(Initialization::getPriority));
   }
 }

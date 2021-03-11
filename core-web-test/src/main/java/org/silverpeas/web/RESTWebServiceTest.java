@@ -50,8 +50,6 @@ import java.util.stream.Stream;
  */
 public abstract class RESTWebServiceTest {
 
-  protected static final String CONTEXT_NAME = "test";
-
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
       "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
@@ -108,7 +106,7 @@ public abstract class RESTWebServiceTest {
    * @return the {@link WebTarget} instance.
    */
   public WebTarget resource() {
-    return ClientBuilder.newClient().target(getBaseURI() + CONTEXT_NAME + "/services/");
+    return ClientBuilder.newClient().target(getBaseURI() + "test-" + this.getClass().getSimpleName() + "/services/");
   }
 
   protected URI getBaseURI() {
