@@ -34,7 +34,8 @@ import javax.ws.rs.WebApplicationException;
  * well authenticated and, optionally, if he's authorized to handle it.
  * @author mmoquillon
  */
-public interface ProtectedWebResource extends SilverpeasWebResource, WebAuthenticationValidation {
+public interface ProtectedWebResource extends SilverpeasWebResource, WebAuthenticationValidation,
+    WebAuthorizationValidation{
 
   /**
    * Validates the authorization of the user to request this web service. For doing, the user must

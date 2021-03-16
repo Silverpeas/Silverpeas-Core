@@ -68,7 +68,7 @@ public class GroupOfParameters {
     setDescription(new HashMap<>(groupOfParameters.getDescription()));
     setHelp(new HashMap<>(groupOfParameters.getHelp()));
     setOrder(groupOfParameters.getOrder());
-    setParameters(new ParameterList(groupOfParameters.getParameterList()));
+    setParameters(groupOfParameters.getParameterList().copy());
   }
 
   /**

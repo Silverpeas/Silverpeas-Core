@@ -110,7 +110,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(0, detail.getOrder());
       assertEquals("/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = tree.get(2);
       assertNotNull(detail);
       assertEquals(NodePK.BIN_NODE_ID, detail.getId());
@@ -130,7 +130,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = tree.get(1);
       assertNotNull(detail);
       assertEquals("2", detail.getId());
@@ -150,7 +150,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = tree.get(3);
       assertNotNull(detail);
       assertEquals("3", detail.getId());
@@ -350,7 +350,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) iter.next();
       assertNotNull(detail);
       assertEquals("2", detail.getId());
@@ -370,7 +370,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) iter.next();
       assertNotNull(detail);
       assertEquals("3", detail.getId());
@@ -451,7 +451,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) iter.next();
       assertNotNull(detail);
       assertEquals("2", detail.getId());
@@ -471,7 +471,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) iter.next();
       assertNotNull(detail);
       assertEquals("3", detail.getId());
@@ -545,7 +545,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) iter.next();
       assertNotNull(detail);
       assertEquals("1", detail.getId());
@@ -565,7 +565,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) iter.next();
       assertNotNull(detail);
       assertEquals("3", detail.getId());
@@ -642,7 +642,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(0, detail.getOrder());
       assertEquals("/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) tree.get(2);
       assertNotNull(detail);
       assertEquals("1", detail.getId());
@@ -662,7 +662,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) tree.get(1);
       assertNotNull(detail);
       assertEquals("2", detail.getId());
@@ -682,7 +682,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = (NodeDetail) tree.get(3);
       assertNotNull(detail);
       assertEquals("3", detail.getId());
@@ -773,7 +773,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(0, detail.getOrder());
       assertEquals("/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       nodePK = new NodePK("4", INSTANCE_ID);
       tree = nodeDAO.getNodePath(connection, nodePK);
       assertNotNull(tree);
@@ -838,7 +838,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(0, detail.getOrder());
       assertEquals("/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
     }
   }
 
@@ -865,7 +865,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       nodePK = new NodePK("1", INSTANCE_ID);
       detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
@@ -886,7 +886,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       nodePK = new NodePK("3", INSTANCE_ID);
       detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
@@ -959,7 +959,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = iter.next();
       assertNotNull(detail);
       assertEquals("1", detail.getId());
@@ -979,7 +979,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       detail = iter.next();
       assertNotNull(detail);
       assertEquals("3", detail.getId());
@@ -1064,7 +1064,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(1, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       nodePK = new NodePK("1", INSTANCE_ID);
       detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
@@ -1088,7 +1088,7 @@ public class NodeDAOIT {
       assertNull(detail.getChildrenDetails());
       assertEquals(2, detail.getOrder());
       assertEquals("/0/", detail.getPath());
-      assertNull(detail.getNodeType());
+      assertEquals(NodeDetail.DEFAULT_NODE_TYPE, detail.getNodeType());
       nodePK = new NodePK("3", INSTANCE_ID);
       detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);

@@ -34,6 +34,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.WebAuthenticationValidation;
+import org.silverpeas.core.webapi.base.WebAuthorizationValidation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
@@ -51,7 +52,7 @@ import static org.silverpeas.core.util.StringUtil.*;
  * @author mmoquillon
  */
 public class CmisUserAuthenticator extends AbstractCmisServiceWrapper
-    implements ProgressControlCmisService, WebAuthenticationValidation {
+    implements ProgressControlCmisService, WebAuthenticationValidation, WebAuthorizationValidation {
 
   public CmisUserAuthenticator(final CmisService service) {
     super(service);
@@ -85,6 +86,7 @@ public class CmisUserAuthenticator extends AbstractCmisServiceWrapper
       final UserPrivilegeValidation validation =
           ServiceProvider.getSingleton(UserPrivilegeValidation.class);
       validateUserAuthentication(validation);
+      validateUserAuthorization(validation);
     } catch (WebApplicationException e) {
       throw new CmisPermissionDeniedException(e.getMessage());
     }

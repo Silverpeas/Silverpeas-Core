@@ -615,7 +615,7 @@ public class NodeDAO extends AbstractDAO {
       nd.setPath(path);
       nd.setModelId(modelId);
       nd.setStatus(status);
-      nd.setNodeType(type);
+      nd.setNodeType(type == null ? NodeDetail.DEFAULT_NODE_TYPE : type);
       nd.setLanguage(language);
       nd.setOrder(order);
       nd.setRightsDependsOn(String.valueOf(rightsDependsOn));
@@ -736,7 +736,7 @@ public class NodeDAO extends AbstractDAO {
     int level = nd.getLevel();
     String modelId = nd.getModelId();
     String status = nd.getStatus();
-    String type = nd.getNodeType();
+    String type = nd.getNodeType() == null ? NodeDetail.DEFAULT_NODE_TYPE : nd.getNodeType();
     String language = nd.getLanguage();
     int fatherId = -1;
     int nbBrothers = 0;

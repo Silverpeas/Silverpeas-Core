@@ -30,6 +30,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
+import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -62,10 +63,12 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -432,22 +435,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     if (StringUtil.isDefined(res)) {
       // Finally refresh the cache
       m_NavBarMgr.addSpaceInCache(res);
-
-      // Component space storage quota
-      initializeComponentSpaceQuota(spaceInst);
-
-      // Data storage quota
-      initializeDataStorageQuota(spaceInst);
     }
     return res;
   }
 
   public String updateSpaceInst(SpaceInst spaceInst) {
     spaceInst.setUpdaterUserId(getUserId());
-    String res = adminController.updateSpaceInst(spaceInst);
-    initializeComponentSpaceQuota(spaceInst);
-    initializeDataStorageQuota(spaceInst);
-    return res;
+    return adminController.updateSpaceInst(spaceInst);
   }
 
   public SpaceLookHelper getSpaceLookHelper() {
@@ -549,34 +543,33 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
   }
 
-  /**
-   * Initializing component space quota
-   *
-   * @param space
-   */
-  public void initializeComponentSpaceQuota(final SpaceInst space) {
-    if (isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
+  public void saveSpaceQuota(final SpaceInst spaceInst, String componentSpaceQuotaMaxCount,
+      String dataStorageQuotaMaxCount) {
+    boolean isAdmin = isUserAdmin();
+    // Component space quota
+    if (isAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
       try {
+        if (StringUtil.isDefined(componentSpaceQuotaMaxCount)) {
+          spaceInst.setComponentSpaceQuotaMaxCount(Integer.parseInt(componentSpaceQuotaMaxCount));
+        }
         SpaceServiceProvider.getComponentSpaceQuotaService().initialize(
-            ComponentSpaceQuotaKey.from(space), space.getComponentSpaceQuota().getMaxCount());
-        space.clearComponentSpaceQuotaCache();
+            ComponentSpaceQuotaKey.from(spaceInst), spaceInst.getComponentSpaceQuota().getMaxCount());
+        spaceInst.clearComponentSpaceQuotaCache();
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
-  }
 
-  /**
-   * Initializing data storage quota
-   *
-   * @param space
-   */
-  public void initializeDataStorageQuota(final SpaceInst space) {
-    if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
+    // Data storage quota
+    if (isAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
       try {
+        if (StringUtil.isDefined(dataStorageQuotaMaxCount)) {
+          spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
+              Long.parseLong(dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
+        }
         SpaceServiceProvider.getDataStorageSpaceQuotaService().initialize(
-            DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota().getMaxCount());
-        space.clearDataStorageQuotaCache();
+            DataStorageSpaceQuotaKey.from(spaceInst), spaceInst.getDataStorageQuota().getMaxCount());
+        spaceInst.clearDataStorageQuotaCache();
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
@@ -865,7 +858,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   private LocalizedParameterList getUngroupedParameters(WAComponent component, boolean creation) {
-    ParameterList parameterList = new ParameterList(component.getParameters());
+    ParameterList parameterList = ParameterList.copy(component.getParameters());
     parameterList.sort();
     setParameterOptions(parameterList, component.getName());
     setParameterValues(parameterList);

@@ -54,7 +54,8 @@ public interface WebAuthenticationValidation {
    * a new one.
    * <p>
    * This method should be invoked for web services requiring an authenticated user. Otherwise, the
-   * annotation Authenticated can be also used instead at class level.
+   * annotation {@link org.silverpeas.core.webapi.base.annotation.Authenticated} can be also used
+   * instead at class level.
    * </p>
    * @see UserPrivilegeValidator
    * @param validation the validation instance to use.

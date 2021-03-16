@@ -25,19 +25,20 @@ package org.silverpeas.core.admin.component.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ParameterList extends ArrayList<Parameter> {
+
+  public static ParameterList copy(List<Parameter> parameters) {
+    return new ParameterList(parameters.stream().map(Parameter::new).collect(Collectors.toList()));
+  }
 
   public ParameterList() {
     super();
   }
 
-  public ParameterList(final ParameterList parameters) {
-    parameters.stream().map(Parameter::new).forEach(this::add);
-  }
-
   public ParameterList(List<Parameter> parameters) {
-    parameters.stream().map(Parameter::new).forEach(this::add);
+    super(parameters);
   }
 
   public void setValues(List<Parameter> parameters) {
@@ -100,5 +101,11 @@ public class ParameterList extends ArrayList<Parameter> {
       localized.add(new LocalizedParameter(param, lang));
     }
     return localized;
+  }
+
+  public ParameterList copy() {
+    ParameterList copy = new ParameterList();
+    this.stream().map(Parameter::new).forEach(copy::add);
+    return copy;
   }
 }

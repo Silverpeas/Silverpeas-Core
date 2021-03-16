@@ -303,7 +303,7 @@ public class I18NHelper implements I18n {
     String onChangeJavascript = "";
     if (bean != null) {
       onChangeJavascript = "onChange= \"javaScript:showTranslation(this.value.substring(0,2));\"";
-      if (bean.getTranslations().get(currentTranslation) == null) {
+      if (currentTranslation == null || bean.getTranslations().get(currentTranslation) == null) {
         Translation translation = bean.getNextTranslation();
         if (translation != null) {
           currentTranslation = translation.getLanguage();
