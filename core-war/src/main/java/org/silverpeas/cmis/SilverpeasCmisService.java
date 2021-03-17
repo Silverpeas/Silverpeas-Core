@@ -49,8 +49,10 @@ import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.DocumentFile;
 import org.silverpeas.core.cmis.model.Space;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.EnumMap;

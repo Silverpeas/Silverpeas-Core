@@ -36,7 +36,6 @@ import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.WebAuthenticationValidation;
 import org.silverpeas.core.webapi.base.WebAuthorizationValidation;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 
 import static org.silverpeas.core.util.StringUtil.*;
@@ -94,14 +93,13 @@ public class CmisUserAuthenticator extends AbstractCmisServiceWrapper
 
   private void prepareForSOAPUsernameToken() {
     final CmisRequestContext context = getSilverpeasContext();
-    final HttpServletRequest request = getSilverpeasContext().getRequest();
+    final CmisRequest request = context.getRequest();
     if (isNotDefined(request.getHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION)) &&
         isDefined(context.getUsername()) && isDefined(context.getPassword())) {
       // at this point, the UsernameToken was loaded by OpenCMIS into the CallContext instance
       // (username and password properties)
-      final CmisRequest cmisRequest = CmisRequest.decorate(request);
       final String credentials = context.getUsername() + ":" + context.getPassword();
-      cmisRequest.addHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION,
+      request.addHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION,
           "Basic " + asBase64(credentials.getBytes(Charsets.UTF_8)));
     }
   }

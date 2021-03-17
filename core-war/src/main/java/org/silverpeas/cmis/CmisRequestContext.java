@@ -26,6 +26,7 @@ package org.silverpeas.cmis;
 
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.silverpeas.cmis.security.CmisRequest;
 import org.silverpeas.core.webapi.base.SilverpeasRequestContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,12 @@ public class CmisRequestContext extends SilverpeasRequestContext implements Call
         (HttpServletRequest) callContext.get(CallContext.HTTP_SERVLET_REQUEST);
     final HttpServletResponse response =
         (HttpServletResponse) callContext.get(CallContext.HTTP_SERVLET_RESPONSE);
-    init(request, response);
+    init(CmisRequest.decorate(request), response);
+  }
+
+  @Override
+  public CmisRequest getRequest() {
+    return (CmisRequest) super.getRequest();
   }
 
   @Override

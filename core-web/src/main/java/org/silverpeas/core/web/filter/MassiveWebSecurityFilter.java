@@ -56,10 +56,9 @@ import java.util.regex.Pattern;
 
 /**
  * Massive Web Security Protection.
- *
- * For now, this filter ensures HTTPS is used in secured connections, blocks content sniffing of
- * web browsers, and checks XSS and SQL injections
- * in URLs.
+ * <p>
+ * For now, this filter ensures HTTPS is used in secured connections, blocks content sniffing of web
+ * browsers, and checks XSS and SQL injections in URLs.
  * @author Yohann Chastagnier
  */
 public class MassiveWebSecurityFilter implements Filter {
@@ -72,6 +71,9 @@ public class MassiveWebSecurityFilter implements Filter {
   private static final String WEB_PAGES_URI_PREFIX =
       UriBuilder.fromUri(URLUtil.getApplicationURL()).path("RwebPages").build().toString();
 
+  private static final String CMIS_URI_PREFIX =
+      UriBuilder.fromPath(URLUtil.getApplicationURL()).path("cmis").build().toString();
+
   private static final List<Pattern> SQL_SKIPPED_PARAMETER_PATTERNS;
   private static final List<Pattern> XSS_SKIPPED_PARAMETER_PATTERNS;
 
@@ -79,7 +81,7 @@ public class MassiveWebSecurityFilter implements Filter {
   private static final List<Pattern> XSS_PATTERNS;
 
   private static final Pattern ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN =
-      Pattern.compile("(?ui)[\\w\\-_éèçàëäüïöâêûîôµùÉÈÇÀËÄÜÏÖÂÊÛÎÔΜÙ]$");
+      Pattern.compile("(?ui)[a-z\\d\\-_éèçàëäüïöâêûîôµù]$");
 
 
   private static final Pattern SQL_SELECT_FROM_PATTERN = Pattern.compile("(?i)select.*from");
@@ -96,13 +98,13 @@ public class MassiveWebSecurityFilter implements Filter {
 
     SQL_SKIPPED_PARAMETER_PATTERNS = new ArrayList<>(1);
     if (StringUtil.isDefined(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity())) {
-      SQL_SKIPPED_PARAMETER_PATTERNS
-          .add(Pattern.compile(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity()));
+      SQL_SKIPPED_PARAMETER_PATTERNS.add(
+          Pattern.compile(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity()));
     }
     XSS_SKIPPED_PARAMETER_PATTERNS = new ArrayList<>(1);
     if (StringUtil.isDefined(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity())) {
-      XSS_SKIPPED_PARAMETER_PATTERNS
-          .add(Pattern.compile(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity()));
+      XSS_SKIPPED_PARAMETER_PATTERNS.add(
+          Pattern.compile(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity()));
     }
 
     SQL_PATTERNS = new ArrayList<>(6);
@@ -132,8 +134,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
     } catch (WebSecurityException wse) {
 
-      logger.error("The request for path {0} isn''t valid: {1}",
-          pathOf(httpRequest), wse.getMessage());
+      logger.error("The request for path {0} isn''t valid: {1}", pathOf(httpRequest),
+          wse.getMessage());
 
       // An HTTP error is sended to the client
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, wse.getMessage());
@@ -151,14 +153,15 @@ public class MassiveWebSecurityFilter implements Filter {
 
   private void checkSecurity(final HttpRequest httpRequest, final HttpServletResponse httpResponse)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    String requestURI = httpRequest.getRequestURI();
+    boolean isCmisService = requestURI.startsWith(CMIS_URI_PREFIX);
     boolean isWebServiceMultipart =
-        httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
-            httpRequest.isContentInMultipart();
-    boolean isWebPageMultiPart = httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
-        httpRequest.isContentInMultipart();
+        requestURI.startsWith(WEB_SERVICES_URI_PREFIX) && httpRequest.isContentInMultipart();
+    boolean isWebPageMultiPart =
+        requestURI.startsWith(WEB_PAGES_URI_PREFIX) && httpRequest.isContentInMultipart();
 
     // Verifying security only if all the prerequisite are satisfied
-    if (!(isWebServiceMultipart || isWebPageMultiPart)) {
+    if (!(isCmisService || isWebServiceMultipart || isWebPageMultiPart)) {
       checkWebInjection(httpRequest, httpResponse);
       setUpSecurityContentPolicy(httpRequest, httpResponse);
     }
@@ -169,15 +172,14 @@ public class MassiveWebSecurityFilter implements Filter {
     boolean isCSPEnabled = SecuritySettings.isWebContentInjectionSecurityEnabled();
     if (isCSPEnabled) {
       final User currentUser = User.getCurrentRequester();
-      final String secure = " https: " +
-          (httpRequest.isSecure() ? WebDavProtocol.SECURED_WEBDAV_SCHEME + ": " :
-              WebDavProtocol.WEBDAV_SCHEME + ": ");
+      final String secure = " https: " + (httpRequest.isSecure() ?
+          WebDavProtocol.SECURED_WEBDAV_SCHEME + ": " :
+          WebDavProtocol.WEBDAV_SCHEME + ": ");
       final String font = currentUser == null ? "" : "; font-src * data:";
       final String img = currentUser == null ? "" : "; img-src * data: blob:";
       httpResponse.setHeader("Content-Security-Policy",
           "default-src 'self' blob: mailto: " + secure +
-              SecuritySettings.getAllowedDefaultSourcesInCSP() +
-              font + img +
+              SecuritySettings.getAllowedDefaultSourcesInCSP() + font + img +
               "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval' " + secure +
               SecuritySettings.getAllowedScriptSourcesInCSP() +
               "; style-src 'self' 'unsafe-inline' " + secure +
@@ -207,8 +209,7 @@ public class MassiveWebSecurityFilter implements Filter {
     long start = System.currentTimeMillis();
     try {
       // Browsing all parameters
-      for (Map.Entry<String, String[]> parameterEntry : httpRequest.getParameterMap()
-          .entrySet()) {
+      for (Map.Entry<String, String[]> parameterEntry : httpRequest.getParameterMap().entrySet()) {
 
         boolean sqlInjectionToVerify = isWebSqlInjectionSecurityEnabled &&
             mustTheParameterBeVerifiedForSqlVerifications(parameterEntry.getKey());
@@ -258,9 +259,8 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Verifies deeply a matched SQL string. Indeed, throwing an exception of XSS attack only on
-   * SQL detection is not enough. This method tries to detect a known table name from the SQL
-   * string.
+   * Verifies deeply a matched SQL string. Indeed, throwing an exception of XSS attack only on SQL
+   * detection is not enough. This method tries to detect a known table name from the SQL string.
    * @param matcherFound
    * @param string
    * @return
@@ -297,8 +297,8 @@ public class MassiveWebSecurityFilter implements Filter {
         new StringBuilder(matchedString.substring(matcher.start(), matcher.end()));
     int index = matcher.start() - 1;
     while (index >= 0) {
-      if (ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN
-          .matcher(String.valueOf(matchedString.charAt(index))).matches()) {
+      if (ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN.matcher(
+          String.valueOf(matchedString.charAt(index))).matches()) {
         tableName.insert(0, matchedString.charAt(index));
       } else {
         break;
@@ -307,8 +307,8 @@ public class MassiveWebSecurityFilter implements Filter {
     }
     index = matcher.end();
     while (index < matchedString.length()) {
-      if (ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN
-          .matcher(String.valueOf(matchedString.charAt(index))).matches()) {
+      if (ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN.matcher(
+          String.valueOf(matchedString.charAt(index))).matches()) {
         tableName.append(matchedString.charAt(index));
       } else {
         break;
@@ -319,14 +319,16 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Gets a pattern that permits to chexk deeply a detected SELECT FROM with known table names.
-   * A cache is handled by this method in order to avoid building at every call the same pattern.
+   * Gets a pattern that permits to chexk deeply a detected SELECT FROM with known table names. A
+   * cache is handled by this method in order to avoid building at every call the same pattern.
    * @return
    */
   private synchronized Pattern getSqlTableNamesPattern() {
     Pattern pattern = (sqlSelectPatternInspectDeeplyCacheKey != null) ?
-        CacheServiceProvider.getApplicationCacheService().getCache()
-            .get(sqlSelectPatternInspectDeeplyCacheKey, Pattern.class) : null;
+        CacheServiceProvider.getApplicationCacheService()
+            .getCache()
+            .get(sqlSelectPatternInspectDeeplyCacheKey, Pattern.class) :
+        null;
     if (pattern == null) {
       StringBuilder sbPattern = new StringBuilder("(");
       for (String tableName : DBUtil.getAllTableNames()) {
@@ -393,8 +395,8 @@ public class MassiveWebSecurityFilter implements Filter {
    * @return
    */
   private boolean verifyMatcherStartingByAWord(Matcher matcher, String matchedString) {
-    return matcher.start() == 0 || !ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN
-        .matcher(matchedString.substring(0, matcher.start())).find();
+    return matcher.start() == 0 || !ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN.matcher(
+        matchedString.substring(0, matcher.start())).find();
   }
 
   /**
@@ -404,8 +406,9 @@ public class MassiveWebSecurityFilter implements Filter {
    * @return
    */
   private boolean verifyMatcherEndingByAWord(Matcher matcher, String matchedString) {
-    return matcher.end(0) == matchedString.length() || !ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN
-        .matcher(String.valueOf(matchedString.charAt(matcher.end(0)))).find();
+    return matcher.end(0) == matchedString.length() ||
+        !ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN.matcher(
+            String.valueOf(matchedString.charAt(matcher.end(0)))).find();
   }
 
   /**
