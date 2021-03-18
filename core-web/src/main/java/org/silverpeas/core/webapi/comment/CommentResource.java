@@ -99,8 +99,10 @@ public class CommentResource extends RESTWebService {
       URI commentURI = getUri().getRequestUri();
       return asWebEntity(theComment, identifiedBy(commentURI));
     } catch (CommentRuntimeException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -121,8 +123,10 @@ public class CommentResource extends RESTWebService {
       List<Comment> theComments = commentService().getAllCommentsOnResource(onContentType(), ref);
       return asWebEntities(theComments);
     } catch (CommentRuntimeException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -144,19 +148,21 @@ public class CommentResource extends RESTWebService {
     checkIsValid(commentToSave);
     try {
       Comment comment = commentToSave.toComment();
+      Comment savedComment;
       if (commentToSave.isIndexed()) {
-        commentService().createAndIndexComment(comment);
+        savedComment = commentService().createAndIndexComment(comment);
       } else {
-        commentService().createComment(comment);
+        savedComment = commentService().createComment(comment);
       }
-      Comment savedComment = commentService().getComment(comment.getIdentifier());
       URI commentURI =
           getUri().getRequestUriBuilder().path(savedComment.getId()).build();
       return Response.created(commentURI).
           entity(asWebEntity(savedComment, identifiedBy(commentURI))).build();
     } catch (CommentRuntimeException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.CONFLICT);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -192,8 +198,10 @@ public class CommentResource extends RESTWebService {
       URI commentURI = getUri().getRequestUriBuilder().path(comment.getId()).build();
       return asWebEntity(comment, identifiedBy(commentURI));
     } catch (CommentRuntimeException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -215,6 +223,7 @@ public class CommentResource extends RESTWebService {
     } catch (CommentRuntimeException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
