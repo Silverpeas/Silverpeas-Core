@@ -574,36 +574,26 @@ public class ContentManagementEngine implements Serializable {
    */
   public List<Integer> getSilverContentIdByInstanceId(String instanceId)
       throws ContentManagerException {
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
     List<Integer> allSilverContentIds = new ArrayList<>();
-    try {
-      // Open connection
-      con = DBUtil.openConnection();
 
-      String sSQLStatement =
-          "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE +
-              " C  where I.instanceId = C.contentInstanceId and I.componentId like ?";
-
-      // Execute the search
-      prepStmt = con.prepareStatement(sSQLStatement);
+    final String sSQLStatement =
+        "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE +
+            " C  where I.instanceId = C.contentInstanceId and I.componentId like ?";
+    try(Connection con = DBUtil.openConnection();
+      PreparedStatement prepStmt = con.prepareStatement(sSQLStatement)) {
       prepStmt.setString(1, instanceId);
+      try(ResultSet resSet = prepStmt.executeQuery()) {
 
-      resSet = prepStmt.executeQuery();
+        // Fetch the result
+        while (resSet.next()) {
+          allSilverContentIds.add(resSet.getInt(1));
+        }
 
-      // Fetch the result
-      while (resSet.next()) {
-        allSilverContentIds.add(resSet.getInt(1));
+        return allSilverContentIds;
       }
-
-      return allSilverContentIds;
     } catch (Exception e) {
       throw new ContentManagerException(
           failureOnGetting("silverpeas content id for instance", instanceId), e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      closeConnection(con);
     }
   }
 
@@ -634,39 +624,30 @@ public class ContentManagementEngine implements Serializable {
 
   public SilverContentVisibility getSilverContentVisibility(int silverObjectId)
       throws ContentManagerException {
-    Connection connection = null;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
-    SilverContentVisibility scv = null;
+    SilverContentVisibility scv;
 
     // Get the SilverContentVisibility
     String sSQLStatement = "SELECT beginDate, endDate, isVisible FROM " + SILVER_CONTENT_TABLE +
         WHERE_SILVER_CONTENT_ID_IS_SET;
-    try {
-      // Open connection
-      connection = DBUtil.openConnection();
+    try(Connection connection = DBUtil.openConnection();
+    PreparedStatement prepStmt = connection.prepareStatement(sSQLStatement)) {
+      prepStmt.setInt(1, silverObjectId);
+      try(ResultSet resSet = prepStmt.executeQuery()) {
 
-      prepStmt = connection.prepareStatement(sSQLStatement);
-      prepStmt.setString(1, String.valueOf(silverObjectId));
-      resSet = prepStmt.executeQuery();
-
-      // Fetch the result
-      if (resSet.next()) {
-        String beginDate = resSet.getString(1);
-        String endDate = resSet.getString(2);
-        int visibility = resSet.getInt(3);
-        boolean isVisible = true;
-        if (visibility == 0) {
-          isVisible = false;
+        // Fetch the result
+        if (resSet.next()) {
+          String beginDate = resSet.getString(1);
+          String endDate = resSet.getString(2);
+          int visibility = resSet.getInt(3);
+          boolean isVisible = visibility != 0;
+          scv = new SilverContentVisibility(beginDate, endDate, isVisible);
+        } else {
+          scv = null;
         }
-        scv = new SilverContentVisibility(beginDate, endDate, isVisible);
       }
     } catch (SQLException e) {
       throw new ContentManagerException(
           failureOnGetting("visibility of silverpeas content", silverObjectId), e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      closeConnection(connection);
     }
     return scv;
   }

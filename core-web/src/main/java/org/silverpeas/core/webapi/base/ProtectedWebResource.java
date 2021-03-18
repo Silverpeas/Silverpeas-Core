@@ -52,6 +52,7 @@ public interface ProtectedWebResource extends SilverpeasWebResource, WebAuthenti
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.
    */
+  @Override
   default void validateUserAuthorization(final UserPrivilegeValidation validation) {
     validation.validateUserAuthorizationOnComponentInstance(getSilverpeasContext().getUser(),
         getComponentId());
