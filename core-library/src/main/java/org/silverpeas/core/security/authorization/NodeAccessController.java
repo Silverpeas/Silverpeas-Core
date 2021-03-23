@@ -83,9 +83,10 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   }
 
   @Override
-  public Stream<NodePK> filterAuthorizedByUser(final Collection<NodePK> nodePks, final String userId,
-      final AccessControlContext context) {
-    final List<String> instancesIds = nodePks.stream().map(NodePK::getInstanceId).distinct().collect(Collectors.toList());
+  public Stream<NodePK> filterAuthorizedByUser(final Collection<NodePK> nodePks,
+      final String userId, final AccessControlContext context) {
+    final List<String> instancesIds =
+        nodePks.stream().map(NodePK::getInstanceId).distinct().collect(Collectors.toList());
     getDataManager(context).loadCaches(userId, instancesIds);
     return nodePks.stream().filter(n -> isUserAuthorized(userId, n, context));
   }
@@ -104,7 +105,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, NodeDetail nodeDetail, final AccessControlContext context) {
+  public boolean isUserAuthorized(String userId, NodeDetail nodeDetail,
+      final AccessControlContext context) {
     getDataManager(context).loadCachesWithLoadedNode(nodeDetail);
     return isUserAuthorized(userId, nodeDetail.getNodePK(), context);
   }
@@ -117,15 +119,19 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       final SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
       return highestUserRole != null ? highestUserRole : SilverpeasRole.READER;
     });
-    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
     boolean authorized = isUserAuthorized(userRoles);
-    if (authorized && componentDataManager.isTopicTrackerSupported(nodePK.getInstanceId()) && nodePK.isTrash()) {
+    if (authorized && componentDataManager.isTopicTrackerSupported(nodePK.getInstanceId()) &&
+        nodePK.isTrash()) {
       authorized = highestRole.get().isGreaterThanOrEquals(WRITER);
     }
     if (authorized && isSharingActionFrom(context.getOperations())) {
       final SilverpeasRole highestUserRole = highestRole.get();
       final User user = User.getById(userId);
-      authorized = !user.isAnonymous() && componentDataManager.isFolderSharingEnabledForRole(nodePK.getInstanceId(), highestUserRole);
+      authorized = !user.isAnonymous() &&
+          componentDataManager.isFolderSharingEnabledForRole(nodePK.getInstanceId(),
+              highestUserRole);
     }
     return authorized;
   }
@@ -171,9 +177,10 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
 
     // If rights are not handled from the node, then filling the user role containers with these
     // of component
-    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-    if (!componentDataManager.isRightOnTopicsEnabled(nodePK.getInstanceId())
-        || nodePK.isRoot() || nodePK.isTrash() || nodePK.isUnclassed()) {
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
+    if (!componentDataManager.isRightOnTopicsEnabled(nodePK.getInstanceId()) || nodePK.isRoot() ||
+        nodePK.isTrash() || nodePK.isUnclassed()) {
       userRoles.addAll(componentUserRoles);
       return;
     }
@@ -198,7 +205,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     private OrganizationController controller;
     private NodeService nodeService;
     Map<String, NodeDetail> nodeDetailCache = null;
-    Map<Pair<String, Integer>, Set<String>> userProfiles = null;
+    Map<Pair<String, String>, Set<String>> userProfiles = null;
 
     DataManager(final AccessControlContext context) {
       this.context = context;
@@ -217,7 +224,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     }
 
     void completeCaches(final String userId, final Collection<String> instanceIds) {
-      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+      final ComponentAccessController.DataManager componentDataManager =
+          ComponentAccessController.getDataManager(context);
       final boolean firstLoad = nodeDetailCache == null;
       if (firstLoad) {
         componentDataManager.loadCaches(userId, instanceIds);
@@ -232,33 +240,36 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
           nodeDetailCache = new HashMap<>(0);
           userProfiles = new HashMap<>(0);
         } else {
-          final Pair<Map<String, NodeDetail>, Map<Pair<String, Integer>, Set<String>>> caches =
+          final Pair<Map<String, NodeDetail>, Map<Pair<String, String>, Set<String>>> caches =
               loadNodesAndUserProfiles(userId, instanceIdsWithRightsOnTopic);
           nodeDetailCache = caches.getFirst();
           userProfiles = caches.getSecond();
         }
       } else {
-        final Pair<Map<String, NodeDetail>, Map<Pair<String, Integer>, Set<String>>> caches =
+        final Pair<Map<String, NodeDetail>, Map<Pair<String, String>, Set<String>>> caches =
             loadNodesAndUserProfiles(userId, instanceIdsWithRightsOnTopic);
         caches.getFirst().forEach((k, v) -> nodeDetailCache.put(k, v));
         caches.getSecond().forEach((k, v) -> userProfiles.put(k, v));
       }
     }
 
-    private Pair<Map<String, NodeDetail>, Map<Pair<String, Integer>, Set<String>>> loadNodesAndUserProfiles(
+    private Pair<Map<String, NodeDetail>, Map<Pair<String, String>, Set<String>>> loadNodesAndUserProfiles(
         final String userId, final Set<String> instanceIdsWithRightsOnTopic) {
-      final List<NodeDetail> nodeDetails = nodeService.getMinimalDataByInstances(instanceIdsWithRightsOnTopic);
+      final List<NodeDetail> nodeDetails =
+          nodeService.getMinimalDataByInstances(instanceIdsWithRightsOnTopic);
       final Map<String, NodeDetail> currentNodeDetailCache = new HashMap<>(nodeDetails.size());
       nodeDetails.forEach(n -> currentNodeDetailCache.put(computeNodeCacheKey(n.getNodePK()), n));
       final Set<String> nodeIds = nodeDetails.stream()
           .map(NodeDetail::getRightsDependsOn)
           .filter(i -> !i.equals(NodeDetail.NO_RIGHTS_DEPENDENCY))
           .collect(Collectors.toSet());
-      final Map<Pair<String, Integer>, Set<String>> currentUserProfiles;
+      final Map<Pair<String, String>, Set<String>> currentUserProfiles;
       if (nodeIds.isEmpty()) {
         currentUserProfiles = new HashMap<>(0);
       } else {
-        currentUserProfiles = controller.getUserProfilesByComponentIdAndObjectId(userId, instanceIdsWithRightsOnTopic, ProfiledObjectIds.fromNodeIds(nodeIds));
+        currentUserProfiles =
+            controller.getUserProfilesByComponentIdAndObjectId(userId, instanceIdsWithRightsOnTopic,
+                ProfiledObjectIds.fromNodeIds(nodeIds));
       }
       return Pair.of(currentNodeDetailCache, currentUserProfiles);
     }
@@ -273,7 +284,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
         final Pair<String, String> key = Pair.of(nodePK.getInstanceId(), node.getRightsDependsOn());
         return userProfiles.getOrDefault(key, emptySet()).toArray(new String[0]);
       }
-      return controller.getUserProfiles(userId, nodePK.getInstanceId(), ProfiledObjectId.fromNode(node.getRightsDependsOn()));
+      return controller.getUserProfiles(userId, nodePK.getInstanceId(),
+          ProfiledObjectId.fromNode(node.getRightsDependsOn()));
     }
 
     public NodeDetail getNodeHeader(final NodePK nodePK) {

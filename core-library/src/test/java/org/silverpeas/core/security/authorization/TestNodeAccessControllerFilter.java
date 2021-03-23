@@ -129,7 +129,7 @@ public class TestNodeAccessControllerFilter {
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620));
     assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(
-        Pair.of(KMELIA_83, NODE_83_620.getLocalId())));
+        Pair.of(KMELIA_83, NODE_83_620.getId())));
     // Node level
     verify(nodeService, times(1)).getMinimalDataByInstances(anyCollection());
     final ArgumentCaptor<ProfiledObjectIds> nodeIds = ArgumentCaptor.forClass(ProfiledObjectIds.class);
@@ -176,7 +176,7 @@ public class TestNodeAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_83));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_83));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getLocalId())));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId())));
     // Node level
     verify(nodeService, times(1)).getMinimalDataByInstances(anyCollection());
     final ArgumentCaptor<ProfiledObjectIds> nodeIds = ArgumentCaptor.forClass(ProfiledObjectIds.class);
@@ -281,12 +281,12 @@ public class TestNodeAccessControllerFilter {
           ArgumentMatchers.any(ProfiledObjectIds.class))).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
         final ProfiledObjectIds profiledObjectIds = a.getArgument(2);
-        final Map<Pair<String, Integer>, Set<String>> result = new HashMap<>();
+        final Map<Pair<String, String>, Set<String>> result = new HashMap<>();
         ALL_NODES.stream()
             .filter(n -> instanceIds.contains(n.getNodePK().getInstanceId()))
             .filter(n -> profiledObjectIds.contains(n.getId()))
             .map(NodeDetail::getNodePK)
-            .forEach(p -> result.put(Pair.of(p.getInstanceId(), Integer.parseInt(p.getId())),
+            .forEach(p -> result.put(Pair.of(p.getInstanceId(), p.getId()),
                 CollectionUtil.asSet(SilverpeasRole.USER.getName())));
         return result;
       });

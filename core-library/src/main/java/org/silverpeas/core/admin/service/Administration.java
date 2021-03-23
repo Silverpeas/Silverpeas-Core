@@ -393,7 +393,7 @@ public interface Administration {
    * @return a map filled with list of profile name as string by couple component instance
    * identifier as string - object identifier as integer.
    */
-  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+  Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       ProfiledObjectIds profiledObjectIds, Collection<String> componentIds, String userId) throws AdminException;
 
   Map<String, List<String>> getProfilesByObjectTypeAndUserId(ProfiledObjectType profiledObjectType,

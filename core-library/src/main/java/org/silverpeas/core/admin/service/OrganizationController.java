@@ -311,7 +311,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @return a map filled with list of profile name as string by couple component instance
    * identifier as string - object identifier as String.
    */
-  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(String userId,
+  Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(String userId,
       Collection<String> componentIds, ProfiledObjectIds profiledObjectIds);
 
   Map<String, List<String>> getUserObjectProfiles(String userId, String componentId,

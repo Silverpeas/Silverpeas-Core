@@ -1721,7 +1721,7 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+  public Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       final ProfiledObjectIds profiledObjectIds, final Collection<String> componentIds,
       final String userId) throws AdminException {
     final Map<Integer, String> localComponentIds =
@@ -1732,7 +1732,8 @@ class DefaultAdministration implements Administration {
         .entrySet()
         .stream()
         .collect(toMap(
-            e -> Pair.of(localComponentIds.get(e.getKey().getFirst()), e.getKey().getSecond()),
+            e -> Pair.of(localComponentIds.get(e.getKey().getFirst()),
+                String.valueOf(e.getKey().getSecond())),
             Map.Entry::getValue));
   }
 

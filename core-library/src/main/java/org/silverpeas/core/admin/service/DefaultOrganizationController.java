@@ -532,7 +532,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+  public Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       final String userId, final Collection<String> componentIds,
       final ProfiledObjectIds profiledObjectIds) {
     try {

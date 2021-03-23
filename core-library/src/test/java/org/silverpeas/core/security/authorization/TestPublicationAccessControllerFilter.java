@@ -225,8 +225,8 @@ public class TestPublicationAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getLocalId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getLocalId())));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
@@ -319,8 +319,8 @@ public class TestPublicationAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getLocalId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getLocalId())));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestWithoutAnyClone = ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS.size();
@@ -370,8 +370,8 @@ public class TestPublicationAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getLocalId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getLocalId())));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     assertThat(publicationDataManager.publicationCache.size(), is(0));
@@ -415,8 +415,8 @@ public class TestPublicationAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83, KMELIA_ALIAS_OTHER));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE));
-    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getLocalId()),
-        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getLocalId())));
+    assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId()),
+        Pair.of(KMELIA_ALIAS_OTHER, NODE_ALIAS_OTHER_SPE.getId())));
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
@@ -539,12 +539,12 @@ public class TestPublicationAccessControllerFilter {
           .getUserProfilesByComponentIdAndObjectId(anyString(), anyCollection(), any(ProfiledObjectIds.class))).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
         final ProfiledObjectIds profiledObjectIds = a.getArgument(2);
-        final Map<Pair<String, Integer>, Set<String>> result = new HashMap<>();
+        final Map<Pair<String, String>, Set<String>> result = new HashMap<>();
         ALL_NODES.stream()
             .filter(n -> instanceIds.contains(n.getNodePK().getInstanceId()))
             .filter(n -> profiledObjectIds.contains(n.getId()))
             .map(NodeDetail::getNodePK)
-            .forEach(p -> result.put(Pair.of(p.getInstanceId(), Integer.parseInt(p.getId())),
+            .forEach(p -> result.put(Pair.of(p.getInstanceId(), p.getId()),
                 CollectionUtil.asSet(SilverpeasRole.USER.getName())));
         return result;
       });

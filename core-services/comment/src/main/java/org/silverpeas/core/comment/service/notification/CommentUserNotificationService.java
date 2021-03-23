@@ -97,7 +97,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
               getInterestedUsers(comment.getCreator().getId(), commentedContent);
           if (!recipients.isEmpty()) {
             Comment newComment =
-                getCommentService().getComment(new CommentId(comment.getId(), componentInstanceId));
+                getCommentService().getComment(new CommentId(componentInstanceId, comment.getId()));
             final NotificationMetaData notification = UserNotificationHelper.build(
                 new CommentUserNotification(getCommentService(), newComment, commentedContent,
                     componentName + "." + SUBJECT_COMMENT_ADDING, service.

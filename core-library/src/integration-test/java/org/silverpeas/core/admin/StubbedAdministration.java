@@ -331,7 +331,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+  public Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       final ProfiledObjectIds profiledObjectIds, final Collection<String> componentIds, final String userId) throws AdminException {
     return Collections.emptyMap();
   }
