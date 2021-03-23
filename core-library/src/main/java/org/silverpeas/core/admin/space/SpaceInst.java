@@ -62,6 +62,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getDataStorageSpaceQuotaService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
@@ -119,13 +120,13 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private String look = null;
 
   /* Collection of components Instances */
-  private final List<ComponentInst> components = new ArrayList<>();
+  private final List<ComponentInst> components = synchronizedList(new ArrayList<>());
 
   /* Collection of subspaces Instances */
-  private final List<SpaceInst> subSpaces = new ArrayList<>();
+  private final List<SpaceInst> subSpaces = synchronizedList(new ArrayList<>());
 
   /* Collection of space profiles Instances */
-  private final List<SpaceProfileInst> spaceProfiles = new ArrayList<>();
+  private final List<SpaceProfileInst> spaceProfiles = synchronizedList(new ArrayList<>());
 
   /* Array of space ids that are children of this space */
   private int level;

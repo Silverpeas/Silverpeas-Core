@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 
 public class SocialInformationStatus extends AbstractSocialInformation {
 
   public SocialInformationStatus(Status status) {
+    super(new ResourceReference(Integer.toString(status.getId()), "status"));
     setDescription(status.getDescription());
     setAuthor(Integer.toString(status.getUserId()));
     setTitle(Integer.toString(status.getUserId()));

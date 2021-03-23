@@ -48,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -79,7 +80,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   private boolean isPublic;
   private boolean isHidden;
   private boolean isInheritanceBlocked = false;
-  private final List<ProfileInst> profiles = new ArrayList<>();
+  private final List<ProfileInst> profiles = synchronizedList(new ArrayList<>());
   private transient List<Parameter> parameters = null;
 
   @Override

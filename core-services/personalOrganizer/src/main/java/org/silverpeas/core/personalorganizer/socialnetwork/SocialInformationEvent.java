@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.personalorganizer.socialnetwork;
 
-import java.util.Date;
-
-import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.personalorganizer.model.Schedulable;
+import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.URLUtil;
+
+import java.util.Date;
 
 /**
  * @author Bensalem Nabil
@@ -46,14 +46,7 @@ public class SocialInformationEvent extends AbstractSocialInformation {
    * @param schedulable
    */
   public SocialInformationEvent(Schedulable schedulable) {
-    this.schedulable = schedulable;
-    this.classification = schedulable.getClassification().getString();
-    if (schedulable.getEndDate().after(new Date())) {
-      setType(SocialInformationType.EVENT.toString());
-    } else {
-      setType(SocialInformationType.LASTEVENT.toString());
-    }
-    setUpdated(true);
+    this(schedulable, true);
   }
 
   /**
@@ -63,6 +56,7 @@ public class SocialInformationEvent extends AbstractSocialInformation {
    * @param isMyEvent
    */
   public SocialInformationEvent(Schedulable schedulable, boolean isMyEvent) {
+    super(new ResourceReference(schedulable.getId(), schedulable.getName()));
     this.schedulable = schedulable;
     this.classification = schedulable.getClassification().getString();
     if (schedulable.getEndDate().after(new Date())) {
@@ -139,19 +133,5 @@ public class SocialInformationEvent extends AbstractSocialInformation {
   @Override
   public Date getDate() {
     return schedulable.getStartDate();
-  }
-
-  /**
-   * Indicates whether some other SocialInformation date is befor or after the date of this one.
-   *
-   * @return int
-   */
-  @Override
-  public int compareTo(SocialInformation socialInfo) {
-    if (SocialInformationType.LASTEVENT.toString().equals(getType())) {
-      // event in the past
-      return getDate().compareTo(socialInfo.getDate()) * -1;
-    }
-    return getDate().compareTo(socialInfo.getDate());// future event
   }
 }

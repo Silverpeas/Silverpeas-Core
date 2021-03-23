@@ -38,6 +38,7 @@ public class SocialInformationComment extends AbstractSocialInformation {
    * @param comment a comment
    */
   public SocialInformationComment(Comment comment) {
+    super(comment.getIdentifier().toReference());
     this.comment = comment;
     setAuthor(comment.getCreatorId());
     if (comment.getLastUpdateDate().equals(comment.getCreationDate())) {

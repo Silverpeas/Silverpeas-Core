@@ -21,29 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.socialnetwork.relationship;
+
+package org.silverpeas.core.contribution.publication.model;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
-import org.silverpeas.core.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
 /**
- * @author Bensalem Nabil
+ * @author silveryocha
  */
-public class SocialInformationRelationShip extends AbstractSocialInformation {
+class PublicationIdentifier extends ContributionIdentifier {
+  private static final long serialVersionUID = 6311113318238469259L;
 
-  /**
-   * @param relationShip the relationship
-   */
-  public SocialInformationRelationShip(RelationShip relationShip) {
-    super(new ResourceReference(Integer.toString(relationShip.getId()), "relationship"));
-    setAuthor(Integer.toString(relationShip.getUser1Id()));// myFriend
-    setTitle(Integer.toString(relationShip.getUser2Id()));// Friend of my Friend
-    setDate(relationShip.getAcceptanceDate());
-    setUrl("/Rprofil/jsp/Main?userId=" + relationShip.getUser2Id());
-    setDescription("");
-    setType(SocialInformationType.RELATIONSHIP.toString());
-    setIcon("Photo_profil.jpg");
-    setUpdated(false);
+  protected PublicationIdentifier(final String instanceId, final String localId,
+      final String type) {
+    super(instanceId, localId, type);
+  }
+
+  @Override
+  public ResourceReference toReference() {
+    return new PublicationPK(getLocalId(), getComponentInstanceId());
   }
 }

@@ -27,7 +27,6 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.util.MapUtil;
 
@@ -142,9 +141,7 @@ public class AnnotationUtil {
       Class<? extends Annotation> annotationClass, Object object) {
     ResourceReference resourceRef;
     if (object instanceof Contribution) {
-      ContributionIdentifier contributionIdentifier = ((Contribution) object).getIdentifier();
-      resourceRef = new ResourceReference(contributionIdentifier.getLocalId(),
-          contributionIdentifier.getComponentInstanceId());
+      resourceRef = ((Contribution) object).getIdentifier().toReference();
     } else if (object instanceof PasteDetailFromToPK) {
       PasteDetailFromToPK<?, ?> pasteDetail = (PasteDetailFromToPK<?, ?>) object;
       if (SourcePK.class.equals(annotationClass)) {

@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.contribution.publication.social;
 
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 
 public class SocialInformationPublication extends AbstractSocialInformation {
 
@@ -38,6 +38,7 @@ public class SocialInformationPublication extends AbstractSocialInformation {
    * @param publication
    */
   public SocialInformationPublication(PublicationWithStatus publication) {
+    super(publication.getPublication().getPK().toResourceReference());
     this.publication = publication.getPublication();
     if (publication.isUpdate()) {
       setAuthor(publication.getPublication().getUpdaterId());

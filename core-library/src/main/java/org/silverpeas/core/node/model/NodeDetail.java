@@ -225,7 +225,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
 
   @Override
   public ContributionIdentifier getIdentifier() {
-    return ContributionIdentifier.from(getNodePK().getInstanceId(), getNodePK().getId(),
+    return new NodeIdentifier(getNodePK().getInstanceId(), getNodePK().getId(),
         getContributionType());
   }
 

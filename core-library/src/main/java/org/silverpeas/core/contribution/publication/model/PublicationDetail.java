@@ -601,7 +601,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   @Override
   public ContributionIdentifier getIdentifier() {
-    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
+    return new PublicationIdentifier(getInstanceId(), getId(), getContributionType());
   }
 
   public int getImportance() {

@@ -31,7 +31,6 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
@@ -53,6 +52,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.contribution.model.ContributionIdentifier.from;
 import static org.silverpeas.core.util.DateUtil.*;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -80,6 +81,7 @@ public class HistoryObjectDAO {
   private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
       "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
           "AND resourceType = ? AND datestat >= ? AND datestat <= ?";
+  private static final String RESOURCE_ID = "resourceId";
 
   private HistoryObjectDAO() {
   }
@@ -194,7 +196,7 @@ public class HistoryObjectDAO {
       sqlQuery.and("componentId").in(criteria.getComponentInstanceIds());
     }
     if (!criteria.getResourceIds().isEmpty()) {
-      sqlQuery.and("resourceId").in(criteria.getResourceIds());
+      sqlQuery.and(RESOURCE_ID).in(criteria.getResourceIds());
     }
     if (isDefined(criteria.getResourceType())) {
       sqlQuery.and("resourceType = ?", criteria.getResourceType());
@@ -310,7 +312,7 @@ public class HistoryObjectDAO {
             JdbcSqlQuery.executeBySplittingOn(types, (typeBatch, ignoreAlsoToo) -> JdbcSqlQuery
                 .createSelect("resourceId, ComponentId, resourceType, count(*)")
                 .from(HISTORY_TABLE_NAME)
-                .where("resourceId").in(idBatch)
+                .where(RESOURCE_ID).in(idBatch)
                 .and("ComponentId").in(instanceIdBatch)
                 .and("resourceType").in(typeBatch)
                 .and("datestat >= ?", date2SQLDate(startDate != null ? startDate : MINIMUM_DATE))
@@ -348,85 +350,37 @@ public class HistoryObjectDAO {
   public static List<String> getListObjectAccessByPeriod(Connection con,
       List<ResourceReference> primaryKeys, String objectType, Date startDate, Date endDate)
       throws SQLException {
-    StringBuilder query = new StringBuilder();
-    query.append(
-        "SELECT resourceId FROM SB_Statistic_History WHERE ComponentId =? AND resourceType = ? " +
-            "AND datestat >= ? AND datestat <= ? ");
-    String instanceId = null;
-    if (primaryKeys != null && !primaryKeys.isEmpty()) {
-      query.append("AND resourceId IN (");
-      for (ResourceReference pk : primaryKeys) {
-        if (primaryKeys.indexOf(pk) != 0) {
-          query.append(",");
-        }
-        query.append("'").append(pk.getId()).append("'");
-      }
-      query.append(")");
-      instanceId = primaryKeys.get(0).getInstanceId();
-    }
-
-    List<String> results = new ArrayList<>();
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query.toString());
-      prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, objectType);
-      prepStmt.setString(3, date2SQLDate(startDate));
-      prepStmt.setString(4, date2SQLDate(endDate));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        results.add(rs.getString(1));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return results;
+    return getListObjectAccessByPeriodAndUser(con, primaryKeys, objectType, startDate, endDate, null);
   }
 
   public static List<String> getListObjectAccessByPeriodAndUser(Connection con,
       List<ResourceReference> primaryKeys, String objectType, Date startDate, Date endDate,
       String userId) throws SQLException {
-    StringBuilder query = new StringBuilder();
-    query.append(
-        "SELECT resourceId FROM SB_Statistic_History WHERE ComponentId =? AND resourceType = ? " +
-            "AND datestat >= ? AND datestat <= ? ");
-    String instanceId = null;
-    if (CollectionUtil.isNotEmpty(primaryKeys)) {
-      query.append("AND resourceId IN (");
-      for (ResourceReference pk : primaryKeys) {
-        if (primaryKeys.indexOf(pk) != 0) {
-          query.append(",");
-        }
-        query.append("'").append(pk.getId()).append("'");
+    final String instanceId = ofNullable(primaryKeys).flatMap(l -> l.stream().findFirst())
+        .map(ResourceReference::getComponentInstanceId)
+        .orElse(null);
+    final List<String> ids = ofNullable(primaryKeys).orElse(emptyList())
+        .stream()
+        .map(ResourceReference::getLocalId)
+        .collect(Collectors.toList());
+    final List<String> result = new ArrayList<>(ids.size());
+    JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, ignore) -> {
+      final JdbcSqlQuery sqlQuery = JdbcSqlQuery.createSelect(RESOURCE_ID)
+          .from(HISTORY_TABLE_NAME)
+          .where("ComponentId = ?", instanceId)
+          .and("resourceType = ?", objectType)
+          .and(RESOURCE_ID).in(idBatch)
+          .and("datestat >= ?", date2SQLDate(startDate))
+          .and("datestat <= ?", date2SQLDate(endDate));
+      if (StringUtil.isDefined(userId)) {
+        sqlQuery.and("userId = ?", userId);
       }
-      query.append(")");
-      instanceId = primaryKeys.get(0).getInstanceId();
-    }
-    if (StringUtil.isDefined(userId)) {
-      query.append(" AND userId = ?");
-    }
-
-    List<String> results = new ArrayList<>();
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query.toString());
-      prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, objectType);
-      prepStmt.setString(3, date2SQLDate(startDate));
-      prepStmt.setString(4, date2SQLDate(endDate));
-      prepStmt.setString(5, userId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        results.add(rs.getString(1));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return results;
+      sqlQuery.executeWith(con, r -> {
+        result.add(r.getString(1));
+        return null;
+      });
+    });
+    return result;
   }
 
   /**

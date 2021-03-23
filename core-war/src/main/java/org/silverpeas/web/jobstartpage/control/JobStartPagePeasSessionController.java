@@ -1167,6 +1167,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         m_NavBarMgr.resetAllCache();
       }
     } catch (Exception e) {
+      m_NavBarMgr.resetAllCache();
       throw new JobStartPagePeasException("JobStartPagePeasSessionController.paste()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
     }

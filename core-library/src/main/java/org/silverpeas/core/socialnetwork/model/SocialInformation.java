@@ -23,12 +23,19 @@
  */
 package org.silverpeas.core.socialnetwork.model;
 
+import org.silverpeas.core.ResourceReference;
+
 import java.util.Date;
 
 /**
  * @author azzedine
  */
 public interface SocialInformation extends Comparable<SocialInformation> {
+
+  /**
+   * @return the {@link ResourceReference} the {@link SocialInformation} is aiming.
+   */
+  ResourceReference getResourceReference();
 
   /**
    * return the Title of this SocialInformation

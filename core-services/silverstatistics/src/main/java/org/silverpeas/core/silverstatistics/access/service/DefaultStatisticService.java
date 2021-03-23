@@ -83,14 +83,10 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
 
   @Override
   public void addStat(String userId, ResourceReference resourceReference, int actionType, String objectType) {
-
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       HistoryObjectDAO.add(con, userId, resourceReference, actionType, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -101,25 +97,19 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
 
   @Override
   public int getCount(List<ResourceReference> resourceReferences, int action, String objectType) {
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       return HistoryObjectDAO.getCount(con, resourceReferences, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public int getCount(ResourceReference resourceReference, int action, String objectType) {
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       return HistoryObjectDAO.getCount(con, resourceReference, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -223,14 +213,10 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
 
   @Override
   public void deleteStats(ResourceReference resourceReference, String objectType) {
-
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       HistoryObjectDAO.deleteHistoryByObject(con, resourceReference, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -241,13 +227,10 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
 
   @Override
   public void moveStat(ResourceReference toResourceReference, int actionType, String objectType) {
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       HistoryObjectDAO.move(con, toResourceReference, actionType, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -255,15 +238,12 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   public int getCountByPeriod(List<ResourceReference> refs, int action, String objectType,
       Date startDate, Date endDate) {
     int nb = 0;
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       for (ResourceReference aRef : refs) {
         nb += HistoryObjectDAO.getCountByPeriod(con, aRef, objectType, startDate, endDate);
       }
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
     return nb;
   }
@@ -294,16 +274,13 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   @Override
   public int getDistinctCountByPeriod(List<ResourceReference> refs, int action, String objectType,
       Date startDate, Date endDate) {
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       List<String> objectIds =
           HistoryObjectDAO.getListObjectAccessByPeriod(con, refs, objectType, startDate, endDate);
       Set<String> distinctObjectIds = new HashSet<>(objectIds);
       return distinctObjectIds.size();
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -311,10 +288,9 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   public int getDistinctCountByPeriodUser(List<ResourceReference> refs, int action,
       String objectType, Date startDate, Date endDate, List<String> userIds) {
     int nb = 0;
-    Connection con = getConnection();
     if (userIds != null && !userIds.isEmpty()) {
       Set<String> distinctObjectIds = new HashSet<>(userIds.size());
-      try {
+      try (Connection con = getConnection()) {
         for (String userId : userIds) {
           List<String> objectIds =
               HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con, refs, objectType, startDate,
@@ -324,10 +300,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
         nb = distinctObjectIds.size();
       } catch (Exception e) {
         throw new StatisticRuntimeException(e);
-      } finally {
-        DBUtil.close(con);
       }
-
     }
     return nb;
   }
@@ -335,15 +308,11 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   @Override
   public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
       int actionType, String objectType, int nbObjects) {
-
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       return HistoryObjectDAO
           .getLastHistoryDetailOfObjectsForUser(con, userId, actionType, objectType, nbObjects);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -373,15 +342,12 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       HistoryObjectDAO.deleteStatsOfComponent(con, componentInstanceId);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(
           "A failure occurred when deleting the statistics relative to the component instance " +
               componentInstanceId, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 }
