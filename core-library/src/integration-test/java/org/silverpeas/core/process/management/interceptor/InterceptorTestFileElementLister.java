@@ -24,8 +24,8 @@
 package org.silverpeas.core.process.management.interceptor;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
-import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * @author Yohann Chastagnier
@@ -33,13 +33,13 @@ import org.silverpeas.core.WAPrimaryKey;
 public class InterceptorTestFileElementLister extends SimulationElementLister {
 
   @Override
-  public void listElements(final WAPrimaryKey sourcePK, final String language) {
+  public void listElements(final ResourceReference sourcePK, final String language) {
     throw new NotImplementedException("Please add an integration test !");
   }
 
   @Override
   public void listElements(final Object source, final String language,
-      final WAPrimaryKey targetPK) {
+      final ResourceReference targetPK) {
     addElement(new InterceptorTestSimulationElement((InterceptorTestFile) source));
   }
 }

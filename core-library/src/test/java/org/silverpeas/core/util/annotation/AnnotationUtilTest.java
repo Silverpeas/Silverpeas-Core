@@ -38,24 +38,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
- * User: Yohann Chastagnier
- * Date:
- * 22/10/13
+ * User: Yohann Chastagnier Date: 22/10/13
  */
 @UnitTest
-public class AnnotationUtilTest {
+class AnnotationUtilTest {
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void testGetAnnotatedValues() {
-    Map<Class<Annotation>, List<Object>> annotationParameterValues = new HashMap<>();
+  void testGetAnnotatedValues() {
+    Map<Class<? extends Annotation>, List<Object>> annotationParameterValues = new HashMap<>();
 
     // Prepare data
-    annotationParameterValues.put((Class) Language.class, CollectionUtil.asList((Object) "fr"));
-    annotationParameterValues.put((Class) SourcePK.class, CollectionUtil
-        .asList(new ResourceReference("1", "componentId1"), (Object) new ResourceReference("2", "componentId2")));
-    annotationParameterValues.put((Class) TargetPK.class,
-        CollectionUtil.asList((Object) new ResourceReference("1", "targetComponentId")));
+    annotationParameterValues.put(Language.class, CollectionUtil.asList("fr"));
+    annotationParameterValues.put(SourcePK.class,
+        CollectionUtil.asList(new ResourceReference("1", "componentId1"),
+            new ResourceReference("2", "componentId2")));
+    annotationParameterValues.put(TargetPK.class,
+        CollectionUtil.asList(new ResourceReference("1", "targetComponentId")));
 
     // Test
     List<Object> test =
