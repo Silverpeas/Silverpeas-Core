@@ -44,7 +44,7 @@ public class Im4javaManager implements Initialization {
     // Im4java settings
     if (!verify(ProcessStarter.getGlobalSearchPath())) {
       for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
-        if ("path".equals(entry.getKey().toLowerCase())) {
+        if ("path".equalsIgnoreCase(entry.getKey())) {
           verify(entry.getValue());
           break;
         }
@@ -71,6 +71,9 @@ public class Im4javaManager implements Initialization {
       // ImageMagick is not installed
       ProcessStarter.setGlobalSearchPath(null);
       verified = false;
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
     return verified;
   }

@@ -128,6 +128,10 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
     try {
       request.process(getProcessContext());
     } catch (Exception e) {
+      SilverLogger.getLogger(this).silent(e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new SilverpeasException(e);
     }
   }

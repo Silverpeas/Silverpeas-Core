@@ -217,6 +217,9 @@ public class DefaultWopiFileEditionManager implements WopiFileEditionManager, In
         });
       } catch (Exception e) {
         logger().error(e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new WebApplicationException(e);
       }
       registerSecurityDomains();

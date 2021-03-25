@@ -138,6 +138,10 @@ public class FileUploadResource extends RESTWebService {
       }
       throw ex;
     } catch (final Exception ex) {
+      SilverLogger.getLogger(this).silent(ex);
+      if (ex instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -169,6 +173,10 @@ public class FileUploadResource extends RESTWebService {
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
+      SilverLogger.getLogger(this).silent(ex);
+      if (ex instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
     }
   }

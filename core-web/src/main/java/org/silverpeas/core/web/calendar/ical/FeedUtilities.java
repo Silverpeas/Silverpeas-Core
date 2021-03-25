@@ -98,6 +98,10 @@ public final class FeedUtilities {
       }
       return loadFeedBody(get);
     } catch (Exception e) {
+      SilverLogger.getLogger(FeedUtilities.class).silent(e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new SilverpeasException(e);
     }
   }

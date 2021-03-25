@@ -28,6 +28,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import java.io.File;
@@ -261,6 +262,10 @@ public abstract class AbstractViewerService {
                 viewerContext.getViewId()));
         semaphore.acquire();
       } catch (Exception e) {
+        SilverLogger.getLogger(this).silent(e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new SilverpeasRuntimeException(e);
       }
 
@@ -304,6 +309,10 @@ public abstract class AbstractViewerService {
         }
         return viewerTreatment.execute();
       } catch (Exception e) {
+        SilverLogger.getLogger(this).silent(e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new SilverpeasRuntimeException(e);
       } finally {
         EXECUTION_SEM.release();

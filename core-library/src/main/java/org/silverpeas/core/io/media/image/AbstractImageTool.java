@@ -26,6 +26,7 @@ package org.silverpeas.core.io.media.image;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.util.HashMap;
@@ -108,6 +109,10 @@ public abstract class AbstractImageTool implements ImageTool {
         semaphore.acquire();
         convert(source, destination, toMap(options), toSet(directives));
       } catch (final Exception e) {
+        SilverLogger.getLogger(this).silent(e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new ImageToolException(e);
       } finally {
         semaphore.release();

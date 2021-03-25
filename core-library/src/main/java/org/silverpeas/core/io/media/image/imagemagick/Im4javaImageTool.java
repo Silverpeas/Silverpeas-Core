@@ -87,6 +87,10 @@ public class Im4javaImageTool extends AbstractImageTool {
       identifyCmd.run(op);
       return result.getOutput().get(0).split("[|]");
     } catch (Exception e) {
+      SilverLogger.getLogger(this).silent(e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new SilverpeasException(e);
     }
   }
@@ -136,6 +140,10 @@ public class Im4javaImageTool extends AbstractImageTool {
         }
       }
     } catch (Exception e) {
+      SilverLogger.getLogger(this).silent(e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new SilverpeasException(e);
     }
   }

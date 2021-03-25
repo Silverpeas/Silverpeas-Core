@@ -250,12 +250,18 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       } catch (Exception e) {
         SseLogger.get().error(e);
         sendResult = emptyList();
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
       }
       sendResult.forEach(s -> {
         try {
           s.get();
         } catch (Exception e) {
           SseLogger.get().error(e);
+          if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+          }
         }
       });
       if (serverEventToDispatch instanceof AfterSentToAllContexts) {

@@ -238,6 +238,9 @@ public class FileRepositoryManager {
       }
     } catch (Exception e) {
       SilverLogger.getLogger(FileRepositoryManager.class).error(e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
     return size;
   }

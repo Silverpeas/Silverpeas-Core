@@ -173,6 +173,9 @@ public class SilverStatisticsManager implements Initialization {
       SilverLogger.getLogger(this)
           .error("error during size statistic computing started at {0}", new Object[]{currentDate},
               ex);
+      if (ex instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
   }
 

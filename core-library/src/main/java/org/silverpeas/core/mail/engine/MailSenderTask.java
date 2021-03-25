@@ -60,6 +60,9 @@ public class MailSenderTask extends AbstractRequestTask<MailSenderTask.MailProce
         mailToSendRequest.process(new MailProcessContext(orderedOneByOneSemaphore));
       } catch (Exception e) {
         SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
       }
     }
   }

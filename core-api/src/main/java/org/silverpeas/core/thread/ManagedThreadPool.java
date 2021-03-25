@@ -175,6 +175,10 @@ public class ManagedThreadPool {
         }
       }
     } catch (Exception e) {
+      SilverLogger.getLogger(config).silent(e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
       throw new ManagedThreadPoolException(e);
     }
   }
