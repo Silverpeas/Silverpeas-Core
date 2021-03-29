@@ -41,7 +41,7 @@ String	newMotherId		= (String) request.getAttribute("newFatherId");
 
 if (translation == null || translation.equals("null"))
 {
-	translation = I18NHelper.defaultLanguage;
+	translation = I18NHelper.DEFAULT_LANGUAGE;
 }
 // initialisation des diff�rentes variables pour l'affichage
 String valueName		= valueToMove.getName(translation);

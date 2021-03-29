@@ -39,6 +39,22 @@ public class SpaceProfileInst extends BaseRightProfile {
 
   private String spaceFatherId = "";
 
+  /**
+   * Constructs an empty right profile on a collaboration space.
+   */
+  public SpaceProfileInst() {
+    super();
+  }
+
+  /**
+   * Constructs a right profile on a collaboration space by copying the specified one.
+   * @param profile a right profile to copy.
+   */
+  public SpaceProfileInst(final SpaceProfileInst profile) {
+    super(profile);
+    spaceFatherId = profile.spaceFatherId;
+  }
+
   public void setSpaceFatherId(String sSpaceFatherId) {
     spaceFatherId = sSpaceFatherId;
   }
@@ -59,16 +75,4 @@ public class SpaceProfileInst extends BaseRightProfile {
     return SPACE_MANAGER.equalsIgnoreCase(getName());
   }
 
-  @SuppressWarnings("unchecked")
-  protected SpaceProfileInst copy() {
-    SpaceProfileInst copy = new SpaceProfileInst();
-    copy.setDescription(getDescription());
-    copy.setInherited(isInherited());
-    copy.setLabel(getLabel());
-    copy.setName(getName());
-    copy.setSpaceFatherId(spaceFatherId);
-    copy.setGroups(getAllGroups());
-    copy.setUsers(getAllUsers());
-    return copy;
-  }
 }

@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -66,7 +66,7 @@ public class PdcServiceProvider {
   @Inject
   private ThesaurusManager thesaurusManager;
   @Inject
-  private ContentManager contentManager;
+  private ContentManagementEngine contentMgtEngine;
   @Inject
   private PdcClassificationService classificationService;
   @Inject
@@ -321,8 +321,8 @@ public class PdcServiceProvider {
     return this.pdcManager;
   }
 
-  private ContentManager getContentManager() {
-    return this.contentManager;
+  private ContentManagementEngine getContentManagerEngine() {
+    return this.contentMgtEngine;
   }
 
   public OrganizationController getOrganisationController() {
@@ -331,17 +331,17 @@ public class PdcServiceProvider {
 
   private int getSilverContentId(String ofTheContent, String inTheComponent) throws
       ContentManagerException {
-    return getContentManager().getSilverContentId(ofTheContent, inTheComponent);
+    return getContentManagerEngine().getSilverContentId(ofTheContent, inTheComponent);
   }
 
   private int getOrCreateSilverContentId(String ofTheContent, String inTheComponent)
       throws ContentManagerException {
     int silverpeasContentId = getSilverContentId(ofTheContent, inTheComponent);
     if (silverpeasContentId == -1) {
-      Optional<ContentInterface> contentInterface =
-          ContentInterface.getByInstanceId(inTheComponent);
-      if (contentInterface.isPresent()) {
-        return contentInterface.get().getOrCreateSilverContentId(ofTheContent, inTheComponent);
+      Optional<SilverpeasContentManager> contentManager =
+          SilverpeasContentManager.getByInstanceId(inTheComponent);
+      if (contentManager.isPresent()) {
+        return contentManager.get().getOrCreateSilverContentId(ofTheContent, inTheComponent);
       }
     }
     return silverpeasContentId;

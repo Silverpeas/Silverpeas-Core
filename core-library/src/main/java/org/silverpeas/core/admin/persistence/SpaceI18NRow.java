@@ -26,17 +26,17 @@ package org.silverpeas.core.admin.persistence;
 import org.silverpeas.core.admin.space.SpaceI18N;
 
 public class SpaceI18NRow {
-  public int id = -1;
-  public int spaceId = -1;
-  public String lang = null;
-  public String name = null;
-  public String description = null;
+  private int id = -1;
+  private int spaceId = -1;
+  private String lang = null;
+  private String name = null;
+  private String description = null;
 
   public SpaceI18NRow() {
   }
 
   public SpaceI18NRow(SpaceI18N spaceI18N) {
-    id = spaceI18N.getId();
+    id = Integer.parseInt(spaceI18N.getId());
     spaceId = Integer.parseInt(spaceI18N.getSpaceId());
     lang = spaceI18N.getLanguage();
     name = spaceI18N.getName();
@@ -54,6 +54,46 @@ public class SpaceI18NRow {
     this.spaceId = spaceId;
     this.lang = lang;
     this.name = name;
+    this.description = description;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(final int id) {
+    this.id = id;
+  }
+
+  public int getSpaceId() {
+    return spaceId;
+  }
+
+  public void setSpaceId(final int spaceId) {
+    this.spaceId = spaceId;
+  }
+
+  public String getLang() {
+    return lang;
+  }
+
+  public void setLang(final String lang) {
+    this.lang = lang;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(final String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(final String description) {
     this.description = description;
   }
 }

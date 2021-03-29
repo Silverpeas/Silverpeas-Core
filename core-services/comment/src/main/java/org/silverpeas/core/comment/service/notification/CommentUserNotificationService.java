@@ -25,11 +25,10 @@ package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentUserNotification;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -56,10 +55,11 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * A service dedicated to notify users about the adding of a comment to a contribution in
  * Silverpeas.
  * <p>
- * This service listens for creation events on comments to perform its task. For each
- * new comment a notification is sent to all users concerned by the comment. A user is concerned if
- * he has participated in the comment flow of the related contribution or if he's an author of the
+ * This service listens for creation events on comments to perform its task. For each new comment a
+ * notification is sent to all users concerned by the comment. A user is concerned if he has
+ * participated in the comment flow of the related contribution or if he's an author of the
  * contribution.
+ *
  * @author mmoquillon
  */
 @Service
@@ -73,7 +73,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    */
   private static final String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
 
-  private static Map<String, ApplicationService> services = new ConcurrentHashMap<>();
+  private static final Map<String, ApplicationService<?>> services = new ConcurrentHashMap<>();
 
   @Inject
   private CommentService commentService;
@@ -88,16 +88,16 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     String componentInstanceId = comment.getComponentInstanceId();
     String componentName = getComponentName(componentInstanceId);
     if (isDefined(componentInstanceId)) {
-      ApplicationService service = lookupComponentService(componentInstanceId);
+      ApplicationService<?> service = lookupComponentService(componentInstanceId);
       if (service != null) {
         try {
           Contribution commentedContent =
-              service.getContentById(comment.getForeignKey().getId());
+              service.getContentById(comment.getResourceReference().getLocalId());
           final Set<String> recipients =
               getInterestedUsers(comment.getCreator().getId(), commentedContent);
           if (!recipients.isEmpty()) {
             Comment newComment =
-                getCommentService().getComment(new CommentPK(comment.getId(), componentInstanceId));
+                getCommentService().getComment(new CommentId(componentInstanceId, comment.getId()));
             final NotificationMetaData notification = UserNotificationHelper.build(
                 new CommentUserNotification(getCommentService(), newComment, commentedContent,
                     componentName + "." + SUBJECT_COMMENT_ADDING, service.
@@ -111,9 +111,9 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     }
   }
 
-  private ApplicationService lookupComponentService(String instanceId) {
+  private ApplicationService<?> lookupComponentService(String instanceId) {
     String componentServiceName = getComponentName(instanceId) + "Service";
-    final ApplicationService[] service = {services.get(componentServiceName)};
+    final ApplicationService<?>[] service = {services.get(componentServiceName)};
     if (service[0] == null) {
       try {
         service[0] = ServiceProvider.getService(componentServiceName);
@@ -134,6 +134,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
 
   /**
    * Gets the name of the Silverpeas component to which the specified instance belongs.
+   *
    * @param componentInstanceId the unique identifier of a component instance.
    * @return the unique name of the Silverpeas component.
    */
@@ -148,17 +149,18 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    * The interested users are the authors of the others comments on the content and the creator of
    * this content. The author of the added or removed comment isn't considered as interested by the
    * comment.
+   *
    * @param commentAuthorId the identifier of the author of the comment that is concerned by the
-   * notification.
-   * @param content the content that was commented by the specified comment.
+   *                        notification.
+   * @param content         the content that was commented by the specified comment.
    * @return a list with the identifier of the interested users.
    */
   private Set<String> getInterestedUsers(final String commentAuthorId, Contribution content) {
     Set<String> interestedUsers = new LinkedHashSet<>();
-    WAPrimaryKey pk = new ResourceReference(content.getContributionId().getLocalId(),
-        content.getContributionId().getComponentInstanceId());
-    List<Comment> comments = getCommentService().getAllCommentsOnPublication(content.
-        getContributionType(), pk);
+    ResourceReference ref = new ResourceReference(content.getIdentifier().getLocalId(),
+        content.getIdentifier().getComponentInstanceId());
+    List<Comment> comments =
+        getCommentService().getAllCommentsOnResource(content.getContributionType(), ref);
     for (Comment aComment : comments) {
       User author = aComment.getCreator();
       if (!author.getId().equals(commentAuthorId) && canBeSent(content, author)) {
@@ -169,7 +171,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     if (!commentAuthorId.equals(contentCreator.getId()) && canBeSent(content, contentCreator)) {
       interestedUsers.add(contentCreator.getId());
     }
-    User contentUpdater = content.getLastModifier();
+    User contentUpdater = content.getLastUpdater();
     if (contentUpdater != null && !contentUpdater.getId().equals(contentCreator.getId()) &&
         !commentAuthorId.equals(contentUpdater.getId()) && canBeSent(content, contentUpdater)) {
       interestedUsers.add(contentUpdater.getId());
@@ -180,12 +182,11 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
   /**
    * Notifies the specified users, identified by their identifier, with the specified notification
    * information.
+   *
    * @param notification the notification information.
-   * @throws NotificationException if the
-   * notification of the recipients fail.
+   * @throws NotificationException if the notification of the recipients fail.
    */
-  protected void notifyUsers(final NotificationMetaData notification)
-      throws NotificationException {
+  protected void notifyUsers(final NotificationMetaData notification) throws NotificationException {
     getNotificationSender(notification.getComponentId()).notifyUser(notification);
   }
 

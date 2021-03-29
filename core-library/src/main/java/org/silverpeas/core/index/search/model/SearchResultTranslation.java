@@ -34,6 +34,10 @@ public class SearchResultTranslation extends SilverContentI18N {
 
   }
 
+  public SearchResultTranslation(final SearchResultTranslation translation) {
+    super(translation);
+  }
+
   public SearchResultTranslation(String language, String name, String description) {
     super(language, name, description);
   }

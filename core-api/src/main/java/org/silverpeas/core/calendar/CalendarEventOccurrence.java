@@ -258,7 +258,7 @@ public class CalendarEventOccurrence
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier
         .from(getCalendarEvent().getCalendar().getComponentInstanceId(), getId(),
             getContributionType());
@@ -275,13 +275,8 @@ public class CalendarEventOccurrence
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return component.getLastUpdater();
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return component.getLastUpdateDate();
   }
 
   @Override

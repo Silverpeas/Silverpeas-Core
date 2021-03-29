@@ -81,23 +81,24 @@ public class TestPublicationAccessControllerFilter {
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC
   private static final String KMELIA_38 = "kmelia38";
-  private static final NodeDetail4Test NODE_38_26 = new NodeDetail4Test("3826", KMELIA_38);
-  private static final NodeDetail4Test NODE_38_62 = new NodeDetail4Test("3862", KMELIA_38);
+  private static final TestNodeDetail NODE_38_26 = new TestNodeDetail("3826", KMELIA_38);
+  private static final TestNodeDetail NODE_38_62 = new TestNodeDetail("3862", KMELIA_38);
 
   // RIGHTS ON TOPIC
   private static final String KMELIA_83 = "kmelia83";
   // INHERITED RIGHTS
-  private static final NodeDetail4Test NODE_83_260 = new NodeDetail4Test("83260", KMELIA_83);
+  private static final TestNodeDetail NODE_83_260 = new TestNodeDetail("83260", KMELIA_83);
   // SPECIFIC RIGHTS
-  private static final NodeDetail4Test NODE_83_620 = new NodeDetail4Test("83620", KMELIA_83, true);
+  private static final TestNodeDetail NODE_83_620 = new TestNodeDetail("83620", KMELIA_83, true);
 
   // OTHER ALIAS GED, RIGHTS ON TOPIC
   private static final String KMELIA_ALIAS_OTHER = "kmelia100";
 
   // SPECIFIC RIGHTS
-  private static final NodeDetail4Test NODE_ALIAS_OTHER_SPE = new NodeDetail4Test("10010", KMELIA_ALIAS_OTHER, true);
+  private static final TestNodeDetail
+      NODE_ALIAS_OTHER_SPE = new TestNodeDetail("10010", KMELIA_ALIAS_OTHER, true);
 
-  private static final List<NodeDetail4Test> ALL_NODES = asList(NODE_38_26, NODE_38_62, NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE);
+  private static final List<TestNodeDetail> ALL_NODES = asList(NODE_38_26, NODE_38_62, NODE_83_260, NODE_83_620, NODE_ALIAS_OTHER_SPE);
 
   private static final PublicationDetail4Test PUB_1_NODE_38_26_SAME_GED_ALIAS = new PublicationDetail4Test("1", NODE_38_26);
   private static final PublicationDetail4Test PUB_2_NODE_38_62 = new PublicationDetail4Test("2", NODE_38_62);
@@ -538,12 +539,12 @@ public class TestPublicationAccessControllerFilter {
           .getUserProfilesByComponentIdAndObjectId(anyString(), anyCollection(), any(ProfiledObjectIds.class))).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
         final ProfiledObjectIds profiledObjectIds = a.getArgument(2);
-        final Map<Pair<String, Integer>, Set<String>> result = new HashMap<>();
+        final Map<Pair<String, String>, Set<String>> result = new HashMap<>();
         ALL_NODES.stream()
             .filter(n -> instanceIds.contains(n.getNodePK().getInstanceId()))
-            .filter(n -> profiledObjectIds.contains(String.valueOf(n.getId())))
+            .filter(n -> profiledObjectIds.contains(n.getId()))
             .map(NodeDetail::getNodePK)
-            .forEach(p -> result.put(Pair.of(p.getInstanceId(), Integer.parseInt(p.getId())),
+            .forEach(p -> result.put(Pair.of(p.getInstanceId(), p.getId()),
                 CollectionUtil.asSet(SilverpeasRole.USER.getName())));
         return result;
       });

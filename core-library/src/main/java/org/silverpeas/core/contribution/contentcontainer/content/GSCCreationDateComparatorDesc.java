@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import java.util.Comparator;
 
 public class GSCCreationDateComparatorDesc implements Comparator<GlobalSilverContent> {
-  final static public GSCCreationDateComparatorDesc comparator =
+  public static final GSCCreationDateComparatorDesc comparator =
       new GSCCreationDateComparatorDesc();
 
   /**
@@ -37,11 +37,11 @@ public class GSCCreationDateComparatorDesc implements Comparator<GlobalSilverCon
    */
   @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    int compareResult = gsc1.getCreationDate().compareTo(gsc2.getCreationDate());
+    int compareResult = gsc2.getCreationDate().compareTo(gsc1.getCreationDate());
     if (compareResult == 0) {
-      compareResult = gsc1.getId().compareTo(gsc2.getId());
+      compareResult = gsc2.getId().compareTo(gsc1.getId());
     }
-    return 0 - compareResult;
+    return compareResult;
   }
 
 }

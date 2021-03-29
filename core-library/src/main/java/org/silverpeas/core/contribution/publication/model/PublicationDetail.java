@@ -38,9 +38,9 @@ import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -172,6 +172,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private transient ThumbnailDetail thumbnail = null;
 
   private ContributionRating contributionRating;
+
+  @Override
+  protected Class<PublicationI18N> getTranslationType() {
+    return PublicationI18N.class;
+  }
 
   /**
    * Default contructor, required for JAXB mapping in importExport.
@@ -504,11 +509,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   }
 
-  @Override
-  public PublicationI18N getTranslation(final String language) {
-    return super.getTranslation(language);
-  }
-
   public PublicationPK getPK() {
     return pk;
   }
@@ -600,8 +600,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
+  public ContributionIdentifier getIdentifier() {
+    return new PublicationIdentifier(getInstanceId(), getId(), getContributionType());
   }
 
   public int getImportance() {
@@ -675,7 +675,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.thumbnail = thumbnail;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
@@ -684,7 +684,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return updaterId != null ? User.getById(updaterId) : null;
   }
 
@@ -714,7 +714,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     result.append(" getKeywords() = ").append(getKeywords()).append("\n");
     result.append(" getContent() = ").append(getContentPagePath()).append("\n");
     result.append(" getStatus() = ").append(getStatus()).append("\n");
-    result.append(" getUpdateDate() = ").append(getUpdateDate()).append("\n");
+    result.append(" getUpdateDate() = ").append(getLastUpdateDate()).append("\n");
     result.append(" getUpdaterId() = ").append(getUpdaterId()).append("\n");
     result.append(" getValidateDate() = ").append(getValidateDate()).append("\n");
     result.append(" getValidatorId() = ").append(getValidatorId()).append("\n");
@@ -766,9 +766,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public String getSilverObjectId() {
     if (this.silverObjectId == null) {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
+      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
       try {
-        int objectId = contentManager.getSilverContentId(getId(), getInstanceId());
+        int objectId = contentMgtEngine.getSilverContentId(getId(), getInstanceId());
         if (objectId >= 0) {
           this.silverObjectId = String.valueOf(objectId);
         }
@@ -796,8 +796,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   @Override
   public String getDate() {
-    if (getUpdateDate() != null) {
-      return DateUtil.date2SQLDate(getUpdateDate());
+    if (getLastUpdateDate() != null) {
+      return DateUtil.date2SQLDate(getLastUpdateDate());
     }
     return DateUtil.date2SQLDate(getCreationDate());
   }

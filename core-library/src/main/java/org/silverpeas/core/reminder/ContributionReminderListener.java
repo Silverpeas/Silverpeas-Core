@@ -65,7 +65,7 @@ public class ContributionReminderListener
     try {
       List<Reminder> reminders = emptyList();
       if (contribution instanceof WithReminder) {
-        reminders = Reminder.getByContribution(contribution.getContributionId());
+        reminders = Reminder.getByContribution(contribution.getIdentifier());
       }
       if (reminders.isEmpty()) {
         Optional<Contribution> parent = contribution.getParent();
@@ -88,12 +88,12 @@ public class ContributionReminderListener
   private List<Reminder> getReminders(Contribution contribution) {
     List<Reminder> reminders = emptyList();
     if (contribution instanceof WithReminder) {
-      reminders = Reminder.getByContribution(contribution.getContributionId());
+      reminders = Reminder.getByContribution(contribution.getIdentifier());
     }
     if (reminders.isEmpty()) {
       Optional<Contribution> parent = contribution.getParent();
       if (parent.isPresent() && parent.get() instanceof WithReminder) {
-        reminders = Reminder.getByContribution(parent.get().getContributionId());
+        reminders = Reminder.getByContribution(parent.get().getIdentifier());
       }
     }
     return reminders;

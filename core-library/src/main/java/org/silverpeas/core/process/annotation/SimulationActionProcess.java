@@ -53,5 +53,5 @@ public @interface SimulationActionProcess {
   /**
    * The class that is capable to give the entire list of elements manipulated by the service.
    */
-  public Class<? extends SimulationElementLister> elementLister();
+  Class<? extends SimulationElementLister> elementLister();
 }

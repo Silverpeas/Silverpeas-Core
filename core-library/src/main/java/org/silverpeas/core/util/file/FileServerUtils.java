@@ -158,7 +158,7 @@ public class FileServerUtils {
     StringBuilder url = new StringBuilder();
     String language = lang;
     if (language == null) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     url.append("/attached_file/").append("componentId/").append(URLEncoder.encodePathSegment(
         componentId)).append("/attachmentId/").append(URLEncoder.encodePathSegment(attachmentId)).

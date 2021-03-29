@@ -54,11 +54,12 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 @Priority(APPLICATION)
 public class WebEntityValidationAspect {
 
-  @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
+  @SuppressWarnings("unchecked")
   @AroundInvoke
-  public <A extends Annotation, T extends WebEntity> Object processAuthorization(
+  public <T extends WebEntity> Object processAuthorization(
       InvocationContext context) throws Exception {
-    Map<Class<A>, A> methodAnnotations = AnnotationUtil.extractMethodAnnotations(context);
+    Map<Class<? extends Annotation>, Annotation> methodAnnotations =
+        AnnotationUtil.extractMethodAnnotations(context);
     if (methodAnnotations.containsKey(POST.class) || methodAnnotations.containsKey(PUT.class)) {
       for (Object parameterValue : context.getParameters()) {
         if (parameterValue instanceof WebEntity) {

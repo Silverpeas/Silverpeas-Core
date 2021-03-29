@@ -4,6 +4,8 @@ Dependencies: org.jboss.as.naming,
   org.slf4j,
   org.apache.xerces,
   com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider,
+  org.apache.cxf.impl meta-inf,
+  org.apache.cxf services,
   org.antlr,
   org.apache.lucene-7,
   ${jackrabbit}

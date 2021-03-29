@@ -104,7 +104,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     }
 
     if (tmpLanguageString == null) {
-      tmpLanguageString = I18NHelper.defaultLanguage;
+      tmpLanguageString = I18NHelper.DEFAULT_LANGUAGE;
     }
 
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(

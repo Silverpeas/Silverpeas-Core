@@ -37,8 +37,10 @@ import java.util.Date;
  * @deprecated use instead {@link org.silverpeas.core.contribution.model.Contribution} and
  * {@link org.silverpeas.core.contribution.model.ContributionContent} interfaces.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public interface SilverContentInterface extends SilverpeasContent {
+
+  @Override
   String getName();
 
   String getName(String language);
@@ -75,7 +77,7 @@ public interface SilverContentInterface extends SilverpeasContent {
   }
 
   @Override
-  default User getLastModifier() {
+  default User getLastUpdater() {
     return getCreator();
   }
 
@@ -89,7 +91,7 @@ public interface SilverContentInterface extends SilverpeasContent {
   }
 
   @Override
-  default Date getLastModificationDate() {
+  default Date getLastUpdateDate() {
     try {
       return getDate() != null ? DateUtil.parseDate(getDate()) : null;
     } catch (ParseException e) {

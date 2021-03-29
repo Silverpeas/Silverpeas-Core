@@ -75,7 +75,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     idr.id = getNextId();
     idr.componentId = componentId;
     idr.name = parameter.getName();
-    idr.label = parameter.getLabel().get(I18NHelper.defaultLanguage);
+    idr.label = parameter.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
     idr.value = parameter.getValue();
 
     insertRow(INSERT_INSTANCEDATA, idr);
@@ -106,7 +106,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     param.setName(row.name);
     param.setValue(row.value);
     HashMap<String, String> multilang = new HashMap<>();
-    multilang.put(I18NHelper.defaultLanguage, row.label);
+    multilang.put(I18NHelper.DEFAULT_LANGUAGE, row.label);
     param.setLabel(multilang);
     return param;
   }

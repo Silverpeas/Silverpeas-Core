@@ -154,7 +154,7 @@ public class SimpleDocumentService
       FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
           getForeignId());
       indexEntry.setLang(language);
-      indexEntry.setCreationDate(document.getCreated());
+      indexEntry.setCreationDate(document.getCreationDate());
       indexEntry.setCreationUser(document.getCreatedBy());
       if (startOfVisibility != null) {
         indexEntry.setStartDate(startOfVisibility);
@@ -195,7 +195,7 @@ public class SimpleDocumentService
   private void deleteIndex(SimpleDocument document, String lang) {
     String language = lang;
     if (language == null) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     String objectType = ATTACHMENT_TYPE + document.getId() + '_' + language;
     IndexEntryKey indexEntry = new IndexEntryKey(document.getInstanceId(), objectType, document.
@@ -207,9 +207,9 @@ public class SimpleDocumentService
   public void unindexAttachmentsOfExternalObject(ResourceReference foreignKey) {
     try (JcrSession session = openSystemSession()) {
       List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, foreignKey.
-          getInstanceId(), foreignKey.getId(), I18NHelper.defaultLanguage);
+          getInstanceId(), foreignKey.getId(), I18NHelper.DEFAULT_LANGUAGE);
       for (SimpleDocument doc : docs) {
-        deleteIndex(doc, I18NHelper.defaultLanguage);
+        deleteIndex(doc, I18NHelper.DEFAULT_LANGUAGE);
       }
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
@@ -806,7 +806,7 @@ public class SimpleDocumentService
     boolean notify = false;
     if (context.isWebdav() || context.isUpload()) {
       String workerId = document.getEditedBy();
-      document.setUpdated(new Date());
+      document.setLastUpdateDate(new Date());
       document.setUpdatedBy(workerId);
       notify = true;
     }
@@ -914,7 +914,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       final List<SimpleDocument> documents = repository
           .listDocumentsLockedByUser(session, usedId, language);
-      documents.sort((o1, o2) -> o2.getUpdated().compareTo(o1.getUpdated()));
+      documents.sort((o1, o2) -> o2.getLastUpdateDate().compareTo(o1.getLastUpdateDate()));
       return documents;
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
@@ -1048,7 +1048,7 @@ public class SimpleDocumentService
       // On part des fichiers d'origine
       List<SimpleDocument> attachments = repository
           .listDocumentsByComponentIdAndType(session, componentId, DocumentType.attachment,
-              I18NHelper.defaultLanguage);
+              I18NHelper.DEFAULT_LANGUAGE);
       for (SimpleDocument attachment : attachments) {
         if (attachment.isVersioned() != toVersionning) {
           repository.changeVersionState(session, attachment.getPk(), "");

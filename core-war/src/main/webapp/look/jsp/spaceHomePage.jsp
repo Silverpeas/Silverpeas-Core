@@ -377,7 +377,7 @@
               .forHtml(publication.getName(helper.getLanguage())) %>
           </b></a>
           <view:username userId="<%=publication.getUpdaterId() %>"/> - <%=DateUtil
-            .getOutputDate(publication.getUpdateDate(), helper.getLanguage()) %> <br/>
+            .getOutputDate(publication.getLastUpdateDate(), helper.getLanguage()) %> <br/>
           <%= Encode.forHtml(publication.getDescription(helper.getLanguage())) %>
         </li>
         <% } %>

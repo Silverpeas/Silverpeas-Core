@@ -123,7 +123,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
     }
 
     return acceptanceFrequency.isActivated() && acceptanceFrequency
-        .isAcceptanceDateExpired(getUser().getTosAcceptanceDate(), I18NHelper.defaultLanguage);
+        .isAcceptanceDateExpired(getUser().getTosAcceptanceDate(), I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

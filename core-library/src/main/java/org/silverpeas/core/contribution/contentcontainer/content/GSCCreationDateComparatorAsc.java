@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import java.util.Comparator;
 
 public class GSCCreationDateComparatorAsc implements Comparator<GlobalSilverContent> {
-  final static public GSCCreationDateComparatorAsc comparator = new GSCCreationDateComparatorAsc();
+  public static final GSCCreationDateComparatorAsc comparator = new GSCCreationDateComparatorAsc();
 
   /**
    * A matching index entry is greater another if his score is higher. This result is reversed as we

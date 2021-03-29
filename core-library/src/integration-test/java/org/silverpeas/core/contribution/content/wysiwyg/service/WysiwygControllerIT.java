@@ -356,7 +356,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // One image
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -384,9 +384,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(copiedImages, hasSize(1));
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"),
@@ -441,7 +441,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // One image
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -469,9 +469,9 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(copiedImages, hasSize(1));
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"),
@@ -534,7 +534,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // One image
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -556,7 +556,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // No image copied
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -707,7 +707,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // One image
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -733,7 +733,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang), hasSize(0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -786,7 +786,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // One image
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -812,7 +812,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang), hasSize(0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -871,7 +871,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     // One image
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang), hasSize(0));
     }
 
@@ -893,7 +893,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       assertThat(listImagesWithNoLanguageFallback(resourceSrcTestPK, lang), hasSize(0));
       assertThat(listImagesWithNoLanguageFallback(resourceDestTestPK, lang),
-          hasSize(I18NHelper.defaultLanguage.equals(lang) ? 1 : 0));
+          hasSize(I18NHelper.DEFAULT_LANGUAGE.equals(lang) ? 1 : 0));
     }
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -1564,7 +1564,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
       throws Exception {
     SimpleDocument image =
         new SimpleDocument(new SimpleDocumentPK("-1", componentId), resourceId, 0, false,
-            new SimpleAttachment("imageFileName", I18NHelper.defaultLanguage, "imageTitle",
+            new SimpleAttachment("imageFileName", I18NHelper.DEFAULT_LANGUAGE, "imageTitle",
                 "imageDescription", 0, MimeTypes.PLAIN_TEXT_MIME_TYPE, "1", new Date(), null));
     image.setDocumentType(DocumentType.image);
     return AttachmentServiceProvider.getAttachmentService()

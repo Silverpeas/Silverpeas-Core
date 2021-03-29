@@ -61,7 +61,7 @@ public class ChatSettings {
   /**
    * Constructs a new object wrapping all the settings on the Silverpeas chat service.
    */
-  public ChatSettings() {
+  protected ChatSettings() {
     final String xmppServerUrl = settings.getString("chat.servers.xmpp", "").trim();
     if (xmppServerUrl.endsWith("/")) {
       xmppBaseUrl = xmppServerUrl.substring(0, xmppServerUrl.length() - 1);

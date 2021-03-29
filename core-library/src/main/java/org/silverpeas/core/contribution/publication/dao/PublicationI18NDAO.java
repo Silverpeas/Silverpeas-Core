@@ -96,7 +96,7 @@ public class PublicationI18NDAO {
 
   private static PublicationI18N resultSetToEntity(final ResultSet r) throws SQLException {
     final PublicationI18N pub = new PublicationI18N();
-    pub.setId(r.getInt(1));
+    pub.setId(String.valueOf(r.getInt(1)));
     pub.setObjectId(Integer.toString(r.getInt(2)));
     pub.setLanguage(r.getString(3));
     pub.setName(r.getString(4));
@@ -135,7 +135,7 @@ public class PublicationI18NDAO {
       prepStmt.setString(1, translation.getName());
       prepStmt.setString(2, translation.getDescription());
       prepStmt.setString(3, translation.getKeywords());
-      prepStmt.setInt(4, translation.getId());
+      prepStmt.setInt(4, Integer.parseInt(translation.getId()));
 
       rowCount = prepStmt.executeUpdate();
     }

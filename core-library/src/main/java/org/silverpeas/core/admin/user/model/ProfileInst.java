@@ -45,21 +45,21 @@ public class ProfileInst extends BaseRightProfile {
   private ProfiledObjectId parentObjectId = ProfiledObjectId.NOTHING;
 
   /**
-   * Copy this profile to get another profile with the same value.
-   * @return a copy of this profile.
+   * Constructs an empty right profile on a component instance.
    */
-  public ProfileInst copy() {
-    ProfileInst pi = new ProfileInst();
-    pi.setName(getName());
-    pi.setLabel(getLabel());
-    pi.setDescription(getDescription());
-    pi.componentFatherId = componentFatherId;
-    pi.setInherited(isInherited());
-    pi.parentObjectId = parentObjectId;
-    pi.objectId = objectId;
-    pi.setGroups(getAllGroups());
-    pi.setUsers(getAllUsers());
-    return pi;
+  public ProfileInst() {
+    super();
+  }
+
+  /**
+   * Constructs a right profile on a component instance by copying the specified one.
+   * @param profile a right profile to copy.
+   */
+  public ProfileInst(final ProfileInst profile) {
+    super(profile);
+    componentFatherId = profile.componentFatherId;
+    parentObjectId = profile.parentObjectId;
+    objectId = profile.objectId;
   }
 
   /**

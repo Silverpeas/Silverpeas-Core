@@ -34,11 +34,15 @@ public class ComponentI18N extends BeanTranslation {
     super();
   }
 
+  public ComponentI18N(final ComponentI18N translation) {
+    super(translation);
+  }
+
   public ComponentI18N(String lang, String name, String description) {
     super(lang, name, description);
   }
 
   public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
+    super(String.valueOf(row.id), row.lang, row.name, row.description);
   }
 }

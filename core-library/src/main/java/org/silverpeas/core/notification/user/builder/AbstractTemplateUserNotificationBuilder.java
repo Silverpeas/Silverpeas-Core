@@ -104,7 +104,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * </p>
    * <p>
    *  This method delegates its call to the {@link #getTitle(String)} method with
-   *  {@link I18NHelper#defaultLanguage} as locale. So, to specify a custom implementation of this
+   *  {@link I18NHelper#DEFAULT_LANGUAGE} as locale. So, to specify a custom implementation of this
    *  method, please override instead the {@link #getTitle(String)} method.
    * </p>
    * @return the title of the notification. By default, the title is specify globally for all
@@ -112,7 +112,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   @Override
   protected final String getTitle() {
-    return getTitle(I18NHelper.defaultLanguage);
+    return getTitle(I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

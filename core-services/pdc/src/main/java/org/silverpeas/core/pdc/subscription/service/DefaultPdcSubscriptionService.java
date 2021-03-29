@@ -31,9 +31,9 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -252,8 +252,8 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
         .getOrganisationController();
 
     try(Connection conn = DBUtil.openConnection()) {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
-      SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
+      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+      SilverContentVisibility scv = contentMgtEngine.getSilverContentVisibility(silverObjectid);
       boolean contentObjectIsVisible = (scv.isVisible() == 1);
 
       if(contentObjectIsVisible) {
@@ -304,14 +304,14 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
     List<SilverContentInterface> silverContents;
     try {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
-      ContentPeas contentPeas = contentManager.getContentPeas(componentId);
-      ContentInterface contentInterface = contentPeas.getContentInterface();
+      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+      ContentPeas contentPeas = contentMgtEngine.getContentPeas(componentId);
+      SilverpeasContentManager silverpeasContentManager = contentPeas.getContentManager();
 
       List<Integer> silverContentIds = Collections.singletonList(silverObjectId);
-      List<ResourceReference> resourceReferences = contentManager.getResourceReferencesByContentIds(silverContentIds);
+      List<ResourceReference> resourceReferences = contentMgtEngine.getResourceReferencesByContentIds(silverContentIds);
 
-      silverContents = contentInterface.getSilverContentByReference(resourceReferences, userId);
+      silverContents = silverpeasContentManager.getSilverContentByReference(resourceReferences, userId);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionBmEJB.sendSubscriptionNotif",

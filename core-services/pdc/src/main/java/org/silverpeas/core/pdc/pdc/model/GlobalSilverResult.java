@@ -26,6 +26,7 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.search.model.SearchResult;
+import org.silverpeas.core.util.StringUtil;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.Map;
  */
 public class GlobalSilverResult implements java.io.Serializable {
 
-  private SearchResult result;
+  private final SearchResult result;
   private String titleLink = null;
   private String downloadLink = null;
   private String location;
@@ -200,7 +201,7 @@ public class GlobalSilverResult implements java.io.Serializable {
   public String getAttachmentId() {
     String id = getType().substring(10); // object type is Attachment1245 or
     // Attachment1245_en
-    if (id != null && id.indexOf('_') != -1) {
+    if (id.indexOf('_') != -1) {
       id = id.substring(0, id.indexOf('_'));
     }
     return id;
@@ -209,9 +210,9 @@ public class GlobalSilverResult implements java.io.Serializable {
   public String getAttachmentLanguage() {
     String id = getType().substring(10); // object type is Attachment1245 or
     // Attachment1245_en
-    String language = I18NHelper.defaultLanguage;
-    if (id != null && id.indexOf('_') != -1) {
-      language = id.substring(id.indexOf('_') + 1, id.length());
+    String language = I18NHelper.DEFAULT_LANGUAGE;
+    if (id.indexOf('_') != -1) {
+      language = id.substring(id.indexOf('_') + 1);
     }
     return language;
   }
@@ -277,15 +278,15 @@ public class GlobalSilverResult implements java.io.Serializable {
   }
 
   public LocalDate getCreationDate() {
-    return result.getCreationDate();
+    return result.getCreationLocalDate();
   }
 
   public LocalDate getLastUpdateDate() {
-    return result.getLastUpdateDate();
+    return result.getLastUpdateLocalDate();
   }
 
   public String getSpaceId() {
-    return "";
+    return StringUtil.EMPTY;
   }
 
   public boolean isAlias() {

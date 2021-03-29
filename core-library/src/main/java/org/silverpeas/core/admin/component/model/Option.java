@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -55,13 +54,22 @@ import java.util.Map;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ParameterOptionType", propOrder = { "name", "value" })
-public class Option implements Cloneable {
+public class Option {
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected Map<String, String> name;
   @XmlElement(required = true)
   protected String value;
+
+  public Option() {
+
+  }
+
+  public Option(final Option option) {
+    this.value = option.value;
+    this.setName(new HashMap<>(option.getName()));
+  }
 
   /**
    * Gets the value of the name property.
@@ -103,18 +111,5 @@ public class Option implements Cloneable {
    */
   public void setValue(String value) {
     this.value = value;
-  }
-
-  @Override
-  @SuppressWarnings( { "unchecked" })
-  public Option clone() {
-    Option option;
-    try {
-      option = (Option) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
-    option.setName(new HashMap<>(getName()));
-    return option;
   }
 }

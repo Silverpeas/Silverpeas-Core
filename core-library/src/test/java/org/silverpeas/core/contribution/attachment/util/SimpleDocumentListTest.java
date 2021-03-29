@@ -316,9 +316,9 @@ public class SimpleDocumentListTest {
     document.setAttachment(new SimpleAttachment());
     document.setLanguage(language);
     if (id % 5 == 0) {
-      document.setUpdated(lastUpdateDate);
+      document.setLastUpdateDate(lastUpdateDate);
     } else {
-      document.setCreated(lastUpdateDate);
+      document.setCreationDate(lastUpdateDate);
     }
     return document;
   }

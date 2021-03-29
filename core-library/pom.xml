@@ -234,6 +234,16 @@
       <artifactId>hibernate-core</artifactId>
     </dependency>
 
+    <!-- CMIS -->
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-commons-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-commons-impl</artifactId>
+    </dependency>
+
     <!-- Mail -->
     <dependency>
       <groupId>com.icegreen</groupId>
@@ -275,23 +285,6 @@
       </testResource>
     </testResources>
     <plugins>
-      <!--<plugin>
-        <groupId>de.jflex</groupId>
-        <artifactId>maven-jflex-plugin</artifactId>
-        <version>1.5.0-20120831.084748-4</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <lexDefinitions>
-                <lexDefinition>src/main/jflex/SilverTokenizerImpl.jflex</lexDefinition>
-              </lexDefinitions>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

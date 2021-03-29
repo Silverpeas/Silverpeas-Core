@@ -25,6 +25,7 @@ package org.silverpeas.core.questioncontainer.container.model;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
@@ -32,13 +33,14 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 
 public class QuestionContainerHeader extends AbstractBean
-    implements java.io.Serializable, SilverContentInterface {
+    implements Serializable, SilverContentInterface {
 
   private static final long serialVersionUID = 6871118433726400355L;
   private QuestionContainerPK pk = null;
@@ -168,6 +170,21 @@ public class QuestionContainerHeader extends AbstractBean
       }
     }
     return null;
+  }
+
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatorId());
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return getCreator();
   }
 
   public String getBeginDate() {

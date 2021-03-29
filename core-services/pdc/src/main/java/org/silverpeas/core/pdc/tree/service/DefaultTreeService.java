@@ -65,7 +65,6 @@ public class DefaultTreeService implements TreeService {
 
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public TreeNode getRoot(Connection con, String treeId)
       throws TreeManagerException {
@@ -96,7 +95,7 @@ public class DefaultTreeService implements TreeService {
     root.setPath("/");
     root.setFatherId("-1");
     root.setOrderNumber(0);
-    String treeId = null;
+    String treeId;
     try {
       treeId = TreeDAO.createRoot(con, root);
       root.setTreeId(treeId);
@@ -127,7 +126,6 @@ public class DefaultTreeService implements TreeService {
         + " and orderNumber >= " + order + " ORDER BY orderNumber ASC";
 
     try {
-      @SuppressWarnings("unchecked")
       Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con, node.getPK(),
           whereClause);
       boolean nodeHasMoved = true;
@@ -141,7 +139,7 @@ public class DefaultTreeService implements TreeService {
         nodeHasMoved = false;
       }
 
-      TreeNode oldNode = getNode(con, (TreeNodePK) node.getPK(), treeId);
+      TreeNode oldNode = getNode(con, node.getPK(), treeId);
       if (node.isRemoveTranslation()) {
         applyTranslationDeletion(con, treeId, oldNode, node, true);
       } else {
@@ -200,7 +198,7 @@ public class DefaultTreeService implements TreeService {
   private void setDefaultLanguage(final TreeNode oldRoot) {
     if (oldRoot.getLanguage() == null) {
       // translation for the first time
-      oldRoot.setLanguage(I18NHelper.defaultLanguage);
+      oldRoot.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
     }
   }
 
@@ -209,14 +207,13 @@ public class DefaultTreeService implements TreeService {
     if (node.getLanguage() != null) {
       setDefaultLanguage(oldNode);
       if (!node.getLanguage().equalsIgnoreCase(oldNode.getLanguage())) {
-        TreeNodeI18N newNode = new TreeNodeI18N(Integer.parseInt(node
-            .getPK().getId()), node.getLanguage(), node.getName(), node
-            .getDescription());
+        TreeNodeI18N newNode = new TreeNodeI18N(node.getPK().getId(), node.getLanguage(),
+            node.getName(), node.getDescription());
         String translationId = node.getTranslationId();
         if (translationId != null && !translationId.equals("-1")) {
           // update translation
           if (withIdSetting) {
-            newNode.setId(Integer.parseInt(node.getTranslationId()));
+            newNode.setId(node.getTranslationId());
             treeI18NDAO.updateTranslation(con, newNode);
           } else {
             treeI18NDAO.updateTranslation(con, treeId, newNode);
@@ -254,7 +251,7 @@ public class DefaultTreeService implements TreeService {
       }
     } else {
       if (byId) {
-        treeI18NDAO.deleteTranslation(con, Integer.parseInt(node.getTranslationId()));
+        treeI18NDAO.deleteTranslation(con, node.getTranslationId());
       } else {
         treeI18NDAO.deleteTranslation(con, treeId, node.getPK().getId(), node.getLanguage());
       }
@@ -280,7 +277,7 @@ public class DefaultTreeService implements TreeService {
             treeId);
 
         // remove node index
-        deleteIndex((TreeNodePK) nodeToDelete.getPK(), nodeToDelete.getTreeId());
+        deleteIndex(nodeToDelete.getPK(), nodeToDelete.getTreeId());
       }
     } catch (Exception e) {
       throw new TreeManagerException(e);
@@ -314,7 +311,7 @@ public class DefaultTreeService implements TreeService {
 
     // Remove all index of nodes of the tree
     for (TreeNode nodeToDelete : tree) {
-      deleteIndex((TreeNodePK) nodeToDelete.getPK(), treeId);
+      deleteIndex(nodeToDelete.getPK(), treeId);
     }
 
     TreeCache.unvalidateTree(treeId);
@@ -348,12 +345,12 @@ public class DefaultTreeService implements TreeService {
   private void setTranslations(Connection con, TreeNode node)
       throws TreeManagerException {
       // ajout de la traduction par defaut
-    TreeNodeI18N translation = new TreeNodeI18N(Integer.parseInt(node.getPK()
-          .getId()), node.getLanguage(), node.getName(), node.getDescription());
+    TreeNodeI18N translation = new TreeNodeI18N(node.getPK().getId(), node.getLanguage(),
+        node.getName(), node.getDescription());
     node.addTranslation(translation);
     if (I18NHelper.isI18nContentActivated) {
       // ajout des autres traductions
-      List<TreeNodeI18N> translations = null;
+      List<TreeNodeI18N> translations;
       try {
         translations = treeI18NDAO.getTranslations(con, node.getTreeId(), node
             .getPK().getId());
@@ -369,8 +366,7 @@ public class DefaultTreeService implements TreeService {
 
   public List<TreeNode> getSubTree(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException {
-    TreeNode root = null;
-    root = getNode(con, rootPK, treeId);
+    TreeNode root = getNode(con, rootPK, treeId);
     List<TreeNodePersistence> list = getDescendants(con, root);
 
     // 1 - On parcours la liste list
@@ -387,8 +383,8 @@ public class DefaultTreeService implements TreeService {
       // On l'insére dans la liste en première position
       sortedList.add(root);
 
-      TreeNode node = null;
-      int position = -1;
+      TreeNode node;
+      int position;
       // On parcours le reste de la liste
       for (int i = 1; i < list.size(); i++) {
         TreeNodePersistence nodePers = list.get(i);
@@ -435,12 +431,6 @@ public class DefaultTreeService implements TreeService {
     }
   }
 
-  /**
-   * @param con
-   * @param root
-   * @return a List of TreeNodePersistence
-   * @throws TreeManagerException
-   */
   private List<TreeNodePersistence> getDescendants(Connection con, TreeNode root)
       throws TreeManagerException {
     String rootId = root.getPK().getId();
@@ -465,7 +455,6 @@ public class DefaultTreeService implements TreeService {
     TreeNode node = null;
     try {
       String whereClause = TREE_ID_EQUALS + treeId + " and id = " + nodePK.getId();
-      @SuppressWarnings("unchecked")
       List<TreeNodePersistence> nodes =
           (List<TreeNodePersistence>) getDAO().findByWhereClause(con, nodePK, whereClause);
       if (!nodes.isEmpty()) {
@@ -494,12 +483,11 @@ public class DefaultTreeService implements TreeService {
     return str.toString();
   }
 
-  @SuppressWarnings("unchecked")
   public List<TreeNode> getNodesByName(Connection con, String nodeName)
       throws TreeManagerException {
 
-    List<TreeNodePersistence> nodes = null;
-    List<TreeNode> result = null;
+    List<TreeNodePersistence> nodes;
+    List<TreeNode> result;
     try {
       String nameEncode = encode(nodeName);
       String nameNoAccent = FileServerUtils.replaceAccentChars(nameEncode);
@@ -530,7 +518,7 @@ public class DefaultTreeService implements TreeService {
     nodeToInsert.setPath(refNode.getPath());
     nodeToInsert.setLevelNumber(refNode.getLevelNumber());
     nodeToInsert.setFatherId(refNode.getFatherId());
-    TreeNodePK newFatherPK = null;
+    TreeNodePK newFatherPK;
     try {
       newFatherPK = TreeDAO.createNode(con, nodeToInsert);
       nodeToInsert.setPK(newFatherPK);
@@ -552,14 +540,13 @@ public class DefaultTreeService implements TreeService {
     // Ajouter 1 au niveau des descendants
     List<TreeNodePersistence> list = getDescendants(con, refNode); // Attention ICI
     if (!list.isEmpty()) {
-      String pathToUpdate = "";
-      String endOfPath = "";
+      String pathToUpdate;
+      String endOfPath;
       for (TreeNodePersistence nodeToUpdate : list) {
         // Modifie le niveau et le chemin de chaque descendant
         nodeToUpdate.setLevelNumber(nodeToUpdate.getLevelNumber() + 1);
         pathToUpdate = nodeToUpdate.getPath();
-        endOfPath = pathToUpdate.substring(refPath.length(), pathToUpdate
-            .length());
+        endOfPath = pathToUpdate.substring(refPath.length());
         pathToUpdate = newPath + endOfPath;
         nodeToUpdate.setPath(pathToUpdate);
 
@@ -574,9 +561,8 @@ public class DefaultTreeService implements TreeService {
       TreeNodePK newFatherPK, String treeId, int orderNumber)
       throws TreeManagerException {
     TreeNode movedNode = getNode(con, nodeToMovePK, treeId);
-    TreeNode savedNode = movedNode;
     TreeNode newFatherNode = getNode(con, newFatherPK, treeId);
-    List<TreeNodePersistence> list = getDescendants(con, savedNode);
+    List<TreeNodePersistence> list = getDescendants(con, movedNode);
 
     // idée le nouveau niveau = niveauActuel - niveauAncienPere +
     // niveauNouveauPere
@@ -605,8 +591,8 @@ public class DefaultTreeService implements TreeService {
     // Premier élément de la liste est l'élément racine
     // il a déjà été modifié donc on passe à l'index 1
     if (list.size() > 1) {
-      TreeNodePersistence nodeToUpdate = null;
-      String pathToUpdate = "";
+      TreeNodePersistence nodeToUpdate;
+      String pathToUpdate;
 
       for (int i = 1; i < list.size(); i++) {
         // Modifie le niveau et le chemin de chaque descendant
@@ -628,17 +614,16 @@ public class DefaultTreeService implements TreeService {
     nodeToInsert.setLevelNumber(father.getLevelNumber() + 1);
     nodeToInsert.setPath(father.getPath() + father.getPK().getId() + "/");
     nodeToInsert.setFatherId(father.getPK().getId());
-    TreeNodePK pk = null;
+    TreeNodePK pk;
 
     int order = nodeToInsert.getOrderNumber();
 
     if (order == -1) {
       // the order is not specified. We are going to insert the new node
       // following the alphabetical order
-      List<TreeNode> brothers = getSonsToNode(con, (TreeNodePK) father
-          .getPK(), treeId);
-      TreeNode brother = null;
-      String brotherName = null;
+      List<TreeNode> brothers = getSonsToNode(con, father.getPK(), treeId);
+      TreeNode brother;
+      String brotherName;
       boolean placeFind = false;
       String nodeToInsertName = nodeToInsert.getName();
       int i = 0;
@@ -664,11 +649,10 @@ public class DefaultTreeService implements TreeService {
 
     try {
       // ATTENTION il faut traiter l'ordre des frères
-      @SuppressWarnings("unchecked")
       Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con,
           father.getPK(), whereClause);
 
-      TreeNode nodeToMove = null;
+      TreeNode nodeToMove;
       for (TreeNodePersistence tnp : nodesToUpdate) {
         // On modifie l'ordre du noeud en ajoutant 1 par rapport au nouveau
         // noeud
@@ -693,13 +677,12 @@ public class DefaultTreeService implements TreeService {
     return pk.getId();
   }
 
-  @SuppressWarnings("unchecked")
   public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException {
     String whereClause = TREE_ID_EQUALS + treeId + " and fatherId = "
         + treeNodePK.getId();
-    Collection<TreeNodePersistence> sons = null;
-    List<TreeNode> result = null;
+    Collection<TreeNodePersistence> sons;
+    List<TreeNode> result;
     try {
       sons = getDAO().findByWhereClause(con, treeNodePK, whereClause);
       result = persistence2TreeNode(con, sons);
@@ -744,8 +727,8 @@ public class DefaultTreeService implements TreeService {
     TreeCache.unvalidateTree(treeId);
   }
 
-  public SilverpeasBeanDAO getDAO() throws TreeManagerException {
-    SilverpeasBeanDAO treeDao = null;
+  public SilverpeasBeanDAO<TreeNodePersistence> getDAO() throws TreeManagerException {
+    SilverpeasBeanDAO<TreeNodePersistence> treeDao;
     try {
       treeDao = SilverpeasBeanDAOFactory
           .getDAO("org.silverpeas.core.pdc.tree.model.TreeNodePersistence");
@@ -769,7 +752,7 @@ public class DefaultTreeService implements TreeService {
       }
       whereClause.append(" or id = ").append(nodePK.getId()).append(") order by levelNumber ASC");
 
-      @SuppressWarnings("unchecked") Collection<TreeNodePersistence> tree =
+      Collection<TreeNodePersistence> tree =
           getDAO().findByWhereClause(con, nodePK, whereClause.toString());
 
       list.addAll(persistence2TreeNode(con, tree));
@@ -797,10 +780,9 @@ public class DefaultTreeService implements TreeService {
 
   public String getPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
-    String path = "";
-    TreeNode node = null;
+    String path;
     try {
-      node = getNode(con, nodePK, treeId);
+      TreeNode node = getNode(con, nodePK, treeId);
       path = node.getPath();
     } catch (Exception e) {
       throw new TreeManagerException(e);
@@ -817,8 +799,7 @@ public class DefaultTreeService implements TreeService {
 
   private void createIndex(Connection con, TreeNode node)
       throws TreeManagerException {
-    TreeNode nodeToIndex = getNode(con, (TreeNodePK) node.getPK(), node
-        .getTreeId());
+    TreeNode nodeToIndex = getNode(con, node.getPK(), node.getTreeId());
 
     createIndex(nodeToIndex);
   }
@@ -831,7 +812,7 @@ public class DefaultTreeService implements TreeService {
 
       Collection<String> languages = node.getLanguages();
       languages.forEach(l -> {
-        TreeNodeI18N translation = node.getTranslation(l);
+        TreeNodeI18N translation = node.getTranslations().get(l);
 
         indexEntry.setTitle(translation.getName(), l);
         indexEntry.setPreview(translation.getDescription(), l);

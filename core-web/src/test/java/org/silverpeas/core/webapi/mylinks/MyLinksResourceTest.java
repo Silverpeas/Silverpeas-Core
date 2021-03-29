@@ -27,7 +27,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -59,7 +58,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv
-public class MyLinksResourceTest {
+class MyLinksResourceTest {
 
   private static final String CURRENT_USER_ID = "26";
   private static final String PATH_BASE = "/test";
@@ -88,9 +87,8 @@ public class MyLinksResourceTest {
     orgaCtrl = rest.getOrganisationController();
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void getMyLinksWithoutPositionAndOneNotVisible() {
+  void getMyLinksWithoutPositionAndOneNotVisible() {
     List<LinkDetail> links = initLinkPositions(null, null, null, null, null);
     when(service.getAllLinks(anyString())).thenReturn(links);
 
@@ -105,9 +103,8 @@ public class MyLinksResourceTest {
 
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void getMyLinksWithPositionAndOneNotVisible() {
+  void getMyLinksWithPositionAndOneNotVisible() {
     List<LinkDetail> links = initLinkPositions(4, 0, 2, 3, 1);
     when(service.getAllLinks(anyString())).thenReturn(links);
 
@@ -122,7 +119,7 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void getMyLinkOfCurrentUserWithoutPosition() {
+  void getMyLinkOfCurrentUserWithoutPosition() {
     LinkDetail link = initLinkPositions((Integer) null).get(0);
     when(service.getLink(anyString())).thenReturn(link);
 
@@ -134,7 +131,7 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void getMyLinkOfCurrentUserWithPosition() {
+  void getMyLinkOfCurrentUserWithPosition() {
     LinkDetail link = initLinkPositions(4).get(0);
     when(service.getLink(anyString())).thenReturn(link);
 
@@ -146,23 +143,20 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void getMyLinkThatTheCurrentUserIsNotOwner() {
-    assertThrows(WebApplicationException.class, () -> {
-      LinkDetail link = initLinkPositions(4).get(0);
-      link.setUserId(CURRENT_USER_ID + "_OTHER");
-      when(service.getLink(anyString())).thenReturn(link);
-
-      rest.getMyLink("");
-    });
-  }
-
-  @Test
-  public void getMyLinkThatDoesNotExists() {
+  void getMyLinkThatTheCurrentUserIsNotOwner() {
+    LinkDetail link = initLinkPositions(4).get(0);
+    link.setUserId(CURRENT_USER_ID + "_OTHER");
+    when(service.getLink(anyString())).thenReturn(link);
     assertThrows(WebApplicationException.class, () -> rest.getMyLink(""));
   }
 
   @Test
-  public void addLink() {
+  void getMyLinkThatDoesNotExists() {
+    assertThrows(WebApplicationException.class, () -> rest.getMyLink(""));
+  }
+
+  @Test
+  void addLink() {
     doReturn(null).when(rest).getMyLink(anyString());
     MyLinkEntity linkEntityToAdd = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
 
@@ -177,7 +171,7 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void updateLink() throws Exception {
+  void updateLink() throws Exception {
     when(service.getLink(anyString())).thenReturn(getDummyUserLink());
     doReturn(null).when(rest).getMyLink(anyString());
     MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
@@ -197,31 +191,26 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void updateLinkButUrlIsMissing() {
-    assertThrows(WebApplicationException.class, () -> {
-      doReturn(null).when(rest).getMyLink(anyString());
-      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-      writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
-      writeDeclaredField(linkEntityToUpdate, "url", "", true);
-
-      rest.updateLink(linkEntityToUpdate);
-    });
+  void updateLinkButUrlIsMissing() throws IllegalAccessException {
+    doReturn(null).when(rest).getMyLink(anyString());
+    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+    writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
+    writeDeclaredField(linkEntityToUpdate, "url", "", true);
+    assertThrows(WebApplicationException.class, () -> rest.updateLink(linkEntityToUpdate));
   }
 
   @Test
-  public void updateLinkButNameIsMissing() {
-    assertThrows(WebApplicationException.class, () -> {
-      doReturn(null).when(rest).getMyLink(anyString());
-      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-      writeDeclaredField(linkEntityToUpdate, "name", "", true);
-      writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
+  void updateLinkButNameIsMissing() throws IllegalAccessException {
+    doReturn(null).when(rest).getMyLink(anyString());
+    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+    writeDeclaredField(linkEntityToUpdate, "name", "", true);
+    writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
 
-      rest.updateLink(linkEntityToUpdate);
-    });
+    assertThrows(WebApplicationException.class, () -> rest.updateLink(linkEntityToUpdate));
   }
 
   @Test
-  public void deleteLink() throws Exception {
+  void deleteLink() {
     when(service.getLink(anyString())).thenReturn(getDummyUserLink());
     doReturn(null).when(rest).getMyLink(anyString());
 
@@ -236,31 +225,26 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void addSpaceLink() {
+  void addSpaceLink() {
     doReturn(null).when(rest).getMyLink(anyString());
     when(orgaCtrl.isSpaceAvailable("750", CURRENT_USER_ID)).thenReturn(true);
-    when(orgaCtrl.getSpaceInstLightById(anyString())).thenAnswer(new Answer<SpaceInstLight>() {
-      @Override
-      public SpaceInstLight answer(final InvocationOnMock invocation) throws Throwable {
-        SpaceInstLight space = new SpaceInstLight();
-        space.setLocalId(Integer.valueOf((String) invocation.getArguments()[0]));
-        space.setName("new space name");
-        space.setDescription("new space description");
-        return space;
+    when(orgaCtrl.getSpaceInstLightById(anyString())).thenAnswer(
+        (Answer<SpaceInstLight>) invocation -> {
+          SpaceInstLight space = new SpaceInstLight();
+          space.setLocalId(Integer.parseInt((String) invocation.getArguments()[0]));
+          space.setName("new space name");
+          space.setDescription("new space description");
+          return space;
+        });
+    when(orgaCtrl.getPathToSpace("750")).thenAnswer((Answer<List<SpaceInstLight>>) invocation -> {
+      List<SpaceInstLight> spacePath = new ArrayList<>();
+      for (int spaceId : new int[]{260, 380, 750}) {
+        SpaceInstLight spaceInst = new SpaceInstLight();
+        spaceInst.setLocalId(spaceId);
+        spaceInst.setName(spaceId + "_name");
+        spacePath.add(spaceInst);
       }
-    });
-    when(orgaCtrl.getPathToSpace("750")).thenAnswer(new Answer<List<SpaceInstLight>>() {
-      @Override
-      public List<SpaceInstLight> answer(final InvocationOnMock invocation) throws Throwable {
-        List<SpaceInstLight> spacePath = new ArrayList<SpaceInstLight>();
-        for (int spaceId : new int[]{260, 380, 750}) {
-          SpaceInstLight spaceInst = new SpaceInstLight();
-          spaceInst.setLocalId(spaceId);
-          spaceInst.setName(spaceId + "_name");
-          spacePath.add(spaceInst);
-        }
-        return spacePath;
-      }
+      return spacePath;
     });
 
     rest.addSpaceLink("750");
@@ -281,32 +265,28 @@ public class MyLinksResourceTest {
   }
 
   @Test
-  public void addComponentLink() {
+  void addComponentLink() {
     doReturn(null).when(rest).getMyLink(anyString());
     when(orgaCtrl.isComponentAvailableToUser("1050", CURRENT_USER_ID)).thenReturn(true);
-    when(orgaCtrl.getComponentInstLight(anyString())).thenAnswer(new Answer<ComponentInstLight>() {
-      @Override
-      public ComponentInstLight answer(final InvocationOnMock invocation) throws Throwable {
-        ComponentInstLight component = new ComponentInstLight();
-        component.setLocalId(Integer.valueOf((String) invocation.getArguments()[0]));
-        component.setLabel("new component name");
-        component.setDescription("new component description");
-        return component;
-      }
-    });
-    when(orgaCtrl.getPathToComponent("1050")).thenAnswer(new Answer<List<SpaceInstLight>>() {
-      @Override
-      public List<SpaceInstLight> answer(final InvocationOnMock invocation) throws Throwable {
-        List<SpaceInstLight> spacePath = new ArrayList<SpaceInstLight>();
-        for (int spaceId : new int[]{260, 380, 750}) {
-          SpaceInstLight spaceInst = new SpaceInstLight();
-          spaceInst.setLocalId(spaceId);
-          spaceInst.setName(spaceId + "_name");
-          spacePath.add(spaceInst);
-        }
-        return spacePath;
-      }
-    });
+    when(orgaCtrl.getComponentInstLight(anyString())).thenAnswer(
+        (Answer<ComponentInstLight>) invocation -> {
+          ComponentInstLight component = new ComponentInstLight();
+          component.setLocalId(Integer.parseInt((String) invocation.getArguments()[0]));
+          component.setLabel("new component name");
+          component.setDescription("new component description");
+          return component;
+        });
+    when(orgaCtrl.getPathToComponent("1050")).thenAnswer(
+        (Answer<List<SpaceInstLight>>) invocation -> {
+          List<SpaceInstLight> spacePath = new ArrayList<>();
+          for (int spaceId : new int[]{260, 380, 750}) {
+            SpaceInstLight spaceInst = new SpaceInstLight();
+            spaceInst.setLocalId(spaceId);
+            spaceInst.setName(spaceId + "_name");
+            spacePath.add(spaceInst);
+          }
+          return spacePath;
+        });
 
     rest.addAppLink("1050");
 
@@ -325,79 +305,68 @@ public class MyLinksResourceTest {
     assertThat(createdLink.getPosition(), is(0));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderAtMiddleWhenNoPositionBefore() throws Exception {
+  void saveUserLinksOrderAtMiddleWhenNoPositionBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(2);
     linkPosition.setLinkId(11);
-    List<LinkDetail> updatedLinks =
-        performSortOrderSave(asList((Integer) null, null, null, null, null),
-            asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
+    List<LinkDetail> updatedLinks = performSortOrderSave(asList(null, null, null, null, null),
+        asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
 
     assertThat(extractLinkIdPositions(LinkDetailComparator.sort(updatedLinks)),
         contains(of(14, 0), of(13, 1), of(11, 2), of(12, 3), of(10, 4)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderAtFirstWhenNoPositionBefore() throws Exception {
+  void saveUserLinksOrderAtFirstWhenNoPositionBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(0);
     linkPosition.setLinkId(11);
-    List<LinkDetail> updatedLinks =
-        performSortOrderSave(asList((Integer) null, null, null, null, null),
-            asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
+    List<LinkDetail> updatedLinks = performSortOrderSave(asList(null, null, null, null, null),
+        asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
 
     assertThat(extractLinkIdPositions(LinkDetailComparator.sort(updatedLinks)),
         contains(of(11, 0), of(14, 1), of(13, 2), of(12, 3), of(10, 4)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderAtLastWhenNoPositionBefore() throws Exception {
+  void saveUserLinksOrderAtLastWhenNoPositionBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(4);
     linkPosition.setLinkId(11);
-    List<LinkDetail> updatedLinks =
-        performSortOrderSave(asList((Integer) null, null, null, null, null),
-            asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
+    List<LinkDetail> updatedLinks = performSortOrderSave(asList(null, null, null, null, null),
+        asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
 
     assertThat(extractLinkIdPositions(LinkDetailComparator.sort(updatedLinks)),
         contains(of(14, 0), of(13, 1), of(12, 2), of(10, 3), of(11, 4)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderFirstSamePositionWhenNoPositionBefore() throws Exception {
+  void saveUserLinksOrderFirstSamePositionWhenNoPositionBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(0);
     linkPosition.setLinkId(14);
-    List<LinkDetail> updatedLinks =
-        performSortOrderSave(asList((Integer) null, null, null, null, null),
-            asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
+    List<LinkDetail> updatedLinks = performSortOrderSave(asList(null, null, null, null, null),
+        asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
 
     assertThat(extractLinkIdPositions(LinkDetailComparator.sort(updatedLinks)),
         contains(of(14, 0), of(13, 1), of(12, 2), of(11, 3), of(10, 4)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderLastSamePositionWhenNoPositionBefore() throws Exception {
+  void saveUserLinksOrderLastSamePositionWhenNoPositionBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(4);
     linkPosition.setLinkId(10);
-    List<LinkDetail> updatedLinks =
-        performSortOrderSave(asList((Integer) null, null, null, null, null),
-            asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
+    List<LinkDetail> updatedLinks = performSortOrderSave(asList(null, null, null, null, null),
+        asList(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)), linkPosition, 5);
 
     assertThat(extractLinkIdPositions(LinkDetailComparator.sort(updatedLinks)),
         contains(of(14, 0), of(13, 1), of(12, 2), of(11, 3), of(10, 4)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderAtMiddleWhenPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderAtMiddleWhenPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(2);
     linkPosition.setLinkId(10);
@@ -408,9 +377,8 @@ public class MyLinksResourceTest {
         contains(of(10, 2), of(14, 3)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderAtFirstWhenPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderAtFirstWhenPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(0);
     linkPosition.setLinkId(10);
@@ -421,9 +389,8 @@ public class MyLinksResourceTest {
         contains(of(10, 0), of(13, 1), of(11, 2), of(14, 3)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderAtLastWhenPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderAtLastWhenPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(50);
     linkPosition.setLinkId(10);
@@ -434,9 +401,8 @@ public class MyLinksResourceTest {
         contains(of(12, 3), of(10, 50)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderFisrtSamePositionWhenPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderFisrtSamePositionWhenPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(0);
     linkPosition.setLinkId(13);
@@ -447,9 +413,8 @@ public class MyLinksResourceTest {
         contains(of(13, 0), of(11, 1)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderMiddleSamePositionWhenPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderMiddleSamePositionWhenPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(2);
     linkPosition.setLinkId(14);
@@ -460,9 +425,8 @@ public class MyLinksResourceTest {
         contains(of(13, 0), of(11, 1)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderMiddleSamePositionWhenAllPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderMiddleSamePositionWhenAllPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(2);
     linkPosition.setLinkId(14);
@@ -472,9 +436,8 @@ public class MyLinksResourceTest {
     assertThat(extractLinkIdPositions(LinkDetailComparator.sort(updatedLinks)), empty());
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderLastSamePositionWhenPositionExistingBefore() throws Exception {
+  void saveUserLinksOrderLastSamePositionWhenPositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(4);
     linkPosition.setLinkId(12);
@@ -485,9 +448,8 @@ public class MyLinksResourceTest {
         contains(of(13, 0), of(11, 1)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderWhenStrangePositionExistingBefore() throws Exception {
+  void saveUserLinksOrderWhenStrangePositionExistingBefore() {
     MyLinkPosition linkPosition = new MyLinkPosition();
     linkPosition.setPosition(3);
     linkPosition.setLinkId(10);
@@ -498,20 +460,20 @@ public class MyLinksResourceTest {
         contains(of(13, 0), of(11, 1), of(12, 4)));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void saveUserLinksOrderBadRequest() {
+  void saveUserLinksOrderBadRequest() {
+    List<Integer> positions = asList(3, null, 4, null, 2);
+    List<Pair<Integer, Integer>> initialLinkListOrderToVerifyBeforeSorting =
+        asList(of(13, 0), of(11, 0), of(14, 2), of(10, 3), of(12, 4));
     assertThrows(WebApplicationException.class,
-        () -> performSortOrderSave(asList(3, null, 4, null, 2),
-            asList(of(13, 0), of(11, 0), of(14, 2), of(10, 3), of(12, 4)), null, -1));
+        () -> performSortOrderSave(positions, initialLinkListOrderToVerifyBeforeSorting, null, -1));
   }
 
-  @SuppressWarnings("unchecked")
   private List<LinkDetail> performSortOrderSave(List<Integer> positions, List<Pair<Integer, Integer>> initialLinkListOrderToVerifyBeforeSorting,
       MyLinkPosition linkPosition, int nbExpectedUpdateCall) {
     when(service.getLink(anyString())).thenReturn(getDummyUserLink());
 
-    List<LinkDetail> links = initLinkPositions(positions.toArray(new Integer[positions.size()]));
+    List<LinkDetail> links = initLinkPositions(positions.toArray(new Integer[0]));
     when(service.getAllLinks(anyString())).thenReturn(links);
 
     assertThat(extractLinkIdPositions(links),

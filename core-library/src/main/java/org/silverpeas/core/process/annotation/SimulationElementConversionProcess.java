@@ -23,53 +23,46 @@
  */
 package org.silverpeas.core.process.annotation;
 
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.management.AbstractFileProcess;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.process.management.AbstractFileProcess;
-import org.silverpeas.core.ActionType;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * User: Yohann Chastagnier
- * Date: 17/10/13
+ * User: Yohann Chastagnier Date: 17/10/13
  */
 public class SimulationElementConversionProcess
     extends AbstractFileProcess<ProcessExecutionContext> {
 
-  private final Map<Class<SimulationElement>, List<SimulationElement>> elements;
-  private final WAPrimaryKey targetPK;
+  private final Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements;
+  private final ResourceReference targetPK;
   private final ActionType actionType;
 
-  /**
-   * Default constructor.
-   * @param elements
-   * @param targetPK
-   * @param actionType
-   */
-  SimulationElementConversionProcess(
-      final Map<Class<SimulationElement>, List<SimulationElement>> elements,
-      final WAPrimaryKey targetPK, final ActionType actionType) {
+ SimulationElementConversionProcess(
+      final Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements,
+      final ResourceReference targetPK, final ActionType actionType) {
     this.elements = elements;
     this.targetPK = targetPK;
     this.actionType = actionType;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public void processFiles(final ProcessExecutionContext processExecutionContext,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
     // Converting each element
-    for (Map.Entry<Class<SimulationElement>, List<SimulationElement>> typeElements : elements
-        .entrySet()) {
+    for (Map.Entry<Class<SimulationElement<?>>, List<SimulationElement<?>>> typeElements :
+        elements.entrySet()) {
 
       // Getting the right converter according to the type of elements
-      DummyHandledFileConverter<? extends SimulationElement> converter =
+      DummyHandledFileConverter<? extends SimulationElement<?>> converter =
           DummyHandledFileConverterRegistration.getConverter(typeElements.getKey());
 
       // Technical assertion

@@ -112,7 +112,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       String language = "en";
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
@@ -123,13 +123,13 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getOrder(), is(0));
       checkEnglishSimpleDocument(doc);
       // second document
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
-      creationDate = attachment.getCreated();
+      creationDate = attachment.getCreationDate();
       document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       result = documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
@@ -139,13 +139,13 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getOrder(), is(1));
       checkEnglishSimpleDocument(doc);
       // third document
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
-      creationDate = attachment.getCreated();
+      creationDate = attachment.getCreationDate();
       document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       result = documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
@@ -155,7 +155,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getOrder(), is(2));
       checkEnglishSimpleDocument(doc);
     }
@@ -172,7 +172,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       String language = "en";
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
@@ -183,13 +183,13 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getOrder(), is(0));
       checkEnglishSimpleDocument(doc);
       // second document
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
-      creationDate = attachment.getCreated();
+      creationDate = attachment.getCreationDate();
       document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       result = documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
@@ -199,13 +199,13 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getOrder(), is(1));
       checkEnglishSimpleDocument(doc);
       // third document
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
-      creationDate = attachment.getCreated();
+      creationDate = attachment.getCreationDate();
       document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       result = documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
@@ -215,7 +215,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getOrder(), is(2));
       checkEnglishSimpleDocument(doc);
     }
@@ -232,7 +232,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
@@ -243,7 +243,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc, is(notNullValue()));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       documentRepository.deleteDocument(session, expResult);
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(nullValue()));
@@ -260,7 +260,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
@@ -270,7 +270,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, "en");
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(0L)));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getForbiddenDownloadForRoles(), nullValue());
       checkEnglishSimpleDocument(doc);
     }
@@ -286,7 +286,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER, SilverpeasRole.USER);
@@ -297,7 +297,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, "en");
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(0L)));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getForbiddenDownloadForRoles(),
           contains(SilverpeasRole.USER, SilverpeasRole.READER));
       checkEnglishSimpleDocument(doc);
@@ -1440,7 +1440,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       documentRepository.createDocument(session, document);
@@ -1454,7 +1454,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
     }
   }
@@ -1470,7 +1470,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       documentRepository.createDocument(session, document);
@@ -1487,7 +1487,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc, not(sameInstance(document)));
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getDocumentType(), is(DocumentType.form));
       checkEnglishSimpleDocument(doc);
     }
@@ -1504,7 +1504,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1520,7 +1520,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(foreignId);
       document.setPK(result);
       assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
@@ -1539,7 +1539,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       SimpleDocument document = new SimpleDocument(emptyId, "node18", 0, false, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
       SimpleDocumentPK sourcePk = documentRepository.createDocument(session, document);
@@ -1584,7 +1584,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
@@ -1654,7 +1654,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1674,7 +1674,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc, not(sameInstance(document)));
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getDocumentType(), is(DocumentType.form));
       document.setForeignId(foreignId);
       document.setPK(result);
@@ -1696,7 +1696,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setNodeName(SimpleDocument.ATTACHMENT_PREFIX + document.getOldSilverpeasId());
@@ -1721,14 +1721,14 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
           oldSilverpeasId, false, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(236L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc, SimpleDocumentMatcher.matches(document));
       doc = documentRepository.findDocumentByOldSilverpeasId(session, instanceId, oldSilverpeasId,
           true,
           language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(236L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc, SimpleDocumentMatcher.matches(versionedDocument));
       checkEnglishSimpleDocument(doc);
     }

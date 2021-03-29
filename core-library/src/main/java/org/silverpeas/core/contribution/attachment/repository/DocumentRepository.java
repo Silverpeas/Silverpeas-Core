@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.attachment.repository;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -86,11 +86,10 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
-import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
- *
  * @author ehugonnet
  */
 @Repository
@@ -99,8 +98,8 @@ public class DocumentRepository {
   private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";
   final DocumentConverter converter = new DocumentConverter();
 
-  public void prepareComponentAttachments(String instanceId, String folder) throws
-      RepositoryException {
+  public void prepareComponentAttachments(String instanceId, String folder)
+      throws RepositoryException {
     try (JcrSession session = JcrRepositoryConnector.openSystemSession()) {
       prepareComponentAttachments(session, instanceId, folder);
       session.save();
@@ -122,8 +121,8 @@ public class DocumentRepository {
    * @return
    * @throws RepositoryException
    */
-  public SimpleDocumentPK createDocument(Session session, SimpleDocument document) throws
-      RepositoryException {
+  public SimpleDocumentPK createDocument(Session session, SimpleDocument document)
+      throws RepositoryException {
     if (0 >= document.getOrder()) {
       getMinMaxOrderIndexes(session, document.getInstanceId(), document.getForeignId(),
           document.getDocumentType()).ifPresent(i -> {
@@ -140,7 +139,7 @@ public class DocumentRepository {
         getFolder());
     Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
     document.setUpdatedBy(document.getCreatedBy());
-    document.setUpdated(document.getCreated());
+    document.setLastUpdateDate(document.getCreationDate());
     converter.fillNode(document, documentNode);
     if (document.isVersioned()) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
@@ -160,14 +159,15 @@ public class DocumentRepository {
    * @throws RepositoryException
    */
   public SimpleDocumentPK moveDocument(Session session, SimpleDocument document,
-      WAPrimaryKey destination) throws RepositoryException {
+      ResourceReference destination) throws RepositoryException {
     SimpleDocument targetDoc = new SimpleDocument();
-    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getComponentInstanceId());
     pk.setOldSilverpeasId(document.getOldSilverpeasId());
     targetDoc.setPK(pk);
     targetDoc.setDocumentType(document.getDocumentType());
     targetDoc.setNodeName(document.getNodeName());
-    prepareComponentAttachments(session, destination.getInstanceId(), document.getFolder());
+    prepareComponentAttachments(session, destination.getComponentInstanceId(),
+        document.getFolder());
     session.save();
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
     if (!originDocumentNode.getPath().equals(targetDoc.getFullJcrPath())) {
@@ -183,9 +183,10 @@ public class DocumentRepository {
         mustCheckInVersion = false;
       }
     }
-    converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
+    converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY,
+        destination.getLocalId());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
-        getInstanceId());
+        getComponentInstanceId());
     if (converter.isVersionedMaster(targetDocumentNode) && targetDocumentNode.isCheckedOut()) {
       session.save();
       if (mustCheckInVersion) {
@@ -206,9 +207,9 @@ public class DocumentRepository {
    * @throws RepositoryException
    */
   public SimpleDocumentPK copyDocument(Session session, SimpleDocument document,
-      WAPrimaryKey destination) throws RepositoryException {
-    prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
-    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+      ResourceReference destination) throws RepositoryException {
+    prepareComponentAttachments(destination.getComponentInstanceId(), document.getFolder());
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getComponentInstanceId());
     SimpleDocument targetDoc;
     if (document.isVersioned() && document.getDocumentType() == DocumentType.attachment) {
       targetDoc = new HistorisedDocument();
@@ -218,14 +219,14 @@ public class DocumentRepository {
     targetDoc.setNodeName(null);
     targetDoc.setPK(pk);
     targetDoc.setDocumentType(document.getDocumentType());
-    targetDoc.setForeignId(destination.getId());
+    targetDoc.setForeignId(destination.getLocalId());
     targetDoc.computeNodeName();
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
     session.getWorkspace().copy(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
-    copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
-    copy.setProperty(SLV_PROPERTY_INSTANCEID, destination.getInstanceId());
+    copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getLocalId());
+    copy.setProperty(SLV_PROPERTY_INSTANCEID, destination.getComponentInstanceId());
     // The reservation is not copied.
     targetDoc = converter.fillDocument(copy, null);
     targetDoc.release();
@@ -243,20 +244,20 @@ public class DocumentRepository {
    * @throws RepositoryException
    */
   public SimpleDocumentPK copyDocument(Session session, HistorisedDocument document,
-      WAPrimaryKey destination) throws RepositoryException {
+      ResourceReference destination) throws RepositoryException {
     try {
-      prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
+      prepareComponentAttachments(destination.getComponentInstanceId(), document.getFolder());
       List<SimpleDocument> history = new ArrayList<>(document.getHistory());
       Collections.reverse(history);
       history.add(document);
 
-      SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+      SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getComponentInstanceId());
       SimpleDocument targetDoc = new HistorisedDocument(history.remove(0));
       FirstVersionManager.computeIfAbsent(new DocumentVersion(targetDoc));
       targetDoc.setNodeName(null);
       targetDoc.setPK(pk);
       targetDoc.setDocumentType(document.getDocumentType());
-      targetDoc.setForeignId(destination.getId());
+      targetDoc.setForeignId(destination.getLocalId());
       targetDoc.setUpdatedBy(null);
       targetDoc.computeNodeName();
       pk = createDocument(session, targetDoc);
@@ -270,7 +271,7 @@ public class DocumentRepository {
         SimpleDocument docToConsider = searchDocumentWithUpdatedContent(session, doc);
         HistorisedDocument targetHistorisedDoc = new HistorisedDocument(docToConsider);
         targetHistorisedDoc.setPK(pk);
-        targetHistorisedDoc.setForeignId(destination.getId());
+        targetHistorisedDoc.setForeignId(destination.getLocalId());
         targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
         // The reservation is not copied.
         targetHistorisedDoc.release();
@@ -308,7 +309,7 @@ public class DocumentRepository {
         if (!checkedLanguages.contains(language)) {
           SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
           if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
-              temp.getUpdated().after(doc.getUpdated())) {
+              temp.getLastUpdateDate().after(doc.getLastUpdateDate())) {
             updated = temp;
           }
           checkedLanguages.add(language);
@@ -343,6 +344,7 @@ public class DocumentRepository {
   /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
+   *
    * @param session
    * @param document
    * @param updateLastModifiedData
@@ -355,15 +357,15 @@ public class DocumentRepository {
       if (StringUtil.isDefined(document.getEditedBy())) {
         document.setUpdatedBy(document.getEditedBy());
       }
-      document.setUpdated(new Date());
+      document.setLastUpdateDate(new Date());
     }
     converter.fillNode(document, documentNode);
   }
 
   /**
-   * Save the optional slv:forbiddenDownloadForRoles simple document property (MIXIN).
-   * This saving works with versionable documents without changing the major and minor version.
-   * This property is transverse between all versions.
+   * Save the optional slv:forbiddenDownloadForRoles simple document property (MIXIN). This saving
+   * works with versionable documents without changing the major and minor version. This property is
+   * transverse between all versions.
    *
    * @param session
    * @param document
@@ -371,14 +373,14 @@ public class DocumentRepository {
    */
   public void saveForbiddenDownloadForRoles(Session session, SimpleDocument document)
       throws RepositoryException {
-    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document, d ->
-        converter.setForbiddenDownloadForRolesOptionalNodeProperty(document, d));
+    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document,
+        d -> converter.setForbiddenDownloadForRolesOptionalNodeProperty(document, d));
   }
 
   /**
-   * Save the optional slv:displayableAsContent simple document property (MIXIN).
-   * This saving works with versionable documents without changing the major and minor version.
-   * This property is transverse between all versions.
+   * Save the optional slv:displayableAsContent simple document property (MIXIN). This saving works
+   * with versionable documents without changing the major and minor version. This property is
+   * transverse between all versions.
    *
    * @param session
    * @param document
@@ -386,14 +388,14 @@ public class DocumentRepository {
    */
   public void saveDisplayableAsContent(Session session, SimpleDocument document)
       throws RepositoryException {
-    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document, d ->
-        converter.setDisplayableAsContentOptionalNodeProperty(document, d));
+    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document,
+        d -> converter.setDisplayableAsContentOptionalNodeProperty(document, d));
   }
 
   /**
-   * Save the optional slv:editableSimultaneously simple document property (MIXIN).
-   * This saving works with versionable documents without changing the major and minor version.
-   * This property is transverse between all versions.
+   * Save the optional slv:editableSimultaneously simple document property (MIXIN). This saving
+   * works with versionable documents without changing the major and minor version. This property is
+   * transverse between all versions.
    *
    * @param session
    * @param document
@@ -401,54 +403,54 @@ public class DocumentRepository {
    */
   public void saveEditableSimultaneously(Session session, SimpleDocument document)
       throws RepositoryException {
-    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document, d ->
-        converter.setEditableSimultaneouslyOptionalNodeProperty(document, d));
+    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document,
+        d -> converter.setEditableSimultaneouslyOptionalNodeProperty(document, d));
   }
 
   /**
-   * Add the document's clone id to the document even if it is locked.
-   * This saving works with versionable documents without changing the major and minor version.
-   * This property is transverse between all versions.
+   * Add the document's clone id to the document even if it is locked. This saving works with
+   * versionable documents without changing the major and minor version. This property is transverse
+   * between all versions.
    *
-   * @param session the JCR session.
+   * @param session  the JCR session.
    * @param original the original document to be cloned.
-   * @param clone the cone of the original document.
+   * @param clone    the cone of the original document.
    * @throws RepositoryException
    */
-  public void setClone(Session session, SimpleDocument original, SimpleDocument clone) throws
-      RepositoryException {
-    acceptWithoutChangingFunctionalVersion(session, clone, d ->
-        d.setProperty(SLV_PROPERTY_CLONE, original.getId()));
+  public void setClone(Session session, SimpleDocument original, SimpleDocument clone)
+      throws RepositoryException {
+    acceptWithoutChangingFunctionalVersion(session, clone,
+        d -> d.setProperty(SLV_PROPERTY_CLONE, original.getId()));
   }
 
   /**
    * Update the document order. This is a unique operation since the order property is not
-   * versionable.
-   * This saving works with versionable documents without changing the major and minor version.
-   * This property is transverse between all versions.
+   * versionable. This saving works with versionable documents without changing the major and minor
+   * version. This property is transverse between all versions.
    */
   public void setOrder(Session session, SimpleDocument document) throws RepositoryException {
-    acceptWithoutChangingFunctionalVersion(session, document, d ->
-        d.setProperty(SLV_PROPERTY_ORDER, document.getOrder()));
+    acceptWithoutChangingFunctionalVersion(session, document,
+        d -> d.setProperty(SLV_PROPERTY_ORDER, document.getOrder()));
   }
 
   /**
-   * Centralization of a simple update.
-   * This saving works with versionable documents without changing the major and minor version.
-   * This property is transverse between all versions.
-   * @param session the current session.
+   * Centralization of a simple update. This saving works with versionable documents without
+   * changing the major and minor version. This property is transverse between all versions.
+   *
+   * @param session  the current session.
    * @param document the aimed document which will be updated on master version.
    * @param consumer the consumer of a checked documentNode.
    * @throws RepositoryException on JCR error.
    */
-  private void acceptOnMasterVersionWithoutChangingFunctionalVersion(Session session, SimpleDocument document,
-      RepositoryConsumer<Node> consumer) throws RepositoryException {
+  private void acceptOnMasterVersionWithoutChangingFunctionalVersion(Session session,
+      SimpleDocument document, RepositoryConsumer<Node> consumer) throws RepositoryException {
     acceptWithoutChangingFunctionalVersion(session, document.getVersionMaster(), consumer);
   }
 
   /**
    * Centralization of the mechanism to update a property
-   * @param session the current session.
+   *
+   * @param session  the current session.
    * @param document the aimed document without taking care of the version.
    * @param consumer the consumer of a checked documentNode.
    * @throws RepositoryException on JCR error.
@@ -475,8 +477,8 @@ public class DocumentRepository {
    * @param documentPk
    * @throws RepositoryException
    */
-  public void deleteDocument(Session session, SimpleDocumentPK documentPk) throws
-      RepositoryException {
+  public void deleteDocument(Session session, SimpleDocumentPK documentPk)
+      throws RepositoryException {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
       deleteContent(documentNode, documentPk.getInstanceId());
@@ -508,10 +510,11 @@ public class DocumentRepository {
       Node parent = documentNode.getParent();
       if (parent instanceof Version) {
         Version selectedVersion = (Version) parent;
-        VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
+        VersionManager versionManager =
+            documentNode.getSession().getWorkspace().getVersionManager();
         versionManager.restore(selectedVersion, true);
-        documentNode = session.getNodeByIdentifier(selectedVersion.getContainingHistory()
-            .getVersionableIdentifier());
+        documentNode = session.getNodeByIdentifier(
+            selectedVersion.getContainingHistory().getVersionableIdentifier());
       }
       if (!documentNode.isCheckedOut()) {
         checkoutNode(documentNode, null);
@@ -519,21 +522,24 @@ public class DocumentRepository {
       if (StringUtil.isDefined(comment)) {
         documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       }
-      final SimpleDocument origin = converter.fillDocument(documentNode, defaultLanguage);
+      final SimpleDocument origin = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
       if (versionedNode) {
         removeHistory(documentNode);
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
-        final SimpleDocument target = converter.fillDocument(documentNode, defaultLanguage);
+        final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
         moveMultilangContent(origin, target);
-        File currentDocumentDir = new File(target.getDirectoryPath(defaultLanguage)).getParentFile();
+        File currentDocumentDir =
+            new File(target.getDirectoryPath(DEFAULT_LANGUAGE)).getParentFile();
         final Optional<File[]> files = ofNullable(currentDocumentDir.getParentFile().listFiles());
         final File[] safeContents = files.orElseGet(() -> {
-          SilverLogger.getLogger(this).warn(
-              "During version state removing, attempting to delete {0} which does not exist whereas JCR is having a reference on it",
-              currentDocumentDir.getParentFile().toString());
+          SilverLogger.getLogger(this)
+              .warn(
+                  "During version state removing, attempting to delete {0} which does not exist " +
+                      "whereas JCR is having a reference on it",
+                  currentDocumentDir.getParentFile().toString());
           return new File[0];
         });
         for (File versionDirectory : safeContents) {
@@ -546,8 +552,9 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
-        final SimpleDocument target = converter.fillDocument(documentNode, defaultLanguage);
-        VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
+        final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
+        VersionManager versionManager =
+            documentNode.getSession().getWorkspace().getVersionManager();
         documentNode.getSession().save();
         moveMultilangContent(origin, target);
         versionManager.checkin(documentNode.getPath());
@@ -568,7 +575,6 @@ public class DocumentRepository {
   }
 
   /**
-   *
    * @param session
    * @param documentPk
    * @param lang
@@ -588,7 +594,6 @@ public class DocumentRepository {
   }
 
   /**
-   *
    * @param session
    * @param instanceId
    * @param oldSilverpeasId
@@ -602,14 +607,16 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
-        session.getRootNode().getPath() + instanceId);
-    Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(
-        SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_OLD_ID), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
-        factory.literal(session.getValueFactory().createValue(oldSilverpeasId)));
-    Comparison versionedComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_VERSIONED), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
-        literal(session.getValueFactory().createValue(versioned)));
+    DescendantNode descendantNodeConstraint =
+        factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath() + instanceId);
+    Comparison oldSilverpeasIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_OLD_ID),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
+            factory.literal(session.getValueFactory().createValue(oldSilverpeasId)));
+    Comparison versionedComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_VERSIONED),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
+                literal(session.getValueFactory().createValue(versioned)));
 
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
         factory.and(oldSilverpeasIdComparison, versionedComparison)), null, null);
@@ -624,33 +631,33 @@ public class DocumentRepository {
   /**
    * The last document in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param session      the current JCR session.
+   * @param instanceId   the component id containing the documents.
+   * @param foreignId    the id of the container owning the documents.
    * @param documentType the type of document.
    * @return the last document in an instance with the specified foreignId.
    * @throws RepositoryException
    */
   SimpleDocument findLast(Session session, String instanceId, String foreignId,
-      final DocumentType documentType) throws
-      RepositoryException {
-    final NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
-        documentType);
+      final DocumentType documentType) throws RepositoryException {
+    final NodeIterator iter =
+        selectDocumentsByForeignIdAndType(session, instanceId, foreignId, documentType);
     while (iter.hasNext()) {
       final Node node = iter.nextNode();
       if (!iter.hasNext()) {
-        return converter.convertNode(node, defaultLanguage);
+        return converter.convertNode(node, DEFAULT_LANGUAGE);
       }
     }
     return null;
   }
 
   /**
-   * Get the minimum and maximum order indexes of attachments linked to a resource for a given type.
+   * Get the minimum and maximum order indexes of attachments linked to a resource for a given
+   * type.
    *
-   * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param session      the current JCR session.
+   * @param instanceId   the component id containing the documents.
+   * @param foreignId    the id of the container owning the documents.
    * @param documentType the type of document.
    * @return optional min and max order indexes of documents for the specified foreignId and type.
    * Optional is empty when it exists no document for the foreign key and the type.
@@ -658,8 +665,8 @@ public class DocumentRepository {
    */
   Optional<Pair<Integer, Integer>> getMinMaxOrderIndexes(Session session, String instanceId,
       String foreignId, final DocumentType documentType) throws RepositoryException {
-    final NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
-        documentType);
+    final NodeIterator iter =
+        selectDocumentsByForeignIdAndType(session, instanceId, foreignId, documentType);
     int min = Integer.MAX_VALUE;
     int max = Integer.MIN_VALUE;
     while (iter.hasNext()) {
@@ -676,27 +683,27 @@ public class DocumentRepository {
   /**
    * Search all the documents of type attachment in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
-   * @param language the language in which the documents are required.
+   * @param foreignId  the id of the container owning the documents.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignId(Session session,
       String instanceId, String foreignId, String language) throws RepositoryException {
-    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
-        DocumentType.attachment);
+    NodeIterator iter =
+        selectDocumentsByForeignIdAndType(session, instanceId, foreignId, DocumentType.attachment);
     return converter.convertNodeIterator(iter, language);
   }
 
   /**
    * Search all the documents of any type in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
-   * @param language the language in which the documents are required.
+   * @param foreignId  the id of the container owning the documents.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -709,11 +716,11 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
-   * @param type thetype of required documents.
-   * @param language the language in which the documents are required.
+   * @param foreignId  the id of the container owning the documents.
+   * @param type       thetype of required documents.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -727,10 +734,10 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance with the specified type.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param type thetype of required documents.
-   * @param language the language in which the documents are required.
+   * @param type       thetype of required documents.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -744,9 +751,9 @@ public class DocumentRepository {
    * Search all the documents related to the component instance identified by the specified
    * identifier.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param language the language in which the documents are required.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -759,10 +766,10 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance with the specified owner.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param owner the id of the user owning the document.
-   * @param language the language in which the documents are required.
+   * @param owner      the id of the user owning the document.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -773,8 +780,7 @@ public class DocumentRepository {
   }
 
   public List<SimpleDocument> listDocumentsLockedByUser(Session session, String usedId,
-      String language) throws
-      RepositoryException {
+      String language) throws RepositoryException {
     NodeIterator iter = selectAllDocumentsByOwnerId(session, usedId);
     return converter.convertNodeIterator(iter, language);
   }
@@ -782,9 +788,9 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param foreignId  the id of the container owning the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -793,15 +799,17 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
-        session.getRootNode().getPath() + instanceId);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
-        literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(descendantdNodeConstraint,
-        foreignIdComparison), new Ordering[]{order}, null);
+    DescendantNode descendantdNodeConstraint =
+        factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath() + instanceId);
+    Comparison foreignIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_FOREIGN_KEY),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
+                literal(session.getValueFactory().createValue(foreignId)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, factory.and(descendantdNodeConstraint, foreignIdComparison),
+            new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -809,9 +817,9 @@ public class DocumentRepository {
   /**
    * Search all the documents of the specified type in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param foreignId  the id of the container owning the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -822,13 +830,15 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath() + instanceId + '/' + type.getFolderName());
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
-        literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), new Ordering[]{order}, null);
+    Comparison foreignIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_FOREIGN_KEY),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
+                literal(session.getValueFactory().createValue(foreignId)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, factory.and(childNodeConstraint, foreignIdComparison),
+            new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -836,9 +846,9 @@ public class DocumentRepository {
   /**
    * Search all the documents of tany type in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param foreignId  the id of the container owning the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -849,15 +859,15 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.
         getRootNode().getPath() + instanceId + '/');
-    Comparison foreignIdComparison = factory
-        .comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_FOREIGN_KEY),
+    Comparison foreignIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_FOREIGN_KEY),
             QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
-                literal(session.getValueFactory().createValue(foreignId))
-        );
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
-        foreignIdComparison), new Ordering[]{order}, null);
+                literal(session.getValueFactory().createValue(foreignId)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, factory.and(descendantNodeConstraint, foreignIdComparison),
+            new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -865,9 +875,9 @@ public class DocumentRepository {
   /**
    * Search all the documents of the specified type in an instance with the specified foreignId.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param type the type of document.
+   * @param type       the type of document.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -878,10 +888,10 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath() + instanceId + '/' + type.getFolderName());
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, childNodeConstraint, new Ordering[]{order},
-        null);
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, childNodeConstraint, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -889,7 +899,8 @@ public class DocumentRepository {
   /**
    * Search all the documents related to the component instance identified by the specified
    * identifier.
-   * @param session the current JCR session.
+   *
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
@@ -913,9 +924,9 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance which are expiring at the specified date.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
-   * @param language the language in which the documents are required.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -928,9 +939,9 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance which are locked at the alert date.
    *
-   * @param session the current JCR session.
+   * @param session   the current JCR session.
    * @param alertDate the date when the document reservation should send an alert.
-   * @param language the language in which the documents are required.
+   * @param language  the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -943,24 +954,26 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance expiring at the specified date.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectExpiringDocuments(Session session, Date expiryDate) throws RepositoryException {
+  NodeIterator selectExpiringDocuments(Session session, Date expiryDate)
+      throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
-        literal(session.getValueFactory().createValue(expiry)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
-        null);
+    Comparison foreignIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_EXPIRY_DATE),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
+                literal(session.getValueFactory().createValue(expiry)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, foreignIdComparison, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -968,9 +981,9 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance requiring to be unlocked at the specified date.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
-   * @param language the language in which the documents are required.
+   * @param language   the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -983,25 +996,26 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance requiring to be unlocked at the specified date.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param expiryDate the date when the document reservation should expire.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectDocumentsRequiringUnlocking(Session session, Date expiryDate) throws
-      RepositoryException {
+  NodeIterator selectDocumentsRequiringUnlocking(Session session, Date expiryDate)
+      throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN, factory.
-        literal(session.getValueFactory().createValue(expiry)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
-        null);
+    Comparison foreignIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_EXPIRY_DATE),
+            QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN, factory.
+                literal(session.getValueFactory().createValue(expiry)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, foreignIdComparison, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -1009,7 +1023,7 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance in a warning state at the specified date.
    *
-   * @param session the current JCR session.
+   * @param session   the current JCR session.
    * @param alertDate the date when a warning is required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
@@ -1020,13 +1034,14 @@ public class DocumentRepository {
     Calendar alert = Calendar.getInstance();
     alert.setTime(DateUtil.getBeginOfDay(alertDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ALERT_DATE), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
-        literal(session.getValueFactory().createValue(alert)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
-        null);
+    Comparison foreignIdComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ALERT_DATE),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
+                literal(session.getValueFactory().createValue(alert)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, foreignIdComparison, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -1034,9 +1049,9 @@ public class DocumentRepository {
   /**
    * Search all the documents in an instance with the specified owner.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param owner the id of the user owning the documents.
+   * @param owner      the id of the user owning the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
@@ -1047,13 +1062,15 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath() + instanceId + '/' + DocumentType.attachment.getFolderName());
-    Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_OWNER), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
-        getValueFactory().createValue(owner)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        ownerComparison), new Ordering[]{order}, null);
+    Comparison ownerComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_OWNER),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
+                getValueFactory().createValue(owner)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, factory.and(childNodeConstraint, ownerComparison),
+            new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -1062,22 +1079,23 @@ public class DocumentRepository {
    * Search all the documents with the specified owner.
    *
    * @param session the current JCR session.
-   * @param owner the id of the user owning the documents.
+   * @param owner   the id of the user owning the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectAllDocumentsByOwnerId(Session session, String owner) throws
-      RepositoryException {
+  NodeIterator selectAllDocumentsByOwnerId(Session session, String owner)
+      throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_OWNER), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
-        getValueFactory().createValue(owner)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, ownerComparison, new Ordering[]{order},
-        null);
+    Comparison ownerComparison =
+        factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_OWNER),
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
+                getValueFactory().createValue(owner)));
+    Ordering order =
+        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query =
+        factory.createQuery(source, ownerComparison, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -1085,7 +1103,7 @@ public class DocumentRepository {
   /**
    * Add the content.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param documentPk the document which content is to be added.
    * @param attachment the attachment metadata.
    * @throws RepositoryException
@@ -1107,18 +1125,18 @@ public class DocumentRepository {
    * Get the content.
    *
    * @param session the current JCR session.
-   * @param pk the document which content is to be added.
-   * @param lang the content language.
+   * @param pk      the document which content is to be added.
+   * @param lang    the content language.
    * @return the attachment binary content.
    * @throws RepositoryException
    * @throws IOException
    */
-  public InputStream getContent(Session session, SimpleDocumentPK pk, String lang) throws
-      RepositoryException, IOException {
+  public InputStream getContent(Session session, SimpleDocumentPK pk, String lang)
+      throws RepositoryException, IOException {
     Node docNode = session.getNodeByIdentifier(pk.getId());
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = defaultLanguage;
+      language = DEFAULT_LANGUAGE;
     }
     SimpleDocument document = converter.fillDocument(docNode, language);
     return new BufferedInputStream(
@@ -1126,12 +1144,12 @@ public class DocumentRepository {
   }
 
   /**
-   * Remove the content for the specified language.
-   * If no other content exists, then the document node is deleted.
+   * Remove the content for the specified language. If no other content exists, then the document
+   * node is deleted.
    *
-   * @param session the current JCR session.
+   * @param session    the current JCR session.
    * @param documentPk the document which content is to be removed.
-   * @param language the language of the content which is to be removed.
+   * @param language   the language of the content which is to be removed.
    * @return false if the document has no child node after the content remove, true otherwise.
    * @throws RepositoryException
    */
@@ -1155,12 +1173,12 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
-   * @param owner the user locking the node.
+   * @param owner    the user locking the node.
    * @return true if node has be checked out - false otherwise.
    * @throws RepositoryException
    */
-  public boolean lock(Session session, SimpleDocument document, String owner) throws
-      RepositoryException {
+  public boolean lock(Session session, SimpleDocument document, String owner)
+      throws RepositoryException {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
       if (!documentNode.isCheckedOut()) {
@@ -1172,12 +1190,12 @@ public class DocumentRepository {
   }
 
   /**
-   * Unlock a document if it is versionned to create a new version or to restore a previous one.
-   * By using this method, the metadata of the content are always updated.
+   * Unlock a document if it is versionned to create a new version or to restore a previous one. By
+   * using this method, the metadata of the content are always updated.
    *
-   * @param session the current JCR open session to perform actions.
+   * @param session  the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
-   * @param restore true to restore the previous version if any.
+   * @param restore  true to restore the previous version if any.
    * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
    * @throws RepositoryException
    */
@@ -1191,7 +1209,7 @@ public class DocumentRepository {
    * been deleted. This method does not update the metadata of the content in order to obtain an
    * efficient content deletion.
    *
-   * @param session the current JCR open session to perform actions.
+   * @param session  the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
    * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
    * @throws RepositoryException
@@ -1204,11 +1222,12 @@ public class DocumentRepository {
   /**
    * Unlock a document if it is versionned to create a new version or to restore a previous one.
    *
-   * @param session the current JCR open session to perform actions.
-   * @param document the document data from which all needed identifiers are retrieved.
-   * @param restore true to restore the previous version if any.
+   * @param session                   the current JCR open session to perform actions.
+   * @param document                  the document data from which all needed identifiers are
+   *                                  retrieved.
+   * @param restore                   true to restore the previous version if any.
    * @param skipContentMetadataUpdate false to update the metadata of the content {@link
-   * SimpleDocument#getAttachment()}.
+   *                                  SimpleDocument#getAttachment()}.
    * @return the document updated.
    * @throws RepositoryException
    */
@@ -1249,7 +1268,7 @@ public class DocumentRepository {
   /**
    * Check the document out.
    *
-   * @param node the node to checkout.
+   * @param node  the node to checkout.
    * @param owner the user checkouting the node.
    * @throws RepositoryException
    */
@@ -1260,13 +1279,14 @@ public class DocumentRepository {
 
   /**
    * Check the document in.
+   *
    * @param documentNode the node to checkin.
-   * @param isMajor true if the new version is a major one - false otherwise.
+   * @param isMajor      true if the new version is a major one - false otherwise.
    * @return the document for this new version.
    * @throws RepositoryException on technical JCR error.
    */
-  SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws
-      RepositoryException {
+  SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor)
+      throws RepositoryException {
     final DocumentVersion firstVersion = FirstVersionManager.remove();
     if (!documentNode.hasProperty(SLV_PROPERTY_MAJOR) && firstVersion != null) {
       isMajor = firstVersion.isMajor();
@@ -1291,8 +1311,8 @@ public class DocumentRepository {
    * @param documentPk
    * @throws RepositoryException
    */
-  public void setVersionnable(Session session, SimpleDocumentPK documentPk) throws
-      RepositoryException {
+  public void setVersionnable(Session session, SimpleDocumentPK documentPk)
+      throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (!converter.isVersionedMaster(documentNode)) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
@@ -1308,8 +1328,8 @@ public class DocumentRepository {
    * @param documentPk
    * @throws RepositoryException
    */
-  public void removeVersionnable(Session session, SimpleDocumentPK documentPk) throws
-      RepositoryException {
+  public void removeVersionnable(Session session, SimpleDocumentPK documentPk)
+      throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersionedMaster(documentNode)) {
       removeHistory(documentNode);
@@ -1538,8 +1558,8 @@ public class DocumentRepository {
    * permits to apply the right first version.
    * </p>
    * <p>
-   * BE CAREFUL: the repository of this manager is the thread memory, so it MUST be used into a
-   * try finally statement:
+   * BE CAREFUL: the repository of this manager is the thread memory, so it MUST be used into a try
+   * finally statement:
    * <pre>
    *   try {
    *     ...
@@ -1570,6 +1590,7 @@ public class DocumentRepository {
 
     /**
      * Gets first version and computes it if it does not yet exist.
+     *
      * @param version a version to register if none yet registered.
      * @return the already registered version if any, the given version otherwise.
      */
@@ -1580,6 +1601,7 @@ public class DocumentRepository {
     /**
      * Registers the given version version, even if an other one is already registered.
      * <p>The previous one registered if any is lost.</p>
+     *
      * @param version a version to register.
      */
     public static void set(final DocumentVersion version) {

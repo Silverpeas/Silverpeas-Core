@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.relationship;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 
@@ -35,6 +36,7 @@ public class SocialInformationRelationShip extends AbstractSocialInformation {
    * @param relationShip the relationship
    */
   public SocialInformationRelationShip(RelationShip relationShip) {
+    super(new ResourceReference(Integer.toString(relationShip.getId()), "relationship"));
     setAuthor(Integer.toString(relationShip.getUser1Id()));// myFriend
     setTitle(Integer.toString(relationShip.getUser2Id()));// Friend of my Friend
     setDate(relationShip.getAcceptanceDate());

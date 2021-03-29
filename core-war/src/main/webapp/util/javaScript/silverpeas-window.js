@@ -785,7 +785,7 @@ function _spWindow_getSilverpeasMainWindow() {
 
     let __safeSpUrl = function(url) {
       if (!url.startsWith(webContext)) {
-        url = (webContext + '/' + url).replaceAll('[/]+', '/');
+        url = (webContext + '/' + url).replaceAll(/[/]+/g, '/');
       }
       return url;
     };

@@ -132,7 +132,7 @@ public class WysiwygRouting {
     private String spaceLabel;
     private String componentLabel;
     private ContributionIdentifier contributionId;
-    private String language = I18NHelper.defaultLanguage;
+    private String language = I18NHelper.DEFAULT_LANGUAGE;
     private boolean indexation = true;
     private String comeBackUrl;
     private String browseInfo;

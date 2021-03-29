@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import java.util.Comparator;
 
 public class GSCNameComparatorDesc implements Comparator<GlobalSilverContent> {
-  final static public GSCNameComparatorDesc comparator = new GSCNameComparatorDesc();
+  public static final GSCNameComparatorDesc comparator = new GSCNameComparatorDesc();
 
   /**
    * A matching index entry is greater another if his score is higher. This result is reversed as we
@@ -37,6 +37,6 @@ public class GSCNameComparatorDesc implements Comparator<GlobalSilverContent> {
    */
   @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    return 0 - gsc1.getName().compareTo(gsc2.getName());
+    return gsc2.getName().compareTo(gsc1.getName());
   }
 }

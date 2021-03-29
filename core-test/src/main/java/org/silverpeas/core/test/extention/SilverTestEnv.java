@@ -25,6 +25,7 @@
 package org.silverpeas.core.test.extention;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -47,19 +48,27 @@ import org.silverpeas.core.util.logging.SilverLoggerProvider;
 import javax.annotation.PostConstruct;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Qualifier;
-import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,7 +86,8 @@ import static org.mockito.Mockito.*;
  * If the class of a {@link TestManagedBean} annotated field is qualified by a {@link Qualifier}
  * annotated annotation, then it is registered under that qualifier also. For any parameter
  * annotated with {@link TestManagedMock}, it is first resolved by looking for an already registered
- * mock in the bean container (otherwise it is mocked and registered as for fields).
+ * mock in the bean container (otherwise it is mocked and registered as for fields). Any methods
+ * annotated with {@link TestManagedBean} are resolved in last.
  * </p>
  * <p>
  * Thirdly it scans for fields annotated with {@link TestedBean} to scan it for injection point in
@@ -88,6 +98,11 @@ import static org.mockito.Mockito.*;
  *  Finally it looks for a method in the test class that is annotated with {@link RequesterProvider}
  *  to execute it and to set the returned {@link User} instance as the default requester to use
  *  in all the tests of the class.
+ * </p>
+ * <p>
+ *  The ordering of the declaration of the different such annotated fields in the test class is
+ *  very important as they are treated sequentially in their declaration ordering. So, any bean that
+ *  is required by others beans has to be declared before those others beans.
  * </p>
  * @author mmoquillon
  */
@@ -117,11 +132,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
         testInstance.getClass().getAnnotation(TestManagedBeans.class);
     if (testManagedBeans != null) {
       for (Class<?> type : testManagedBeans.value()) {
-        Object bean = instantiate(type);
-        Objects.requireNonNull(bean);
-        mockInjectedDependency(bean);
-        invokePostConstruction(bean);
-        manageBean(bean, type);
+        constructAndRegisterBean(type);
       }
     }
     TestManagedMocks testManagedMocks = testInstance.getClass().getAnnotation(TestManagedMocks.class);
@@ -137,6 +148,10 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
         processTestManagedBeanAnnotation(field, testInstance);
         processMockedBeanAnnotation(field, testInstance);
         processTestedBeanAnnotation(field, testInstance);
+      }
+      Method[] methods = type.getDeclaredMethods();
+      for (Method method : methods) {
+        processTestManagedBeanAnnotation(method, testInstance);
       }
     });
   }
@@ -206,24 +221,38 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   @Override
   public void beforeEach(final ExtensionContext context) throws Exception {
     CacheServiceProvider.clearAllThreadCaches();
-    Method[] methods = context.getRequiredTestClass().getDeclaredMethods();
-    for(Method method: methods) {
-      RequesterProvider requesterProvider = method.getAnnotation(RequesterProvider.class);
-      if (requesterProvider != null && User.class.isAssignableFrom(method.getReturnType())) {
-        method.setAccessible(true);
-        User requester = (User) method.invoke(context.getRequiredTestInstance());
-        UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
-        when(mock.getCurrentRequester()).thenReturn(requester);
-        break;
-      }
+    Class<?> test = context.getRequiredTestClass();
+    UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
+    Method requesterProvider = recursivelyFindRequesterProvider(test);
+    if (requesterProvider != null) {
+      requesterProvider.trySetAccessible();
+      User requester = (User) requesterProvider.invoke(context.getRequiredTestInstance());
+      when(mock.getCurrentRequester()).thenReturn(requester);
     }
   }
 
+  private Method recursivelyFindRequesterProvider(final Class<?> testClass) {
+    Method[] methods = testClass.getDeclaredMethods();
+    return  Stream.of(methods)
+        .filter(m -> m.getAnnotation(RequesterProvider.class) != null)
+        .filter(m -> User.class.isAssignableFrom(m.getReturnType()))
+        .findFirst()
+        .orElseGet(() -> {
+          Class<?> superclass = testClass.getSuperclass();
+          return superclass == null ? null : recursivelyFindRequesterProvider(superclass);
+        });
+  }
+
   private void processTestManagedBeanAnnotation(final Field field, final Object testInstance)
-      throws IllegalAccessException {
+      throws ReflectiveOperationException {
     if (field.isAnnotationPresent(TestManagedBean.class)) {
       final Object bean = setupInstanceField(field, testInstance);
       manageBean(bean, field.getType());
+      if (field.isAnnotationPresent(Named.class)) {
+        Named namedQualifier = field.getAnnotation(Named.class);
+        String name = namedQualifier.value();
+        when(TestBeanContainer.getMockedBeanContainer().getBeanByName(name)).thenReturn(bean);
+      }
     }
   }
 
@@ -237,23 +266,39 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       } else {
         bean = spy(field.getType());
       }
-      field.setAccessible(true);
+      field.trySetAccessible();
       field.set(testInstance, bean);
       registerInBeanContainer(bean);
+      if (field.isAnnotationPresent(Named.class)) {
+        Named namedQualifier = field.getAnnotation(Named.class);
+        String name = namedQualifier.value();
+        when(TestBeanContainer.getMockedBeanContainer().getBeanByName(name)).thenReturn(bean);
+      }
     }
   }
 
   private void processTestedBeanAnnotation(final Field field, final Object testInstance)
-      throws IllegalAccessException {
+      throws ReflectiveOperationException {
     if (field.isAnnotationPresent(TestedBean.class)) {
       final Object bean = setupInstanceField(field, testInstance);
       registerInBeanContainer(bean);
     }
   }
 
+  private void processTestManagedBeanAnnotation(final Method method, final Object testInstance)
+      throws ReflectiveOperationException {
+    if (method.isAnnotationPresent(TestManagedBean.class)) {
+      method.trySetAccessible();
+      Class<?>[] classes = (Class<?>[]) method.invoke(testInstance);
+      for (Class<?> clazz : classes) {
+        constructAndRegisterBean(clazz);
+      }
+    }
+  }
+
   private Object setupInstanceField(final Field field, final Object testInstance)
-      throws IllegalAccessException {
-    field.setAccessible(true);
+      throws ReflectiveOperationException {
+    field.trySetAccessible();
     Object bean = field.get(testInstance);
     if (bean == null) {
       bean = instantiate(field.getType());
@@ -265,18 +310,32 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     return bean;
   }
 
+  private void constructAndRegisterBean(final Class<?> type) throws ReflectiveOperationException {
+    Object bean = instantiate(type);
+    Objects.requireNonNull(bean);
+    mockInjectedDependency(bean);
+    invokePostConstruction(bean);
+    manageBean(bean, type);
+  }
+
   private void mockInjectedDependency(final Object bean)
-      throws IllegalAccessException {
+      throws ReflectiveOperationException {
     loopInheritance(bean.getClass(), typeToLookup -> {
       Field[] beanFields = typeToLookup.getDeclaredFields();
       for (Field dependency : beanFields) {
         if (dependency.isAnnotationPresent(Inject.class)) {
-          Object mock =
-              TestBeanContainer.getMockedBeanContainer().getBeanByType(dependency.getType());
-          if (mock == null) {
-            mock = mock(dependency.getType());
+          Object mock;
+          if (dependency.getType().equals(Instance.class)) {
+            ParameterizedType type = (ParameterizedType) dependency.getGenericType();
+            Type beanType = type.getActualTypeArguments()[0];
+            mock = new InstanceImpl<>((Class<?>)beanType);
+          } else {
+            mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(dependency.getType());
+            if (mock == null) {
+              mock = mock(dependency.getType());
+            }
           }
-          dependency.setAccessible(true);
+          dependency.trySetAccessible();
           dependency.set(bean, mock);
         }
       }
@@ -287,7 +346,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     T bean;
     try {
       Constructor<? extends T> constructor = beanType.getDeclaredConstructor();
-      constructor.setAccessible(true);
+      constructor.trySetAccessible();
       bean = constructor.newInstance();
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
         IllegalAccessException e) {
@@ -362,7 +421,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     try {
       Constructor<ManagedThreadPool> managedThreadPoolConstructor =
           ManagedThreadPool.class.getDeclaredConstructor();
-      managedThreadPoolConstructor.setAccessible(true);
+      managedThreadPoolConstructor.trySetAccessible();
       ManagedThreadPool managedThreadPool = managedThreadPoolConstructor.newInstance();
       ManagedThreadFactory managedThreadFactory = Thread::new;
       FieldUtils.writeField(managedThreadPool, "managedThreadFactory", managedThreadFactory, true);
@@ -382,14 +441,48 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     } else {
       clazz = (Class<T>) bean.getClass();
     }
-    Class<?>[] types = Arrays.copyOf(clazz.getInterfaces(), clazz.getInterfaces().length + 1);
-    types[types.length - 1] = clazz;
 
-    for (Class type : types) {
-      putInTestBeanContainer(bean, type, qualifiers);
+    TypeConsumer registerer = t -> {
+      putInTestBeanContainer(bean, t, qualifiers);
       if (qualifiers.length > 1) {
-        Stream.of(qualifiers).forEach(q -> putInTestBeanContainer(bean, type, q));
+        Stream.of(qualifiers).forEach(q -> putInTestBeanContainer(bean, t, q));
       }
+    };
+
+    Function<Class<?>, Class<?>[]> typesFinder = c -> {
+      Class<?>[] interfaces = c.getInterfaces();
+      Class<?>[] types = Arrays.copyOf(interfaces, interfaces.length + 1);
+      types[types.length - 1] = c;
+      return types;
+    };
+
+    try {
+      Stream.of(typesFinder.apply(clazz))
+          .filter(t -> t.getTypeParameters().length == 0)
+          .forEach(t -> {
+            try {
+              registerer.consume(t);
+            } catch (ReflectiveOperationException e) {
+              throw new SilverpeasRuntimeException(e);
+            }
+          });
+
+      if (!clazz.isInterface()) {
+        loopInheritance(clazz.getSuperclass(), c ->
+          Stream.of(typesFinder.apply(c))
+              .filter(t -> Modifier.isAbstract(t.getModifiers()))
+              .filter(t -> t.getTypeParameters().length == 0)
+              .forEach(t -> {
+                try {
+                  registerer.consume(t);
+                } catch (ReflectiveOperationException e) {
+                  throw new SilverpeasRuntimeException(e);
+                }
+              })
+        );
+      }
+    } catch (ReflectiveOperationException e) {
+      throw new SilverpeasRuntimeException(e);
     }
     return bean;
   }
@@ -399,16 +492,13 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       Annotation... qualifiers) {
     Set existing = TestBeanContainer.getMockedBeanContainer().getAllBeansByType(type, qualifiers);
     if (!existing.isEmpty()) {
-      if (!type.isAnnotationPresent(Singleton.class)) {
-        final HashSet all = new HashSet(existing);
-        all.add(bean);
-        when(TestBeanContainer.getMockedBeanContainer()
-            .getAllBeansByType(type, qualifiers)).thenReturn(all);
-        if (existing.size() == 1) {
-          when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers))
-              .thenThrow(
-                  new AmbiguousResolutionException("A bean of type " + type + " already exist!"));
-        }
+      final HashSet all = new HashSet<>(existing);
+      all.add(bean);
+      when(TestBeanContainer.getMockedBeanContainer()
+          .getAllBeansByType(type, qualifiers)).thenReturn(all);
+      if (existing.size() == 1) {
+        when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenThrow(
+            new AmbiguousResolutionException("A bean of type " + type + " already exist!"));
       }
     } else {
       when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenReturn(
@@ -420,7 +510,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   }
 
   private void loopInheritance(final Class<?> fromType, final TypeConsumer consumer)
-      throws IllegalAccessException {
+      throws ReflectiveOperationException {
     Class<?> type = fromType;
     while (type != null && !type.isInterface() &&
         !type.equals(Object.class)) {
@@ -431,7 +521,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
 
   @FunctionalInterface
   private interface TypeConsumer {
-    void consume(final Class<?> type) throws IllegalAccessException;
+    void consume(final Class<?> type) throws ReflectiveOperationException;
   }
 
   private class StubbedLoggerConfigurationManager extends LoggerConfigurationManager {
@@ -445,6 +535,68 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
 
     StubbedSilverLoggerProvider(final LoggerConfigurationManager loggerConfigurationManager) {
       super(loggerConfigurationManager);
+    }
+  }
+
+  private class InstanceImpl<T> implements Instance<T> {
+
+    private final Class<T> beansType;
+
+    public InstanceImpl(Class<T> beansType) {
+      this.beansType = beansType;
+    }
+
+    @Override
+    public Instance<T> select(final Annotation... qualifiers) {
+      return null;
+    }
+
+    @Override
+    public <U extends T> Instance<U> select(final Class<U> subtype,
+        final Annotation... qualifiers) {
+      return null;
+    }
+
+    @Override
+    public <U extends T> Instance<U> select(final TypeLiteral<U> subtype,
+        final Annotation... qualifiers) {
+      return null;
+    }
+
+    @Override
+    public boolean isUnsatisfied() {
+      return TestBeanContainer.getMockedBeanContainer().getAllBeansByType(beansType).isEmpty();
+    }
+
+    @Override
+    public boolean isAmbiguous() {
+      return false;
+    }
+
+    @Override
+    public void destroy(final T instance) {
+      // nothing to do
+    }
+
+    @NotNull
+    @Override
+    public Iterator<T> iterator() {
+      Set<T> beans = TestBeanContainer.getMockedBeanContainer().getAllBeansByType(beansType);
+      if (beans.isEmpty()) {
+        return Collections.singleton(mock(beansType)).iterator();
+      } else {
+        return beans.iterator();
+      }
+    }
+
+    @Override
+    public T get() {
+      Set<T> beans = TestBeanContainer.getMockedBeanContainer().getAllBeansByType(beansType);
+      if (!beans.isEmpty()) {
+        return beans.iterator().next();
+      } else {
+        return mock(beansType);
+      }
     }
   }
 }

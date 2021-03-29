@@ -25,23 +25,27 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.DateUtil;
 
+import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 /**
  * This class represents contribution classified on taxonomy
  */
 public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18N>
-    implements java.io.Serializable {
+    implements Serializable {
 
   private static final long serialVersionUID = 1L;
   private String url = "";
   private String location = "";
   private String id = "";
   private String instanceId = "";
-  private String date = ""; // this is the updateDate
-  private String creationDate = "";
+  private final Date updateDate;// this is the updateDate
+  private final Date creationDate;
   private String thumbnailURL = "";
   private String userId = "";
   private String type = "";
@@ -54,25 +58,35 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   /* following attributes are exclusively used by taglibs */
   private String spaceId = "";
 
-  private void init(String name, String desc, String id,
-      String instanceId, String date, String userId) {
+  @Override
+  protected Class<GlobalSilverContentI18N> getTranslationType() {
+    return GlobalSilverContentI18N.class;
+  }
+
+  private void init(String name, String desc, String id, String instanceId, String userId) {
     setName(name);
     setDescription(desc);
     this.id = id;
     this.instanceId = instanceId;
-    this.date = date;
     this.userId = userId;
 
     GlobalSilverContentI18N gscI18N =
-        new GlobalSilverContentI18N(I18NHelper.defaultLanguage, name, desc);
+        new GlobalSilverContentI18N(I18NHelper.DEFAULT_LANGUAGE, name, desc);
     addTranslation(gscI18N);
   }
 
   // constructor
   public GlobalSilverContent(SilverContentInterface sci) {
+    Date date;
+    try {
+      date = sci.getDate() == null ? null : DateUtil.parseDate(sci.getDate());
+    } catch (ParseException e) {
+      date = null;
+    }
     init(sci.getName(), sci.getDescription(), sci.getId(),
-        sci.getInstanceId(), sci.getDate(), sci.getCreatorId());
-    this.creationDate = sci.getSilverCreationDate();
+        sci.getInstanceId(), sci.getCreatorId());
+    this.updateDate = date;
+    this.creationDate = sci.getCreationDate();
 
     processLanguages(sci);
   }
@@ -114,8 +128,8 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     return getName();
   }
 
-  public String getDate() {
-    return this.date;
+  public Date getLastUpdateDate() {
+    return this.updateDate;
   }
 
   public String getUserId() {
@@ -138,7 +152,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     this.location = location;
   }
 
-  public String getCreationDate() {
+  public Date getCreationDate() {
     return creationDate;
   }
 

@@ -93,7 +93,7 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);
       SimpleAttachment expResult = new SimpleAttachment(fileName, language, title,
           description, 15L, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate, formId);
-      expResult.setUpdated(updateDate);
+      expResult.setLastUpdateDate(updateDate);
       expResult.setUpdatedBy(updatedBy);
       assertThat(expResult.equals(expResult), is(true));
       node.setProperty(SLV_PROPERTY_NAME, fileName);

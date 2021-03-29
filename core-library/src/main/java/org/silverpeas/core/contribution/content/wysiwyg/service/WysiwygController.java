@@ -390,7 +390,7 @@ public class WysiwygController {
     }
 
     @Override
-    public ContributionIdentifier getContributionId() {
+    public ContributionIdentifier getIdentifier() {
       return ContributionIdentifier.from(componentId, objectId, WYSIWYG);
     }
 
@@ -405,12 +405,12 @@ public class WysiwygController {
     }
 
     @Override
-    public User getLastModifier() {
+    public User getLastUpdater() {
       return null;
     }
 
     @Override
-    public Date getLastModificationDate() {
+    public Date getLastUpdateDate() {
       return null;
     }
 

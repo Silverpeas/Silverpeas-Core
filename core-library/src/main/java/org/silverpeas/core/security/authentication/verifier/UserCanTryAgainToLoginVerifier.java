@@ -132,7 +132,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
     if (isActivated && (getUser() == null || !getUser().isAnonymous())) {
       return getString("authentication.attempts.remaining",
           (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
-              getUser().getUserPreferences().getLanguage() : I18NHelper.defaultLanguage,
+              getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE,
           String.valueOf(nbMaxAttempts - nbAttempts));
     }
 

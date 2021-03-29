@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This is the Node Data Access Object.
@@ -87,7 +88,7 @@ public class NodeI18NDAO {
     String lang = rs.getString(3);
     String name = rs.getString(4);
     String description = StringUtil.defaultStringIfNotDefined(rs.getString(5));
-    final NodeI18NDetail i18n = new NodeI18NDetail(id, lang, name, description);
+    final NodeI18NDetail i18n = new NodeI18NDetail(String.valueOf(id), lang, name, description);
     i18n.setObjectId(Integer.toString(nodeId));
     return i18n;
   }
@@ -109,7 +110,7 @@ public class NodeI18NDAO {
     try {
       prepStmt = con.prepareStatement(INSERT_TRANSLATION);
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, nd.getNodeId());
+      prepStmt.setInt(2, Integer.parseInt(nd.getNodeId()));
       prepStmt.setString(3, nd.getLanguage());
       prepStmt.setString(4, nd.getName());
       prepStmt.setString(5, nd.getDescription());
@@ -141,7 +142,7 @@ public class NodeI18NDAO {
       prepStmt.setString(1, nd.getLanguage());
       prepStmt.setString(2, nd.getName());
       prepStmt.setString(3, nd.getDescription());
-      prepStmt.setInt(4, nd.getId());
+      prepStmt.setInt(4, Integer.parseInt(nd.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -153,17 +154,17 @@ public class NodeI18NDAO {
   /**
    * Delete into the database a translation
    *
-   * @param id translationId
+   * @param id node identifier about which the translation is
    * @see NodeI18NDetail
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static void removeTranslation(Connection con, int id) throws SQLException {
+  public static void removeTranslation(Connection con, String id) throws SQLException {
 
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_TRANSLATION);
-      prepStmt.setInt(1, id);
+      prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -200,9 +201,9 @@ public class NodeI18NDAO {
    * @return
    * @throws SQLException
    */
-  public static List<NodeI18NDetail> getTranslations(Connection con, int nodeId) throws SQLException {
+  public static List<NodeI18NDetail> getTranslations(Connection con, String nodeId) throws SQLException {
     try (PreparedStatement prepStmt = con.prepareStatement(SELECT_TRANSLATIONS)) {
-      prepStmt.setInt(1, nodeId);
+      prepStmt.setInt(1, Integer.parseInt(nodeId));
       try(ResultSet rs = prepStmt.executeQuery()) {
         List<NodeI18NDetail> result = new ArrayList<>();
         while (rs.next()) {
@@ -213,15 +214,16 @@ public class NodeI18NDAO {
     }
   }
 
-  public static Map<Integer, List<NodeI18NDetail>> getIndexedTranslations(Connection con,
-      List<Integer> nodeId) throws SQLException {
-    return JdbcSqlQuery.executeBySplittingOn(nodeId, (idBatch, result) -> JdbcSqlQuery
+  static Map<Integer, List<NodeI18NDetail>> getIndexedTranslations(Connection con,
+      List<String> nodeIds) throws SQLException {
+    List<Integer> localIds = nodeIds.stream().map(Integer::parseInt).collect(Collectors.toList());
+    return JdbcSqlQuery.executeBySplittingOn(localIds, (idBatch, result) -> JdbcSqlQuery
         .createSelect(FIELDS)
         .from(TABLENAME)
         .where("nodeId").in(idBatch)
         .executeWith(con, r -> {
           final NodeI18NDetail node = resultSet2NodeDetail(r);
-          MapUtil.putAddList(result, node.getNodeId(), node);
+          MapUtil.putAddList(result, Integer.parseInt(node.getNodeId()), node);
           return null;
         }));
   }

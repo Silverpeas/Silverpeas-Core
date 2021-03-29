@@ -27,16 +27,15 @@ import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * This class represents one content descriptor in memory (read from the xml)
+ * This class represents one content descriptor in memory (read from the xml) that links a type
+ * of content (hence the content handled by a given container) with a manager of such a content
+ * type.
  */
 public class ContentPeas {
 
-  // The content type (unique among all contents)
   String type = null;
-  // The class to call that implements the ContentInterface
-  String contentInterfaceClassName = null;
-  // The object (class.forName(m_sContentInterface))
-  ContentInterface contentInterface = null;
+  String contentManagerClassName = null;
+  SilverpeasContentManager contentManager = null;
 
   public ContentPeas(String sContentDescriptorPath) {
     // -------------------------------------------------
@@ -80,30 +79,30 @@ public class ContentPeas {
 
   private void init(String type, String contentInterfaceClassName) {
     this.type = type;
-    this.contentInterfaceClassName = contentInterfaceClassName;
+    this.contentManagerClassName = contentInterfaceClassName;
   }
 
   public String getType() {
     return type;
   }
 
-  private String getContentInterfaceClass() {
-    return contentInterfaceClassName;
+  private String getContentManagerClass() {
+    return contentManagerClassName;
   }
 
   @SuppressWarnings("unchecked")
-  public ContentInterface getContentInterface() throws SilverpeasException {
-    if (contentInterface == null) {
+  public SilverpeasContentManager getContentManager() throws SilverpeasException {
+    if (contentManager == null) {
       try {
-        Class<ContentInterface> contentInterfaceClass =
-            (Class<ContentInterface>) Class.forName(this.getContentInterfaceClass());
-        this.contentInterface = ServiceProvider.getSingleton(contentInterfaceClass);
+        Class<SilverpeasContentManager> contentInterfaceClass =
+            (Class<SilverpeasContentManager>) Class.forName(this.getContentManagerClass());
+        this.contentManager = ServiceProvider.getSingleton(contentInterfaceClass);
       } catch (ClassNotFoundException e) {
         throw new SilverpeasException(e);
       }
     }
 
-    return contentInterface;
+    return contentManager;
   }
 
 }

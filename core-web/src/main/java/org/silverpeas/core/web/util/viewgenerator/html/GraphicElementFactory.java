@@ -156,7 +156,7 @@ public class GraphicElementFactory implements Serializable {
   }
 
   private String getLanguage() {
-    String language = I18NHelper.defaultLanguage;
+    String language = I18NHelper.DEFAULT_LANGUAGE;
     if (mainSessionController != null) {
       language = mainSessionController.getFavoriteLanguage();
     }

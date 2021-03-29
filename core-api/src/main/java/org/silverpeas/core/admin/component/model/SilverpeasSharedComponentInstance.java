@@ -24,14 +24,20 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.i18n.LocalizedResource;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface SilverpeasSharedComponentInstance extends SilverpeasComponentInstance {
+public interface SilverpeasSharedComponentInstance extends SilverpeasComponentInstance,
+    LocalizedResource, Securable {
 
   /**
    * Gets a personal silverpeas component instance from the specified identifier.
@@ -41,5 +47,25 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
    */
   static Optional<SilverpeasSharedComponentInstance> getById(String sharedComponentInstanceId) {
     return SilverpeasComponentInstanceProvider.get().getSharedById(sharedComponentInstanceId);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  BasicIdentifier getIdentifier();
+
+  @Override
+  default boolean canBeAccessedBy(User user) {
+    return ComponentAccessControl.get().isUserAuthorized(user.getId(), getIdentifier());
+  }
+
+  /**
+   * Is the user can modify this component instance?
+   * @param user a user in Silverpeas.
+   * @return true if the user can both access this component instance and has management privilege
+   * on this component instance (by being either an administrator or a space manager)
+   */
+  @Override
+  default boolean canBeModifiedBy(User user) {
+    return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }
 }

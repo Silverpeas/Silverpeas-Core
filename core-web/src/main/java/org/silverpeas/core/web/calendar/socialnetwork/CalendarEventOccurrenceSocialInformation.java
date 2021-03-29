@@ -64,6 +64,7 @@ public class CalendarEventOccurrenceSocialInformation extends AbstractSocialInfo
   public CalendarEventOccurrenceSocialInformation(CalendarEventOccurrence occurrence,
       final OffsetDateTime now, final String requesterId, final ZoneId userZoneId,
       final String userOwnerId) {
+    super(occurrence.getIdentifier().toReference());
     this.requesterId = requesterId;
     this.userZoneId = userZoneId;
     this.userOwnerId = userOwnerId;
@@ -115,16 +116,6 @@ public class CalendarEventOccurrenceSocialInformation extends AbstractSocialInfo
       setDate(startDate);
     }
     return startDate;
-  }
-
-  @Override
-  public int compareTo(SocialInformation socialInfo) {
-    if (SocialInformationType.LASTEVENT.toString().equals(getType())) {
-      // event in the past
-      return getDate().compareTo(socialInfo.getDate()) * -1;
-    }
-    // future event
-    return getDate().compareTo(socialInfo.getDate());
   }
 
   public CalendarEventOccurrence getOccurrence() {

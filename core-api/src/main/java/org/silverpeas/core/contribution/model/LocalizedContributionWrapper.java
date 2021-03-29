@@ -41,8 +41,8 @@ class LocalizedContributionWrapper implements LocalizedContribution {
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
-    return contribution.getContributionId();
+  public ContributionIdentifier getIdentifier() {
+    return contribution.getIdentifier();
   }
 
   @Override
@@ -76,13 +76,13 @@ class LocalizedContributionWrapper implements LocalizedContribution {
   }
 
   @Override
-  public User getLastModifier() {
-    return contribution.getLastModifier();
+  public User getLastUpdater() {
+    return contribution.getLastUpdater();
   }
 
   @Override
-  public Date getLastModificationDate() {
-    return contribution.getLastModificationDate();
+  public Date getLastUpdateDate() {
+    return contribution.getLastUpdateDate();
   }
 
   @Override

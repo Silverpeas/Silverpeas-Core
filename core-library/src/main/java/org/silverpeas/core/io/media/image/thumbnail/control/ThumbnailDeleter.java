@@ -44,8 +44,8 @@ public class ThumbnailDeleter implements ContributionDeletion {
   public void delete(final Contribution contribution) {
     try {
       if (contribution instanceof WithThumbnail) {
-        final String instanceId = contribution.getContributionId().getComponentInstanceId();
-        final String localId = contribution.getContributionId().getLocalId();
+        final String instanceId = contribution.getIdentifier().getComponentInstanceId();
+        final String localId = contribution.getIdentifier().getLocalId();
         if (isInteger(localId)) {
           final int contribId = Integer.parseInt(localId);
           ThumbnailDetail thumbToDelete = new ThumbnailDetail(instanceId, contribId, ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);

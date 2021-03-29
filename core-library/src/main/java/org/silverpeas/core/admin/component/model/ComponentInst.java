@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -42,9 +43,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -76,8 +80,13 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   private boolean isPublic;
   private boolean isHidden;
   private boolean isInheritanceBlocked = false;
-  private List<ProfileInst> profiles;
+  private final List<ProfileInst> profiles = synchronizedList(new ArrayList<>());
   private transient List<Parameter> parameters = null;
+
+  @Override
+  protected Class<ComponentI18N> getTranslationType() {
+    return ComponentI18N.class;
+  }
 
   /**
    * Creates new ComponentInst
@@ -87,16 +96,46 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     name = "";
     domainFatherId = "";
     order = 0;
-    profiles = new ArrayList<>();
     isPublic = false;
     isHidden = false;
   }
 
   /**
+   * Creates a new Component instance as a copy of the specified one. Only the identifier isn't
+   * copied as it should be unique.
+   *
+   * @param ci a component instance to copy.
+   */
+  public ComponentInst(final ComponentInst ci) {
+    super(ci);
+    id = "";
+    name = ci.name;
+    domainFatherId = ci.domainFatherId;
+    order = ci.order;
+    createDate = ci.createDate;
+    updateDate = ci.updateDate;
+    removeDate = ci.removeDate;
+    status = ci.status;
+    creatorUserId = ci.creatorUserId;
+    creator = ci.creator;
+    updaterUserId = ci.updaterUserId;
+    updater = ci.updater;
+    removerUserId = ci.removerUserId;
+    remover = ci.remover;
+    isPublic = ci.isPublic;
+    isHidden = ci.isHidden;
+    isInheritanceBlocked = ci.isInheritanceBlocked;
+    ci.profiles.stream().map(ProfileInst::new).forEach(this::addProfileInst);
+    parameters = ci.parameters.stream().map(Parameter::new).collect(Collectors.toList());
+    setTranslations(ci.getClonedTranslations());
+  }
+
+  /**
    * Gets the name of the multi-user component from which the specified instance was spawn. By
-   * convention, the identifiers of the component instances are made up of the name of the
-   * component followed by a number. This method is a way to get directly the component name
-   * from an instance identifier.
+   * convention, the identifiers of the component instances are made up of the name of the component
+   * followed by a number. This method is a way to get directly the component name from an instance
+   * identifier.
+   *
    * @param componentInstanceId the unique identifier of a component instance.
    * @return the name of the multi-user component or null if the specified identifier doesn't match
    * the rule of a shared component instance identifier.
@@ -113,8 +152,9 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   /**
    * Gets the local identifier of the multi-user component from which the specified instance was
    * spawn. By convention, the identifiers of the component instances are made up of the name of the
-   * component followed by a number, the local identifier. This method is a way to get directly
-   * the component local identifier from an instance identifier.
+   * component followed by a number, the local identifier. This method is a way to get directly the
+   * component local identifier from an instance identifier.
+   *
    * @param componentInstanceId the unique identifier of a component instance.
    * @return the local identifier of the multi-user component or -1 if the specified identifier
    * doesn't match the rule of a shared component instance identifier.
@@ -130,39 +170,9 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return componentId;
   }
 
-  public ComponentInst copy() {
-    ComponentInst ci = new ComponentInst();
-    ci.id = id;
-    ci.name = name;
-    ci.domainFatherId = domainFatherId;
-    ci.order = order;
-    ci.createDate = createDate;
-    ci.updateDate = updateDate;
-    ci.removeDate = removeDate;
-    ci.status = status;
-    ci.creatorUserId = creatorUserId;
-    ci.creator = creator;
-    ci.updaterUserId = updaterUserId;
-    ci.updater = updater;
-    ci.removerUserId = removerUserId;
-    ci.remover = remover;
-    ci.isPublic = isPublic;
-    ci.isHidden = isHidden;
-    ci.isInheritanceBlocked = isInheritanceBlocked;
-    if (profiles == null) {
-      ci.profiles = null;
-    } else {
-      ci.profiles = new ArrayList<>(profiles.size());
-      for (ProfileInst profile : profiles) {
-        ci.addProfileInst(profile.copy());
-      }
-    }
-    ci.parameters = new ArrayList<>(this.parameters.size());
-    for (Parameter param : this.parameters) {
-      ci.parameters.add(param.clone());
-    }
-    ci.setTranslations(getClonedTranslations());
-    return ci;
+  @Override
+  public BasicIdentifier getIdentifier() {
+    return new BasicIdentifier(getLocalId(), getId());
   }
 
   @Override
@@ -184,6 +194,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   /**
    * This method is a hack (technical debt)
+   *
    * @param sName
    */
   @Override
@@ -193,6 +204,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   /**
    * This method is a hack (technical debt)
+   *
    * @return
    */
   @Override
@@ -230,19 +242,19 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return getOrderNum();
   }
 
-  public Date getCreateDate() {
+  public Date getCreationDate() {
     return createDate;
   }
 
-  public void setCreateDate(Date createDate) {
+  public void setCreationDate(Date createDate) {
     this.createDate = createDate;
   }
 
-  public Date getRemoveDate() {
+  public Date getRemovalDate() {
     return removeDate;
   }
 
-  public void setRemoveDate(Date removeDate) {
+  public void setRemovalDate(Date removeDate) {
     this.removeDate = removeDate;
   }
 
@@ -254,11 +266,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     this.status = status;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
-  public void setUpdateDate(Date updateDate) {
+  public void setLastUpdateDate(Date updateDate) {
     this.updateDate = updateDate;
   }
 
@@ -298,29 +310,24 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public List<ProfileInst> getAllProfilesInst() {
-    return profiles;
+    return List.copyOf(profiles);
   }
 
   public List<ProfileInst> getInheritedProfiles() {
-    List<ProfileInst> inheritedProfiles = new ArrayList<>();
-    for (ProfileInst profile : profiles) {
-      if (profile.isInherited()) {
-        inheritedProfiles.add(profile);
-      }
-    }
-
-    return inheritedProfiles;
+    return profiles.stream()
+        .filter(ProfileInst::isInherited)
+        .collect(Collectors.toList());
   }
 
+  /**
+   * Gets the specific right profiles of this component instance (that is to say all the non
+   * inherited profiles)
+   * @return the specific right profiles of this component instance;
+   */
   public List<ProfileInst> getProfiles() {
-    List<ProfileInst> specificProfiles = new ArrayList<>();
-    for (ProfileInst profile : profiles) {
-      if (!profile.isInherited()) {
-        specificProfiles.add(profile);
-      }
-    }
-
-    return specificProfiles;
+    return profiles.stream()
+        .filter(Predicate.not(ProfileInst::isInherited))
+        .collect(Collectors.toList());
   }
 
   public void removeAllProfilesInst() {
@@ -328,21 +335,19 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public ProfileInst getProfileInst(String profileName) {
-    for (ProfileInst profile : profiles) {
-      if (!profile.isInherited() && profile.getName().equals(profileName)) {
-        return profile;
-      }
-    }
-    return null;
+    return profiles.stream()
+        .filter(Predicate.not(ProfileInst::isInherited))
+        .filter(p -> p.getName().equals(profileName))
+        .findFirst()
+        .orElse(null);
   }
 
   public ProfileInst getInheritedProfileInst(String profileName) {
-    for (ProfileInst profile : profiles) {
-      if (profile.isInherited() && profile.getName().equals(profileName)) {
-        return profile;
-      }
-    }
-    return null;
+    return profiles.stream()
+        .filter(ProfileInst::isInherited)
+        .filter(p -> p.getName().equals(profileName))
+        .findFirst()
+        .orElse(null);
   }
 
   public ProfileInst getProfileInst(int nIndex) {
@@ -361,21 +366,16 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public Parameter getParameter(String parameterName) {
-    for (Parameter parameter : parameters) {
-      if (parameter.getName().equalsIgnoreCase(parameterName)) {
-        return parameter;
-      }
-    }
-    return null;
+    return parameters.stream()
+        .filter(p -> p.getName().equalsIgnoreCase(parameterName))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
   public String getParameterValue(String parameterName) {
     Parameter param = getParameter(parameterName);
-    if (param != null) {
-      return param.getValue();
-    }
-    return "";
+    return param != null ? param.getValue() : "";
   }
 
   @Override
@@ -418,21 +418,21 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     creator = null;
   }
 
-  public UserDetail getCreator() {
+  public User getCreator() {
     if (creator == null && isDefined(creatorUserId)) {
       creator = UserDetail.getById(creatorUserId);
     }
     return creator;
   }
 
-  public UserDetail getUpdater() {
+  public User getLastUpdater() {
     if (updater == null && isDefined(updaterUserId)) {
       updater = UserDetail.getById(updaterUserId);
     }
     return updater;
   }
 
-  public UserDetail getRemover() {
+  public User getRemover() {
     if (remover == null && isDefined(removerUserId)) {
       remover = UserDetail.getById(removerUserId);
     }
@@ -440,13 +440,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public void removeInheritedProfiles() {
-    ArrayList<ProfileInst> newProfiles = new ArrayList<>();
-    for (ProfileInst profile : profiles) {
-      if (!profile.isInherited()) {
-        newProfiles.add(profile);
-      }
-    }
-    profiles = newProfiles;
+    profiles.removeIf(ProfileInst::isInherited);
   }
 
   @Override
@@ -473,8 +467,8 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
-    Set<SilverpeasRole> silverpeasRoles =
-        SilverpeasRole.fromStrings(OrganizationController.get().getUserProfiles(user.getId(), getId()));
+    Set<SilverpeasRole> silverpeasRoles = SilverpeasRole.fromStrings(
+        OrganizationController.get().getUserProfiles(user.getId(), getId()));
     silverpeasRoles.remove(MANAGER);
     return silverpeasRoles;
   }

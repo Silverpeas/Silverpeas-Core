@@ -35,4 +35,8 @@ public interface ComponentResourceIdentifier extends ResourceIdentifier {
   String getLocalId();
 
   String getComponentInstanceId();
+
+  default ResourceReference toReference() {
+    return new ResourceReference(getLocalId(), getComponentInstanceId());
+  }
 }

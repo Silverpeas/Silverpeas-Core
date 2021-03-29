@@ -378,7 +378,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         if (pubDetail.getLanguage() != null) {
           if (oldLang == null) {
             // translation for the first time
-            publi.setLanguage(I18NHelper.defaultLanguage);
+            publi.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
           }
           if (oldLang != null && !oldLang.equalsIgnoreCase(pubDetail.getLanguage())) {
             addOrUpdateTranslation(con, pubDetail);
@@ -490,8 +490,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final boolean forceUpdateDate) {
     if (forceUpdateDate) {
       // In import case, we can force the update date to an old value
-      if (pubDetail.getUpdateDate() != null) {
-        publi.setUpdateDate(pubDetail.getUpdateDate());
+      if (pubDetail.getLastUpdateDate() != null) {
+        publi.setUpdateDate(pubDetail.getLastUpdateDate());
       } else {
         publi.setUpdateDate(new Date());
       }
@@ -1088,7 +1088,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final PublicationDetail pubDetail) {
     indexEntry.setLang("fr");
     indexEntry.setCreationDate(pubDetail.getCreationDate());
-    indexEntry.setLastModificationDate(pubDetail.getUpdateDate());
+    indexEntry.setLastModificationDate(pubDetail.getLastUpdateDate());
     if (pubDetail.getBeginDate() != null) {
       indexEntry.setStartDate(pubDetail.getBeginDate());
     }
@@ -1101,10 +1101,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private void fillIndexEntryWithTranslations(final FullIndexEntry indexEntry,
       final PublicationDetail pubDetail) {
-    Collection<String> languages = pubDetail.getLanguages();
-    for (final String language : languages) {
-      PublicationI18N translation = pubDetail.getTranslation(language);
-
+    for (final Map.Entry<String, PublicationI18N> l10n : pubDetail.getTranslations().entrySet()) {
+      String language = l10n.getKey();
+      PublicationI18N translation = l10n.getValue();
       indexEntry.setTitle(translation.getName(), language);
       indexEntry.setPreview(translation.getDescription(), language);
       indexEntry.setKeywords(translation.getKeywords() + " " + pubDetail.getAuthor(), language);

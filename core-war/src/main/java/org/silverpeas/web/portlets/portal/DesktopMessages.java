@@ -50,7 +50,7 @@ public class DesktopMessages {
   public static DesktopMessages init(String language) {
     cache.remove();
     final String userLanguage =
-        (StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage);
+        (StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE);
     DesktopMessages desktopMessages = new DesktopMessages();
     desktopMessages.bundle = ResourceLocator.getLocalizationBundle(RESOURCE_BASE, userLanguage);
     desktopMessages.locale = new Locale(userLanguage);

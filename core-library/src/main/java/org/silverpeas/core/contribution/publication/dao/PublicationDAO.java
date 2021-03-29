@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
+import org.silverpeas.core.persistence.jdbc.AbstractDAO;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
@@ -72,7 +73,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  * This is the Publication Data Access Object.
  * @author Nicolas Eysseric
  */
-public class PublicationDAO {
+public class PublicationDAO extends AbstractDAO {
   // if beginDate is null, it will be replace in database with it
   private static final String NULL_BEGIN_DATE = "0000/00/00";
   // if endDate is null, it will be replace in database with it
@@ -296,8 +297,8 @@ public class PublicationDAO {
       prepStmt.setString(11, detail.getKeywords());
       prepStmt.setString(12, detail.getContentPagePath());
       prepStmt.setString(13, detail.getStatus());
-      if (detail.isUpdateDateMustBeSet() && detail.getUpdateDate() != null) {
-        prepStmt.setString(14, formatDate(detail.getUpdateDate()));
+      if (detail.isUpdateDateMustBeSet() && detail.getLastUpdateDate() != null) {
+        prepStmt.setString(14, formatDate(detail.getLastUpdateDate()));
       } else {
         setDateParameter(prepStmt, 14, detail.getCreationDate(), DateUtil.today2SQLDate());
       }
@@ -455,17 +456,6 @@ public class PublicationDAO {
     }
 
     return pub;
-  }
-
-  private static Date asDate(final String dateAsSqlString, final String nullValue)
-      throws ParseException {
-    final Date date;
-    if (nullValue.equals(dateAsSqlString)) {
-      date = null;
-    } else {
-      date = DateUtil.parseDate(dateAsSqlString);
-    }
-    return date;
   }
 
   /**
@@ -1115,24 +1105,6 @@ public class PublicationDAO {
     }
   }
 
-  private static void setStringParameter(final PreparedStatement statement, int idx,
-      final String value, final String defaultValue) throws SQLException {
-    if (StringUtil.isDefined(value)) {
-      statement.setString(idx, value);
-    } else {
-      statement.setString(idx, defaultValue);
-    }
-  }
-
-  private static void setDateParameter(final PreparedStatement statement, int idx, final Date date,
-      final String defaultDate) throws SQLException {
-    if (date == null) {
-      statement.setString(idx, defaultDate);
-    } else {
-      statement.setString(idx, formatDate(date));
-    }
-  }
-
   public static void storeRow(Connection con, PublicationDetail detail)
       throws SQLException {
     int rowCount;
@@ -1149,7 +1121,7 @@ public class PublicationDAO {
       prepStmt.setString(10, detail.getKeywords());
       prepStmt.setString(11, detail.getContentPagePath());
       prepStmt.setString(12, detail.getStatus());
-      setDateParameter(prepStmt, 13, detail.getUpdateDate(), formatDate(detail.getCreationDate()));
+      setDateParameter(prepStmt, 13, detail.getLastUpdateDate(), formatDate(detail.getCreationDate()));
       if (detail.getUpdaterId() == null) {
         prepStmt.setString(14, detail.getCreatorId());
       } else {

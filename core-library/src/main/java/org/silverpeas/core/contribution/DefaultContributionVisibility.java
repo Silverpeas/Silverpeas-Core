@@ -64,7 +64,7 @@ public class DefaultContributionVisibility implements ContributionVisibility {
   public Period getPeriod() {
     if (period == null) {
       period = new MemoizedSupplier<>(() -> {
-        final OffsetDateTime lastModification = ofNullable(contribution.getLastModificationDate())
+        final OffsetDateTime lastModification = ofNullable(contribution.getLastUpdateDate())
             .map(d -> ofInstant(d.toInstant(), ZoneId.systemDefault()))
             .orElse(null);
         return getSpecificPeriod()

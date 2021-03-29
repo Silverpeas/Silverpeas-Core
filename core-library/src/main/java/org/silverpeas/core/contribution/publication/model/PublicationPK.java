@@ -24,7 +24,7 @@
 /* $Id$ */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
 
@@ -33,41 +33,24 @@ import java.io.Serializable;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PublicationPK extends WAPrimaryKey implements Serializable {
+public class PublicationPK extends ResourceReference implements Serializable {
   private static final long serialVersionUID = -6957633959517435029L;
 
-  /**
-   * Constructor which set only the id
-   * @param id
-   * @since 1.0
-   */
   public PublicationPK(String id) {
     super(id);
   }
 
-  /**
-   * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @param id
-   * @param space
-   * @param componentName
-   * @since 1.0
-   */
   public PublicationPK(String id, String space, String componentName) {
-    super(id, space, componentName);
+    super(id, componentName);
+    setSpace(space);
   }
 
   public PublicationPK(String id, String componentId) {
     super(id, componentId);
   }
 
-  /**
-   * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @param id
-   * @param pk
-   * @since 1.0
-   */
-  public PublicationPK(String id, WAPrimaryKey pk) {
-    super(id, pk.getSpace(), pk.getInstanceId());
+  public PublicationPK(String id, ResourceReference pk) {
+    this(id, pk.getSpace(), pk.getInstanceId());
   }
 
   /**

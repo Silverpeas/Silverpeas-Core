@@ -63,8 +63,8 @@ for (PublicationDetail pub : publications) {
     <% if (pubUpdater != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), userZoneId, language)%>
     <% } %>
-    <% if (pubUpdater == null && pub.getUpdateDate() != null) { %>
-      <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>
+    <% if (pubUpdater == null && pub.getLastUpdateDate() != null) { %>
+      <br/><%=DateUtil.getOutputDate(pub.getLastUpdateDate(), language) %>
     <% } %>
     <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil
         .isDefined(pub.getDescription(language))) { %>

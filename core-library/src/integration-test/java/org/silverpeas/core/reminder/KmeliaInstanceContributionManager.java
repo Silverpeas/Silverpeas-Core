@@ -55,7 +55,7 @@ public class KmeliaInstanceContributionManager implements ComponentInstanceContr
   }
 
   public void addContribution(final EventContrib contribution) {
-    contributions.put(contribution.getContributionId(), contribution);
+    contributions.put(contribution.getIdentifier(), contribution);
   }
 
   @Override

@@ -182,7 +182,7 @@ class DocumentConverter extends AbstractJcrConverter {
     pk.setOldSilverpeasId(oldSilverpeasId);
     String language = lang;
     if (language == null) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     SimpleAttachment file = getAttachment(node, language);
     if (file == null) {
@@ -191,12 +191,15 @@ class DocumentConverter extends AbstractJcrConverter {
         file = getAttachment(node, iter.next());
       }
     }
+
     SimpleDocument doc = new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
-        getIntProperty(node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
-        getStringProperty(node, SLV_PROPERTY_OWNER), getDateProperty(node,
-        SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
-        getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
-        getStringProperty(node, SLV_PROPERTY_COMMENT), file);
+        getIntProperty(node, SLV_PROPERTY_ORDER),
+        getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
+         getStringProperty(node, SLV_PROPERTY_OWNER), file);
+    doc.setReservation(getDateProperty(node, SLV_PROPERTY_RESERVATION_DATE));
+    doc.setAlert(getDateProperty(node, SLV_PROPERTY_ALERT_DATE));
+    doc.setExpiry(getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE));
+    doc.setComment(getStringProperty(node, SLV_PROPERTY_COMMENT));
     doc.setRepositoryPath(node.getPath());
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
@@ -355,7 +358,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public void removeAttachment(Node documentNode, String language) throws RepositoryException {
     String lang = language;
     if (lang == null) {
-      lang = I18NHelper.defaultLanguage;
+      lang = I18NHelper.DEFAULT_LANGUAGE;
     }
     if (documentNode.hasNode(SimpleDocument.FILE_PREFIX + lang)) {
       Node attachmentNode = documentNode.getNode(SimpleDocument.FILE_PREFIX + lang);
@@ -396,7 +399,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public void releaseDocumentNode(Node documentNode, String lang) throws RepositoryException {
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     final String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
     if (documentNode.hasNode(attachmentNodeName)) {

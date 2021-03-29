@@ -34,7 +34,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -62,13 +61,12 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 @Entity
 @Table(name = "pdcclassification")
-@NamedQueries({
-    @NamedQuery(name = "findByComponentInstanceId", query = "from PdcClassification where " +
-        "instanceId=:instanceId and contentId is null and nodeId is null"),
-    @NamedQuery(name = "findByNodeId", query = "from PdcClassification where " +
-        "instanceId=:instanceId and contentId is null and nodeId=:nodeId"),
-    @NamedQuery(name = "findByPdcAxisValues", query = "select distinct c from PdcClassification c" +
-        " join c.positions p join p.axisValues v where v in :values")})
+@NamedQuery(name = "findByComponentInstanceId", query = "select p from PdcClassification p where " +
+    "p.instanceId=:instanceId and p.contentId is null and p.nodeId is null")
+@NamedQuery(name = "findByNodeId", query = "select p from PdcClassification p where " +
+    "p.instanceId=:instanceId and p.contentId is null and p.nodeId=:nodeId")
+@NamedQuery(name = "findByPdcAxisValues", query = "select distinct c from PdcClassification c " +
+    "join c.positions p join p.axisValues v where v in :values")
 public class PdcClassification
     extends BasicJpaEntity<PdcClassification, UniqueLongIdentifier> {
 
@@ -82,7 +80,7 @@ public class PdcClassification
   @Size(min = 1)
   @UniquePositions
   @Valid
-  private Set<PdcPosition> positions = new HashSet<>();
+  private final Set<PdcPosition> positions = new HashSet<>();
   private boolean modifiable = true;
   @Column(nullable = false)
   @NotNull
@@ -133,7 +131,7 @@ public class PdcClassification
    * @return an empty classification on the PdC.
    */
   public static PdcClassification aPdcClassificationOfContent(Contribution contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     return aPdcClassificationOfContent(contributionId.getLocalId(),
         contributionId.getComponentInstanceId());
   }

@@ -24,7 +24,7 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.IdentifiableResource;
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.BaseRightProfile;
@@ -85,9 +85,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
@@ -326,7 +326,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addSilverpeasContentFeatures() {
     if (!contains(Contribution.class)) {
-      addClasses(Contribution.class, IdentifiableResource.class);
+      addClasses(Contribution.class, SilverpeasResource.class);
     }
     if (!contains(SilverpeasContent.class)) {
       addClasses(SilverpeasContent.class);
@@ -341,9 +341,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(WAPrimaryKey.class, ResourceReference.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
-    addClasses(ContentManager.class, SilverContentPostUpdate.class);
+    addClasses(ContentManagementEngine.class, SilverContentPostUpdate.class);
     addClasses(JoinStatement.class);
-    addClasses(ContentManagerProvider.class);
+    addClasses(ContentManagementEngineProvider.class);
     addClasses(ContentPeas.class);
     addClasses(SilverContentVisibility.class);
     return this;
@@ -517,8 +517,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(ContributionWithVisibility.class, ContributionVisibility.class,
           DefaultContributionVisibility.class);
     }
-    if (!contains(ResourcePath.class)) {
-      addClasses(ResourcePath.class);
+    if (!contains(ContributionPath.class)) {
+      addClasses(ContributionPath.class);
     }
     addPackages(true, "org.silverpeas.core.node");
     addPackages(true, "org.silverpeas.core.contribution.publication.service");

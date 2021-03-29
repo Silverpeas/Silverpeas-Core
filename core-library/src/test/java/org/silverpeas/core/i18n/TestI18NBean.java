@@ -33,5 +33,10 @@ public class TestI18NBean extends AbstractI18NBean<TestI18N> {
   protected TestI18NBean() {
 
   }
+
+  @Override
+  protected Class<TestI18N> getTranslationType() {
+    return TestI18N.class;
+  }
 }
   

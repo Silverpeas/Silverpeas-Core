@@ -48,13 +48,7 @@ public class SocialPublications implements SocialPublicationProvider {
   protected SocialPublications() {
   }
 
-  /**
-   * get my SocialInformationPublication
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List
-   */
+
   @Override
   public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
     return getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
@@ -64,14 +58,7 @@ public class SocialPublications implements SocialPublicationProvider {
     return publicationService;
   }
 
-  /**
-   * get the SocialInformationPublication of my contacts
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List
-   */
+
   @SuppressWarnings("unchecked")
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
@@ -95,7 +82,7 @@ public class SocialPublications implements SocialPublicationProvider {
     Iterator<SocialInformationPublication> socialPublicationIt = socialPublications.iterator();
     while (socialPublicationIt.hasNext()) {
       SocialInformationPublication socialPublication = socialPublicationIt.next();
-      String instanceId = socialPublication.getPublication().getComponentInstanceId();
+      String instanceId = socialPublication.getPublication().getInstanceId();
 
       // On Kmelia application, if the user has not access right to the publication, then it is
       // removed from the result

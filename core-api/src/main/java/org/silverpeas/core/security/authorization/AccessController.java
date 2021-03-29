@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.CollectionUtil;
 
@@ -68,6 +69,14 @@ public interface AccessController<T> {
   default boolean isUserAuthorized(Set<SilverpeasRole> userRoles) {
     return CollectionUtil.isNotEmpty(userRoles);
   }
+
+  /**
+   * Checks if the specified user may access the object with the specified identifier.
+   * @param userId the unique identifier of the user.
+   * @param id the unique identifier of the object to be accessed in Silverpeas.
+   * @return true if access is granted - false otherwise.
+   */
+  boolean isUserAuthorized(String userId, ResourceIdentifier id);
 
   /**
    * Checks if the specified user may access the specified object.

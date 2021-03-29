@@ -532,7 +532,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+  public Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       final String userId, final Collection<String> componentIds,
       final ProfiledObjectIds profiledObjectIds) {
     try {
@@ -545,7 +545,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
+  public Map<String, List<String>> getUserObjectProfiles(final String userId,
       final String componentId, final ProfiledObjectType profiledObjectType) {
     try {
       return getAdminService().getProfilesByObjectTypeAndUserId(profiledObjectType, componentId, userId);

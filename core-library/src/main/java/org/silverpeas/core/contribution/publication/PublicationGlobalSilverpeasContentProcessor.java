@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication;
 
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface.ContributionWrapper;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager.ContributionWrapper;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;

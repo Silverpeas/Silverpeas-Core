@@ -116,7 +116,7 @@ public class DefaultNotificationManager extends AbstractNotification
 
   @Override
   public DefaultNotificationManager forLanguage(final String language) {
-    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
+    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
     multilang = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationManager.multilang.notificationManagerBundle", lang);
     return this;

@@ -29,8 +29,10 @@ import org.silverpeas.core.annotation.constraint.DateRange;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.Objects;
@@ -39,10 +41,10 @@ import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
- * A period is a laps of time starting at a given date or datetime and ending at a given
- * date or datetime. When the period takes care of the time, it is always set in
- * UTC/Greenwich in order to avoid any bugs by comparing two periods in different time zones
- * or offset zones.
+ * A period is a laps of time starting at a given date or datetime and ending at a given date or
+ * datetime. When the period takes care of the time, it is always set in UTC/Greenwich in order to
+ * avoid any bugs by comparing two periods in different time zones or offset zones.
+ *
  * @author mmoquillon
  */
 @Embeddable
@@ -58,26 +60,30 @@ public class Period implements Serializable {
   private boolean inDays = false;
 
   /**
-   * Creates a new period of time between the two specified non null date or datetime.
-   * If date parameters are instances of {@link LocalDate}, take a look at method
-   * {@link #between(LocalDate, LocalDate)}.
-   * If date parameters are instances of {@link OffsetDateTime}, take a look at method
-   * {@link #between(OffsetDateTime, OffsetDateTime)}.
+   * Creates a new period of time between the two specified non null date or datetime. If date
+   * parameters are instances of {@link LocalDate}, take a look at method {@link #between(LocalDate,
+   * LocalDate)}. If date parameters are instances of {@link OffsetDateTime}, take a look at method
+   * {@link #between(OffsetDateTime, OffsetDateTime)}. If the temporal parameters are
+   * {@link Instant} instances then the system timezone is taken for those temporal objects.
+   *
    * @param start the start of the period. It defines the inclusive date or datetime at which the
-   * period starts.
-   * @param end the end day of the period. It defines the exclusive date or the exclusive datetime
-   * at which the period ends. The end date must be the same or after the start date. An end date
-   * equal to the start date means the period is spanning all the day; it is equivalent to an end
-   * date being one day after the start date.
+   *              period starts.
+   * @param end   the end day of the period. It defines the exclusive date or the exclusive datetime
+   *              at which the period ends. The end date must be the same or after the start date.
+   *              An end date equal to the start date means the period is spanning all the day; it
+   *              is equivalent to an end date being one day after the start date.
    * @return the period of days between the two specified dates.
-   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or
-   * {@link OffsetDateTime} instances.
+   * @throws IllegalArgumentException if the type of the temporal parameters aren't yet supported.
+   * Currently only {@link LocalDate}, {@link OffsetDateTime} and {@link Instant} are supported.
    */
   public static Period between(java.time.temporal.Temporal start, java.time.temporal.Temporal end) {
     if (start instanceof LocalDate && end instanceof LocalDate) {
       return between(LocalDate.from(start), LocalDate.from(end));
     } else if (start instanceof OffsetDateTime && end instanceof OffsetDateTime) {
       return between(OffsetDateTime.from(start), OffsetDateTime.from(end));
+    } else if (start instanceof Instant && end instanceof Instant) {
+      return between(OffsetDateTime.ofInstant((Instant) start, ZoneId.systemDefault()),
+          OffsetDateTime.ofInstant((Instant) end, ZoneId.systemDefault()));
     } else {
       throw new IllegalArgumentException(
           "Temporal parameters must be either of type LocalDate or OffsetDateTime");
@@ -89,12 +95,13 @@ public class Period implements Serializable {
    * over all the day(s) between the specified inclusive start day and the exclusive end day; the
    * period is expressed in days. For example, a period between 2016-12-15 and 2016-12-17 means the
    * period is spreading over two days (2016-12-15 and 2016-12-16).
-   * @param startDay the start day of the period. It defines the inclusive date at which the
-   * period starts.
-   * @param endDay the end day of the period. It defines the exclusive date at which the period
-   * ends. The end date must be the same or after the start date. An end date equal to the start
-   * date means the period is spanning all the day of the start date; it is equivalent to an end
-   * date being one day after the start date.
+   *
+   * @param startDay the start day of the period. It defines the inclusive date at which the period
+   *                 starts.
+   * @param endDay   the end day of the period. It defines the exclusive date at which the period
+   *                 ends. The end date must be the same or after the start date. An end date equal
+   *                 to the start date means the period is spanning all the day of the start date;
+   *                 it is equivalent to an end date being one day after the start date.
    * @return the period of days between the two specified dates.
    */
   public static Period between(LocalDate startDay, LocalDate endDay) {
@@ -116,10 +123,11 @@ public class Period implements Serializable {
    * the specified inclusive datetime and it ends at the specified other exclusive datetime. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   * @param startDateTime the start datetime of the period. It defines the inclusive date
-   * time at which the period starts.
-   * @param endDateTime the end datetime of the period. It defines the exclusive datetime
-   * at which the period ends. The end datetime must be after the start datetime.
+   *
+   * @param startDateTime the start datetime of the period. It defines the inclusive date time at
+   *                      which the period starts.
+   * @param endDateTime   the end datetime of the period. It defines the exclusive datetime at which
+   *                      the period ends. The end datetime must be after the start datetime.
    * @return the period of time between the two specified datetimes.
    */
   public static Period between(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
@@ -134,24 +142,25 @@ public class Period implements Serializable {
   }
 
   /**
-   * Creates a new period of time between the two specified date or datetime.
-   * If date parameters are instances of {@link LocalDate}, take a look at the method
-   * {@link Period#betweenNullable(LocalDate, LocalDate)}.
-   * If date parameters are instances of {@link OffsetDateTime}, take a look at the method
-   * {@link Period#betweenNullable(OffsetDateTime, OffsetDateTime)}.
-   * If both date parameters are null, then a period between {@link LocalDate#MIN} and
-   * {@link LocalDate#MAX} is returned unless those parameters are explicitly typed; for example:
-   * {@code Period.betweenNullable((OffsetDateTime) null, null)}
+   * Creates a new period of time between the two specified date or datetime. If date parameters are
+   * instances of {@link LocalDate}, take a look at the method {@link
+   * Period#betweenNullable(LocalDate, LocalDate)}. If date parameters are instances of {@link
+   * OffsetDateTime}, take a look at the method {@link Period#betweenNullable(OffsetDateTime,
+   * OffsetDateTime)}. If both date parameters are null, then a period between {@link LocalDate#MIN}
+   * and {@link LocalDate#MAX} is returned unless those parameters are explicitly typed; for
+   * example: {@code Period.betweenNullable((OffsetDateTime) null, null)}
+   *
    * @param start the start of the period. It defines the inclusive date or datetime at which the
-   * period starts. If it is null then the minimum temporal (date or datetime) is taken.
-   * @param end the end day of the period. It defines the exclusive date or the exclusive datetime
-   * at which the period ends. The end date must be the same or after the start date. An end date
-   * equal to the start date means the period is spanning all the day; it is equivalent to an end
-   * date being one day after the start date. If It is null then the maximum temporal (date or
-   * datetime) is taken.
+   *              period starts. If it is null then the minimum temporal (date or datetime) is
+   *              taken.
+   * @param end   the end day of the period. It defines the exclusive date or the exclusive datetime
+   *              at which the period ends. The end date must be the same or after the start date.
+   *              An end date equal to the start date means the period is spanning all the day; it
+   *              is equivalent to an end date being one day after the start date. If It is null
+   *              then the maximum temporal (date or datetime) is taken.
    * @return the period of days between the two specified dates.
-   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or
-   * {@link OffsetDateTime} instances.
+   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or {@link
+   *                                  OffsetDateTime} instances.
    * @see LocalDate#MIN for the minimum supported date.
    * @see OffsetDateTime#MIN for the maximum supported date.
    * @see LocalDate#MAX for the maximum supported datetime.
@@ -172,21 +181,23 @@ public class Period implements Serializable {
       return betweenNullable(minOrDateTime(start), maxOrDateTime(end));
     }
     throw new IllegalArgumentException(
-          "Temporal parameters must be either of type LocalDate or OffsetDateTime");
+        "Temporal parameters must be either of type LocalDate or OffsetDateTime");
   }
 
   /**
    * Creates a new period of time between the two specified dates. The period is spreading over all
    * the day(s) between the specified inclusive start day and the exclusive end day; the period is
-   * expressed in days. For example, a period between 2016-12-15 and 2016-12-17 means the period
-   * is spreading over two days (2016-12-15 and 2016-12-16).
-   * @param startDay the start day of the period. It defines the inclusive date at which the
-   * period starts. If null, then the minimum supported {@link LocalDate#MIN} date is taken.
-   * @param endDay the end day of the period. It defines the exclusive date at which the period
-   * ends. The end date must be the same or after the start date. An end date equal to the start
-   * date means the period is spanning all the day of the start date; it is equivalent to an end
-   * date being one day after the start date. If null, then the maximum supported
-   * {@link LocalDate#MAX} is taken.
+   * expressed in days. For example, a period between 2016-12-15 and 2016-12-17 means the period is
+   * spreading over two days (2016-12-15 and 2016-12-16).
+   *
+   * @param startDay the start day of the period. It defines the inclusive date at which the period
+   *                 starts. If null, then the minimum supported {@link LocalDate#MIN} date is
+   *                 taken.
+   * @param endDay   the end day of the period. It defines the exclusive date at which the period
+   *                 ends. The end date must be the same or after the start date. An end date equal
+   *                 to the start date means the period is spanning all the day of the start date;
+   *                 it is equivalent to an end date being one day after the start date. If null,
+   *                 then the maximum supported {@link LocalDate#MAX} is taken.
    * @return the period of days between the two specified dates.
    * @see LocalDate#MIN for the minimum supported date.
    * @see LocalDate#MAX for the maximum supported date.
@@ -202,12 +213,13 @@ public class Period implements Serializable {
    * specified inclusive datetime and it ends at the specified other exclusive datetime. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   * @param startDateTime the start datetime of the period. It defines the inclusive date
-   * time at which the period starts. If null then the minimum supported
-   * {@link OffsetDateTime#MIN} is taken.
-   * @param endDateTime the end datetime of the period. It defines the exclusive datetime
-   * at which the period ends. The end datetime must be after the start datetime. If null, then the
-   * maximum supported {@link OffsetDateTime#MAX} is taken.
+   *
+   * @param startDateTime the start datetime of the period. It defines the inclusive date time at
+   *                      which the period starts. If null then the minimum supported {@link
+   *                      OffsetDateTime#MIN} is taken.
+   * @param endDateTime   the end datetime of the period. It defines the exclusive datetime at which
+   *                      the period ends. The end datetime must be after the start datetime. If
+   *                      null, then the maximum supported {@link OffsetDateTime#MAX} is taken.
    * @return the period of time between the two specified date times.
    * @see OffsetDateTime#MIN for the minimum supported date.
    * @see OffsetDateTime#MAX for the maximum supported date.
@@ -220,11 +232,11 @@ public class Period implements Serializable {
 
   /**
    * Gets the inclusive temporal start date of this period of time.
-   *
+   * <p>
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
-   * the first day of the period.<br>
-   * Otherwise, the date and the time in UTC/Greenwich at which this period starts on the
-   * timeline is returned.
+   * the first day of the period.<br> Otherwise, the date and the time in UTC/Greenwich at which
+   * this period starts on the timeline is returned.
+   *
    * @return a temporal instance ({@link LocalDate} if all day period or {@link OffsetDateTime})
    * otherwise.
    */
@@ -234,11 +246,11 @@ public class Period implements Serializable {
 
   /**
    * Gets the exclusive temporal end date of this period of time.
-   *
+   * <p>
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
-   * the last day of the period.<br>
-   * Otherwise, the date and the time in UTC/Greenwich at which this period ends on the
-   * timeline is returned.
+   * the last day of the period.<br> Otherwise, the date and the time in UTC/Greenwich at which this
+   * period ends on the timeline is returned.
+   *
    * @return a temporal instance ({@link LocalDate} if all day period or {@link OffsetDateTime})
    * otherwise.
    */
@@ -248,6 +260,7 @@ public class Period implements Serializable {
 
   /**
    * Is this period in days?
+   *
    * @return true if the laps of time defining this period is expressed in days. False otherwise.
    */
   public boolean isInDays() {
@@ -256,8 +269,9 @@ public class Period implements Serializable {
 
   /**
    * Is this period starts at the the minimum supported date/datetime in Java?
-   * @return true if this period starts at the minimum date/datetime supported by Java.
-   * False otherwise.
+   *
+   * @return true if this period starts at the minimum date/datetime supported by Java. False
+   * otherwise.
    * @see LocalDate#MIN for the minimum supported date.
    * @see OffsetDateTime#MIN for the maximum supported date.
    */
@@ -268,8 +282,9 @@ public class Period implements Serializable {
 
   /**
    * Is this period ends at the the maximum supported date/datetime in Java?
-   * @return true if this period ends at the minimum date/datetime supported by Java.
-   * False otherwise.
+   *
+   * @return true if this period ends at the minimum date/datetime supported by Java. False
+   * otherwise.
    * @see LocalDate#MAX for the maximum supported datetime.
    * @see OffsetDateTime#MAX for the maximum supported datetime.
    */
@@ -280,6 +295,7 @@ public class Period implements Serializable {
 
   /**
    * Is this period including the specified temporal?
+   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if the specified date is included in this period, false otherwise.
    */
@@ -290,9 +306,10 @@ public class Period implements Serializable {
 
   /**
    * Is this period ending before the specified temporal?
+   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
-   * @return true if this period's end date is at or before the specified temporal (the period's
-   * end date is exclusive).
+   * @return true if this period's end date is at or before the specified temporal (the period's end
+   * date is exclusive).
    */
   public boolean endsBefore(final Temporal dateTime) {
     OffsetDateTime dt = asOffsetDateTime(dateTime);
@@ -301,9 +318,10 @@ public class Period implements Serializable {
 
   /**
    * Is this period ending after the specified temporal?
+   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
-   * @return true if this period's end date is at or before the specified temporal (the period's
-   * end date is exclusive).
+   * @return true if this period's end date is at or before the specified temporal (the period's end
+   * date is exclusive).
    */
   public boolean endsAfter(final Temporal dateTime) {
     OffsetDateTime dt = asOffsetDateTime(dateTime);
@@ -312,9 +330,10 @@ public class Period implements Serializable {
 
   /**
    * Is this period starting after the specified temporal?
+   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
-   * @return true if this period's start date is after the specified temporal (the period's
-   * start date is inclusive).
+   * @return true if this period's start date is after the specified temporal (the period's start
+   * date is inclusive).
    */
   public boolean startsAfter(final Temporal dateTime) {
     OffsetDateTime dt = asOffsetDateTime(dateTime);

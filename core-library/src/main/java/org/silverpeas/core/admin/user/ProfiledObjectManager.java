@@ -124,12 +124,12 @@ public class ProfiledObjectManager {
     }
   }
 
-  public Map<Integer, List<String>> getUserProfileNames(ProfiledObjectType profiledObjectType,
+  public Map<String, List<String>> getUserProfileNames(ProfiledObjectType profiledObjectType,
       int componentId, int userId, List<String> groupIds) throws AdminException {
     try (final Connection con = DBUtil.openConnection()) {
       final List<UserRoleRow> roles =
           roleDAO.getRoles(con, ProfiledObjectIds.ofType(profiledObjectType), singleton(componentId), groupIds, userId);
-      final Map<Integer, List<String>> objectProfiles = new HashMap<>(roles.size());
+      final Map<String, List<String>> objectProfiles = new HashMap<>(roles.size());
       roles.sort(Comparator.comparingInt(UserRoleRow::getObjectId));
       int currentObjectId = -1;
       List<String> roleNames = new ArrayList<>();
@@ -137,7 +137,7 @@ public class ProfiledObjectManager {
         if (currentObjectId != role.getObjectId()) {
           currentObjectId = role.getObjectId();
           roleNames = new ArrayList<>();
-          objectProfiles.put(currentObjectId, roleNames);
+          objectProfiles.put(String.valueOf(currentObjectId), roleNames);
         }
         roleNames.add(role.getRoleName());
       }

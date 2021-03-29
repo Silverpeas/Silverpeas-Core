@@ -112,8 +112,10 @@ public class PdcClassificationResource extends RESTWebService {
       URI itsURI = getUri().getRequestUri();
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException | PdcException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -142,6 +144,7 @@ public class PdcClassificationResource extends RESTWebService {
     } catch (ContentManagerException | PdcException ex) {
       SilverLogger.getLogger(this).warn(ex.getMessage());
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -178,10 +181,13 @@ public class PdcClassificationResource extends RESTWebService {
           entity(thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI))).
           build();
     } catch (ContentManagerException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
@@ -219,10 +225,13 @@ public class PdcClassificationResource extends RESTWebService {
           .build(getContentId());
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }

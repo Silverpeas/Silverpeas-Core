@@ -23,19 +23,19 @@
  */
 package org.silverpeas.core.contact.model;
 
-import java.io.Serializable;
+import org.silverpeas.core.ResourceReference;
 
-import org.silverpeas.core.WAPrimaryKey;
+import java.io.Serializable;
 
 /**
  * It's the Contact PrimaryKey object It identify a Contact
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class ContactPK extends WAPrimaryKey implements Serializable {
+public class ContactPK extends ResourceReference implements Serializable {
 
   // for flat pk design pattern
-  public transient ContactDetail contactDetail = null;
+  private transient ContactDetail contactDetail = null;
 
   /**
    * Constructor which set only the id
@@ -57,8 +57,9 @@ public class ContactPK extends WAPrimaryKey implements Serializable {
    * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    */
-  public ContactPK(String id, WAPrimaryKey pk) {
-    super(id, pk);
+  public ContactPK(String id, ResourceReference pk) {
+    this(id, pk.getInstanceId());
+    setSpace(pk.getSpace());
   }
 
   /**
@@ -66,6 +67,7 @@ public class ContactPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Contact";
   }
@@ -75,6 +77,7 @@ public class ContactPK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "SB_Contact_Contact";
   }
@@ -89,6 +92,14 @@ public class ContactPK extends WAPrimaryKey implements Serializable {
     return other instanceof ContactPK && (id.equals(((ContactPK) other).getId())) &&
         (space.equals(((ContactPK) other).getSpace())) &&
         (componentName.equals(((ContactPK) other).getComponentName()));
+  }
+
+  public ContactDetail getContactDetail() {
+    return contactDetail;
+  }
+
+  public void setContactDetail(final ContactDetail contactDetail) {
+    this.contactDetail = contactDetail;
   }
 
   /**

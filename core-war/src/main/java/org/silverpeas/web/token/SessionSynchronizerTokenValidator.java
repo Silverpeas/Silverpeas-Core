@@ -165,7 +165,8 @@ public class SessionSynchronizerTokenValidator implements Filter {
     return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request) &&
         !isCredentialManagement(request) && !isSsoAuthentication(request) &&
         !(isWebServiceRequested(request) &&
-            StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY)));
+            StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY))) &&
+        !isCMISResource(request);
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
@@ -179,6 +180,10 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isWebServiceRequested(HttpServletRequest request) {
     return request.getRequestURI().contains(getApplicationURL() + "/services/");
+  }
+
+  private boolean isCMISResource(HttpServletRequest request) {
+    return request.getRequestURI().contains(getApplicationURL() + "/cmis/");
   }
 
   private boolean isSsoAuthentication(HttpServletRequest request) {

@@ -71,7 +71,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     }
     String lang = attachment.getLanguage();
     if (!StringUtil.isDefined(lang)) {
-      lang = I18NHelper.defaultLanguage;
+      lang = I18NHelper.DEFAULT_LANGUAGE;
     }
     contextFolder = addExclusiveFolder(contextFolder, lang);
     addFile(contextFolder, attachment);

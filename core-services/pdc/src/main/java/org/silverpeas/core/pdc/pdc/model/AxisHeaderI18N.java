@@ -37,8 +37,12 @@ public class AxisHeaderI18N extends BeanTranslation implements java.io.Serializa
   public AxisHeaderI18N() {
   }
 
-  public AxisHeaderI18N(int axisId, String lang, String name, String description) {
+  public AxisHeaderI18N(final AxisHeaderI18N translation) {
+    super(translation);
+  }
+
+  public AxisHeaderI18N(String axisId, String lang, String name, String description) {
     super(lang, name, description);
-    setObjectId(Integer.toString(axisId));
+    setObjectId(axisId);
   }
 }

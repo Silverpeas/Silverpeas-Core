@@ -43,7 +43,7 @@
 	String translation = (String) request.getAttribute("Translation");
 	if (translation == null || translation.equals("null"))
 	{
-		translation = I18NHelper.defaultLanguage;
+		translation = I18NHelper.DEFAULT_LANGUAGE;
 	}
 
 	String id = "";

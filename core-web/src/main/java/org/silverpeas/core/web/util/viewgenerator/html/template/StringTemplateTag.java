@@ -113,7 +113,7 @@ public class StringTemplateTag extends TagSupport {
       language = locale.getLanguage();
     }
     if (StringUtil.isNotDefined(language)) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
 
     // Template file

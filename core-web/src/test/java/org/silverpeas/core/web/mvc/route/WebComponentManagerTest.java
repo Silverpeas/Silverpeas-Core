@@ -44,10 +44,10 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yohann Chastagnier
  */
-public class WebComponentManagerTest extends WebComponentRequestRouterTest {
+class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
-  public void webComponentControllerIsNotAnnoted() {
+  void webComponentControllerIsNotAnnotated() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(BadTestWebComponentController.class).defaultRequest().perform();
@@ -62,7 +62,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void veryfingWebComponentControllerInitialize() throws Exception {
+  void verifyingWebComponentControllerInitialize() throws Exception {
     ComponentContext componentContext = mock(ComponentContext.class);
     when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
     TestResult testResult = onDefaultController().defaultRequest().perform();
@@ -73,7 +73,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void doGetOnRequestRouterWithRedirectToInternalJsp() throws Exception {
+  void doGetOnRequestRouterWithRedirectToInternalJsp() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest().perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathNotFound(testResult);
@@ -87,7 +87,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void doPostOnRequestRouterWithRedirectToInternal() throws Exception {
+  void doPostOnRequestRouterWithRedirectToInternal() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("create").perform();
@@ -97,7 +97,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void doPutOnRequestRouterWithRedirectToInternalWithRedirectTo() throws Exception {
+  void doPutOnRequestRouterWithRedirectToInternalWithRedirectTo() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.PUT)
             .changeSuffixPathWith("update").perform();
@@ -107,7 +107,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void doDeleteOnRequestRouter() throws Exception {
+  void doDeleteOnRequestRouter() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.DELETE)
             .changeSuffixPathWith("delete").perform();
@@ -117,7 +117,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void homepageIsNotSpecified() {
+  void homepageIsNotSpecified() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(HomePageIsNotSpecifiedController.class).defaultRequest().perform();
@@ -129,7 +129,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void twoHomepageIsSpecified() {
+  void twoHomepageIsSpecified() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(TwoHomepagesController.class).defaultRequest().perform();
@@ -144,7 +144,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void lowerAccessRoleSuccess() throws Exception {
+  void lowerAccessRoleSuccess() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setHighestUserRole(SilverpeasRole.PUBLISHER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
@@ -158,7 +158,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void lowerAccessRoleWithUserThatHasNotEnoughRights() throws Exception {
+  void lowerAccessRoleWithUserThatHasNotEnoughRights() throws Exception {
     TestResult testResult =
         onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
@@ -170,7 +170,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void lowerAccessRoleButWrongHttpMethod() throws Exception {
+  void lowerAccessRoleButWrongHttpMethod() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeHttpMethodWith(HttpMethod.GET)
             .changeSuffixPathWith("lowerRoleAccess").perform();
@@ -181,7 +181,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
+  void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
@@ -193,7 +193,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void lowerRoleAccessRedirectToInternalOnError() throws Exception {
+  void lowerRoleAccessRedirectToInternalOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
@@ -205,7 +205,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void lowerRoleAccessRedirectToOnError() throws Exception {
+  void lowerRoleAccessRedirectToOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().setHighestUserRole(SilverpeasRole.WRITER).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
@@ -216,7 +216,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void httpMethodWithInvokableAnnotation() {
+  void httpMethodWithInvokableAnnotation() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(HttpMethodWithInvokableAnnotationController.class).defaultRequest().perform();
@@ -228,7 +228,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void referenceInvokableBeforeThatDoesNotExist() {
+  void referenceInvokableBeforeThatDoesNotExist() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(InvokeBeforeNoReferenceController.class).defaultRequest().perform();
@@ -241,7 +241,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void referenceInvokableAfterThatDoesNotExist() {
+  void referenceInvokableAfterThatDoesNotExist() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(InvokeAfterNoReferenceController.class).defaultRequest().perform();
@@ -254,7 +254,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void invokableIdentifierAlreadyExists() {
+  void invokableIdentifierAlreadyExists() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(InvokableIdentifierAlreadyExistsController.class).defaultRequest().perform();
@@ -267,7 +267,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneIvokationBefore() throws Exception {
+  void oneIvokationBefore() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("invokation/oneBefore")
             .perform();
@@ -281,7 +281,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void twoIvokationsBefore() throws Exception {
+  void twoIvokationsBefore() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/2Before")
             .perform();
@@ -295,7 +295,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneIvokationAfter() throws Exception {
+  void oneIvokationAfter() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/oneAfter")
             .perform();
@@ -309,7 +309,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void threeIvokationsAfter() throws Exception {
+  void threeIvokationsAfter() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3After").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -322,7 +322,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void threeIvokationsBeforeAndFourAfter() throws Exception {
+  void threeIvokationsBeforeAndFourAfter() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/invokation/3Before4After")
             .perform();
@@ -336,7 +336,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void navigateToHtmlEditor() throws Exception {
+  void navigateToHtmlEditor() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("wysiwyg/modify").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -346,7 +346,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
 
   @Test
-  public void missingNavigationOnHttpMethod() {
+  void missingNavigationOnHttpMethod() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(MissingNavigationController.class).defaultRequest().perform();
@@ -359,7 +359,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void twoNavigationsSpecifiedOnHttpMethod() {
+  void twoNavigationsSpecifiedOnHttpMethod() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(TwoNavigationsSpecifiedController.class).defaultRequest().perform();
@@ -372,7 +372,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void samePathsWithoutVariable() {
+  void samePathsWithoutVariable() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(SamePathsWithoutVariableController.class).defaultRequest().perform();
@@ -388,7 +388,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void samePathsWithVariables() {
+  void samePathsWithVariables() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(SamePathsWithVariablesController.class).defaultRequest().perform();
@@ -406,7 +406,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void notHandledProducesSpecifiedOnHttpMethod() {
+  void notHandledProducesSpecifiedOnHttpMethod() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
         onController(NotHandledProducesSpecifiedController.class).defaultRequest().perform();
@@ -420,7 +420,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneVariableSimple() throws Exception {
+  void oneVariableSimple() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/view").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -434,7 +434,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneVariableComplex() throws Exception {
+  void oneVariableComplex() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-myVariableValue_123-test/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -448,7 +448,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneVariableComplex2() throws Exception {
+  void oneVariableComplex2() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
             .perform();
@@ -463,7 +463,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneVariableRegexpCheckOk() throws Exception {
+  void oneVariableRegexpCheckOk() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-123-otherTest").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -493,7 +493,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void oneVariableRegexpCheckOk2() throws Exception {
+  void oneVariableRegexpCheckOk2() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/wysiwyg/resourceId-_123-test")
             .perform();
@@ -508,7 +508,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void twoVariablesRegexpCheckOk() throws Exception {
+  void twoVariablesRegexpCheckOk() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/resourceId-123-test/id26/view").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -523,7 +523,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void sameVariableName() throws Exception {
+  void sameVariableName() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_123/review").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -537,7 +537,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void sameVariableNameButNotSameValues() throws Exception {
+  void sameVariableNameButNotSameValues() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/wysiwyg/myVariableValue_123/myVariableValue_124/review").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -550,7 +550,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void redirectToInternalJspWithVariable() throws Exception {
+  void redirectToInternalJspWithVariable() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -561,7 +561,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void redirectToInternalWithVariable() throws Exception {
+  void redirectToInternalWithVariable() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/123/push/26/report")
             .perform();
@@ -572,7 +572,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void redirectToWithVariable() throws Exception {
+  void redirectToWithVariable() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/redirect/report/123/push/26")
             .perform();
@@ -583,7 +583,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void redirectToWithVariableButSeveralValuesForSameVariable() throws Exception {
+  void redirectToWithVariableButSeveralValuesForSameVariable() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/redirect/report/123/push/26/SameVariableSevralValues").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -596,7 +596,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void producesByReturningEntity() throws Exception {
+  void producesByReturningEntity() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/produces/entity")
             .perform();
@@ -607,7 +607,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void producesByReturningString() throws Exception {
+  void producesByReturningString() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/produces/string")
             .perform();
@@ -618,7 +618,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void producesByHandlingResponseManually() throws Exception {
+  void producesByHandlingResponseManually() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("/produces/manually")
             .perform();
@@ -629,7 +629,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void webApplicationException412() throws Exception {
+  void webApplicationException412() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("webApplicationException412")
             .perform();
@@ -641,7 +641,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void specialControllerInheritance() throws Exception {
+  void specialControllerInheritance() throws Exception {
     TestResult testResult =
         onController(TestWebComponentSpecialInheritanceController.class).defaultRequest().perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -651,7 +651,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void variableConcurrencyVariableMethodNotFound() throws Exception {
+  void variableConcurrencyVariableMethodNotFound() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/variables/concurrencyWithStatics/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -661,7 +661,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void variableConcurrencyVariable() throws Exception {
+  void variableConcurrencyVariable() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/variables/concurrencyWithStatics/dynamicPath/").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -674,7 +674,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void variableConcurrencyStatic() throws Exception {
+  void variableConcurrencyStatic() throws Exception {
     TestResult testResult = onDefaultController().defaultRequest()
         .changeSuffixPathWith("/variables/concurrencyWithStatics/staticPath").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -685,7 +685,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  public void navigationContextManagement() throws Exception {
+  void navigationContextManagement() throws Exception {
     TestResult testResult =
         onDefaultController().defaultRequest().changeSuffixPathWith("Main").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());

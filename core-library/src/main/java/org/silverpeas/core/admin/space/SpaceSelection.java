@@ -88,7 +88,7 @@ public class SpaceSelection extends ClipboardSelection implements Serializable {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
     keyData.setTitle(spaceInst.getName());
     keyData.setAuthor(spaceInst.getCreatorUserId());
-    keyData.setCreationDate(spaceInst.getCreateDate());
+    keyData.setCreationDate(spaceInst.getCreationDate());
     keyData.setDesc(spaceInst.getDescription());
     return keyData;
   }

@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import java.util.Comparator;
 
 public class GSCDateComparatorDesc implements Comparator<GlobalSilverContent> {
-  final static public GSCDateComparatorDesc comparator = new GSCDateComparatorDesc();
+  public static final GSCDateComparatorDesc comparator = new GSCDateComparatorDesc();
 
   /**
    * This result is reversed as we want a descending sort.
@@ -36,10 +36,10 @@ public class GSCDateComparatorDesc implements Comparator<GlobalSilverContent> {
    */
   @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    int compareResult = gsc1.getDate().compareTo(gsc2.getDate());
+    int compareResult = gsc2.getLastUpdateDate().compareTo(gsc1.getLastUpdateDate());
     if (compareResult == 0) {
-      compareResult = gsc1.getId().compareTo(gsc2.getId());
+      compareResult = gsc2.getId().compareTo(gsc1.getId());
     }
-    return 0 - compareResult;
+    return compareResult;
   }
 }

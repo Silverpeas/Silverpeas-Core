@@ -101,9 +101,9 @@ public class ComponentInstManager {
     componentInst.setDomainFatherId(componentInstToCopy.getDomainFatherId());
     componentInst.setOrderNum(componentInstToCopy.getOrderNum());
 
-    componentInst.setCreateDate(componentInstToCopy.getCreateDate());
-    componentInst.setUpdateDate(componentInstToCopy.getUpdateDate());
-    componentInst.setRemoveDate(componentInstToCopy.getRemoveDate());
+    componentInst.setCreationDate(componentInstToCopy.getCreationDate());
+    componentInst.setLastUpdateDate(componentInstToCopy.getLastUpdateDate());
+    componentInst.setRemovalDate(componentInstToCopy.getRemovalDate());
     componentInst.setStatus(componentInstToCopy.getStatus());
     componentInst.setCreatorUserId(componentInstToCopy.getCreatorUserId());
     componentInst.setUpdaterUserId(componentInstToCopy.getUpdaterUserId());
@@ -311,13 +311,13 @@ public class ComponentInstManager {
         componentInst.setOrderNum(instance.orderNum);
 
         if (instance.createTime != null) {
-          componentInst.setCreateDate(new Date(Long.parseLong(instance.createTime)));
+          componentInst.setCreationDate(new Date(Long.parseLong(instance.createTime)));
         }
         if (instance.updateTime != null) {
-          componentInst.setUpdateDate(new Date(Long.parseLong(instance.updateTime)));
+          componentInst.setLastUpdateDate(new Date(Long.parseLong(instance.updateTime)));
         }
         if (instance.removeTime != null) {
-          componentInst.setRemoveDate(new Date(Long.parseLong(instance.removeTime)));
+          componentInst.setRemovalDate(new Date(Long.parseLong(instance.removeTime)));
         }
 
         componentInst.setCreatorUserId(idAsString(instance.createdBy));

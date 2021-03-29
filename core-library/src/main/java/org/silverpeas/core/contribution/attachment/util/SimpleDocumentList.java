@@ -227,8 +227,8 @@ public class SimpleDocumentList<T extends SimpleDocument>
             valueBuffer.append(getLanguagePriorityIndex(simpleDocument), orderBy.isAscending());
             break;
           case LAST_UPDATE_DATE_DESC:
-            valueBuffer.append((simpleDocument.getUpdated() != null ? simpleDocument.getUpdated() :
-                simpleDocument.getCreated()), orderBy.isAscending());
+            valueBuffer.append((simpleDocument.getLastUpdateDate() != null ? simpleDocument.getLastUpdateDate() :
+                simpleDocument.getCreationDate()), orderBy.isAscending());
             break;
           default:
             throw new UnsupportedOperationException();

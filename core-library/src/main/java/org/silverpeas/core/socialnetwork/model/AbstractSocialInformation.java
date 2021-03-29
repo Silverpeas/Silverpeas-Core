@@ -23,15 +23,18 @@
  */
 package org.silverpeas.core.socialnetwork.model;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.date.DateTime;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author bensalem Nabil
  */
 public abstract class AbstractSocialInformation implements SocialInformation {
 
+  protected final ResourceReference resourceReference;
   protected String title;
   protected String description;
   protected String author;
@@ -40,6 +43,15 @@ public abstract class AbstractSocialInformation implements SocialInformation {
   protected boolean socialInformationWasupdated;
   protected String type;
   protected String icon;
+
+  protected AbstractSocialInformation(final ResourceReference resourceReference) {
+    this.resourceReference = resourceReference;
+  }
+
+  @Override
+  public ResourceReference getResourceReference() {
+    return resourceReference;
+  }
 
   @Override
   public String getTitle() {
@@ -127,20 +139,22 @@ public abstract class AbstractSocialInformation implements SocialInformation {
       return false;
     }
     final AbstractSocialInformation other = (AbstractSocialInformation) obj;
-    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+    if (!Objects.equals(this.title, other.title)) {
       return false;
     }
-    if ((this.description == null) ? (other.description != null) : !this.description.equals(
-        other.description)) {
+    if (!Objects.equals(this.description, other.description)) {
       return false;
     }
-    if ((this.author == null) ? (other.author != null) : !this.author.equals(other.author)) {
+    if (!Objects.equals(this.author, other.author)) {
       return false;
     }
-    if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
+    if (!Objects.equals(this.url, other.url)) {
       return false;
     }
-    return this.date == other.date || (this.date != null && this.date.equals(other.date));
+    if (!Objects.equals(this.date, other.date)) {
+      return false;
+    }
+    return Objects.equals(this.resourceReference, other.resourceReference);
   }
 
   @Override
@@ -151,6 +165,7 @@ public abstract class AbstractSocialInformation implements SocialInformation {
     hash = 71 * hash + (this.author != null ? this.author.hashCode() : 0);
     hash = 71 * hash + (this.url != null ? this.url.hashCode() : 0);
     hash = 71 * hash + (this.date != null ? this.date.hashCode() : 0);
+    hash = 71 * hash + (this.resourceReference != null ? this.resourceReference.hashCode() : 0);
     return hash;
   }
 
@@ -175,6 +190,8 @@ public abstract class AbstractSocialInformation implements SocialInformation {
         result = -1;
       } else if (!isUpdated() && socialInfo.isUpdated()) {
         result = 1;
+      } else {
+        result = socialInfo.getResourceReference().asString().compareTo(getResourceReference().asString());
       }
     }
     return result;

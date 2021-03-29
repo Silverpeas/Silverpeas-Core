@@ -39,8 +39,8 @@ public class AttachmentDeleter implements ContributionDeletion {
   public void delete(final Contribution contribution) {
     if (contribution instanceof WithAttachment) {
       AttachmentServiceProvider.getAttachmentService()
-          .deleteAllAttachments(contribution.getContributionId().getLocalId(),
-              contribution.getContributionId().getComponentInstanceId());
+          .deleteAllAttachments(contribution.getIdentifier().getLocalId(),
+              contribution.getIdentifier().getComponentInstanceId());
     }
   }
 }

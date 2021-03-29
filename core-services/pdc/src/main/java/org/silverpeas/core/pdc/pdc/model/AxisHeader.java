@@ -24,7 +24,6 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
@@ -34,7 +33,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
 
   // Class version identifier
   private static final long serialVersionUID = 5523411511012194843L;
-  private WAPrimaryKey pk;
+  private AxisPK pk;
   /**
    * The type of the axe
    */
@@ -56,6 +55,11 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
    */
   private int rootId = -1;
 
+  @Override
+  protected Class<AxisHeaderI18N> getTranslationType() {
+    return AxisHeaderI18N.class;
+  }
+
   //
   // Constructor
   //
@@ -64,20 +68,8 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
 
   public AxisHeader(AxisPK pk, String name, String type, int order,
       String creationDate, String creatorId, int rootId) {
-    setPK(pk);
+    this.pk = pk;
     setName(name);
-    this.type = type;
-    this.order = order;
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.rootId = rootId;
-  }
-
-  public AxisHeader(AxisPK pk, String name, String type, int order,
-      String creationDate, String creatorId, int rootId, String description) {
-    setPK(pk);
-    setName(name);
-    setDescription(description);
     this.type = type;
     this.order = order;
     this.creationDate = creationDate;
@@ -87,7 +79,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
 
   public AxisHeader(String id, String name, String type, int order, int rootId,
       String description) {
-    setPK(new AxisPK(id));
+    this.pk = new AxisPK(id);
     setName(name);
     setDescription(description);
     this.type = type;
@@ -96,7 +88,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
   }
 
   public AxisHeader(String id, String name, String type, int order, int rootId) {
-    setPK(new AxisPK(id));
+    this.pk = new AxisPK(id);
     setName(name);
     this.type = type;
     this.order = order;
@@ -104,7 +96,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
   }
 
   public AxisHeader(AxisHeaderPersistence persistence) {
-    this.pk = persistence.getPK();
+    this.pk = (AxisPK) persistence.getPK();
     setName(persistence.getName());
     setDescription(persistence.getDescription());
     this.creationDate = persistence.getCreationDate();
@@ -195,12 +187,8 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
     this.creatorId = creatorId;
   }
 
-  public WAPrimaryKey getPK() {
+  public AxisPK getPK() {
     return pk;
-  }
-
-  public void setPK(WAPrimaryKey value) {
-    pk = value;
   }
 
   /**

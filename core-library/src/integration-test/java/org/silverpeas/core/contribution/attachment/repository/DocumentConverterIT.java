@@ -99,13 +99,15 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument expectedResult = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), comment,
-        new SimpleAttachment(fileName, language, title, description,
+        foreignId, order, versionned, owner, new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
+    expectedResult.setReservation(reservation.getTime());
+    expectedResult.setAlert(alert.getTime());
+    expectedResult.setExpiry(expiry.getTime());
+    expectedResult.setComment(comment);
     expectedResult.setOldSilverpeasId(oldSilverpeasId);
-    expectedResult.getAttachment().setUpdated(updateDate);
+    expectedResult.getAttachment().setLastUpdateDate(updateDate);
     expectedResult.getAttachment().setUpdatedBy(updatedBy);
     expectedResult.setMajorVersion(1);
     expectedResult.setMinorVersion(2);
@@ -184,7 +186,7 @@ public class DocumentConverterIT extends JcrIntegrationIT {
         new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId);
-    expectedResult.setUpdated(updateDate);
+    expectedResult.setLastUpdateDate(updateDate);
     expectedResult.setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
@@ -281,17 +283,20 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), comment,
+        foreignId, order, versionned, owner,
         new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
+    document.setReservation(reservation.getTime());
+    document.setAlert(alert.getTime());
+    document.setExpiry(expiry.getTime());
+    document.setComment(comment);
     document.setMajorVersion(1);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setLastUpdateDate(updateDate);
     document.getAttachment().setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
@@ -360,16 +365,20 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), comment, new SimpleAttachment(fileName, language, title, description,
+        foreignId, order, versionned, owner,
+        new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
         creationDate, formId));
+    document.setReservation(reservation.getTime());
+    document.setAlert(alert.getTime());
+    document.setExpiry(expiry.getTime());
+    document.setComment(comment);
     document.setMajorVersion(1);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setLastUpdateDate(updateDate);
     document.getAttachment().setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
@@ -436,14 +445,17 @@ public class DocumentConverterIT extends JcrIntegrationIT {
         "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
         creationDate, formId);
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), comment, attachment);
+        foreignId, order, versionned, owner, attachment);
+    document.setReservation(reservation.getTime());
+    document.setAlert(alert.getTime());
+    document.setExpiry(expiry.getTime());
+    document.setComment(comment);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setStatus(status);
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setLastUpdateDate(updateDate);
     document.getAttachment().setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
@@ -502,16 +514,20 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), comment, new SimpleAttachment(fileName, language, title, description,
+        foreignId, order, versionned, owner,
+        new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
         creationDate, formId));
+    document.setReservation(reservation.getTime());
+    document.setAlert(alert.getTime());
+    document.setExpiry(expiry.getTime());
+    document.setComment(comment);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setStatus(status);
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setLastUpdateDate(updateDate);
     document.getAttachment().setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
@@ -549,18 +565,21 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), comment,
+        foreignId, order, versionned, owner,
         new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
+    document.setReservation(reservation.getTime());
+    document.setAlert(alert.getTime());
+    document.setExpiry(expiry.getTime());
+    document.setComment(comment);
     document.setStatus(status);
     document.setMajorVersion(1);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
     document.setOldSilverpeasId(oldSilverpeasId);
-    document.getAttachment().setUpdated(updateDate);
+    document.getAttachment().setLastUpdateDate(updateDate);
     document.getAttachment().setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(

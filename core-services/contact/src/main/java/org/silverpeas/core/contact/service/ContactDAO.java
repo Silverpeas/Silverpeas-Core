@@ -296,7 +296,7 @@ public class ContactDAO {
       throws SQLException, ParseException {
     ContactDetail detail = loadRow(con, primaryKey);
     ContactPK primary = new ContactPK(primaryKey.getId(), primaryKey);
-    primary.contactDetail = detail;
+    primary.setContactDetail(detail);
     return primary;
   }
 

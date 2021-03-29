@@ -192,7 +192,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @deprecated use getAllUsers(String componentId) Return all the users allowed to access the
    * given component of the given space
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   <T extends User> T[] getAllUsers(String sPrefixTableName, String sComponentName);
 
   /**
@@ -309,12 +309,12 @@ public interface OrganizationController extends java.io.Serializable {
    * @param profiledObjectIds if NOTHING is given, then all the rows associated to the type
    * are returned, otherwise all the rows associated to type and ids.
    * @return a map filled with list of profile name as string by couple component instance
-   * identifier as string - object identifier as integer.
+   * identifier as string - object identifier as String.
    */
-  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(String userId,
+  Map<Pair<String, String>, Set<String>> getUserProfilesByComponentIdAndObjectId(String userId,
       Collection<String> componentIds, ProfiledObjectIds profiledObjectIds);
 
-  Map<Integer, List<String>> getUserObjectProfiles(String userId, String componentId,
+  Map<String, List<String>> getUserObjectProfiles(String userId, String componentId,
       ProfiledObjectType profiledObjectType);
 
   List<ProfileInst> getUserProfiles(String componentId, ProfiledObjectId objectId);
@@ -422,7 +422,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @return true if the user can access the given component instance. False otherwise.
    * @deprecated Replaced by {@link OrganizationController#isComponentAvailableToUser(String, String)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   boolean isComponentAvailable(String componentId, String userId);
 
   /**

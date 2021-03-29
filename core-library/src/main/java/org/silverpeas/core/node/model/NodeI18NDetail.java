@@ -34,17 +34,21 @@ public class NodeI18NDetail extends BeanTranslation implements java.io.Serializa
 
   }
 
+  public NodeI18NDetail(final NodeI18NDetail translation) {
+    super(translation);
+  }
+
   public NodeI18NDetail(String lang, String nodeName, String nodeDescription) {
     super(lang, nodeName, nodeDescription);
   }
 
-  public NodeI18NDetail(int id, String lang, String nodeName,
+  public NodeI18NDetail(String id, String lang, String nodeName,
       String nodeDescription) {
     super(id, lang, nodeName, nodeDescription);
   }
 
-  public int getNodeId() {
-    return Integer.parseInt(super.getObjectId());
+  public String getNodeId() {
+    return super.getObjectId();
   }
 
   public void setNodeId(String id) {

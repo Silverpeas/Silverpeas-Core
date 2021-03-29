@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.webapi.comment;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.date.Date;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.owasp.encoder.Encode;
 
@@ -45,7 +45,9 @@ import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -119,7 +121,7 @@ public class CommentEntity implements WebEntity {
    * @return a list of entities representing each of then one of the specified comments.
    */
   public static List<CommentEntity> fromComments(final List<Comment> comments) {
-    List<CommentEntity> entities = new ArrayList<CommentEntity>();
+    List<CommentEntity> entities = new ArrayList<>();
     for (Comment comment : comments) {
       entities.add(fromComment(comment));
     }
@@ -132,12 +134,14 @@ public class CommentEntity implements WebEntity {
    * @return a comment instance.
    */
   public Comment toComment() {
-    Comment comment = new Comment(new CommentPK(getId(), getComponentId()), getResourceType(),
-        new PublicationPK(getResourceId(), getComponentId()), Integer.valueOf(getAuthor().getId()),
-        getAuthor().getFullName(), getText(),
-        decodeFromDisplayDate(getCreationDate(), getCurrentUserLanguage()),
-        decodeFromDisplayDate(getModificationDate(), getCurrentUserLanguage()));
-    comment.setOwnerDetail(getAuthor().toUserDetail());
+    CommentId commentId = new CommentId(getComponentId(), getId());
+    ResourceReference resourceRef = new ResourceReference(getResourceId(), getComponentId());
+    Date authoredDate = decodeFromDisplayDate(getCreationDate(), getCurrentUserLanguage());
+    Date updateDate = decodeFromDisplayDate(getModificationDate(), getCurrentUserLanguage());
+    Comment comment =
+        new Comment(commentId, getAuthor().getId(), getResourceType(), resourceRef, authoredDate);
+    comment.setLastUpdateDate(updateDate);
+    comment.setMessage(getText());
     return comment;
   }
 
@@ -150,8 +154,8 @@ public class CommentEntity implements WebEntity {
   public CommentEntity withURI(final URI uri) {
     this.uri = uri;
     String baseURI = uri.toString();
-    String usersURI = baseURI.toString().substring(0, baseURI.indexOf("comments"))
-        + ProfileResourceBaseURIs.USERS_BASE_URI;
+    String usersURI =
+        baseURI.substring(0, baseURI.indexOf("comments")) + ProfileResourceBaseURIs.USERS_BASE_URI;
     this.author = this.author.withAsUri(ProfileResourceBaseURIs.uriOfUser(author, usersURI));
     return this;
   }
@@ -232,6 +236,7 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the current user language.
+   *
    * @return the language of the current user.
    */
   public String getCurrentUserLanguage() {
@@ -240,6 +245,7 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Sets a currentUserLanguage to this entity.
+   *
    * @param currentUserLanguage the language of the current user.
    * @return itself.
    */
@@ -248,11 +254,11 @@ public class CommentEntity implements WebEntity {
 
     //change values of creationDate and modificationDate according to language of the current user
     java.util.Date createDate =
-        decodeFromDisplayDate(getCreationDate(), I18NHelper.defaultLanguage);
+        decodeFromDisplayDate(getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.creationDate = encodeToDisplayDate(createDate, this.currentUserLanguage);
 
     java.util.Date updateDate =
-        decodeFromDisplayDate(getModificationDate(), I18NHelper.defaultLanguage);
+        decodeFromDisplayDate(getModificationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.modificationDate = encodeToDisplayDate(updateDate, this.currentUserLanguage);
     return this;
   }
@@ -297,58 +303,43 @@ public class CommentEntity implements WebEntity {
   }
 
   protected CommentEntity(final Comment comment) {
-    this.componentId = comment.getCommentPK().getInstanceId();
-    this.id = comment.getCommentPK().getId();
+    this.componentId = comment.getIdentifier().getComponentInstanceId();
+    this.id = comment.getIdentifier().getLocalId();
     this.resourceType = comment.getResourceType();
-    this.resourceId = comment.getForeignKey().getId();
+    this.resourceId = comment.getResourceReference().getLocalId();
     this.text = comment.getMessage();
     this.textForHtml = Encode.forHtml(comment.getMessage());
     this.author = UserProfileEntity.fromUser((UserDetail) comment.getCreator());
     //we don't even know the language of the current user (the currentUserLanguage attribute has
     // not been yet initialized
-    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.defaultLanguage);
+    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.modificationDate =
-        encodeToDisplayDate(comment.getLastModificationDate(), I18NHelper.defaultLanguage);
+        encodeToDisplayDate(comment.getLastUpdateDate(), I18NHelper.DEFAULT_LANGUAGE);
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
+  public boolean equals(final Object o) {
+    if (this == o) {
       return true;
     }
-    if (obj == null) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final CommentEntity other = (CommentEntity) obj;
-    if (isDefined(getId()) && isDefined(other.getId())) {
-      return getId().equals(other.getId());
-    } else {
-      return getComponentId().equals(other.getComponentId()) && getResourceType().equals(other.
-          getResourceType()) && getResourceId().equals(other.getResourceId()) &&
-          getText().equals(other.getText()) && getCreationDate().equals(other.getCreationDate()) &&
-          getModificationDate().equals(other.getModificationDate()) &&
-          getAuthor().equals(other.getAuthor());
-    }
+    final CommentEntity that = (CommentEntity) o;
+    return Objects.equals(uri, that.uri) &&
+        Objects.equals(id, that.id) && Objects.equals(componentId, that.componentId) &&
+        Objects.equals(resourceType, that.resourceType) &&
+        Objects.equals(resourceId, that.resourceId) && Objects.equals(text, that.text) &&
+        Objects.equals(textForHtml, that.textForHtml) && Objects.equals(author, that.author) &&
+        Objects.equals(currentUserLanguage, that.currentUserLanguage) &&
+        Objects.equals(creationDate, that.creationDate) &&
+        Objects.equals(modificationDate, that.modificationDate);
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    if (isDefined(getId())) {
-      hash = 17 * hash + getId().hashCode();
-    } else {
-      hash = 17 * hash + (getComponentId() != null ? getComponentId().hashCode() : 0);
-      hash = 17 * hash + (getResourceType() != null ? getResourceType().hashCode() : 0);
-      hash = 17 * hash + (getResourceId() != null ? getResourceId().hashCode() : 0);
-      hash = 17 * hash + (getText() != null ? getText().hashCode() : 0);
-      hash = 17 * hash + (getCreationDate() != null ? getCreationDate().hashCode() : 0);
-      hash = 17 * hash + (getModificationDate() != null ? getModificationDate().hashCode() : 0);
-      hash = 17 * hash + (getAuthor() != null ? getAuthor().hashCode() : 0);
-    }
-    return hash;
+    return Objects.hash(uri, id, componentId, resourceType, resourceId, text, textForHtml, author,
+        currentUserLanguage, creationDate, modificationDate, indexed);
   }
 
   protected CommentEntity() {
@@ -358,7 +349,7 @@ public class CommentEntity implements WebEntity {
    * Encodes the specified date into a date to display by taking into account the user prefered
    * language. If the specified date isn't defined, then a display date of today is returned.
    *
-   * @param date the date to encode.
+   * @param date     the date to encode.
    * @param language the language to use to encode the display date.
    * @return the resulting display date.
    */
@@ -367,7 +358,7 @@ public class CommentEntity implements WebEntity {
     if (date != null) {
       displayDate = DateUtil.getOutputDate(date, language);
     } else {
-      displayDate = DateUtil.getOutputDate(Date.today(), language);
+      displayDate = DateUtil.getOutputDate(new Date(), language);
     }
     return displayDate;
   }
@@ -377,7 +368,7 @@ public class CommentEntity implements WebEntity {
    * display date isn't defined, then the today date is returned.
    *
    * @param displayDate the display date to decode.
-   * @param language the language in which the date is encoded.
+   * @param language    the language in which the date is encoded.
    * @return the resulting decoded date.
    */
   private static java.util.Date decodeFromDisplayDate(String displayDate, String language) {
@@ -385,8 +376,9 @@ public class CommentEntity implements WebEntity {
     if (isDefined(displayDate)) {
       try {
         String sqlDate = DateUtil.date2SQLDate(displayDate, language);
-        date = new Date(DateUtil.parseDate(sqlDate));
+        date = DateUtil.parseDate(sqlDate);
       } catch (ParseException ex) {
+        SilverLogger.getLogger(CommentEntity.class).warn(ex);
       }
     }
     return date;

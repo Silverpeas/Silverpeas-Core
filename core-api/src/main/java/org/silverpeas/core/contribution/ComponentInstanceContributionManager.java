@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -100,7 +100,7 @@ public interface ComponentInstanceContributionManager {
       componentInstanceManager.set(ServiceProvider
           .getServiceByComponentInstanceAndNameSuffix(instanceId, Constants.NAME_SUFFIX));
     } catch (IllegalStateException e) {
-      throw new SilverpeasRuntimeException(MessageFormat
+      throw new NotFoundException(MessageFormat
           .format("no ComponentInstanceContributionManager implementation for {0}", instanceId), e);
     }
     cache.put(cacheKey, componentInstanceManager.get());

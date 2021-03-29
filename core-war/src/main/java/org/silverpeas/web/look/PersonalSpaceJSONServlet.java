@@ -187,7 +187,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     });
   }
 
-  private String getComponentsAsJSONArray(Collection<SilverpeasComponentInstance> components,
+  private String getComponentsAsJSONArray(Collection<? extends SilverpeasComponentInstance> components,
       LookHelper helper) {
     return JSONCodec.encodeArray(jsonArray -> {
       for (SilverpeasComponentInstance component : components) {

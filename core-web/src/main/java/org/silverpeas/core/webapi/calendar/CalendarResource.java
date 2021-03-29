@@ -456,7 +456,7 @@ public class CalendarResource extends AbstractCalendarResource {
       }
       final ReminderEntity reminderEntity = eventEntity.getReminder();
       if (reminderEntity != null) {
-        final Reminder reminder = new DurationReminder(event.getContributionId(), getUser(), CALENDAR_EVENT_USER_NOTIFICATION);
+        final Reminder reminder = new DurationReminder(event.getIdentifier(), getUser(), CALENDAR_EVENT_USER_NOTIFICATION);
         try {
           reminderEntity.mergeInto(reminder).schedule();
         } catch (Exception e) {
@@ -528,10 +528,10 @@ public class CalendarResource extends AbstractCalendarResource {
       final CalendarEvent original = updatedEvents.get(0);
       final CalendarEvent created = updatedEvents.get(1);
       final Mutable<Boolean> reminderError = Mutable.of(false);
-      Reminder.getByContribution(original.getContributionId()).stream()
+      Reminder.getByContribution(original.getIdentifier()).stream()
           .filter(r -> CALENDAR_EVENT_USER_NOTIFICATION.asString().equals(r.getProcessName()))
           .map(DurationReminder.class::cast)
-          .map(r -> new DurationReminder(created.getContributionId(), User.getById(r.getUserId()), CALENDAR_EVENT_USER_NOTIFICATION)
+          .map(r -> new DurationReminder(created.getIdentifier(), User.getById(r.getUserId()), CALENDAR_EVENT_USER_NOTIFICATION)
               .withText(r.getText()).triggerBefore(r.getDuration(), r.getTimeUnit(), r.getContributionProperty()))
           .forEach(r -> {
             try {

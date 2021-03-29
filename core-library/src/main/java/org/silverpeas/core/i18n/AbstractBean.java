@@ -29,8 +29,16 @@ import java.util.Collections;
 /**
  * The abstraction of Silverpeas's beans.
  */
-public abstract class AbstractBean extends AbstractI18NBean {
+public abstract class AbstractBean extends AbstractI18NBean<BeanTranslation> {
   private static final long serialVersionUID = 3300278318449203747L;
+
+  protected AbstractBean() {
+  }
+
+  @Override
+  protected Class<BeanTranslation> getTranslationType() {
+    return BeanTranslation.class;
+  }
 
   @Override
   public final Collection<String> getLanguages() {
@@ -46,4 +54,6 @@ public abstract class AbstractBean extends AbstractI18NBean {
   public final String getName(String language) {
     return getName();
   }
+
+
 }

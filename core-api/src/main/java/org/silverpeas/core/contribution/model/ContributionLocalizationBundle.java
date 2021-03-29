@@ -85,7 +85,7 @@ public class ContributionLocalizationBundle {
     LocalizationBundle main = ResourceLocator
         .getLocalizationBundle("org.silverpeas.contribution.multilang.contribution", language);
     final String componentName = SilverpeasComponentInstance
-        .getComponentName(contribution.getContributionId().getComponentInstanceId());
+        .getComponentName(contribution.getIdentifier().getComponentInstanceId());
     final Optional<LocalizationBundle> specific = ResourceLocator.getOptionalLocalizationBundle(
         "org.silverpeas." + componentName.toLowerCase() + ".multilang.contribution", language);
     return new ContributionLocalizationBundle(contribution, main, specific.orElse(null));
@@ -110,7 +110,7 @@ public class ContributionLocalizationBundle {
 
   private String getByTypeAndPropertyOrJustByType(String property,
       Pair<String, Object[]> keySuffixAndParameters) {
-    final String contributionType = contribution.getContributionId().getType();
+    final String contributionType = contribution.getIdentifier().getType();
     final String keySuffix = keySuffixAndParameters.getLeft();
     final Object[] parameters = keySuffixAndParameters.getRight();
     final String keyBase = "contribution." + contributionType + ".";

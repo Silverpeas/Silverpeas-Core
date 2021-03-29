@@ -24,7 +24,7 @@
 package org.silverpeas.core.index.search.model;
 
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * @author Nicolas Eysseric
  */
-public class SearchResult extends AbstractI18NBean {
+public class SearchResult extends AbstractBean {
 
   private String keywords;
   private LocalDate creationDate;
@@ -111,10 +111,10 @@ public class SearchResult extends AbstractI18NBean {
     setName(gsc.getName());
     setDescription(gsc.getDescription());
 
-    this.creationDate = getLocalDate(gsc.getCreationDate());
+    this.creationDate = DateUtil.toLocalDate(gsc.getCreationDate());
     this.creatorId = gsc.getUserId();
 
-    this.lastUpdateDate = getLocalDate(gsc.getDate());
+    this.lastUpdateDate = DateUtil.toLocalDate(gsc.getLastUpdateDate());
 
     this.id = gsc.getId();
     this.componentId = gsc.getInstanceId();
@@ -157,7 +157,7 @@ public class SearchResult extends AbstractI18NBean {
     return keywords;
   }
 
-  public LocalDate getCreationDate() {
+  public LocalDate getCreationLocalDate() {
     return creationDate;
   }
 
@@ -165,7 +165,7 @@ public class SearchResult extends AbstractI18NBean {
     return creatorId;
   }
 
-  public LocalDate getLastUpdateDate() {
+  public LocalDate getLastUpdateLocalDate() {
     return lastUpdateDate;
   }
 

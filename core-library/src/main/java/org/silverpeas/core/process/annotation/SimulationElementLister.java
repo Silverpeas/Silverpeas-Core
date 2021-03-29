@@ -24,8 +24,8 @@
 package org.silverpeas.core.process.annotation;
 
 import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.util.MapUtil;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +50,7 @@ public abstract class SimulationElementLister {
   /**
    * Element indexed by
    */
-  private Map<Class<SimulationElement>, List<SimulationElement>> elements = null;
+  private Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements = null;
 
   /**
    * Constructor called with Class.newInstance
@@ -60,8 +60,8 @@ public abstract class SimulationElementLister {
   }
 
   /**
-   * Constrictor called from an other element lister
-   * @param parentElementLister
+   * Constructor called from an other element lister
+   * @param parentElementLister an element lister parent to this one
    */
   public SimulationElementLister(SimulationElementLister parentElementLister) {
     if (parentElementLister != null) {
@@ -72,7 +72,7 @@ public abstract class SimulationElementLister {
 
   /**
    * Hidden method to pass the type of action aimed by the simulation
-   * @param actionType
+   * @param actionType the type of the action performed in the context of the simulation.
    */
   void setActionType(final ActionType actionType) {
     this.actionType = actionType;
@@ -80,7 +80,7 @@ public abstract class SimulationElementLister {
 
   /**
    * Gets the type of the action aimed by the simulation
-   * @return
+   * @return the action type
    */
   protected ActionType getActionType() {
     return actionType;
@@ -88,31 +88,28 @@ public abstract class SimulationElementLister {
 
   /**
    * Hidden method to pass the element container
-   * @param elements
+   * @param elements the elements on which are the simulation
    */
-  void setElements(final Map<Class<SimulationElement>, List<SimulationElement>> elements) {
+  void setElements(final Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements) {
     this.elements = elements;
   }
 
-  /**
-   * @param element
-   */
   @SuppressWarnings("unchecked")
-  protected void addElement(SimulationElement element) {
+  protected void addElement(SimulationElement<?> element) {
     if (element != null && element.getElement() != null) {
-      MapUtil.putAddList(LinkedList.class, elements, (Class<SimulationElement>) element.getClass(),
-          element);
+      MapUtil.putAddList(LinkedList.class, elements,
+          (Class<SimulationElement<?>>) element.getClass(), element);
     }
   }
 
   /**
    * This method contains the treatment that lists all elements which have to be converted into
-   * dummy handled file.
-   * To register an element, please use
-   * {@link SimulationElementLister#addElement(SimulationElement)} ]
+   * dummy handled file. To register an element, please use
+   * {@link SimulationElementLister#addElement(SimulationElement)}
+   * ]
    * @param sourcePK the parameter represents a primary key
    */
-  public abstract void listElements(final WAPrimaryKey sourcePK, final String language);
+  public abstract void listElements(final ResourceReference sourcePK, final String language);
 
   /**
    * This method contains the treatment that lists all elements which have to be converted into
@@ -122,5 +119,5 @@ public abstract class SimulationElementLister {
    * @param source could be anything
    */
   public abstract void listElements(final Object source, final String language,
-      final WAPrimaryKey targetPK);
+      final ResourceReference targetPK);
 }

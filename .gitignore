@@ -5,6 +5,7 @@
 *.merge*
 catalog.xml
 target
+core-war/overlays
 .settings
 .classpath
 .project

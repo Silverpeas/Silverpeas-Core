@@ -81,13 +81,15 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected boolean isUserCanBeNotified(final String userId) {
     final boolean isAccessible;
-    if (resource instanceof Contribution) {
-      final Contribution contribution = (Contribution) this.resource;
-      final String instanceId = contribution.getContributionId().getComponentInstanceId();
-      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
-    } else if (resource instanceof NodeDetail) {
+    if (resource instanceof NodeDetail) {
+      // the resource is in particularly a node
       final NodeDetail node = (NodeDetail) resource;
       isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node);
+    } else if (resource instanceof Contribution) {
+      // for any others contributions
+      final Contribution contribution = (Contribution) this.resource;
+      final String instanceId = contribution.getIdentifier().getComponentInstanceId();
+      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
     } else {
       final String instanceId = getComponentInstanceId();
       if (isDefined(instanceId)) {
@@ -110,13 +112,13 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected boolean isGroupCanBeNotified(final String groupId) {
     final boolean isAccessible;
-    if (resource instanceof Contribution) {
-      final Contribution contribution = (Contribution) this.resource;
-      final String instanceId = contribution.getContributionId().getComponentInstanceId();
-      isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
-    } else if (resource instanceof NodeDetail) {
+    if (resource instanceof NodeDetail) {
       final NodeDetail node = (NodeDetail) resource;
       isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
+    } else if (resource instanceof Contribution) {
+      final Contribution contribution = (Contribution) this.resource;
+      final String instanceId = contribution.getIdentifier().getComponentInstanceId();
+      isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
     } else {
       final String instanceId = getComponentInstanceId();
       if (isDefined(instanceId)) {
@@ -177,9 +179,9 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       Contribution contribution = (Contribution) resource;
       final ComponentInstanceRoutingMapProvider routingMapProvider =
           ComponentInstanceRoutingMapProviderByInstance.get()
-              .getByInstanceId(contribution.getContributionId().getComponentInstanceId());
+              .getByInstanceId(contribution.getIdentifier().getComponentInstanceId());
       resourceUrl =
-          routingMapProvider.absolute().getPermalink(contribution.getContributionId()).toString();
+          routingMapProvider.absolute().getPermalink(contribution.getIdentifier()).toString();
     }
     if (StringUtils.isBlank(resourceUrl)) {
       resourceUrl = "";
@@ -212,7 +214,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   private void fill(final NotificationResourceData notificationResourceData,
       final Contribution contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     notificationResourceData.setComponentInstanceId(contributionId.getComponentInstanceId());
     notificationResourceData.setResourceId(contributionId.getLocalId());
     notificationResourceData.setResourceType(contributionId.getType());

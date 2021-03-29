@@ -33,7 +33,7 @@ public class PasteDetail {
   String toComponentId;
   String userId;
   private Map<String, String> options;
-  public final static String OPTION_PREFIX = "PasteOption_";
+  public static final String OPTION_PREFIX = "PasteOption_";
 
   public PasteDetail() {
 

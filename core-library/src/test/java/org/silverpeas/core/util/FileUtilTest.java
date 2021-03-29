@@ -27,9 +27,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
@@ -50,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author ehugonnet
  */
 @EnableSilverTestEnv
-public class FileUtilTest {
+class FileUtilTest {
 
   private File rootFolder;
 
@@ -105,7 +104,7 @@ public class FileUtilTest {
   }
 
   @Test
-  public void testGetFilename() {
+  void testGetFilename() {
     assertThat(FileUtil.getFilename(null), is(""));
     assertThat(FileUtil.getFilename(""), is(""));
     assertThat(FileUtil.getFilename("     "), is(""));
@@ -120,7 +119,7 @@ public class FileUtilTest {
    * Test of getMimeType method, of class FileUtil.
    */
   @Test
-  public void testGetMimeType() {
+  void testGetMimeType() {
     String fileName = "";
     String expResult = MimeTypes.DEFAULT_MIME_TYPE;
     String result = FileUtil.getMimeType(fileName);
@@ -135,7 +134,7 @@ public class FileUtilTest {
    * Test of getAttachmentContext method, of class FileUtil.
    */
   @Test
-  public void testGetAttachmentContext() {
+  void testGetAttachmentContext() {
     String context = "";
     String[] expResult = new String[]{FileUtil.BASE_CONTEXT};
     String[] result = FileUtil.getAttachmentContext(context);
@@ -149,18 +148,21 @@ public class FileUtilTest {
   }
 
   @Test
-  public void testIsArchive() {
+  void testIsArchive() {
     assertTrue(FileUtil.isArchive("toto.zip"));
     assertTrue(FileUtil.isArchive("toto.tar.gz"));
+    // with Apache Chemistry, all the Java archives (jar, war, sar, ear, ...)
+    // are now taken into account as a Java archive and no more as a simple zip archive.
     assertTrue(FileUtil.isArchive("toto.jar"));
-    assertFalse(FileUtil.isArchive("toto.war"));
-    assertFalse(FileUtil.isArchive("toto.ear"));
+    assertTrue(FileUtil.isArchive("toto.war"));
+    assertTrue(FileUtil.isArchive("toto.ear"));
     assertFalse(FileUtil.isArchive("toto.txt"));
     assertTrue(FileUtil.isArchive("toto.tgz"));
+    assertFalse(FileUtil.isArchive("toto.odt"));
   }
 
   @Test
-  public void testCheckPathNotRelative() throws RelativeFileAccessException {
+  void testCheckPathNotRelative() throws RelativeFileAccessException {
     FileUtil.assertPathNotRelative(null);
     FileUtil.assertPathNotRelative("klkl");
     FileUtil.assertPathNotRelative("klkl.lk");
@@ -175,27 +177,27 @@ public class FileUtilTest {
   }
 
   @Test
-  public void testCheckPathNotRelativeError1() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError1() throws RelativeFileAccessException {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("../"));
   }
 
   @Test
-  public void testCheckPathNotRelativeError2() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError2() throws RelativeFileAccessException {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("..\\"));
   }
 
   @Test
-  public void testCheckPathNotRelativeError3() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError3() throws RelativeFileAccessException {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("/.."));
   }
 
   @Test
-  public void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("\\.."));
   }
 
   @Test
-  public void testDeleteEmptyDir() throws IOException {
+  void testDeleteEmptyDir() throws IOException {
     File root = File.createTempFile("prefix", "suffix");
     FileUtils.deleteQuietly(root);
     assertThat(root.exists(), is(false));
@@ -221,7 +223,7 @@ public class FileUtilTest {
   }
 
   @Test
-  public void testMoveAllFilesAtRootFolder() throws IOException {
+  void testMoveAllFilesAtRootFolder() throws IOException {
     File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(rootFolder);
     assertThat(foldersAtRoot, arrayWithSize(2));
     for (File folder : foldersAtRoot) {
@@ -243,24 +245,24 @@ public class FileUtilTest {
   }
 
   @Test
-  public void testMoveAllFilesAtRootFolderThatDoesNotExist() throws IOException {
+  void testMoveAllFilesAtRootFolderThatDoesNotExist() throws IOException {
     File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(new File("juudejdefgegzflbzefjze"));
     assertThat(foldersAtRoot, arrayWithSize(0));
   }
 
   @Test
-  public void testMoveAllFilesAtRootFolderWhichInstanceIsNull() throws IOException {
+  void testMoveAllFilesAtRootFolderWhichInstanceIsNull() throws IOException {
     File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(null);
     assertThat(foldersAtRoot, arrayWithSize(0));
   }
 
   @Test
-  public void testValidateFileNameOk() throws Exception {
+  void testValidateFileNameOk() throws Exception {
     FileUtil.validateFilename("myFileName", ".");
   }
 
   @Test
-  public void testValidateFileNameKo() throws Exception {
+  void testValidateFileNameKo() throws Exception {
     assertThrows(IllegalStateException.class,
         () -> FileUtil.validateFilename(".." + File.separator, "."));
   }

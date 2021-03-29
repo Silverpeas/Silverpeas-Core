@@ -66,7 +66,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
     try {
       ContactPK primary = contactDAO.selectByPrimaryKey(con, contactPK);
       if (primary != null) {
-        return primary.contactDetail;
+        return primary.getContactDetail();
       } else {
         throw new ContactRuntimeException("Contact not found with id = " + contactPK.getId());
       }
@@ -152,8 +152,8 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   /**
    * addFather() add a new father (designed by "fatherPK") to a contact ("pubPK") The contact will
    * be visible from its new father node.
-   * @param contactPK
-   * @param fatherPK
+   * @param contactPK reference to a contact
+   * @param fatherPK reference to a category
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -171,8 +171,8 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   /**
    * removeFather() remove a father (designed by "fatherPK") from a contact ("pubPK") The contact
    * won't be visible from its old father node.
-   * @param contactPK
-   * @param fatherPK
+   * @param contactPK reference to a contact
+   * @param fatherPK reference to a category
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -207,8 +207,8 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   /**
    * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
    * designed by originPK.
-   * @param originPK
-   * @param contactPK
+   * @param originPK reference to a category
+   * @param contactPK reference to a contact
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -458,7 +458,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
             "Contact", contact.getPK().getId());
         String fullName = contact.getFirstName() + " " + contact.getLastName();
         indexEntry.setTitle(fullName);
-        indexEntry.setLang(I18NHelper.defaultLanguage);
+        indexEntry.setLang(I18NHelper.DEFAULT_LANGUAGE);
         indexEntry.setCreationDate(contact.getCreationDate());
         indexEntry.setCreationUser(contact.getCreatorId());
         indexEntry.addTextContent(contact.getPhone());
@@ -479,7 +479,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
 
   /**
    * Called on : - deleteContact()
-   * @param contactPK
+   * @param contactPK reference to a contact
    */
   public void deleteIndex(ContactPK contactPK) {
     IndexEntryKey indexEntry = new IndexEntryKey(contactPK.getComponentName(), "Contact", contactPK.getId());

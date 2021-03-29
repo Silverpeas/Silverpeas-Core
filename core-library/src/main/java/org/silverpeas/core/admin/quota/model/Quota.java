@@ -266,7 +266,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
    */
   public void setMinCount(final String minCount) throws QuotaException {
     try {
-      setMinCount(Long.valueOf(minCount));
+      setMinCount(Long.parseLong(minCount));
     } catch (final NumberFormatException nfe) {
       throw new QuotaException(this, "Invalid minimal count");
     }
@@ -291,7 +291,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
    */
   public void setMaxCount(final String maxCount) throws QuotaException {
     try {
-      setMaxCount(Long.valueOf(maxCount));
+      setMaxCount(Long.parseLong(maxCount));
     } catch (final NumberFormatException nfe) {
       throw new QuotaException(this, "Invalid maximal count");
     }

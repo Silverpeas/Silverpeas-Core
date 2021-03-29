@@ -89,7 +89,7 @@ public class Attachments {
    * @param contribution the contribution to which the attachments has to be attached.
    */
   public void attachTo(final Contribution contribution) {
-    attachTo(contribution, I18NHelper.defaultLanguage);
+    attachTo(contribution, I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**
@@ -109,7 +109,7 @@ public class Attachments {
   private void attachTo(final Contribution contribution, final String language) {
     if (CollectionUtil.isNotEmpty(this.uploadedFiles)) {
       List<UploadedFile> files = new ArrayList<>(this.uploadedFiles);
-      final ContributionIdentifier contributionId = contribution.getContributionId();
+      final ContributionIdentifier contributionId = contribution.getIdentifier();
       if (listFromYoungestToOldestAdd()) {
         Collections.reverse(files);
       }

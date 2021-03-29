@@ -64,11 +64,11 @@ public class ResultEntity {
   private ResultEntity(SearchResult gsr) {
     this.name = gsr.getName();
     this.description = gsr.getDescription();
-    if (gsr.getCreationDate() != null) {
-      this.creationDate = gsr.getCreationDate().toString();
+    if (gsr.getCreationLocalDate() != null) {
+      this.creationDate = gsr.getCreationLocalDate().toString();
     }
-    if (gsr.getLastUpdateDate() != null) {
-      this.updateDate = gsr.getLastUpdateDate().toString();
+    if (gsr.getLastUpdateLocalDate() != null) {
+      this.updateDate = gsr.getLastUpdateLocalDate().toString();
     }
     this.id = gsr.getId();
     this.type = gsr.getType();

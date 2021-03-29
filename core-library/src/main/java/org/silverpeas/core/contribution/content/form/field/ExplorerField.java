@@ -95,7 +95,7 @@ public class ExplorerField extends AbstractField {
    * Returns the string value of this field : aka the node path.
    */
   public String getValue() {
-    return getValue(I18NHelper.defaultLanguage);
+    return getValue(I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

@@ -939,7 +939,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
     result.setAlert(alertDate);
     result.setContentType(MimeTypes.BZ2_ARCHIVE_MIME_TYPE);
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    result.setUpdated(creationDate);
+    result.setLastUpdateDate(creationDate);
     String creatorId = "150";
     result.setUpdatedBy(creatorId);
     String description = "Ceci est mon document de test mis à jour";
@@ -1096,7 +1096,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
     result.setAlert(alertDate);
     result.setContentType(MimeTypes.BZ2_ARCHIVE_MIME_TYPE);
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    result.setUpdated(creationDate);
+    result.setLastUpdateDate(creationDate);
     String creatorId = "150";
     result.setUpdatedBy(creatorId);
     String description = "Ceci est mon document de test mis à jour";

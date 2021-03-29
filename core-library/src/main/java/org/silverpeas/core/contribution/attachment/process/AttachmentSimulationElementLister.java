@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.attachment.process;
 
 import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
@@ -44,19 +44,19 @@ public class AttachmentSimulationElementLister extends SimulationElementLister {
   }
 
   @Override
-  public void listElements(final WAPrimaryKey sourcePK, final String language) {
+  public void listElements(final ResourceReference sourcePK, final String language) {
     for (SimpleDocument document : AttachmentServiceProvider.getAttachmentService()
-        .listAllDocumentsByForeignKey(sourcePK.toResourceReference(), language)) {
+        .listAllDocumentsByForeignKey(sourcePK, language)) {
       addElement(new SimpleDocumentSimulationElement(document));
     }
   }
 
   @Override
-  public void listElements(final Object source, final String language, final WAPrimaryKey targetPK) {
+  public void listElements(final Object source, final String language,
+      final ResourceReference targetPK) {
     if (source instanceof SimpleDocument) {
       final SimpleDocument document = (SimpleDocument) source;
-      if (getActionType().isMove()
-          && document.getInstanceId().equals(targetPK.getInstanceId())) {
+      if (getActionType().isMove() && document.getInstanceId().equals(targetPK.getInstanceId())) {
         return;
       }
       if (getActionType().isUpdate()) {

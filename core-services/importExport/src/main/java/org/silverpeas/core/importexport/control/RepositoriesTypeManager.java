@@ -223,8 +223,8 @@ public class RepositoriesTypeManager {
       // add attachment
       Date creationDate = new Date();
       if (settings.useFileDates() && !settings.mustCreateOnePublicationForAllFiles()) {
-        if (pubDetailToSave.getUpdateDate() != null) {
-          creationDate = pubDetailToSave.getUpdateDate();
+        if (pubDetailToSave.getLastUpdateDate() != null) {
+          creationDate = pubDetailToSave.getLastUpdateDate();
         } else {
           creationDate = pubDetailToSave.getCreationDate();
         }
@@ -249,7 +249,7 @@ public class RepositoriesTypeManager {
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.defaultLanguage);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.DEFAULT_LANGUAGE);
       return null;
     }
   }

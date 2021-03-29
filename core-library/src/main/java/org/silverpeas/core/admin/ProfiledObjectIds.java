@@ -50,9 +50,9 @@ public class ProfiledObjectIds extends ArrayList<String> {
     this.addAll(objectIds);
   }
 
-  private ProfiledObjectIds(Collection<Integer> objectIds, final ProfiledObjectType type) {
+  private ProfiledObjectIds(Collection<String> objectIds, final ProfiledObjectType type) {
     this.type = type;
-    objectIds.stream().map(String::valueOf).forEach(this::add);
+    this.addAll(objectIds);
   }
 
   public static ProfiledObjectIds none() {
@@ -79,7 +79,7 @@ public class ProfiledObjectIds extends ArrayList<String> {
    * @param nodeIds a collection of unique node identifier.
    * @return the {@link ProfiledObjectId} instance representation of the node identifier.
    */
-  public static ProfiledObjectIds fromNodeIds(final Collection<Integer> nodeIds) {
+  public static ProfiledObjectIds fromNodeIds(final Collection<String> nodeIds) {
     return new ProfiledObjectIds(nodeIds, ProfiledObjectType.NODE);
   }
 

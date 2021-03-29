@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.silverpeas.core.node.model.NodeDetail;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.core.node.model.NodeDetail;
 
 @XmlRootElement
 public class NodeTranslationEntity {
@@ -43,8 +43,8 @@ public class NodeTranslationEntity {
   public NodeTranslationEntity() {
   }
 
-  public NodeTranslationEntity(int id, String language, NodeDetail node) {
-    this.setId(Integer.toString(id));
+  public NodeTranslationEntity(String id, String language, NodeDetail node) {
+    this.setId(id);
     this.setLanguage(language);
     this.setName(node.getName(language));
     this.setDescription(node.getDescription(language));

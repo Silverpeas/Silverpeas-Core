@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.questioncontainer.container.service;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
@@ -102,8 +102,8 @@ public class QuestionContainerContentManager {
     getContentManager().removeSilverContent(con, contentId);
   }
 
-  private static ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
+  private static ContentManagementEngine getContentManager() {
+    return ContentManagementEngineProvider.getContentManagementEngine();
   }
 
 }

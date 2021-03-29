@@ -38,7 +38,7 @@ boolean	isAdmin			= ((Boolean) request.getAttribute("IsAdmin")).booleanValue();
 String translation = (String) request.getAttribute("Translation");
 if (translation == null || translation.equals("null"))
 {
-	translation = I18NHelper.defaultLanguage;
+	translation = I18NHelper.DEFAULT_LANGUAGE;
 }
 
 // initialisation des diff�rentes variables pour l'affichage

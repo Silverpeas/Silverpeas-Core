@@ -117,7 +117,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
             ERROR_PWD_AND_EMAIL_MUST_BE_CHANGED_ON_FIRST_LOGIN;
     if (request != null) {
       String message = getString("authentication.logon." + errorCode, (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
-              getUser().getUserPreferences().getLanguage() : I18NHelper.defaultLanguage);
+              getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE);
       request.setAttribute("message", message);
       request.setAttribute("isThatUserMustFillEmailAddressOnFirstLogin",
           isThatUserMustFillEmailAddressOnFirstLogin);

@@ -373,7 +373,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier
         .from(getCalendar().getComponentInstanceId(), getId(), getContributionType());
   }
@@ -442,16 +442,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   public Date getCreationDate() {
     return this.component.getCreationDate();
-  }
-
-  @Override
-  public User getLastModifier() {
-    return this.component.getLastUpdater();
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return this.component.getLastUpdateDate();
   }
 
   public Date getLastUpdateDate() {

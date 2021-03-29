@@ -28,12 +28,15 @@
 <%@ page import="org.silverpeas.core.util.memory.MemoryUnit" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="check.jsp" %>
 
+<c:set var="space" value="${requestScope.Space}"/>
+<jsp:useBean id="space" type="org.silverpeas.core.admin.space.SpaceInst"/>
+
 <%
-SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
 String		translation 		= request.getParameter("Translation");
 boolean 	isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
 boolean isUserAdmin = (Boolean) request.getAttribute("isUserAdmin");
@@ -57,17 +60,21 @@ browseBar.setSpaceId(space.getId());
 browseBar.setPath(resource.getString("JSPP.updateSpace"));
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript">
 function B_VALIDER_ONCLICK() {
 	ifCorrectFormExecute(function() {
 		document.infoSpace.submit();
   });
+}
+function B_CANCEL_ONCLICK() {
+  if(typeof parent.jumpToSpace === 'function') {
+    parent.jumpToSpace('${space.id}');
+  } else {
+    history.back();
+  }
 }
 
 function ifCorrectFormExecute(callback) {
@@ -138,8 +145,8 @@ function removeTranslation() {
 	document.infoSpace.submit();
 }
 </script>
-</head>
-<body class="page_content_admin" onload="document.infoSpace.NameObject.focus();">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin" onLoad="document.infoSpace.NameObject.focus();">
 <form name="infoSpace" action="EffectiveUpdateSpace" method="post">
 <%
 	out.println(window.printBefore());
@@ -191,12 +198,12 @@ function removeTranslation() {
 
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-	buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back()", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=B_CANCEL_ONCLICK()", false));
 	out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 	out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
 </form>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

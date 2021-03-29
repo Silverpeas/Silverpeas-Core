@@ -140,8 +140,8 @@ out.println(frame.printBefore());
 				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+
             WebEncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+WebEncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
 			cellLabel.setCompareOn(space.getName());
-			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemoveDate())+"&nbsp;("+space.getRemoverName()+")");
-			cell.setCompareOn(space.getRemoveDate());
+			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemovalDate())+"&nbsp;("+space.getRemoverName()+")");
+			cell.setCompareOn(space.getRemovalDate());
 
 			IconPane iconPane = gef.getIconPane();
 			Icon restoreIcon = iconPane.addIcon();
@@ -173,8 +173,8 @@ out.println(frame.printBefore());
 			ComponentInstLight component = (ComponentInstLight) it.next();
 			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+
 					WebEncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
-			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemoveDate())+"&nbsp;("+component.getRemoverName()+")");
-			cell.setCompareOn(component.getRemoveDate());
+			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemovalDate())+"&nbsp;("+component.getRemoverName()+")");
+			cell.setCompareOn(component.getRemovalDate());
 
 			IconPane iconPane = gef.getIconPane();
 			Icon restoreIcon = iconPane.addIcon();

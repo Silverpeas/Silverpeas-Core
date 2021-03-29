@@ -37,6 +37,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,12 +51,12 @@ public class PdcSearchProcessor implements SearchQueryProcessor {
   @Inject
   private PdcManager pdcManager;
 
-  private Comparator<GlobalSilverContent> cDateDesc = (o1, o2) -> {
-    String string1 = o1.getCreationDate();
-    String string2 = o2.getCreationDate();
+  private final Comparator<GlobalSilverContent> cDateDesc = (o1, o2) -> {
+    Date creationDate1 = o1.getCreationDate();
+    Date creationDate2 = o2.getCreationDate();
 
-    if (string1 != null && string2 != null) {
-      int result = string2.compareTo(string1);
+    if (creationDate1 != null && creationDate2 != null) {
+      int result = creationDate2.compareTo(creationDate1);
       // Add comparison on title if we have the same creation date
       return (result != 0) ? result : o2.getId().compareTo(o1.getId());
     }

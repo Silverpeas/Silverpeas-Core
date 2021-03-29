@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -78,6 +79,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   @Transient
   private ComponentInst cachedComponentInst;
 
+  @Override
+  protected Class<ComponentI18N> getTranslationType() {
+    return ComponentI18N.class;
+  }
+
   /**
    * Constructor
    */
@@ -121,6 +127,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   }
 
   @Override
+  public BasicIdentifier getIdentifier() {
+    return new BasicIdentifier(getLocalId(), getId());
+  }
+
+  @Override
   public String getId() {
     return name + id;
   }
@@ -151,7 +162,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    * returns an empty string.
    */
   public String getDomainFatherId() {
-    return domainFatherId;
+    return getSpaceId();
   }
 
   /**
@@ -187,11 +198,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     super.setName(label);
   }
 
-  public Date getCreateDate() {
+  public Date getCreationDate() {
     return createDate;
   }
 
-  public Date getRemoveDate() {
+  public Date getRemovalDate() {
     return removeDate;
   }
 
@@ -203,7 +214,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     this.status = status;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
@@ -241,6 +252,16 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
 
   public int getUpdatedBy() {
     return updatedBy;
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(String.valueOf(getCreatedBy()));
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return User.getById(String.valueOf(getUpdatedBy()));
   }
 
   public String getPath(String separator) {

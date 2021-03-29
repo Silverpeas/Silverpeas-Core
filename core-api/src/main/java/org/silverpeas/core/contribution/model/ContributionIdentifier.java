@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.ComponentResourceIdentifier;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.ContributionLocator;
 import org.silverpeas.core.util.Mutable;
@@ -125,6 +126,33 @@ public class ContributionIdentifier implements ComponentResourceIdentifier, Seri
       }
     }
     throw new IllegalArgumentException(failureOnGetting("contribution id from", contributionId));
+  }
+
+  /**
+   * Is the specified identifier a valid contribution identifier?
+   * @param id the textual format of an identifier of a resource in Silverpeas.
+   * @return true if the given parameter represents correctly the identifier of a contribution in
+   * Silverpeas, false otherwise.
+   */
+  public static boolean isValid(String id) {
+    final Matcher matcher = ABSOLUTE_ID_PATTERN.matcher(id);
+    return matcher.matches();
+  }
+
+  /**
+   * Constructs a new contribution identifier from the specified Silverpeas resource identifier.
+   * If the resource identifier is actually a {@link ContributionIdentifier} instance, then returns
+   * it as such, otherwise decode it from its {@link String} representation (though its
+   * {@link ResourceIdentifier#asString()} method
+   * @param resourceId a {@link ResourceIdentifier} object.
+   * @return an contribution identifier.
+   */
+  public static ContributionIdentifier from(final ResourceIdentifier resourceId) {
+    if (resourceId instanceof ContributionIdentifier) {
+      return (ContributionIdentifier) resourceId;
+    } else {
+      return ContributionIdentifier.decode(resourceId.asString());
+    }
   }
 
   /**

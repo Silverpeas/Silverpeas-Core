@@ -51,7 +51,7 @@ public class WysiwygEditorConfig {
   private SettingBundle wysiwygSettings;
   private String height = "500";
   private String width = "100%";
-  private String language = I18NHelper.defaultLanguage;
+  private String language = I18NHelper.DEFAULT_LANGUAGE;
   private String toolbar = "Default";
   private boolean toolbarStartExpanded = true;
   private boolean fileBrowserDisplayed = true;

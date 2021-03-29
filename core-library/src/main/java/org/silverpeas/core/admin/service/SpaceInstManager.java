@@ -96,9 +96,9 @@ public class SpaceInstManager {
     spaceInst.setFirstPageType(spaceInstToCopy.getFirstPageType());
     spaceInst.setFirstPageExtraParam(spaceInstToCopy.getFirstPageExtraParam());
     spaceInst.setOrderNum(spaceInstToCopy.getOrderNum());
-    spaceInst.setCreateDate(spaceInstToCopy.getCreateDate());
-    spaceInst.setUpdateDate(spaceInstToCopy.getUpdateDate());
-    spaceInst.setRemoveDate(spaceInstToCopy.getRemoveDate());
+    spaceInst.setCreationDate(spaceInstToCopy.getCreationDate());
+    spaceInst.setLastUpdate(spaceInstToCopy.getLastUpdateDate());
+    spaceInst.setRemovalDate(spaceInstToCopy.getRemovalDate());
     spaceInst.setStatus(spaceInstToCopy.getStatus());
     spaceInst.setUpdaterUserId(spaceInstToCopy.getUpdaterUserId());
     spaceInst.setRemoverUserId(spaceInstToCopy.getRemoverUserId());
@@ -295,13 +295,13 @@ public class SpaceInstManager {
     spaceInst.setOrderNum(space.orderNum);
 
     if (space.createTime != null) {
-      spaceInst.setCreateDate(new Date(Long.parseLong(space.createTime)));
+      spaceInst.setCreationDate(new Date(Long.parseLong(space.createTime)));
     }
     if (space.updateTime != null) {
-      spaceInst.setUpdateDate(new Date(Long.parseLong(space.updateTime)));
+      spaceInst.setLastUpdate(new Date(Long.parseLong(space.updateTime)));
     }
     if (space.removeTime != null) {
-      spaceInst.setRemoveDate(new Date(Long.parseLong(space.removeTime)));
+      spaceInst.setRemovalDate(new Date(Long.parseLong(space.removeTime)));
     }
 
     spaceInst.setUpdaterUserId(idAsString(space.updatedBy));
@@ -603,14 +603,14 @@ public class SpaceInstManager {
     if (changedSpace.lang != null) {
       if (oldSpace.lang == null) {
         // translation for the first time
-        oldSpace.lang = I18NHelper.defaultLanguage;
+        oldSpace.lang = I18NHelper.DEFAULT_LANGUAGE;
       }
       if (!oldSpace.lang.equalsIgnoreCase(changedSpace.lang)) {
         SpaceI18NRow row = new SpaceI18NRow(changedSpace);
         String translationId = spaceInstNew.getTranslationId();
         if (translationId != null && !translationId.equals("-1")) {
           // update translation
-          row.id = Integer.parseInt(spaceInstNew.getTranslationId());
+          row.setId(Integer.parseInt(spaceInstNew.getTranslationId()));
 
           organizationSchema.spaceI18N().updateTranslation(row);
         } else {
@@ -633,13 +633,13 @@ public class SpaceInstManager {
       if (translations != null && !translations.isEmpty()) {
         SpaceI18NRow translation = translations.get(0);
 
-        changedSpace.lang = translation.lang;
-        changedSpace.name = translation.name;
-        changedSpace.description = translation.description;
+        changedSpace.lang = translation.getLang();
+        changedSpace.name = translation.getName();
+        changedSpace.description = translation.getDescription();
 
         organizationSchema.space().updateSpace(changedSpace);
 
-        organizationSchema.spaceI18N().removeTranslation(translation.id);
+        organizationSchema.spaceI18N().removeTranslation(translation.getId());
       }
     } else {
       organizationSchema.spaceI18N().removeTranslation(Integer.parseInt(spaceInstNew.

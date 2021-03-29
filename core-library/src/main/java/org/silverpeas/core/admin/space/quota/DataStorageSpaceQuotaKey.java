@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.space.quota;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -36,7 +37,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
  */
 public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
-  private final UserDetail user;
+  private final User user;
 
   public static DataStorageSpaceQuotaKey from(final UserDetail user) {
     return new DataStorageSpaceQuotaKey(
@@ -63,7 +64,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
    * @param space
    * @param user
    */
-  private DataStorageSpaceQuotaKey(final SpaceInst space, final UserDetail user) {
+  private DataStorageSpaceQuotaKey(final SpaceInst space, final User user) {
     super(space);
     this.user = user;
   }
@@ -98,7 +99,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
   /**
    * @return the user
    */
-  public UserDetail getUser() {
+  public User getUser() {
     return user;
   }
 }

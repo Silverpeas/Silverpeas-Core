@@ -45,7 +45,7 @@ import javax.ws.rs.PUT;
  * @param <R> the type of the web component context.
  */
 public final class WebComponentRequestRouter<T extends WebComponentController<R>,
-    R extends WebComponentRequestContext<? extends WebComponentController>>
+    R extends WebComponentRequestContext<? extends WebComponentController<R>>>
     extends ComponentRequestRouter<T> {
   private static final long serialVersionUID = -3344222078427488724L;
 

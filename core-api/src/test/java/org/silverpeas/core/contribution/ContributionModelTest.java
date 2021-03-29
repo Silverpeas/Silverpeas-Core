@@ -69,7 +69,7 @@ public class ContributionModelTest {
     LocalizedContribution translation =
         myContribution.getModel().getProperty("inLanguage", language);
     assertThat(translation.getLanguage(), is(language));
-    assertThat(translation.getContributionId(), is(myContribution.getContributionId()));
+    assertThat(translation.getIdentifier(), is(myContribution.getIdentifier()));
   }
 
   @Test

@@ -216,7 +216,7 @@ public class VersioningImport {
     }
     SimpleDocument existingDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
         getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
-        getLogicalName(), I18NHelper.defaultLanguage,
+        getLogicalName(), I18NHelper.DEFAULT_LANGUAGE,
         document.getName(), document.getDescription(), version.getSize(), version.
         getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
 
@@ -284,7 +284,7 @@ public class VersioningImport {
     boolean launchCallback = isPublic;
     existingDocument.setPublicDocument(isPublic);
     existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-    existingDocument.setUpdated(new Date());
+    existingDocument.setLastUpdateDate(new Date());
     existingDocument.setUpdatedBy("" + userId);
     existingDocument.setContentType(version.getMimeType());
     existingDocument.setSize(version.getSize());

@@ -36,7 +36,7 @@ import javax.inject.Named;
  */
 @Service
 @Named
-public final class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap
+public class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap
     implements Initialization {
 
   @Override

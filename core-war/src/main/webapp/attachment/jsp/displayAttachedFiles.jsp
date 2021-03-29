@@ -288,7 +288,7 @@
             <c:if test="${showFileSize}">
               <c:out value="${view:humanReadableSize(currentAttachment.size)}"/>
             </c:if>
-               - <view:formatDateTime value="${currentAttachment.updated}"/>
+               - <view:formatDateTime value="${currentAttachment.lastUpdateDate}"/>
             <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
               <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview.file"/>" title="<fmt:message key="GML.preview.file" />"/>
             </c:if>

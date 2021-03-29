@@ -26,13 +26,10 @@ package org.silverpeas.core.node.model;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
-import java.text.ParseException;
 
 public class NodeSelection extends ClipboardSelection implements Serializable {
 
@@ -76,11 +73,7 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
     keyData.setTitle(nodeDetail.getName());
     keyData.setAuthor(nodeDetail.getCreatorId());
-    try {
-      keyData.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
-    } catch (ParseException e) {
-      SilverLogger.getLogger(this).error(e);
-    }
+    keyData.setCreationDate(nodeDetail.getCreationDate());
     keyData.setDesc(nodeDetail.getDescription());
     return keyData;
   }

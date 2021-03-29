@@ -30,8 +30,8 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.util.LocalizationBundle;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.URLUtil.getSearchResultURL;
 
 public class PdcResourceClassificationUserNotification
     extends AbstractPdcSubscriptionUserNotification<SilverContentInterface>
@@ -103,20 +103,6 @@ public class PdcResourceClassificationUserNotification
 
   @Override
   protected String getResourceURL(final SilverContentInterface silverContent) {
-    String contentUrl = silverContent.getURL();
-    if (contentUrl != null) {
-      StringBuilder documentUrlBuffer =
-          new StringBuilder().append("/RpdcSearch/jsp/GlobalContentForward?contentURL=");
-      try {
-        documentUrlBuffer.append(URLEncoder.encode(contentUrl, "UTF-8"));
-      } catch (UnsupportedEncodingException e) {
-        documentUrlBuffer.append(contentUrl);
-      }
-      documentUrlBuffer.append("&componentId=").append(getComponentInstanceId());
-      return documentUrlBuffer.toString();
-    }
-
-    // In other cases, no resource URL can be build.
-    return null;
+    return defaultStringIfNotDefined(getSearchResultURL(silverContent), null);
   }
 }

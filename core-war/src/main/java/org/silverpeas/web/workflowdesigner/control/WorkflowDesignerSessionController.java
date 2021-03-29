@@ -2810,7 +2810,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
     if (waComponent.getLabel().isEmpty()) {
       // no explicit labels, use name of process
-      waComponent.getLabel().put(I18NHelper.defaultLanguage, processModel.getName());
+      waComponent.getLabel().put(I18NHelper.DEFAULT_LANGUAGE, processModel.getName());
     }
 
     Iterator<ContextualDesignation> descriptions =
@@ -2822,7 +2822,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
     if (waComponent.getDescription().isEmpty()) {
       // no explicit description, use name of process
-      waComponent.getDescription().put(I18NHelper.defaultLanguage, processModel.getName());
+      waComponent.getDescription().put(I18NHelper.DEFAULT_LANGUAGE, processModel.getName());
     }
 
     // Create the list of roles, to be placed as profiles in the component descriptor
@@ -2877,7 +2877,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
   private String getSureLanguage(String language) {
     if (language.equalsIgnoreCase("default")) {
-      return I18NHelper.defaultLanguage;
+      return I18NHelper.DEFAULT_LANGUAGE;
     }
     return language;
   }
@@ -2885,9 +2885,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   private Profile getSupervisorProfile() {
     Profile profile = new Profile();
     profile.setName("supervisor");
-    profile.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
+    profile.getLabel().put(I18NHelper.DEFAULT_LANGUAGE, getSettings().getString(
         "componentDescriptor.supervisor"));
-    profile.getHelp().put(I18NHelper.defaultLanguage, getSettings().getString(
+    profile.getHelp().put(I18NHelper.DEFAULT_LANGUAGE, getSettings().getString(
         "componentDescriptor.supervisor"));
     return profile;
   }

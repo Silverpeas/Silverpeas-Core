@@ -23,16 +23,17 @@
  */
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * It's the Node PrimaryKey object It identify a Node
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class NodePK extends WAPrimaryKey implements Serializable {
+public class NodePK extends ResourceReference implements Serializable {
 
   private static final long serialVersionUID = 444396186497175804L;
 
@@ -41,38 +42,21 @@ public class NodePK extends WAPrimaryKey implements Serializable {
   public static final String BIN_NODE_ID = "1";
   public static final String UNCLASSED_NODE_ID = "2";
 
-  /**
-   * Constructor which set only the id
-   * @param id
-   * @since 1.0
-   */
   public NodePK(String id) {
     super(id);
   }
 
-  /**
-   * Constructor which set id, space and component name
-   * @param id
-   * @param space
-   * @param componentName
-   * @since 1.0
-   */
   public NodePK(String id, String space, String componentName) {
-    super(id, space, componentName);
+    super(id, componentName);
+    setSpace(space);
   }
 
   public NodePK(String id, String componentId) {
     super(id, componentId);
   }
 
-  /**
-   * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @param id
-   * @param pk
-   * @since 1.0
-   */
-  public NodePK(String id, WAPrimaryKey pk) {
-    super(id, pk);
+  public NodePK(String id, ResourceReference pk) {
+    this(id, pk.getSpace(), pk.getInstanceId());
   }
 
   public boolean isTrash() {
@@ -129,21 +113,8 @@ public class NodePK extends WAPrimaryKey implements Serializable {
       return false;
     }
     NodePK other = (NodePK) obj;
-    if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    if (componentName == null) {
-      if (other.componentName != null) {
-        return false;
-      }
-    } else if (!componentName.equals(other.componentName)) {
-      return false;
-    }
-    return true;
+    return Objects.equals(id, other.id) &&
+        Objects.equals(getComponentInstanceId(), other.getComponentInstanceId());
   }
 
   /**
@@ -153,10 +124,6 @@ public class NodePK extends WAPrimaryKey implements Serializable {
    */
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((componentName == null) ? 0 : componentName.hashCode());
-    return result;
+    return Objects.hash(getId(), getComponentInstanceId());
   }
 }

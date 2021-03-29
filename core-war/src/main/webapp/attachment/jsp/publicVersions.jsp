@@ -201,7 +201,7 @@
         arrayLine.addArrayCellText("????");
       }
       ArrayCellText cell =
-          arrayLine.addArrayCellText(resources.getOutputDateAndHour(publicVersion.getUpdated()));
+          arrayLine.addArrayCellText(resources.getOutputDateAndHour(publicVersion.getLastUpdateDate()));
       cell.setNoWrap(true);
 
       String xtraData = "";

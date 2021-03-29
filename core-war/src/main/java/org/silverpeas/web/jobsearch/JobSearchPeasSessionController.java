@@ -183,7 +183,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     if (null != spaceInstLight) {
       String nom = spaceInstLight.getName(getLanguage());
       String desc = spaceInstLight.getDescription();
-      Date dateCrea = spaceInstLight.getCreateDate();
+      Date dateCrea = spaceInstLight.getCreationDate();
       String nomCrea = getUserName(spaceInstLight.getCreatedBy());
       List<String> listEmplacement = new ArrayList<>();
       String emplacement = getPathSpace(spaceId);
@@ -310,7 +310,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     if (null != componentInstLight) {
       String nom = componentInstLight.getLabel(getLanguage());
       String desc = componentInstLight.getDescription(getLanguage());
-      Date dateCrea = componentInstLight.getCreateDate();
+      Date dateCrea = componentInstLight.getCreationDate();
       String nomCrea = getUserName(componentInstLight.getCreatedBy());
       List<String> listEmplacement = new ArrayList<>();
       String emplacement = getPathComponent(componentId);

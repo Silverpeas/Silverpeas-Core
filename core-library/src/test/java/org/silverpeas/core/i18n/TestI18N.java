@@ -38,6 +38,10 @@ public class TestI18N extends BeanTranslation {
     // for copy
   }
 
+  public TestI18N(final TestI18N translation) {
+    super(translation);
+  }
+
   public TestI18N(String lang, String name, String description, String value,
       BeanTranslationTest.ObjectClonable objectClonable,
       BeanTranslationTest.ObjectNotClonable objectNotClonable) {
@@ -57,11 +61,6 @@ public class TestI18N extends BeanTranslation {
 
   public BeanTranslationTest.ObjectNotClonable getObjectNotClonable() {
     return objectNotClonable;
-  }
-
-  @Override
-  protected TestI18N copy() {
-    return (TestI18N) super.copy();
   }
 }
   

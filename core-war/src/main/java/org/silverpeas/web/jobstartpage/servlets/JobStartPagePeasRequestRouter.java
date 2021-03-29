@@ -558,10 +558,10 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     } else if (function.equals("EffectiveCreateSpace")) {
       // Space CREATE action
       SpaceInst newSpace = new SpaceInst();
-      request2SpaceInst(newSpace, jobStartPageSC, request);
-
+      request2SpaceInst(newSpace, request);
       String spaceId = jobStartPageSC.createSpace(newSpace);
       if (spaceId != null && spaceId.length() > 0) {
+        initQuotaData(newSpace, request, jobStartPageSC);
         jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
         refreshNavBar(jobStartPageSC, request);
         destination = getDestinationSpace(START_PAGE_INFO_DEST, jobStartPageSC, request);
@@ -575,21 +575,20 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       }
     } else if (function.equals("UpdateSpace")) {
       String translation = request.getParameter("Translation");
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-      setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-      request.setAttribute(SPACE_TYPE, spaceint1);
+      SpaceInst spaceInst = jobStartPageSC.getSpaceInstById();
+      setSpacesNameInRequest(spaceInst, jobStartPageSC, request);
+      request.setAttribute(SPACE_TYPE, spaceInst);
       request.setAttribute("Translation", translation);
       request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
 
       destination = "/jobStartPagePeas/jsp/updateSpace.jsp";
     } else if (function.equals("EffectiveUpdateSpace")) {
       // Update the space
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-
-      request2SpaceInst(spaceint1, jobStartPageSC, request);
-
-      String spaceId = jobStartPageSC.updateSpaceInst(spaceint1);
+      SpaceInst spaceInst = jobStartPageSC.getSpaceInstById();
+      request2SpaceInst(spaceInst, request);
+      String spaceId = jobStartPageSC.updateSpaceInst(spaceInst);
       if (spaceId != null && spaceId.length() > 0) {
+        initQuotaData(spaceInst, request, jobStartPageSC);
         refreshNavBar(jobStartPageSC, request);
         destination = getDestinationSpace(START_PAGE_INFO_DEST, jobStartPageSC, request);
       } else {
@@ -844,12 +843,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     }
   }
 
-  private void request2SpaceInst(SpaceInst spaceInst,
-      JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) {
+  private void request2SpaceInst(SpaceInst spaceInst, HttpServletRequest request) {
     String name = request.getParameter("NameObject");
     String desc = request.getParameter("Description");
-    String componentSpaceQuotaMaxCount = request.getParameter("ComponentSpaceQuota");
-    String dataStorageQuotaMaxCount = request.getParameter("DataStorageQuota");
     String pInheritance = request.getParameter("InheritanceBlocked");
     String look = request.getParameter("SelectedLook");
     if (desc == null) {
@@ -865,27 +861,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       spaceInst.setLook(look);
     }
     I18NHelper.setI18NInfo(spaceInst, request);
+  }
 
-    // Component space quota
-    if (jobStartPageSC.isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated
-        && StringUtil.isDefined(componentSpaceQuotaMaxCount)) {
-      try {
-        spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(componentSpaceQuotaMaxCount));
-      } catch (QuotaException qe) {
-        throw new QuotaRuntimeException(qe.getMessage(), qe);
-      }
-    }
-
-    // Data storage quota
-    if (jobStartPageSC.isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated
-        && StringUtil.isDefined(dataStorageQuotaMaxCount)) {
-      try {
-        spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
-            Long.valueOf(dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
-      } catch (QuotaException qe) {
-        throw new QuotaRuntimeException(qe.getMessage(), qe);
-      }
-    }
+  private void initQuotaData(SpaceInst spaceInst, HttpServletRequest request,
+      JobStartPagePeasSessionController jobStartPageSC) {
+    String componentSpaceQuotaMaxCount = request.getParameter("ComponentSpaceQuota");
+    String dataStorageQuotaMaxCount = request.getParameter("DataStorageQuota");
+    jobStartPageSC.saveSpaceQuota(spaceInst, componentSpaceQuotaMaxCount,
+        dataStorageQuotaMaxCount);
   }
 
   private void request2ComponentInst(ComponentInst componentInst,
@@ -917,7 +900,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       componentInst.setName(componentName);
     }
 
-    ParameterList parameters = component.getAllParameters().clone();
+    ParameterList parameters = component.getAllParameters().copy();
     for (Parameter parameter : parameters) {
       String value = request.getParameter(parameter.getName());
       if (parameter.isCheckbox() && !StringUtil.isDefined(value)) {

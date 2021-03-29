@@ -26,9 +26,9 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ClassifyEngineException;
 import org.silverpeas.core.pdc.classification.Criteria;
@@ -60,7 +60,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Inject
   private ClassifyEngine classifyEngine;
   @Inject
-  private ContentManager contentManager;
+  private ContentManagementEngine contentMgtEngine;
 
   protected DefaultPdcClassifyManager() {
   }
@@ -191,7 +191,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   public List<Integer> getObjectsByInstance(String instanceId) throws PdcException {
     final List<Integer> objectIdList;
     try {
-      JoinStatement contentJoin = contentManager.getPositionsByGenericSearch(null, null, null);
+      JoinStatement contentJoin = contentMgtEngine.getPositionsByGenericSearch(null, null, null);
       List<Criteria> criterias = new ArrayList<>();
       List<String> instanceIds = new ArrayList<>();
       instanceIds.add(instanceId);
@@ -289,7 +289,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       // Change the position in criteria
       List<SearchCriteria> alCriterias = searchContext.getCriterias();
       return classifyEngine.findSilverOjectByCriterias(alCriterias,
-          alComponentId, contentManager.getPositionsByGenericSearch(
+          alComponentId, contentMgtEngine.getPositionsByGenericSearch(
           authorId, afterDate, beforeDate), afterDate, beforeDate,
           recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
@@ -306,8 +306,8 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
-      ContentManager theContentManager = ContentManagerProvider.getContentManager();
-      List<Integer> contentIds = theContentManager.getSilverContentIdByInstanceId(componentInstanceId);
+      ContentManagementEngine engine = ContentManagementEngineProvider.getContentManagementEngine();
+      List<Integer> contentIds = engine.getSilverContentIdByInstanceId(componentInstanceId);
       for (Integer contentId : contentIds) {
         classifyEngine.unclassifySilverObject(connection, contentId);
       }
