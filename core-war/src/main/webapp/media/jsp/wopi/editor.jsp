@@ -22,14 +22,15 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
-<%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.wopi.WopiSettings" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<c:set var="origin" value="<%=URLUtil.getServerURL(request)%>"/>
+<c:set var="origin" value='<%=WopiSettings.getWopiClientBaseUrl().orElse(StringUtil.EMPTY).replaceFirst("(https?://[^/]+)(.*)", "$1")%>'/>
 <c:set var="wopiClientUrl" value="${requestScope.WopiClientUrl}"/>
 <c:set var="currentUser" value="<%=User.getCurrentRequester()%>"/>
 <c:set var="wopiUser" value="${requestScope.WopiUser}"/>
@@ -95,6 +96,7 @@
             let msgId = data['MessageId'];
             if ('App_LoadingStatus' === msgId) {
               ClientMessageManager.post('Host_PostmessageReady');
+            } else if ('View_Added' === msgId) {
               ClientMessageManager.post('Hide_Menu_Item', {id : 'signdocument'});
               <c:if test="${hideTrackChanges}">
               ClientMessageManager.post('Hide_Menu_Item', {id : 'changesmenu'});
@@ -116,9 +118,10 @@
             } else if ('UI_Close' === msgId) {
               window.top.close();
             }
-            return;
+          } else {
+            sp.log.warning("received an event from an " + event.origin +
+                " origin, but the one accepted is ${silfn:escapeJs(origin)}. Web Browser Edition will be unstable.");
           }
-          sp.log.warning("received an event from an unknown origin");
         }, false);
 
         let ClientMessageManager = new function() {
