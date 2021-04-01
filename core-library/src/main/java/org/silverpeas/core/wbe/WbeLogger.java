@@ -22,44 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.attachment.webdav;
+package org.silverpeas.core.wbe;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.wbe.WbeHostManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
- * Handles the Web Browser Edition releasing on attachment manipulations.
+ * A Silverpeas's logger dedicated to Web Browser Edition host features.
  * @author silveryocha
  */
-@Bean
-public class AttachmentWebdavListener extends CDIResourceEventListener<AttachmentEvent> {
+public class WbeLogger {
 
+  private static SilverLogger logger;
 
-  @Override
-  public void onUpdate(final AttachmentEvent event) {
-    final AttachmentRef attachment = event.getTransition().getBefore();
-    release(attachment);
+  private WbeLogger() {
   }
 
-  @Override
-  public void onUnlock(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onRemoving(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onDeletion(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  private void release(final AttachmentRef attachment) {
-    WbeHostManager.get().revokeFile(new WebdavWbeFile(attachment.getId(), null));
+  public static SilverLogger logger() {
+    if (logger == null) {
+      logger = SilverLogger.getLogger("silverpeas.core.wbe");
+    }
+    return logger;
   }
 }

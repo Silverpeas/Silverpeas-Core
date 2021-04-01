@@ -22,44 +22,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.attachment.webdav;
+package org.silverpeas.core.wbe;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.wbe.WbeHostManager;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
- * Handles the Web Browser Edition releasing on attachment manipulations.
  * @author silveryocha
  */
-@Bean
-public class AttachmentWebdavListener extends CDIResourceEventListener<AttachmentEvent> {
+public class WbeSettings {
 
+  public static final String SETTINGS_PATH = "org.silverpeas.wbe.wbeSettings";
 
-  @Override
-  public void onUpdate(final AttachmentEvent event) {
-    final AttachmentRef attachment = event.getTransition().getBefore();
-    release(attachment);
+  private WbeSettings() {
   }
 
-  @Override
-  public void onUnlock(final AttachmentEvent event) {
-    onUpdate(event);
+  /**
+   * Indicates if Web Browser Edition is enabled.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isEnabled() {
+    return getSettings().getBoolean("wbe.enabled", false);
   }
 
-  @Override
-  public void onRemoving(final AttachmentEvent event) {
-    onUpdate(event);
+  /**
+   * Gets the prefix of WEb Browser Edition user ids to exchange.
+   * @return a string which could be empty but never null.
+   */
+  public static String getWbeUserIdPrefix() {
+    return getSettings().getString("wbe.user.id.prefix", "");
   }
 
-  @Override
-  public void onDeletion(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  private void release(final AttachmentRef attachment) {
-    WbeHostManager.get().revokeFile(new WebdavWbeFile(attachment.getId(), null));
+  private static SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle(SETTINGS_PATH);
   }
 }

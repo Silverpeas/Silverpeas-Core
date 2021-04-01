@@ -22,44 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.attachment.webdav;
+package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
-import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.wbe.WbeHostManager;
+import javax.ws.rs.core.Response;
 
 /**
- * Handles the Web Browser Edition releasing on attachment manipulations.
  * @author silveryocha
  */
-@Bean
-public class AttachmentWebdavListener extends CDIResourceEventListener<AttachmentEvent> {
+public class WbeResponseError extends RuntimeException {
+  private static final long serialVersionUID = 863867838952254729L;
 
+  private final transient Response response;
 
-  @Override
-  public void onUpdate(final AttachmentEvent event) {
-    final AttachmentRef attachment = event.getTransition().getBefore();
-    release(attachment);
+  public WbeResponseError(final Response response) {
+    super("conflict");
+    this.response = response;
   }
 
-  @Override
-  public void onUnlock(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onRemoving(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  @Override
-  public void onDeletion(final AttachmentEvent event) {
-    onUpdate(event);
-  }
-
-  private void release(final AttachmentRef attachment) {
-    WbeHostManager.get().revokeFile(new WebdavWbeFile(attachment.getId(), null));
+  Response getResponse() {
+    return response;
   }
 }

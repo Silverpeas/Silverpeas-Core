@@ -47,7 +47,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.wopi.StubbedWopiFileEditionManager;
+import org.silverpeas.core.wbe.StubbedWbeHostManager;
 
 import javax.inject.Inject;
 import javax.jcr.NodeIterator;
@@ -78,7 +78,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
   private final DocumentRepository documentRepository = new DocumentRepository();
 
   @Inject
-  private StubbedWopiFileEditionManager wopiManager;
+  private StubbedWbeHostManager wbeManager;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -99,7 +99,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
 
   @After
   public void clear() {
-    wopiManager.handled = true;
+    wbeManager.handled = true;
   }
 
   /**
@@ -666,9 +666,9 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    * Test of saveEditableSimultaneously method, of class DocumentRepository.
    */
   @Test
-  public void testSaveEditableSimultaneouslyOpenOfficeCompatibleDocumentButWopiNotHandled()
+  public void testSaveEditableSimultaneouslyOpenOfficeCompatibleDocumentButWbeNotHandled()
       throws Exception {
-    wopiManager.handled = false;
+    wbeManager.handled = false;
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
