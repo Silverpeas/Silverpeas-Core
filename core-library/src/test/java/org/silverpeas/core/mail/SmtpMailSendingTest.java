@@ -42,6 +42,7 @@ import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.SmtpConfig;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
@@ -69,7 +70,7 @@ import static org.hamcrest.Matchers.*;
 @LoggerLevel(Level.DEBUG)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
-@TestManagedBeans(MailSenderTask.class)
+@TestManagedBeans({MailSenderTask.class, RequestTaskManager.class})
 class SmtpMailSendingTest {
 
   private final static String COMMON_FROM = "from@titi.org";
@@ -96,7 +97,7 @@ class SmtpMailSendingTest {
   }
 
   @Test
-  void sendingMailSynchronouslyWithDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithDefaultValues(GreenMailOperations mail) {
     MailSending mailSending = MailSending.from(null);
 
     // Verifying data

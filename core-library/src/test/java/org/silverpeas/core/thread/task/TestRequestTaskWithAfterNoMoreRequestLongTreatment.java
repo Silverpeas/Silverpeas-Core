@@ -30,12 +30,12 @@ package org.silverpeas.core.thread.task;
 public class TestRequestTaskWithAfterNoMoreRequestLongTreatment extends TestRequestTask {
 
   static void newRandomSleepRequest() {
-    RequestTaskManager.push(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class,
+    RequestTaskManager.get().push(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class,
         new RandomSleepTestRequest());
   }
 
   static void newSleepRequest(int sleep) {
-    RequestTaskManager.push(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class,
+    RequestTaskManager.get().push(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class,
         new SleepTestRequest(sleep));
   }
 

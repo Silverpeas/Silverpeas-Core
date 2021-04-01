@@ -44,7 +44,7 @@ public class MailSenderTask extends AbstractRequestTask<MailSenderTask.MailProce
    * All the requests are processed by a single background thread. This thread is built and started
    * by the start method.
    */
-  private static Semaphore orderedOneByOneSemaphore = new Semaphore(1, true);
+  private static final Semaphore orderedOneByOneSemaphore = new Semaphore(1, true);
 
   /**
    * Add a mail to send.
@@ -53,16 +53,14 @@ public class MailSenderTask extends AbstractRequestTask<MailSenderTask.MailProce
   public static void addMailToSend(MailToSend mailToSend) {
     MailToSendRequest mailToSendRequest = new MailToSendRequest(mailToSend);
     if (mailToSend.isAsynchronous()) {
-      RequestTaskManager.push(MailSenderTask.class, mailToSendRequest);
+      RequestTaskManager.get().push(MailSenderTask.class, mailToSendRequest);
     } else {
       // The sending is performed synchronously
       try {
         mailToSendRequest.process(new MailProcessContext(orderedOneByOneSemaphore));
-      } catch (Exception e) {
+      } catch (InterruptedException e) {
         SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
-        if (e instanceof InterruptedException) {
-          Thread.currentThread().interrupt();
-        }
+        Thread.currentThread().interrupt();
       }
     }
   }

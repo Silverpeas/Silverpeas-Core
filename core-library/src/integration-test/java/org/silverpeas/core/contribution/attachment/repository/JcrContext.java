@@ -70,18 +70,11 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
  */
 public class JcrContext implements TestRule {
 
-  private boolean initialized = false;
-
   @Override
   public Statement apply(final Statement base, final Description description) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        if (!initialized) {
-          SilverpeasJcrSchemaRegistering jcrSchemaRegistering = ServiceProvider.getService(SilverpeasJcrSchemaRegistering.class);
-          jcrSchemaRegistering.init();
-          initialized = true;
-        }
         try {
           base.evaluate();
         } finally {

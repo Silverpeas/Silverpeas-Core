@@ -22,7 +22,8 @@ import java.util.Date;
 /**
  * Created by Nicolas on 07/06/2017.
  */
-public abstract class AbstractRequest implements AbstractRequestTask.Request {
+public abstract class AbstractRequest
+    implements AbstractRequestTask.Request<AbstractRequestTask.ProcessContext> {
 
   @Inject
   private ProcessInstanceRepository repository;
@@ -46,17 +47,19 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
   }
 
   protected void setInstanceInError(String id) {
-    UpdatableProcessInstance processInstance = repository.getById(id);
+    ProcessInstanceImpl processInstance = repository.getById(id);
 
     // set errorStatus to true
     processInstance.setErrorStatus(true);
 
-    repository.save((ProcessInstanceImpl) processInstance);
+    repository.save(processInstance);
   }
 
   protected UpdatableHistoryStep createHistoryNewStep(final HistoryStepDescriptor descriptor) {
     ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-    SilverLogger.getLogger(this).info("createHistoryNewStep() - InstanceId = {0}",descriptor.getProcessInstance().getInstanceId());
+    SilverLogger.getLogger(this)
+        .info("createHistoryNewStep() - InstanceId = {0}",
+            descriptor.getProcessInstance().getInstanceId());
     final UpdatableHistoryStep newStep = (UpdatableHistoryStep) instanceManager.createHistoryStep();
     if (event.getUser() != null) {
       newStep.setUserId(event.getUser().getUserId());
@@ -64,7 +67,8 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     if (event.getSubstitute() != null) {
       newStep.setSubstituteId(event.getSubstitute().getUserId());
     }
-    SilverLogger.getLogger(this).info("createHistoryNewStep() - ActionName = {0}",descriptor.getActionName());
+    SilverLogger.getLogger(this)
+        .info("createHistoryNewStep() - ActionName = {0}", descriptor.getActionName());
     newStep.setAction(descriptor.getActionName());
     newStep.setActionDate(descriptor.getActionDate());
     newStep.setUserRoleName(descriptor.getUserRoleName());
@@ -82,25 +86,24 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
 
   protected UpdatableHistoryStep fetchHistoryStep(final String processInstanceId,
       final boolean existingStep) {
-    return Transaction.performInOne(()-> {
+    return Transaction.performInOne(() -> {
       UpdatableProcessInstance processInstance =
           getProcessInstanceRepository().getById(processInstanceId);
       if (existingStep) {
         return (UpdatableHistoryStep) processInstance.getSavedStep(event.getUser().getUserId());
       } else {
-        return
-            createHistoryNewStep(new HistoryStepDescriptor().withProcessInstance(processInstance));
+        return createHistoryNewStep(
+            new HistoryStepDescriptor().withProcessInstance(processInstance));
 
       }
     });
   }
 
-  protected void processProcessInstance(final String id,
-      final GenericEvent event,
+  protected void processProcessInstance(final String id, final GenericEvent event,
       final UpdatableHistoryStep step) {
-    Transaction.performInOne(()-> {
+    Transaction.performInOne(() -> {
       ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-      UpdatableProcessInstance processInstance = getProcessInstanceRepository().getById(id);
+      ProcessInstanceImpl processInstance = getProcessInstanceRepository().getById(id);
 
       // Do workflow stuff
       try {
@@ -109,7 +112,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager).removeProcessInstance(id);
         } else {
-          getProcessInstanceRepository().save((ProcessInstanceImpl) processInstance);
+          getProcessInstanceRepository().save(processInstance);
         }
       } catch (WorkflowException we) {
         saveError(processInstance, event, we);
@@ -136,6 +139,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     this.event = event;
   }
 
+  @SuppressWarnings("unchecked")
   <T extends GenericEvent> T getEvent() {
     return (T) this.event;
   }
@@ -159,7 +163,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     }
 
     public String getActionName() {
-      return actionName == null ? event.getActionName():actionName;
+      return actionName == null ? event.getActionName() : actionName;
     }
 
     public HistoryStepDescriptor withActionName(final String actionName) {
@@ -168,7 +172,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     }
 
     public String getUserRoleName() {
-      return userRoleName == null ? event.getUserRoleName():userRoleName;
+      return userRoleName == null ? event.getUserRoleName() : userRoleName;
     }
 
     public HistoryStepDescriptor withUserRoleName(final String userRoleName) {
@@ -177,7 +181,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     }
 
     public Date getActionDate() {
-      return actionDate == null ? event.getActionDate():actionDate;
+      return actionDate == null ? event.getActionDate() : actionDate;
     }
 
     public HistoryStepDescriptor withActionDate(final Date actionDate) {

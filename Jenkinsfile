@@ -15,6 +15,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
+          sh "/opt/wildfly-for-tests/wildfly-*.Final/bin/standalone.sh -c standalone-full.xml &> /dev/null &"
           version = computeSnapshotVersion()
           checkParentPOMVersion(version)
           waitForDependencyRunningBuildIfAny(version, 'core')
@@ -22,6 +23,7 @@ pipeline {
           sh """
 mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
 mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+/opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
 """
           deleteLockFile(lockFilePath)
         }

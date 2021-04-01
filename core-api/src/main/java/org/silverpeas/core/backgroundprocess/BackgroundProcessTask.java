@@ -88,7 +88,7 @@ public class BackgroundProcessTask extends AbstractRequestTask<AbstractRequestTa
         final RequestContext newRequestContext = new RequestContext(request);
         synchronizedContexts.put(request.getUniqueId(), newRequestContext);
         getLogger().debug(() -> format("pushing a new process {0}", newRequestContext));
-        RequestTaskManager.push(BackgroundProcessTask.class, request);
+        RequestTaskManager.get().push(BackgroundProcessTask.class, request);
       } else {
         getLogger().debug(
             () -> format("ignoring a process because it is yet registered and still living {0}",
@@ -113,9 +113,8 @@ public class BackgroundProcessTask extends AbstractRequestTask<AbstractRequestTa
     synchronizedContexts.entrySet().removeIf(entry -> entry.getValue().isRemovable());
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  protected void processRequest(final Request request) throws SilverpeasException {
+  protected void processRequest(final Request<AbstractRequestTask.ProcessContext> request) throws SilverpeasException {
     AbstractBackgroundProcessRequest currentRequest = (AbstractBackgroundProcessRequest) request;
     synchronized (synchronizedContexts) {
       final RequestContext context = synchronizedContexts.get(currentRequest.getUniqueId());
@@ -146,7 +145,7 @@ public class BackgroundProcessTask extends AbstractRequestTask<AbstractRequestTa
   }
 
   private static class RequestContext {
-    private AbstractBackgroundProcessRequest request;
+    private final AbstractBackgroundProcessRequest request;
     private long lastProcessing = 0;
 
     RequestContext(AbstractBackgroundProcessRequest request) {

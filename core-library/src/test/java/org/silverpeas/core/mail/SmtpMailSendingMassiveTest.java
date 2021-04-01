@@ -41,6 +41,7 @@ import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SmtpConfig;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 
@@ -57,8 +58,8 @@ import static org.hamcrest.Matchers.*;
 @LoggerLevel(Level.DEBUG)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
-@TestManagedBeans(MailSenderTask.class)
-public class SmtpMailSendingMassiveTest {
+@TestManagedBeans({MailSenderTask.class, RequestTaskManager.class})
+class SmtpMailSendingMassiveTest {
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String COMMON_TO = "to@toto.org";
@@ -78,14 +79,13 @@ public class SmtpMailSendingMassiveTest {
   @AfterEach
   public void destroy() throws Exception {
     // Replacing by reflection the mock instances by the previous extracted one.
-    FieldUtils
-        .writeDeclaredStaticField(MailSenderProvider.class, "mailSender", oldMailSender, true);
+    FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender", oldMailSender,
+        true);
   }
 
   @Test
-  public void
-  sendingSeveralMailsSynchronouslyAndAsynchronouslyAndVerifyingSendingPerformedOneByOne(GreenMailOperations mail)
-      throws Exception {
+  void sendingSeveralMailsSynchronouslyAndAsynchronouslyAndVerifyingSendingPerformedOneByOne(
+      GreenMailOperations mail) throws Exception {
 
     List<Runnable> runnables = new ArrayList<>();
     List<Thread> threads = new ArrayList<>();
@@ -142,8 +142,10 @@ public class SmtpMailSendingMassiveTest {
     public void run() {
       MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
       MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
-      MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail)
-          .withSubject(id + " subject - " + (asynch ? "A" : "S")).withContent(id + " content");
+      MailSending mailSending = MailSending.from(senderEmail)
+          .to(receiverEmail)
+          .withSubject(id + " subject - " + (asynch ? "A" : "S"))
+          .withContent(id + " content");
 
       // Sending mail
       if (asynch) {
@@ -165,8 +167,8 @@ public class SmtpMailSendingMassiveTest {
     if (lastLogTime < 0) {
       lastLogTime = currentTime;
     }
-    System.out
-        .println(StringUtil.leftPad(String.valueOf(currentTime - lastLogTime), 6, " ") + " ms -> " +
+    System.out.println(
+        StringUtil.leftPad(String.valueOf(currentTime - lastLogTime), 6, " ") + " ms -> " +
             message);
   }
 

@@ -44,6 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,8 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defau
  */
 @Technical
 @Bean
-public class ServerEventDispatcherTask extends AbstractRequestTask {
+public class ServerEventDispatcherTask
+    extends AbstractRequestTask<AbstractRequestTask.ProcessContext> {
 
   private static final int MIN_LIFE_TIME = 40000;
   private static final Set<SilverpeasAsyncContext> synchronizedContexts =
@@ -83,9 +85,10 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    */
   static void unregisterAsyncContext(SilverpeasAsyncContext context) {
     if (synchronizedContexts.remove(context)) {
-      SseLogger.get().debug(() -> format(
-          "Unregistering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}",
-          context, synchronizedContexts.size()));
+      SseLogger.get()
+          .debug(() -> format(
+              "Unregistering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}",
+              context, synchronizedContexts.size()));
       context.complete();
     }
   }
@@ -101,7 +104,6 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   /**
    * Unregister an {@link SilverpeasAsyncContext} instance.
    * @param sessionId an identifier od a session.
-   *
    */
   public static void unregisterBySessionId(String sessionId) {
     List<SilverpeasAsyncContext> contextsToRemove = new ArrayList<>();
@@ -114,16 +116,17 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   }
 
   /**
-   * Register an {@link SilverpeasAsyncContext} instance.<br>
-   * If the instance is already registered, nothing is again registered.
+   * Register an {@link SilverpeasAsyncContext} instance.<br> If the instance is already registered,
+   * nothing is again registered.
    * @param context the instance to register.
    */
   public static void registerAsyncContext(SilverpeasAsyncContext context) {
     serverEventStore.cleanExpired();
     synchronizedContexts.add(context);
-    SseLogger.get().debug(() -> format(
-        "Registering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}", context,
-        synchronizedContexts.size()));
+    SseLogger.get()
+        .debug(() -> format(
+            "Registering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}",
+            context, synchronizedContexts.size()));
   }
 
   /**
@@ -145,7 +148,8 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       return lastServerEventId;
     }
     for (ServerEvent serverEventToSendAgain : serverEventsToSendAgain) {
-      boolean sent = serverEventToSendAgain.send(request, response, receiverSessionInfoId, receiver);
+      boolean sent =
+          serverEventToSendAgain.send(request, response, receiverSessionInfoId, receiver);
       if (sent) {
         SseLogger.get().debug(() -> format("Send of not consumed {0}", serverEventToSendAgain));
       }
@@ -164,14 +168,15 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     }
   }
 
-  private static void push(Request request) {
-    RequestTaskManager.push(ServerEventDispatcherTask.class, request);
+  private static void push(ServerEventDispatchRequest request) {
+    RequestTaskManager.get().push(ServerEventDispatcherTask.class, request);
   }
 
   /**
    * This is the implementation of a request in charge of dispatching a server event.
    */
-  private static class ServerEventDispatchRequest implements Request {
+  private static class ServerEventDispatchRequest
+      implements Request<AbstractRequestTask.ProcessContext> {
     private final ServerEvent serverEventToDispatch;
 
     /**
@@ -183,13 +188,13 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
     @Override
     public String getReplacementId() {
-      return serverEventToDispatch instanceof StoreLastOnly
-          ? serverEventToDispatch.getName().asString()
-          : null;
+      return serverEventToDispatch instanceof StoreLastOnly ?
+          serverEventToDispatch.getName().asString() :
+          null;
     }
 
     @Override
-    public void process(Object context) {
+    public void process(AbstractRequestTask.ProcessContext context) {
       final List<SilverpeasAsyncContext> safeContexts = getSafeContexts();
       if (!safeContexts.isEmpty()) {
         sendTo(safeContexts);
@@ -219,14 +224,16 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
             }
             asyncContext.setLastServerEventId(null);
           }
-          boolean sendPerformed = serverEventToDispatch
-              .send(request, response, asyncContext.getSessionId(), asyncContext.getUser());
+          boolean sendPerformed =
+              serverEventToDispatch.send(request, response, asyncContext.getSessionId(),
+                  asyncContext.getUser());
           if (sendPerformed) {
             SseLogger.get().debug(() -> format("Send done on {0}", asyncContext));
           }
           if (completeAfterSend && sendPerformed) {
             asyncContext.complete();
-            SseLogger.get().debug(() -> format("Complete requested after send on {0}", asyncContext));
+            SseLogger.get()
+                .debug(() -> format("Complete requested after send on {0}", asyncContext));
           }
         }
       } catch (IOException e) {
@@ -237,31 +244,29 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
     private void sendTo(final List<SilverpeasAsyncContext> safeContexts) {
       SseLogger.get().debug(() -> format("Sending {0}", serverEventToDispatch));
-      final List<Callable<Void>> threadedSends = safeContexts
-          .stream()
-          .map(c -> (Callable<Void>) () -> {
+      final List<Callable<Void>> threadedSends =
+          safeContexts.stream().map(c -> (Callable<Void>) () -> {
             push(this.serverEventToDispatch, c, completeAfterSend());
             return null;
           }).collect(Collectors.toList());
       List<Future<Void>> sendResult;
       try {
-        sendResult = ManagedThreadPool.getPool().invoke(threadedSends,
-            defaultConfig().withMaxThreadPoolSizeOf(getSseSendMaxThreadPool()));
-      } catch (Exception e) {
+        sendResult = ManagedThreadPool.getPool()
+            .invoke(threadedSends,
+                defaultConfig().withMaxThreadPoolSizeOf(getSseSendMaxThreadPool()));
+      } catch (InterruptedException e) {
         SseLogger.get().error(e);
         sendResult = emptyList();
-        if (e instanceof InterruptedException) {
-          Thread.currentThread().interrupt();
-        }
+        Thread.currentThread().interrupt();
       }
       sendResult.forEach(s -> {
         try {
           s.get();
-        } catch (Exception e) {
+        } catch (ExecutionException e) {
           SseLogger.get().error(e);
-          if (e instanceof InterruptedException) {
-            Thread.currentThread().interrupt();
-          }
+        } catch (InterruptedException e) {
+          SseLogger.get().error(e);
+          Thread.currentThread().interrupt();
         }
       });
       if (serverEventToDispatch instanceof AfterSentToAllContexts) {
@@ -270,7 +275,8 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     }
 
     /**
-     * Gets the context safely, so a list on which the caller can work without concurrency problems.
+     * Gets the context safely, so a list on which the caller can work without concurrency
+     * problems.
      * @return the list of context.
      */
     List<SilverpeasAsyncContext> getSafeContexts() {
@@ -309,16 +315,18 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
             final long lifetime = currentTime - item.getStoreTime();
             if (lifetime >= maxLifeTime) {
               it.remove();
-              SseLogger.get().debug(
-                  () -> format("Removing expired {0} lifetime of {1}ms", item.getServerEvent(),
-                      lifetime));
+              SseLogger.get()
+                  .debug(
+                      () -> format("Removing expired {0} lifetime of {1}ms", item.getServerEvent(),
+                          lifetime));
             } else {
               done = true;
             }
           }
         }
-        SseLogger.get().debug(() -> format("Size of the server event store (after clean): {0}",
-            synchronizedStore.size()));
+        SseLogger.get()
+            .debug(() -> format("Size of the server event store (after clean): {0}",
+                synchronizedStore.size()));
       }
     }
 
@@ -326,9 +334,8 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
      * Gets server events from the store which the id is higher than the given one.
      * @param lastServerEventId the last identifier performed by the client.
      * @return a list of {@link ServerEvent} instances.
-     * @throws IOException on error.
      */
-    List<ServerEvent> getFromId(long lastServerEventId) throws IOException {
+    List<ServerEvent> getFromId(long lastServerEventId) {
       List<ServerEvent> serverEventsToSendAgain = new ArrayList<>();
       synchronizedStore.forEach(i -> {
         if (i.getServerEvent().getId().compareTo(lastServerEventId) > 0) {
@@ -349,8 +356,9 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
           removeAll((StoreLastOnly) serverEvent);
         }
         synchronizedStore.add(new StoredServerEvent(serverEvent));
-        SseLogger.get().debug(() -> format("Add {0} into the store (size={1})", serverEvent,
-            synchronizedStore.size()));
+        SseLogger.get()
+            .debug(() -> format("Add {0} into the store (size={1})", serverEvent,
+                synchronizedStore.size()));
       }
     }
 
@@ -370,8 +378,8 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
             final StoreLastOnly itemEvent = (StoreLastOnly) item.getServerEvent();
             if (storeLastOnly.getStoreDiscriminator().equals(itemEvent.getStoreDiscriminator())) {
               it.remove();
-              SseLogger.get().debug(
-                  () -> format("Remove {0} from the store (size={1})", item.getServerEvent(),
+              SseLogger.get()
+                  .debug(() -> format("Remove {0} from the store (size={1})", item.getServerEvent(),
                       synchronizedStore.size()));
               done = true;
             }

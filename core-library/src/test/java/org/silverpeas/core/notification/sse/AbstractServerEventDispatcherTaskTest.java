@@ -35,6 +35,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.servlet.AsyncContext;
@@ -55,7 +56,7 @@ import static org.mockito.Mockito.*;
  */
 @EnableSilverTestEnv
 @LoggerLevel(Level.DEBUG)
-@TestManagedBeans(ServerEventDispatcherTask.class)
+@TestManagedBeans({ServerEventDispatcherTask.class, RequestTaskManager.class})
 abstract class AbstractServerEventDispatcherTaskTest {
 
   final static String EVENT_SOURCE_REQUEST_URI = "/handled";

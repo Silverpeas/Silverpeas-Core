@@ -51,7 +51,7 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
    * @param indexEntry the index entry ro process.
    */
   public static void addIndexEntry(FullIndexEntry indexEntry) {
-    RequestTaskManager.push(IndexerTask.class, new AddIndexEntryRequest(indexEntry));
+    RequestTaskManager.get().push(IndexerTask.class, new AddIndexEntryRequest(indexEntry));
   }
 
   /**
@@ -59,7 +59,7 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
    * @param indexEntry the index entry ro process.
    */
   public static void removeIndexEntry(IndexEntryKey indexEntry) {
-    RequestTaskManager.push(IndexerTask.class, new RemoveIndexEntryRequest(indexEntry));
+    RequestTaskManager.get().push(IndexerTask.class, new RemoveIndexEntryRequest(indexEntry));
   }
 
   /**
@@ -67,14 +67,14 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
    * @param scope the scope of index entries to process.
    */
   public static void removeIndexEntriesByScope(String scope) {
-    RequestTaskManager.push(IndexerTask.class, new RemoveScopedIndexEntriesRequest(scope));
+    RequestTaskManager.get().push(IndexerTask.class, new RemoveScopedIndexEntriesRequest(scope));
   }
 
   /**
    * Add a request 'remove all index entries'.
    */
   public static void removeAllIndexEntries() {
-    RequestTaskManager.push(IndexerTask.class, new RemoveAllIndexEntriesRequest());
+    RequestTaskManager.get().push(IndexerTask.class, new RemoveAllIndexEntriesRequest());
   }
 
   @Override

@@ -29,6 +29,7 @@ import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -45,7 +46,7 @@ import static org.hamcrest.Matchers.*;
  */
 @EnableAutoWeld
 @AddBeanClasses(DefaultServerEventNotifier.class)
-@AddPackages(AbstractServerEventDispatcherTaskTest.class)
+@AddPackages({AbstractServerEventDispatcherTaskTest.class, RequestTaskManager.class})
 class ServerEventListenerPushingServerEventDispatcherTaskTest
     extends AbstractServerEventDispatcherTaskTest {
 

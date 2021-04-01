@@ -426,6 +426,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addJcrFeatures() {
+    initJcrSchema();
     addJpaPersistenceFeatures();
     addProcessFeatures();
     addSilverpeasExceptionBases();

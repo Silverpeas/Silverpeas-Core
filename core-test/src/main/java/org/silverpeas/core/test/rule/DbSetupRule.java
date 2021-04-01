@@ -378,19 +378,6 @@ public class DbSetupRule implements TestRule {
     }
   }
 
-  public static int getTableIndexFor(ITable table, String columnName, Object value) {
-    try {
-      for (int i = 0; i < table.getRowCount(); i++) {
-        if (value.equals(table.getValue(i, columnName))) {
-          return i;
-        }
-      }
-      return -1;
-    } catch (DataSetException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
-  }
-
   public static TableRow getTableRowFor(ITable table, String columnName, Object value) {
     List<TableRow> rows = getTableRowsFor(table, columnName, value);
     return rows.size() != 1 ? null : rows.get(0);
@@ -408,10 +395,6 @@ public class DbSetupRule implements TestRule {
     } catch (DataSetException e) {
       throw new SilverpeasRuntimeException(e);
     }
-  }
-
-  public static int getTableIndexForId(ITable table, Object id) {
-    return getTableIndexFor(table, "id", id);
   }
 
   /**

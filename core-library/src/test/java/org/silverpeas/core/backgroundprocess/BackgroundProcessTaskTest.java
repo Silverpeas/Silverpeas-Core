@@ -33,6 +33,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
@@ -57,10 +58,13 @@ import static org.hamcrest.Matchers.is;
 @LoggerLevel(Level.DEBUG)
 @Execution(ExecutionMode.SAME_THREAD)
 @TestManagedBeans(BackgroundProcessTask.class)
-public class BackgroundProcessTaskTest {
+class BackgroundProcessTaskTest {
 
   private final static List<AbstractBackgroundProcessRequest> processedRequest =
       synchronizedList(new ArrayList<>());
+
+  @TestManagedBean
+  RequestTaskManager taskManager;
 
   @BeforeEach
   public void setup() {
@@ -75,7 +79,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushOneRandomRequestShouldWork() {
+  void pushOneRandomRequestShouldWork() {
     final SimpleProcessRequest4Test request = new SimpleProcessRequest4Test();
     push(request);
 
@@ -86,7 +90,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushLotOfRandomRequestsShouldWork() {
+  void pushLotOfRandomRequestsShouldWork() {
     final List<AbstractBackgroundProcessRequest> requests = new ArrayList<>();
     for (int i = 0; i < 10000; i++) {
       requests.add(new SimpleProcessRequest4Test());
@@ -100,7 +104,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushUniqueVeryShortRequestsShouldWork() {
+  void pushUniqueVeryShortRequestsShouldWork() {
     final List<DurationProcessRequest4Test> requests = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       requests.add(new DurationProcessRequest4Test(i, "ID", 0));
@@ -118,7 +122,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushUniqueShortRequestsShouldWork() {
+  void pushUniqueShortRequestsShouldWork() {
     final List<DurationProcessRequest4Test> requests = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       requests.add(new DurationProcessRequest4Test(i, "ID", 5));
@@ -136,7 +140,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushUniqueLongRequestsShouldWork() {
+  void pushUniqueLongRequestsShouldWork() {
     final List<DurationProcessRequest4Test> requests = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       requests.add(new DurationProcessRequest4Test(i, "ID", 100));
@@ -154,7 +158,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushUniqueVeryLongRequestsShouldWork() {
+  void pushUniqueVeryLongRequestsShouldWork() {
     DurationProcessRequest4Test r1 = new DurationProcessRequest4Test(0, "ID", 2000);
     DurationProcessRequest4Test r2 = new DurationProcessRequest4Test(1, "ID", 10);
 
@@ -169,7 +173,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void pushUniqueVeryLongRequestsAfterNoMoreValidShouldWork() {
+  void pushUniqueVeryLongRequestsAfterNoMoreValidShouldWork() {
     DurationProcessRequest4Test r1 = new DurationProcessRequest4Test(0, "ID", 2000);
     DurationProcessRequest4Test r2 = new DurationProcessRequest4Test(1, "ID", 10);
 
@@ -184,7 +188,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void replaceUniqueRequestsShouldWork() {
+  void replaceUniqueRequestsShouldWork() {
     DurationProcessRequest4Test r1 = new DurationProcessRequest4Test(0, "DUMMY", 1000);
     DurationProcessRequest4Test r2 = new DurationProcessRequest4Test(1, "ID", 10);
     DurationProcessRequest4Test r3 = new DurationProcessRequest4Test(2, "ID", 10);
@@ -203,7 +207,7 @@ public class BackgroundProcessTaskTest {
   }
 
   @Test
-  public void bigMeltingShouldWork() {
+  void bigMeltingShouldWork() {
     final List<DurationProcessRequest4Test> requestsT1 = new ArrayList<>();
     final List<SimpleProcessRequest4Test> requestsT2 = new ArrayList<>();
     final List<DurationProcessRequest4Test> requestsT3 = new ArrayList<>();
@@ -301,7 +305,7 @@ public class BackgroundProcessTaskTest {
     await()
         .timeout(5, TimeUnit.MINUTES)
         .pollInterval(200, TimeUnit.MILLISECONDS)
-        .until(() -> !RequestTaskManager.isTaskRunning(BackgroundProcessTask.class));
+        .until(() -> !taskManager.isTaskRunning(BackgroundProcessTask.class));
   }
 
   private void push(AbstractBackgroundProcessRequest request) {
