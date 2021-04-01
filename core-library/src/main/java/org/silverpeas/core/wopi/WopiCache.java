@@ -54,7 +54,7 @@ import static org.silverpeas.core.wopi.WopiLogger.logger;
 public class WopiCache {
   private final Map<String, Element<WopiUser>> wopiUserCache = new ConcurrentHashMap<>();
   private final Map<String, String> wopiAccessTokenUserMapping = new ConcurrentHashMap<>();
-  private final Map<String, String> wopiUserIdUserMapping = new ConcurrentHashMap<>();
+  private final Map<String, Set<String>> wopiUserIdUserMapping = new ConcurrentHashMap<>();
   private final Map<String, Element<WopiFile>> wopiFileCache = new ConcurrentHashMap<>();
   private final Map<String, String> silverpeasResourceWopiFileMapping = new ConcurrentHashMap<>();
   private final Map<String, Set<String>> wopiFileUsersEditionCache = new ConcurrentHashMap<>();
@@ -108,10 +108,14 @@ public class WopiCache {
     return wopiUserCache.computeIfAbsent(spSessionId, j -> {
       final WopiUser wopiUser = userSupplier.get();
       wopiAccessTokenUserMapping.putIfAbsent(wopiUser.getAccessToken(), spSessionId);
-      wopiUserIdUserMapping.putIfAbsent(wopiUser.getId(), spSessionId);
+      wopiUserIdUserMapping.computeIfAbsent(wopiUser.getId(), k -> synchronizedSet(new HashSet<>())).add(spSessionId);
       return new Element<>(wopiUser, w -> {
         final String wuId = wopiAccessTokenUserMapping.remove(w.getAccessToken());
-        wopiUserIdUserMapping.remove(w.getId());
+        final Set<String> spSessionIds = wopiUserIdUserMapping.get(w.getId());
+        spSessionIds.remove(w.getSilverpeasSessionId());
+        if (spSessionIds.isEmpty()) {
+          wopiUserIdUserMapping.remove(w.getId());
+        }
         wopiUserFilesEditionCache.remove(wuId);
         wopiFileUsersEditionCache.forEach((k, v) -> v.remove(wuId));
       });
@@ -218,7 +222,7 @@ public class WopiCache {
    */
   void registerEdition(final WopiFile file, final Set<String> userIds) {
     final Set<String> spSessionIds = userIds.stream()
-        .map(wopiUserIdUserMapping::get)
+        .flatMap(i -> wopiUserIdUserMapping.get(i).stream())
         .filter(StringUtil::isDefined)
         .collect(Collectors.toSet());
     final String fileId = file.id();
@@ -257,11 +261,13 @@ public class WopiCache {
    * @return a list of {@link WopiFile}.
    */
   List<WopiFile> getEditedFilesBy(final WopiUser user) {
-    final String spSessionId = wopiUserIdUserMapping.get(user.getId());
-    return wopiUserFilesEditionCache.getOrDefault(spSessionId, emptySet()).stream()
+    return wopiUserIdUserMapping.get(user.getId())
+        .stream()
+        .flatMap(s -> wopiUserFilesEditionCache.getOrDefault(s, emptySet()).stream())
         .map(wopiFileCache::get)
         .filter(Objects::nonNull)
         .map(Element::get)
+        .distinct()
         .collect(toList());
   }
 
