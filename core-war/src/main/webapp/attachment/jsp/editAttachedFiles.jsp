@@ -80,8 +80,8 @@
           listDocumentsByForeignKeyAndType(new ResourceReference(request.getParameter("Id"), request.getParameter("ComponentId")),
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));
-  pageContext.setAttribute("attachments", attachments);
 %>
+<c:set var="attachments" value="<%=attachments%>"/>
 <c:url var="noColorPix" value="/util/icons/colorPix/1px.gif" />
 <c:url var="ArrayPnoColorPix" value="/util/icons/colorPix/15px.gif" />
 
@@ -428,7 +428,7 @@
             <c:url var="moveDownIcon" value="/util/icons/arrow/arrowDown.gif" />
             <fmt:message var="moveDownIconMsg" key="Down" />
 
-            <c:forEach items="${pageScope.attachments}" var="varAttachment" varStatus="attachmentIterStatus">
+            <c:forEach items="${attachments}" var="varAttachment" varStatus="attachmentIterStatus">
 
               <%-- Download variable handling --%>
               <c:set var="canUserDownloadFile" value="${true}"/>
@@ -484,7 +484,7 @@
                   <view:icon altText="${varAttachment.description}" iconName="${infoIcon}" />
                 </td>
                 <td class="odd" align="left"><c:out value="${view:humanReadableSize(varAttachment.size)}" /></td>
-                <td class="odd" align="left"><view:formatDate language="${sessionScope.SilverSessionController.favoriteLanguage}" value="${varAttachment.created}"/></td>
+                <td class="odd" align="left"><view:formatDate language="${sessionScope.SilverSessionController.favoriteLanguage}" value="${varAttachment.creationDate}"/></td>
                 <td class="odd" align="right">
                   <view:icons>
                     <view:icon iconName="${updateIcon}" altText="${updateIconMsg}" action="javascript:updateAttachment(\'${varAttachment.id}\', \'${varAttachment.language}\');"/>
