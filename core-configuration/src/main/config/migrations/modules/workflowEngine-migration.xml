@@ -35,7 +35,7 @@
   </current>
 
   <upgrade fromVersion="008">
-    <script name="create_table.sql" type="sql"/>
+    <script name="alter_table.sql" type="sql"/>
   </upgrade>
 
 </migration>

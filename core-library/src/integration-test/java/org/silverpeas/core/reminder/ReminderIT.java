@@ -26,6 +26,7 @@ package org.silverpeas.core.reminder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -147,6 +148,11 @@ public class ReminderIT {
         .publishAt(OffsetDateTime.now().plusSeconds(45)));
     new BackgroundProcessLogger().init();
     BackgroundProcessLogger.get().setLevel(Level.DEBUG);
+  }
+
+  @After
+  public void releaseScheduler() {
+    SchedulerInitializer.get().release();
   }
 
   @Test
@@ -389,7 +395,7 @@ public class ReminderIT {
     assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isDeleted(reminder));
-    assertThat(reminder.isScheduled(), is(false));
+    assertThat(beforeTriggered.isScheduled(), is(false));
   }
 
   @Test

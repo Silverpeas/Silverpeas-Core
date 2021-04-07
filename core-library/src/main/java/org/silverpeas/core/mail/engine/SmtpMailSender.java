@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.mail.engine;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
@@ -100,10 +99,8 @@ public class SmtpMailSender implements MailSender {
       // Sending.
       performSend(mail, smtpConfiguration, session, email, toAddresses);
 
-    } catch (MessagingException | UnsupportedEncodingException e) {
-      SilverLogger.getLogger(this).error(e);
     } catch (Exception e) {
-      throw new SilverpeasRuntimeException(e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 

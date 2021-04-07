@@ -27,7 +27,6 @@ package org.silverpeas.core.webapi.workflow;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.workflow.api.UserManager;

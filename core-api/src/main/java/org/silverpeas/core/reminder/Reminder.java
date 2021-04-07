@@ -324,7 +324,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
       }
       Reminder me = ReminderRepository.get().save(this);
       JobTrigger trigger = JobTrigger.triggerAt(triggeringDateTime);
-      scheduler.scheduleJob(getJobName(), trigger, ReminderProcess.get());
+      scheduler.scheduleJob(me.getJobName(), trigger, ReminderProcess.get());
       return (T) me;
     });
   }

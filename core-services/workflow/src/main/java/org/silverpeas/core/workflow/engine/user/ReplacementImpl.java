@@ -26,7 +26,6 @@ package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.util.StringUtil;
@@ -36,7 +35,6 @@ import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;

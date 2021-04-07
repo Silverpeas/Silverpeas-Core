@@ -24,13 +24,8 @@
 package org.silverpeas.core.io.media;
 
 import org.apache.tika.Tika;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.mp4.MP4Parser;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -44,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.util.Set;
 
 /**
  * This tool is kind of interface between the Silverpeas callers which needs to get metadata from

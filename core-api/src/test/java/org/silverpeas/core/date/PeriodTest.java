@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Unit test in the {@link Period} objects
  * @author mmoquillon
  */
-public class PeriodTest {
+class PeriodTest {
 
   private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getDefault();
 
@@ -60,7 +60,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodBetweenTwoDates() {
+  void periodBetweenTwoDates() {
     LocalDate yesterday = LocalDate.now().minusDays(1);
     LocalDate tomorrow = LocalDate.now().plusDays(1);
     Period period = Period.between(yesterday, tomorrow);
@@ -72,7 +72,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodBetweenTwoDateTimes() {
+  void periodBetweenTwoDateTimes() {
     OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
     OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
     Period period = Period.between(yesterday, tomorrow);
@@ -84,7 +84,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodBetweenTwoZonedDateTimes() {
+  void periodBetweenTwoZonedDateTimes() {
     ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1);
     ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1);
     Period period = Period.between(yesterday, tomorrow);
@@ -96,7 +96,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodBetweenTwoDayDateTimes() {
+  void periodBetweenTwoDayDateTimes() {
     OffsetDateTime start = LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
     OffsetDateTime end = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
     Period period = Period.between(start, end);
@@ -108,7 +108,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodInTheCurrentDay() {
+  void periodInTheCurrentDay() {
     LocalDate currentDay = LocalDate.now();
     Period period = Period.between(currentDay, currentDay);
     assertThat(period.startsAtMinDate(), is(false));
@@ -119,7 +119,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodStartingAtMinDate() {
+  void periodStartingAtMinDate() {
     LocalDate currentDay = LocalDate.now();
     Period period = Period.between(LocalDate.MIN, currentDay);
     assertThat(period.startsAtMinDate(), is(true));
@@ -130,7 +130,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodStartingAtMinDateTime() {
+  void periodStartingAtMinDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     Period period = Period.between(OffsetDateTime.MIN, now);
     assertThat(period.startsAtMinDate(), is(true));
@@ -141,7 +141,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodEndingAtMaxDate() {
+  void periodEndingAtMaxDate() {
     LocalDate currentDay = LocalDate.now();
     Period period = Period.between(currentDay, LocalDate.MAX);
     assertThat(period.startsAtMinDate(), is(false));
@@ -152,7 +152,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodEndingAtMaxDateTime() {
+  void periodEndingAtMaxDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     Period period = Period.between(now, OffsetDateTime.MAX);
     assertThat(period.startsAtMinDate(), is(false));
@@ -163,7 +163,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodStartingAtMinDateTimeAndEndingAtMaxDate() {
+  void periodStartingAtMinDateTimeAndEndingAtMaxDate() {
     Period period = Period.between(LocalDate.MIN, LocalDate.MAX);
     assertThat(period.startsAtMinDate(), is(true));
     assertThat(period.endsAtMaxDate(), is(true));
@@ -173,7 +173,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodStartingAtMinDateTimeAndEndingAtMaxDateTime() {
+  void periodStartingAtMinDateTimeAndEndingAtMaxDateTime() {
     Period period = Period.between(OffsetDateTime.MIN, OffsetDateTime.MAX);
     assertThat(period.startsAtMinDate(), is(true));
     assertThat(period.endsAtMaxDate(), is(true));
@@ -183,75 +183,79 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodInNowShouldFail() {
+  void periodInNowShouldFail() {
+    OffsetDateTime now = OffsetDateTime.now();
     assertThrows(IllegalArgumentException.class, () -> {
-      OffsetDateTime now = OffsetDateTime.now();
       Period.between(now, now);
     });
   }
 
   @Test
-  public void periodBetweenTwoDifferentTemporalShouldFail1() {
+  void periodBetweenTwoDifferentTemporalShouldFail1() {
+    LocalDate yesterday = LocalDate.now().minusDays(1);
+    OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
     assertThrows(IllegalArgumentException.class, () -> {
-      LocalDate yesterday = LocalDate.now().minusDays(1);
-      OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
       Period.between(yesterday, tomorrow);
     });
   }
 
   @Test
-  public void periodBetweenTwoDifferentTemporalShouldFail2() {
+  void periodBetweenTwoDifferentTemporalShouldFail2() {
+    OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+    LocalDate tomorrow = LocalDate.now().plusDays(1);
     assertThrows(IllegalArgumentException.class, () -> {
-      OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
-      LocalDate tomorrow = LocalDate.now().plusDays(1);
       Period.between(yesterday, tomorrow);
     });
   }
 
   @Test
-  public void periodInDateEndingBeforeStartingShouldFail() {
+  void periodInDateEndingBeforeStartingShouldFail() {
+    LocalDate yesterday = LocalDate.now().minusDays(1);
+    LocalDate tomorrow = LocalDate.now().plusDays(1);
     assertThrows(IllegalArgumentException.class, () -> {
-      LocalDate yesterday = LocalDate.now().minusDays(1);
-      LocalDate tomorrow = LocalDate.now().plusDays(1);
       Period.between(tomorrow, yesterday);
     });
   }
 
   @Test
-  public void periodInDateTimeEndingBeforeStartingShouldFail() {
+  void periodInDateTimeEndingBeforeStartingShouldFail() {
+    OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+    OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
     assertThrows(IllegalArgumentException.class, () -> {
-      OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
-      OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
       Period.between(tomorrow, yesterday);
     });
   }
 
   @Test
-  public void periodStartingAtUndefinedDateShouldFail() {
+  void periodStartingAtUndefinedDateShouldFail() {
+    LocalDate now = LocalDate.now();
     assertThrows(NullPointerException.class, () ->
-    Period.between(null, LocalDate.now()));
+    Period.between(null, now));
   }
 
   @Test
-  public void periodStartingAtUndefinedDateTimeShouldFail() {
+  void periodStartingAtUndefinedDateTimeShouldFail() {
+    OffsetDateTime now = OffsetDateTime.now();
     assertThrows(NullPointerException.class, () ->
-    Period.between(null, OffsetDateTime.now()));
+    Period.between(null, now));
   }
 
   @Test
-  public void periodEndingAtUndefinedDateShouldFail() {
+  void periodEndingAtUndefinedDateShouldFail() {
+    LocalDate now = LocalDate.now();
     assertThrows(NullPointerException.class, () ->
-    Period.between(LocalDate.now(), null));
+    Period.between(now, null));
   }
 
   @Test
-  public void periodEndingAtUndefinedDateTimeShouldFail() {
+  void periodEndingAtUndefinedDateTimeShouldFail() {
+    OffsetDateTime now = OffsetDateTime.now();
     assertThrows(NullPointerException.class, () ->
-    Period.between(OffsetDateTime.now(), null));
+    Period.between(now, null));
   }
 
   @Test
-  public void periodExplicitlyStartingAtUndefinedDate() {
+  void periodExplicitlyStartingAtUndefinedDate() {
     LocalDate today = LocalDate.now();
     Period period = Period.betweenNullable(null, today);
     assertThat(period.startsAtMinDate(), is(true));
@@ -262,7 +266,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodExplicitlyStartingAtUndefinedDateTime() {
+  void periodExplicitlyStartingAtUndefinedDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     Period period = Period.betweenNullable(null, now);
     assertThat(period.startsAtMinDate(), is(true));
@@ -273,7 +277,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodExplicitlyEndingAtUndefinedDate() {
+  void periodExplicitlyEndingAtUndefinedDate() {
     LocalDate today = LocalDate.now();
     Period period = Period.betweenNullable(today, null);
     assertThat(period.startsAtMinDate(), is(false));
@@ -284,7 +288,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodExplicitlyEndingAtUndefinedDateTime() {
+  void periodExplicitlyEndingAtUndefinedDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     Period period = Period.betweenNullable(now, null);
     assertThat(period.startsAtMinDate(), is(false));
@@ -295,7 +299,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodExplicitlyStartingAndEndingAtUndefinedDate() {
+  void periodExplicitlyStartingAndEndingAtUndefinedDate() {
     Period period = Period.betweenNullable((LocalDate)null, null);
     assertThat(period.startsAtMinDate(), is(true));
     assertThat(period.endsAtMaxDate(), is(true));
@@ -305,7 +309,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodExplicitlyStartingAndEndingAtUndefinedDateTime() {
+  void periodExplicitlyStartingAndEndingAtUndefinedDateTime() {
     Period period = Period.betweenNullable((OffsetDateTime) null, null);
     assertThat(period.startsAtMinDate(), is(true));
     assertThat(period.endsAtMaxDate(), is(true));
@@ -315,7 +319,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodWithBothNonDefinedStartAndEndTemporal() {
+  void periodWithBothNonDefinedStartAndEndTemporal() {
     Temporal start = null;
     Temporal end = null;
     Period period = Period.betweenNullable(start, end);
@@ -327,7 +331,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodWithNonDefinedStartTemporalAndEndingAtADefinedDate() {
+  void periodWithNonDefinedStartTemporalAndEndingAtADefinedDate() {
     Temporal start = null;
     Temporal end = LocalDate.now().plusDays(1);
     Period period = Period.betweenNullable(start, end);
@@ -339,7 +343,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodWithNonDefinedStartTemporalAndEndingAtADefinedDateTime() {
+  void periodWithNonDefinedStartTemporalAndEndingAtADefinedDateTime() {
     Temporal start = null;
     Temporal end = OffsetDateTime.now().plusDays(1).withOffsetSameInstant(ZoneOffset.UTC);
     Period period = Period.betweenNullable(start, end);
@@ -351,7 +355,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodStartingAtADefinedDateAndEndingAtAnUndefinedTemporal() {
+  void periodStartingAtADefinedDateAndEndingAtAnUndefinedTemporal() {
     Temporal start = LocalDate.now().minusDays(1);
     Temporal end = null;
     Period period = Period.betweenNullable(start, end);
@@ -363,7 +367,7 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodStartingAtADefinedDateTimeAndEndingAtAnUndefinedTemporal() {
+  void periodStartingAtADefinedDateTimeAndEndingAtAnUndefinedTemporal() {
     Temporal start = OffsetDateTime.now().minusDays(1).withOffsetSameInstant(ZoneOffset.UTC);
     Temporal end = null;
     Period period = Period.betweenNullable(start, end);
@@ -375,19 +379,19 @@ public class PeriodTest {
   }
 
   @Test
-  public void periodWithDifferentNullableTypeOfDateTime() {
+  void periodWithDifferentNullableTypeOfDateTime() {
+    Temporal start = OffsetDateTime.now().minusDays(1);
+    Temporal end = LocalDate.now().plusDays(1);
     assertThrows(IllegalArgumentException.class, () -> {
-      Temporal start = OffsetDateTime.now().minusDays(1);
-      Temporal end = LocalDate.now().plusDays(1);
       Period.betweenNullable(start, end);
     });
   }
 
   @Test
-  public void periodWithDifferentTypeOfDateTime() {
+  void periodWithDifferentTypeOfDateTime() {
+    Temporal start = OffsetDateTime.now().minusDays(1);
+    Temporal end = LocalDate.now().plusDays(1);
     assertThrows(IllegalArgumentException.class, () -> {
-      Temporal start = OffsetDateTime.now().minusDays(1);
-      Temporal end = LocalDate.now().plusDays(1);
       Period.between(start, end);
     });
   }
