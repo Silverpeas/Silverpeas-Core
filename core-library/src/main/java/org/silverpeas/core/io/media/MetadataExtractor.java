@@ -24,6 +24,7 @@
 package org.silverpeas.core.io.media;
 
 import org.apache.tika.Tika;
+import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
@@ -32,6 +33,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.time.Duration;
@@ -57,14 +59,11 @@ public class MetadataExtractor {
     return ServiceProvider.getService(MetadataExtractor.class);
   }
 
-  private static Set<MediaType> mp4ParserSupportedTypes =
-      new MP4Parser().getSupportedTypes(new ParseContext());
-
   MetadataExtractor() {
   }
 
   @PostConstruct
-  private void initialize() {
+  protected void initialize() {
     tika = new Tika();
   }
 
@@ -100,25 +99,23 @@ public class MetadataExtractor {
    * @return a {@link MetaData} instance that handles the metadata extracted from the given file.
    */
   private MetaData adjust(final File file, Metadata metaData) {
-    String contentType = metaData.get(HttpHeaders.CONTENT_TYPE);
-    MediaType mediaType = MediaType.parse(contentType);
-    adjustMp4Duration(metaData, mediaType);
+    adjustMediaDuration(metaData);
     return new MetaData(file, metaData);
   }
 
 
   /**
-   * Adjusts MP4 extracted duration.<br>
-   * Indeed {@link MP4Parser} puts into metadata the duration in seconds.<br>
-   * It can not be perfect all the time!
+   * Adjusts media (sound or video) extracted duration.<br>
+   * Indeed the sound and video parsers puts into metadata the duration in seconds whereas we are
+   * expected the duration in milliseconds.
    * @param metadata the current extracted metadata.
-   * @param mediaType the mediaType of current processed file.
    */
-  private void adjustMp4Duration(Metadata metadata, MediaType mediaType) {
-    if (mp4ParserSupportedTypes.contains(mediaType)) {
+  private void adjustMediaDuration(Metadata metadata) {
+    String durationData = metadata.get(XMPDM.DURATION);
+    if (StringUtil.isDefined(durationData)) {
       try {
         Duration duration =
-            UnitUtil.getDuration(new BigDecimal(metadata.get(XMPDM.DURATION)), TimeUnit.SECOND);
+            UnitUtil.getDuration(new BigDecimal(durationData), TimeUnit.SECOND);
         metadata.set(XMPDM.DURATION, String.valueOf(duration.getTimeAsLong()));
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);

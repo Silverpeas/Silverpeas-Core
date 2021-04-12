@@ -54,6 +54,11 @@
       <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
     </dependency>
@@ -123,10 +128,6 @@
     <dependency>
       <groupId>org.silverpeas.jcr</groupId>
       <artifactId>access-control</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
@@ -207,7 +208,7 @@
       <artifactId>tika-parsers</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.drewnoakes</groupId>
+      <groupId>org.tallison</groupId>
       <artifactId>metadata-extractor</artifactId>
     </dependency>
     <dependency>

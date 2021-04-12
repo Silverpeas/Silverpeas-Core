@@ -57,9 +57,8 @@ public class TikaParser implements Parser {
 
   @Override
   public Context getContext(String path, String encoding) {
-    try {
-      final org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
-      final Reader reader = tika.parse(new File(path), metadata);
+    final org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
+    try(Reader reader = tika.parse(new File(path), metadata)) {
       return new Context(reader, new TikaMetadata(metadata));
     } catch (IOException ex) {
       indexingLogger().error(ex.getMessage(), ex);

@@ -43,9 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author ehugonnet
  */
 @EnableSilverTestEnv
-public class MetadataExtractorTest {
-
-  private final static Tika tika = new Tika();
+class MetadataExtractorTest {
 
   private static final File docFile = getDocumentNamed("/Liste_ECCA.doc");
   private static final File docxFile = getDocumentNamed("/Test.docx");
@@ -65,14 +63,14 @@ public class MetadataExtractorTest {
   @BeforeEach
   public void setup() {
     instance = new MetadataExtractor();
-    mocker.setField(instance, tika, "tika");
+    instance.initialize();
   }
 
   /**
    * Test of getSummaryInformation method, of class MetadataExtractor.
    */
   @Test
-  public void testExtractMetadataFromOLE2WordDocument() {
+  void testExtractMetadataFromOLE2WordDocument() {
     File file = docFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -92,7 +90,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFrom2007WordDocument() {
+  void testExtractMetadataFrom2007WordDocument() {
     File file = docxFile;
     assertThat(file.exists(), is(true));
     MetaData result = instance.extractMetadata(file);
@@ -117,7 +115,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFromOpenOfficeDocument() {
+  void testExtractMetadataFromOpenOfficeDocument() {
     File file = ooFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -137,7 +135,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFromTiffImage() {
+  void testExtractMetadataFromTiffImage() {
     File file = tifFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -159,11 +157,8 @@ public class MetadataExtractorTest {
     assertThat(result.getDuration(), nullValue());
   }
 
-  /**
-   * Test of getSummaryInformation method, of class MetadataExtractor.
-   */
   @Test
-  public void testExtractMetadataFromPdfWithoutMetadata() throws Exception {
+  void testExtractMetadataFromPdfWithoutMetadata() {
     File file = emptyPdfFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -183,25 +178,8 @@ public class MetadataExtractorTest {
     assertThat(result.getDuration(), nullValue());
   }
 
-  /*
-   private void loadPdfWithPdfBox(File file) throws Exception {
-   PDDocument document = PDDocument.load(file);
-   PDDocumentInformation info = document.getDocumentInformation();
-   System.out.println("Title: " + info.getTitle());
-   String istring = info.getTitle().substring(info.getTitle().length() - 1);
-   int ivalue = istring.codePointAt(0);
-   System.out.println(Integer.toHexString(ivalue));
-   RandomAccessBuffer buffer = new RandomAccessBuffer();
-   document = PDDocument.loadNonSeq(file, buffer);
-   info = document.getDocumentInformation();
-   System.out.println("NonSeqTitle: " + info.getTitle());
-   istring = info.getTitle().substring(info.getTitle().length() - 1);
-   ivalue = istring.codePointAt(0);
-   System.out.println(Integer.toHexString(ivalue));
-   }*/
-
   @Test
-  public void testExtractMetadataFromMp4Video() {
+  void testExtractMetadataFromMp4Video() {
     File file = mp4File;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -216,7 +194,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFromMovVideo() {
+  void testExtractMetadataFromMovVideo() {
     File file = movFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -231,7 +209,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFromFlvVideo() {
+  void testExtractMetadataFromFlvVideo() {
     File file = flvFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -246,7 +224,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFromMp3Audio() {
+  void testExtractMetadataFromMp3Audio() {
     File file = mp3File;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -261,7 +239,7 @@ public class MetadataExtractorTest {
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.NULL));
     assertThat(result.getFramerate(), nullValue());
-    assertThat(result.getDuration().getTimeAsLong(), is(4257l));
+    assertThat(result.getDuration().getTimeAsLong(), is(4257L));
     assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:04.257"));
     assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:04"));
   }
