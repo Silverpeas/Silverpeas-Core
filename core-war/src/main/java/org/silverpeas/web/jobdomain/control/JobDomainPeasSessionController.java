@@ -189,7 +189,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isAccessGranted() {
     return !getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin()
-        || getUserDetail().isAccessDomainManager();
+        || getUserDetail().isAccessDomainManager() || isOnlySpaceManager();
   }
 
   public void setRefreshDomain(boolean refreshDomain) {
@@ -1099,7 +1099,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
               groupId))) {
         Group targetGroup = adminCtrl.getGroupById(groupId);
         // Add user access control for security purpose
-        if (isUserAuthorizedToManageGroup(targetGroup)) {
+        if (isOnlySpaceManager() || isUserAuthorizedToManageGroup(targetGroup)) {
           if (GroupNavigationStock.isGroupValid(targetGroup)) {
             List<String> manageableGroupIds = null;
             if (isOnlyGroupManager() && !isGroupManagerOnGroup(groupId)) {
@@ -1468,15 +1468,17 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       // and all classic domains
       domains.addAll(Arrays.asList(adminCtrl.getAllDomains()));
-    } else if (isCommunityManager()) {
+    } else if (isOnlySpaceManager() || isCommunityManager()) {
       // return mixed domain...
       domains.add(adminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
 
-      // domain of user...
-      domains.add(adminCtrl.getDomain(ud.getDomainId()));
-
-      // and default domain
-      domains.add(adminCtrl.getDomain("0"));
+      if (ud.isDomainRestricted()) {
+        // domain of current user only...
+        domains.add(adminCtrl.getDomain(ud.getDomainId()));
+      } else {
+        // all classic domains
+        domains.addAll(Arrays.asList(adminCtrl.getAllDomains()));
+      }
     }
     return domains;
   }
@@ -2362,5 +2364,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (manager.isPresent()) {
       manager.get().saveRule(rule);
     }
+  }
+
+  public boolean isOnlySpaceManager() {
+    return !getUserDetail().isAccessAdmin() && !getUserDetail().isAccessDomainManager() &&
+        !isOnlyGroupManager() && !isManagerOfCurrentDomain() &&
+        ArrayUtil.isNotEmpty(getUserManageableSpaceIds());
   }
 }

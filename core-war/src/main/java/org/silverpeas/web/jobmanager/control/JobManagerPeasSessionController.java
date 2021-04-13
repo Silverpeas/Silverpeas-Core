@@ -217,36 +217,14 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jSTAT4.getId(), jSTAT4);
 
     } else if (isManager) {
-      if (getUserDetail().isAccessDomainManager()) {
-        // l'administrateur du composant à accès seulement à certaines fonctions
-        String[] functionIds = { jspp.getId(), jdp.getId() };
-        jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
+      String[] functionIds = { jspp.getId(), jdp.getId() };
+      jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
 
-        services.put(jDesigner.getId(), jDesigner);
-        nbServices++;
+      services.put(jDesigner.getId(), jDesigner);
+      nbServices++;
 
-        services.put(jdp.getId(), jdp);
-        services.put(jspp.getId(), jspp);
-      } else {
-        // l'administrateur d'espace à accès seulement à certaines fonctions
-        if (!getUserManageableGroupIds().isEmpty()) {
-          // Il est également gestionnaire de groupe, il a acces au référentiel (jobDomain)
-          String[] functionIds = { jspp.getId(), jdp.getId() };
-          jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
-          services.put(jDesigner.getId(), jDesigner);
-          nbServices++;
-
-          services.put(jdp.getId(), jdp);
-          services.put(jspp.getId(), jspp);
-        } else {
-          // Il n'est pas gestionnaire de groupe
-          String[] functionIds = { jspp.getId() };
-          jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
-          services.put(jDesigner.getId(), jDesigner);
-          nbServices++;
-          services.put(jspp.getId(), jspp);
-        }
-      }
+      services.put(jdp.getId(), jdp);
+      services.put(jspp.getId(), jspp);
 
       String[] id2 = { jSTAT2.getId(), jSTAT3.getId() };
       jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, id2, false);

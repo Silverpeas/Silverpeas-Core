@@ -92,6 +92,7 @@
   boolean isUserRW = (Boolean) request.getAttribute("isUserRW");
   boolean isX509Enabled = (Boolean) request.getAttribute("isX509Enabled");
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
+  boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
   boolean isUserManageableByGroupManager =
       (Boolean) request.getAttribute("userManageableByGroupManager");
   boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
@@ -181,6 +182,12 @@
     operationPane.addLine();
     operationPane.addOperation(resource.getIcon("JDP.x509"), resource.getString("JDP.getX509"),
         "userGetP12?Iduser=" + thisUserId);
+  }
+
+  if (onlySpaceManager) {
+    // no action to space manager
+    operationPane.clear();
+    updatableUser = false;
   }
 
 %>

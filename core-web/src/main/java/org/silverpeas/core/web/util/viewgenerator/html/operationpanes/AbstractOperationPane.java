@@ -129,4 +129,9 @@ public abstract class AbstractOperationPane implements OperationPane {
   public void addOperationOfCreation(String icon, String label, String action) {
     addOperationOfCreation(icon, label, action, null);
   }
+
+  @Override
+  public void clear() {
+    getStack().clear();
+  }
 }
