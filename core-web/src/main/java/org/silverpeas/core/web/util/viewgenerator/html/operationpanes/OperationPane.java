@@ -92,4 +92,9 @@ public interface OperationPane extends SimpleGraphicElement {
   public void addLine();
 
   public void setMultilang(LocalizationBundle multilang);
+
+  /**
+   * Removes all operations
+   */
+  public void clear();
 }
