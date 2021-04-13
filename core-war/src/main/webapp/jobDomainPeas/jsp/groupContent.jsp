@@ -62,6 +62,7 @@
     boolean isGroupManager			= (Boolean)request.getAttribute("isOnlyGroupManager");
     boolean isGroupManagerDirectly	= (Boolean)request.getAttribute("isGroupManagerDirectlyOnThisGroup");
     boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
+    boolean onlySpaceManager = (Boolean)request.getAttribute("isOnlySpaceManager");
 
     boolean showTabs		= false;
 
@@ -132,6 +133,12 @@
   operationPane.addOperation("useless", resource.getString("JDP.user.rights.action"), "groupViewRights");
   if (isRightCopyReplaceEnabled) {
     operationPane.addOperation("useless", resource.getString("JDP.rights.assign"), "javascript:assignSameRights()");
+  }
+
+  if (onlySpaceManager) {
+    // no action to space manager
+    operationPane.clear();
+    showTabs = false;
   }
 %>
 

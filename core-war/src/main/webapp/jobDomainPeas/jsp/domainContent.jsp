@@ -59,6 +59,7 @@
   boolean isDomainSync 		= (Boolean)request.getAttribute("isDomainSync");
   boolean isUserRW 			= (Boolean)request.getAttribute("isUserRW");
   boolean isGroupManager		= (Boolean)request.getAttribute("isOnlyGroupManager");
+  boolean onlySpaceManager		= (Boolean)request.getAttribute("isOnlySpaceManager");
   boolean isUserAddingAllowed = (Boolean)request.getAttribute("isUserAddingAllowedForGroupManager");
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
@@ -165,6 +166,11 @@
 	    operationPane.addLine();
 	    operationPane.addOperation(resource.getIcon("JDP.domainSqlSynchro"),resource.getString("JDP.domainSynchro"),"javascript:DomainSQLSynchro()");
 	}
+  }
+
+  if (onlySpaceManager) {
+    // no action to space manager
+    operationPane.clear();
   }
 %>
 
