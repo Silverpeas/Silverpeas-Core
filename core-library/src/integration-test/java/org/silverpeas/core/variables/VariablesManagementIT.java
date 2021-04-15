@@ -40,6 +40,7 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -110,7 +111,7 @@ public class VariablesManagementIT {
   }
 
   @Test
-  public void createAValuedVariableInAFixedPeriod() {
+  public void createAValuedVariableInAFixedPeriod() throws SQLException {
     final String label = "A Label";
     final String description = "A short description about the variable";
     final LocalDate yesterday = LocalDate.now().minusDays(1);

@@ -177,9 +177,9 @@ class PeriodTest {
     Period period = Period.between(OffsetDateTime.MIN, OffsetDateTime.MAX);
     assertThat(period.startsAtMinDate(), is(true));
     assertThat(period.endsAtMaxDate(), is(true));
-    assertThat(period.getStartDate(), is(OffsetDateTime.MIN));
-    assertThat(period.getEndDate(), is(OffsetDateTime.MAX));
-    assertThat(period.isInDays(), is(false));
+    assertThat(period.getStartDate(), is(LocalDate.MIN));
+    assertThat(period.getEndDate(), is(LocalDate.MAX));
+    assertThat(period.isInDays(), is(true));
   }
 
   @Test
@@ -313,9 +313,9 @@ class PeriodTest {
     Period period = Period.betweenNullable((OffsetDateTime) null, null);
     assertThat(period.startsAtMinDate(), is(true));
     assertThat(period.endsAtMaxDate(), is(true));
-    assertThat(period.getStartDate(), is(OffsetDateTime.MIN));
-    assertThat(period.getEndDate(), is(OffsetDateTime.MAX));
-    assertThat(period.isInDays(), is(false));
+    assertThat(period.getStartDate(), is(LocalDate.MIN));
+    assertThat(period.getEndDate(), is(LocalDate.MAX));
+    assertThat(period.isInDays(), is(true));
   }
 
   @Test

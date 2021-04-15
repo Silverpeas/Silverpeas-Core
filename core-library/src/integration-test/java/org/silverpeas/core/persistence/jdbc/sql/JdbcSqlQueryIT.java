@@ -54,6 +54,9 @@ import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
 import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
+/**
+ * Integration tests on the different features exposed by the {@link JdbcSqlQuery} technical class.
+ */
 @RunWith(Arquillian.class)
 public class JdbcSqlQueryIT {
 

@@ -25,48 +25,47 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.sql.Date;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.Instant;
 
-import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MAX_DATE;
-import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MIN_DATE;
+import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MAX_TIMESTAMP;
+import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MIN_TIMESTAMP;
 
 /**
- * A converter of {@link LocalDate} and {@link Date} to take into account {@link LocalDate#MIN} and
- * {@link LocalDate#MAX} as a workaround of the Hibernate limitation with the Java Time API:
+ * A converter of {@link Instant} and {@link Timestamp} to take into account {@link Instant#MIN}
+ * and {@link Instant#MAX} as a workaround of the Hibernate limitation with the Java Time API:
  * <a href="https://hibernate.atlassian.net/browse/HHH-13482">bug HHH-13482</a>
  * @author mmoquillon
  */
 @Converter(autoApply = true)
-public class LocalDateAttributeConverter implements
-    AttributeConverter<LocalDate, Date> {
+public class InstantAttributeConverter implements AttributeConverter<Instant, Timestamp> {
 
   @Override
-  public Date convertToDatabaseColumn(LocalDate locDate) {
-    if (locDate == null) {
+  public Timestamp convertToDatabaseColumn(Instant instant) {
+    if (instant == null) {
       return null;
     }
-    if (locDate.equals(LocalDate.MIN)) {
-      return MIN_DATE;
+    if (instant.equals(Instant.MIN)) {
+      return MIN_TIMESTAMP;
     }
-    if (locDate.equals(LocalDate.MAX)) {
-      return MAX_DATE;
+    if (instant.equals(Instant.MAX)) {
+      return MAX_TIMESTAMP;
     }
 
-    return Date.valueOf(locDate);
+    return Timestamp.from(instant);
   }
 
   @Override
-  public LocalDate convertToEntityAttribute(Date sqlDate) {
-    if (sqlDate == null) {
+  public Instant convertToEntityAttribute(Timestamp sqlTimestamp) {
+    if (sqlTimestamp == null) {
       return null;
     }
-    if (sqlDate.toLocalDate().equals(MIN_DATE.toLocalDate())) {
-      return LocalDate.MIN;
+    if (sqlTimestamp.equals(MIN_TIMESTAMP)) {
+      return Instant.MIN;
     }
-    if (sqlDate.toLocalDate().equals(MAX_DATE.toLocalDate())) {
-      return LocalDate.MAX;
+    if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
+      return Instant.MAX;
     }
-    return sqlDate.toLocalDate();
+    return sqlTimestamp.toInstant();
   }
 }

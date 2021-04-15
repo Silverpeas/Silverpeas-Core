@@ -23,16 +23,19 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa.model;
 
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * User: Yohann Chastagnier
@@ -46,6 +49,9 @@ public class Equipment extends SilverpeasJpaEntity<Equipment, UuidIdentifier> im
   @Column(name = "name", nullable = false)
   private String name;
 
+  @Embedded
+  private Period rentPeriod = Period.between(LocalDate.MIN, LocalDate.MAX);
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "animalId", referencedColumnName = "id", nullable = false)
   private Animal animal;
@@ -57,6 +63,15 @@ public class Equipment extends SilverpeasJpaEntity<Equipment, UuidIdentifier> im
   public Equipment setName(final String name) {
     this.name = name;
     return this;
+  }
+
+  public Equipment rentOver(Period period) {
+    this.rentPeriod = period;
+    return this;
+  }
+
+  public Period getRentPeriod() {
+    return rentPeriod;
   }
 
   public Animal getAnimal() {

@@ -371,7 +371,10 @@ public class ReminderIT {
     assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
+
+    waitForSchedulerStateUpdate();
     assertThat(reminder.isScheduled(), is(false));
+
     final DateTimeReminder afterTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
     assertThat(afterTriggered, notNullValue());
     assertThat(afterTriggered.isScheduled(), is(false));
@@ -395,6 +398,8 @@ public class ReminderIT {
     assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isDeleted(reminder));
+
+    waitForSchedulerStateUpdate();
     assertThat(beforeTriggered.isScheduled(), is(false));
   }
 
@@ -507,6 +512,10 @@ public class ReminderIT {
 
   private Callable<Boolean> isNotScheduled(final Reminder reminder) {
     return () -> !Reminder.getById(reminder.getId()).isScheduled();
+  }
+
+  private void waitForSchedulerStateUpdate() {
+    await().pollDelay(1, SECONDS).until(() -> true);
   }
 
   /**

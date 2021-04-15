@@ -39,12 +39,27 @@ import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.Objects;
 
-import static org.silverpeas.core.date.TemporalConverter.*;
+import static org.silverpeas.core.date.TemporalConverter.asInstant;
 
 /**
+ * <p>
  * A period is a laps of time starting at a given date or datetime and ending at another given date
  * or datetime. When the period takes care of the time, it is always set in UTC/Greenwich in order
- * to avoid any bugs by comparing two periods in different time zones or offset zones.
+ * to avoid any bugs by comparing two periods in different time zones or offset zones. A period
+ * is indefinite when it spans over a very large of time that cannot be reached; in this case the
+ * period is counted in days between {@link LocalDate#MIN} and {@link LocalDate#MAX}. An indefinite
+ * period can be created either by:
+ * </p>
+ *<ul>
+ *   <li>invoking the {@link Period#indefinite()} method,</li>
+ *   <li>or by invoking one of the <code>between(...,...)</code> method with as arguments the
+ *   <code>MIN</code> et <code>MAX</code> values of one of the concrete date or datetime of the Java
+ *   Time API,</li>
+ *   <li>or by invoking one of the <code>betweenNullable(...,...)</code> method with as arguments
+ *   either null or the <code>MIN</code> et <code>MAX</code> values of one of the concrete date or
+ *   datetime of the Java Time API.</li>
+ *</ul>
+ *
  * @author mmoquillon
  */
 @Embeddable
@@ -58,6 +73,16 @@ public class Period implements Serializable {
   private Instant endDateTime;
   @Column(name = "inDays", nullable = false)
   private boolean inDays = false;
+
+  /**
+   * Creates an indefinite period of time. An undefined period is a period over an indefinite range
+   * of time meaning that whatever any event, it occurs during this period. It is like an infinite
+   * period but starting at {@link LocalDate#MIN} and ending at {@link LocalDate#MAX}.
+   * @return an undefined period.
+   */
+  public static Period indefinite() {
+    return betweenInDays(Instant.MIN, Instant.MAX);
+  }
 
   /**
    * Creates a new period of time between the two specified non null date or datetime. It accepts
@@ -158,7 +183,7 @@ public class Period implements Serializable {
     Period period = new Period();
     period.startDateTime = startInstant;
     period.endDateTime = endInstant;
-    period.inDays = false;
+    period.inDays = period.startsAtMinDate() && period.endsAtMaxDate();
     return period;
   }
 
@@ -322,7 +347,7 @@ public class Period implements Serializable {
    */
   public Temporal getStartDate() {
     Temporal startDate;
-    if (startDateTime == Instant.MIN) {
+    if (startsAtMinDate()) {
       startDate = isInDays() ? LocalDate.MIN : OffsetDateTime.MIN;
     } else {
       startDate = isInDays() ? LocalDate.ofInstant(startDateTime, ZoneOffset.UTC) :
@@ -343,7 +368,7 @@ public class Period implements Serializable {
    */
   public Temporal getEndDate() {
     Temporal endDate;
-    if (endDateTime == Instant.MAX) {
+    if (endsAtMaxDate()) {
       endDate = isInDays() ? LocalDate.MAX : OffsetDateTime.MAX;
     } else {
       endDate = isInDays() ? LocalDate.ofInstant(endDateTime, ZoneOffset.UTC) :

@@ -262,7 +262,7 @@ public class TemporalConverter {
   public static Instant asInstant(final Temporal temporal) {
     Objects.requireNonNull(temporal);
     return applyByType(temporal, LOCAL_DATE_TO_INSTANT, LOCAL_DATE_TIME_TO_INSTANT,
-        OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT);
+        OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT, INSTANT_TO_INSTANT);
   }
 
   /**
@@ -282,9 +282,20 @@ public class TemporalConverter {
   public static Date asDate(final Temporal temporal) {
     Objects.requireNonNull(temporal);
     Instant instant = applyByType(temporal, LOCAL_DATE_TO_INSTANT, LOCAL_DATE_TIME_TO_INSTANT,
-        OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT);
+        OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT, INSTANT_TO_INSTANT);
     return Date.from(instant);
   }
+
+  private static final Conversion<Instant, Instant> INSTANT_TO_INSTANT =
+      Conversion.of(Instant.class, t -> {
+        if (t.equals(Instant.MIN)) {
+          return Instant.MIN;
+        }
+        if (t.equals(Instant.MAX)) {
+          return Instant.MAX;
+        }
+        return t;
+      });
 
   private static final Conversion<LocalDate, Instant> LOCAL_DATE_TO_INSTANT =
       Conversion.of(LocalDate.class, t -> {

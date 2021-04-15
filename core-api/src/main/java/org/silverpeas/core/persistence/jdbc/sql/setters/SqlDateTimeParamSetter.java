@@ -59,7 +59,7 @@ class SqlDateTimeParamSetter extends SqlTemporalParamSetter {
     if (value instanceof Timestamp) {
       statement.setTimestamp(idx, (Timestamp) value);
     } else if (isADateTime(value)) {
-      statement.setTimestamp(idx, new Timestamp(toInstant(value).toEpochMilli()));
+      statement.setTimestamp(idx, Timestamp.from(toInstant(value)));
     } else {
       throwTypeNotSupported(value.getClass());
     }
