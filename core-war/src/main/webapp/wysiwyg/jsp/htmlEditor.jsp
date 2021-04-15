@@ -253,6 +253,7 @@
 </c:if>
 <c:set var="actionWysiwyg" value="<%=actionWysiwyg%>"/>
 
+<c:set var="isHtmlLoadingContext" value="${actionWysiwyg eq 'Load' or actionWysiwyg eq 'Refresh'}"/>
 <c:set var="handledSubscriptionType" value="${param.handledSubscriptionType}"/>
 <c:set var="handledSubscriptionResourceId" value="${param.handledSubscriptionResourceId}"/>
 <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
@@ -269,19 +270,15 @@
 <c:set var="isHandledSubscriptionConfirmation"
        value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title>Silverpeas Wysiwyg Editor</title>
-  <c:if test="${actionWysiwyg eq 'Load' or actionWysiwyg eq 'Refresh'}">
-    <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part noLookAndFeel="${not isHtmlLoadingContext}">
+  <c:if test="${isHtmlLoadingContext}">
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="subscription"/>
   </c:if>
-</head>
-<body>
-<c:if test="${actionWysiwyg eq 'Load' or actionWysiwyg eq 'Refresh'}">
+</view:sp-head-part>
+<view:sp-body-part>
+<c:if test="${isHtmlLoadingContext}">
 <view:browseBar componentId="<%=componentId%>" extraInformations="<%=browseInformation%>"/>
 <view:window>
 
@@ -444,5 +441,5 @@
 <view:progressMessage/>
 </view:window>
 </c:if>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
