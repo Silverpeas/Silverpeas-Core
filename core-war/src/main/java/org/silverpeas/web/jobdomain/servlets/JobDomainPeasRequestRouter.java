@@ -125,6 +125,7 @@ public class JobDomainPeasRequestRouter extends
   private static final String GO_BACK_DEST = "goBack.jsp";
   private static final String DISPLAY_REMOVED_USERS_DEST = "displayRemovedUsers";
   private static final String DOMAIN_USER_FILTER_MANAGEMENT_DEST = "domainUserFilterManagement.jsp";
+  private static final String IS_ONLY_SPACE_MANAGER_ATTR = "isOnlySpaceManager";
 
   @Override
   public JobDomainPeasSessionController createComponentSessionController(
@@ -817,6 +818,7 @@ public class JobDomainPeasRequestRouter extends
         setRightManagementAttributes(request, domainRight);
 
         request.setAttribute(IS_ONLY_GROUP_MANAGER_ATTR, jobDomainSC.isOnlyGroupManager());
+        request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
             isUserAddingAllowedForGroupManager());
       } else if (GROUP_CONTENT_DEST.equals(destination) || "exportgroup.jsp".equals(destination)) {
@@ -834,6 +836,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("isGroupManagerDirectlyOnThisGroup", jobDomainSC.
             isGroupManagerDirectlyOnCurrentGroup());
         request.setAttribute(IS_ONLY_GROUP_MANAGER_ATTR, jobDomainSC.isOnlyGroupManager());
+        request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
 
         request.setAttribute("ManageableSpaces", jobDomainSC.getManageablesSpaces());
         request.setAttribute("IsRightCopyReplaceEnabled",
@@ -849,6 +852,7 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute(IS_ONLY_GROUP_MANAGER_ATTR, jobDomainSC.isOnlyGroupManager());
           request.setAttribute("userManageableByGroupManager", jobDomainSC.
               isUserInAtLeastOneGroupManageableByCurrentUser());
+          request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
         }
         request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
         request.setAttribute("Index", jobDomainSC.getIndex());
