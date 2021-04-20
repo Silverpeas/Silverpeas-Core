@@ -3293,8 +3293,10 @@ class Admin implements Administration {
     final UserDetail[] users = getUserDetails(userIds.toArray(new String[0]));
     for (final UserDetail user : users) {
       if (user.getDomainId().equals(targetDomainId)) {
+        String userName = user.getDisplayedName();
         userManager.blankUser(user);
         cache.opUpdateUser(userManager.getUserDetail(user.getId()));
+        SilverLogger.getLogger(this).info("User " + userName + " blanked");
       }
     }
   }
