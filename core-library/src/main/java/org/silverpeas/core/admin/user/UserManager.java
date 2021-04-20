@@ -703,6 +703,7 @@ public class UserManager {
     }
     try(Connection connection = DBUtil.openConnection()) {
       userDAO.blankUser(connection, user);
+      SilverLogger.getLogger(this).info("User " + user.getDisplayedName() + " blanked");
     } catch (SQLException e) {
       throw new AdminException("Cannot blank the user " + user.getId(), e);
     }
