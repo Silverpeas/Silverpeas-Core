@@ -60,6 +60,7 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
    * Return the object root table name
    * @return the root table name of the object
    */
+  @Override
   public String getRootTableName() {
     return "QuestionResult";
   }
@@ -68,6 +69,7 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
    * Return the object root table name
    * @return the root table name of the object
    */
+  @Override
   public String getTableName() {
     return "SB_Question_QuestionResult";
   }
@@ -77,6 +79,7 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
    * @param other the object to compare to this PollPK
    * @return true if other is equals to this object
    */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof QuestionResultPK)) {
       return false;
@@ -90,6 +93,7 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

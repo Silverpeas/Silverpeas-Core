@@ -189,13 +189,6 @@ public interface OrganizationController extends java.io.Serializable {
   <T extends User> T[] getUserDetails(String[] asUserIds);
 
   /**
-   * @deprecated use getAllUsers(String componentId) Return all the users allowed to access the
-   * given component of the given space
-   */
-  @Deprecated(forRemoval = true)
-  <T extends User> T[] getAllUsers(String sPrefixTableName, String sComponentName);
-
-  /**
    * Return all the users allowed to acces the given component
    */
   <T extends User> T[] getAllUsers(String componentId);
@@ -414,16 +407,6 @@ public interface OrganizationController extends java.io.Serializable {
    * @return a list of component instance identifier as string.
    */
   List<String> getAvailableComponentsByUser(String userId);
-
-  /**
-   * Is the specified component instance available to the given user?
-   * @param componentId the unique identifier of a component instance.
-   * @param userId the unique identifier of a user.
-   * @return true if the user can access the given component instance. False otherwise.
-   * @deprecated Replaced by {@link OrganizationController#isComponentAvailableToUser(String, String)}
-   */
-  @Deprecated(forRemoval = true)
-  boolean isComponentAvailable(String componentId, String userId);
 
   /**
    * Is the specified component instance available among the components instances accessible by the

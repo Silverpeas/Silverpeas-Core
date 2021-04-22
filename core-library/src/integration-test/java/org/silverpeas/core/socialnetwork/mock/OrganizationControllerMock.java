@@ -199,11 +199,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] getAllUsers(final String sPrefixTableName, final String sComponentName) {
-    return new UserDetail[0];
-  }
-
-  @Override
   public UserDetail[] getAllUsers(final String componentId) {
     return new UserDetail[0];
   }
@@ -422,11 +417,6 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public boolean isSpaceAvailable(final String spaceId, final String userId) {
     return false;
-  }
-
-  @Override
-  public boolean isComponentAvailable(final String componentId, final String userId) {
-    return isComponentAvailableToUser(componentId, userId);
   }
 
   @Override

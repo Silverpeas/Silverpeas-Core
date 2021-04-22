@@ -67,30 +67,17 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
     super(id, pk);
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public String getRootTableName() {
     return "Tree";
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public String getTableName() {
     return "SB_Tree_Tree";
   }
 
-  /**
-   * Method declaration
-   * @param other
-   * @return
-   * @see
-   */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof TreeNodePK)) {
       return false;
@@ -100,11 +87,7 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
         && (componentName.equals(((TreeNodePK) other).getComponentName()));
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

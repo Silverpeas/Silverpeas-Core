@@ -65,6 +65,7 @@ public class AnswerPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Answer";
   }
@@ -74,6 +75,7 @@ public class AnswerPK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "SB_Question_Answer";
   }
@@ -83,6 +85,7 @@ public class AnswerPK extends WAPrimaryKey implements Serializable {
    * @return true if other is equals to this object
    * @param other the object to compare to this AnswerPK
    */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof AnswerPK)) {
       return false;
@@ -96,6 +99,7 @@ public class AnswerPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

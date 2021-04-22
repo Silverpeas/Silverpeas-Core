@@ -125,6 +125,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return (getId() != null) ? getId().hashCode() : 0;
   }

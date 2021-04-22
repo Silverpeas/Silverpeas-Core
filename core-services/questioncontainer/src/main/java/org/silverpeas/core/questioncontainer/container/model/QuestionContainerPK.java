@@ -47,14 +47,17 @@ public class QuestionContainerPK extends WAPrimaryKey implements Serializable {
     super(id, pk);
   }
 
+  @Override
   public String getRootTableName() {
     return "QuestionContainer";
   }
 
+  @Override
   public String getTableName() {
     return "SB_QuestionContainer_QC";
   }
 
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof QuestionContainerPK)) {
       return false;
@@ -65,6 +68,7 @@ public class QuestionContainerPK extends WAPrimaryKey implements Serializable {
         .getComponentName()));
   }
 
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

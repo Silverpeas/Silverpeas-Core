@@ -88,6 +88,7 @@ public class ContactPK extends ResourceReference implements Serializable {
    * @return true if other is equals to this object
    * @since 1.0
    */
+  @Override
   public boolean equals(Object other) {
     return other instanceof ContactPK && (id.equals(((ContactPK) other).getId())) &&
         (space.equals(((ContactPK) other).getSpace())) &&
@@ -106,6 +107,7 @@ public class ContactPK extends ResourceReference implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

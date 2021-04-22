@@ -71,6 +71,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
    * @return
    *
    */
+  @Override
   public String getRootTableName() {
     return "Coordinates";
   }
@@ -80,16 +81,12 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
    * @return
    *
    */
+  @Override
   public String getTableName() {
     return "SB_Coordinates_Coordinates";
   }
 
-  /**
-   * Method declaration
-   * @param other
-   * @return
-   *
-   */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof CoordinatePK)) {
       return false;
@@ -99,11 +96,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
         && (componentName.equals(((CoordinatePK) other).getComponentName()));
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

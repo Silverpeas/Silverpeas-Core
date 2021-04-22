@@ -103,29 +103,17 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
     super(id, pk);
   }
 
-  /**
-   * **********
-   */
-
+  @Override
   public String getRootTableName() {
     return "Attachment";
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
+  @Override
   public String getTableName() {
     return "SB_Attachment_Attachment";
   }
 
-  /**
-   * Method declaration
-   * @param other
-   * @return
-   *
-   */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof AttachmentPK)) {
       return false;
@@ -134,11 +122,7 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
         && (componentName.equals(((AttachmentPK) other).getComponentName()));
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
+  @Override
   public String toString() {
     return "(id = " + getId() + ", componentName = " + getComponentName() + ")";
   }
@@ -147,6 +131,7 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

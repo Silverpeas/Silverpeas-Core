@@ -311,19 +311,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] getAllUsers(String sPrefixTableName, String sComponentName) {
-    try {
-      if (sComponentName != null) {
-        return getAdminService().getUsers(true, null, sPrefixTableName, sComponentName);
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-
-    }
-    return new UserDetail[0];
-  }
-
-  @Override
   public UserDetail[] getAllUsers(String componentId) {
     try {
       if (componentId != null) {
@@ -775,11 +762,6 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public boolean isToolAvailable(String toolId) {
     return ToolInstance.from(toolId).isPresent();
-  }
-
-  @Override
-  public boolean isComponentAvailable(final String componentId, final String userId) {
-    return isComponentAvailableToUser(componentId, userId);
   }
 
   @Override

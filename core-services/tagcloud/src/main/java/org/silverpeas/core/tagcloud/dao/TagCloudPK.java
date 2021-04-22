@@ -64,14 +64,17 @@ public class TagCloudPK extends WAPrimaryKey implements Serializable {
     this.type = type;
   }
 
+  @Override
   public String getRootTableName() {
     return "TagCloud";
   }
 
+  @Override
   public String getTableName() {
     return "SB_TagCloud_TagCloud";
   }
 
+  @Override
   public boolean equals(Object other) {
     return ((other instanceof TagCloudPK)
         && (id.equals(((TagCloudPK) other).getId()))
@@ -79,12 +82,14 @@ public class TagCloudPK extends WAPrimaryKey implements Serializable {
         .equals(((TagCloudPK) other).getComponentName())));
   }
 
+  @Override
   public String toString() {
     return new StringBuffer().append("(id = ").append(getId()).append(
         ", space = ").append(getSpace()).append(", componentName = ").append(
         getComponentName()).append(")").toString();
   }
 
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

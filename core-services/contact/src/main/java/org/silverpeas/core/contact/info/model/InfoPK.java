@@ -41,14 +41,17 @@ public class InfoPK extends WAPrimaryKey implements Serializable {
     super(id, pk);
   }
 
+  @Override
   public String getRootTableName() {
     return "Info";
   }
 
+  @Override
   public String getTableName() {
     return "SB_Contact_Info";
   }
 
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof InfoPK))
       return false;
@@ -57,6 +60,7 @@ public class InfoPK extends WAPrimaryKey implements Serializable {
         && (componentName.equals(((InfoPK) other).getComponentName()));
   }
 
+  @Override
   public String toString() {
     return "(id = " + getId() + ", space = " + getSpace()
         + ", componentName = " + getComponentName() + ")";
@@ -66,6 +70,7 @@ public class InfoPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

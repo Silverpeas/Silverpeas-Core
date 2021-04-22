@@ -41,7 +41,7 @@ public class ValuePK extends WAPrimaryKey implements Serializable {
   }
 
   public ValuePK(int id) {
-    super((new Integer(id)).toString());
+    super((Integer.valueOf(id)).toString());
   }
 
   /**
@@ -62,6 +62,7 @@ public class ValuePK extends WAPrimaryKey implements Serializable {
    * Return the object root table name
    * @return the root table name of the object
    */
+  @Override
   public String getRootTableName() {
     return "Pdc";
   }
@@ -70,6 +71,7 @@ public class ValuePK extends WAPrimaryKey implements Serializable {
    * Return the object table name
    * @return the table name of the object
    */
+  @Override
   public String getTableName() {
     return "";
   }
@@ -79,6 +81,7 @@ public class ValuePK extends WAPrimaryKey implements Serializable {
    * @return true if other is equals to this object
    * @param other the object to compare to this NodePK
    */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof ValuePK))
       return false;
@@ -92,6 +95,7 @@ public class ValuePK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }
