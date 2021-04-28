@@ -660,6 +660,11 @@ if (!window.SilverpeasAjaxConfig) {
       this.url = explodedUrl.base;
       this.parameters = explodedUrl.parameters;
       this.method = 'GET';
+      this.responseType = undefined;
+    },
+    asBlobResponse : function() {
+      this.responseType = 'blob';
+      return this;
     },
     withParams : function(params) {
       if (typeof params === 'string') {
@@ -694,6 +699,9 @@ if (!window.SilverpeasAjaxConfig) {
     },
     getUrl : function() {
       return (this.method !== 'POST' && this.method !== 'PUT') ? sp.url.format(this.url, this.parameters) : this.url;
+    },
+    getResponseType : function() {
+      return this.responseType;
     },
     getMethod : function() {
       return this.method;
@@ -834,6 +842,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
         method : ajaxConfig.getMethod(),
         headers : ajaxConfig.getHeaders()
       };
+      if (ajaxConfig.getResponseType && StringUtil.isDefined(ajaxConfig.getResponseType())) {
+        params.responseType = ajaxConfig.getResponseType();
+      }
       if (ajaxConfig.getMethod().startsWith('P')) {
         params.data = ajaxConfig.getParams();
         if (!ajaxConfig.getHeaders()['Content-Type']) {
@@ -857,6 +868,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
 
       if (Object.getOwnPropertyNames) {
         let xhr = new XMLHttpRequest();
+        if (StringUtil.isDefined(params.responseType)) {
+          xhr.responseType = params.responseType;
+        }
         xhr.onload = function() {
           if (typeof notySetupRequestComplete === 'function') {
             notySetupRequestComplete.call(this, xhr);
@@ -1292,6 +1306,25 @@ if (typeof window.sp === 'undefined') {
       }
     },
     base64 : {
+      urlAsData : function(url) {
+        return sp.ajaxRequest(url).asBlobResponse().send().then(function(request) {
+          const blob = request.response;
+          return new Promise(function(resolve, reject) {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+              const fullData = reader['result'];
+              return resolve({
+                'size' : blob['size'],
+                'type' : blob['type'],
+                'justData' : fullData.split(',')[1],
+                'fullData' : fullData
+              });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        });
+      },
       encode : function(str) {
         return window.btoa(str);
       },
