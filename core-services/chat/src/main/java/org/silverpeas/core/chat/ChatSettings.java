@@ -51,6 +51,14 @@ public class ChatSettings {
   private final String xmppBaseUrl;
 
   /**
+   * Gets the identifier of the chat client from point of view of Silverpeas server.
+   * @return a string representing an identifier.
+   */
+  public String getSilverpeasChatClientId() {
+    return settings.getString("chat.client.spid", "jsxc");
+  }
+
+  /**
    * Gets an instance of the {@link ChatSettings} class.
    * @return a {@link ChatSettings} instance.
    */
@@ -264,4 +272,3 @@ public class ChatSettings {
     }
   }
 }
-  

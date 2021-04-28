@@ -26,6 +26,7 @@
 <%@ tag import="org.silverpeas.core.admin.user.model.User" %>
 <%@ tag import="org.silverpeas.core.chat.servers.ChatServer" %>
 <%@ tag import="org.silverpeas.core.chat.ChatUser" %>
+<%@ tag import="org.silverpeas.core.util.file.FileServerUtils" %>
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -49,47 +50,71 @@
 <script type="text/javascript">
   (function() {
     whenSilverpeasReady(function() {
-      <c:choose>
-      <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled and chatServer.isUserExisting(chatUser)}">
-      SilverChat.init({
-        url : '${chatUrl}',
-        id : '${chatUser.chatLogin}',
-        password : '${chatUser.chatPassword}',
-        domain : '${chatUser.chatDomain}',
-        <c:if test="${not empty chatIceServer}">
-        ice : {
-          server: '${chatIceServer}',
-          auth: true
-        },
-        </c:if>
-        acl : {
-          groupchat : {
-             creation: ${empty aclGroupsAllowedToCreate or chatUser.isAtLeastInOneGroup(aclGroupsAllowedToCreate)}
-          }
-        },
-        language : '${chatUser.userPreferences.language}',
-        avatar: webContext + '/display/avatar/60x/',
-        notificationLogo: (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
-        debug: false,
-        selectUser: function(openChatWith) {
-          $('#userId').off('change').on('change', function() {
-            var id = $(this).val();
-            if (id && id !== '${chatUser.id}') {
-              User.get(id).then(function(user) {
-                if (user) {
-                  openChatWith(user.chatId, user.fullName);
+      spLayout.getHeader().addEventListener('load', function() {
+        <c:choose>
+        <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled and chatServer.isUserExisting(chatUser)}">
+        window.USERSESSION_PROMISE.then(function() {
+          const chatOptions = {
+            url : '${chatUrl}',
+            jid : '${chatUser.chatLogin}@${chatUser.chatDomain}',
+            vcard : {
+              'fn' : '${silfn:escapeJs(chatUser.displayedName)}'
+            },
+            id : '${chatUser.chatLogin}',
+            password : '${chatUser.chatPassword}',
+            domain : '${chatUser.chatDomain}',
+            <c:if test="${not empty chatIceServer}">
+            ice : {
+              server : '${chatIceServer}',
+              auth : true
+            },
+            </c:if>
+            acl : {
+              groupchat : {
+                creation : ${empty aclGroupsAllowedToCreate or chatUser.isAtLeastInOneGroup(aclGroupsAllowedToCreate)}
+              }
+            },
+            language : currentUser.language,
+            avatar : webContext + '/display/avatar/60x/',
+            userAvatarUrl : webContext + '/<%=FileServerUtils.getImageURL(chatUser.getAvatar(), "60x60")%>',
+            notificationLogo : (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
+            debug : false,
+            selectUser : function(openChatWith) {
+              $('#userId').off('change').on('change', function() {
+                var id = $(this).val();
+                if (id && id !== '${chatUser.id}') {
+                  User.get(id).then(function(user) {
+                    if (user) {
+                      openChatWith(user.chatId, user.fullName);
+                    }
+                  });
                 }
               });
+              SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
             }
-          });
-          SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
-        }
-      }).start();
-      </c:when>
-      <c:otherwise>
-      sp.log.warning('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
-      </c:otherwise>
-      </c:choose>
+          };
+          if (typeof SilverChat === 'undefined') {
+            sp.log.warning('${silfn:escapeJs(chatBundle.getString("chat.client.notAvailable"))}');
+            return;
+          }
+          SilverChat.init(chatOptions).start();
+          spUserSession.addLogoutPromise(new Promise(function(resolve, reject) {
+            spUserSession.addEventListener('current-user-logout', function() {
+              spProgressMessage.show();
+              SilverChat.stop().then(function() {
+                resolve();
+              }, function() {
+                reject();
+              });
+            }, 'silverchat-user-logout');
+          }));
+        });
+        </c:when>
+        <c:otherwise>
+        sp.log.warning('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
+        </c:otherwise>
+        </c:choose>
+      }, 'silverchat-initialization');
     });
   })();
 </script>

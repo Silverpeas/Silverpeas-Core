@@ -579,3 +579,19 @@
 .jsxc_videoContainer {
   border-bottom: 1px solid #656565;
 }
+
+/*
+Converse.js
+ */
+
+#conversejs #converse-roster .filter-by .fa-users {
+  display: none;
+}
+
+#conversejs .controlbox-section .show-profile {
+  pointer-events: none;
+}
+
+#conversejs .muc-bookmark-form .form-group:nth-child(3) {
+  display: none;
+}

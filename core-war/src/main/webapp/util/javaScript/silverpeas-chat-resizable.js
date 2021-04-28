@@ -39,19 +39,11 @@
      */
     $.widget("ui.resizable", $.ui.resizable, {
       _mouseStart : function(event) {
-        spLayout.getBody().getContent().muteMouseEvents();
-        if (spLayout.getSplash().isShown()) {
-          spLayout.getSplash().muteMouseEvents();
-          spAdminLayout.getBody().getContent().muteMouseEvents();
-        }
+        spWindow.startsBoxResize();
         this._super(event);
       },
       _mouseStop : function(event) {
-        spLayout.getBody().getContent().unmuteMouseEvents();
-        if (spLayout.getSplash().isShown()) {
-          spLayout.getSplash().unmuteMouseEvents();
-          spAdminLayout.getBody().getContent().unmuteMouseEvents();
-        }
+        spWindow.endsBoxResize();
         this._super(event);
       }
     });
