@@ -25,10 +25,8 @@ package org.silverpeas.core.persistence.datasource;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 /**
  * Some constants to take care when converting dates and date times to their database counterpart.
