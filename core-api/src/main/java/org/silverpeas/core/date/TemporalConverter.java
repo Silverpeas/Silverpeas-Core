@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.date;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -403,4 +401,3 @@ public class TemporalConverter {
     }
   }
 }
-  
