@@ -27,6 +27,8 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MAX_TIMESTAMP;
 import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MIN_TIMESTAMP;
@@ -52,7 +54,8 @@ public class InstantAttributeConverter implements AttributeConverter<Instant, Ti
       return MAX_TIMESTAMP;
     }
 
-    return Timestamp.from(instant);
+    return Timestamp.valueOf(OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
+        .toLocalDateTime());
   }
 
   @Override
@@ -66,6 +69,6 @@ public class InstantAttributeConverter implements AttributeConverter<Instant, Ti
     if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
       return Instant.MAX;
     }
-    return sqlTimestamp.toInstant();
+    return sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC).toInstant();
   }
 }

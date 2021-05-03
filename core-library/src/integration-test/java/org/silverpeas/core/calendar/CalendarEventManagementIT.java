@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,6 +43,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
@@ -81,11 +83,17 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
         .build();
   }
 
+  @After
+  public void restoreTimeZone() {
+    TimeZone.setDefault(DEFAULT_TIME_ZONE);
+  }
+
   @Before
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarEventTableLines(), hasSize(6));
     OperationContext.fromUser(USER_ID);
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
   }
 
   @Test

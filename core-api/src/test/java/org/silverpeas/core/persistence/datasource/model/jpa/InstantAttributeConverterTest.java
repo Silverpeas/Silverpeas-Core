@@ -57,7 +57,7 @@ class InstantAttributeConverterTest {
     Instant now = Instant.now();
     InstantAttributeConverter converter = new InstantAttributeConverter();
     Timestamp date = converter.convertToDatabaseColumn(now);
-    assertThat(date.toInstant(), is(now));
+    assertThat(date.toLocalDateTime().toInstant(ZoneOffset.UTC), is(now));
   }
 
   @Test
@@ -83,6 +83,6 @@ class InstantAttributeConverterTest {
     Timestamp now = new Timestamp(new java.util.Date().getTime());
     InstantAttributeConverter converter = new InstantAttributeConverter();
     Instant date = converter.convertToEntityAttribute(now);
-    assertThat(date, is(now.toInstant()));
+    assertThat(date, is(now.toLocalDateTime().toInstant(ZoneOffset.UTC)));
   }
 }
