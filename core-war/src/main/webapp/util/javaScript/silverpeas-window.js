@@ -756,6 +756,29 @@ function _spWindow_getSilverpeasMainWindow() {
           webContext + "/RjobStartPagePeas/jsp/SetupComponent?ComponentId=" + componentId)['catch'](__loadErrorListener);
     };
 
+    /**
+     * Calling this method permits to resize without lagging boxes.
+     * endBoxResize method MUST be called when resize is done.
+     */
+    this.startsBoxResize = function() {
+      spLayout.getBody().getContent().muteMouseEvents();
+      if (spLayout.getSplash().isShown()) {
+        spLayout.getSplash().muteMouseEvents();
+        spAdminLayout.getBody().getContent().muteMouseEvents();
+      }
+    };
+
+    /**
+     * If a box is resized, and if method startBoxResize is called, then calling this method.
+     */
+    this.endsBoxResize = function() {
+      spLayout.getBody().getContent().unmuteMouseEvents();
+      if (spLayout.getSplash().isShown()) {
+        spLayout.getSplash().unmuteMouseEvents();
+        spAdminLayout.getBody().getContent().unmuteMouseEvents();
+      }
+    };
+
     const PERMALINK_PARTS = WindowSettings.get('permalink.parts');
     let __isPermalink = function(link) {
       if (link.indexOf(webContext + '/autoRedirect.jsp') >= 0) {
