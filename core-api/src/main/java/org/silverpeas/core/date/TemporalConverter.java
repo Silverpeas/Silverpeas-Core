@@ -23,27 +23,28 @@
  */
 package org.silverpeas.core.date;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A converter of date and datetime into different temporal types used in Silverpeas. It provides
  * methods to perform operations against temporal objects according their concrete type; the
  * temporal objects are then converted before passing them to the matching function. It provides
- * also convenient methods to convert a temporal, whatever its type, to another type like a
- * {@link LocalDate} or an {@link OffsetDateTime}. It provides also methods dedicated to convert
- * a string representation of a date or a datetime to its corresponding temporal instance and
- * vice-versa.
+ * also convenient methods to convert a temporal, whatever its type, to another type like a {@link
+ * LocalDate} or an {@link OffsetDateTime}. It provides also methods dedicated to convert a string
+ * representation of a date or a datetime to its corresponding temporal instance and vice-versa.
  * @author mmoquillon
  */
 public class TemporalConverter {
@@ -52,84 +53,33 @@ public class TemporalConverter {
   }
 
   /**
-   * Performs one of the specified functions according to the type of the specified temporal object.
-   * The given temporal object is converted before passing it to one of the specified function.
-   * @param temporal a temporal object to consume.
-   * @param dateFunction a function that works on a {@link LocalDate} instance.
-   * @param dateTimeFunction a function that works on a {@link OffsetDateTime} instance.
-   * @param <T> the type of the return value.
-   * @return T the return value of the function that was applied to the converted temporal object.
-   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or
-   * {@link OffsetDateTime} instances.
+   * Performs one of the specified conversion function against the given temporal object according
+   * to its concrete type. The result of the conversion is then returned.
+   * @param temporal a {@link Temporal} object to convert.
+   * @param conversions one or more conversion functions.
+   * @param <T> the concrete type of the converted value.
+   * @return the value obtained by the application of the correct conversion function to the given
+   * {@link Temporal} object.
+   * @throws IllegalArgumentException exception if no conversion functions are passed or
+   * the concrete type of the {@link Temporal} object isn't accepted by any of the conversion
+   * functions.
    */
-  public static <T> T applyByType(java.time.temporal.Temporal temporal,
-      Function<LocalDate, T> dateFunction, Function<OffsetDateTime, T> dateTimeFunction) {
+  @SafeVarargs
+  public static <T> T applyByType(Temporal temporal,
+      Conversion<? extends Temporal, T>... conversions) {
     Objects.requireNonNull(temporal);
-    Objects.requireNonNull(dateFunction);
-    Objects.requireNonNull(dateTimeFunction);
-    if (temporal instanceof LocalDate) {
-      return dateFunction.apply(LocalDate.from(temporal));
-    } else if (temporal instanceof OffsetDateTime) {
-      return dateTimeFunction.apply(OffsetDateTime.from(temporal).withOffsetSameInstant(ZoneOffset.UTC));
-    } else {
-      throw new IllegalArgumentException(
-          "Temporal parameters must be both of type LocalDate or OffsetDateTime");
+    Objects.requireNonNull(conversions);
+    if (conversions.length == 0) {
+      throw new IllegalArgumentException("Expected at least one conversion function");
     }
-  }
-
-  /**
-   * Performs one of the specified functions according to the type of the specified temporal object.
-   * The given temporal object is converted before passing it to one of the specified function.
-   * @param temporal a temporal object to consume.
-   * @param dateFunction a function that works on a {@link LocalDate} instance.
-   * @param dateTimeFunction a function that works on a {@link OffsetDateTime} instance.
-   * @param zonedDateTimeTFunction a function that works on a {@link ZonedDateTime} instance.
-   * @param <T> the type of the return value.
-   * @return T the return value of the function that was applied to the converted temporal object.
-   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or
-   * {@link OffsetDateTime} instances.
-   */
-  public static <T> T applyByType(java.time.temporal.Temporal temporal,
-      Function<LocalDate, T> dateFunction, Function<OffsetDateTime, T> dateTimeFunction,
-      Function<ZonedDateTime, T> zonedDateTimeTFunction) {
-    Objects.requireNonNull(temporal);
-    Objects.requireNonNull(dateFunction);
-    Objects.requireNonNull(dateTimeFunction);
-    Objects.requireNonNull(zonedDateTimeTFunction);
-    if (temporal instanceof LocalDate) {
-      return dateFunction.apply(LocalDate.from(temporal));
-    } else if (temporal instanceof OffsetDateTime) {
-      return dateTimeFunction.apply(OffsetDateTime.from(temporal));
-    } else if (temporal instanceof ZonedDateTime) {
-      return zonedDateTimeTFunction.apply(ZonedDateTime.from(temporal));
-    } else {
-      throw new IllegalArgumentException(
-          "Temporal parameters must be both of type LocalDate or OffsetDateTime or ZonedDateTime");
-    }
-  }
-
-  public static <T> T applyByType(java.time.temporal.Temporal temporal,
-      Function<LocalDate, T> localDateFunction, Function<LocalDateTime, T> localDateTimeFunction,
-      Function<OffsetDateTime, T> offsetDateTimeFunction,
-      Function<ZonedDateTime, T> zonedDateTimeFunction) {
-    Objects.requireNonNull(temporal);
-    Objects.requireNonNull(localDateFunction);
-    Objects.requireNonNull(localDateTimeFunction);
-    Objects.requireNonNull(zonedDateTimeFunction);
-    Objects.requireNonNull(offsetDateTimeFunction);
-
-    if (temporal instanceof LocalDate) {
-      return localDateFunction.apply(LocalDate.from(temporal));
-    } else if (temporal instanceof OffsetDateTime) {
-      return offsetDateTimeFunction.apply(OffsetDateTime.from(temporal));
-    } else if (temporal instanceof ChronoZonedDateTime) {
-      return zonedDateTimeFunction.apply(ZonedDateTime.from(temporal));
-    } else if (temporal instanceof LocalDateTime) {
-      return localDateTimeFunction.apply(LocalDateTime.from(temporal));
-    } else {
-      throw new IllegalArgumentException(
-          "Temporal parameters must be both of type LocalDate or OffsetDateTime or ZonedDateTime");
-    }
+    return Stream.of(conversions)
+        .filter(c -> c.accepts(temporal))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(
+            "Temporal parameter isn't of the expected type: " + Stream.of(conversions)
+                .map(Conversion::getAcceptedType)
+                .collect(Collectors.joining())))
+        .apply(temporal);
   }
 
   /**
@@ -138,21 +88,21 @@ public class TemporalConverter {
    * @param temporal a temporal object to consume.
    * @param dateConsumer a function that consumes a {@link LocalDate} instance.
    * @param dateTimeConsumer a function that consumers a {@link OffsetDateTime} instance.
-   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or
-   * {@link OffsetDateTime} instances.
+   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or {@link
+   * OffsetDateTime} instances.
    */
-  public static void consumeByType(java.time.temporal.Temporal temporal,
+  public static void consumeByType(Temporal temporal,
       Consumer<LocalDate> dateConsumer, Consumer<OffsetDateTime> dateTimeConsumer) {
     Objects.requireNonNull(temporal);
     Objects.requireNonNull(dateTimeConsumer);
     Objects.requireNonNull(dateConsumer);
-    applyByType(temporal, date -> {
+    applyByType(temporal, Conversion.of(LocalDate.class, date -> {
       dateConsumer.accept(date);
       return null;
-    }, dateTime -> {
+    }), Conversion.of(OffsetDateTime.class, dateTime -> {
       dateTimeConsumer.accept(dateTime);
       return null;
-    });
+    }));
   }
 
   /**
@@ -164,6 +114,7 @@ public class TemporalConverter {
    * <li>{@link LocalDateTime}</li>
    * <li>{@link ZonedDateTime}</li>
    * <li>{@link OffsetDateTime}</li>
+   * <li>{@link Instant}</li>
    * </ul>
    * <p>
    * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
@@ -173,20 +124,22 @@ public class TemporalConverter {
    * the temporal is directly returned. If the temporal is a {@link LocalDate} instance then the
    * date is converted into an {@link OffsetDateTime} instance by taking the start of the day in
    * UTC/Greenwich. If the temporal is a {@link LocalDateTime} instance then the time is converted
-   * in UTC/Greenwich.
+   * in UTC/Greenwich. If the temporal is an {@link Instant} then it is converted into an
+   * {@link OffsetDateTime} instance with the zone offset at UTC/Greenwich.
    * </p>
    * @param temporal the temporal to convert.
    * @return an {@link OffsetDateTime} instance.
-   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
-   * this converter.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by this
+   * converter.
    */
   public static OffsetDateTime asOffsetDateTime(final Temporal temporal) {
     Objects.requireNonNull(temporal);
     return TemporalConverter.applyByType(temporal,
-        date -> date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
-        localDateTime -> localDateTime.atOffset(ZoneOffset.UTC),
-        offsetDateTime -> offsetDateTime,
-        ZonedDateTime::toOffsetDateTime);
+        Conversion.of(LocalDate.class, t -> t.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime()),
+        Conversion.of(LocalDateTime.class, t -> t.atOffset(ZoneOffset.UTC)),
+        Conversion.of(OffsetDateTime.class, Function.identity()),
+        Conversion.of(ZonedDateTime.class, ZonedDateTime::toOffsetDateTime),
+        Conversion.of(Instant.class, t -> t.atOffset(ZoneOffset.UTC)));
   }
 
   /**
@@ -198,6 +151,7 @@ public class TemporalConverter {
    * <li>{@link LocalDateTime}</li>
    * <li>{@link ZonedDateTime}</li>
    * <li>{@link OffsetDateTime}</li>
+   * <li>{@link Instant}</li>
    * </ul>
    * <p>
    * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
@@ -207,20 +161,22 @@ public class TemporalConverter {
    * the temporal is directly returned. If the temporal is a {@link LocalDate} instance then the
    * date is converted into a {@link ZonedDateTime} instance by taking the start of the day in
    * UTC/Greenwich. If the temporal is a {@link LocalDateTime} instance then the time is converted
-   * in UTC/Greenwich.
+   * in UTC/Greenwich. If the temporal is an {@link Instant} then it is converted into a
+   * {@link ZonedDateTime} instance with the zone Id at UTC/Greenwich.
    * </p>
    * @param temporal the temporal to convert.
    * @return a {@link ZonedDateTime} instance.
-   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
-   * this converter.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by this
+   * converter.
    */
   public static ZonedDateTime asZonedDateTime(final Temporal temporal) {
     Objects.requireNonNull(temporal);
     return TemporalConverter.applyByType(temporal,
-        date -> date.atStartOfDay(ZoneOffset.UTC),
-        localDateTime -> localDateTime.atZone(ZoneId.of(ZoneOffset.UTC.getId())),
-        OffsetDateTime::toZonedDateTime,
-        zonedDateTime -> zonedDateTime);
+        Conversion.of(LocalDate.class, t -> t.atStartOfDay(ZoneOffset.UTC)),
+        Conversion.of(LocalDateTime.class, t -> t.atZone(ZoneId.of(ZoneOffset.UTC.getId()))),
+        Conversion.of(OffsetDateTime.class, OffsetDateTime::toZonedDateTime),
+        Conversion.of(ZonedDateTime.class, Function.identity()),
+        Conversion.of(Instant.class, t -> t.atZone(ZoneOffset.UTC)));
   }
 
   /**
@@ -232,6 +188,7 @@ public class TemporalConverter {
    * <li>{@link LocalDateTime}</li>
    * <li>{@link ZonedDateTime}</li>
    * <li>{@link OffsetDateTime}</li>
+   * <li>{@link Instant}</li>
    * </ul>
    * <p>
    * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
@@ -239,52 +196,73 @@ public class TemporalConverter {
    * <p>
    * If the temporal is already an {@link LocalDate} instance, then nothing is converted and
    * the temporal is directly returned. If the temporal is a datetime, then only the date is
-   * returned.
+   * returned. If the temporal is an {@link Instant} then the time part is set at UTC/Greenwich
+   * before returning only the date part as a {@link LocalDate} instance.
    * </p>
    * @param temporal the temporal to convert.
    * @return an {@link LocalDate} instance.
-   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
-   * this converter.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by this
+   * converter.
    */
   public static LocalDate asLocalDate(final Temporal temporal) {
     Objects.requireNonNull(temporal);
     return TemporalConverter.applyByType(temporal,
-        date -> date,
-        LocalDateTime::toLocalDate,
-        OffsetDateTime::toLocalDate,
-        ZonedDateTime::toLocalDate);
+        Conversion.of(LocalDate.class, Function.identity()),
+        Conversion.of(LocalDateTime.class, LocalDateTime::toLocalDate),
+        Conversion.of(OffsetDateTime.class, OffsetDateTime::toLocalDate),
+        Conversion.of(ZonedDateTime.class, ZonedDateTime::toLocalDate),
+        Conversion.of(Instant.class, t -> LocalDate.ofInstant(t, ZoneOffset.UTC)));
   }
 
   /**
    * <p>
-   * Converts the specified temporal instance to an {@link LocalDate} instance. The temporal
-   * instance must be of one of the following type:</p>
+   * Converts the specified temporal instance to an {@link LocalDate} instance after applying the
+   * timezone conversion. The temporal instance must be of one of the following type:</p>
    * <ul>
    * <li>{@link LocalDate}</li>
    * <li>{@link LocalDateTime}</li>
    * <li>{@link ZonedDateTime}</li>
    * <li>{@link OffsetDateTime}</li>
+   * <li>{@link Instant}</li>
    * </ul>
    * <p>
    * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
    * </p>
    * <p>
    * If the temporal is already an {@link LocalDate} instance, then nothing is converted and
-   * the temporal is directly returned. If the temporal is a datetime, then only the date is
-   * returned.
+   * the temporal is directly returned. If the temporal is a datetime, then it is converted to the
+   * specified timezone for a same instant before returning only the date (the day can change once
+   * the timezone applied onto the time).
    * </p>
    * @param temporal the temporal to convert.
    * @return an {@link LocalDate} instance.
-   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
-   * this converter.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by this
+   * converter.
    */
   public static LocalDate asLocalDate(final Temporal temporal, final ZoneId zoneId) {
     Objects.requireNonNull(temporal);
     return TemporalConverter.applyByType(temporal,
-        d -> d,
-        l -> l.atZone(ZoneId.of(ZoneOffset.UTC.getId())).withZoneSameInstant(zoneId).toLocalDate(),
-        o -> o.atZoneSameInstant(zoneId).toLocalDate(),
-        z -> z.withZoneSameInstant(zoneId).toLocalDate());
+        Conversion.of(LocalDate.class, Function.identity()),
+        Conversion.of(LocalDateTime.class, t ->
+            t.atZone(ZoneId.of(ZoneOffset.UTC.getId()))
+                .withZoneSameInstant(zoneId)
+                .toLocalDate()),
+        Conversion.of(OffsetDateTime.class, t -> t.atZoneSameInstant(zoneId).toLocalDate()),
+        Conversion.of(ZonedDateTime.class, t -> t.withZoneSameInstant(zoneId).toLocalDate()),
+        Conversion.of(Instant.class, t -> LocalDate.ofInstant(t,zoneId)));
+  }
+
+  /**
+   * Converts the specified temporal in an {@link Instant} instance. If the temporal is a date then
+   * it is expressed as a datetime in UTC/Greenwich. If the temporal is a local datetime, then the
+   * time is expressed in UTC/Greenwich.
+   * @param temporal the temporal to convert.
+   * @return an {@link Instant} instance.
+   */
+  public static Instant asInstant(final Temporal temporal) {
+    Objects.requireNonNull(temporal);
+    return applyByType(temporal, LOCAL_DATE_TO_INSTANT, LOCAL_DATE_TIME_TO_INSTANT,
+        OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT, INSTANT_TO_INSTANT);
   }
 
   /**
@@ -303,51 +281,123 @@ public class TemporalConverter {
    */
   public static Date asDate(final Temporal temporal) {
     Objects.requireNonNull(temporal);
-    Long epochMilli =
-        applyByType(temporal, localDate2EpochMilli, localDateTime2EpochMilli,
-            offsetDateTime2EpochMilli, zonedDateTime2EpochMilli);
-    return new Date(epochMilli);
+    Instant instant = applyByType(temporal, LOCAL_DATE_TO_INSTANT, LOCAL_DATE_TIME_TO_INSTANT,
+        OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT, INSTANT_TO_INSTANT);
+    return Date.from(instant);
   }
 
-  private static Function<LocalDate, Long> localDate2EpochMilli = t -> {
-    if (t.equals(LocalDate.MIN)) {
-      return Long.MIN_VALUE;
-    }
-    if (t.equals(LocalDate.MAX)) {
-      return Long.MAX_VALUE;
-    }
-    return t.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
-  };
+  private static final Conversion<Instant, Instant> INSTANT_TO_INSTANT =
+      Conversion.of(Instant.class, t -> {
+        if (t.equals(Instant.MIN)) {
+          return Instant.MIN;
+        }
+        if (t.equals(Instant.MAX)) {
+          return Instant.MAX;
+        }
+        return t;
+      });
 
-  private static Function<LocalDateTime, Long> localDateTime2EpochMilli = t -> {
-    if (t.equals(LocalDateTime.MIN)) {
-      return Long.MIN_VALUE;
-    }
-    if (t.equals(LocalDateTime.MAX)) {
-      return Long.MAX_VALUE;
-    }
-    ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(t);
-    return t.toInstant(offset).toEpochMilli();
-  };
+  private static final Conversion<LocalDate, Instant> LOCAL_DATE_TO_INSTANT =
+      Conversion.of(LocalDate.class, t -> {
+        if (t.equals(LocalDate.MIN)) {
+          return Instant.MIN;
+        }
+        if (t.equals(LocalDate.MAX)) {
+          return Instant.MAX;
+        }
+        return t.atStartOfDay(ZoneOffset.UTC).toInstant();
+      });
 
-  private static Function<OffsetDateTime, Long> offsetDateTime2EpochMilli = t -> {
-    if (t.equals(OffsetDateTime.MIN)) {
-      return Long.MIN_VALUE;
-    }
-    if (t.equals(OffsetDateTime.MAX)) {
-      return Long.MAX_VALUE;
-    }
-    return t.toInstant().toEpochMilli();
-  };
+  private static final Conversion<LocalDateTime, Instant> LOCAL_DATE_TIME_TO_INSTANT =
+      Conversion.of(LocalDateTime.class, t -> {
+        if (t.equals(LocalDateTime.MIN)) {
+          return Instant.MIN;
+        }
+        if (t.equals(LocalDateTime.MAX)) {
+          return Instant.MAX;
+        }
+        ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(t);
+        return t.toInstant(offset);
+      });
 
-  private static Function<ZonedDateTime, Long> zonedDateTime2EpochMilli = t -> {
-    if (t.toOffsetDateTime().equals(OffsetDateTime.MIN)) {
-      return Long.MIN_VALUE;
+  private static final Conversion<OffsetDateTime, Instant> OFFSET_DATE_TIME_TO_INSTANT =
+      Conversion.of(OffsetDateTime.class, t -> {
+        if (t.equals(OffsetDateTime.MIN)) {
+          return Instant.MIN;
+        }
+        if (t.equals(OffsetDateTime.MAX)) {
+          return Instant.MAX;
+        }
+        return t.toInstant();
+      });
+
+  private static final Conversion<ZonedDateTime, Instant> ZONED_DATE_TIME_TO_INSTANT =
+      Conversion.of(ZonedDateTime.class, t -> {
+        if (t.toOffsetDateTime().equals(OffsetDateTime.MIN)) {
+          return Instant.MIN;
+        }
+        if (t.toOffsetDateTime().equals(OffsetDateTime.MAX)) {
+          return Instant.MAX;
+        }
+        return t.toInstant();
+      });
+
+  /**
+   * A conversion function of a temporal object into a value of type R.
+   * @param <T> the concrete type of the temporal object this conversion function accepts.
+   * @param <R> the concrete type of the converted value.
+   */
+  public static class Conversion<T extends Temporal, R> {
+
+    private final Class<T> type;
+    private final Function<T, R> converter;
+
+    /**
+     * Constructs a conversion function that will apply to the specified concrete type of
+     * {@link Temporal} objects and that will return a value of the specified concrete type R.
+     * @param type the expected concrete type of the {@link Temporal} objects to convert.
+     * @param converter the temporal conversion implementation.
+     * @param <T> the accepted {@link Temporal} concrete type.
+     * @param <R> the type to which the temporal objects will be converted.
+     * @return a {@link Conversion} instance.
+     */
+    public static <T extends Temporal, R> Conversion<T, R> of(Class<T> type,
+        Function<T, R> converter) {
+      return new Conversion<>(type, converter);
     }
-    if (t.toOffsetDateTime().equals(OffsetDateTime.MAX)) {
-      return Long.MAX_VALUE;
+
+    private Conversion(Class<T> type, Function<T, R> converter) {
+      this.type = type;
+      this.converter = converter;
     }
-    return t.toInstant().toEpochMilli();
-  };
+
+    /**
+     * Does this conversion function accepts to the type of the specified temporal object.
+     * @param temporal a {@link Temporal} object.
+     * @return true if this function known how to convert the concrete type of the given
+     * {@link Temporal} object to a value of type R. False otherwise.
+     */
+    public boolean accepts(Temporal temporal) {
+      return type.isAssignableFrom(temporal.getClass());
+    }
+
+    /**
+     * Applies the conversion to the specified {@link Temporal} object.
+     * @param temporal a {@link Temporal} object. Must be of type T otherwise a
+     * {@link ClassCastException} is thrown.
+     * @return a value of type R, issued from the conversion of the {@link Temporal} object.
+     */
+    public R apply(Temporal temporal) {
+      return converter.apply(type.cast(temporal));
+    }
+
+    /**
+     * Gets the simple name of the concrete type of {@link Temporal} objects this conversion
+     * function accepts as argument.
+     * @return the simple name of the {@link Temporal} class accepted by this conversion function.
+     */
+    public String getAcceptedType() {
+      return type.getSimpleName();
+    }
+  }
 }
-  

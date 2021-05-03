@@ -55,8 +55,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -110,7 +110,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   private String externalUrl;
 
   @Column(name = "synchroDate")
-  private OffsetDateTime synchronizationDate;
+  private Instant synchronizationDate;
 
   /**
    * Necessary for JPA management.
@@ -321,7 +321,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    * no synchronization was yet operated.
    * @return optionally the date of its last synchronization date.
    */
-  public Optional<OffsetDateTime> getLastSynchronizationDate() {
+  public Optional<Instant> getLastSynchronizationDate() {
     return Optional.ofNullable(this.synchronizationDate);
   }
 
@@ -335,9 +335,9 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   /**
    * Sets the date time at which this calendar is lastly synchronized.
-   * @param dateTime an {@link OffsetDateTime} value.
+   * @param dateTime an {@link Instant} value.
    */
-  protected void setLastSynchronizationDate(final OffsetDateTime dateTime) {
+  protected void setLastSynchronizationDate(final Instant dateTime) {
     this.synchronizationDate = dateTime;
   }
 

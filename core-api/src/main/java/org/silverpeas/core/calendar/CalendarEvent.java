@@ -52,6 +52,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -267,7 +268,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
 
   @Column(name = "synchroDate")
-  private OffsetDateTime synchronizationDate;
+  private Instant synchronizationDate;
 
   @Transient
   private WysiwygContent content;
@@ -518,7 +519,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Gets the last date at which this event was synchronized from an external calendar.
    * @return a date and time or null if this event isn't a synchronized one.
    */
-  public OffsetDateTime getLastSynchronizationDate() {
+  public Instant getLastSynchronizationDate() {
     return this.synchronizationDate;
   }
 
@@ -534,7 +535,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Sets the date time at which this event is lastly synchronized.
    * @param dateTime an {@link OffsetDateTime} value.
    */
-  protected void setLastSynchronizationDate(final OffsetDateTime dateTime) {
+  protected void setLastSynchronizationDate(final Instant dateTime) {
     this.synchronizationDate = dateTime;
   }
 

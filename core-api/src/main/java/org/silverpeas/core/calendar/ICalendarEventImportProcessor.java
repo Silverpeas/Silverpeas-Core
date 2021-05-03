@@ -240,7 +240,8 @@ public class ICalendarEventImportProcessor {
       if (wasUpdated(event, existingEvent)) {
         final Date lastUpdateDateBeforeUpdate = existingEvent.getLastUpdateDate();
         final EventOperationResult updateResult = existingEvent.updateFrom(event);
-        if (updateResult.updated().isPresent() && !updateResult.updated().get().getLastUpdateDate()
+        Optional<CalendarEvent> updatedEvent = updateResult.updated();
+        if (updatedEvent.isPresent() && !updatedEvent.get().getLastUpdateDate()
             .equals(lastUpdateDateBeforeUpdate)) {
           result = updateResult;
         }
@@ -328,12 +329,16 @@ public class ICalendarEventImportProcessor {
     private CalendarEvent existing;
 
     public static CalendarEvent eventFrom(final EventOperationResult result) {
-      if (result.created().isPresent()) {
-        return result.created().get();
+      Optional<CalendarEvent> createdEvent = result.created();
+      if (createdEvent.isPresent()) {
+        return createdEvent.get();
       }
-      if (result.updated().isPresent()) {
-        return result.updated().get();
+
+      Optional<CalendarEvent> updatedEvent = result.updated();
+      if (updatedEvent.isPresent()) {
+        return updatedEvent.get();
       }
+
       if (result instanceof EventImportResult) {
         EventImportResult importResult = (EventImportResult) result;
         if (importResult.existing().isPresent()) {

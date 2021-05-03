@@ -53,12 +53,6 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class CalendarManagementIT extends BaseCalendarTest {
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
-
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 

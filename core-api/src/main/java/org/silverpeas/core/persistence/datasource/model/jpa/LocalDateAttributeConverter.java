@@ -28,13 +28,13 @@ import javax.persistence.Converter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants.MAX_DATE;
-import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants.MIN_DATE;
+import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MAX_DATE;
+import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MIN_DATE;
 
 /**
- * An automatic converter of {@link LocalDate} values to SQL {@link Date} values for
- * JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
- * API).
+ * A converter of {@link LocalDate} and {@link Date} to take into account {@link LocalDate#MIN} and
+ * {@link LocalDate#MAX} as a workaround of the Hibernate limitation with the Java Time API:
+ * <a href="https://hibernate.atlassian.net/browse/HHH-13482">bug HHH-13482</a>
  * @author mmoquillon
  */
 @Converter(autoApply = true)
@@ -52,6 +52,7 @@ public class LocalDateAttributeConverter implements
     if (locDate.equals(LocalDate.MAX)) {
       return MAX_DATE;
     }
+
     return Date.valueOf(locDate);
   }
 
@@ -60,10 +61,10 @@ public class LocalDateAttributeConverter implements
     if (sqlDate == null) {
       return null;
     }
-    if (sqlDate.equals(MIN_DATE)) {
+    if (sqlDate.toLocalDate().equals(MIN_DATE.toLocalDate())) {
       return LocalDate.MIN;
     }
-    if (sqlDate.equals(MAX_DATE)) {
+    if (sqlDate.toLocalDate().equals(MAX_DATE.toLocalDate())) {
       return LocalDate.MAX;
     }
     return sqlDate.toLocalDate();

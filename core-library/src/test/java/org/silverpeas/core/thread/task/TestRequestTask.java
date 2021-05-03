@@ -24,7 +24,10 @@
 
 package org.silverpeas.core.thread.task;
 
+import org.awaitility.Awaitility;
 import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author silveryocha
@@ -36,15 +39,15 @@ public class TestRequestTask extends AbstractRequestTask<TestRequestTask.TestPro
   }
 
   static void newEmptyRequest() {
-    RequestTaskManager.push(TestRequestTask.class, new SleepTestRequest(0));
+    RequestTaskManager.get().push(TestRequestTask.class, new SleepTestRequest(0));
   }
 
   static void newRandomSleepRequest() {
-    RequestTaskManager.push(TestRequestTask.class, new RandomSleepTestRequest());
+    RequestTaskManager.get().push(TestRequestTask.class, new RandomSleepTestRequest());
   }
 
   static void newThreadKillRequest() {
-    RequestTaskManager.push(TestRequestTask.class, new ThreadKillTestRequest());
+    RequestTaskManager.get().push(TestRequestTask.class, new ThreadKillTestRequest());
   }
 
   static class TestProcessContext implements AbstractRequestTask.ProcessContext {

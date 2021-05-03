@@ -36,7 +36,8 @@ import static org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_D
  * Defines a request performed by {@link BackgroundProcessTask}.
  * @author silveryocha
  */
-public abstract class AbstractBackgroundProcessRequest implements AbstractRequestTask.Request {
+public abstract class AbstractBackgroundProcessRequest
+    implements AbstractRequestTask.Request<AbstractRequestTask.ProcessContext> {
 
   private final LOCK_DURATION lockDuration;
   private final String uniqueId;
@@ -59,7 +60,7 @@ public abstract class AbstractBackgroundProcessRequest implements AbstractReques
   }
 
   @Override
-  public void process(final Object context) throws InterruptedException {
+  public void process(final AbstractRequestTask.ProcessContext context) throws InterruptedException {
     process();
   }
 

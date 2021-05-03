@@ -61,10 +61,10 @@ public class VariableScheduledValue
   @Column(nullable = false)
   private String value;
 
-  @Column
+  @Column(columnDefinition = "DATE", nullable = false)
   private LocalDate startDate;
 
-  @Column
+  @Column(columnDefinition = "DATE", nullable = false)
   private LocalDate endDate;
 
   @ManyToOne(fetch = FetchType.EAGER, optional = false)

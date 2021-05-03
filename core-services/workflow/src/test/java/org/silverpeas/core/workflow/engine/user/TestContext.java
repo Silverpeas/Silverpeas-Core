@@ -41,8 +41,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -107,7 +106,6 @@ public class TestContext extends CommonAPITestRule {
     // Mocking persistence repository of delegations...
     ReplacementRepository repository =
         jpaMocker.mockRepository(ReplacementRepository.class, savedReplacement);
-    when(repository.save(any(Replacement.class))).thenCallRealMethod();
     when(repository.findAllByIncumbentAndByWorkflow(any(User.class), anyString())).thenAnswer(
         invocation -> computeReplacementsFor(invocation, aSubstitute));
     when(repository.findAllBySubstituteAndByWorkflow(any(User.class), anyString())).thenAnswer(

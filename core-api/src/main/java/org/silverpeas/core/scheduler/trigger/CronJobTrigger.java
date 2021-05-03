@@ -85,9 +85,9 @@ import java.text.ParseException;
  * DAY_OF_WEEK field means "the days Monday, Wednesday, and Friday".
  * </p>
  * <p>
- * The '/' character is used to specify increments. For example "0/15" in the seconds field means
- * "the seconds 0, 15, 30, and 45". And "5/15" in the seconds field means "the seconds 5, 20, 35,
- * and 50". Specifying '*' before the '/' is equivalent to specifying 0 is the value to start with.
+ * The '/' character is used to specify increments. For example "0/15" in the minutes field means
+ * "the minutes 0, 15, 30, and 45". And "5/15" in the minutes field means "the minutes 5, 20, 35,
+ * and 50". Specifying '*' before the '/' is equivalent to specifying 0 is the valu to start with.
  * Essentially, for each field in the expression, there is a set of numbers that can be turned on or
  * off. For seconds and minutes, the numbers range from 0 to 59. For hours 0 to 23, for days of the
  * month 0 to 31, and for months 1 to 12. The "/" character simply helps you turn on every "nth"

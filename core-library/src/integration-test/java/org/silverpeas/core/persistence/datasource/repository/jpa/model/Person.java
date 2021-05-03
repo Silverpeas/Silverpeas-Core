@@ -34,6 +34,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,9 @@ public class Person extends SilverpeasJpaEntity<Person, UuidIdentifier> implemen
   @Column(name = "lastName", nullable = false)
   @NotNull
   private String lastName;
+
+  @Column(name = "birthday", nullable = false, columnDefinition = "DATE")
+  private LocalDate birthday;
 
   @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
   private List<Animal> animals;
@@ -80,6 +85,15 @@ public class Person extends SilverpeasJpaEntity<Person, UuidIdentifier> implemen
     return this;
   }
 
+  public LocalDate getBirthday() {
+    return birthday;
+  }
+
+  public Person setBirthday(final LocalDate birthday) {
+    this.birthday = birthday;
+    return this;
+  }
+
   public List<Animal> getAnimals() {
     return animals;
   }
@@ -93,6 +107,7 @@ public class Person extends SilverpeasJpaEntity<Person, UuidIdentifier> implemen
     Person copy = new Person();
     copy.firstName = firstName;
     copy.lastName = lastName;
+    copy.birthday = birthday;
     // animals are fetched eagerly, so by convention they should be also copied
     copy.animals = animals.stream().map(Animal::copy).collect(Collectors.toList());
     return copy;

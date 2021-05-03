@@ -147,7 +147,7 @@ public class SimulationActionInterceptorIT {
       // the log file can contains more than this record as the tests can be ran several
       // times.
       assertThat(IOUtils.readLines(loggerReaderRule.getReader()).stream()
-          .filter(line -> line.contains(level.name()) && line.contains(message))
+          .filter(line -> line.contains(message))
           .count(), is(greaterThanOrEqualTo(1L)));
     } catch (IOException e) {
       fail(e.getMessage());

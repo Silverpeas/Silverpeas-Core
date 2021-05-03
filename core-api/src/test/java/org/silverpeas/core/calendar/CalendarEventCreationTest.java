@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * by adding it to a given calendar.
  * @author mmoquillon
  */
-public class CalendarEventCreationTest {
+class CalendarEventCreationTest {
 
   private static final String EVENT_TITLE = "an event";
   private static final String EVENT_DESCRIPTION = "a description";
@@ -49,7 +49,7 @@ public class CalendarEventCreationTest {
    * By default, the event is public and has no occurrences.
    */
   @Test
-  public void createADefaultNewEventOnAllDay() {
+  void createADefaultNewEventOnAllDay() {
     LocalDate today = LocalDate.now();
     CalendarEvent event =
         CalendarEvent.on(today).withTitle(EVENT_TITLE).withDescription(EVENT_DESCRIPTION);
@@ -60,7 +60,7 @@ public class CalendarEventCreationTest {
   }
 
   @Test
-  public void createADefaultNewEventOnSeveralDays() {
+  void createADefaultNewEventOnSeveralDays() {
     LocalDate today = LocalDate.now();
     LocalDate dayAfterTomorrow = today.plusDays(2);
     CalendarEvent event = CalendarEvent.on(Period.between(today, dayAfterTomorrow))
@@ -73,7 +73,7 @@ public class CalendarEventCreationTest {
   }
 
   @Test
-  public void createADefaultNewEventAtAGivenDateTime() {
+  void createADefaultNewEventAtAGivenDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     OffsetDateTime inThreeHours = now.plusHours(3);
     CalendarEvent event = CalendarEvent.on(Period.between(now, inThreeHours))
@@ -86,7 +86,7 @@ public class CalendarEventCreationTest {
   }
 
   @Test
-  public void createADefaultNewEventWithEndDateBeforeStartDate() {
+  void createADefaultNewEventWithEndDateBeforeStartDate() {
     assertThrows(IllegalArgumentException.class, () -> {
       LocalDate now = LocalDate.now();
       LocalDate yesterday = now.minusDays(1);
@@ -95,7 +95,7 @@ public class CalendarEventCreationTest {
   }
 
   @Test
-  public void createADefaultNewEventWithEndDateTimeBeforeStartDateTime() {
+  void createADefaultNewEventWithEndDateTimeBeforeStartDateTime() {
     assertThrows(IllegalArgumentException.class, () -> {
       OffsetDateTime now = OffsetDateTime.now();
       OffsetDateTime yesterday = now.minusDays(1);

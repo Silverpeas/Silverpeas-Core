@@ -57,7 +57,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -108,23 +107,23 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     }
     RRule recurrenceRule = generateRecurrenceRule(event);
     Date firstOccurrenceStartDate =
-        TemporalConverter.applyByType(event.getStartDate(), iCal4JDateCodec::encode,
-            iCal4JDateCodec::encode);
+        TemporalConverter.applyByType(event.getStartDate(), iCal4JDateCodec.localDateConversion(),
+            iCal4JDateCodec.offsetDateTimeConversion());
     Date periodStartDate = TemporalConverter.applyByType(
-        inPeriod == null ? event.getStartDate() : inPeriod.getStartDate(), iCal4JDateCodec::encode,
-        iCal4JDateCodec::encode);
+        inPeriod == null ? event.getStartDate() : inPeriod.getStartDate(),
+        iCal4JDateCodec.localDateConversion(), iCal4JDateCodec.offsetDateTimeConversion());
     Temporal endDate = event.getRecurrence()
         .getEndDate()
         .orElseThrow(
             () -> new NotSupportedException("Endless period of recurrent event not supported!"));
     Date periodEndDate = TemporalConverter.applyByType(
-        inPeriod == null ? endDate.plus(1, ChronoUnit.DAYS) :
-            inPeriod.getEndDate(),
-        iCal4JDateCodec::encode, iCal4JDateCodec::encode);
+        inPeriod == null ? endDate.plus(1, ChronoUnit.DAYS) : inPeriod.getEndDate(),
+        iCal4JDateCodec.localDateConversion(), iCal4JDateCodec.offsetDateTimeConversion());
 
     return recurrenceRule.getRecur()
         .getDates(firstOccurrenceStartDate, periodStartDate, periodEndDate,
-            firstOccurrenceStartDate instanceof DateTime ? Value.DATE_TIME : Value.DATE).size();
+            firstOccurrenceStartDate instanceof DateTime ? Value.DATE_TIME : Value.DATE)
+        .size();
   }
 
   @Override
@@ -159,22 +158,23 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   private CalendarEventOccurrence generateNextOccurrenceOfRecurrentEvent(final CalendarEvent event,
       final ZonedDateTime since) {
     final ZoneId actualZoneId = event.getCalendar().getZoneId();
-    final ZonedDateTime eventStartDate =
-        event.isOnAllDay() ? ((LocalDate) event.getStartDate()).atStartOfDay(actualZoneId) :
-            ((OffsetDateTime) event.getStartDate()).atZoneSameInstant(actualZoneId);
+    final ZonedDateTime eventStartDate = event.isOnAllDay() ?
+        ((LocalDate) event.getStartDate()).atStartOfDay(actualZoneId) :
+        ((OffsetDateTime) event.getStartDate()).atZoneSameInstant(actualZoneId);
     final Optional<Temporal> optionalRecurEndDate = event.getRecurrence().getEndDate();
     LocalDate recurEndDate = null;
     if (optionalRecurEndDate.isPresent()) {
-      recurEndDate =
-          optionalRecurEndDate.get() instanceof LocalDate ? (LocalDate) optionalRecurEndDate.get() :
-              ((OffsetDateTime) optionalRecurEndDate.get()).toLocalDate();
+      recurEndDate = optionalRecurEndDate.get() instanceof LocalDate ?
+          (LocalDate) optionalRecurEndDate.get() :
+          ((OffsetDateTime) optionalRecurEndDate.get()).toLocalDate();
     }
     final VEvent vEvent = fromCalendarEvent(event);
     final ChronoUnit recurUnit = event.getRecurrence().getFrequency().getUnit().toChronoUnit();
 
     final ZonedDateTime sinceDateTime =
         since.withZoneSameInstant(actualZoneId).isBefore(eventStartDate) ?
-            eventStartDate.minusMinutes(1) : since.withZoneSameInstant(actualZoneId);
+            eventStartDate.minusMinutes(1) :
+            since.withZoneSameInstant(actualZoneId);
     final Date iCalSinceDate = iCal4JDateCodec.encode(sinceDateTime);
     LocalDate searchPeriodStart = sinceDateTime.toLocalDate();
     int nbNextStartDateComputations = 0;
@@ -185,9 +185,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
       }
       final PeriodList occurDateList = getPeriodList(vEvent,
           Period.between(searchPeriodStart, searchPeriodStart.plus(2, recurUnit)));
-      Iterator<net.fortuna.ical4j.model.Period> occurDateIt = occurDateList.iterator();
-      while (occurDateIt.hasNext()) {
-        net.fortuna.ical4j.model.Period nextOccurDate = occurDateIt.next();
+      for (final net.fortuna.ical4j.model.Period nextOccurDate : occurDateList) {
         if (nextOccurDate.getStart().after(iCalSinceDate)) {
           return buildCalendarEventOccurrence(event, nextOccurDate);
         }
@@ -221,8 +219,9 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     Recur.Builder builder = new Recur.Builder().frequency(recurrenceType);
     final Optional<Temporal> endDate = recurrence.getRecurrenceEndDate();
     if (endDate.isPresent()) {
-      builder.until(TemporalConverter.applyByType(endDate.get(), iCal4JDateCodec::encode,
-          iCal4JDateCodec::encode));
+      builder.until(
+          TemporalConverter.applyByType(endDate.get(), iCal4JDateCodec.localDateConversion(),
+              iCal4JDateCodec.offsetDateTimeConversion()));
     } else if (recurrence.getRecurrenceCount() != Recurrence.NO_RECURRENCE_COUNT) {
       builder.count(recurrence.getRecurrenceCount());
     }
@@ -230,14 +229,14 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
 
     WeekDayList dayList = recurrence.getDaysOfWeek().stream().
         map(dayOfWeekOccurrence -> {
-      WeekDay weekDay = iCal4JRecurrenceCodec.encode(dayOfWeekOccurrence.dayOfWeek());
-      if (recurrence.getFrequency().isWeekly() || recurrence.getFrequency().isDaily() ||
-          dayOfWeekOccurrence.nth() == 0) {
-        return weekDay;
-      } else {
-        return new WeekDay(weekDay, dayOfWeekOccurrence.nth());
-      }
-    }).
+          WeekDay weekDay = iCal4JRecurrenceCodec.encode(dayOfWeekOccurrence.dayOfWeek());
+          if (recurrence.getFrequency().isWeekly() || recurrence.getFrequency().isDaily() ||
+              dayOfWeekOccurrence.nth() == 0) {
+            return weekDay;
+          } else {
+            return new WeekDay(weekDay, dayOfWeekOccurrence.nth());
+          }
+        }).
         collect(Collectors.toCollection(WeekDayList::new));
     builder.dayList(dayList);
     return new RRule(builder.build());
@@ -279,8 +278,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     return vEvent;
   }
 
-  private PeriodList getPeriodList(final VEvent vEvent,
-      final Period inPeriod) {
+  private PeriodList getPeriodList(final VEvent vEvent, final Period inPeriod) {
     final net.fortuna.ical4j.model.Period icalPeriod = fromPeriod(inPeriod);
     PeriodList periodList = vEvent.calculateRecurrenceSet(icalPeriod);
     periodList.removeIf(period -> period.getEnd().equals(icalPeriod.getStart()));

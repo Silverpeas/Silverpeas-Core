@@ -39,7 +39,7 @@ import org.silverpeas.core.workflow.api.event.TimeoutEvent;
  */
 @Technical
 @Bean
-public class WorkflowEngineTask extends AbstractRequestTask {
+public class WorkflowEngineTask extends AbstractRequestTask<AbstractRequestTask.ProcessContext> {
 
   protected WorkflowEngineTask() {
     super();
@@ -95,7 +95,7 @@ public class WorkflowEngineTask extends AbstractRequestTask {
     push(request);
   }
 
-  private static void push(Request request) {
-    RequestTaskManager.push(WorkflowEngineTask.class, request);
+  private static void push(AbstractRequest request) {
+    RequestTaskManager.get().push(WorkflowEngineTask.class, request);
   }
 }

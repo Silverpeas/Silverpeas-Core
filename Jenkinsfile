@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild'
+      image 'silverpeas/silverbuild:6.3-it'
       args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
     }
   }
@@ -15,6 +15,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
+          sh "/opt/wildfly-for-tests/wildfly-*.Final/bin/standalone.sh -c standalone-full.xml &> /dev/null &"
           version = computeSnapshotVersion()
           checkParentPOMVersion(version)
           waitForDependencyRunningBuildIfAny(version, 'core')
@@ -22,6 +23,7 @@ pipeline {
           sh """
 mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
 mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+/opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
 """
           deleteLockFile(lockFilePath)
         }

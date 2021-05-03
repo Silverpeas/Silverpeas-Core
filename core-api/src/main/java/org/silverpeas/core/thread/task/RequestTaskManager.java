@@ -25,12 +25,16 @@
 package org.silverpeas.core.thread.task;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask.Request;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -51,10 +55,18 @@ import java.util.concurrent.Semaphore;
  * {@link RequestTaskManager#push(Class, Request)} method.</p>
  * @author silveryocha
  */
+@Technical
+@Singleton
+@Bean
 public class RequestTaskManager {
 
-  static final ConcurrentMap<Class, RequestTaskMonitor> tasks = new ConcurrentHashMap<>();
+  private final ConcurrentMap<Class<? extends AbstractRequestTask<?>>,
+      RequestTaskMonitor<? extends AbstractRequestTask<?>, ?>> tasks = new ConcurrentHashMap<>();
   private static final int RESTART_WAITING_BEFORE_GETTING_RESULT = 200;
+
+  public static RequestTaskManager get() {
+    return ServiceProvider.getSingleton(RequestTaskManager.class);
+  }
 
   /**
    * Hidden constructor because the class is not instantiable.
@@ -62,12 +74,10 @@ public class RequestTaskManager {
   private RequestTaskManager() {
   }
 
-  @SuppressWarnings("unchecked")
-  private static <T extends AbstractRequestTask, C extends AbstractRequestTask.ProcessContext>
+  private <T extends AbstractRequestTask<C>, C extends AbstractRequestTask.ProcessContext>
   boolean startIfNecessary(final RequestTaskMonitor<T, C> monitor) {
     if (!monitor.isTaskRunning()) {
-      AbstractRequestTask<C> task =
-          (AbstractRequestTask) ServiceProvider.getService(monitor.taskClass);
+      AbstractRequestTask<C> task = ServiceProvider.getService(monitor.taskClass);
       try {
         debug(monitor.taskClass, "starting a thread in charge of request processing");
         task.monitor = monitor;
@@ -85,8 +95,7 @@ public class RequestTaskManager {
     return false;
   }
 
-  @SuppressWarnings("unchecked")
-  private static <T extends AbstractRequestTask, C extends AbstractRequestTask.ProcessContext>
+  private <T extends AbstractRequestTask<C>, C extends AbstractRequestTask.ProcessContext>
   boolean restartIfNecessary(final RequestTaskMonitor<T, C> monitor) {
     if (!monitor.isTaskRunning() && !monitor.requestList.isEmpty()) {
       warn(monitor.taskClass,
@@ -97,23 +106,19 @@ public class RequestTaskManager {
     return false;
   }
 
-  private static void warn(Class taskClass, String message, Object... parameters) {
+  private void warn(Class<?> taskClass, String message, Object... parameters) {
     getLogger().warn(taskClass.getSimpleName() + " - " + message, parameters);
   }
 
-  private static void error(Class taskClass, String message, Object... parameters) {
+  private void error(Class<?> taskClass, String message, Object... parameters) {
     getLogger().error(taskClass.getSimpleName() + " - " + message, parameters);
   }
 
-  private static void error(Class taskClass, Exception e) {
-    getLogger().error(taskClass.getSimpleName() + " - an error occurred", e);
-  }
-
-  private static void debug(Class taskClass, String message, Object... parameters) {
+  private void debug(Class<?> taskClass, String message, Object... parameters) {
     getLogger().debug(taskClass.getSimpleName() + " - " + message, parameters);
   }
 
-  private static SilverLogger getLogger() {
+  private SilverLogger getLogger() {
     return SilverLogger.getLogger("silverpeas.core.thread");
   }
 
@@ -124,8 +129,8 @@ public class RequestTaskManager {
    * {@link AbstractRequestTask.Request}.
    * @param <T> the type of the task.
    */
-  @SuppressWarnings("unchecked")
-  public static <T extends AbstractRequestTask> boolean isTaskRunning(Class<T> taskClass) {
+  public <T extends AbstractRequestTask<C>, C extends AbstractRequestTask.ProcessContext>
+  boolean isTaskRunning(Class<T> taskClass) {
     final Mutable<Boolean> isRunning = Mutable.of(false);
     tasks.computeIfPresent(taskClass, (i, m) -> {
       isRunning.set(m.isTaskRunning());
@@ -150,12 +155,13 @@ public class RequestTaskManager {
    * @param <C> the type of the task process context.
    */
   @SuppressWarnings("unchecked")
-  public static <T extends AbstractRequestTask, C extends AbstractRequestTask.ProcessContext>
+  public <T extends AbstractRequestTask<C>, C extends AbstractRequestTask.ProcessContext>
   void push(Class<T> taskClass, Request<C> newRequest) {
-    final RequestTaskMonitor<T, C> monitor = tasks.computeIfAbsent(taskClass, c -> {
-      AbstractRequestTask<C> taskForInit = (AbstractRequestTask) ServiceProvider.getService(c);
-      return new RequestTaskMonitor<>(taskForInit);
-    });
+    final RequestTaskMonitor<T, C> monitor =
+        (RequestTaskMonitor<T, C>) tasks.computeIfAbsent(taskClass, c -> {
+          T taskForInit = (T) ServiceProvider.getService(c);
+          return new RequestTaskMonitor<>(taskForInit);
+        });
     synchronized (monitor.requestList) {
       restartIfNecessary(monitor);
     }
@@ -191,14 +197,27 @@ public class RequestTaskManager {
     }
   }
 
-  static class TaskWatcher implements Callable<Void> {
-    final RequestTaskMonitor monitor;
+  @PreDestroy
+  protected void shutdownAllTasks() {
+    tasks.forEach((t, m) -> m.shutdown());
+    tasks.clear();
+  }
 
-    TaskWatcher(final RequestTaskMonitor monitor) {
+  @SuppressWarnings("java:S1452")
+  protected ConcurrentMap<Class<? extends AbstractRequestTask<?>>,
+      RequestTaskMonitor<? extends AbstractRequestTask<?>, ?>> getTasks() {
+    return tasks;
+  }
+
+  private class TaskWatcher implements Callable<Void> {
+    final RequestTaskMonitor<? extends AbstractRequestTask<?>, ? extends AbstractRequestTask
+        .ProcessContext> monitor;
+
+    TaskWatcher(final RequestTaskMonitor<? extends AbstractRequestTask<?>, ? extends AbstractRequestTask
+        .ProcessContext> monitor) {
       this.monitor = monitor;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Void call() {
       debug(this.monitor.taskClass, "task watcher - started");
@@ -231,11 +250,15 @@ public class RequestTaskManager {
       debug(this.monitor.taskClass, "task watcher - stopped");
       return null;
     }
+
+    private void error(Class<?> taskClass, Exception e) {
+      getLogger().error(taskClass.getSimpleName() + " - an error occurred", e);
+    }
   }
 
-  static class RequestTaskMonitor<T extends AbstractRequestTask, C extends AbstractRequestTask
+  class RequestTaskMonitor<T extends AbstractRequestTask<C>, C extends AbstractRequestTask
       .ProcessContext> {
-    final Class taskClass;
+    final Class<T> taskClass;
     final List<Request<C>> requestList;
     private final Semaphore queueSemaphore;
     Future<Void> task = null;
@@ -244,15 +267,26 @@ public class RequestTaskManager {
     /**
      * @param taskForInit a task instance for initialization, it will not be run.
      */
+    @SuppressWarnings("unchecked")
     RequestTaskMonitor(final T taskForInit) {
       final int queueLimit = taskForInit.getRequestQueueLimit();
       this.queueSemaphore = queueLimit > 0 ? new Semaphore(queueLimit, true) : null;
       this.requestList = queueLimit > 0 ? new ArrayList<>(queueLimit) : new ArrayList<>();
-      this.taskClass = taskForInit.getClass();
+      this.taskClass = (Class<T>) taskForInit.getClass();
     }
 
     boolean isTaskRunning() {
       return task != null && !task.isCancelled() && !task.isDone();
+    }
+
+    void shutdown() {
+      if (isTaskRunning()) {
+        boolean cancelled = task.cancel(true);
+        if (!cancelled) {
+          warn(RequestTaskMonitor.class, "Cannot cancel task " +
+              task.getClass().getSimpleName());
+        }
+      }
     }
 
     void acquireAccess() {

@@ -21,45 +21,47 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.persistence.datasource.model.jpa;
+package org.silverpeas.core.persistence.datasource;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
- * Some constants for the date time converter.
+ * Some constants to take care when converting dates and date times to their database counterpart.
  * @author mmoquillon
  */
 public class SQLDateTimeConstants {
+
+  private static final LocalDateTime MIN = LocalDate.parse("0001-01-01").atStartOfDay();
+  private static final LocalDateTime MAX = LocalDate.parse("9999-12-31").atStartOfDay();
 
   private SQLDateTimeConstants() {
 
   }
 
   /**
-   * The minimum date for any of our supported data sources. Currently, it is based upon the
-   * more limited ones, that are Oracle and MS-SQLServer.
+   * The minimum date for any of our supported data sources. Currently, it is based upon the more
+   * limited ones, that are Oracle and MS-SQLServer.
    */
-  static final Date MIN_DATE = Date.valueOf(LocalDate.parse("0001-01-01"));
+  public static final Date MIN_DATE = Date.valueOf(MIN.toLocalDate());
 
   /**
-   * The maximum date for any of our supported data sources. Currently, it is based upon the
-   * more limited ones, that are Oracle and MS-SQLServer.
+   * The maximum date for any of our supported data sources. Currently, it is based upon the more
+   * limited ones, that are Oracle and MS-SQLServer.
    */
-  static final Date MAX_DATE = Date.valueOf(LocalDate.parse("9999-12-31"));
+  public static final Date MAX_DATE = Date.valueOf(MAX.toLocalDate());
 
   /**
    * The minimum timestamp for any of our supported data sources. Currently, it is based upon the
    * more limited ones, that are Oracle and MS-SQLServer.
    */
-  static final Timestamp MIN_TIMESTAMP =
-      Timestamp.valueOf(LocalDate.parse("0001-01-01").atStartOfDay());
+  public static final Timestamp MIN_TIMESTAMP = Timestamp.valueOf(MIN);
 
   /**
    * The maximum timestamp for any of our supported data sources. Currently, it is based upon the
    * more limited ones, that are Oracle and MS-SQLServer.
    */
-  static final Timestamp MAX_TIMESTAMP =
-      Timestamp.valueOf(LocalDate.parse("9999-12-31").atTime(23, 59, 59, 999999));
+  public static final Timestamp MAX_TIMESTAMP = Timestamp.valueOf(MAX);
 }

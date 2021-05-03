@@ -25,6 +25,8 @@
 package org.silverpeas.core.reminder;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,6 +81,7 @@ import static org.mockito.Mockito.when;
     CalendarEventUserNotificationReminder.class})
 class DefaultContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
+  private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
 
   private static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
   private static final String INSTANCE_ID = "componentNameTest26";
@@ -103,6 +106,16 @@ class DefaultContributionReminderUserNotificationTest {
 
   @Mock
   private User receiver;
+
+  @BeforeAll
+  static void setTimeZone() {
+    TimeZone.setDefault(TimeZone.getTimeZone(UTC_ZONE_ID));
+  }
+
+  @AfterAll
+  static void restoreTimeZone() {
+    TimeZone.setDefault(DEFAULT_TIMEZONE);
+  }
 
   @BeforeEach
   void setup(@TestManagedMock ContributionManager contributionManager,
@@ -208,7 +221,7 @@ class DefaultContributionReminderUserNotificationTest {
 
   private void triggerDateTime(Reminder reminder, OffsetDateTime dateTime)
       throws IllegalAccessException {
-    FieldUtils.writeField(reminder, "triggerDateTime", dateTime, true);
+    FieldUtils.writeField(reminder, "triggerDateTime", dateTime.toInstant(), true);
   }
 
   private Map<String, String> computeNotificationContents(Reminder reminder) {
@@ -240,11 +253,5 @@ class DefaultContributionReminderUserNotificationTest {
 
   private String getTitle(final UserNotification userNotification, final String language) {
     return userNotification.getNotificationMetaData().getTitle(language);
-  }
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(UTC_ZONE_ID));
   }
 }

@@ -104,15 +104,6 @@ public class ReplacementTest {
   }
 
   @Test
-  public void saveANewReplacement() {
-    Replacement replacement = Replacement.between(anIncumbent, aSubstitute)
-        .inWorkflow(WORKFLOW_ID)
-        .during(aPeriod)
-        .save();
-    assertThat(replacement.isPersisted(), is(true));
-  }
-
-  @Test
   public void getAllEmptyReplacementsOfAUser() {
     List<Replacement> replacements = Replacement.getAllOf(aUser("32"), WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(true));

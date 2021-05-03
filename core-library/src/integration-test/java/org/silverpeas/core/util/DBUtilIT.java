@@ -82,7 +82,7 @@ public class DBUtilIT {
   private ManagedThreadFactory managedThreadFactory;
 
   @Rule
-  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("")
+  public DbSetupRule dbSetupRule = DbSetupRule.createDefaultTables()
       .loadInitialDataSetFrom(TABLES_CREATION, CLEAN_UP, USER_SET_UP, UNIQUE_ID_SET_UP);
 
   @Deployment

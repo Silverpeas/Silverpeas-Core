@@ -26,47 +26,49 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
-import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants
-    .MAX_TIMESTAMP;
-import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants
-    .MIN_TIMESTAMP;
+import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MAX_TIMESTAMP;
+import static org.silverpeas.core.persistence.datasource.SQLDateTimeConstants.MIN_TIMESTAMP;
 
 /**
- * An automatic converter of {@link LocalDateTime} values to SQL {@link Timestamp} values for
- * JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
- * API).
+ * A converter of {@link Instant} and {@link Timestamp} to take into account {@link Instant#MIN}
+ * and {@link Instant#MAX} as a workaround of the Hibernate limitation with the Java Time API:
+ * <a href="https://hibernate.atlassian.net/browse/HHH-13482">bug HHH-13482</a>
  * @author mmoquillon
  */
 @Converter(autoApply = true)
-public class LocalDateTimeAttributeConverter implements
-    AttributeConverter<LocalDateTime, Timestamp> {
+public class InstantAttributeConverter implements AttributeConverter<Instant, Timestamp> {
 
   @Override
-  public Timestamp convertToDatabaseColumn(LocalDateTime locDateTime) {
-    if (locDateTime == null) {
+  public Timestamp convertToDatabaseColumn(Instant instant) {
+    if (instant == null) {
       return null;
     }
-    if (locDateTime.equals(LocalDateTime.MIN)) {
+    if (instant.equals(Instant.MIN)) {
       return MIN_TIMESTAMP;
     }
-    if (locDateTime.equals(LocalDateTime.MAX)) {
+    if (instant.equals(Instant.MAX)) {
       return MAX_TIMESTAMP;
     }
-    return Timestamp.valueOf(locDateTime);
+
+    return Timestamp.valueOf(OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
+        .toLocalDateTime());
   }
 
   @Override
-  public LocalDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
+  public Instant convertToEntityAttribute(Timestamp sqlTimestamp) {
     if (sqlTimestamp == null) {
       return null;
     }
     if (sqlTimestamp.equals(MIN_TIMESTAMP)) {
-      return LocalDateTime.MIN;
-    } else if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
-      return LocalDateTime.MAX;
+      return Instant.MIN;
     }
-    return sqlTimestamp.toLocalDateTime();
+    if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
+      return Instant.MAX;
+    }
+    return sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC).toInstant();
   }
 }

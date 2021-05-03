@@ -1,5 +1,6 @@
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
@@ -23,7 +24,8 @@ class TaskDoneRequest extends AbstractRequest {
   }
 
   @Override
-  public void process(final Object context) throws InterruptedException {
+  public void process(final AbstractRequestTask.ProcessContext context)
+      throws InterruptedException {
     TaskDoneEvent event = getEvent();
 
     // Get the process instance

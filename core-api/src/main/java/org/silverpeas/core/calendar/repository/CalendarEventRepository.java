@@ -29,7 +29,7 @@ import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -86,14 +86,14 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
    * and times.
    * @param filter a filter to apply on the calendar events to return. The filter can be empty and
    * then no filtering will be applied on the requested calendar events.
-   * @param startDateTime the inclusive datetime in UTC/Greenwich at which begins the period
+   * @param startDateTime the inclusive instant in UTC/Greenwich at which begins the period
    * in which the events are get.
-   * @param endDateTime the inclusive datetime in UTC/Greenwich at which ends the period in
+   * @param endDateTime the inclusive instant in UTC/Greenwich at which ends the period in
    * which the events are get.
    * @return a list of events filtering by the given filter and that occur between the two date
    * times or an empty list if there is no events matching the specified arguments.
    */
-  List<CalendarEvent> getAllBetween(CalendarEventFilter filter, OffsetDateTime startDateTime,
-      OffsetDateTime endDateTime);
+  List<CalendarEvent> getAllBetween(CalendarEventFilter filter, Instant startDateTime,
+      Instant endDateTime);
 
 }

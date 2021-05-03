@@ -32,6 +32,7 @@ import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -153,8 +154,10 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     Optional<Temporal> optionalDateTime = recurrence.getRecurrenceEndDate();
     endDate = null;
     optionalDateTime.ifPresent(t ->
-        endDate = TemporalConverter.applyByType(t, LocalDate::toString,
-            dateTime -> formatDateWithOffset(event.asCalendarComponent(), dateTime, zoneId)));
+        endDate = TemporalConverter.applyByType(t,
+            Conversion.of(LocalDate.class, LocalDate::toString),
+            Conversion.of(OffsetDateTime.class,
+                dt -> formatDateWithOffset(event.asCalendarComponent(), dt, zoneId))));
     daysOfWeek = recurrence.getDaysOfWeek()
         .stream()
         .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))

@@ -32,6 +32,7 @@ import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.api.user.ReplacementList;
 import org.silverpeas.core.workflow.api.user.User;
 
 import javax.inject.Inject;
@@ -91,27 +92,29 @@ public class ReplacementResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<ReplacementEntity> getAllReplacements(
+  public <T extends Replacement<T>> Collection<ReplacementEntity> getAllReplacements(
       @QueryParam("incumbent") final String incumbentId,
       @QueryParam("substitute") final String substituteId) {
-    final Stream<Replacement> stream;
+    final Stream<T> stream;
     if (isDefined(incumbentId) && isDefined(substituteId)) {
       final User incumbent = getUser(incumbentId);
       final User substitute = getUser(substituteId);
-      final List<Replacement> replacements =
+      final List<T> replacements =
           Replacement.getAllWith(incumbent, substitute, workflowId);
       stream = filterOnTheRequester(replacements.stream());
     } else if (isDefined(incumbentId)) {
       final User incumbent = getUser(incumbentId);
-      final List<Replacement> replacements = Replacement.getAllOf(incumbent, workflowId);
+      final List<T> replacements = Replacement.getAllOf(incumbent, workflowId);
       stream = filterOnTheRequester(replacements.stream());
     } else if (isDefined(substituteId)) {
       final User substitute = getUser(substituteId);
-      final List<Replacement> replacements = Replacement.getAllBy(substitute, workflowId);
+      final List<T> replacements = Replacement.getAllBy(substitute, workflowId);
       stream = filterOnTheRequester(replacements.stream());
     } else {
-      stream = process(() -> Replacement.getAll(workflowId).stream()).lowestAccessRole(
-          SilverpeasRole.SUPERVISOR).execute();
+      stream = process(() -> {
+        ReplacementList<T> replacements = Replacement.getAll(workflowId);
+        return replacements.stream();
+      }).lowestAccessRole(SilverpeasRole.SUPERVISOR).execute();
     }
     return encode(stream);
   }
@@ -132,7 +135,7 @@ public class ReplacementResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{id}")
   public ReplacementEntity getReplacement(@PathParam("id") final String replacementId) {
-    final Replacement replacement = getReplacementById(replacementId);
+    final Replacement<?> replacement = getReplacementById(replacementId);
     return asWebEntity(replacement, getUri().getAbsolutePath());
   }
 
@@ -159,7 +162,7 @@ public class ReplacementResource extends RESTWebService {
     assertIsValid(entity);
     final User incumbent = getUser(entity.getIncumbent().getId());
     final User substitute = getUser(entity.getSubstitute().getId());
-    Replacement replacement = Replacement.between(incumbent, substitute)
+    Replacement<?> replacement = Replacement.between(incumbent, substitute)
         .inWorkflow(workflowId)
         .during(Period.between(entity.getStartDate(), entity.getEndDate()))
         .save();
@@ -195,11 +198,11 @@ public class ReplacementResource extends RESTWebService {
   public ReplacementEntity updateReplacement(@PathParam("id") final String id,
       final ReplacementEntity entity) {
     assertIsValid(entity);
-    final Replacement replacement = getReplacementById(id);
+    final Replacement<?> replacement = getReplacementById(id);
     if (!replacement.getIncumbent().getUserId().equals(entity.getIncumbent().getId())) {
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
-    final Replacement updatedReplacement =
+    final Replacement<?> updatedReplacement =
         replacement.setSubstitute(getUser(entity.getSubstitute().getId()))
             .setPeriod(Period.between(entity.getStartDate(), entity.getEndDate()))
             .save();
@@ -221,7 +224,7 @@ public class ReplacementResource extends RESTWebService {
   @Path("{id}")
   @Transactional
   public void deleteReplacement(@PathParam("id") final String replacementId) {
-    final Replacement replacement = getReplacementById(replacementId);
+    final Replacement<?> replacement = getReplacementById(replacementId);
     replacement.delete();
   }
 
@@ -244,9 +247,9 @@ public class ReplacementResource extends RESTWebService {
     }
   }
 
-  private Replacement getReplacementById(final String id) {
-    Optional<Replacement> optionalReplacement = Replacement.get(id);
-    Replacement replacement = optionalReplacement.orElseThrow(
+  private <T extends Replacement<T>> T getReplacementById(final String id) {
+    Optional<T> optionalReplacement = Replacement.get(id);
+    T replacement = optionalReplacement.orElseThrow(
         () -> new WebApplicationException(Response.Status.NOT_FOUND));
     assertIsValid(replacement);
     return replacement;
@@ -264,15 +267,15 @@ public class ReplacementResource extends RESTWebService {
     return isSupervisor;
   }
 
-  private Predicate<Replacement> onTheRequester =
+  private final Predicate<Replacement<?>> onTheRequester =
       r -> r.getSubstitute().getUserId().equals(getUser().getId()) ||
           r.getIncumbent().getUserId().equals(getUser().getId());
 
-  private Stream<Replacement> filterOnTheRequester(final Stream<Replacement> replacements) {
+  private <T extends Replacement<T>> Stream<T> filterOnTheRequester(final Stream<T> replacements) {
     return isRequesterSupervisor() ? replacements : replacements.filter(onTheRequester);
   }
 
-  private List<ReplacementEntity> encode(final Stream<Replacement> replacements) {
+  private <T extends Replacement<T>> List<ReplacementEntity> encode(final Stream<T> replacements) {
     return replacements.map(r -> asWebEntity(r, identifiedBy(r.getId())))
         .collect(Collectors.toList());
   }
@@ -288,7 +291,7 @@ public class ReplacementResource extends RESTWebService {
     }
   }
 
-  private void assertIsValid(final Replacement replacement) {
+  private void assertIsValid(final Replacement<?> replacement) {
     if (!workflowId.equals(replacement.getWorkflowInstanceId())) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }

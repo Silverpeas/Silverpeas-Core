@@ -25,6 +25,7 @@
 package org.silverpeas.core.thread.task;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,14 @@ import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.thread.task.RequestTaskManager.RequestTaskMonitor;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -53,7 +54,10 @@ import static org.hamcrest.Matchers.*;
 @LoggerLevel(Level.DEBUG)
 @TestManagedBeans({TestRequestTask.class, TestRequestTaskWithLimit.class,
     TestRequestTaskWithAfterNoMoreRequestLongTreatment.class})
-public class RequestTaskManagerTest {
+class RequestTaskManagerTest {
+
+  @TestedBean
+  private RequestTaskManager taskManager;
 
   private static int counter = 0;
   private static int afterNoMoreRequestCounter = 0;
@@ -77,7 +81,7 @@ public class RequestTaskManagerTest {
   @BeforeEach
   @AfterEach
   public synchronized void clean() {
-    RequestTaskManager.tasks.clear();
+    taskManager.shutdownAllTasks();
   }
 
   @BeforeEach
@@ -91,52 +95,54 @@ public class RequestTaskManagerTest {
   }
 
   @Test
-  public void usingNormallyShouldWork()
-      throws ExecutionException, InterruptedException, TimeoutException {
+  void usingNormallyShouldWork() {
     assertThat(counter, is(0));
     final int nbRequests = 100;
     for (int i = 0; i < nbRequests; i++) {
       TestRequestTask.newRandomSleepRequest();
       if (Math.random() > 0.7) {
-        Thread.sleep(50);
+        await(50);
       }
     }
-    RequestTaskMonitor monitor = waitForTaskEndingAtEndOfTest(TestRequestTask.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAtEndOfTest(TestRequestTask.class);
     assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(monitor);
     assertThat(counter, is(nbRequests));
   }
 
   @Test
-  public void usingLimitedQueueShouldWork()
-      throws ExecutionException, InterruptedException, TimeoutException {
+  void usingLimitedQueueShouldWork() {
     assertThat(counter, is(0));
     final int nbRequests = 100;
     for (int i = 0; i < nbRequests; i++) {
       TestRequestTaskWithLimit.newRandomSleepRequest();
       if (Math.random() > 0.7) {
-        Thread.sleep(50);
+        await(50);
       }
     }
-    RequestTaskMonitor monitor = waitForTaskEndingAtEndOfTest(TestRequestTaskWithLimit.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAtEndOfTest(TestRequestTaskWithLimit.class);
     assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(monitor);
     assertThat(counter, is(nbRequests));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void firstRequestKillsTaskButRestartedOnNewRequestPush()
-      throws ExecutionException, InterruptedException, TimeoutException {
+  void firstRequestKillsTaskButRestartedOnNewRequestPush() {
 
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithLimit.newEmptyRequest();
-    RequestTaskMonitor monitor = waitForTaskEndingAfterFirstInit(TestRequestTaskWithLimit.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAfterFirstInit(TestRequestTaskWithLimit.class);
 
     // Setting manually the queue
     monitor.requestList.add(new TestRequestTaskWithLimit.ThreadKillTestRequest());
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
-    Thread.sleep(500);
+    await(500);
 
     assertThat(counter, is(0));
     assertThat(monitor.isTaskRunning(), is(false));
@@ -153,14 +159,14 @@ public class RequestTaskManagerTest {
     assertThat(counter, is(4));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void notFirstRequestKillsTaskButRestartedOnNewRequestPush()
-      throws ExecutionException, InterruptedException, TimeoutException {
+  void notFirstRequestKillsTaskButRestartedOnNewRequestPush() {
 
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithLimit.newEmptyRequest();
-    RequestTaskMonitor monitor = waitForTaskEndingAfterFirstInit(TestRequestTaskWithLimit.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAfterFirstInit(TestRequestTaskWithLimit.class);
 
     // Setting manually the queue
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
@@ -171,7 +177,7 @@ public class RequestTaskManagerTest {
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
-    Thread.sleep(500);
+    await(500);
 
     assertThat(monitor.isTaskRunning(), is(false));
     assertThat(monitor.requestList.size(), is(8));
@@ -185,14 +191,14 @@ public class RequestTaskManagerTest {
     assertThat(counter, is(8));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void newRequestPushWakeUpTheTaskBeforeAcquiringAccessToAddTheRequestIntoQueue()
-      throws Exception {
+  void newRequestPushWakeUpTheTaskBeforeAcquiringAccessToAddTheRequestIntoQueue() throws Exception {
 
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithLimit.newEmptyRequest();
-    RequestTaskMonitor monitor = waitForTaskEndingAfterFirstInit(TestRequestTaskWithLimit.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAfterFirstInit(TestRequestTaskWithLimit.class);
 
     // Setting manually the queue
     monitor.requestList.add(new TestRequestTaskWithLimit.SleepTestRequest(0));
@@ -200,7 +206,7 @@ public class RequestTaskManagerTest {
     // Acquiring all access
     monitor.acquireAccess();
     monitor.acquireAccess();
-    Thread.sleep(500);
+    await(500);
 
     Semaphore semaphore = (Semaphore) FieldUtils.readDeclaredField(monitor, "queueSemaphore", true);
     assertThat(semaphore.availablePermits(), is(0));
@@ -221,15 +227,21 @@ public class RequestTaskManagerTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void requestPushedDuringAfterNoMoreRequestMustBeHandledBySameTask() throws Exception {
+  void requestPushedDuringAfterNoMoreRequestMustBeHandledBySameTask() {
 
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithAfterNoMoreRequestLongTreatment.newRandomSleepRequest();
-    Thread.sleep(800);
+    await(800);
 
-    RequestTaskMonitor monitor =
-        RequestTaskManager.tasks.get(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class);
-    Future taskInstanceOnAfterNoMoreRequest = monitor.task;
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor =
+        (RequestTaskMonitor<?
+            extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+            TestRequestTask.TestProcessContext>) taskManager
+            .getTasks()
+            .get(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class);
+    Future<?> taskInstanceOnAfterNoMoreRequest = monitor.task;
     assertThat(monitor.isTaskRunning(), is(true));
     assertThat(monitor.taskWatcher.isDone(), is(false));
     assertThat(monitor.taskWatcher.isCancelled(), is(false));
@@ -239,7 +251,7 @@ public class RequestTaskManagerTest {
 
     // Adding a new request
     TestRequestTaskWithAfterNoMoreRequestLongTreatment.newSleepRequest(20);
-    Future taskInstanceAfterEndOfTreatment = monitor.task;
+    Future<?> taskInstanceAfterEndOfTreatment = monitor.task;
 
     waitForTaskEndingAtEndOfTest(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class);
     assertThat(taskInstanceOnAfterNoMoreRequest, is(taskInstanceAfterEndOfTreatment));
@@ -247,13 +259,13 @@ public class RequestTaskManagerTest {
     assertThat(counter, is(2));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void onlyRequestKillingTaskMustAlsoBeConsumed()
-      throws ExecutionException, InterruptedException, TimeoutException {
+  void onlyRequestKillingTaskMustAlsoBeConsumed() {
     // Firstly initializing the monitor by pushing a request
     TestRequestTask.newEmptyRequest();
-    RequestTaskMonitor monitor = waitForTaskEndingAfterFirstInit(TestRequestTask.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAfterFirstInit(TestRequestTask.class);
 
     // Setting manually the queue
     monitor.requestList.add(new TestRequestTask.ThreadKillTestRequest());
@@ -270,12 +282,18 @@ public class RequestTaskManagerTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void onlyRequestKillingTaskMusAlsoBeConsumedWithLimitedQueue()
-      throws ExecutionException, InterruptedException, TimeoutException {
+  void onlyRequestKillingTaskMusAlsoBeConsumedWithLimitedQueue() {
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithLimit.newEmptyRequest();
-    Thread.sleep(600);
-    RequestTaskMonitor monitor = RequestTaskManager.tasks.get(TestRequestTaskWithLimit.class);
+    await(600);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor =
+        (RequestTaskMonitor<?
+            extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+            TestRequestTask.TestProcessContext>) taskManager
+            .getTasks()
+            .get(TestRequestTaskWithLimit.class);
     assertThat(monitor.isTaskRunning(), is(false));
     assertThat(monitor.requestList.size(), is(0));
     assertThat(counter, is(1));
@@ -295,7 +313,7 @@ public class RequestTaskManagerTest {
   }
 
   @Test
-  public void bigMelting() throws ExecutionException, InterruptedException, TimeoutException {
+  void bigMelting() {
     assertThat(counter, is(0));
     final int nbRequests = 100;
     int nbSleepRequests = 0;
@@ -309,10 +327,12 @@ public class RequestTaskManagerTest {
         TestRequestTask.newThreadKillRequest();
       }
       if (Math.random() > 0.7) {
-        Thread.sleep(50);
+        await(50);
       }
     }
-    RequestTaskMonitor monitor = waitForTaskEndingAtEndOfTest(TestRequestTask.class);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor = waitForTaskEndingAtEndOfTest(TestRequestTask.class);
     waitForTaskEndingAtEndOfTest(TestRequestTaskWithLimit.class);
     assertThat(monitor, notNullValue());
     assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(monitor);
@@ -320,10 +340,20 @@ public class RequestTaskManagerTest {
   }
 
   @SuppressWarnings("unchecked")
-  private RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
-      throws InterruptedException, ExecutionException {
-    Thread.sleep(200);
-    final RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
+  private RequestTaskMonitor<?
+      extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+      TestRequestTask.TestProcessContext> waitForTaskEndingAfterFirstInit(
+      final Class<?> testClass) {
+    await(200);
+    final RequestTaskMonitor<?
+        extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor =
+        (RequestTaskMonitor<?
+            extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+            TestRequestTask.TestProcessContext>) taskManager
+            .getTasks()
+            .get(testClass);
     // Waiting the end of the current task
     final Future<Void> taskWatcher = monitor.taskWatcher;
     final Future<Void> currentTask = monitor.task;
@@ -345,20 +375,32 @@ public class RequestTaskManagerTest {
   }
 
   private void assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(
-      final RequestTaskMonitor monitor) {
+      final RequestTaskMonitor<?
+          extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+          TestRequestTask.TestProcessContext> monitor) {
     assertThat(monitor.isTaskRunning(), is(false));
     assertThat(monitor.task, nullValue());
     assertThat(monitor.taskWatcher, nullValue());
     assertThat(monitor.requestList.size(), is(0));
   }
 
-  private RequestTaskMonitor waitForTaskEndingAtEndOfTest(final Class testClass)
-      throws InterruptedException {
-    Thread.sleep(200);
-    RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
+  @SuppressWarnings("unchecked")
+  private RequestTaskMonitor<?
+      extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+      TestRequestTask.TestProcessContext> waitForTaskEndingAtEndOfTest(
+      final Class<?> testClass) {
+    await(200);
+    RequestTaskMonitor<? extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+        TestRequestTask.TestProcessContext>
+        monitor =
+        (RequestTaskMonitor<?
+            extends AbstractRequestTask.Request<TestRequestTask.TestProcessContext>,
+            TestRequestTask.TestProcessContext>) taskManager
+            .getTasks()
+            .get(testClass);
     int nbTry = 0;
     while (nbTry < 20) {
-      Thread.sleep(10);
+      await(10);
       if (monitor.isTaskRunning()) {
         nbTry = 0;
       }
@@ -377,5 +419,9 @@ public class RequestTaskManagerTest {
     assertThat(monitor.isTaskRunning(), is(false));
     assertThat(monitor.requestList.size(), is(0));
     return monitor;
+  }
+
+  private void await(long timeInMilliSecondes) {
+    Awaitility.await().pollInterval(timeInMilliSecondes, TimeUnit.MILLISECONDS).until(() -> true);
   }
 }

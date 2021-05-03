@@ -60,12 +60,6 @@ public class CalendarEventAttendeeManagementIT extends BaseCalendarTest {
   private static final String EVENT_WITH_ATTENDEE_AND_DATE_PART = "ID_E_5";
   private static final String EVENT_WITHOUT_ATTENDEE = "ID_E_4";
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
-
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(CalendarEventAttendeeManagementIT.class)

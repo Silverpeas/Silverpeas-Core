@@ -81,7 +81,8 @@ public class ReplacementResourceUpdateIT extends ResourceUpdateTest {
         .addMavenDependenciesWithPersistence(
             "org.silverpeas.core.services:silverpeas-core-workflow",
             "org.silverpeas.core.services:silverpeas-core-personalorganizer")
-        .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.workflow"))
+        .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.workflow")
+            .addAsResource("org/silverpeas/workflow/multilang"))
         .build();
   }
 

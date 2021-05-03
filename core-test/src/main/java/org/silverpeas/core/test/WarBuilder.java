@@ -35,6 +35,7 @@ import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.test.integration.SilverpeasJcrInitializationListener;
 import org.silverpeas.core.test.integration.SilverpeasLoggerInitializationListener;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Charsets;
@@ -228,13 +229,17 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     return this;
   }
 
+  public WarBuilder<T> initJcrSchema() {
+    addWebListener(SilverpeasJcrInitializationListener.class);
+    return this;
+  }
+
   /**
    * Builds the final WAR archive. The following stuffs are automatically added :
    * <ul>
    * <li>The <b>beans.xml</b> in order to activate CDI,</li>
    * <li>The <b>META-INF/services/org.silverpeas.core.util.BeanContainer</b> to load the CDI-based bean
    * container,</li>
-   * <li>The <b>test-ds.xml</b> resource in order to define a data source for tests.</li>
    * </ul>
    * @return the built WAR archive.
    */
@@ -282,7 +287,6 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       war.addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
           "META-INF/services/org.silverpeas.core.util.BeanContainer");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-      war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
       // Resources
       war.addAsResource("maven.properties");
       return war;

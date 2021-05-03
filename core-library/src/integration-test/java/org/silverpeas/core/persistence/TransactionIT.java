@@ -63,20 +63,20 @@ public class TransactionIT {
 
   public static final String TABLES_CREATION =
       "/org/silverpeas/core/persistence/datasource/create_table.sql";
-  public static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
-      .columns("id", "firstName", "lastName", "createDate", "createdBy", "lastUpdateDate",
-          "lastUpdatedBy", "version")
-      .values("person_1", "Yohann", "Chastagnier", "2013-11-21 09:57:30.003", "1",
+  private static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
+      .columns("id", "firstName", "lastName", "birthday", "createDate", "createdBy",
+          "lastUpdateDate", "lastUpdatedBy", "version")
+      .values("person_1", "Yohann", "Chastagnier", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_2", "Nicolas", "Eysseric", "2013-11-21 09:57:30.003", "1",
+      .values("person_2", "Nicolas", "Eysseric", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_3", "Miguel", "Moquillon", "2013-11-21 09:57:30.003", "2",
+      .values("person_3", "Miguel", "Moquillon", "1971-11-30", "2013-11-21 09:57:30.003", "2",
           "2013-11-22 22:00:50.006", "10", 3L)
-      .values("person_1000", "firstName", "lastName", "2013-11-21 09:57:30.003", "1",
+      .values("person_1000", "firstName", "lastName", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_1001", "firstName", "lastName", "2013-11-21 09:57:30.003", "1",
+      .values("person_1001", "firstName", "lastName", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L).build();
-  public static final Operation ANIMAL_SET_UP = Operations.insertInto("test_animals")
+  private static final Operation ANIMAL_SET_UP = Operations.insertInto("test_animals")
       .columns("id", "type", "name", "personId", "createDate", "createdBy", "lastUpdateDate",
           "lastUpdatedBy", "version")
       .values(1L, "cat", "Blacky", "person_1", "2013-11-21 09:57:30.003", "1",
@@ -88,15 +88,18 @@ public class TransactionIT {
       .values(1000L, "type", "name", "person_1000", "2013-11-21 09:57:30.003", "10",
           "2013-11-21 09:57:30.003", "10", 0L)
       .values(1001L, "type", "name", "person_1001", "2013-11-21 09:57:30.003", "10",
-          "2013-11-21 09:57:30.003", "10", 0L).build();
-  public static final Operation EQUIPEMENT_SET_UP = Operations.insertInto("test_equipments")
-      .columns("id", "name", "animalId", "createDate", "createdBy", "lastUpdateDate",
-          "lastUpdatedBy", "version")
-      .values("equipment_1", "necklace", 2L, "2013-11-21 09:57:30.003", "1",
-          "2013-11-22 22:00:50.006", "2", 10L).build();
-  public static final Operation UNIQUE_ID_SET_UP =
-      Operations.insertInto("UniqueId").columns("maxId", "tableName").values(9, "test_animals")
-          .build();
+          "2013-11-21 09:57:30.003", "10", 0L)
+      .build();
+  private static final Operation EQUIPEMENT_SET_UP = Operations.insertInto("test_equipments")
+      .columns("id", "name", "animalId", "startDate", "endDate", "inDays", "createDate",
+          "createdBy", "lastUpdateDate", "lastUpdatedBy", "version")
+      .values("equipment_1", "necklace", 2L, "0001-01-01 00:00:00.000", "9999-12-31 00:00:00.000",
+          1, "2013-11-21 09:57:30.003", "1", "2013-11-22 22:00:50.006", "2", 10L)
+      .build();
+  private static final Operation UNIQUE_ID_SET_UP = Operations.insertInto("UniqueId")
+      .columns("maxId", "tableName")
+      .values(9, "test_animals")
+      .build();
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLES_CREATION)

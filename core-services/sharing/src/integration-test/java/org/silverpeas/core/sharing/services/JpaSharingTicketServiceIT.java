@@ -65,6 +65,9 @@ public class JpaSharingTicketServiceIT {
   @Inject
   private SharingTicketService service;
 
+  @Inject
+  private RequestTaskManager requestTaskManager;
+
   private static UserDetail creator;
 
   @Rule
@@ -81,7 +84,7 @@ public class JpaSharingTicketServiceIT {
   @After
   public void clean() {
     await().pollInterval(1, TimeUnit.SECONDS)
-        .until(() -> !RequestTaskManager.isTaskRunning(BackgroundProcessTask.class));
+        .until(() -> !requestTaskManager.isTaskRunning(BackgroundProcessTask.class));
   }
 
   @Deployment
@@ -97,7 +100,7 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   @Transactional
-  public void testGetTicketsByUser() {
+  public void getTicketsByUser() {
     String userId = "0";
     List<Ticket> result = service.getTicketsByUser(userId, null, null);
     assertThat(result, is(notNullValue()));
@@ -117,7 +120,7 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   @Transactional
-  public void testDeleteTicketsForSharedObject() {
+  public void deleteTicketsForSharedObject() {
     String key = "965e985d-c711-47b3-a467-62779505965e";
     Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
         new Date(1330988399000L), -1);
@@ -138,7 +141,7 @@ public class JpaSharingTicketServiceIT {
    * Test of getTicket method, of class JpaSharingTicketService.
    */
   @Test
-  public void testGetTicket() {
+  public void getTicket() {
     Pair<Ticket, List<DownloadDetail>> expResult = createExpectedTicketWithOneDownload();
     Ticket result = service.getTicket(expResult.getLeft().getToken());
     assertEquals(result, expResult);
@@ -149,7 +152,7 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   @Transactional
-  public void testCreateTicket() {
+  public void createTicket() {
     Ticket ticket = new SimpleFileTicket(5, "kmelia2", creator, new Date(1330972778622L),
         new Date(1330988399000L), -1);
     String key = service.createTicket(ticket);
@@ -164,7 +167,7 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   @Transactional
-  public void testAddDownload() {
+  public void addDownload() {
     Pair<Ticket, List<DownloadDetail>> expResult = createExpectedTicketWithOneDownload();
     Ticket result = service.getTicket(expResult.getLeft().getToken());
     assertEquals(result, expResult);
@@ -182,7 +185,7 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   @Transactional
-  public void testUpdateTicket() {
+  public void updateTicket() {
     String key = "965e985d-c711-47b3-a467-62779505965e";
     final Ticket result = Transaction.performInOne(() -> {
       Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
@@ -208,7 +211,7 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   @Transactional
-  public void testDeleteTicket() {
+  public void deleteTicket() {
     Transaction.performInOne(() -> {
       String key = "965e985d-c711-47b3-a467-62779505965e";
       Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),

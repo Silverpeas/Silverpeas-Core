@@ -76,12 +76,6 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   private static final String EVENT_DESCRIPTION = "a description";
   private static final String USER_ID = "1";
 
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
-
   @Inject
   private CalendarEventNotificationListener eventListener;
 

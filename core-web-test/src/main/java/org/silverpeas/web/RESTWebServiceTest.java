@@ -55,7 +55,8 @@ public abstract class RESTWebServiceTest {
       "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
       "/org/silverpeas/web/environment/create-table-space-component.sql",
       "/org/silverpeas/web/environment/create-table-profile.sql",
-      "/org/silverpeas/web/environment/create-table-token.sql", getTableCreationScript())
+      "/org/silverpeas/web/environment/create-table-token.sql",
+      "/org/silverpeas/web/environment/create-table-notification.sql", getTableCreationScript())
       .loadInitialDataSetFrom(getDataSetScript());
 
   @Before

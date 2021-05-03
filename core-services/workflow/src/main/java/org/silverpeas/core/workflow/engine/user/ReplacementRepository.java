@@ -46,28 +46,33 @@ import java.util.List;
 public class ReplacementRepository extends SilverpeasJpaEntityRepository<ReplacementImpl>
     implements Replacement.Repository {
 
+  private static final String WORKFLOW_PARAM = "workflow";
+  private static final String SUBSTITUTE_PARAM = "substitute";
+  private static final String INCUMBENT_PARAM = "incumbent";
+
   @Inject
   private ReplacementEventNotifier notifier;
 
   @Override
-  public Replacement save(final Replacement replacement) {
-    final Replacement previous = Transaction.performInNew(() -> {
+  @SuppressWarnings("unchecked")
+  public <T extends Replacement<T>> T save(final Replacement<T> replacement) {
+    final ReplacementImpl previous = Transaction.performInNew(() -> {
       if (replacement.getId() != null) {
-        return getById(replacement.getId());
+        return findById(replacement.getId());
       }
       return null;
     });
-    final Replacement saved = save((ReplacementImpl) replacement);
+    final ReplacementImpl saved = super.save((ReplacementImpl) replacement);
     if (previous != null) {
       notifyUsers(ResourceEvent.Type.UPDATE, previous, saved);
     } else {
       notifyUsers(ResourceEvent.Type.CREATION, saved);
     }
-    return saved;
+    return (T) saved;
   }
 
   @Override
-  public void delete(final Replacement replacement) {
+  public <T extends Replacement<T>> void delete(final Replacement<T> replacement) {
     super.delete((ReplacementImpl) replacement);
     notifyUsers(ResourceEvent.Type.DELETION, replacement);
   }
@@ -77,8 +82,8 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
   public List<ReplacementImpl> findAllByIncumbentAndByWorkflow(final User user,
       final String workflowInstanceId) {
     NamedParameters parameters = newNamedParameters()
-        .add("incumbent", user.getUserId())
-        .add("workflow", workflowInstanceId);
+        .add(INCUMBENT_PARAM, user.getUserId())
+        .add(WORKFLOW_PARAM, workflowInstanceId);
     return findByNamedQuery("Replacement.findAllByIncumbentAndByWorkflow", parameters);
   }
 
@@ -87,8 +92,8 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
   public List<ReplacementImpl> findAllBySubstituteAndByWorkflow(final User user,
       final String workflowInstanceId) {
     NamedParameters parameters = newNamedParameters()
-        .add("substitute", user.getUserId())
-        .add("workflow", workflowInstanceId);
+        .add(SUBSTITUTE_PARAM, user.getUserId())
+        .add(WORKFLOW_PARAM, workflowInstanceId);
     return findByNamedQuery("Replacement.findAllBySubstituteAndByWorkflow", parameters);
   }
 
@@ -96,7 +101,7 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
   @SuppressWarnings("unchecked")
   public List<ReplacementImpl> findAllByWorkflow(final String workflowInstanceId) {
     NamedParameters parameters = newNamedParameters()
-        .add("workflow", workflowInstanceId);
+        .add(WORKFLOW_PARAM, workflowInstanceId);
     return findByNamedQuery("Replacement.findAllByWorkflow", parameters);
   }
 
@@ -105,13 +110,18 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
   public List<ReplacementImpl> findAllByUsersAndByWorkflow(final User incumbent,
       final User substitute, final String workflowInstanceId) {
     NamedParameters parameters = newNamedParameters()
-        .add("incumbent", incumbent.getUserId())
-        .add("substitute", substitute.getUserId())
-        .add("workflow", workflowInstanceId);
+        .add(INCUMBENT_PARAM, incumbent.getUserId())
+        .add(SUBSTITUTE_PARAM, substitute.getUserId())
+        .add(WORKFLOW_PARAM, workflowInstanceId);
     return findByNamedQuery("Replacement.findAllByUsersAndByWorkflow", parameters);
   }
 
-  private void notifyUsers(final ResourceEvent.Type cause, final Replacement... replacements) {
+  @Override
+  public ReplacementImpl findById(final String replacementId) {
+    return super.getById(replacementId);
+  }
+
+  private void notifyUsers(final ResourceEvent.Type cause, final Replacement<?>... replacements) {
     try {
       notifier.notifyEventOn(cause, replacements);
     } catch (Exception e) {

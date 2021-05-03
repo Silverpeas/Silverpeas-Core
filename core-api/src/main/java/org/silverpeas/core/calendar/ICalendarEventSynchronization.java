@@ -53,7 +53,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -161,7 +163,7 @@ public class ICalendarEventSynchronization implements Initialization {
     try {
       InputStream source = (InputStream) calendar.getExternalCalendarUrl().getContent();
       return Transaction.performInOne(() -> {
-        final OffsetDateTime synchronizationDateTime = OffsetDateTime.now();
+        final Instant synchronizationDateTime = Instant.now();
         calendar.setLastSynchronizationDate(synchronizationDateTime);
         Calendar syncCalendar = Calendar.getById(calendar.getId());
         syncCalendar.setLastSynchronizationDate(synchronizationDateTime);
@@ -216,18 +218,20 @@ public class ICalendarEventSynchronization implements Initialization {
   }
 
   private void removeDeletedEvents(final Calendar calendar, final ICalendarImportResult result) {
-    Calendar.getEvents()
-        .filter(f -> f.onCalendar(calendar)
-            .onSynchronizationDateLimit(calendar.getLastSynchronizationDate().get()))
-        .stream()
-        .forEach(e -> {
-          e.delete();
-          result.incDeleted();
-        });
+    if (calendar.getLastSynchronizationDate().isPresent()) {
+      Calendar.getEvents()
+          .filter(f -> f.onCalendar(calendar)
+              .onSynchronizationDateLimit(calendar.getLastSynchronizationDate().get()))
+          .stream()
+          .forEach(e -> {
+            e.delete();
+            result.incDeleted();
+          });
+    }
   }
 
   private Stream<? extends Runnable> synchronizationProcessorsOf(final List<Calendar> calendars) {
-    return calendars.stream().map(c -> (Runnable) () -> {
+    return calendars.stream().map(c -> () -> {
       try {
         // we set the creator of the calendar as the requester for the synchronization in this
         // thread
@@ -248,15 +252,16 @@ public class ICalendarEventSynchronization implements Initialization {
   }
 
   private String generateReport(final Calendar calendar, final ICalendarImportResult result) {
-    String duration = "N/A";
-    String synchroDate = "N/A";
-    Optional<OffsetDateTime> lastSynchroDate = calendar.getLastSynchronizationDate();
+    String duration;
+    String synchroDate;
+    Optional<Instant> lastSynchroDate = calendar.getLastSynchronizationDate();
     if (lastSynchroDate.isPresent()) {
-      OffsetDateTime dateTime = lastSynchroDate.get();
-      synchroDate = dateTime.toString();
-      duration = String.valueOf(
-          Duration.between(dateTime, OffsetDateTime.now())
-              .getSeconds());
+      Instant dateTime = lastSynchroDate.get();
+      synchroDate = OffsetDateTime.ofInstant(dateTime, ZoneId.systemDefault()).toString();
+      duration = String.valueOf(Duration.between(dateTime, Instant.now()).getSeconds());
+    } else {
+      duration = "N/A";
+      synchroDate = "N/A";
     }
 
     return new StringBuilder("Report of the synchronization of calendar ").append(calendar.getId())

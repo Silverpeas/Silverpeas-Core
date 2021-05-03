@@ -29,6 +29,8 @@ import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
@@ -44,10 +46,12 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    */
   protected <T> WarBuilder4WebCore(final Class<T> test) {
     super(test);
+    initJcrSchema();
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
-    addClasses(SilverpeasSessionOpener.class, MainSessionController.class, ComponentContext.class);
+    addClasses(SilverpeasSessionOpener.class, MainSessionController.class, ComponentContext.class,
+        SilverpeasAuthenticatedHttpServlet.class, SilverpeasHttpServlet.class);
     addPackages(true, "org.silverpeas.core.web.http");
     addPackages(true, "org.silverpeas.core.web.panel");
     addPackages(true, "org.silverpeas.core.web.selection");
@@ -68,6 +72,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addAsResource("org/silverpeas/util/security.properties");
     addAsResource("org/silverpeas/social/settings/socialNetworkSettings.properties");
     addAsResource("org/silverpeas/publicationTemplate/settings/template.properties");
+    addAsResource("org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties");
+    addAsResource("org/silverpeas/notificationManager/multilang");
   }
 
   /**

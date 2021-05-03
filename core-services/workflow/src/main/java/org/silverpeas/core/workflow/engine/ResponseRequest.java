@@ -2,6 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -29,17 +30,16 @@ class ResponseRequest extends AbstractRequest {
   }
 
   @Override
-  public void process(final Object context) throws InterruptedException {
+  public void process(final AbstractRequestTask.ProcessContext context)
+      throws InterruptedException {
     ResponseEvent event = getEvent();
 
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
     String id = instance.getInstanceId();
 
-    UpdatableHistoryStep step =
-        Transaction.performInOne(() -> createHistoryNewStep(new HistoryStepDescriptor()
-            .withActionName( "#response#")
-            .withProcessInstance(instance)));
+    UpdatableHistoryStep step = Transaction.performInOne(() -> createHistoryNewStep(
+        new HistoryStepDescriptor().withActionName("#response#").withProcessInstance(instance)));
     processProcessInstance(id, event, step);
   }
 

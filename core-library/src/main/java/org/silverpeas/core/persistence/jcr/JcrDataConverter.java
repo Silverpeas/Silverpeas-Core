@@ -33,7 +33,6 @@ import java.util.StringTokenizer;
 import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
 
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.DateUtil;
 
 /**

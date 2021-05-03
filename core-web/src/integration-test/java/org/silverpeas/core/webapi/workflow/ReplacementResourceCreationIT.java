@@ -69,8 +69,7 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
   private String authToken;
   private User user;
   private ReplacementEntity resource;
-  private Period period =
-      Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusWeeks(3));
+  private Period period = Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusWeeks(3));
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -81,7 +80,8 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
         .addMavenDependenciesWithPersistence(
             "org.silverpeas.core.services:silverpeas-core-workflow",
             "org.silverpeas.core.services:silverpeas-core-personalorganizer")
-        .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.workflow"))
+        .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.workflow")
+            .addAsResource("org/silverpeas/workflow/multilang"))
         .build();
   }
 
@@ -89,10 +89,11 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
   public void prepareTests() throws WorkflowException {
     user = User.getById("2");
     authToken = getTokenKeyOf(user);
-    resource = new ReplacementEntity(
+    Replacement<?> replacement =
         Replacement.between(userManager.getUser("2"), userManager.getUser("3"))
             .inWorkflow(getExistingComponentInstances()[0])
-            .during(period));
+            .during(period);
+    resource = new ReplacementEntity(replacement);
   }
 
   @Test
@@ -102,7 +103,7 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
     final ReplacementEntity expected = aResource();
     Response response = post(expected, aResourceURI());
     assertThat(response.getStatus(), is(STATUS_CREATED));
-    ;
+
     ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
     assertThat(createdEntity, notNullValue());
     assertThat(createdEntity.getURI(), is(response.getLocation()));

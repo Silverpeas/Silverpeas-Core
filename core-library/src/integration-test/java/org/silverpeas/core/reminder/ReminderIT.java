@@ -26,6 +26,7 @@ package org.silverpeas.core.reminder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -149,9 +150,15 @@ public class ReminderIT {
     BackgroundProcessLogger.get().setLevel(Level.DEBUG);
   }
 
+  @After
+  public void releaseScheduler() {
+    SchedulerInitializer.get().release();
+  }
+
   @Test
   public void emptyTest() {
     // empty test to check the testing environment is working
+    assertThat(true, is(true));
   }
 
   @Test
@@ -364,7 +371,10 @@ public class ReminderIT {
     assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
+
+    waitForSchedulerStateUpdate();
     assertThat(reminder.isScheduled(), is(false));
+
     final DateTimeReminder afterTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
     assertThat(afterTriggered, notNullValue());
     assertThat(afterTriggered.isScheduled(), is(false));
@@ -388,7 +398,9 @@ public class ReminderIT {
     assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isDeleted(reminder));
-    assertThat(reminder.isScheduled(), is(false));
+
+    waitForSchedulerStateUpdate();
+    assertThat(beforeTriggered.isScheduled(), is(false));
   }
 
   @Test
@@ -500,6 +512,10 @@ public class ReminderIT {
 
   private Callable<Boolean> isNotScheduled(final Reminder reminder) {
     return () -> !Reminder.getById(reminder.getId()).isScheduled();
+  }
+
+  private void waitForSchedulerStateUpdate() {
+    await().pollDelay(1, SECONDS).until(() -> true);
   }
 
   /**

@@ -28,16 +28,17 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.DataSourceProvider;
 import org.silverpeas.core.test.util.SQLRequester;
@@ -46,6 +47,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,8 +57,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
@@ -69,26 +73,21 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
  */
 public class DbSetupRule implements TestRule {
 
-  private static Operation UNIQUE_ID_CREATION = Operations.sql(
-      "CREATE TABLE IF NOT EXISTS UniqueId " +
-          "(maxId BIGINT NOT NULL, tableName varchar(100) PRIMARY KEY)");
-//  private static final Pattern TABLE_NAME_PATTERN =
-//      Pattern.compile("(?i)(create table( if not exists)? )(\\w+)(\\W?.+)*");
+  private static final String INITIAL_TABLES = "/dbsetup_default_tables.sql";
 
-  private List<Connection> safeConnectionPool = new ArrayList<>();
+  private final List<Connection> safeConnectionPool = new ArrayList<>();
 
-  private String[] sqlTableScripts = null;
+  private final String[] sqlTableScripts;
   private String[] sqlInsertScripts = null;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
+  private final DbSetupTracker dbSetupTracker = new DbSetupTracker();
   private Operation tableCreation = null;
   private Operation dataSetLoading = Operations.sql("");
-  private List<String> tableNames = new ArrayList<>();
 
   /**
    * Constructs a new instance of this rule by specifying the SQL scripts containing the
    * statements to create the different tables required by the integration test. The creation of
-   * the table UniqueId is taken in charge automatically by this rule, so you don't have to
-   * specify it.
+   * the default tables, required by the tests, like UniqueId, are taken in charge automatically
+   * by this rule, so you don't have to specify them.
    * <p>
    * In order to work fine, it is not recommended to insert an initial data set with these
    * scripts. For doing a such purpose, please invoke one of the following methods:
@@ -99,7 +98,17 @@ public class DbSetupRule implements TestRule {
    * @return itself.
    */
   public static DbSetupRule createTablesFrom(String... sqlScripts) {
+    Objects.requireNonNull(sqlScripts);
     return new DbSetupRule(sqlScripts);
+  }
+
+  /**
+   * Constructs a new instance of this rule by creating only the default tables (like UniqueId)
+   * required for the integration tests on database to run.
+   * @return itself.
+   */
+  public static DbSetupRule createDefaultTables() {
+    return new DbSetupRule();
   }
 
   /**
@@ -132,8 +141,9 @@ public class DbSetupRule implements TestRule {
   }
 
   protected DbSetupRule(String... sqlScripts) {
-    sqlTableScripts = sqlScripts;
-    tableNames.add("UniqueId");
+    sqlTableScripts = new String[sqlScripts.length + 1];
+    System.arraycopy(sqlScripts, 0, sqlTableScripts, 1, sqlScripts.length);
+    sqlTableScripts[0] = INITIAL_TABLES;
   }
 
   @Override
@@ -165,11 +175,11 @@ public class DbSetupRule implements TestRule {
     };
   }
 
-  protected void performBefore(Description description) throws Exception {
+  protected void performBefore(Description description) {
     // For now, this method is useful for extension rules.
   }
 
-  protected void performAfter(Description description) throws Exception {
+  protected void performAfter(Description description) {
     // For now, this method is useful for extension rules.
   }
 
@@ -182,81 +192,59 @@ public class DbSetupRule implements TestRule {
             loadOperationFromSqlScripts(description.getTestClass(), sqlInsertScripts));
       }
     }
-    try {
-      Operation preparation =
-          Operations.sequenceOf(UNIQUE_ID_CREATION, tableCreation, dataSetLoading);
-      DataSource dataSource = DataSourceProvider.getDataSource();
-      DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
-      dbSetupTracker.launchIfNecessary(dbSetup);
-      Logger.getLogger(this.getClass().getName())
-          .info("Database structure loaded successfully with DbSetup framework.");
-    } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName())
-          .log(Level.SEVERE, "Database structure not loaded...", e);
-      throw e;
-    }
+
+    Operation preparation = Operations.sequenceOf(tableCreation, dataSetLoading);
+    DataSource dataSource = DataSourceProvider.getDataSource();
+    DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
+    dbSetupTracker.launchIfNecessary(dbSetup);
+    Logger.getLogger(this.getClass().getName())
+        .info("Database structure loaded successfully with DbSetup framework.");
+
   }
 
   @SuppressWarnings("ConstantConditions")
-  private Operation loadOperationFromSqlScripts(Class classOfTest, String[] scripts) {
+  private Operation loadOperationFromSqlScripts(Class<?> classOfTest, String[] scripts) {
     List<Operation> statements = new ArrayList<>();
     if (scripts != null) {
-      for (final String script : scripts) {
-        if (FilenameUtils.getExtension(script).toLowerCase().equals("sql")) {
-          try (InputStream sqlScriptInput = classOfTest.getResourceAsStream(script)) {
-            if (sqlScriptInput != null) {
-              StringWriter sqlScriptContent = new StringWriter();
-              IOUtils.copy(sqlScriptInput, sqlScriptContent, Charsets.UTF_8);
-              if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
-                String[] sql = sqlScriptContent.toString().split(";");
-                //prepareCleanUpOperation(sql);
-                statements.add(Operations.sql(sql));
+      Stream.of(scripts)
+          .filter(s -> FilenameUtils.getExtension(s).equalsIgnoreCase("sql"))
+          .forEach(s -> {
+            try (InputStream sqlScriptInput = classOfTest.getResourceAsStream(s)) {
+              if (sqlScriptInput != null) {
+                StringWriter sqlScriptContent = new StringWriter();
+                IOUtils.copy(sqlScriptInput, sqlScriptContent, StandardCharsets.UTF_8);
+                if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
+                  String[] sql = sqlScriptContent.toString().split(";");
+                  statements.add(Operations.sql(sql));
+                }
               }
+            } catch (IOException e) {
+              Logger.getLogger(getClass().getSimpleName())
+                  .log(Level.SEVERE, "Error while loading the SQL script {0}!", s);
             }
-          } catch (IOException e) {
-            Logger.getLogger(getClass().getSimpleName())
-                .log(Level.SEVERE, "Error while loading the SQL script {0}!", script);
-          }
-        }
-      }
+          });
     }
     return Operations.sequenceOf(statements);
   }
 
-//  private void prepareCleanUpOperation(String... statements) {
-//    for (String sql : statements) {
-//      Matcher matcher = TABLE_NAME_PATTERN.matcher(sql.trim());
-//      if (matcher.matches()) {
-//        tableNames.add(matcher.group(3));
-//      }
-//    }
-//  }
-
-  private void cleanUpDataSource(Description description) throws Exception {
+  private void cleanUpDataSource(Description description) {
     try {
-      // the deletion must occurs in the reverse order from the insertion to take into account the
-      // constrains.
-      /*Collections.reverse(tableNames);
-      Operation cleanUp = Operations.deleteAllFrom(tableNames);
-      try (Connection connection = getSafeConnection()) {
-        cleanUp.execute(connection, null);
-      }*/
       try (Connection connection = getSafeConnection();
            PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
            ResultSet rs = statement.executeQuery()) {
-        for (; rs.next(); ) {
+        while (rs.next()) {
           String tableName = rs.getString(1);
-          try (PreparedStatement dropStatement = connection
-              .prepareStatement("DROP  TABLE " + tableName)) {
-            dropStatement.execute();
+          if (!tableName.startsWith("QRTZ_")) {
+            try (PreparedStatement dropStatement = connection.prepareStatement(
+                "DROP  TABLE " + tableName)) {
+              dropStatement.execute();
+            }
           }
         }
         Logger.getLogger(this.getClass().getName())
             .info("Database structure dropped successfully" + ".");
       } catch (Exception e) {
-        Logger.getLogger(this.getClass().getName())
-            .log(Level.SEVERE, "Database structure not well dropped...", e);
-        throw e;
+        throw new SilverpeasRuntimeException(e);
       }
     } finally {
       closeConnectionsQuietly(description);
@@ -381,40 +369,32 @@ public class DbSetupRule implements TestRule {
    * @return the actual data set.
    * @throws Exception if an error occurs while fetching the data set in the database.
    */
-  public static IDataSet getActualDataSet(Connection connection) throws Exception {
-    IDatabaseConnection databaseConnection = new DatabaseConnection(connection);
-    return databaseConnection.createDataSet();
-  }
-
-  public static int getTableIndexFor(ITable table, String columnName, Object value)
-      throws Exception {
-    for (int i = 0; i < table.getRowCount(); i++) {
-      if (value.equals(table.getValue(i, columnName))) {
-        return i;
-      }
+  public static IDataSet getActualDataSet(Connection connection) {
+    try {
+      IDatabaseConnection databaseConnection = new DatabaseConnection(connection);
+      return databaseConnection.createDataSet();
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException(e);
     }
-    return -1;
   }
 
-  public static TableRow getTableRowFor(ITable table, String columnName, Object value)
-      throws Exception {
+  public static TableRow getTableRowFor(ITable table, String columnName, Object value) {
     List<TableRow> rows = getTableRowsFor(table, columnName, value);
-    return rows.isEmpty() || rows.size() > 1 ? null : rows.get(0);
+    return rows.size() != 1 ? null : rows.get(0);
   }
 
-  public static List<TableRow> getTableRowsFor(ITable table, String columnName, Object value)
-      throws Exception {
-    List<TableRow> rows = new ArrayList<TableRow>();
-    for (int i = 0; i < table.getRowCount(); i++) {
-      if (value.equals(table.getValue(i, columnName))) {
-        rows.add(new TableRow(table, i));
+  public static List<TableRow> getTableRowsFor(ITable table, String columnName, Object value) {
+    try {
+      List<TableRow> rows = new ArrayList<>();
+      for (int i = 0; i < table.getRowCount(); i++) {
+        if (value.equals(table.getValue(i, columnName))) {
+          rows.add(new TableRow(table, i));
+        }
       }
+      return rows;
+    } catch (DataSetException e) {
+      throw new SilverpeasRuntimeException(e);
     }
-    return rows;
-  }
-
-  public static int getTableIndexForId(ITable table, Object id) throws Exception {
-    return getTableIndexFor(table, "id", id);
   }
 
   /**
@@ -429,11 +409,15 @@ public class DbSetupRule implements TestRule {
       this.index = index;
     }
 
-    public Object getValue(String columnName) throws Exception {
-      return table.getValue(index, columnName);
+    public Object getValue(String columnName) {
+      try {
+        return table.getValue(index, columnName);
+      } catch (DataSetException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
     }
 
-    public String getString(String columnName) throws Exception {
+    public String getString(String columnName) {
       Object value = getValue(columnName);
       if (value instanceof String) {
         return (String) value;
@@ -441,7 +425,7 @@ public class DbSetupRule implements TestRule {
       return null;
     }
 
-    public Date getDate(String columnName) throws Exception {
+    public Date getDate(String columnName) {
       Object value = getValue(columnName);
       if (value instanceof Date) {
         return (Date) value;
@@ -449,7 +433,7 @@ public class DbSetupRule implements TestRule {
       return null;
     }
 
-    public Integer getInteger(String columnName) throws Exception {
+    public Integer getInteger(String columnName) {
       Object value = getValue(columnName);
       if (value instanceof Number) {
         return ((Number) value).intValue();
@@ -457,7 +441,7 @@ public class DbSetupRule implements TestRule {
       return null;
     }
 
-    public Long getLong(String columnName) throws Exception {
+    public Long getLong(String columnName) {
       Object value = getValue(columnName);
       if (value instanceof Number) {
         return ((Number) value).longValue();

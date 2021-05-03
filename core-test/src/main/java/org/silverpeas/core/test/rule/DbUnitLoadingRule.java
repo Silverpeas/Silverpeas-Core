@@ -57,7 +57,7 @@ public class DbUnitLoadingRule extends DbSetupRule {
   }
 
   @Override
-  protected void performBefore(Description description) throws Exception {
+  protected void performBefore(Description description) {
     super.performBefore(description);
 
     // Database load

@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.silverpeas.core.date.TemporalConverter.asInstant;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
@@ -61,8 +62,8 @@ public class DefaultCalendarEventOccurrenceRepository
       return Collections.emptyList();
     }
     NamedParameters parameters = newNamedParameters().add("events", events)
-        .add("startDateTime", asOffsetDateTime(period.getStartDate()))
-        .add("endDateTime", asOffsetDateTime(period.getEndDate()));
+        .add("startDateTime", asInstant(period.getStartDate()))
+        .add("endDateTime", asInstant(period.getEndDate()));
     return findByNamedQuery("occurrenceByEventsAndByPeriod", parameters);
   }
 
@@ -70,7 +71,7 @@ public class DefaultCalendarEventOccurrenceRepository
   public List<CalendarEventOccurrence> getAllSince(final CalendarEventOccurrence occurrence) {
     NamedParameters parameters =
         newNamedParameters().add(EVENT_PARAM, occurrence.getCalendarEvent())
-            .add("date", asOffsetDateTime(occurrence.getStartDate()));
+            .add("date", asInstant(occurrence.getStartDate()));
     return
         findByNamedQuery("occurrenceByEventSince", parameters);
   }

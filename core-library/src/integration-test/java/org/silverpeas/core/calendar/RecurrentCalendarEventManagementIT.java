@@ -64,17 +64,12 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
 
   private static final String CALENDAR_ID = "ID_1";
   private static final String EVENT_TITLE = "an event";
+
   private static final String EVENT_DESCRIPTION = "a description";
   private static final String USER_ID = "1";
 
   private LocalDate today = LocalDate.now();
   private OffsetDateTime now = OffsetDateTime.now();
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
 
   @Deployment
   public static Archive<?> createTestArchive() {

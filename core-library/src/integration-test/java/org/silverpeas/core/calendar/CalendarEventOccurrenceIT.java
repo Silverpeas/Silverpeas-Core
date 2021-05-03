@@ -38,13 +38,11 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
@@ -68,12 +66,6 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
 
   private CalendarEvent recurrentEvent;
   private CalendarEvent event;
-
-  static {
-    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
-    // TimeZone.
-    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
-  }
 
   @Deployment
   public static Archive<?> createTestArchive() {

@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +39,9 @@ import java.util.Optional;
  */
 public class CalendarEventFilter {
 
-  private List<Calendar> calendars = new ArrayList<>();
-  private List<User> participants = new ArrayList<>();
-  private OffsetDateTime synchronizationDateLimit = null;
+  private final List<Calendar> calendars = new ArrayList<>();
+  private final List<User> participants = new ArrayList<>();
+  private Instant synchronizationDateLimit = null;
 
   CalendarEventFilter() {
 
@@ -93,7 +94,7 @@ public class CalendarEventFilter {
    * after.
    * @return itself.
    */
-  public CalendarEventFilter onSynchronizationDateLimit(final OffsetDateTime dateTime) {
+  public CalendarEventFilter onSynchronizationDateLimit(final Instant dateTime) {
     this.synchronizationDateLimit = dateTime;
     return this;
   }
@@ -121,7 +122,7 @@ public class CalendarEventFilter {
    * @return either a datetime or nothing if the criterion on the events synchronization date isn't
    * set.
    */
-  public Optional<OffsetDateTime> getSynchronizationDateLimit() {
+  public Optional<Instant> getSynchronizationDateLimit() {
     return Optional.ofNullable(synchronizationDateLimit);
   }
 }

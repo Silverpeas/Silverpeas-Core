@@ -26,7 +26,6 @@ package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.util.StringUtil;
@@ -35,46 +34,55 @@ import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
-import javax.inject.Named;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Objects;
+
+import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
 
 /**
  * Implementation of the replacement business object by using JPA for the persistence.
  * @author mmoquillon
  */
-@NamedQueries({
-    @NamedQuery(name = "Replacement.findAllByIncumbentAndByWorkflow",
-        query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and " +
-            "r.workflowId = :workflow"),
-    @NamedQuery(name = "Replacement.findAllBySubstituteAndByWorkflow",
-        query = "select r from ReplacementImpl r where r.substituteId = :substitute and " +
-            "r.workflowId = :workflow"),
-    @NamedQuery(name = "Replacement.findAllByWorkflow",
-        query = "select r from ReplacementImpl r where r.workflowId = :workflow"),
-    @NamedQuery(name = "Replacement.findAllByUsersAndByWorkflow",
-        query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and r" +
-            ".substituteId = :substitute and r.workflowId = :workflow")})
+@NamedQuery(name = "Replacement.findAllByIncumbentAndByWorkflow",
+    query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and " +
+        "r.workflowId = :workflow")
+@NamedQuery(name = "Replacement.findAllBySubstituteAndByWorkflow",
+    query = "select r from ReplacementImpl r where r.substituteId = :substitute and " +
+        "r.workflowId = :workflow")
+@NamedQuery(name = "Replacement.findAllByWorkflow",
+    query = "select r from ReplacementImpl r where r.workflowId = :workflow")
+@NamedQuery(name = "Replacement.findAllByUsersAndByWorkflow",
+    query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and r" +
+        ".substituteId = :substitute and r.workflowId = :workflow")
 @Entity
 @Table(name = "sb_workflow_replacements")
 public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidIdentifier>
     implements Replacement<ReplacementImpl> {
 
   @NotNull
+  @Column(nullable = false)
   private String incumbentId;
 
   @NotNull
+  @Column(nullable = false)
   private String substituteId;
 
   @NotNull
+  @Column(nullable = false)
   private String workflowId;
 
   @NotNull
-  private Period period;
+  @Column(nullable = false)
+  private LocalDate startDate;
+
+  @NotNull
+  @Column(nullable = false)
+  private LocalDate endDate;
 
   @Override
   public User getIncumbent() {
@@ -88,7 +96,7 @@ public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidId
 
   @Override
   public Period getPeriod() {
-    return period;
+    return Period.between(startDate, endDate);
   }
 
   @Override
@@ -131,8 +139,8 @@ public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidId
   public ReplacementImpl setPeriod(final Period period) {
     Objects.requireNonNull(period,
         "The period during which the replacement is enabled must be non-null");
-    this.period = Period.between(TemporalConverter.asLocalDate(period.getStartDate()),
-        TemporalConverter.asLocalDate(period.getEndDate()));
+    this.startDate = asLocalDate(period.getStartDate());
+    this.endDate = asLocalDate(period.getEndDate());
     return this;
   }
 

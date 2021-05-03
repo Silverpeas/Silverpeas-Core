@@ -30,15 +30,15 @@ package org.silverpeas.core.thread.task;
 public class TestRequestTaskWithLimit extends TestRequestTask {
 
   static void newEmptyRequest() {
-    RequestTaskManager.push(TestRequestTaskWithLimit.class, new SleepTestRequest(0));
+    RequestTaskManager.get().push(TestRequestTaskWithLimit.class, new SleepTestRequest(0));
   }
 
   static void newRandomSleepRequest() {
-    RequestTaskManager.push(TestRequestTaskWithLimit.class, new RandomSleepTestRequest());
+    RequestTaskManager.get().push(TestRequestTaskWithLimit.class, new RandomSleepTestRequest());
   }
 
   static void newThreadKillRequest() {
-    RequestTaskManager.push(TestRequestTaskWithLimit.class, new ThreadKillTestRequest());
+    RequestTaskManager.get().push(TestRequestTaskWithLimit.class, new ThreadKillTestRequest());
   }
 
   @Override
