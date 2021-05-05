@@ -60,10 +60,12 @@
       viewerAppOptions.set("textLayerMode", ${downloadEnabled} ? 1 : 0);
       viewerAppOptions.set("verbosity", 0);
       var viewerConfig = e.detail.viewerConfiguration;
+      <c:if test="${not downloadEnabled}">
       viewerConfig.toolbar.download.remove();
+      viewerConfig.secondaryToolbar.downloadButton.remove();
+      </c:if>
       viewerConfig.toolbar.openFile.remove();
       viewerConfig.toolbar.viewBookmark.remove();
-      viewerConfig.secondaryToolbar.downloadButton.remove();
       viewerConfig.secondaryToolbar.openFileButton.remove();
       viewerConfig.secondaryToolbar.viewBookmarkButton.remove();
       viewerConfig.secondaryToolbar.documentPropertiesButton.remove();
