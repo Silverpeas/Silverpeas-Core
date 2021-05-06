@@ -208,9 +208,8 @@ public class IndexSearcher {
       final BooleanQuery.Builder rangeClausesBuilder) throws ParseException {
     if (query.getMultiFieldQuery() != null) {
       booleanQueryBuilder.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
-    } else {
-      parseRangeQuery(query, booleanQueryBuilder, rangeClausesBuilder);
     }
+    parseRangeQuery(query, booleanQueryBuilder, rangeClausesBuilder);
   }
 
   private void parseRangeQuery(final QueryDescription query,

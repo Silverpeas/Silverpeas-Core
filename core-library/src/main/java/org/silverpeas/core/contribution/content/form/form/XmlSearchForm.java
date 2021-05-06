@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form.form;
 
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.contribution.content.form.AbstractForm;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -31,12 +33,17 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
+import org.silverpeas.core.contribution.content.form.record.ParameterValue;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +56,8 @@ import java.util.List;
 public class XmlSearchForm extends AbstractForm {
 
   private static final String DIV_TAG_END = "</div>";
+  public static final String EXTRA_FIELD_PERIOD = "extraSearchFieldUpdatedFor";
+  public static final String EXTRA_FIELD_SPACE = "extraSearchFieldSpace";
 
   public XmlSearchForm(RecordTemplate template) throws FormException {
     super(template);
@@ -115,9 +124,9 @@ public class XmlSearchForm extends AbstractForm {
       out.println("</h2>");
     }
 
-    List<FieldTemplate> listFields = getFieldTemplates();
+    List<FieldTemplate> listFields = new ArrayList<>(getFieldTemplates());
 
-    if (listFields != null && !listFields.isEmpty()) {
+    if (CollectionUtil.isNotEmpty(listFields)) {
       if (pagesContext.isBorderPrinted()) {
         out.println("<ul class=\"fields form-border\">");
       } else {
@@ -128,6 +137,20 @@ public class XmlSearchForm extends AbstractForm {
       PagesContext pc = new PagesContext(pagesContext);
       pc.setUseMandatory(false);
       pc.setIgnoreDefaultValues(true);
+
+      //adding extra fields
+      if (pagesContext.isExtraSearchFieldPeriod()) {
+        GenericFieldTemplate fieldDate =
+            generateListboxFieldFromProperties(EXTRA_FIELD_PERIOD, "form.search.field.period",
+                pagesContext);
+        listFields.add(fieldDate);
+      }
+      if (pagesContext.isExtraSearchFieldSpace()) {
+        GenericFieldTemplate fieldSpace =
+            generateListboxFieldFromMainSpaces(EXTRA_FIELD_SPACE, "form.search.field.space",
+                pagesContext);
+        listFields.add(fieldSpace);
+      }
 
       displayFields(out, record, listFields, language, pc);
 
@@ -202,4 +225,77 @@ public class XmlSearchForm extends AbstractForm {
     sb.append(DIV_TAG_END);
     return sb.toString();
   }
+
+  private GenericFieldTemplate generateListboxFieldFromMainSpaces(String fieldName, String prefix,
+      final PagesContext pc) {
+
+    String label = Util.getString(prefix + ".label", pc.getLanguage());
+
+    String[] mainSpaceIds = OrganizationController.get().getAllRootSpaceIds();
+    StringBuilder keys = new StringBuilder();
+    StringBuilder values = new StringBuilder();
+    for (String spaceId : mainSpaceIds) {
+      SpaceInstLight space = OrganizationController.get().getSpaceInstLightById(spaceId);
+      if (keys.length() > 0) {
+        keys.append("##");
+        values.append("##");
+      }
+      keys.append(space.getId());
+      values.append(space.getName(pc.getLanguage()));
+    }
+
+    return generateListboxField(fieldName, label, keys.toString(), values.toString());
+  }
+
+  private GenericFieldTemplate generateListboxFieldFromProperties(String fieldName, String prefix,
+      final PagesContext pc) {
+
+    String label = Util.getString(prefix + ".label", pc.getLanguage());
+    String keys = Util.getSetting(prefix + ".keys");
+    String values = Util.getString(prefix + ".values", pc.getLanguage());
+
+    return generateListboxField(fieldName, label, keys, values);
+  }
+
+  private GenericFieldTemplate generateListboxField(String fieldName, String label, String keys,
+      String values) {
+    GenericFieldTemplate fieldDate = new GenericFieldTemplate();
+    fieldDate.setFieldName(fieldName);
+    try {
+      fieldDate.setTypeName("text");
+    } catch (FormException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+    fieldDate.setDisplayerName("listbox");
+    fieldDate.setSearchable(true);
+    fieldDate.setLabel(label);
+    List<Parameter> parameters = new ArrayList<>();
+
+    Parameter paramKeys = new Parameter();
+    paramKeys.setName("keys");
+    List<ParameterValue> parameterValues = new ArrayList<>();
+    ParameterValue paramValue = new ParameterValue();
+    paramValue.setLang("fr");
+    paramValue.setValue(keys);
+    parameterValues.add(paramValue);
+    paramKeys.setParameterValuesObj(parameterValues);
+
+    Parameter paramValues = new Parameter();
+    paramValues.setName("values");
+    parameterValues = new ArrayList<>();
+    paramValue = new ParameterValue();
+    paramValue.setLang("fr");
+    paramValue.setValue(values);
+    parameterValues.add(paramValue);
+    paramValues.setParameterValuesObj(parameterValues);
+
+    parameters.add(paramKeys);
+    parameters.add(paramValues);
+
+    fieldDate.setParametersObj(parameters);
+
+    return fieldDate;
+  }
+
+
 }

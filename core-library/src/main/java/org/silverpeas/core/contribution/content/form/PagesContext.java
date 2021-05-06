@@ -71,6 +71,9 @@ public class PagesContext {
   String elementToHideWhenSkipping;
   String domainId;
 
+  boolean extraSearchFieldPeriod = false;
+  boolean extraSearchFieldSpace = false;
+
   public PagesContext() {
   }
 
@@ -99,6 +102,8 @@ public class PagesContext {
     setFormSkippable(pc.isFormSkippable());
     setElementToHideWhenSkipping(pc.getElementToHideWhenSkipping());
     setDomainId(pc.getDomainId());
+    setExtraSearchFieldPeriod(pc.isExtraSearchFieldPeriod());
+    setExtraSearchFieldSpace(pc.isExtraSearchFieldSpace());
   }
 
   public PagesContext(String formIndex, String language) {
@@ -391,5 +396,21 @@ public class PagesContext {
 
   public void setDomainId(final String domainId) {
     this.domainId = domainId;
+  }
+
+  public boolean isExtraSearchFieldPeriod() {
+    return extraSearchFieldPeriod;
+  }
+
+  public void setExtraSearchFieldPeriod(final boolean extraSearchFieldPeriod) {
+    this.extraSearchFieldPeriod = extraSearchFieldPeriod;
+  }
+
+  public boolean isExtraSearchFieldSpace() {
+    return extraSearchFieldSpace;
+  }
+
+  public void setExtraSearchFieldSpace(final boolean extraSearchFieldSpace) {
+    this.extraSearchFieldSpace = extraSearchFieldSpace;
   }
 }
