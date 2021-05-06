@@ -216,8 +216,7 @@ public class IndexSearcher {
       final BooleanQuery.Builder booleanQueryBuilder,
       final BooleanQuery.Builder rangeClausesBuilder) throws ParseException {
     TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
-    if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
-        isSearchByComponentType()) && !query.isPeriodDefined()) {
+    if (!StringUtil.isDefined(query.getQuery()) && !query.isPeriodDefined()) {
       rangeQuery = TermRangeQuery
             .newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01", true, true);
     }

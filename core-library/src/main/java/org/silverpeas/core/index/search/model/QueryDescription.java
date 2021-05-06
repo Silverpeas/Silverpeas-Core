@@ -263,9 +263,7 @@ public final class QueryDescription implements Serializable {
 
   public boolean isEmpty() {
     boolean queryDefined = StringUtil.isDefined(query) || getMultiFieldQuery() != null;
-    boolean filtersDefined = isSearchBySpace() || isSearchByComponentType() ||
-        StringUtil.isDefined(getRequestedAuthor());
-    filtersDefined = filtersDefined || isPeriodDefined();
+    boolean filtersDefined = StringUtil.isDefined(getRequestedAuthor()) || isPeriodDefined();
     return !queryDefined && !filtersDefined;
   }
 
@@ -288,20 +286,6 @@ public final class QueryDescription implements Serializable {
   public boolean isPeriodDefined() {
     return !Objects.isNull(requestedCreatedAfter) || !Objects.isNull(requestedCreatedBefore) ||
         !Objects.isNull(requestedUpdatedAfter) || !Objects.isNull(requestedUpdatedBefore);
-  }
-
-  /**
-   * @return the searchBySpace
-   */
-  public boolean isSearchBySpace() {
-    return searchBySpace;
-  }
-
-  /**
-   * @param isSearchBySpace the searchBySpace to set
-   */
-  public void setSearchBySpace(boolean isSearchBySpace) {
-    this.searchBySpace = isSearchBySpace;
   }
 
   public LocalDate getRequestedUpdatedBefore() {
@@ -339,14 +323,6 @@ public final class QueryDescription implements Serializable {
 
     // add all needed information
     extComponents.add(new ExternalComponent(server, component, path, url));
-  }
-
-  public boolean isSearchByComponentType() {
-    return searchByComponentType;
-  }
-
-  public void setSearchByComponentType(boolean searchByComponentType) {
-    this.searchByComponentType = searchByComponentType;
   }
 
   public void setRequestedFolder(String requestedFolder) {

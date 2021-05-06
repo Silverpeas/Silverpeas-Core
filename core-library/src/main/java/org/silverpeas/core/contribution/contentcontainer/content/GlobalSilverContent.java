@@ -87,6 +87,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
         sci.getInstanceId(), sci.getCreatorId());
     this.updateDate = date;
     this.creationDate = sci.getCreationDate();
+    this.type = sci.getContributionType();
 
     processLanguages(sci);
   }
