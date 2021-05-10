@@ -217,8 +217,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public boolean updatablePropertyExists() {
     UserFull userFull = getUserFull(getUserId());
-    return ((userFull.isAtLeastOnePropertyUpdatableByUser()) ||
-        (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()));
+    return (userFull.isAtLeastOnePropertyUpdatableByUser() ||
+        (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()) ||
+        getExtraTemplate() != null);
   }
 
   /**
@@ -242,12 +243,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   private void processDataOfExtraTemplate(HttpRequest request) {
-    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-    PagesContext context = getTemplateContext();
-    PublicationTemplate template = templateManager.getDirectoryTemplate(context);
+    PublicationTemplate template = getExtraTemplate();
     if (template != null) {
       try {
-        templateManager.saveData(template.getFileName(), context, request.getFileItems());
+        PublicationTemplateManager.getInstance()
+            .saveData(template.getFileName(), getTemplateContext(), request.getFileItems());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
         MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
@@ -257,5 +257,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   private PagesContext getTemplateContext() {
     return PagesContext.getDirectoryContext(getUserId(), getUserId(), getLanguage());
+  }
+
+  private PublicationTemplate getExtraTemplate() {
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    PagesContext context = getTemplateContext();
+    return templateManager.getDirectoryTemplate(context);
   }
 }
