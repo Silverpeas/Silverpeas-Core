@@ -1376,8 +1376,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
-        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetMainLocation();
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -1851,8 +1850,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
-        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetMainLocation();
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -3686,6 +3684,13 @@ public class TestPublicationAccessController {
    * @param expectedUserAuthorization the expected user authorization to verify
    */
   private void assertIsUserAuthorized(boolean expectedUserAuthorization) {
+    if (AccessControlOperation.isPersistActionFrom(testContext.accessControlContext.getOperations())) {
+      // In case of persist operation, the component access control removes the USER role.
+      testContext.componentUserRoles.remove(SilverpeasRole.user);
+      if (testContext.nodeNotInheritedUserRoles != null) {
+        testContext.nodeNotInheritedUserRoles.remove(SilverpeasRole.user);
+      }
+    }
     testContext.setup();
     PublicationPK publicationPK =
         new PublicationPK("124", testContext.isGED ? GED_INSTANCE_ID : "yellowpages38");
