@@ -364,7 +364,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param query the query description used to build Lucene query
    */
   private void addExternalComponents(QueryDescription query) {
-    if (isEnableExternalSearch && !query.isSearchBySpace()) {
+    if (isEnableExternalSearch) {
       for (ExternalSPConfigVO extServerCfg : this.externalServers) {
         // Loop on each directory in order to add all the external components
         List<String> filteredComponents = extServerCfg.getComponents();
@@ -2054,12 +2054,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (includeUsers) {
         query.addComponent(DIRECTORY_SERVICE);
       }
-    } else if (getQueryParameters().getSpaceId() != null) {
-      // used for search by space without keywords
-      query.setSearchBySpace(!isOnlyInPdcSearch);
-    } else if (isDataTypeDefined()) {
-      // used for search by component type without keywords
-      query.setSearchByComponentType(true);
     }
 
     // Add external components into QueryDescription
