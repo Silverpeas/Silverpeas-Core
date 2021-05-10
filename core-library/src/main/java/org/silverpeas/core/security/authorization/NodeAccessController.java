@@ -51,7 +51,9 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonMap;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.USER;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.isPersistActionFrom;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.isSharingActionFrom;
 
 /**
@@ -167,24 +169,37 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, NodePK nodePK) {
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
+    final String instanceId = nodePK.getInstanceId();
 
     // Component access control
     final Set<SilverpeasRole> componentUserRoles =
-        componentAccessController.getUserRoles(userId, nodePK.getInstanceId(), context);
-    if (!componentAccessController.isUserAuthorized(componentUserRoles)) {
+        componentAccessController.getUserRoles(userId, instanceId, context);
+    final boolean componentUserAuthorized = componentAccessController.isUserAuthorized(componentUserRoles);
+    if (!componentUserAuthorized) {
+      if (!nodePK.isRoot() && !nodePK.isTrash() && !nodePK.isUnclassed() &&
+          componentDataManager.hasUserHasReadAccessAtLeast(instanceId) &&
+          componentDataManager.isRightOnTopicsEnabled(instanceId)) {
+        fillNodeUserRoles(userRoles, context, userId, nodePK, componentUserRoles);
+      }
       return;
     }
 
     // If rights are not handled from the node, then filling the user role containers with these
     // of component
-    final ComponentAccessController.DataManager componentDataManager =
-        ComponentAccessController.getDataManager(context);
-    if (!componentDataManager.isRightOnTopicsEnabled(nodePK.getInstanceId()) || nodePK.isRoot() ||
+    if (!componentDataManager.isRightOnTopicsEnabled(instanceId) || nodePK.isRoot() ||
         nodePK.isTrash() || nodePK.isUnclassed()) {
       userRoles.addAll(componentUserRoles);
       return;
     }
 
+    fillNodeUserRoles(userRoles, context, userId, nodePK, componentUserRoles);
+  }
+
+  private void fillNodeUserRoles(final Set<SilverpeasRole> userRoles,
+      final AccessControlContext context, final String userId, final NodePK nodePK,
+      final Set<SilverpeasRole> componentUserRoles) {
     final DataManager dataManager = getDataManager(context);
     final NodeDetail node = dataManager.getNodeHeader(nodePK);
     if (node != null) {
@@ -192,7 +207,11 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
         userRoles.addAll(componentUserRoles);
         return;
       }
-      userRoles.addAll(SilverpeasRole.fromStrings(dataManager.getUserProfiles(userId, node)));
+      final Set<SilverpeasRole> nodeRoles = SilverpeasRole.fromStrings(dataManager.getUserProfiles(userId, node));
+      if (isPersistActionFrom(context.getOperations())) {
+        nodeRoles.remove(USER);
+      }
+      userRoles.addAll(nodeRoles);
     }
   }
 
