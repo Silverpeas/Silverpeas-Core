@@ -143,6 +143,34 @@
   }
 
   /**
+   * Setups chatboxes addons.
+   * Chatboxes API is used on room display.
+   * For now the notifications are handled in the way that unread message counter for MUC is
+   * updated num_unread or num_unread_general instead of only num_unread.
+   * @private
+   */
+  function __setupChatboxesAddons(chatOptions) {
+    chatOptions.whitelisted_plugins.push('silverpeas-chatboxes');
+    converse.plugins.add('silverpeas-chatboxes', {
+      dependencies: ["silverpeas-rooms", "converse-chatboxes"],
+      initialize : function() {
+        const _converse = this._converse;
+        if (!!_converse.settings['notify_all_room_messages']) {
+          _converse.api.listen.on('chatBoxesInitialized', function() {
+            _converse.chatboxes.on('change:num_unread_general', function(chatbox) {
+              // num_unread_general means both the direct messages and the messages sent to other
+              // participants
+              chatbox.save({
+                'num_unread' : chatbox.get('num_unread_general')
+              });
+            });
+          });
+        }
+      }
+    });
+  }
+
+  /**
    * Setups the common stuffs in order to get the chat working into Silverpeas.
    * @private
    */
@@ -215,6 +243,7 @@
       __setupResize(__settings);
       __setupRoomsAddons(__settings);
       __setupSilverpeas(__settings);
+      __setupChatboxesAddons(__settings);
       return this;
     };
     this.start = function() {
