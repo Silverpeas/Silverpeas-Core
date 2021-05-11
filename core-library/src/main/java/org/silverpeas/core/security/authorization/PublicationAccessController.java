@@ -203,7 +203,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
     final String instanceId = publicationPK.getInstanceId();
     final String pubId = publicationPK.getId();
     final Set<SilverpeasRole> componentUserRoles = componentAccessController.getUserRoles(userId, instanceId, context);
-    final boolean componentAccessAuthorized = componentAccessController.isUserAuthorized(componentUserRoles);
+    final boolean componentUserAuthorized = componentAccessController.isUserAuthorized(componentUserRoles);
     if (isNotCreationContext(pubId, instanceId)) {
       final DataManager dataManager = getDataManager(context);
       final boolean needPubLoading = !isSearchActionFrom(dataManager.operations) && !dataManager.isLotOfDataMode();
@@ -212,11 +212,11 @@ public class PublicationAccessController extends AbstractAccessController<Public
           : null;
       if ((needPubLoading && pubDetail == null)
           || (isTopicTrackerSupported(instanceId, context)
-              && fillTopicTrackerRoles(userRoles, context, userId, componentAccessAuthorized, publicationPK))) {
+              && fillTopicTrackerRoles(userRoles, context, userId, componentUserAuthorized, publicationPK))) {
           return;
       }
     }
-    if (componentAccessAuthorized) {
+    if (componentUserAuthorized) {
       userRoles.addAll(componentUserRoles);
     }
   }
@@ -231,18 +231,28 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * @param userRoles the {@link Set} to fill.
    * @param context the context.
    * @param userId the identifier of the current user.
-   * @param componentAccessAuthorized is component access authorized.
+   * @param componentUserAuthorized is user authorized at component level according to operation context.
    * @param pubPK the publication primary key.
    * @return true if roles have been handled, false otherwise.
    */
   private boolean fillTopicTrackerRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId,
-      final boolean componentAccessAuthorized, final PublicationPK pubPK) {
+      final boolean componentUserAuthorized, final PublicationPK pubPK) {
     boolean rolesProcessed = false;
-    if (!componentAccessAuthorized) {
-      // Check if an alias of publication is authorized
-      // (special treatment in case of the user has no access right on component instance)
-      rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
+    if (!componentUserAuthorized) {
+      if (isPersistActionFrom(context.getOperations())) {
+        final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+        if (componentDataManager.isRightOnTopicsEnabled(pubPK.getInstanceId())) {
+          // If rights are handled on folders, folder rights are checked !
+          rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubPK);
+        } else {
+          rolesProcessed = true;
+        }
+      } else {
+        // Check if an alias of publication is authorized
+        // (special treatment in case of the user has no access right on component instance)
+        rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
+      }
     } else {
       final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
       if (componentDataManager.isRightOnTopicsEnabled(pubPK.getInstanceId())) {
