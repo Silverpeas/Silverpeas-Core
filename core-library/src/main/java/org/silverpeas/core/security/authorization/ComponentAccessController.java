@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -116,8 +117,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   protected void fillUserRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final String componentId) {
+    final DataManager dataManager = getDataManager(context);
     try {
-      final DataManager dataManager = getDataManager(context);
       final Predicate<User> isUserNotValidState = u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
       final Predicate<String> isTool = c -> c == null || dataManager.isToolAvailable(c);
 
@@ -155,9 +156,12 @@ public class ComponentAccessController extends AbstractAccessController<String>
         }
       }
     } finally {
+      boolean userHasReadAccessAtLeast = false;
       if (AccessControlOperation.isPersistActionFrom(context.getOperations())) {
-        userRoles.remove(SilverpeasRole.USER);
+        userHasReadAccessAtLeast = userRoles.remove(SilverpeasRole.USER);
       }
+      userHasReadAccessAtLeast |= !userRoles.isEmpty();
+      dataManager.setUserHasReadAccessAtLeast(componentId, userHasReadAccessAtLeast);
     }
   }
 
@@ -201,6 +205,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
     private Map<String, Boolean> isFolderSharingEnabledForRoleCache = new HashMap<>(1);
     private Map<String, Boolean> isCoWritingEnabledCache = new HashMap<>(1);
     private Map<String, Boolean> isTopicTrackerSupportedCache = new HashMap<>(1);
+    private Map<String, Boolean> hasUserReadAccessAtLeast = new HashMap<>(1);
     Map<String, Boolean> isRightOnTopicsEnabledCache = new HashMap<>(1);
     Set<String> availableComponentCache = null;
     Map<String, Set<String>> userProfiles = null;
@@ -222,6 +227,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
       isFolderSharingEnabledForRoleCache = new HashMap<>(nbElements);
       isCoWritingEnabledCache = new HashMap<>(nbElements);
       isTopicTrackerSupportedCache = new HashMap<>(nbElements);
+      hasUserReadAccessAtLeast = new HashMap<>(nbElements);
       availableComponentCache = new HashSet<>(controller.getAvailableComponentsByUser(userId));
       completeCaches(userId, instanceIds);
     }
@@ -298,6 +304,17 @@ public class ComponentAccessController extends AbstractAccessController<String>
         return userProfiles.getOrDefault(componentId, emptySet()).toArray(new String[0]);
       }
       return controller.getUserProfiles(userId, componentId);
+    }
+
+    void setUserHasReadAccessAtLeast(final String componentId, final boolean hasAccess) {
+      hasUserReadAccessAtLeast.put(componentId, hasAccess);
+    }
+
+    boolean hasUserHasReadAccessAtLeast(final String componentId) {
+      final Boolean hasAccess = hasUserReadAccessAtLeast.get(componentId);
+      Objects.requireNonNull(hasAccess,
+          "setUserHasReadAccessAtLeast MUST have been called before using hasUserHasReadAccessAtLeast one");
+      return hasAccess;
     }
 
     private boolean isSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole,
