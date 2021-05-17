@@ -23,43 +23,12 @@
  */
 package org.silverpeas.core.subscription;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
-import java.io.Serializable;
-
 /**
- * The type of a resource that can be targeted by a subscription.
+ * The type of a contribution that can be targeted by a subscription.
+ * <p>
+ * This interface permits to identify resources handled by subscription API.
+ * </p>
  * @author Yohann Chastagnier
  */
-public interface SubscriptionResourceType extends Serializable {
-
-  /**
-   * Is this type is valid? It is valid if the type of the resource isn't unknown.
-   * @return true if the type of the resource targeted by a subscription is known, false otherwise.
-   */
-  default boolean isValid() {
-    return true;
-  }
-
-  /**
-   * Indicates a priority which can be used by UI as example.
-   * @return an integer which lowest value means the highest priority.
-   */
-  int priority();
-
-  /**
-   * Gets the name of the subscription type.
-   * <p>
-   *   Minus character is not authorized because it is used internally for technical purposes.
-   * </p>
-   * @return a string.
-   */
-  @JsonValue
-  String getName();
-
-  @JsonCreator
-  static SubscriptionResourceType from(String name) {
-    return SubscriptionResourceTypeRegistry.get().getByName(name);
-  }
+public interface SubscriptionContributionType extends SubscriptionResourceType {
 }
