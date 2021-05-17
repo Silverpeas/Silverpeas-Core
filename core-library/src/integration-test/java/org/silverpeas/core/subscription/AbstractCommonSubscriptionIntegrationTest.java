@@ -55,7 +55,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   /**
    * The resource is a forum. Used by component instances handling forums.
    */
-  protected static final SubscriptionResourceType FORUM = new SubscriptionResourceType() {
+  protected static final SubscriptionContributionType FORUM = new SubscriptionContributionType() {
     private static final long serialVersionUID = -1130015664194572265L;
 
     @Override
@@ -72,7 +72,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   /**
    * The resource is a message in a given forum. Used by component instances handling forums.
    */
-  protected static final SubscriptionResourceType FORUM_MESSAGE = new SubscriptionResourceType() {
+  protected static final SubscriptionContributionType FORUM_MESSAGE = new SubscriptionContributionType() {
     private static final long serialVersionUID = 6385822460694305970L;
 
     @Override

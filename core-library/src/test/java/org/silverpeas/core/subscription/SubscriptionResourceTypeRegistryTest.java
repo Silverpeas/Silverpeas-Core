@@ -38,7 +38,7 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  * @author silveryocha
  */
 @EnableSilverTestEnv
-public class SubscriptionResourceTypeRegistryTest {
+class SubscriptionResourceTypeRegistryTest {
 
   @TestManagedBean
   private SubscriptionResourceTypeRegistry registry;

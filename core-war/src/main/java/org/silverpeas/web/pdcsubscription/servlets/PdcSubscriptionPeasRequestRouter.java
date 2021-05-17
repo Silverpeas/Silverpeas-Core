@@ -29,8 +29,6 @@ import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -38,6 +36,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
+import org.silverpeas.web.pdcsubscription.control.SubscriptionCategory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -48,8 +47,8 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<PdcSubscriptionSessionController> {
 
   private static final long serialVersionUID = -441269066150311066L;
-  private static final String SUB_RES_TYPE_ATTR = "subResType";
-  private static final String VIEW_SUBSCRIPTION_OF_TYPE = "ViewSubscriptionOfType";
+  private static final String SUB_RES_CATEGORY_ATTR = "subResCategory";
+  private static final String VIEW_SUBSCRIPTION_OF_CATEGORY = "ViewSubscriptionOfCategory";
   private static final String VIEW_SUBSCRIPTION_TAXONOMY = "ViewSubscriptionTaxonomy";
   private static final String USER_ID_PARAM = "userId";
   private static final String ACTION_PARAM = "action";
@@ -91,17 +90,17 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
     request.setAttribute("currentUserId", pdcSC.getUserId());
     try {
       if (function.startsWith("subscriptionList")) {
-        destination = getDestination(VIEW_SUBSCRIPTION_OF_TYPE, pdcSC, request);
+        destination = getDestination(VIEW_SUBSCRIPTION_OF_CATEGORY, pdcSC, request);
       } else if (VIEW_SUBSCRIPTION_TAXONOMY.equals(function)) {
         destination = rootDest + processSubscriptionList(request, pdcSC);
       } else if (function.startsWith("showUserSubscriptions")) {
         final String reqUserId = defaultStringIfNotDefined(request.getParameter(USER_ID_PARAM), pdcSC.getUserId());
         final int userId = Integer.parseInt(reqUserId);
         destination = rootDest + processUserSubscriptions(request, pdcSC, userId);
-      } else if (function.equals(VIEW_SUBSCRIPTION_OF_TYPE)) {
-        destination = rootDest + viewSubscriptionOfType(pdcSC, request);
-      } else if (function.equals("DeleteSubscriptionOfType")) {
-        destination = deleteSubscriptionOfType(pdcSC, request);
+      } else if (function.equals(VIEW_SUBSCRIPTION_OF_CATEGORY)) {
+        destination = rootDest + viewSubscriptionOfCategory(pdcSC, request);
+      } else if (function.equals("DeleteSubscriptionOfCategory")) {
+        destination = deleteSubscriptionOfCategory(pdcSC, request);
       } else if (function.startsWith("PdcSubscription")) {
         String subscriptionId = request.getParameter("pdcSId");
         if (StringUtil.isDefined(subscriptionId)) {
@@ -135,29 +134,25 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
     return destination;
   }
 
-  private String viewSubscriptionOfType(final PdcSubscriptionSessionController pdcSC,
+  private String viewSubscriptionOfCategory(final PdcSubscriptionSessionController pdcSC,
       final HttpRequest request) {
+    final SubscriptionCategory category = pdcSC.getSubscriptionCategory(request.getParameter(SUB_RES_CATEGORY_ATTR));
     final String userId = request.getParameter(USER_ID_PARAM);
-    SubscriptionResourceType subResType = SubscriptionResourceType.from(request.getParameter(SUB_RES_TYPE_ATTR));
-    if (!subResType.isValid()) {
-      subResType = CommonSubscriptionResourceConstants.COMPONENT;
-    }
     final String action = request.getParameter(ACTION_PARAM);
-    request.setAttribute("subscriptions", pdcSC.getUserSubscriptionsOfType(userId, subResType));
-    request.setAttribute(SUB_RES_TYPE_ATTR, subResType);
+    request.setAttribute("subscriptions", pdcSC.getUserSubscriptionsOfCategory(userId, category));
+    request.setAttribute(SUB_RES_CATEGORY_ATTR, category);
     request.setAttribute(ACTION_PARAM, action);
     request.setAttribute(USER_ID_PARAM, userId);
-    return "viewSubscriptionsOfType.jsp";
+    return "viewSubscriptionsOfCategory.jsp";
   }
 
-  private String deleteSubscriptionOfType(final PdcSubscriptionSessionController pdcSC,
+  private String deleteSubscriptionOfCategory(final PdcSubscriptionSessionController pdcSC,
       final HttpRequest request) {
-    final SubscriptionResourceType subResType = SubscriptionResourceType.from(request.getParameter(SUB_RES_TYPE_ATTR));
     final String[] selectedItems = request.getParameterValues("subscriptionCheckbox");
     if (!ArrayUtils.isEmpty(selectedItems)) {
-      pdcSC.deleteUserSubscriptionsOfType(selectedItems, subResType);
+      pdcSC.deleteUserSubscriptions(selectedItems);
     }
-    return getDestination(VIEW_SUBSCRIPTION_OF_TYPE, pdcSC, request);
+    return getDestination(VIEW_SUBSCRIPTION_OF_CATEGORY, pdcSC, request);
   }
 
   /**
