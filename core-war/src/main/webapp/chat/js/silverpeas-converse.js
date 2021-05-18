@@ -38,11 +38,16 @@
         const __superSetFn = _converse.api.vcard.set;
         Object.assign(_converse.api.vcard, {
           get : function(model, force) {
+            let _force = force;
             let _curJid = model;
             if (typeof model === 'object') {
               _curJid = model.attributes.jid;
+              if (!model._sp_vcard_init) {
+                model._sp_vcard_init = true;
+                _force = true;
+              }
             }
-            return __superGetFn.call(this, model, force).then(function(vCard) {
+            return __superGetFn.call(this, model, _force).then(function(vCard) {
               for (let key in vCard) {
                 if (typeof vCard[key] === 'undefined') {
                   vCard[key] = '';
@@ -51,7 +56,7 @@
               if (_curJid === chatOptions.jid) {
                 extendsObject(false, chatOptions.vcard, vCard);
               }
-              const contact = _converse.roster.findWhere({'jid' : _curJid});
+              const contact = _converse.roster && _converse.roster.findWhere({'jid' : _curJid});
               if (contact && contact.attributes) {
                 const attrs = contact.attributes;
                 const newAttrs = ['image', 'image_type'].filter(function(t) {
