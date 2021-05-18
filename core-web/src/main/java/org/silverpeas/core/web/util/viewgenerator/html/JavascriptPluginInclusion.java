@@ -908,6 +908,7 @@ public class JavascriptPluginInclusion {
         xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));
       }
       xhtml.addElement(link(chatDir + "css/silverchat.css"));
+      xhtml.addElement(link(chatDir + "css/silverpeas-converse.css"));
       xhtml.addElement(scriptContent(
           settingVariableName("SilverChatSettings")
               .add("un.d.i.u", getApplicationURL() + getUserNotificationDesktopIconUrl())

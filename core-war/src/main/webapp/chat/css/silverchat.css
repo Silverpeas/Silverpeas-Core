@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2000 - 2021 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #jsxc_windowList {
   z-index: 8000;
 }
@@ -594,4 +618,108 @@ Converse.js
 
 #conversejs .muc-bookmark-form .form-group:nth-child(3) {
   display: none;
+}
+
+/*Overriding default theme*/
+#conversejs, #conversejs-bg, .converse-overlayed {
+  --subdued-color: #A8ABA1;
+  --green: #1c94d4;
+  --redder-orange: #E77051;
+  --orange: #f07d19;
+  --light-blue: #252525;
+  --lighter-blue: #7bb49e;
+  --brand-heading-color: #24549e;
+  --completion-light-color: #FFB9A7;
+  --completion-dark-color: #D24E2B;
+  --chat-head-color-dark: #1c94d4;
+  --chat-head-color-darker: #0E763B;
+  --chat-head-color-lighten-50-percent: #e7f7ee;
+  --chat-head-color: var(--green);
+  --chat-head-text-color: white;
+  --chat-toolbar-btn-color: var(--green);
+  --chat-toolbar-btn-disabled-color: gray;
+  --chat-content-background-color: white;
+  --chat-info-color: var(--chatroom-head-bg-color);
+  --highlight-color: #DCF9F6;
+  --highlight-color-darker: #B0E8E2;
+  --normal-font: "Helvetica", "Arial", sans-serif;
+  --heading-font: 'Muli', normal;
+  --branding-font: 'Baumans', cursive;
+  --heading-display: block;
+  --heading-color: white;
+  --chatroom-badge-color: var(--chatroom-head-bg-color);
+  --chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
+  --chatroom-correcting-color: #fadfd7;
+  --chatroom-head-bg-color-dark: #D24E2B;
+  --chatroom-head-bg-color: var(--redder-orange);
+  --chatroom-head-border-bottom: 0px;
+  --chatroom-head-button-color: var(--chatroom-head-bg-color);
+  --chatroom-head-color: white;
+  --chatroom-head-description-display: block;
+  --chatroom-head-description-link-color: white;
+  --chatroom-head-title-font-weight: normal;
+  --chatroom-head-title-padding-right: 0px;
+  --chatroom-width: 400px;
+  --muc-toolbar-btn-color: var(--redder-orange);
+  --muc-toolbar-btn-disabled-color: gray;
+  --headline-head-color: var(--orange);
+  --headline-message-color: #D2842B;
+  --chatbox-button-size: 12px;
+  --fullpage-chatbox-button-size: 14px;
+  --font-size-tiny: 10px;
+  --font-size-small: 12px;
+  --font-size: 12px;
+  --font-size-large: 14px;
+  --font-size-huge: 18px;
+  --message-font-size: var(--font-size);
+  --chatbox-border-radius: 8px;
+  --separator-text-color: var(--message-text-color);
+  --chat-separator-border-bottom: 2px solid var(--chat-head-color);
+  --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
+  --chatbox-message-input-border-top: 4px solid var(--chat-head-color);
+  --chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
+  --line-height-small: 12px;
+  --line-height: 14px;
+  --line-height-large: 18px;
+  --line-height-huge: 24px;
+  --occupants-padding: 1em;
+  --occupants-background-color: white;
+  --occupants-border-left: 0.2143rem solid var(--panel-divider-color);
+  --occupants-border-bottom: 1px solid lightgrey;
+  --embedded-emoji-picker-height: 300px;
+  --avatar-border-radius: 10%;
+  --avatar-border: 0 solid #FFF;
+  --avatar-background-color: white;
+  --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
+  --fullpage-chat-width: 100%;
+  --fullpage-emoji-picker-height: 300px;
+  --fullpage-max-chat-textarea-height: 15em;
+  --overlayed-chat-head-height: 40px;
+  --overlayed-chat-height: 450px;
+  --overlayed-chat-width: 300px;
+  --overlayed-chatbox-hover-height: 1em;
+  --overlayed-emoji-picker-height: 300px;
+  --overlayed-max-chat-textarea-height: 200px;
+  --overlayed-badge-color: #818479;
+  --list-toggle-color: #818479;
+  --list-toggle-hover-color: #585B51;
+  --list-toggle-font-weight: normal;
+  --list-item-hover-color: rgba(0, 0, 0, 0.035);
+  --list-item-action-color: #e3eef3;
+  --list-item-link-color: inherit;
+  --list-item-link-hover-color: var(--dark-link-color);
+  --list-item-open-color: var(--controlbox-head-color);
+  --list-item-open-hover-color: var(--controlbox-head-color);
+  --list-dot-circle-color: #f6dec1;
+}
+
+#conversejs.theme-default .chat-head .avatar {
+  width: 25px;
+  height: 25px;
+  background-color: transparent
+}
+
+#conversejs.theme-default .chat-head .avatar image {
+  width: auto;
+  height: 25px;
 }
