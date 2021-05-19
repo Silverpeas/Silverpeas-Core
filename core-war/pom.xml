@@ -218,6 +218,7 @@
             <exclude>**/*-min.*</exclude>
             <exclude>**/*.min-*</exclude>
             <exclude>**/*-min-*</exclude>
+            <exclude>**/chat/converse/**/*</exclude>
             <exclude>**/util/yui/**/*</exclude>
             <exclude>**/ckeditor*/**/*</exclude>
             <exclude>**/vuejs/vue.js</exclude>

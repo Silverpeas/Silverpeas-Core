@@ -31,6 +31,7 @@ import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.html.PermalinkRegistry;
@@ -885,16 +886,29 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeChat(final ElementContainer xhtml) {
     if (ChatServer.isEnabled()) {
       final String chatDir = getApplicationURL() + "/chat/";
-      final String jsxcDir = chatDir + "jsxc/";
-      xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
-      xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
-      xhtml.addElement(script(jsxcDir + "lib/jsxc.dep.min.js"));
-      xhtml.addElement(script(jsxcDir + "jsxc.min.js"));
-      xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-chat-resizable.js"));
-      xhtml.addElement(script(chatDir + "js/silverchat.min.js"));
-      xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
-      xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
+      final String silverpeasChatClientId = ChatSettings.get().getSilverpeasChatClientId();
+      if (silverpeasChatClientId.equals("jsxc")) {
+        final String jsxcDir = chatDir + "jsxc/";
+        xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
+        xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
+        xhtml.addElement(script(jsxcDir + "lib/jsxc.dep.min.js"));
+        xhtml.addElement(script(jsxcDir + "jsxc.min.js"));
+        xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-chat-resizable.js"));
+        xhtml.addElement(script(chatDir + "js/silverchat.min.js"));
+        xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
+        xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
+      } else if (silverpeasChatClientId.equals("conversejs")) {
+        final String converseDir = chatDir + "converse/";
+        xhtml.addElement(script(converseDir + "converse.min.js"));
+        final Element link = link(converseDir + "converse.min.css");
+        if (link instanceof link) {
+          ((link) link).setMedia("screen");
+          xhtml.addElement(link);
+        }
+        xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));
+      }
       xhtml.addElement(link(chatDir + "css/silverchat.css"));
+      xhtml.addElement(link(chatDir + "css/silverpeas-converse.css"));
       xhtml.addElement(scriptContent(
           settingVariableName("SilverChatSettings")
               .add("un.d.i.u", getApplicationURL() + getUserNotificationDesktopIconUrl())

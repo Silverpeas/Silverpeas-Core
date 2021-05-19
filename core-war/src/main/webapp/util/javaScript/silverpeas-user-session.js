@@ -50,11 +50,10 @@ Silverpeas plugin which handles the behaviour about the connected users informat
     return;
   }
 
-  var CONNECTED_USERS_CHANGED_EVENT_NAME = "connectedUsersChanged";
+  const CONNECTED_USERS_CHANGED_EVENT_NAME = "connectedUsersChanged";
 
-  var NB_CONNECTED_USERS_AT_INIT = $mainWindow.UserSessionSettings.get("us.cu.nb.i");
-  var CONNECTED_USERS_URL = $mainWindow.UserSessionSettings.get("us.cu.v.u");
-
+  const NB_CONNECTED_USERS_AT_INIT = $mainWindow.UserSessionSettings.get("us.cu.nb.i");
+  const CONNECTED_USERS_URL = $mainWindow.UserSessionSettings.get("us.cu.v.u");
 
   /**
    * Handling the rendering of the Silverpeas's connected users.
@@ -62,6 +61,15 @@ Silverpeas plugin which handles the behaviour about the connected users informat
    */
   $mainWindow.spUserSession = new function() {
     applyEventDispatchingBehaviorOn(this);
+    const __logoutPromises = [];
+
+    /**
+     * Permits to performs safe logouts
+     * @param promise
+     */
+    this.addLogoutPromise = function(promise) {
+      __logoutPromises.push(promise);
+    };
 
     /**
      * Views the connected users.
@@ -74,7 +82,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
      * Logout the current user.
      */
     this.logout = function(options) {
-      var params = extendsObject({
+      const params = extendsObject({
         logoutDestination : webContext + '/Logout'
       }, options);
       spServerEventSource.close();
@@ -91,8 +99,8 @@ Silverpeas plugin which handles the behaviour about the connected users informat
     };
 
     // dispatch the changed event
-    var __lastNb;
-    var __changeConnectedUsersWith = function(nb) {
+    let __lastNb;
+    const __changeConnectedUsersWith = function(nb) {
       try {
         __lastNb = nb;
         this.dispatchEvent(CONNECTED_USERS_CHANGED_EVENT_NAME, {nb : nb});
@@ -102,23 +110,16 @@ Silverpeas plugin which handles the behaviour about the connected users informat
     }.bind(this);
 
     // do the specified logout function
-    var __doLogout = function(logout) {
-      if ($mainWindow.SilverChat) {
-        spProgressMessage.show();
-        // creating a timeout for critical network cases
-        var __timeout = setTimeout(function() {
-          logout.call(this);
-        }.bind(this), 5000);
-        // stopping the silver chat
-        $mainWindow.SilverChat.stop().then(function() {
-          // removing the timeout
-          clearTimeout(__timeout);
-          // performing the logout
-          logout.call(this);
-        }.bind(this));
-      } else {
+    const __doLogout = function(logout) {
+      this.dispatchEvent('current-user-logout');
+      // creating a timeout for critical network cases
+      const handler = function() {
+        // removing the timeout
+        clearTimeout(__timeout);
         logout.call(this);
-      }
+      }.bind(this);
+      const __timeout = setTimeout(handler, 5000);
+      sp.promise.whenAllResolved(__logoutPromises).then(handler, handler);
     }.bind(this);
 
     whenSilverpeasReady(function() {
@@ -129,7 +130,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
 
       // a new user session is opened or a user session is closed
       spServerEventSource.addEventListener('USER_SESSION', function(serverEvent) {
-        var data = extendsObject({
+        const data = extendsObject({
           nbConnectedUsers : 0,
           isOpening : false,
           isClosing : false
