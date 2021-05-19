@@ -631,6 +631,7 @@ Converse.js
   --brand-heading-color: #24549e;
   --completion-light-color: #FFB9A7;
   --completion-dark-color: #D24E2B;
+  --chat-status-online: #1a9707;
   --chat-head-color-dark: #1c94d4;
   --chat-head-color-darker: #0E763B;
   --chat-head-color-lighten-50-percent: #e7f7ee;
@@ -722,4 +723,28 @@ Converse.js
 #conversejs.theme-default .chat-head .avatar image {
   width: auto;
   height: 25px;
+}
+
+#conversejs.converse-overlayed .chatbox converse-emoji-picker .emoji-picker .insert-emoji a {
+  font-size: 24px;
+  line-height: calc(25px * 1.5);
+  padding: 0;
+  height: calc(25px * 1.5);
+  width: calc(25px * 1.5);
+}
+
+#conversejs.converse-overlayed .chatbox .emoji-skintone-picker {
+  display: none;
+}
+
+#conversejs.converse-overlayed .chatbox converse-emoji-picker .emoji-picker__lists {
+  height: 11em;
+}
+
+#conversejs .chatbox .emoji-picker__header ul .emoji-category a {
+  font-size: 15px;
+}
+
+#conversejs .chatbox .controlbox-heading__btn.show-client-info {
+  display: none;
 }
