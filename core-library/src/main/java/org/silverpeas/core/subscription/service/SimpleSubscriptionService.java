@@ -71,11 +71,13 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
     }
   }
 
+  @Transactional
   @Override
   public void subscribe(Subscription subscription) {
     subscribe(Collections.singletonList(subscription));
   }
 
+  @Transactional
   @Override
   public void subscribe(final Collection<? extends Subscription> subscriptions) {
 
@@ -95,11 +97,13 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
     }
   }
 
+  @Transactional
   @Override
   public void unsubscribe(Subscription subscription) {
     unsubscribe(Collections.singletonList(subscription));
   }
 
+  @Transactional
   @Override
   public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
     Connection con = null;
@@ -116,11 +120,13 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
     }
   }
 
+  @Transactional
   @Override
   public void unsubscribeBySubscriber(SubscriptionSubscriber subscriber) {
     unsubscribeBySubscribers(Collections.singletonList(subscriber));
   }
 
+  @Transactional
   @Override
   public void unsubscribeBySubscribers(
       final Collection<? extends SubscriptionSubscriber> subscribers) {
@@ -139,11 +145,13 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
     }
   }
 
+  @Transactional
   @Override
   public void unsubscribeByResource(SubscriptionResource resource) {
     unsubscribeByResources(Collections.singletonList(resource));
   }
 
+  @Transactional
   @Override
   public void unsubscribeByResources(final Collection<? extends SubscriptionResource> resources) {
 
@@ -183,16 +191,10 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
   @Override
   public SubscriptionList getByResource(final SubscriptionResource resource,
       final SubscriptionMethod method) {
-
-    Connection con = null;
-
-    try {
-      con = getConnection();
+    try (final Connection con = getConnection()) {
       return subscriptionDao.getSubscriptionsByResource(con, resource, method);
     } catch (Exception e) {
       throw new SubscribeRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -306,8 +308,8 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
    * by Silverpeas when a component instance is being deleted.
    * @param componentInstanceId the unique identifier of a component instance.
    */
-  @Override
   @Transactional
+  @Override
   public void delete(final String componentInstanceId) {
     try(Connection connection = getConnection()) {
       subscriptionDao.removeByInstanceId(connection, componentInstanceId);

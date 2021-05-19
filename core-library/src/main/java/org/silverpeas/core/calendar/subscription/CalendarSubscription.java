@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.calendar.subscription;
 
-import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.PKSubscription;
 
 /**
  * @author silveryocha
  */
-public class CalendarSubscription extends PKSubscription {
+public class CalendarSubscription extends PKSubscription<CalendarSubscriptionResource> {
 
-  public CalendarSubscription(final String subscriberId, final Calendar calendar) {
-    super(subscriberId, new CalendarSubscriptionResource(calendar));
+  public CalendarSubscription(final SubscriptionSubscriber subscriber,
+      final CalendarSubscriptionResource resource, final String creatorId) {
+    super(subscriber, resource, creatorId);
   }
 }

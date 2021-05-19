@@ -26,7 +26,7 @@ package org.silverpeas.web.pdcsubscription.control;
 
 import org.silverpeas.core.subscription.SubscriptionContributionType;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry;
+import org.silverpeas.core.subscription.SubscriptionFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public class ContributionSubscriptionCategory extends SubscriptionCategory {
 
   public ContributionSubscriptionCategory(final PdcSubscriptionSessionController ctrl) {
     super(ctrl);
-    handledTypes = SubscriptionResourceTypeRegistry.get()
+    handledTypes = SubscriptionFactory.get()
         .streamAll()
         .filter(SubscriptionResourceType::isValid)
         .filter(SubscriptionContributionType.class::isInstance)

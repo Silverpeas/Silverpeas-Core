@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.web.subscription;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.Location;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodeDetail;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * User: Yohann Chastagnier
@@ -53,37 +55,48 @@ public class SubscriptionContext {
   /**
    * Initializing all context data excepted ones of the user.
    * @param resource a subscription resource
+   * @return itself.
    */
-  public void initialize(SubscriptionResource resource) {
+  public SubscriptionContext initialize(SubscriptionResource resource) {
     internalContext = new InternalContext();
     internalContext.resource = resource;
+    return this;
   }
 
   /**
-   * Initializing all context data excepted ones of the user.
-   * @param resource a subscription resource
-   * @param resourcePath
+   * Indicates the location from which the context is initialized.
+   * @param location a {@link Location} instance.
+   * @return itself.
    */
-  public void initialize(SubscriptionResource resource,
-      Collection<SubscriptionResourcePath> resourcePath) {
-    initialize(resource);
-    if (CollectionUtil.isNotEmpty(resourcePath)) {
-      internalContext.path.addAll(resourcePath);
-    }
+  public SubscriptionContext atLocation(final Location location) {
+    internalContext.location = location;
+    return this;
   }
 
   /**
-   * Initializing all context data excepted ones of the user.
-   * @param resource a subscription resource
-   * @param nodePath
+   * Indicates the node path of the resource as subscription side.
+   * @param nodePath a collection of {@link NodeDetail} representing a path.
+   * @return itself.
    */
-  public void initializeFromNode(SubscriptionResource resource, Collection<NodeDetail> nodePath) {
+  public SubscriptionContext withNodePath(Collection<NodeDetail> nodePath) {
     Collection<SubscriptionResourcePath> resourcePath = new ArrayList<>(nodePath.size());
     for (NodeDetail node : nodePath) {
       resourcePath.add(new SubscriptionResourcePath(node.getName(userPreferences.getLanguage()),
           node.getLink()));
     }
-    initialize(resource, resourcePath);
+    return withPath(resourcePath);
+  }
+
+  /**
+   * Indicates the path of the resource as subscription side.
+   * @param path a collection of {@link SubscriptionResourcePath}.
+   * @return itself.
+   */
+  public SubscriptionContext withPath(final Collection<SubscriptionResourcePath> path) {
+    if (CollectionUtil.isNotEmpty(path)) {
+      internalContext.path.addAll(path);
+    }
+    return this;
   }
 
   /**
@@ -98,6 +111,13 @@ public class SubscriptionContext {
    */
   public SubscriptionResource getResource() {
     return internalContext.resource;
+  }
+
+  /**
+   * @return the location from which the context is initialized.
+   */
+  public Optional<Location> getLocation() {
+    return Optional.ofNullable(internalContext.location);
   }
 
   /**
@@ -117,9 +137,10 @@ public class SubscriptionContext {
   /**
    * Internal context
    */
-  private class InternalContext {
-    public String destinationUrl = "/RSubscription/jsp/Main";
-    public SubscriptionResource resource = null;
-    public Collection<SubscriptionResourcePath> path = new ArrayList<>();
+  private static class InternalContext {
+    String destinationUrl = "/RSubscription/jsp/Main";
+    SubscriptionResource resource = null;
+    Location location = null;
+    Collection<SubscriptionResourcePath> path = new ArrayList<>();
   }
 }

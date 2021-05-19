@@ -104,16 +104,28 @@ public interface SubscriptionService extends Serializable {
   boolean existsSubscription(Subscription subscription);
 
   /**
+   * <p>
    * Gets all subscriptions in relation to the given resource.
-   * @param resource
+   * </p>
+   * <p>
+   *  It is possible here to not specify the instance id the resource is linked to, but BE
+   *  CAREFUL to do that with resources having a unique identifier.
+   * </p>
+   * @param resource a resource subscription which could have no instance id specified.
    * @return list of subscriptions
    */
   SubscriptionList getByResource(SubscriptionResource resource);
 
   /**
+   * <p>
    * Gets all subscriptions in relation to the given resource.
-   * @param resource
-   * @param method
+   * </p>
+   * <p>
+   *  It is possible here to not specify the instance id the resource is linked to, but BE
+   *  CAREFUL to do that with resources having a unique identifier.
+   * </p>
+   * @param resource a resource subscription which could have no instance id specified.
+   * @param method an optional subscription method.
    * @return list of subscriptions
    */
   SubscriptionList getByResource(SubscriptionResource resource, SubscriptionMethod method);

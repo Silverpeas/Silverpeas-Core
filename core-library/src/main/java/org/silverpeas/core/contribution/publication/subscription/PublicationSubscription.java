@@ -21,33 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.subscription;
+package org.silverpeas.core.contribution.publication.subscription;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
-
-import static org.silverpeas.core.calendar.subscription.CalendarSubscriptionConstants.CALENDAR;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.PKSubscription;
 
 /**
  * @author silveryocha
  */
-public class CalendarSubscriptionResource extends PKSubscriptionResource {
+public class PublicationSubscription extends PKSubscription<PublicationSubscriptionResource> {
 
-  /**
-   * A way to get an instance of a forum subscription resource.
-   * @param calendar a calendar instance.
-   * @return the corresponding {@link CalendarSubscriptionResource} instance.
-   */
-  public static CalendarSubscriptionResource from(final Calendar calendar) {
-    return new CalendarSubscriptionResource(new ResourceReference(calendar.getId(), calendar.getComponentInstanceId()));
-  }
-
-  /**
-   * Default constructor
-   * @param reference a calendar reference.
-   */
-  public CalendarSubscriptionResource(final ResourceReference reference) {
-    super(reference, CALENDAR);
+  public PublicationSubscription(final SubscriptionSubscriber subscriber,
+      final PublicationSubscriptionResource resource, final String creatorId) {
+    super(subscriber, resource, creatorId);
   }
 }

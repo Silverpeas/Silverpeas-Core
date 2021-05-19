@@ -26,7 +26,9 @@ package org.silverpeas.core.subscription.util;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
@@ -36,6 +38,14 @@ import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisib
  */
 public class SubscriptionList extends ArrayList<Subscription> {
   private static final long serialVersionUID = -2314233862350010699L;
+
+  public SubscriptionList() {
+    super();
+  }
+
+  public SubscriptionList(@Nonnull final Collection<? extends Subscription> c) {
+    super(c);
+  }
 
   /**
    * Removes from this list the subscription that the linked subscriber has not the same

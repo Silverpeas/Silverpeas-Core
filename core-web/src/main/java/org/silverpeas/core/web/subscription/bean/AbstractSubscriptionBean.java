@@ -121,7 +121,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
     return true;
   }
 
-  private boolean isUserCanAccess(final String userId, SubscriptionResource resource) {
+  protected boolean isUserCanAccess(final String userId, SubscriptionResource resource) {
     final boolean accessOK;
     if (resource.getType() == NODE) {
       NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
@@ -132,7 +132,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
     return accessOK;
   }
 
-  private boolean isGroupCanAccess(final String groupId, SubscriptionResource resource) {
+  protected boolean isGroupCanAccess(final String groupId, SubscriptionResource resource) {
     final boolean accessOK;
     if (resource.getType() == NODE) {
       NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());

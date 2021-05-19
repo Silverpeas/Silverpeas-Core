@@ -38,14 +38,14 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  * @author silveryocha
  */
 @EnableSilverTestEnv
-class SubscriptionResourceTypeRegistryTest {
+class SubscriptionFactoryTest {
 
   @TestManagedBean
-  private SubscriptionResourceTypeRegistry registry;
+  private SubscriptionFactory registry;
 
   @BeforeEach
   void commonsAsserts() {
-    assertThat(SubscriptionResourceTypeRegistry.get(), is(registry));
+    assertThat(SubscriptionFactory.get(), is(registry));
     assertThat(SubscriptionResourceType.from(null), is(UNKNOWN));
     assertThat(SubscriptionResourceType.from("toto"), is(UNKNOWN));
     assertThat(registry.streamAll().count(), is(2L));
@@ -53,17 +53,17 @@ class SubscriptionResourceTypeRegistryTest {
 
   @Test
   void commons() {
-    SubscriptionResourceTypeRegistry.get().streamAll().forEach(s -> {
+    SubscriptionFactory.get().streamAll().forEach(s -> {
       assertThat(s, not(is(UNKNOWN)));
       assertThat(SubscriptionResourceType.from(s.getName()), is(s));
-      assertThat(registry.getByName(s.getName()), is(s));
+      assertThat(registry.getSubscriptionResourceTypeByName(s.getName()), is(s));
       assertThat(s.isValid(), is(true));
     });
   }
 
   @Test
   void withOtherThanCommons() {
-    registry.add(new SubscriptionResourceType() {
+    registry.register(new SubscriptionResourceType() {
       private static final long serialVersionUID = -9142052086485634286L;
 
       @Override
@@ -75,8 +75,8 @@ class SubscriptionResourceTypeRegistryTest {
       public String getName() {
         return "ADDED_TYPE";
       }
-    });
-    registry.add(new SubscriptionResourceType() {
+    }, (r, s, i) -> null, (s, r, c) -> null);
+    registry.register(new SubscriptionResourceType() {
       private static final long serialVersionUID = 4065017699598254761L;
 
       @Override
@@ -88,8 +88,8 @@ class SubscriptionResourceTypeRegistryTest {
       public String getName() {
         return "OTHER_ADDED_TYPE";
       }
-    });
-    registry.add(new SubscriptionResourceType() {
+    }, (r, s, i) -> null, (s, r, c) -> null);
+    registry.register(new SubscriptionResourceType() {
       private static final long serialVersionUID = 6154543477111474298L;
 
       @Override
@@ -101,7 +101,7 @@ class SubscriptionResourceTypeRegistryTest {
       public String getName() {
         return "02_OTHER_ADDED_TYPE";
       }
-    });
+    }, (r, s, i) -> null, (s, r, c) -> null);
     assertThat(registry.streamAll().count(), is(5L));
     assertThat(
         registry.streamAll().map(SubscriptionResourceType::getName).collect(Collectors.toList()),
