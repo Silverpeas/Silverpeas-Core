@@ -98,12 +98,14 @@ public abstract class AbstractSubscriptionResource<T extends WAPrimaryKey>
 
     AbstractSubscriptionResource<T> that = (AbstractSubscriptionResource<T>) obj;
 
-    return new EqualsBuilder().append(id, that.id).append(type, that.type).append(pk, that.pk)
+    return new EqualsBuilder().append(id, that.id)
+        .append(type, that.type)
+        .append(pk.toString(), that.pk.toString())
         .isEquals();
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(id).append(type).append(pk).toHashCode();
+    return new HashCodeBuilder().append(id).append(type).append(pk.toString()).toHashCode();
   }
 }

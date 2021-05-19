@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Date;
 
@@ -37,13 +37,14 @@ import java.util.Date;
  * User: Yohann Chastagnier
  * Date: 19/02/13
  */
-public abstract class AbstractSubscription implements Subscription {
+public abstract class AbstractSubscription<R extends SubscriptionResource>
+    implements Subscription {
 
-  private final SubscriptionResource resource;
+  private final R resource;
   private final SubscriptionSubscriber subscriber;
-  private final SubscriptionMethod subscriptionMethod;
+  private SubscriptionMethod subscriptionMethod;
   private final String creatorId;
-  private final Date creationDate;
+  private Date creationDate;
 
   /**
    * Constructor which use by default SubscriptionMethod.SELF_CREATION and null creation date.
@@ -51,8 +52,7 @@ public abstract class AbstractSubscription implements Subscription {
    * @param resource id, type and pk of the resource aimed by the subscription
    * @param creatorId the user id that has handled the subscription
    */
-  protected AbstractSubscription(SubscriptionSubscriber subscriber, SubscriptionResource resource,
-      String creatorId) {
+  protected AbstractSubscription(SubscriptionSubscriber subscriber, R resource, String creatorId) {
     this(subscriber, resource, SubscriptionMethod.UNKNOWN, creatorId, null);
   }
 
@@ -64,11 +64,11 @@ public abstract class AbstractSubscription implements Subscription {
    * @param creatorId the user id that has handled the subscription
    * @param creationDate date of the subscription creation (date when saved)
    */
-  protected AbstractSubscription(SubscriptionSubscriber subscriber, SubscriptionResource resource,
+  protected AbstractSubscription(SubscriptionSubscriber subscriber, R resource,
       SubscriptionMethod subscriptionMethod, String creatorId, Date creationDate) {
     this.subscriber = subscriber;
     this.resource = resource;
-    if (!subscriptionMethod.isValid() || subscriptionMethod == null) {
+    if (subscriptionMethod == null || !subscriptionMethod.isValid()) {
       // Guessing the method if it is unknown
       if (SubscriberType.GROUP.equals(subscriber.getType()) ||
           !subscriber.getId().equals(creatorId)) {
@@ -85,13 +85,21 @@ public abstract class AbstractSubscription implements Subscription {
     this.creationDate = creationDate;
   }
 
+  protected void setSubscriptionMethod(final SubscriptionMethod subscriptionMethod) {
+    this.subscriptionMethod = subscriptionMethod;
+  }
+
+  protected void setCreationDate(final Date creationDate) {
+    this.creationDate = creationDate;
+  }
+
   @Override
   public SubscriptionSubscriber getSubscriber() {
     return subscriber;
   }
 
   @Override
-  public SubscriptionResource getResource() {
+  public R getResource() {
     return resource;
   }
 
@@ -110,6 +118,7 @@ public abstract class AbstractSubscription implements Subscription {
     return creationDate;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public boolean equals(Object o) {
     if (this == o) {

@@ -38,10 +38,12 @@ import org.silverpeas.cmis.walkers.TreeWalkerForSpaceInst;
 import org.silverpeas.cmis.walkers.TreeWalkerSelector;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -97,6 +99,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -120,6 +123,11 @@ public abstract class CMISEnvForTests {
   // the current user behind the request (to get its default language)
   @TestManagedMock
   protected PersonalizationService personalizationService;
+
+  // the organization controller is used by the tree walker. In the test, the organization
+  //controller will provide the data by backing an excerpt of a organizational schema of Silverpeas.
+  @TestManagedMock
+  protected WAComponentRegistry waComponentRegistry;
 
   // the organization controller is used by the tree walker. In the test, the organization
   //controller will provide the data by backing an excerpt of a organizational schema of Silverpeas.
@@ -264,6 +272,14 @@ public abstract class CMISEnvForTests {
         any(ResourceIdentifier.class))).thenReturn(true);
     when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class))).thenReturn(
         true);
+
+    when(waComponentRegistry.getWAComponent(startsWith("kmelia"))).then(m -> {
+      final String instanceId = m.getArgument(0, String.class);
+      final WAComponent kmelia = mock(WAComponent.class);
+      when(kmelia.getName()).thenReturn("kmelia");
+      when(kmelia.isTopicTracker()).thenReturn(true);
+      return Optional.of(kmelia);
+    });
 
     when(organizationController.isComponentAvailableToUser(anyString(), anyString())).thenReturn(
         true);

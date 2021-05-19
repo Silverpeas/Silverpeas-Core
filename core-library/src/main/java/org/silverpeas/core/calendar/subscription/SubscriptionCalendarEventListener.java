@@ -44,7 +44,7 @@ public class SubscriptionCalendarEventListener
 
   @Override
   protected SubscriptionResource getSubscriptionResource(final Calendar resource) {
-    return new CalendarSubscriptionResource(resource);
+    return CalendarSubscriptionResource.from(resource);
   }
 
   @Override

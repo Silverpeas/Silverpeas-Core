@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.subscription.SubscriptionContributionType;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry;
+import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
@@ -70,7 +70,7 @@ public class SubscriptionCategoryWebManager {
   }
 
   private List<SubscriptionCategory> loadCategories(final PdcSubscriptionSessionController ctrl) {
-    Stream<SubscriptionCategory> categories = SubscriptionResourceTypeRegistry.get()
+    Stream<SubscriptionCategory> categories = SubscriptionFactory.get()
         .streamAll()
         .filter(SubscriptionResourceType::isValid)
         .filter(Predicate.not(SubscriptionContributionType.class::isInstance))

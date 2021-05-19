@@ -21,45 +21,51 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+package org.silverpeas.core.contribution.publication.subscription;
 
-import java.io.Serializable;
+import org.silverpeas.core.subscription.SubscriptionContributionType;
 
 /**
- * The type of a resource that can be targeted by a subscription.
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public interface SubscriptionResourceType extends Serializable {
+public class PublicationSubscriptionConstants {
 
-  /**
-   * Is this type is valid? It is valid if the type of the resource isn't unknown.
-   * @return true if the type of the resource targeted by a subscription is known, false otherwise.
-   */
-  default boolean isValid() {
-    return true;
+  private PublicationSubscriptionConstants() {
+    // Constant class
   }
 
   /**
-   * Indicates a priority which can be used by UI as example.
-   * @return an integer which lowest value means the highest priority.
+   * The resource is a publication. Used by component instances handling publications.
    */
-  int priority();
+  public static final SubscriptionContributionType PUBLICATION = new SubscriptionContributionType() {
+    private static final long serialVersionUID = 1202631086138582114L;
+
+    @Override
+    public int priority() {
+      return 20;
+    }
+
+    @Override
+    public String getName() {
+      return "PUBLICATION";
+    }
+  };
 
   /**
-   * Gets the name of the subscription type.
-   * <p>
-   *   '@' character is not authorized because it is used internally for technical purposes.
-   * </p>
-   * @return a string.
+   * The resource is a publication alias. Used by component instances handling publications.
    */
-  @JsonValue
-  String getName();
+  public static final SubscriptionContributionType PUBLICATION_ALIAS = new SubscriptionContributionType() {
+    private static final long serialVersionUID = -5367357111587094711L;
 
-  @JsonCreator
-  static SubscriptionResourceType from(String name) {
-    return SubscriptionFactory.get().getSubscriptionResourceTypeByName(name);
-  }
+    @Override
+    public int priority() {
+      return 20;
+    }
+
+    @Override
+    public String getName() {
+      return "PUBLICATION_ALIAS";
+    }
+  };
 }

@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
@@ -30,18 +34,14 @@ import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.node.model.NodePK;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Same database environment as DAO tests. User: Yohann Chastagnier Date: 24/02/13
@@ -170,9 +170,9 @@ public class SubscriptionServiceIT extends AbstractCommonSubscriptionIntegration
 
     subscriptionService.unsubscribeByResources(Arrays
         .asList(NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)),
-        NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)),
-        NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID)),
-        NodeSubscriptionResource.from(new NodePK("20", INSTANCE_ID))));
+            NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)),
+            NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID)),
+            NodeSubscriptionResource.from(new NodePK("20", INSTANCE_ID))));
 
     // Verifying the deleted subscriptions
     result = subscriptionService.getBySubscriberAndComponent(userSubscriber, INSTANCE_ID);

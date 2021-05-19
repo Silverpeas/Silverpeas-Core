@@ -23,8 +23,6 @@
  */
 package org.silverpeas.web.pdcsubscription.control;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -33,14 +31,12 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionService;
 import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionFactory;
+import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.PKSubscription;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -57,8 +53,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.subscription.SubscriptionResourceType.from;
-import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
-import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = 3130701500269550099L;
@@ -123,6 +117,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public void deleteUserSubscriptions(final String[] selectedItems) {
+    final SubscriptionFactory factory = SubscriptionFactory.get();
     final List<Subscription> subscriptionsToDeleted = Stream.of(selectedItems).map(i -> {
       // exploding data
       final String[] subscriptionIdentifiers = i.split("@");
@@ -130,19 +125,10 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       final String resourceId = subscriptionIdentifiers[1];
       final String instanceId = subscriptionIdentifiers[2];
       final String creatorId = subscriptionIdentifiers[3];
-      final Subscription subscription;
-      if (type == COMPONENT) {
-        subscription = new ComponentSubscription(UserSubscriptionSubscriber.from(getUserId()),
-            instanceId, creatorId);
-      } else if (type == NODE) {
-        subscription = new NodeSubscription(UserSubscriptionSubscriber.from(getUserId()),
-            new NodePK(resourceId, instanceId), creatorId);
-      } else {
-        subscription = new PKSubscription(UserSubscriptionSubscriber.from(getUserId()),
-            PKSubscriptionResource.from(new ResourceReference(resourceId, instanceId), type),
-            creatorId);
-      }
-      return subscription;
+      final SubscriptionResource subscriptionResource = factory.createSubscriptionResourceInstance(
+          type, resourceId, null, instanceId);
+      return factory.createSubscriptionInstance(
+          UserSubscriptionSubscriber.from(getUserId()), subscriptionResource, creatorId);
     }).collect(Collectors.toList());
     getSubscribeService().unsubscribe(subscriptionsToDeleted);
   }

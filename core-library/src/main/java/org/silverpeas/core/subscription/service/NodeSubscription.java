@@ -23,17 +23,14 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.node.model.NodePK;
-
-import java.util.Date;
 
 /**
  * @author ehugonnet
  */
-public class NodeSubscription extends AbstractSubscription {
+public class NodeSubscription extends AbstractSubscription<NodeSubscriptionResource> {
 
   /**
    * Node subscription constructor for which the type of the subscriber is USER and the
@@ -58,21 +55,23 @@ public class NodeSubscription extends AbstractSubscription {
   /**
    * Node subscription constructor for a subscriber that handles the subscription too.
    * @param subscriber the subscriber
-   * @param nodePK representation of the topic
+   * @param resource the topic resource
    * @param creatorId the user id that has handled the subscription
    */
-  public NodeSubscription(final SubscriptionSubscriber subscriber, final NodePK nodePK,
-      final String creatorId) {
-    super(subscriber, NodeSubscriptionResource.from(nodePK), SubscriptionMethod.UNKNOWN, creatorId,
-        null);
+  public NodeSubscription(final SubscriptionSubscriber subscriber,
+      final NodeSubscriptionResource resource, final String creatorId) {
+    super(subscriber, resource, creatorId);
   }
 
   /**
-   * @see AbstractSubscription
+   * Node subscription constructor for a subscriber that handles the subscription too.
+   * @param subscriber the subscriber
+   * @param nodePK representation of the topic
+   * @param creatorId the user id that has handled the subscription
    */
-  protected NodeSubscription(final SubscriptionSubscriber subscriber,
-      final SubscriptionResource resource, final SubscriptionMethod subscriptionMethod,
-      final String creatorId, final Date creationDate) {
-    super(subscriber, resource, subscriptionMethod, creatorId, creationDate);
+  protected NodeSubscription(final SubscriptionSubscriber subscriber, final NodePK nodePK,
+      final String creatorId) {
+    super(subscriber, NodeSubscriptionResource.from(nodePK), SubscriptionMethod.UNKNOWN, creatorId,
+        null);
   }
 }

@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.calendar.subscription;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
@@ -48,7 +49,9 @@ public abstract class AbstractCalendarSubscriptionService extends AbstractResour
   @Override
   public void init() throws Exception {
     super.init();
-    SubscriptionResourceTypeRegistry.get().add(CALENDAR);
+    SubscriptionFactory.get().register(CALENDAR,
+        (r, s, i) -> new CalendarSubscriptionResource(new ResourceReference(r, i)),
+        (s, r, c) -> new CalendarSubscription(s, (CalendarSubscriptionResource) r, c));
   }
 
   @Override
