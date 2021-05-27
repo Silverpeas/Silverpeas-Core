@@ -186,7 +186,7 @@ public class AuthenticationSQL extends Authentication {
     updatePassword(sqlConnection, login, newPasswordInDB);
   }
 
-  private static Connection getSQLConnection(AuthenticationConnection<Connection> connection) {
+  protected static Connection getSQLConnection(AuthenticationConnection<Connection> connection) {
     return connection.getConnector();
   }
 
