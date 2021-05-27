@@ -33,8 +33,11 @@ import org.silverpeas.core.util.StringUtil;
 import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * Setting properties of the chat service. It loads the
@@ -79,6 +82,22 @@ public class ChatSettings {
   }
 
   /**
+   * Indicates if the visio conference is enabled.
+   * @return true of enabled, false otherwise.
+   */
+  public boolean isVisioEnabled() {
+    return settings.getBoolean("chat.client." + getSilverpeasChatClientId() + ".visio.enabled", true);
+  }
+
+  /**
+   * Indicates if the screencast is enabled.
+   * @return true of enabled, false otherwise.
+   */
+  public boolean isScreencastEnabled() {
+    return settings.getBoolean("chat.client." + getSilverpeasChatClientId() + ".screencast.enabled", true);
+  }
+
+  /**
    * Gets the URL at which the chat server is listening.
    * @return the chat server's URL.
    */
@@ -104,7 +123,9 @@ public class ChatSettings {
    * @return the hostname or the IP address of the ICE server.
    */
   public String getICEServer() {
-    return settings.getString("chat.servers.ice", "");
+    return Optional.ofNullable(settings.getString("chat.servers.ice", null))
+        .filter(i -> this.isVisioEnabled())
+        .orElse(EMPTY);
   }
 
   /**

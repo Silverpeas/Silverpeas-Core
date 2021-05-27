@@ -886,7 +886,8 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeChat(final ElementContainer xhtml) {
     if (ChatServer.isEnabled()) {
       final String chatDir = getApplicationURL() + "/chat/";
-      final String silverpeasChatClientId = ChatSettings.get().getSilverpeasChatClientId();
+      final ChatSettings chatSettings = ChatSettings.get();
+      final String silverpeasChatClientId = chatSettings.getSilverpeasChatClientId();
       if (silverpeasChatClientId.equals("jsxc")) {
         final String jsxcDir = chatDir + "jsxc/";
         xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
@@ -900,6 +901,12 @@ public class JavascriptPluginInclusion {
       } else if (silverpeasChatClientId.equals("conversejs")) {
         final String converseDir = chatDir + "converse/";
         xhtml.addElement(script(converseDir + "converse.min.js"));
+        if (chatSettings.isVisioEnabled()) {
+          xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
+        }
+        if (chatSettings.isScreencastEnabled()) {
+          xhtml.addElement(script(chatDir + "converse-plugins/screencast.min.js"));
+        }
         final Element link = link(converseDir + "converse.min.css");
         if (link instanceof link) {
           ((link) link).setMedia("screen");
