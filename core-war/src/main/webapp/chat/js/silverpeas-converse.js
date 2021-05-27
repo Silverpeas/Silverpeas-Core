@@ -261,6 +261,12 @@
     };
     this.init = function(chatOptions) {
       __settings = extendsObject(__settings, chatOptions);
+      if (__settings.visioEnabled) {
+        __settings.whitelisted_plugins.push('jitsimeet');
+      }
+      if (__settings.screencastEnabled) {
+        __settings.whitelisted_plugins.push('screencast');
+      }
       __setupVCard(__settings);
       __setupResize(__settings);
       __setupRoomsAddons(__settings);
@@ -269,38 +275,43 @@
       return this;
     };
     this.start = function() {
-      converse.initialize({
-        'loglevel' : __settings.debug ? 'debug' : 'error',
-        'i18n' : __settings.language,
-        'assets_path' : '/silverpeas/chat/converse/',
-        'sounds_path' : '/silverpeas/chat/converse/',
-        'play_sounds' : false,
-        'bosh_service_url' : __settings.url,
-        'allow_logout' : false,
-        'auto_login' : true,
-        'auto_reconnect' : true,
-        'jid' : __settings.jid,
-        'default_domain' : __settings.domain,
-        'domain_placeholder' : __settings.domain,
-        'password' : __settings.password,
-        'autocomplete_add_contact' : false,
-        'notification_icon' : __settings.notificationLogo,
-        'muc_domain' : 'conference.' + __settings.domain,
-        'locked_muc_domain' : 'hidden',
-        'muc_disable_slash_commands' : true,
-        'locked_muc_nickname' : true,
-        'nickname' : __settings.vcard.fn,
-        'auto_register_muc_nickname' : true,
-        'notify_all_room_messages': true,
-        'auto_join_on_invite': false,
-        'roster_groups' : false,
-        'allow_adhoc_commands' : false,
-        'allow_contact_removal' : false,
-        'allow_contact_requests' : false,
-        'allow_registration' : false,
-        'show_controlbox_by_default' : false,
-        'discover_connection_methods' : false,
-        'whitelisted_plugins' : __settings.whitelisted_plugins
+      sp.i18n.load({
+        bundle : 'org.silverpeas.chat.multilang.chat',
+        async : true
+      }).then(function() {
+        converse.initialize({
+          'loglevel' : __settings.debug ? 'debug' : 'error',
+          'i18n' : __settings.language,
+          'assets_path' : '/silverpeas/chat/converse/',
+          'sounds_path' : '/silverpeas/chat/converse/',
+          'play_sounds' : false,
+          'bosh_service_url' : __settings.url,
+          'allow_logout' : false,
+          'auto_login' : true,
+          'auto_reconnect' : true,
+          'jid' : __settings.jid,
+          'default_domain' : __settings.domain,
+          'domain_placeholder' : __settings.domain,
+          'password' : __settings.password,
+          'autocomplete_add_contact' : false,
+          'notification_icon' : __settings.notificationLogo,
+          'muc_domain' : 'conference.' + __settings.domain,
+          'locked_muc_domain' : 'hidden',
+          'muc_disable_slash_commands' : true,
+          'locked_muc_nickname' : true,
+          'nickname' : __settings.vcard.fn,
+          'auto_register_muc_nickname' : true,
+          'notify_all_room_messages': true,
+          'auto_join_on_invite': false,
+          'roster_groups' : false,
+          'allow_adhoc_commands' : false,
+          'allow_contact_removal' : false,
+          'allow_contact_requests' : false,
+          'allow_registration' : false,
+          'show_controlbox_by_default' : false,
+          'discover_connection_methods' : false,
+          'whitelisted_plugins' : __settings.whitelisted_plugins
+        });
       });
     };
     this.stop = function() {
