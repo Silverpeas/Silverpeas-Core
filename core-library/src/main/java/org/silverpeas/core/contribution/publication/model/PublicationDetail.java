@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.ContributionWithVisibility;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -39,8 +40,8 @@ import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldD
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -1131,7 +1132,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean isUpdateDateMustBeSet() {
-    return updateDateMustBeSet;
+    return !ContributionModificationContextHandler.isMinorModification() && updateDateMustBeSet;
   }
 
   public void setUpdateDateMustBeSet(boolean updateDateMustBeSet) {
