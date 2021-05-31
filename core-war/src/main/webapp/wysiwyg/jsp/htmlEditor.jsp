@@ -41,6 +41,7 @@
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
+<%@ page import="org.silverpeas.core.contribution.ContributionModificationContextHandler" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
@@ -76,6 +77,7 @@
   }
 
   UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+  ContributionModificationContextHandler.verifyRequest(request);
 
   if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) ||
       "SaveHtml".equals(actionWysiwyg)) {

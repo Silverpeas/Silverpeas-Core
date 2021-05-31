@@ -22,47 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.base;
+package org.silverpeas.core.contribution;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.ContributionModificationContextHandler;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * @author silveryocha
  */
-public abstract class SilverpeasRequestContext {
+public class ContributionSettings {
 
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private User user;
+  private static final SettingBundle SETTINGS = ResourceLocator.getSettingBundle(
+      "org.silverpeas.contribution.settings.contribution");
 
-  public void init(final HttpServletRequest request, final HttpServletResponse response) {
-    this.request = request;
-    this.response = response;
-    final String httpMethod = request.getMethod().toUpperCase();
-    if ("PUT".equals(httpMethod)) {
-      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-      ContributionModificationContextHandler.verifyRequest(request);
-    }
+  /**
+   * Hidden constructor.
+   */
+  private ContributionSettings() {
   }
 
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(final User user) {
-    this.user = user;
-  }
-
-  public HttpServletRequest getRequest() {
-    return request;
-  }
-
-  public HttpServletResponse getResponse() {
-    return response;
+  /**
+   * Indicates if the behavior of asking to user if its modification is a minor one is enabled or
+   * not.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isMinorModificationBehaviorEnabled() {
+    return SETTINGS.getBoolean("contribution.modification.behavior.minor", true);
   }
 }

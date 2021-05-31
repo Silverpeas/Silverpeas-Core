@@ -26,6 +26,7 @@ package org.silverpeas.web.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.importexport.control.RepositoriesTypeManager;
 import org.silverpeas.core.io.upload.UploadSession;
@@ -112,6 +113,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       }
 
       UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+      ContributionModificationContextHandler.verifyRequest(request);
 
       final String resourceId = request.getParameter("ResourceId");
       final String contentLanguage = checkLanguage(request.getParameter("ContentLanguage"));
