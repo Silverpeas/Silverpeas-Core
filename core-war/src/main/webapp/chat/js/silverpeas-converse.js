@@ -193,13 +193,57 @@
   }
 
   /**
+   * Setups notification addons.
+   * According to OS and WEB browser, notifications could not be handled as attempted.
+   * This addon try to improve this part.
+   * @private
+   */
+  function __setupNotificationAddons(chatOptions) {
+    chatOptions.whitelisted_plugins.push('silverpeas-notification');
+    converse.plugins.add('silverpeas-notification', {
+      initialize : function() {
+        let __timeout;
+        let __lastBlurOrFocus;
+        const _converse = this._converse;
+        const _blurFocusEventHandler = function(e) {
+          if (document.visibilityState !== 'hidden') {
+            clearTimeout(__timeout);
+            __timeout = setTimeout(function() {
+              const ev = {'type' : e.type.endsWith('blur') ? "blur" : "focus"};
+              if (__lastBlurOrFocus && ev.type !== __lastBlurOrFocus) {
+                sp.log.debug('previous', __lastBlurOrFocus, 'next', ev);
+                _converse.saveWindowState(ev);
+              }
+              __lastBlurOrFocus = ev.type;
+            }, 1000);
+          }
+        }
+        const _visibilityEventHandler = function() {
+          // If invoked, blur and focus MUST be ignored
+          sp.log.debug('visibilitychange event', document.visibilityState);
+          clearTimeout(__timeout);
+          __lastBlurOrFocus = undefined;
+        }
+        _converse.api.listen.on('registeredGlobalEventHandlers', function() {
+          window.addEventListener("visibilitychange", _visibilityEventHandler);
+          window.addEventListener("blur", _blurFocusEventHandler);
+          window.addEventListener("focus", _blurFocusEventHandler);
+          let __body = spLayout.getBody();
+          __body.addEventListener("blur", _blurFocusEventHandler, "noti#ConverseJS");
+          __body.addEventListener("focus", _blurFocusEventHandler, "noti#ConverseJS");
+        });
+      }
+    });
+  }
+
+  /**
    * Setups the common stuffs in order to get the chat working into Silverpeas.
    * @private
    */
   function __setupSilverpeas(chatOptions) {
     chatOptions.whitelisted_plugins.push('silverpeas-setup');
     converse.plugins.add('silverpeas-setup', {
-      dependencies: ["silverpeas-vcard"],
+      dependencies : ["silverpeas-vcard"],
       initialize : function() {
         const _converse = this._converse;
         window._converse = _converse;
@@ -272,6 +316,7 @@
       __setupRoomsAddons(__settings);
       __setupSilverpeas(__settings);
       __setupChatboxesAddons(__settings);
+      __setupNotificationAddons(__settings);
       return this;
     };
     this.start = function() {
@@ -301,8 +346,8 @@
           'locked_muc_nickname' : true,
           'nickname' : __settings.vcard.fn,
           'auto_register_muc_nickname' : true,
-          'notify_all_room_messages': true,
-          'auto_join_on_invite': false,
+          'notify_all_room_messages' : true,
+          'auto_join_on_invite' : false,
           'roster_groups' : false,
           'allow_adhoc_commands' : false,
           'allow_contact_removal' : false,
