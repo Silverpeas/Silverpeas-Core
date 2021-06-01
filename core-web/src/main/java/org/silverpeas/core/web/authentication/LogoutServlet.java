@@ -49,21 +49,21 @@ public class LogoutServlet extends HttpServlet {
         getSessionManagement().closeSession(session.getId());
         invalidateUserSession(session);
       }
-      StringBuilder buffer = new StringBuilder(512);
-      buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
-      buffer.append(request.getServerPort()).append(request.getContextPath());
       SettingBundle resource = ResourceLocator.getSettingBundle(
           "org.silverpeas.authentication.settings.authenticationSettings");
       String postLogoutPage = resource.getString("logout.page", "/Login?logout=true");
+      if (postLogoutPage.startsWith("http")) {
+        response.sendRedirect(postLogoutPage);
+        return;
+      }
+      StringBuilder buffer = new StringBuilder(512);
+      buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
+      buffer.append(request.getServerPort()).append(request.getContextPath());
       User currentUser = User.getCurrentRequester();
       if (currentUser != null) {
         String paramDelimiter = (postLogoutPage.contains("?") ? "&" : "?");
         postLogoutPage +=
             paramDelimiter + LoginServlet.PARAM_DOMAINID + "=" + currentUser.getDomainId();
-      }
-      if (postLogoutPage.startsWith("http")) {
-        response.sendRedirect(postLogoutPage);
-        return;
       }
       buffer.append(postLogoutPage);
       response.sendRedirect(response.encodeRedirectURL(buffer.toString()));
