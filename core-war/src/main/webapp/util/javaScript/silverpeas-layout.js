@@ -216,6 +216,17 @@
       this.__hidePromise = undefined;
       this.__hide_timeout = undefined;
     },
+    addEventListener : function(eventName, listener, listenerId) {
+      switch (eventName) {
+        case 'blur':
+        case 'focus':
+          const normalizedEventName = this.normalizeEventName(eventName);
+          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
+          break;
+        default:
+          this._super(eventName, listener);
+      }
+    },
     resize : function() {
       var bodyLayoutHeight = $mainWindow.innerHeight -
           this.getMainLayout().getHeader().getContainer().offsetHeight;
@@ -288,9 +299,16 @@
               }
 
               try {
-                var frameContentDocument = this.contentFrame.contentWindow.document;
+                const contentWindow = this.contentFrame.contentWindow;
+                const frameContentDocument = contentWindow.document;
                 frameContentDocument.body.setAttribute('tabindex', '-1');
                 frameContentDocument.body.focus();
+                contentWindow.addEventListener('blur', function() {
+                  this.dispatchEvent("blur");
+                }.bind(this));
+                contentWindow.addEventListener('focus', function() {
+                  this.dispatchEvent("focus");
+                }.bind(this));
               } catch (e) {
                 sp.log.error(e);
               }
