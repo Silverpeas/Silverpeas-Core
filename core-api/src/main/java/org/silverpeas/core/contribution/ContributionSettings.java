@@ -27,6 +27,10 @@ package org.silverpeas.core.contribution;
 import org.silverpeas.core.contribution.tracking.TrackedApplications;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The different settings that are applied on the contributions, whatever their concrete type.
@@ -49,8 +53,10 @@ public class ContributionSettings {
    * not.
    * @return true if enabled, false otherwise.
    */
-  public static boolean isMinorModificationBehaviorEnabled() {
-    return SETTINGS.getBoolean("contribution.modification.behavior.minor", true);
+  public static Stream<String> streamComponentNamesWithMinorModificationBehaviorEnabled() {
+    return Stream.of(
+        SETTINGS.getList("contribution.modification.behavior.minor.componentNames", new String[]{}))
+        .filter(StringUtil::isDefined);
   }
 
   /**
@@ -63,7 +69,7 @@ public class ContributionSettings {
    * that support such a tracking) is enabled for all the applications in Silverpeas.
    */
   public static TrackedApplications getApplicationsTrackedForModifications() {
-      String[] apps = SETTINGS.getList("contribution.tracking.apps", new String[]{});
-      return TrackedApplications.track(apps);
+    return TrackedApplications.track(
+        streamComponentNamesWithMinorModificationBehaviorEnabled().toArray(String[]::new));
   }
 }

@@ -4651,6 +4651,18 @@ input.search:focus {
   top: -2px;
 }
 
+.contribution-modification-context .champs label {
+  font-weight: normal;
+}
+
+.contribution-modification-context .label img {
+  margin:-3px 0 0 2px;
+}
+
+.contribution-modification-context .field label {
+  font-weight: normal;
+}
+
 /* userzoom-tooltip-profilPhoto */
 .userzoom-tooltip {
   border:1px solid #aeaeae;

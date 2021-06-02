@@ -731,9 +731,9 @@
     };
     var removeContainers = function($containers) {
       if ($containers.length > 0) {
-        $containers.dialog("close");
-        $containers.dialog("destroy");
-        $containers.remove();
+        $containers.each(function(index, $container){
+          $container.spUIManager.destroy();
+        });
         __debug($containers.length + " dialogs removed");
       }
     };
@@ -765,25 +765,28 @@
       FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
     }
     var $container = FS_MANAGER.top$()("<div>")
-        .attr('class', 'spFullscreenModalBackground')
-        .attr('style', 'display: none; border: 0; padding: 0; height: 0; width: 0; overflow: hidden;');
+        .attr('class', 'spFullscreenModalBackground ui-widget-overlay ui-front')
+        .attr('style', 'display: none; border: 0; padding: 0; overflow: hidden;');
     FS_MANAGER.top$()(FS_MANAGER.topDocument().body).append($container);
-
-    $container.dialog({
-      fullscreenModalBackground : true,
-      closeOnEscape : false,
-      autoOpen : false,
-      modal : true,
-      resizable : false,
-      height : '0px',
-      width : '0px'
-    });
-
-    $container.dialog('widget').find(".ui-dialog-titlebar").hide();
+    var $containerElement = $container[0];
+    $containerElement.spUIManager = new function() {
+      this.isOpen = function() {
+        return $container.css('display') !== 'none';
+      };
+      this.open = function() {
+        return $container.show();
+      };
+      this.close = function() {
+        return $container.hide();
+      };
+      this.destroy = function() {
+        return $container.remove();
+      };
+    };
 
     // Little hack to prevent some unexpected errors when escape key is
     // pressed during an ajax request
-    $container.dialog("widget").keydown(function(e) {
+    $containerElement.addEventListener('keydown', function(e) {
       if (e.keyCode === 27) {
         e.preventDefault();
       }
@@ -804,8 +807,8 @@
     }
     dialogInstanceElement.__lastRegisteredHandler = function() {
       try {
-        if ($container.dialog('isOpen')) {
-          $container.dialog("close");
+        if ($containerElement.spUIManager.isOpen()) {
+          $containerElement.spUIManager.close();
         }
       } catch (e) {
         sp.log.debug(e);
@@ -818,8 +821,7 @@
     });
 
     // Displaying the dialog.
-    $container.dialog("open");
-    $container.dialog("widget").css('top', '-1000px').css('left', '-1000px');
+    $containerElement.spUIManager.open();
   }
 
   function __closeFullscreenModalBackground() {
@@ -845,23 +847,20 @@
 
   $.widget("ui.dialog", $.ui.dialog, {
     open : function() {
-      if (__displayFullscreenModalBackground && !this._isOpen &&
-          !this.options.fullscreenModalBackground) {
+      if (__displayFullscreenModalBackground && !this._isOpen) {
         __adjustPosition(this.options);
         __openFullscreenModalBackground(this.element);
       }
       return this._super();
     },
     close : function() {
-      if (__displayFullscreenModalBackground && this._isOpen &&
-          !this.options.fullscreenModalBackground) {
+      if (__displayFullscreenModalBackground && this._isOpen) {
         __closeFullscreenModalBackground();
       }
       return this._super();
     },
     destroy : function() {
-      if (__displayFullscreenModalBackground && this._isOpen &&
-          !this.options.fullscreenModalBackground) {
+      if (__displayFullscreenModalBackground && this._isOpen) {
         __closeFullscreenModalBackground();
       }
       return this._super();

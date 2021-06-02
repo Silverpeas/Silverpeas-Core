@@ -26,7 +26,6 @@ package org.silverpeas.core.webapi.attachment;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -42,7 +41,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
@@ -129,7 +127,6 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         return null;
       }
 
-      UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
       ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
 
       String uploadedFilename = filename;

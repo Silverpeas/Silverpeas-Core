@@ -29,6 +29,7 @@ import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.notification.user.client.ExternalRecipient;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
@@ -48,8 +49,6 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.getSubscriptionNotificationUserNoteFromCurrentRequest;
-import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.isSubscriptionNotificationEnabledForCurrentRequest;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -175,12 +174,14 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     try {
       if (isUserSubscriptionNotification() &&
           (NotifAction.UPDATE == getAction() || NotifAction.CLASSIFIED == getAction())) {
-        if (!isSubscriptionNotificationEnabledForCurrentRequest()) {
+        final UserSubscriptionNotificationSendingHandler handler =
+            UserSubscriptionNotificationSendingHandler.get();
+        if (!handler.isSubscriptionNotificationEnabledForCurrentRequest()) {
           // In that case, the user requested to not send subscription notification
           stop();
         } else {
           // Maybe a note has been written?
-          userNote.set(getSubscriptionNotificationUserNoteFromCurrentRequest());
+          userNote.set(handler.getSubscriptionNotificationUserNoteFromCurrentRequest());
         }
       }
       initialize();

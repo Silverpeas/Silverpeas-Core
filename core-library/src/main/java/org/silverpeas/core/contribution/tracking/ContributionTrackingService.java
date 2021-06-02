@@ -51,9 +51,9 @@ public class ContributionTrackingService implements ContributionModification, Co
   @Transactional(Transactional.TxType.MANDATORY)
   public void update(final Contribution before, final Contribution after) {
     saveEventIfTrackingEnabled(after, () -> {
-      TrackedActionType type = modifHandler.isMinorModification() ?
-          TrackedActionType.MINOR_UPDATE :
-          TrackedActionType.MAJOR_UPDATE;
+      TrackedActionType type = modifHandler.isMinorModification()
+          .map(m -> m ? TrackedActionType.MINOR_UPDATE : TrackedActionType.MAJOR_UPDATE)
+          .orElse(TrackedActionType.UPDATE);
       Instant dateTime = after.getLastUpdateDate().toInstant();
       TrackedAction action = new TrackedAction(type, dateTime, after.getLastUpdater());
       save(action, after.getIdentifier());

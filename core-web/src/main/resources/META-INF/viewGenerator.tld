@@ -854,72 +854,32 @@
     </attribute>
   </tag>
   <tag>
-    <description>This TAG must be called into body of Button TAG. It permits to handle a user
-      confirmation of subscription notification sending.
+    <description>This TAG must be called into body of Button TAG.
+      It permits to handle a user contribution context.
     </description>
-    <name>confirmComponentSubscriptionNotificationSending</name>
+    <name>handleContributionManagementContext</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewgenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ContributionManagementContextTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>Specify the name of the method to call in order to validate the data filled by
-        a user. The method must return true if data filled are ok, false otherwise.</description>
-      <name>jsValidationCallbackMethodName</name>
-      <required>false</required>
+      <description>The id of the handled contribution</description>
+      <name>contributionId</name>
+      <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
+      <type>org.silverpeas.core.contribution.model.ContributionIdentifier</type>
     </attribute>
-    <attribute>
-      <description>
-        The identifier of the contribution saved. Used for example for adding comments automatically
-      </description>
-      <name>contributionLocalId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>
-        The identifier of the contribution saved. Used for example for adding comments automatically.
-        Usually this value is that of the getContributionType method from SilverpeasContent
-        interface implemented by the resource.
-      </description>
-      <name>contributionType</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>
-        Is the saved contribution indexable?
-      </description>
-      <name>contributionIndexable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Boolean</type>
-    </attribute>
-  </tag>
-  <tag>
-    <description>This TAG must be called into body of Button TAG. It permits to handle a user
-      confirmation of subscription notification sending.
-    </description>
-    <name>confirmResourceSubscriptionNotificationSending</name>
-    <tag-class>
-      org.silverpeas.core.web.util.viewgenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
-    </tag-class>
-    <body-content>JSP</body-content>
     <attribute>
       <description>The type of the resource subscription handled</description>
       <name>subscriptionResourceType</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>org.silverpeas.core.subscription.SubscriptionResourceType</type>
     </attribute>
     <attribute>
       <description>The identifier of the resource on which the subscription is registered</description>
       <name>subscriptionResourceId</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
@@ -927,26 +887,6 @@
       <description>Specify the name of the method to call in order to validate the data filled by
         a user. The method must return true if data filled are ok, false otherwise.</description>
       <name>jsValidationCallbackMethodName</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>
-        The identifier of the contribution saved. Used for example for adding comments automatically
-      </description>
-      <name>contributionLocalId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>
-        The identifier of the contribution saved. Used for example for adding comments automatically.
-        Usually this value is that of the getContributionType method from SilverpeasContent
-        interface implemented by the resource.
-      </description>
-      <name>contributionType</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>

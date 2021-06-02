@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Optional;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.util.StringUtil.fromBase64;
@@ -44,8 +45,8 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * This class permits to handle a contribution modification context.
  * <p>
  * A such context can give additional information to adopt different kind of behaviors. For example,
- * it can indicate if the user modification is a minor one which permits the contribution services
- * to adopt a different behavior from a normal one.
+ * it can indicates if the user modification is a minor one which permits the contribution services
+ * to adopt a different behavior against a normal one.
  * </p>
  * @author silveryocha
  */
@@ -79,33 +80,32 @@ public class ContributionModificationContextHandler
    * </p>
    * @param request the current HTTP request.
    */
+  @Override
   public void parseForProperty(HttpServletRequest request) {
-    if (isEnabled()) {
-      final String parameter = request.getParameter(HTTP_PARAM);
-      final String header = request.getHeader(HTTP_PARAM);
-      final Context context = getMergedContext(parameter, header);
-      getRequestCacheService().getCache().put(CACHE_KEY, context);
-    }
-  }
-
-  private static boolean isEnabled() {
-    return ContributionSettings.isMinorModificationBehaviorEnabled();
+    final String parameter = request.getParameter(HTTP_PARAM);
+    final String header = request.getHeader(HTTP_PARAM);
+    final Context context = getMergedContext(parameter, header);
+    getRequestCacheService().getCache().put(CACHE_KEY, context);
   }
 
   /**
    * Indicates from current request if the current user made a minor modification.
    * @return true if minor, false otherwise.
    */
-  public boolean isMinorModification() {
-    final Context context = getContext();
-    return context.isMinor();
+  public Optional<Boolean> isMinorModification() {
+    return getContext().map(Context::isMinor);
   }
 
   private Context getMergedContext(final String parameter, final String header) {
     Context fromParameters = decodeContext(parameter);
     Context fromHeaders = decodeContext(header);
     final Context mergedContext = new Context();
-    mergedContext.isMinor = fromParameters.isMinor || fromHeaders.isMinor;
+    if (fromParameters.isMinor != null) {
+      mergedContext.isMinor = fromParameters.isMinor;
+    }
+    if (mergedContext.isMinor == null || (!mergedContext.isMinor && fromHeaders.isMinor != null)) {
+      mergedContext.isMinor = fromHeaders.isMinor;
+    }
     return mergedContext;
   }
 
@@ -123,9 +123,8 @@ public class ContributionModificationContextHandler
     return JSONCodec.decode(decodedValue, Context.class);
   }
 
-  private Context getContext() {
-    Context context = getRequestCacheService().getCache().get(CACHE_KEY, Context.class);
-    return context == null ? new Context() : context;
+  private Optional<Context> getContext() {
+    return Optional.ofNullable(getRequestCacheService().getCache().get(CACHE_KEY, Context.class));
   }
 
   @XmlRootElement
@@ -135,9 +134,9 @@ public class ContributionModificationContextHandler
     private static final long serialVersionUID = -7623666268435749654L;
 
     @XmlElement
-    private boolean isMinor = false;
+    private Boolean isMinor = null;
 
-    boolean isMinor() {
+    Boolean isMinor() {
       return isMinor;
     }
   }

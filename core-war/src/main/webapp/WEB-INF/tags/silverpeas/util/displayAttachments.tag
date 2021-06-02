@@ -73,23 +73,28 @@
               type="java.lang.Boolean"
               description="True to display the attachment file size, false otherwise (false by default)" %>
 
-<%@ attribute name="subscriptionManagementContext" required="false"
-              type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"
-              description="The context of the subscription notification to manage." %>
+<%@ attribute name="contributionManagementContext" required="false"
+              type="org.silverpeas.core.contribution.util.ContributionManagementContext"
+              description="The context of the contribution to manage." %>
 
+<c:set var="isHandledContributionModificationContext" value="${false}"/>
 <c:set var="_paramHandledSubscriptionType" value=""/>
 <c:set var="_paramHandledSubscriptionResourceId" value=""/>
-<c:if test="${not empty subscriptionManagementContext}">
-  <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
-              and subscriptionManagementContext.entityStatusAfterPersistAction.validated
-              and subscriptionManagementContext.entityPersistenceAction.update}">
-    <c:set var="_paramHandledSubscriptionType" value="${subscriptionManagementContext.linkedSubscriptionResource.type.name}"/>
-    <c:set var="_paramHandledSubscriptionResourceId" value="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
+<c:if test="${not empty contributionManagementContext}">
+  <c:if test="${contributionManagementContext.entityStatusBeforePersistAction.validated
+              and contributionManagementContext.entityStatusAfterPersistAction.validated
+              and contributionManagementContext.entityPersistenceAction.update}">
+    <c:set var="isHandledContributionModificationContext" value="${true}"/>
+    <c:set var="_paramHandledSubscriptionType" value="${contributionManagementContext.linkedSubscriptionResource.type.name}"/>
+    <c:set var="_paramHandledSubscriptionResourceId" value="${contributionManagementContext.linkedSubscriptionResource.id}"/>
   </c:if>
 </c:if>
 <c:set var="isHandledSubscriptionConfirmation"
        value="${not empty _paramHandledSubscriptionType and not empty _paramHandledSubscriptionResourceId}"/>
 
+<c:if test="${isHandledContributionModificationContext}">
+  <view:includePlugin name="contributionmodictx"/>
+</c:if>
 <c:if test="${isHandledSubscriptionConfirmation}">
   <view:includePlugin name="subscription"/>
 </c:if>
@@ -121,6 +126,7 @@
   <c:param name="ShowInfo" value="${_paramShowDescription}"/>
   <c:param name="ShowFileSize" value="${_paramShowFileSize}"/>
   <c:param name="ShowMenuNotif" value="${_paramShowMenuNotif}"/>
+  <c:param name="HandledContributionModificationContext" value="${isHandledContributionModificationContext}"/>
   <c:param name="HandledSubscriptionType" value="${_paramHandledSubscriptionType}"/>
   <c:param name="HandledSubscriptionResourceId" value="${_paramHandledSubscriptionResourceId}"/>
 </c:import>

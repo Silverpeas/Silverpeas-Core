@@ -67,12 +67,18 @@
 <c:if test="${empty helpCoverClass}">
   <c:set var="helpCoverClass" value="droparea-cover-help-attachment"/>
 </c:if>
+<%@ attribute name="isHandledModificationContext" required="false"
+              type="java.lang.Boolean"
+              description="Is handled modification context enabled?" %>
 <%@ attribute name="handledSubscriptionType" required="false"
               type="java.lang.String"
               description="The the subscription notification type to manage, if any." %>
 <%@ attribute name="handledSubscriptionResourceId" required="false"
               type="java.lang.String"
               description="The the resource id of subscription notification to manage, if any." %>
+<c:if test="${isHandledModificationContext == null}">
+  <c:set var="isHandledModificationContext" value="${false}"/>
+</c:if>
 <c:set var="isHandledSubscriptionConfirmation"
        value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
@@ -156,10 +162,40 @@
         helpCoverClass : "${helpCoverClass}"
       };
 
-      var _performDdWithPotentialNotification = function (fileUpload, resolve, reject) {
+      var _performDdWithContributionModificationManagement = function (fileUpload, resolve, reject) {
+        let rejectOnClose = true;
+        if (${isHandledModificationContext}) {
+          jQuery.contributionModificationContext.validateOnUpdate({
+            contributionId : {
+              componentInstanceId : '${componentInstanceId}',
+              localId : '${resourceId}',
+              type : '${resourceType}'
+            },
+            callback : function(userResponse) {
+              rejectOnClose = false;
+              _performDdWithPotentialNotification.call(this, fileUpload, userResponse, resolve, reject);
+            },
+            callbackOnClose : function() {
+              if (rejectOnClose) {
+                reject();
+              }
+            }
+          });
+        } else {
+          _performDdWithPotentialNotification.call(this, fileUpload, null, resolve, reject);
+        }
+      };
+
+      var _performDdWithPotentialNotification = function (fileUpload, userModificationContextResponse, resolve, reject) {
+        function __applyModificationContextResponse(ajaxOptions) {
+          if (userModificationContextResponse) {
+            ajaxOptions = userModificationContextResponse.applyOnAjaxOptions(ajaxOptions);
+          }
+          return ajaxOptions;
+        }
         <c:choose>
         <c:when test="${isHandledSubscriptionConfirmation}">
-        var rejectOnClose = true;
+        let rejectOnClose = true;
         $.subscription.confirmNotificationSendingOnUpdate({
           comment : {
             saveNote : ${silfn:booleanValue(commentActivated)},
@@ -175,6 +211,7 @@
           callback : function(userResponse) {
             rejectOnClose = false;
             var ajaxOptions = userResponse.applyOnAjaxOptions();
+            ajaxOptions = __applyModificationContextResponse(ajaxOptions);
             fileUpload.uploadSession.onCompleted.urlHeaders = ajaxOptions.headers;
             resolve();
           },
@@ -215,7 +252,7 @@
               uploadCompletedUrl += '&Type=' + version;
               </c:if>
               fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;
-              _performDdWithPotentialNotification.call(this, fileUpload, resolve, reject);
+              _performDdWithContributionModificationManagement.call(this, fileUpload, resolve, reject);
               return true;
             },
             callbackOnClose : function() {
@@ -233,7 +270,7 @@
           return Promise.resolve();
         }
         return new Promise(function(resolve, reject) {
-          _performDdWithPotentialNotification.call(this, fileUpload, resolve, reject);
+          _performDdWithContributionModificationManagement.call(this, fileUpload, resolve, reject);
         });
       };
       </c:otherwise>

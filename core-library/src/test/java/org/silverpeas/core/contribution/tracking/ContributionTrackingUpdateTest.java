@@ -47,6 +47,7 @@ import org.silverpeas.core.test.extention.TestedBean;
 
 import java.util.Date;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -149,7 +150,7 @@ class ContributionTrackingUpdateTest {
     PublicationDetail before = getPublication("kmelia2");
     PublicationDetail after = updatePublication(before);
 
-    when(modifHandler.isMinorModification()).thenReturn(true);
+    when(modifHandler.isMinorModification()).thenReturn(Optional.of(true));
     when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
       ContributionTrackingEvent event = i.getArgument(0);
       assertThat(event.getAction().getDateTime().toInstant(),
@@ -171,7 +172,7 @@ class ContributionTrackingUpdateTest {
     PublicationDetail before = getPublication("kmelia2");
     PublicationDetail after = updatePublication(before);
 
-    when(modifHandler.isMinorModification()).thenReturn(false);
+    when(modifHandler.isMinorModification()).thenReturn(Optional.of(false));
     when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
       ContributionTrackingEvent event = i.getArgument(0);
       assertThat(event.getAction().getDateTime().toInstant(),

@@ -1139,13 +1139,24 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.cloneStatus = cloneStatus;
   }
 
-  public boolean isUpdateDateMustBeSet() {
-    return !ContributionModificationContextHandler.get().isMinorModification() &&
+  /**
+   * Indicates if the update data MUST be set.
+   * <p>
+   *   The update data are:
+   *   <ul>
+   *     <li>the last update date</li>
+   *     <li>the last updater</li>
+   *   </ul>
+   * </p>
+   * @return true if update data MUST be set, false otherwise.
+   */
+  public boolean isUpdateDataMustBeSet() {
+    return !ContributionModificationContextHandler.get().isMinorModification().orElse(false) &&
         updateDateMustBeSet;
   }
 
-  public void setUpdateDateMustBeSet(boolean updateDateMustBeSet) {
-    this.updateDateMustBeSet = updateDateMustBeSet;
+  public void setUpdateDataMustBeSet(boolean updateDataMustBeSet) {
+    this.updateDateMustBeSet = updateDataMustBeSet;
   }
 
   public int getNbAccess() {
