@@ -92,6 +92,8 @@
   <c:set var="handledSubscriptionResourceId" value="${param.HandledSubscriptionResourceId}"/>
   <c:set var="isHandledSubscriptionConfirmation"
          value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
+  <c:set var="isHandledModificationContext"
+         value="${silfn:booleanValue(param.HandledContributionModificationContext)}"/>
 
   <view:componentParam var="commentActivated" componentId="${param.ComponentId}" parameter="tabComments"/>
   <c:if test="${not silfn:booleanValue(commentActivated)}">
@@ -726,7 +728,36 @@
       return lastVersionType;
     }
 
-    function _performActionWithPotentialNotification(callback, options) {
+    function _performActionWithContributionModificationManagement(callback, options) {
+      let mustPerform = ${isHandledModificationContext};
+      if (mustPerform) {
+        var params = typeof options === 'object' ? options : {};
+        var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
+        mustPerform = verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav;
+        if (mustPerform) {
+          jQuery.contributionModificationContext.validateOnUpdate({
+            contributionId : {
+              componentInstanceId : '${componentId}',
+              localId : '${param.Id}',
+              type : '${param.Type}'
+            },
+            callback : function(userResponse) {
+              _performActionWithPotentialNotification(callback, options, userResponse);
+            }});
+        }
+      }
+      if (!mustPerform) {
+        _performActionWithPotentialNotification(callback, options);
+      }
+    }
+
+    function _performActionWithPotentialNotification(callback, options, userModificationContextResponse) {
+      function __applyModificationContextResponse(ajaxOptions) {
+        if (userModificationContextResponse) {
+          ajaxOptions = userModificationContextResponse.applyOnAjaxOptions(ajaxOptions);
+        }
+        return ajaxOptions;
+      }
       <c:choose>
       <c:when test="${isHandledSubscriptionConfirmation}">
       var params = typeof options === 'object' ? options : {};
@@ -744,13 +775,19 @@
             type : '${handledSubscriptionType}',
             resourceId : '${handledSubscriptionResourceId}'
           }, callback : function(userResponse) {
-            callback.call(this, userResponse);
+            const userResponseWrapper = new function() {
+              this.applyOnAjaxOptions = function(ajaxOptions) {
+                ajaxOptions = __applyModificationContextResponse(ajaxOptions);
+                return userResponse.applyOnAjaxOptions(ajaxOptions);
+              };
+            };
+            callback.call(this, userResponseWrapper);
           }
         });
       } else {
         callback.call(this, {
           applyOnAjaxOptions : function(ajaxOptions) {
-            return ajaxOptions;
+            return __applyModificationContextResponse(ajaxOptions);
           }
         });
       }
@@ -758,7 +795,7 @@
       <c:otherwise>
       callback.call(this, {
         applyOnAjaxOptions : function(ajaxOptions) {
-          return ajaxOptions;
+          return __applyModificationContextResponse(ajaxOptions);
         }
       });
       </c:otherwise>
@@ -874,7 +911,7 @@
             $("#dialog-attachment-delete").dialog("close");
               </c:when>
               <c:otherwise>
-            _performActionWithPotentialNotification(function(userResponse) {
+            _performActionWithContributionModificationManagement(function(userResponse) {
               $.progressMessage();
               var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
               $.ajax(userResponse.applyOnAjaxOptions({
@@ -899,7 +936,7 @@
           text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
           click: function() {
             var $this = $(this);
-            _performActionWithPotentialNotification(function(userResponse) {
+            _performActionWithContributionModificationManagement(function(userResponse) {
               $.progressMessage();
               var attachmentId = $this.data("id");
               var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
@@ -943,7 +980,7 @@
             }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
             submitUrl = submitUrl + '/' + encodeURIComponent(filename);
-            _performActionWithPotentialNotification(function() {
+            _performActionWithContributionModificationManagement(function() {
               $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
@@ -990,7 +1027,7 @@
             } else {
               submitUrl = submitUrl + '/no_file';
             }
-            _performActionWithPotentialNotification(function() {
+            _performActionWithContributionModificationManagement(function() {
               $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
@@ -1114,7 +1151,7 @@
             $('#checkin_oldId').val($("#dialog-attachment-checkin").data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
             var $this = $(this);
-            _performActionWithPotentialNotification(function() {
+            _performActionWithContributionModificationManagement(function() {
               submitCheckin.call($this, submitUrl);
             }, {
               versionTypeDomRadioSelector : '#dialog-attachment-checkin input[name="private"]',
@@ -1469,6 +1506,7 @@
                                   contentLanguage="${contentLanguage}"
                                   hasToBeIndexed="${indexIt}"
                                   documentType="${param.Context}"
+                                  isHandledModificationContext="${isHandledModificationContext}"
                                   handledSubscriptionType="${handledSubscriptionType}"
                                   handledSubscriptionResourceId="${handledSubscriptionResourceId}"/>
 </c:if>

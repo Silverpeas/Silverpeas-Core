@@ -47,6 +47,11 @@ public enum TrackedActionType {
    */
   MAJOR_UPDATE,
   /**
+   * Modifications has been performed, but no functional mechanism has been used to specify the
+   * type of the modification.
+   */
+  UPDATE,
+  /**
    * A contribution has been deleted.
    */
   DELETION

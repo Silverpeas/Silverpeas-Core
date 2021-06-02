@@ -191,6 +191,10 @@ public enum SupportedWebPlugins {
    */
   SUBSCRIPTION,
   /**
+   * Silverpeas plugin to handle contribution modification context feature
+   */
+  CONTRIBUTIONMODICTX,
+  /**
    * Silverpeas plugin to handle file and folder upload services by drag and drop. This plugin
    * loads dynamically and is not loaded several times if the plugin already exists in the
    * current html page.

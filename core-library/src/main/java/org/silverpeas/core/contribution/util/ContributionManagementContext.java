@@ -21,50 +21,71 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription.util;
+package org.silverpeas.core.contribution.util;
 
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.ActionType;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.subscription.SubscriptionResource;
 
 /**
- * This class permits to specify a context into which the subscriptions have to be managed.
- * For example, it permits to define the context on the save action of a WYSIWYG of contribution
+ * This class permits to specify a context into which a contribution has to be managed.
+ * For example, it permits to define the context on the save action of a WYSIWYG of a contribution
  * from kmelia component.
  * @author Yohann Chastagnier
  */
-public class SubscriptionManagementContext {
-  private final SubscriptionResource linkedSubscriptionResource;
-  private final String entityId;
+public class ContributionManagementContext {
+  private final ContributionIdentifier contributionId;
+  private SubscriptionResource linkedSubscriptionResource;
   private ActionType entityPersistenceAction = ActionType.READ;
   private ContributionStatus entityStatusBeforePersistAction = ContributionStatus.UNKNOWN;
   private ContributionStatus entityStatusAfterPersistAction = ContributionStatus.UNKNOWN;
 
   /**
-   * Initializes a context by specifying the finest subscription resource linked to the entity that
-   * is handled.
-   * @param linkedSubscriptionResource the finest subscription resource (the resource on which
-   * subscriptions are registered) linked to the entity that is handled.
-   * @param andEntityId the identifier of the entity on which the persistence (or validation)
-   * action
-   * is performed.
-   * @return a new instance of {@link SubscriptionManagementContext}
-   * initialized with the given subscription resource.
+   * Initializes a context by specifying the contribution handled by this context.
+   * @param id a component instance identifier as string.
+   * @return a new instance of {@link ContributionManagementContext}.
    */
-  public static SubscriptionManagementContext on(SubscriptionResource linkedSubscriptionResource,
-      String andEntityId) {
-    return new SubscriptionManagementContext(linkedSubscriptionResource, andEntityId);
+  public static ContributionManagementContext atComponentInstanceId(final String id) {
+    return new ContributionManagementContext(ContributionIdentifier.from(id, id, "UNKNOWN"));
+  }
+
+  /**
+   * Initializes a context by specifying the contribution handled by this context.
+   * @param contribution a {@link Contribution} instance.
+   * @return a new instance of {@link ContributionManagementContext}.
+   */
+  public static ContributionManagementContext on(final Contribution contribution) {
+    return new ContributionManagementContext(contribution.getIdentifier());
   }
 
   /**
    * Hidden constructor.
-   * @param linkedSubscriptionResource
-   * @param entityId
    */
-  private SubscriptionManagementContext(final SubscriptionResource linkedSubscriptionResource,
-      final String entityId) {
+  private ContributionManagementContext(final ContributionIdentifier contributionId) {
+    this.contributionId = contributionId;
+  }
+
+
+  /**
+   * Setup the finest subscription resource linked to the entity that is handled.
+   * @param linkedSubscriptionResource the finest subscription resource (the resource on which
+   * subscriptions are registered) linked to the entity that is handled.
+   * @return itself.
+   */
+  public ContributionManagementContext aboutSubscriptionResource(
+      final SubscriptionResource linkedSubscriptionResource) {
     this.linkedSubscriptionResource = linkedSubscriptionResource;
-    this.entityId = entityId;
+    return this;
+  }
+
+  /**
+   * Gets the {@link ContributionIdentifier} of the managed contribution.
+   * @return the handled contribution identifier handled into the context.
+   */
+  public ContributionIdentifier getContributionId() {
+    return contributionId;
   }
 
   /**
@@ -85,23 +106,13 @@ public class SubscriptionManagementContext {
    * operation (or validation).
    * @return the instance of the current completed context.
    */
-  public SubscriptionManagementContext forPersistenceAction(
+  public ContributionManagementContext forPersistenceAction(
       ContributionStatus entityStatusBeforePersistenceAction, ActionType entityPersistenceAction,
       ContributionStatus entityStatusAfterPersistenceAction) {
     this.entityStatusBeforePersistAction = entityStatusBeforePersistenceAction;
     this.entityPersistenceAction = entityPersistenceAction;
     this.entityStatusAfterPersistAction = entityStatusAfterPersistenceAction;
     return this;
-  }
-
-  /**
-   * Gets the identifier of the entity on which the persistence (or validation) action is
-   * performed.
-   * @return the identifier of the entity on which the persistence (or validation) action is
-   * performed.
-   */
-  public String getEntityId() {
-    return entityId;
   }
 
   /**

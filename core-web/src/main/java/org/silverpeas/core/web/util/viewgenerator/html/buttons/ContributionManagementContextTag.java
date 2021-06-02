@@ -23,38 +23,55 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
+import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.html.SupportedWebPlugins;
+import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.getDynamicSubscriptionJavascriptLoadContent;
 
 /**
  * This TAG can be called into a {@link ButtonTag}.<br>
- * It permits to display a popup in order to ask to the user to confirm the subscription
- * notification sending linked to its modifications.
+ * It permits to display a popups in order to ask to the user some validation and confirmations.
+ * <p>
+ *   For now, it asks:
+ *   <ul>
+ *     <li>for minor/major modifications</li>
+ *     <li>for user notification sending</li>
+ *   </ul>
+ * </p>
  */
-public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
+public class ContributionManagementContextTag extends TagSupport {
   private static final long serialVersionUID = 6158988849428896473L;
 
+  private ContributionIdentifier contributionId;
   private SubscriptionResourceType subscriptionResourceType = COMPONENT;
   private String subscriptionResourceId = null;
   private String jsValidationCallbackMethodName;
 
-  private String contributionLocalId;
-  private String contributionType;
   private Boolean contributionIndexable = true;
 
   public SubscriptionResourceType getSubscriptionResourceType() {
     return subscriptionResourceType;
+  }
+
+  public ContributionIdentifier getContributionId() {
+    return contributionId;
+  }
+
+  public void setContributionId(final ContributionIdentifier contributionId) {
+    this.contributionId = contributionId;
   }
 
   public void setSubscriptionResourceType(final SubscriptionResourceType subscriptionResourceType) {
@@ -77,22 +94,6 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     this.jsValidationCallbackMethodName = jsValidationCallbackMethodName;
   }
 
-  public String getContributionLocalId() {
-    return contributionLocalId;
-  }
-
-  public void setContributionLocalId(final String contributionLocalId) {
-    this.contributionLocalId = contributionLocalId;
-  }
-
-  public String getContributionType() {
-    return contributionType;
-  }
-
-  public void setContributionType(final String contributionType) {
-    this.contributionType = contributionType;
-  }
-
   public Boolean getContributionIndexable() {
     return contributionIndexable;
   }
@@ -106,13 +107,12 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     ButtonTag buttonTag = (ButtonTag) findAncestorWithClass(this, ButtonTag.class);
     if (buttonTag != null) {
       buttonTag.setActionPreProcessing("");
-      try {
-        pageContext.getOut().println(new script().setType("text/javascript")
-            .addElement(JavascriptPluginInclusion.getDynamicSubscriptionJavascriptLoadContent(null))
-            .toString());
-      } catch (IOException e) {
-        throw new JspException("ConfirmResourceSubscriptionSendingTag Tag", e);
-      }
+      ElementContainer xhtml = new ElementContainer();
+      xhtml.addElement(WebPlugin.get()
+          .getHtml(SupportedWebPlugins.CONTRIBUTIONMODICTX, getRequest().getUserLanguage()));
+      xhtml.addElement(new script().setType("text/javascript")
+          .addElement(getDynamicSubscriptionJavascriptLoadContent(null)));
+      xhtml.output(pageContext.getOut());
       buttonTag.setActionPreProcessing(renderJs());
       return EVAL_PAGE;
     } else {
@@ -131,6 +131,30 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
   }
 
   protected String renderJs() {
+    final ContributionIdentifier cId = ofNullable(getContributionId()).orElseGet(() -> {
+      GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      final String componentId = gef.getComponentIdOfCurrentRequest();
+      return ContributionIdentifier.from(componentId, componentId, "UNKNOWN");
+    });
+    final StringBuilder sb = new StringBuilder();
+    sb.append("jQuery.contributionModificationContext.validateOnUpdate({");
+    sb.append("  contributionId:{");
+    sb.append("    componentInstanceId:'").append(cId.getComponentInstanceId()).append("',");
+    sb.append("    localId:'").append(cId.getLocalId()).append("',");
+    sb.append("    type:'").append(cId.getType()).append("'");
+    sb.append("  },status: undefined");
+    sb.append("  ,callback: function() {");
+    sb.append(renderSubscriptionJs());
+    sb.append("  }");
+    if (StringUtil.isDefined(getJsValidationCallbackMethodName())) {
+      sb.append("  ,validationCallback:").append(getJsValidationCallbackMethodName());
+    }
+    sb.append("});");
+    return sb.toString();
+  }
+
+  protected String renderSubscriptionJs() {
     GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
         .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
@@ -140,7 +164,7 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     boolean comments = StringUtil.getBooleanValue(
         OrganizationController.get().getComponentParameterValue(componentId, "comments"));
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append("jQuery.subscription.confirmNotificationSendingOnUpdate({subscription:{");
     sb.append("  componentInstanceId:'").append(componentId).append("'");
     final SubscriptionResourceType type = getSubscriptionResourceType();
@@ -157,8 +181,8 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     if (tabComments || comments) {
       sb.append("  ,comment:{");
       sb.append("saveNote : true,");
-      sb.append("contributionLocalId : '").append(contributionLocalId).append("',");
-      sb.append("contributionType : '").append(contributionType).append("',");
+      sb.append("contributionLocalId : '").append(contributionId.getLocalId()).append("',");
+      sb.append("contributionType : '").append(contributionId.getType()).append("',");
       sb.append("contributionIndexable : ").append(contributionIndexable);
       sb.append("}");
     }

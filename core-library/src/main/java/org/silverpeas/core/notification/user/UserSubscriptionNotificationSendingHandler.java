@@ -24,8 +24,12 @@
 package org.silverpeas.core.notification.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -42,7 +46,10 @@ import static org.silverpeas.core.util.StringUtil.*;
  * This class handles the feature that permits to skip the user subscription notification sending.
  * @author Yohann Chastagnier
  */
-public class UserSubscriptionNotificationSendingHandler {
+@Technical
+@Service
+public class UserSubscriptionNotificationSendingHandler implements
+    ContributionOperationContextPropertyHandler {
 
   private static final String SENDING_NOT_ENABLED_KEY =
       UserSubscriptionNotificationSendingHandler.class.getName() + "#SENDING_ENABLED";
@@ -50,10 +57,14 @@ public class UserSubscriptionNotificationSendingHandler {
   private static final String SENDING_NOT_ENABLED_JMS_WAY_KEY =
       UserSubscriptionNotificationSendingHandler.class.getName() + "#SENDING_ENABLED_JMS_WAY";
 
+  public static UserSubscriptionNotificationSendingHandler get() {
+    return ServiceProvider.getService(UserSubscriptionNotificationSendingHandler.class);
+  }
+
   /**
    * Hidden constructor.
    */
-  private UserSubscriptionNotificationSendingHandler() {
+  protected UserSubscriptionNotificationSendingHandler() {
   }
 
   /**
@@ -61,7 +72,8 @@ public class UserSubscriptionNotificationSendingHandler {
    * skipped for the current request (from request parameters or request headers).
    * @param request the current HTTP request.
    */
-  public static void verifyRequest(HttpServletRequest request) {
+  @Override
+  public void parseForProperty(HttpServletRequest request) {
     if (NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled()) {
       final String parameter = request.getParameter(
           UserSubscriptionNotificationBehavior
@@ -78,7 +90,7 @@ public class UserSubscriptionNotificationSendingHandler {
    * Indicates if the user subscription notification sending is enabled for the current request.
    * @return true if enabled, false otherwise.
    */
-  public static boolean isSubscriptionNotificationEnabledForCurrentRequest() {
+  public boolean isSubscriptionNotificationEnabledForCurrentRequest() {
     final Confirmation confirmation = getConfirmation();
     return confirmation.isNotificationSendEnabled();
   }
@@ -87,7 +99,7 @@ public class UserSubscriptionNotificationSendingHandler {
    * Gets a user note to paste into subscription notification message from the current request.
    * @return true if enabled, false otherwise.
    */
-  public static String getSubscriptionNotificationUserNoteFromCurrentRequest() {
+  public String getSubscriptionNotificationUserNoteFromCurrentRequest() {
     final Confirmation confirmation = getConfirmation();
     if (confirmation.isNotificationSendEnabled()) {
       return confirmation.note;
@@ -95,7 +107,7 @@ public class UserSubscriptionNotificationSendingHandler {
     return null;
   }
 
-  private static Confirmation getMergedConfirmations(final String parameter, final String header) {
+  private Confirmation getMergedConfirmations(final String parameter, final String header) {
     Confirmation fromParameters = decodeConfirmation(parameter);
     Confirmation fromHeaders = decodeConfirmation(header);
     final Confirmation mergedConfirmation = new Confirmation();
@@ -104,7 +116,7 @@ public class UserSubscriptionNotificationSendingHandler {
     return mergedConfirmation;
   }
 
-  private static Confirmation decodeConfirmation(final String value) {
+  private Confirmation decodeConfirmation(final String value) {
     final String decodedValue;
     if (isDefined(value)) {
       if (value.startsWith("{")) {
@@ -118,7 +130,7 @@ public class UserSubscriptionNotificationSendingHandler {
     return JSONCodec.decode(decodedValue, Confirmation.class);
   }
 
-  private static Confirmation getConfirmation() {
+  private Confirmation getConfirmation() {
     Confirmation confirmation =
         getRequestCacheService().getCache().get(SENDING_NOT_ENABLED_KEY, Confirmation.class);
     if (confirmation == null) {

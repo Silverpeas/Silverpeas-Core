@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.contribution.ContributionSettings;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.html.SupportedWebPlugins;
@@ -59,6 +60,7 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicat
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
+import static org.silverpeas.core.contribution.ContributionSettings.streamComponentNamesWithMinorModificationBehaviorEnabled;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.displayableAsContentComponentNames;
 import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
@@ -923,6 +925,20 @@ public class JavascriptPluginInclusion {
               .add("un.d.i.u", getApplicationURL() + getUserNotificationDesktopIconUrl())
               .produce()));
     }
+    return xhtml;
+  }
+
+  /**
+   * Includes a dynamic loading of Silverpeas subscription JQuery Plugin.
+   * @param xhtml the container into which the plugin loading code will be added.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeContributionModificationContext(final ElementContainer xhtml) {
+    final String rootDir = getApplicationURL() + "/contribution/jsp/javaScript/";
+    final JavascriptSettingProducer settingProducer = settingVariableName("ContributionModificationContextSettings");
+    settingProducer.add("m.c.e", streamComponentNamesWithMinorModificationBehaviorEnabled(), true);
+    xhtml.addElement(scriptContent(settingProducer.produce()));
+    xhtml.addElement(script(rootDir + "silverpeas-contribution-modification-context.js"));
     return xhtml;
   }
 

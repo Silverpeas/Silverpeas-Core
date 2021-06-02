@@ -27,7 +27,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
+import org.silverpeas.core.contribution.util.ContributionManagementContext;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -328,7 +328,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
 
   /**
    * Handled the navigation to the html editor.
-   * @param subscriptionManagementContext
+   * @param contributionManagementContext
    * @param objectId
    * @param objectType
    * @param returnPath
@@ -336,10 +336,10 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
    * @return
    */
   public Navigation redirectToHtmlEditor(
-      SubscriptionManagementContext subscriptionManagementContext, String objectId,
+      ContributionManagementContext contributionManagementContext, String objectId,
       final String objectType, String returnPath, boolean indexIt) {
     try {
-      getRequest().setAttribute("subscriptionManagementContext", subscriptionManagementContext);
+      getRequest().setAttribute("contributionManagementContext", contributionManagementContext);
 
       WysiwygRouting routing = new WysiwygRouting();
       WysiwygRouting.WysiwygRoutingContext context =

@@ -455,8 +455,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     if (pubDetail.getStatus() != null) {
       publi.setStatus(pubDetail.getStatus());
     }
-    publi.setUpdaterId(pubDetail.getUpdaterId());
-    if (pubDetail.isUpdateDateMustBeSet()) {
+    if (pubDetail.isUpdateDataMustBeSet()) {
+      publi.setUpdaterId(pubDetail.getUpdaterId());
       copyUpdateDate(pubDetail, publi, forceUpdateDate);
     }
     if (pubDetail.getValidatorId() != null) {
