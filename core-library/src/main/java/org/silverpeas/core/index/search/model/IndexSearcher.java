@@ -302,9 +302,11 @@ public class IndexSearcher {
             booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
           }
         } else {
-          Query fieldI18NQuery =
-              getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages, analyzer);
-          booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
+          if (StringUtil.isDefined(fieldQuery.getContent())) {
+            Query fieldI18NQuery =
+                getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages, analyzer);
+            booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
+          }
         }
       }
 

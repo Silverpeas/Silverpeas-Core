@@ -30,13 +30,14 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.core.UriBuilder;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SharingContext {
+public class SharingContext implements Serializable {
 
   private static final Pattern REGEXPR_SHARED_ATTACHMENT =
       Pattern.compile("(?i)src=\"(.+/attachmentId/[^\"]+)");
