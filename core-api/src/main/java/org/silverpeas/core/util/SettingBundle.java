@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * A bundle settings used to configure some features in Silverpeas or the behaviour of an
@@ -108,7 +109,7 @@ public class SettingBundle implements SilverpeasBundle {
    * {@code org.silverpeas.core.util.SettingBundle#getString} method and use the default value
    * to test afterward the data is or not defined.
    * @param key the unique name of the data in this bundle.
-   * @param defaultValue the default value to use if the setting is'nt valued or if it isn't
+   * @param defaultValue the default value to use if the setting isn't valued or if it isn't
    * defined in the bundle.
    * @return the value of the data as a string of characters.
    * @throws MissingResourceException if the bundle doesn't exist.
@@ -122,6 +123,82 @@ public class SettingBundle implements SilverpeasBundle {
         return defaultValue;
       }
       throw ex;
+    }
+  }
+
+  /**
+   * Gets the value as an array of String instances of the data identified by the specified key.
+   * The value of the property in the bundle is considered to be a text encoding a list of
+   * comma-separated items. These items will be the elements of the returned array. Any blank
+   * items are skipped.
+   * @param key the unique name of the data in this bundle.
+   * @return an array with the items of the list that values the given property key.
+   */
+  public String[] getList(String key) {
+    return getList(key, ",");
+  }
+
+  /**
+   * Gets the value as an array of String instances of the data identified by the specified key.
+   * The value of the property in the bundle is considered to be a text encoding a list of
+   * items separated from each other by the given separator. These items will be the elements of the
+   * returned array. Any blank items are skipped.
+   * @param key the unique name of the data in this bundle.
+   * @param separator the separator used to separate each item of property value.
+   * @return an array with the items of the list that values the given property key.
+   */
+  public String[] getList(String key, String separator) {
+    String value = getString(key);
+    return Stream.of(value.trim().split(separator))
+        .map(String::trim)
+        .filter(s -> !s.isBlank())
+        .toArray(String[]::new);
+  }
+
+  /**
+   * Gets the value as an array of String instances of the data identified by the specified key.
+   * The value of the property in the bundle is considered to be a text encoding a list of
+   * comma-separated items. These items will be the elements of the returned array. Any blank
+   * items are skipped.
+   * <p>
+   * If you expect the data can be not defined in this bundle, then use this method instead of
+   * {@code org.silverpeas.core.util.SettingBundle#getList} method and use the default value
+   * to test afterward the data is or not defined.
+   * </p>
+   * @param key the unique name of the data in this bundle.
+   * @param defaultValue  the default value to use if the setting isn't valued or if it isn't
+   * defined in the bundle.
+   * @return an array with the items of the list that values the given property key.
+   */
+  public String[] getList(String key, String[] defaultValue) {
+    return getList(key, defaultValue, ",");
+  }
+
+  /**
+   * Gets the value as an array of String instances of the data identified by the specified key.
+   * The value of the property in the bundle is considered to be a text encoding a list of
+   * items separated from each other by the given separator. These items will be the elements of
+   * the returned array. Any blank items are skipped.
+   * <p>
+   * If you expect the data can be not defined in this bundle, then use this method instead of
+   * {@code org.silverpeas.core.util.SettingBundle#getList} method and use the default value
+   * to test afterward the data is or not defined.
+   * </p>
+   * @param key the unique name of the data in this bundle.
+   * @param defaultValue  the default value to use if the setting isn't valued or if it isn't
+   * defined in the bundle.
+   * @param separator the separator used to separate each item of property value.
+   * @return an array with the items of the list that values the given property key.
+   */
+  public String[] getList(String key, String[] defaultValue, String separator) {
+    try {
+      String[] value = getList(key, separator);
+      return value.length > 0 ? value : defaultValue;
+    } catch (MissingResourceException e) {
+      if (isDefined(e.getKey())) {
+        return defaultValue;
+      }
+      throw e;
     }
   }
 

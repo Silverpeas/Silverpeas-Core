@@ -24,7 +24,10 @@
 package org.silverpeas.core.contribution;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -40,26 +43,33 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * This class permits to handle a contribution modification context.
  * <p>
- *   A such context can give additional information to adopt different kind of behaviors. For
- *   example, it can indicate if the user modification is a minor one which permits to
- *   contribution services to adopt a different behavior against a normal one.
+ * A such context can give additional information to adopt different kind of behaviors. For example,
+ * it can indicate if the user modification is a minor one which permits the contribution services
+ * to adopt a different behavior from a normal one.
  * </p>
  * @author silveryocha
  */
-public class ContributionModificationContextHandler {
+@Technical
+@Service
+public class ContributionModificationContextHandler
+    implements ContributionOperationContextPropertyHandler {
 
   /**
-   * HTTP parameter that permits to retrieve contribution modification context if any.
+   * HTTP parameter from which the contribution modification context is retrieved.
    */
   private static final String HTTP_PARAM = "CONTRIBUTION_MODIFICATION_CONTEXT";
 
   private static final String CACHE_KEY =
       ContributionModificationContextHandler.class.getName() + "#CACHE_KEY";
 
+  public static ContributionModificationContextHandler get() {
+    return ServiceProvider.getService(ContributionModificationContextHandler.class);
+  }
+
   /**
    * Hidden constructor.
    */
-  private ContributionModificationContextHandler() {
+  protected ContributionModificationContextHandler() {
   }
 
   /**
@@ -69,7 +79,7 @@ public class ContributionModificationContextHandler {
    * </p>
    * @param request the current HTTP request.
    */
-  public static void verifyRequest(HttpServletRequest request) {
+  public void parseForProperty(HttpServletRequest request) {
     if (isEnabled()) {
       final String parameter = request.getParameter(HTTP_PARAM);
       final String header = request.getHeader(HTTP_PARAM);
@@ -86,12 +96,12 @@ public class ContributionModificationContextHandler {
    * Indicates from current request if the current user made a minor modification.
    * @return true if minor, false otherwise.
    */
-  public static boolean isMinorModification() {
+  public boolean isMinorModification() {
     final Context context = getContext();
     return context.isMinor();
   }
 
-  private static Context getMergedContext(final String parameter, final String header) {
+  private Context getMergedContext(final String parameter, final String header) {
     Context fromParameters = decodeContext(parameter);
     Context fromHeaders = decodeContext(header);
     final Context mergedContext = new Context();
@@ -99,7 +109,7 @@ public class ContributionModificationContextHandler {
     return mergedContext;
   }
 
-  private static Context decodeContext(final String value) {
+  private Context decodeContext(final String value) {
     final String decodedValue;
     if (isDefined(value)) {
       if (value.startsWith("{")) {
@@ -113,7 +123,7 @@ public class ContributionModificationContextHandler {
     return JSONCodec.decode(decodedValue, Context.class);
   }
 
-  private static Context getContext() {
+  private Context getContext() {
     Context context = getRequestCacheService().getCache().get(CACHE_KEY, Context.class);
     return context == null ? new Context() : context;
   }

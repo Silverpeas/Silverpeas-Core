@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
@@ -219,8 +220,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // Verifying the subscription notification sending parameters
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    // Verifying contribution modification context if nay
-    ContributionModificationContextHandler.verifyRequest(request);
+    // Parses request for any additional property implied a contribution
+    ContributionOperationContextPropertyHandler.parseRequest(request);
     destination = computeNextDestination(httpRequest, componentId, function, ctrl);
 
     // Session security token management

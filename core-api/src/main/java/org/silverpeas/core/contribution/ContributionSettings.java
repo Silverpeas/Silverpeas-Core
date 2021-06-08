@@ -24,10 +24,13 @@
 
 package org.silverpeas.core.contribution;
 
+import org.silverpeas.core.contribution.tracking.TrackedApplications;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 /**
+ * The different settings that are applied on the contributions, whatever their concrete type.
+ * These settings allow to customize some feature behaviours on the contributions.
  * @author silveryocha
  */
 public class ContributionSettings {
@@ -48,5 +51,19 @@ public class ContributionSettings {
    */
   public static boolean isMinorModificationBehaviorEnabled() {
     return SETTINGS.getBoolean("contribution.modification.behavior.minor", true);
+  }
+
+  /**
+   * Gets the applications in Silverpeas for which the contributions have to be tracked for change.
+   * Only the contributions that support the tracking for modifications will be taken in charge (for
+   * example the publications).
+   * @return a {@link TrackedApplications} instance. If {@link TrackedApplications#NONE}, no
+   * tracking for contributions modifications are operated (the tracking for change is disabled).
+   * If {@link TrackedApplications#ALL}, the tracking for contributions modifications (those
+   * that support such a tracking) is enabled for all the applications in Silverpeas.
+   */
+  public static TrackedApplications getApplicationsTrackedForModifications() {
+      String[] apps = SETTINGS.getList("contribution.tracking.apps", new String[]{});
+      return TrackedApplications.track(apps);
   }
 }
