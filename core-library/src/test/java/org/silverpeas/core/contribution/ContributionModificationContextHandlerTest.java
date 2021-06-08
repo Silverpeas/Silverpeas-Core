@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SettingBundleStub;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,9 @@ class ContributionModificationContextHandlerTest {
   @RegisterExtension
   static SettingBundleStub contributionSettings = new SettingBundleStub(
       "org.silverpeas.contribution.settings.contribution");
+  
+  @TestedBean
+  ContributionModificationContextHandler handler;
 
   private HttpServletRequest request;
 
@@ -68,8 +72,8 @@ class ContributionModificationContextHandlerTest {
       "that the modification is not minor")
   void noMinorModificationWhenHttpParameterIsNull() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(null);
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -77,8 +81,8 @@ class ContributionModificationContextHandlerTest {
       " modification method indicates that the modification is not minor")
   void noMinorModificationWhenHttpParameterIsNotEqualToTrueOrFalse() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn("{}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -87,8 +91,8 @@ class ContributionModificationContextHandlerTest {
   void noMinorModificationWhenHttpParameterIsNotEqualToTrueOrFalseAsBase64() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         StringUtil.asBase64("{}".getBytes()));
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -97,8 +101,8 @@ class ContributionModificationContextHandlerTest {
   void noMinorModificationWhenHttpParameterIsEqualToFalse() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         "{\"isMinor\":false}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -107,8 +111,8 @@ class ContributionModificationContextHandlerTest {
   void noMinorModificationWhenHttpParameterIsEqualToFalseAsBase64() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         StringUtil.asBase64("{\"isMinor\":false}".getBytes()));
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -117,12 +121,12 @@ class ContributionModificationContextHandlerTest {
   void minorModificationWhenHttpParameterIsEqualToTrue() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         "{\"isMinor\":true}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -131,12 +135,12 @@ class ContributionModificationContextHandlerTest {
   void minorModificationWhenHttpParameterIsEqualToTrueAsBase64() {
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         StringUtil.asBase64("{\"isMinor\":true}".getBytes()));
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -147,8 +151,8 @@ class ContributionModificationContextHandlerTest {
     contributionSettings.put("contribution.modification.behavior.minor", "false");
     when(request.getParameter(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         "{\"isMinor\":true}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -156,8 +160,8 @@ class ContributionModificationContextHandlerTest {
       "that the modification is not minor")
   void noMinorModificationWhenHttpHeaderIsNull() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(null);
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -165,8 +169,8 @@ class ContributionModificationContextHandlerTest {
       " modification method indicates that the modification is not minor")
   void noMinorModificationWhenHttpHeaderIsNotEqualToTrueOrFalse() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn("{}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -175,8 +179,8 @@ class ContributionModificationContextHandlerTest {
   void noMinorModificationWhenHttpHeaderIsNotEqualToTrueOrFalseAsBase64() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         StringUtil.asBase64("{}".getBytes()));
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -185,8 +189,8 @@ class ContributionModificationContextHandlerTest {
   void noMinorModificationWhenHttpHeaderIsEqualToFalse() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         "{\"isMinor\":false}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -195,8 +199,8 @@ class ContributionModificationContextHandlerTest {
   void noMinorModificationWhenHttpHeaderIsEqualToFalseAsBase64() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         StringUtil.asBase64("{\"isMinor\":false}".getBytes()));
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -205,12 +209,12 @@ class ContributionModificationContextHandlerTest {
   void minorModificationWhenHttpHeaderIsEqualToTrue() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         "{\"isMinor\":true}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -219,12 +223,12 @@ class ContributionModificationContextHandlerTest {
   void minorModificationWhenHttpHeaderIsEqualToTrueAsBase64() {
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         StringUtil.asBase64("{\"isMinor\":true}".getBytes()));
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(true));
+    assertThat(handler.isMinorModification(), is(true));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    assertThat(handler.isMinorModification(), is(false));
   }
 
   @Test
@@ -235,7 +239,7 @@ class ContributionModificationContextHandlerTest {
     contributionSettings.put("contribution.modification.behavior.minor", "false");
     when(request.getHeader(CONTRIBUTION_MODIFICATION_CONTEXT_HTTP_PARAM)).thenReturn(
         "{\"isMinor\":true}");
-    ContributionModificationContextHandler.verifyRequest(request);
-    assertThat(ContributionModificationContextHandler.isMinorModification(), is(false));
+    ContributionOperationContextPropertyHandler.parseRequest(request);
+    assertThat(handler.isMinorModification(), is(false));
   }
 }

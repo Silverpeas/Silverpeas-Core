@@ -59,6 +59,7 @@ import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.tracking.ModificationTracked;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -105,6 +106,7 @@ import static org.silverpeas.core.util.StringUtil.split;
  */
 @XmlRootElement(namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
+@ModificationTracked
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, ContributionWithVisibility, SilverContentInterface, Rateable,
     Serializable, WithAttachment, WithThumbnail, WithReminder {
@@ -543,8 +545,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       setBeginDate(null);
       setBeginHour(null);
     } else {
-      final Date periodStart = asDate(asOffsetDateTime(period.getStartDate())
-              .atZoneSameInstant(ZoneId.systemDefault()));
+      final Date periodStart =
+          asDate(asOffsetDateTime(period.getStartDate()).atZoneSameInstant(ZoneId.systemDefault()));
       setBeginDate(periodStart);
       setBeginHour(DateUtil.formatTime(periodStart));
     }
@@ -552,8 +554,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       setEndDate(null);
       setEndHour(null);
     } else {
-      final Date periodEnd = asDate(asOffsetDateTime(period.getEndDate())
-          .atZoneSameInstant(ZoneId.systemDefault()));
+      final Date periodEnd =
+          asDate(asOffsetDateTime(period.getEndDate()).atZoneSameInstant(ZoneId.systemDefault()));
       setEndDate(periodEnd);
       setEndHour(DateUtil.formatTime(periodEnd));
     }
@@ -664,9 +666,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @return the {@link ThumbnailDetail} instance if any.
    */
   public ThumbnailDetail getThumbnail() {
-    if (thumbnail == null && getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-      ThumbnailDetail thumbnailReference = new ThumbnailDetail(getPK().getInstanceId(), Integer.
-          parseInt(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+    if (thumbnail == null && getPK() != null && getPK().getInstanceId() != null &&
+        getPK().getId() != null) {
+      ThumbnailDetail thumbnailReference =
+          new ThumbnailDetail(getPK().getInstanceId(), Integer.parseInt(getPK().getId()),
+              ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       thumbnail = ThumbnailController.getCompleteThumbnail(thumbnailReference);
     }
     return thumbnail;
@@ -767,7 +771,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public String getSilverObjectId() {
     if (this.silverObjectId == null) {
-      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+      ContentManagementEngine contentMgtEngine =
+          ContentManagementEngineProvider.getContentManagementEngine();
       try {
         int objectId = contentMgtEngine.getSilverContentId(getId(), getInstanceId());
         if (objectId >= 0) {
@@ -842,9 +847,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
     if (xmlFields == null) {
       try {
-        xmlFields = getFormTemplateBm()
-            .getXMLFieldsForExport(getPK().getInstanceId() + ":" + getInfoId(), getPK().getId(),
-                language);
+        xmlFields =
+            getFormTemplateBm().getXMLFieldsForExport(getPK().getInstanceId() + ":" + getInfoId(),
+                getPK().getId(), language);
       } catch (Exception e) {
         throw new PublicationRuntimeException(e);
       }
@@ -866,8 +871,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
           .getPublicationTemplate(getPK().getInstanceId() + ":" + getInfoId());
       data = pub.getRecordSet().getRecord(pk.getId());
     } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(failureOnGetting("form record with",
-          MessageFormat.format("pubid {0} and infoId {1}", getPK().getId(), getInfoId())), e);
+      SilverLogger.getLogger(this)
+          .warn(failureOnGetting("form record with",
+              MessageFormat.format("pubid {0} and infoId {1}", getPK().getId(), getInfoId())), e);
     }
 
     if (data == null) {
@@ -889,8 +895,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
         formValues.put(fieldName, sw.toString());
       } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(failureOnGetting("field value with",
-            MessageFormat.format("pubid {0} and fieldName {1}", getPK().getId(), fieldName)), e);
+        SilverLogger.getLogger(this)
+            .warn(failureOnGetting("field value with",
+                MessageFormat.format("pubid {0} and fieldName {1}", getPK().getId(), fieldName)),
+                e);
       }
 
     }
@@ -925,12 +933,12 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       fieldValue = "";
     } else {
       if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
-        String attachmentId =
-            fieldValue.substring(fieldValue.indexOf('_') + 1);
+        String attachmentId = fieldValue.substring(fieldValue.indexOf('_') + 1);
         fieldValue = getFieldValueFromAttachment(attachmentId, language, fieldValue);
       } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
-        fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
-            getId(), xmlField.getName(), language);
+        fieldValue =
+            WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().getId(),
+                xmlField.getName(), language);
       } else {
         fieldValue = WebEncodeHelper.javaStringToHtmlParagraphe(fieldValue);
       }
@@ -1132,7 +1140,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean isUpdateDateMustBeSet() {
-    return !ContributionModificationContextHandler.isMinorModification() && updateDateMustBeSet;
+    return !ContributionModificationContextHandler.get().isMinorModification() &&
+        updateDateMustBeSet;
   }
 
   public void setUpdateDateMustBeSet(boolean updateDateMustBeSet) {
@@ -1222,8 +1231,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   /**
    * Is the specified user can access this publication?
    * <p>
-   * A user can access a publication if he has enough rights to access both the application
-   * instance
+   * A user can access a publication if he has enough rights to access both the application instance
    * in which is managed this publication and one of the nodes to which this publication belongs
    * to.
    * @param user a user in Silverpeas.
@@ -1245,8 +1253,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
+    return PublicationAccessControl.get()
+        .isUserAuthorized(user.getId(), this,
+            AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
   }
 
   /**
@@ -1287,17 +1296,17 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * Sets an authorized location to the current instance.
    * <p>
    * A publication is linked or not to a node, depending the application functional context. This
-   * method should be used into the case of a publication linked to a node, located at a location
-   * in other words. Sometimes, a publication can be located at several locations (so linked to
-   * several nodes), in that case there is a main location and the others which are called
-   * "aliases". The caller of this method has verified which locations of a publication is
-   * authorized according to a context, that the publication detail instance does not know about,
-   * and set one of these authorized ones to the current instance. If the authorized location set
-   * defines an alias then some methods will take into account this information, like
-   * {@link #getPermalink()} for example.
+   * method should be used into the case of a publication linked to a node, located at a location in
+   * other words. Sometimes, a publication can be located at several locations (so linked to several
+   * nodes), in that case there is a main location and the others which are called "aliases". The
+   * caller of this method has verified which locations of a publication is authorized according to
+   * a context, that the publication detail instance does not know about, and set one of these
+   * authorized ones to the current instance. If the authorized location set defines an alias then
+   * some methods will take into account this information, like {@link #getPermalink()} for
+   * example.
    * </p>
    * <p>
-   *   Giving a null location means that alias data MUST be cleared.
+   * Giving a null location means that alias data MUST be cleared.
    * </p>
    * @param location a {@link Location} instance.
    */
@@ -1321,9 +1330,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getId(),
-        authorizedLocation != null && !authorizedLocation.getInstanceId().equals(getInstanceId())
-            ? authorizedLocation.getInstanceId()
-            : null);
+        authorizedLocation != null && !authorizedLocation.getInstanceId().equals(getInstanceId()) ?
+            authorizedLocation.getInstanceId() :
+            null);
   }
 
   public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
@@ -1338,8 +1347,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
 
     // Access is verified for sharing context
-    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING));
+    return PublicationAccessControl.get()
+        .isUserAuthorized(user.getId(), this,
+            AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING));
   }
 
   @Override

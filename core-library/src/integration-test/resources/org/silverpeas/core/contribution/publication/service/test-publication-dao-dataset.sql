@@ -4,8 +4,8 @@ values (100, 1, 'A kmelia 100', 'kmelia', 1, 0, 0, 1),
        (300, 1, 'A kmelia 300', 'kmelia', 3, 0, 1, 0);
 
 insert into sb_publication_publifather (pubid, nodeid, instanceid, aliasuserid, aliasdate, puborder)
-values (100, 110, 'kmelia200', 0, '2009/10/18', 0),
-       (101, 110, 'kmelia200', 0, '2009/10/18', 5);
+values (100, 110, 'kmelia200', NULL, NULL, 0),
+       (101, 110, 'kmelia200', NULL, NULL, 5);
 
 insert into sb_publication_publi (pubid, infoid, pubname, pubdescription, pubcreationdate, pubbegindate, pubenddate,
                                   pubcreatorid, pubimportance, pubversion, pubkeywords, pubcontent, pubstatus,
