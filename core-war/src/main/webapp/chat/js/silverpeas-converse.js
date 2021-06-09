@@ -325,6 +325,7 @@
         async : true
       }).then(function() {
         converse.initialize({
+          'view_mode' : __settings.viewMode,
           'loglevel' : __settings.debug ? 'debug' : 'error',
           'i18n' : __settings.language,
           'assets_path' : '/silverpeas/chat/converse/',
@@ -343,6 +344,7 @@
           'muc_domain' : 'conference.' + __settings.domain,
           'locked_muc_domain' : 'hidden',
           'muc_disable_slash_commands' : true,
+          'muc_history_max_stanzas' : 0,
           'locked_muc_nickname' : true,
           'nickname' : __settings.vcard.fn,
           'auto_register_muc_nickname' : true,
