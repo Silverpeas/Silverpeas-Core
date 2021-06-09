@@ -55,6 +55,7 @@
         <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled and chatServer.isUserExisting(chatUser)}">
         window.USERSESSION_PROMISE.then(function() {
           const chatOptions = {
+            viewMode : 'overlayed',
             url : '${chatUrl}',
             jid : '${chatUser.chatLogin}@${chatUser.chatDomain}',
             vcard : {
