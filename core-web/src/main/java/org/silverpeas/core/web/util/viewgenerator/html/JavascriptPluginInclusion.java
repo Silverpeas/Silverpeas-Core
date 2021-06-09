@@ -901,6 +901,7 @@ public class JavascriptPluginInclusion {
       } else if (silverpeasChatClientId.equals("conversejs")) {
         final String converseDir = chatDir + "converse/";
         xhtml.addElement(script(converseDir + "converse.min.js"));
+        xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
         if (chatSettings.isVisioEnabled()) {
           xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
         }

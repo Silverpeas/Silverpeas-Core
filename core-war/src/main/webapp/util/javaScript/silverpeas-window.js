@@ -734,7 +734,7 @@ function _spWindow_getSilverpeasMainWindow() {
      */
     this.loadLink = function(link, options) {
       let permalink = link;
-      if (!__isPermalink(link)) {
+      if (!this.isPermalink(link)) {
         let webContextIndex = link.indexOf(webContext);
         let shortLink = webContextIndex >= 0 ? link.substr(webContextIndex + webContext.length) : link;
         permalink = webContext + '/autoRedirect.jsp?domainId=' + this.currentUser.domainId + '&goto=' + encodeURIComponent(shortLink);
@@ -780,7 +780,7 @@ function _spWindow_getSilverpeasMainWindow() {
     };
 
     const PERMALINK_PARTS = WindowSettings.get('permalink.parts');
-    let __isPermalink = function(link) {
+    this.isPermalink = function(link) {
       if (link.indexOf(webContext + '/autoRedirect.jsp') >= 0) {
         return true;
       }
