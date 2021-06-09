@@ -305,6 +305,7 @@
     };
     this.init = function(chatOptions) {
       __settings = extendsObject(__settings, chatOptions);
+      __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
       if (__settings.visioEnabled) {
         __settings.whitelisted_plugins.push('jitsimeet');
       }
