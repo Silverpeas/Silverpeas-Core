@@ -1117,7 +1117,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     clone.setInfoId(infoId);
     clone.setKeywords(keywords);
     clone.setName(getName());
-    clone.setPk(pk);
+    clone.setPk(new PublicationPK(pk.getId(), pk));
     clone.setStatus(status);
     clone.setTargetValidatorId(targetValidatorId);
     clone.setCloneId(cloneId);

@@ -4661,6 +4661,7 @@ input.search:focus {
 
 .contribution-modification-context .field label {
   font-weight: normal;
+  white-space: nowrap;
 }
 
 /* userzoom-tooltip-profilPhoto */

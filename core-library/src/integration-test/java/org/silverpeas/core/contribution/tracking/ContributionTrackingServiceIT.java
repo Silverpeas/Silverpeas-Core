@@ -75,8 +75,6 @@ public class ContributionTrackingServiceIT {
   @Deployment
   public static Archive<WebArchive> createDeployment() {
     return WarBuilder4Publication.onWarForTestClass(ContributionTrackingServiceIT.class)
-        .addClasses(ContributionModificationContextHandler.class, AttachmentException.class,
-            ContributionOperationContextPropertyHandler.class)
         .addPackages(true, "org.silverpeas.core.contribution.tracking")
         .addAsResource("org/silverpeas/contribution")
         .build();

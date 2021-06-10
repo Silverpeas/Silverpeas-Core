@@ -98,6 +98,7 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.persistence.Transaction.getTransaction;
 
 /**
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
@@ -325,9 +326,16 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   @Transactional
   public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
+    setDetail(detail, false, ResourceEvent.Type.UPDATE);
+  }
+
+  @Override
+  @Transactional
+  public void setDetail(PublicationDetail detail, boolean forceUpdateDate,
+      ResourceEvent.Type evenType) {
     try {
       int indexOperation = detail.getIndexOperation();
-      updateDetail(detail, forceUpdateDate);
+      updateDetail(detail, forceUpdateDate, evenType);
       if (detail.isRemoveTranslation()) {
         WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(),
             detail.getLanguage());
@@ -352,10 +360,19 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  private void updateDetail(PublicationDetail pubDetail, boolean forceUpdateDate) {
+  private void updateDetail(PublicationDetail pubDetail, boolean forceUpdateDate,
+      ResourceEvent.Type eventType) {
     try (Connection con = getConnection()) {
-      PublicationDetail publi = PublicationDAO.loadRow(con, pubDetail.getPK());
+      final PublicationPK newPK = pubDetail.getPK();
+      PublicationDetail publi = getTransaction().performNew(() -> {
+        try (Connection subCon = DBUtil.openConnection()) {
+          return PublicationDAO.loadRow(subCon, newPK);
+        }
+      });
       PublicationDetail before = publi.copy();
+      Optional.of(eventType)
+          .filter(ResourceEvent.Type.MOVE::equals)
+          .ifPresent(t -> publi.setPk(newPK));
       String oldName = publi.getName();
       String oldDesc = publi.getDescription();
       String oldKeywords = publi.getKeywords();
@@ -392,7 +409,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
       loadTranslations(publi);
       PublicationDAO.storeRow(con, publi);
-      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, before, publi);
+      notifier.notifyEventOn(eventType, before, publi);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }

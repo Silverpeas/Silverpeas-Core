@@ -33,22 +33,20 @@
 <c:set var="isMinorModificationBahavior" value="${silfn:booleanValue(param.minorBehavior)}"/>
 <fmt:message var="minorQuestionLabel" key="contribution.modification.minor.question"/>
 <fmt:message var="minorHelpMessage" key="contribution.modification.minor.help"/>
-<fmt:message var="minorLabel" key="contribution.modification.minor.minors"/>
-<fmt:message var="majorLabel" key="contribution.modification.minor.majors"/>
+<fmt:message var="minorImportantsLabel" key="contribution.modification.minor.importants"/>
 
 <div class="contribution-modification-context">
     <c:if test="${isMinorModificationBahavior}">
       <div class="minor-major-behavior">
         <div class="label">
           <label class="txtlibform">${minorQuestionLabel}</label>
-          <img id="minorHelpMessage" class="infoBulle" title="${minorHelpMessage}" src="<c:url value="/util/icons/help.png"/>" alt="info"/>
+        </div>
+        <div>
+            ${minorHelpMessage}
         </div>
         <div class="field">
           <label>
-            <input name="modificationLevelType" type="radio" value="minor"> ${minorLabel}
-          </label>
-          <label>
-            <input name="modificationLevelType" type="radio" value="major" checked> ${majorLabel}
+            <input name="modificationLevelType" type="checkbox" value="major" checked> ${minorImportantsLabel}
           </label>
         </div>
       </div>
