@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
@@ -112,6 +113,16 @@ public interface PublicationService {
    * update.
    */
   void setDetail(PublicationDetail detail, boolean forceUpdateDate);
+
+  /**
+   * Updates the specified publication.
+   * @param detail the detail of the publication from which it has to be updated.
+   * @param forceUpdateDate a boolean indicating if the update date has to be set with date of this
+   * update.
+   * @param eventType permit to precise to listener of publication modification the type of the
+   * update.
+   */
+  void setDetail(PublicationDetail detail, boolean forceUpdateDate, ResourceEvent.Type eventType);
 
   /**
    * Adds the specified father to the given publication. The publication will be then visible from

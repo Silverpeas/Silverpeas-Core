@@ -25,6 +25,7 @@ package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.ContributionModification;
+import org.silverpeas.core.contribution.ContributionMove;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -39,7 +40,8 @@ import static java.util.Collections.emptyList;
  * @author silveryocha
  */
 public class ContributionReminderListener
-    implements ContributionModification, ContributionDeletion {
+    implements ContributionModification, ContributionMove, ContributionDeletion {
+
   @Override
   public void update(final Contribution before, final Contribution after) {
     try {
@@ -58,6 +60,11 @@ public class ContributionReminderListener
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
+  }
+
+  @Override
+  public void move(final Contribution before, final Contribution after) {
+    update(before, after);
   }
 
   @Override

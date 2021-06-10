@@ -33,6 +33,7 @@ import org.silverpeas.core.notification.system.AbstractResourceEvent;
  * @author mmoquillon
  */
 public class PublicationEvent extends AbstractResourceEvent<PublicationDetail> {
+  private static final long serialVersionUID = 7579870966508990655L;
 
   protected PublicationEvent() {
     super();

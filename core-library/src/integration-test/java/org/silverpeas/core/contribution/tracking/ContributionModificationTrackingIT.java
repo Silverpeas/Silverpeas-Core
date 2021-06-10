@@ -82,8 +82,7 @@ public class ContributionModificationTrackingIT {
   public static Archive<WebArchive> createDeployment() {
     return WarBuilder4Publication.onWarForTestClass(ContributionTrackingServiceIT.class)
         .addJcrFeatures()
-        .addClasses(ContributionModificationContextHandler.class,
-            ContributionOperationContextPropertyHandler.class, ContributionEventProcessor.class)
+        .addClasses(ContributionEventProcessor.class)
         .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")
         .addPackages(true, "org.silverpeas.core.contribution.tracking")
         .addAsResource("org/silverpeas/contribution")

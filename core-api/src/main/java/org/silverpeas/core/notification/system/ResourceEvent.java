@@ -119,6 +119,10 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
      */
     UPDATE,
     /**
+     * The notification is about the move of a resource from a location to another in Silverpeas.
+     */
+    MOVE,
+    /**
      * The notification is about the removing of a resource in Silverpeas. Some types of resources
      * are never directly deleted but first removed in a trash. They are then again existent and
      * recoverable. This event is about this state of the life-cycle of a such resource.

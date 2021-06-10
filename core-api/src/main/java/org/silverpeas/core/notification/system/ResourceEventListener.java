@@ -70,6 +70,14 @@ public interface ResourceEventListener<T extends ResourceEvent> {
   }
 
   /**
+   * An event on the move of a resource has be listened. By default, this method does nothing.
+   * @param event the event on the move of a resource.
+   * @throws java.lang.Exception if an error occurs while treating the event.
+   */
+  default void onMove(final T event) throws Exception {
+  }
+
+  /**
    * An event on the creation of a resource has be listened. By default, this method does nothing.
    * @param event the event on the creation of a resource.
    * @throws java.lang.Exception if an error occurs while treating the event.
@@ -111,6 +119,9 @@ public interface ResourceEventListener<T extends ResourceEvent> {
           break;
         case UPDATE:
           onUpdate(event);
+          break;
+        case MOVE:
+          onMove(event);
           break;
         case UNLOCK:
           onUnlock(event);

@@ -39,7 +39,7 @@ public class DefaultUserProvider implements UserProvider {
 
   @Override
   public User getUser(final String userId) {
-    if (userId.equals(SYSTEM_USER_ID)) {
+    if (SYSTEM_USER_ID.equals(userId)) {
       return getSystemUser();
     }
     return OrganizationController.get().getUserDetail(userId);

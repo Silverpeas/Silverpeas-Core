@@ -239,8 +239,7 @@
         };
         this.perform = function(userValidation) {
           return new Promise(function(resolve, reject) {
-            const modificationType = $settings.$this.find('input[name=modificationLevelType]:checked').val();
-            userValidation.data.isMinor = modificationType === 'minor';
+            userValidation.data.isMinor = $settings.$this.find('input[name=modificationLevelType]:checked').length === 0;
             resolve();
           });
         };
