@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
-
 /**
  * Pagination is an interface to be implemented by a graphic element to print a pages index or a
  * elements counter.

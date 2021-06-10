@@ -79,7 +79,7 @@ public class Im4javaImageTool extends AbstractImageTool {
       throws SilverpeasException {
     try {
       IMOperation op = new IMOperation();
-      op.format(String.join("|", (CharSequence[]) infoTypes));
+      op.format(String.join("|", infoTypes));
       op.addImage(source.getPath());
       IdentifyCmd identifyCmd = new IdentifyCmd();
       ArrayListOutputConsumer result = new ArrayListOutputConsumer();

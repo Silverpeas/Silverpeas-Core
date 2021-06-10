@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.silverpeas.core.contribution.content.form.displayers.UserFieldDisplayer
-    .produceMandatoryCheck;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.GROUP;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;

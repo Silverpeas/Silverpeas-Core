@@ -23,29 +23,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ include file="import.jsp" %>
 
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<script language='Javascript'>
-function forwardToComponent()
-{
-    <%
-        String component = (String)request.getParameter("component");
-        String space = (String)request.getParameter("space");
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-        if ((component != null) && (component.length() > 0))
-        {
-            out.println("window.location = \"" + m_context + URLUtil.getURL(space, component) + "Main\"");
-        }
-    %>
-}
-</script>
-</HEAD>
-<BODY onload="javascript:forwardToComponent()">
-</BODY>
-</HTML>
+<view:sp-page>
+  <view:sp-head-part noLookAndFeel="true">
+    <script type='text/javascript'>
+      function forwardToComponent() {
+        <%
+            String component = StringUtil.defaultStringIfNotDefined(request.getParameter("component"));
+            String space = StringUtil.defaultStringIfNotDefined(request.getParameter("space"));
+            if (StringUtil.isDefined(SilverpeasComponentInstance.getComponentName(component))) {
+              out.println("window.location = \"" + m_context + URLUtil.getURL(space, component) + "Main\"");
+            }
+        %>
+      }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part onLoad="javascript:forwardToComponent()">
+  </view:sp-body-part>
+</view:sp-page>
