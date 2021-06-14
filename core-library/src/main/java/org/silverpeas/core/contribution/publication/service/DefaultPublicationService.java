@@ -182,6 +182,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       loadTranslations(detail);
       detail.setIndexOperation(indexOperation);
       createIndex(detail, false);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, detail);
       return detail.getPK();
     } catch (Exception re) {
       throw new PublicationRuntimeException(re);
@@ -324,7 +325,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   @Transactional
   public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
-    try (Connection con = getConnection()) {
+    try {
       int indexOperation = detail.getIndexOperation();
       updateDetail(detail, forceUpdateDate);
       if (detail.isRemoveTranslation()) {
@@ -346,7 +347,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       } else if (indexOperation == IndexManager.REMOVE) {
         deleteIndex(detail.getPK());
       }
-    } catch (SQLException | FormException | PublicationTemplateException re) {
+    } catch (FormException | PublicationTemplateException re) {
       throw new PublicationRuntimeException(re);
     }
   }
@@ -400,7 +401,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private void loadTranslation(final Connection con, final PublicationDetail publi)
       throws SQLException {
     List<PublicationI18N> translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
-    if (translations != null && !translations.isEmpty()) {
+    if (!translations.isEmpty()) {
       PublicationI18N translation = translations.get(0);
       publi.setLanguage(translation.getLanguage());
       publi.setName(translation.getName());

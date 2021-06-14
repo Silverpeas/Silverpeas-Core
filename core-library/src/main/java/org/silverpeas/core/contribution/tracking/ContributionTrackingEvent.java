@@ -24,10 +24,10 @@
 package org.silverpeas.core.contribution.tracking;
 
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -48,6 +48,9 @@ public class ContributionTrackingEvent
   @Embedded
   private ContributionIdentifier contributionId;
 
+  @Column(name = "context")
+  private String context = "";
+
   protected ContributionTrackingEvent() {
     // for JPA
   }
@@ -63,6 +66,27 @@ public class ContributionTrackingEvent
       final ContributionIdentifier contributionId) {
     this.action = action;
     this.contributionId = contributionId;
+  }
+
+  /**
+   * Gets a description about the context on the modification that was operated on the underlying
+   * contribution.
+   * @return a short description of the modification context or an empty string if no description
+   * was provided about it.
+   */
+  public String getContext() {
+    return context == null ? "" : context;
+  }
+
+  /**
+   * Sets a short text explaining the context under which the tracked modification of the underlying
+   * contribution was operated.
+   * @param context
+   * @return
+   */
+  public ContributionTrackingEvent setContext(final String context) {
+    this.context = context;
+    return this;
   }
 
   /**
@@ -95,6 +119,6 @@ public class ContributionTrackingEvent
    * Saves the specified event into the modification history of the related contribution.
    */
   public ContributionTrackingEvent save() {
-    return ContributionTrackingRepository.get().saveAndFlush(this);
+    return ContributionTrackingRepository.get().save(this);
   }
 }

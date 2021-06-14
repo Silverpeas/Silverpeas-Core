@@ -223,6 +223,11 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     CacheServiceProvider.clearAllThreadCaches();
     Class<?> test = context.getRequiredTestClass();
     UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
+    User systemUser = mock(User.class);
+    when(systemUser.getId()).thenReturn("-1");
+    when(systemUser.getFirstName()).thenReturn("SYSTEM");
+    when(systemUser.getLastName()).thenReturn("SYSTEM");
+    when(mock.getSystemUser()).thenReturn(systemUser);
     Method requesterProvider = recursivelyFindRequesterProvider(test);
     if (requesterProvider != null) {
       requesterProvider.trySetAccessible();
@@ -388,6 +393,13 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   private void mockUserProvider() {
     UserProvider userProvider = mock(UserProvider.class);
     doCallRealMethod().when(userProvider).getCurrentRequester();
+    when(userProvider.getSystemUser()).thenAnswer( i -> {
+      User systemUser = mock(User.class);
+      when(systemUser.getId()).thenReturn("-1");
+      when(systemUser.getLastName()).thenReturn("SYSTEM");
+      when(systemUser.getFirstName()).thenReturn("SYSTEM");
+      return systemUser;
+    });
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class)).thenReturn(
         userProvider);
   }

@@ -30,28 +30,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.component.service.DefaultSilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.SettingBundleStub;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestedBean;
 
-import java.util.Date;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Optional;
 
+import static org.exparity.hamcrest.date.OffsetDateTimeMatchers.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
+import static org.silverpeas.core.contribution.tracking.ContributionTrackingTestContext.YESTERDAY;
 
 /**
  * Unit tests on the tracking for updates of contributions.
@@ -60,8 +59,6 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv
 @TestManagedBeans({DefaultSilverpeasComponentInstanceProvider.class, Transaction.class})
 class ContributionTrackingUpdateTest {
-
-  static final OffsetDateTime YESTERDAY = OffsetDateTime.now().minusDays(1);
 
   @RegisterExtension
   static SettingBundleStub contributionSettings =
@@ -76,41 +73,23 @@ class ContributionTrackingUpdateTest {
   @TestedBean
   ContributionTrackingService service;
 
-  @RequesterProvider
-  User getRequester() {
-    UserDetail user = new UserDetail();
-    user.setId("0");
-    user.setFirstName("Toto");
-    user.setLastName("Tartempion");
-    user.setLogin("toto");
-    return user;
-  }
+  ContributionTrackingTestContext context = new ContributionTrackingTestContext();
+
 
   @BeforeEach
   public void setup() {
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    UserProvider userProvider = UserProvider.get();
-    when(userProvider.getUser(anyString())).thenAnswer(i -> {
-      String id = i.getArgument(0);
-      if (id.equals("0")) {
-        return getRequester();
-      }
-      UserDetail user = new UserDetail();
-      user.setId(id);
-      user.setLastName("Tartempion" + id);
-      user.setFirstName("Toto");
-      user.setLogin("toto" + id);
-      return user;
-    });
-    contributionSettings.put("contribution.tracking.apps", "kmelia");
-    contributionSettings.put("contribution.modification.behavior.minor", "true");
+    context.initMocks();
+    contributionSettings.put("contribution.modification.behavior.minor.componentNames", "kmelia");
   }
 
   @Test
   @DisplayName("No tracking is performed when updating a no tracked contribution")
   void updateDoesntImplyATrackedContribution() {
-    User requester = getRequester();
+    context.setUpRequester();
+
+    User requester = context.getRequester();
     ContributionIdentifier id = ContributionIdentifier.from("app32", "42", "NoTrackedContribution");
     NoTrackedContribution before = new NoTrackedContribution(id, YESTERDAY, requester);
     NoTrackedContribution after = before.update(OffsetDateTime.now(), requester);
@@ -124,8 +103,10 @@ class ContributionTrackingUpdateTest {
   @DisplayName("No tracking is performed when updating a tracked contribution in a non tracked " +
       "application instance")
   void updateImpliesATrackedContributionInANonTrackedApp() {
-    PublicationDetail before = getPublication("Toto12");
-    PublicationDetail after = updatePublication(before);
+    context.setUpRequester();
+
+    PublicationDetail before = context.getPublication("Toto12");
+    PublicationDetail after = updatePublication(before, context.getRequester());
 
     service.update(before, after);
     verify(modifHandler, never()).isMinorModification();
@@ -136,8 +117,10 @@ class ContributionTrackingUpdateTest {
   @DisplayName("Tracking is performed when updating a tracked contribution in a tracked " +
       "application instance")
   void updateImpliesATrackedContributionInATrackedApp() {
-    PublicationDetail before = getPublication("kmelia2");
-    PublicationDetail after = updatePublication(before);
+    context.setUpRequester();
+
+    PublicationDetail before = context.getPublication("kmelia2");
+    PublicationDetail after = updatePublication(before, context.getRequester());
 
     service.update(before, after);
     verify(modifHandler, times(1)).isMinorModification();
@@ -145,21 +128,24 @@ class ContributionTrackingUpdateTest {
   }
 
   @Test
-  @DisplayName("Saved Tracking event about a minor modification is correctly set")
+  @DisplayName("Tracking event about a minor modification is correctly saved with the requester")
   void updateSavesACorrectTrackingEventAboutTheMinorModification() {
-    PublicationDetail before = getPublication("kmelia2");
-    PublicationDetail after = updatePublication(before);
+    context.setUpRequester();
+
+    PublicationDetail before = context.getPublication("kmelia2");
+    PublicationDetail after = updatePublication(before, context.getRequester());
 
     when(modifHandler.isMinorModification()).thenReturn(Optional.of(true));
     when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
       ContributionTrackingEvent event = i.getArgument(0);
-      assertThat(event.getAction().getDateTime().toInstant(),
-          is(after.getLastUpdateDate().toInstant()));
+      assertThat(event.getAction().getDateTime(),
+          within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
       assertThat(event.getAction().getType(), is(TrackedActionType.MINOR_UPDATE));
-      assertThat(event.getAction().getUser(), is(getRequester()));
+      assertThat(event.getAction().getUser(), is(context.getRequester()));
       assertThat(event.getContributionId().getType(), is(after.getContributionType()));
       assertThat(event.getContributionId().getComponentInstanceId(), is(after.getInstanceId()));
       assertThat(event.getContributionId().getLocalId(), is(after.getId()));
+      assertThat(event.getContext().isEmpty(), is(true));
       return null;
     });
 
@@ -167,43 +153,112 @@ class ContributionTrackingUpdateTest {
   }
 
   @Test
-  @DisplayName("Saved Tracking event about a major modification is correctly set")
+  @DisplayName("Tracking event about a major modification is correctly saved with the requester")
   void updateSavesACorrectTrackingEventAboutTheMajorModification() {
-    PublicationDetail before = getPublication("kmelia2");
-    PublicationDetail after = updatePublication(before);
+    context.setUpRequester();
+
+    PublicationDetail before = context.getPublication("kmelia2");
+    PublicationDetail after = updatePublication(before, context.getRequester());
 
     when(modifHandler.isMinorModification()).thenReturn(Optional.of(false));
     when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
       ContributionTrackingEvent event = i.getArgument(0);
-      assertThat(event.getAction().getDateTime().toInstant(),
-          is(after.getLastUpdateDate().toInstant()));
+      assertThat(event.getAction().getDateTime(),
+          within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
       assertThat(event.getAction().getType(), is(TrackedActionType.MAJOR_UPDATE));
-      assertThat(event.getAction().getUser(), is(getRequester()));
+      assertThat(event.getAction().getUser(), is(context.getRequester()));
       assertThat(event.getContributionId().getType(), is(after.getContributionType()));
       assertThat(event.getContributionId().getComponentInstanceId(), is(after.getInstanceId()));
       assertThat(event.getContributionId().getLocalId(), is(after.getId()));
+      assertThat(event.getContext().isEmpty(), is(true));
       return null;
     });
 
     service.update(before, after);
   }
 
-  private PublicationDetail getPublication(final String instanceId) {
-    PublicationDetail publi = new PublicationDetail();
-    publi.setPk(new PublicationPK("23", instanceId));
-    publi.setName("My publi");
-    publi.setDescription("A description");
-    publi.setCreationDate(Date.from(YESTERDAY.toInstant()));
-    publi.setCreatorId("1");
-    publi.setUpdateDate(publi.getCreationDate());
-    publi.setUpdaterId(publi.getCreatorId());
-    return publi;
+  @Test
+  @DisplayName(
+      "Tracking event about a classical modification is correctly saved with the " + "requester")
+  void updateSavesACorrectTrackingEventAboutAClassicalModification() {
+    context.setUpRequester();
+
+    PublicationDetail before = context.getPublication("kmelia2");
+    PublicationDetail after = updatePublication(before, context.getRequester());
+
+    when(modifHandler.isMinorModification()).thenReturn(Optional.empty());
+    when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
+      ContributionTrackingEvent event = i.getArgument(0);
+      assertThat(event.getAction().getDateTime(),
+          within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
+      assertThat(event.getAction().getType(), is(TrackedActionType.UPDATE));
+      assertThat(event.getAction().getUser(), is(context.getRequester()));
+      assertThat(event.getContributionId().getType(), is(after.getContributionType()));
+      assertThat(event.getContributionId().getComponentInstanceId(), is(after.getInstanceId()));
+      assertThat(event.getContributionId().getLocalId(), is(after.getId()));
+      assertThat(event.getContext().isEmpty(), is(true));
+      return null;
+    });
+
+    service.update(before, after);
   }
 
-  private PublicationDetail updatePublication(final PublicationDetail publication) {
+  @Test
+  @DisplayName("Saved Tracking event about an update in a batch process is correctly set")
+  void updateInABatchProcessSavesACorrectTrackingEventAboutTheModification() {
+    // no requester in a batch process
+
+    PublicationDetail before = context.getPublication("kmelia2");
+    PublicationDetail after = updatePublication(before, User.getById("3"));
+
+    when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
+      ContributionTrackingEvent event = i.getArgument(0);
+      // no minor nor major modification support here
+      assertThat(event.getAction().getType(), is(TrackedActionType.UPDATE));
+      assertThat(event.getAction().getUser(), is(after.getLastUpdater()));
+      assertThat(event.getAction().getDateTime(),
+          within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
+      assertThat(event.getContributionId().getType(), is(after.getContributionType()));
+      assertThat(event.getContributionId().getComponentInstanceId(), is(after.getInstanceId()));
+      assertThat(event.getContributionId().getLocalId(), is(after.getId()));
+      assertThat(event.getContext().isEmpty(), is(true));
+      return null;
+    });
+
+    service.update(before, after);
+  }
+
+  @Test
+  @DisplayName(
+      "Saved Tracking event about an update without any updater in a batch process without any " +
+          "creator is correctly set")
+  void updateInABatchProcessWithoutAnyCreatorSavesACorrectTrackingEventAboutTheModification() {
+    // no requester in a batch process
+
+    PublicationDetail before = context.getPublication("kmelia2");
+    PublicationDetail after = updatePublication(before, null);
+
+    when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
+      ContributionTrackingEvent event = i.getArgument(0);
+      // no minor nor major modification support here
+      assertThat(event.getAction().getType(), is(TrackedActionType.UPDATE));
+      assertThat(event.getAction().getUser(), is(User.getSystemUser()));
+      assertThat(event.getAction().getDateTime(),
+          within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
+      assertThat(event.getContributionId().getType(), is(after.getContributionType()));
+      assertThat(event.getContributionId().getComponentInstanceId(), is(after.getInstanceId()));
+      assertThat(event.getContributionId().getLocalId(), is(after.getId()));
+      assertThat(event.getContext().isEmpty(), is(true));
+      return null;
+    });
+
+    service.update(before, after);
+  }
+
+  private PublicationDetail updatePublication(final PublicationDetail publication, User updater) {
     PublicationDetail publi = publication.copy();
     publi.setUpdateDate(new Date());
-    publi.setUpdaterId(getRequester().getId());
+    publi.setUpdaterId(updater == null ? null : updater.getId());
     return publi;
   }
 }

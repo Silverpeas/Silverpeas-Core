@@ -38,7 +38,9 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.contribution.tracking.TestContext.TrackingEventRecord;
 import org.silverpeas.core.persistence.Transaction;
@@ -49,7 +51,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,9 +66,6 @@ public class ContributionTrackingServiceIT {
   @Inject
   ContributionTrackingService trackingService;
 
-  @Inject
-  ContributionModificationContextHandler modificationContextHandler;
-
   TestContext context = new TestContext();
 
   @Rule
@@ -77,7 +75,7 @@ public class ContributionTrackingServiceIT {
   @Deployment
   public static Archive<WebArchive> createDeployment() {
     return WarBuilder4Publication.onWarForTestClass(ContributionTrackingServiceIT.class)
-        .addClasses(ContributionModificationContextHandler.class,
+        .addClasses(ContributionModificationContextHandler.class, AttachmentException.class,
             ContributionOperationContextPropertyHandler.class)
         .addPackages(true, "org.silverpeas.core.contribution.tracking")
         .addAsResource("org/silverpeas/contribution")
@@ -87,12 +85,6 @@ public class ContributionTrackingServiceIT {
   @Before
   public void setUp() {
     assertThat(trackingService, notNullValue());
-    assertThat(modificationContextHandler, notNullValue());
-
-    SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    User currentUser = User.getById("1");
-    sessionCacheService.newSessionCache(currentUser);
   }
 
   @After
@@ -102,6 +94,9 @@ public class ContributionTrackingServiceIT {
 
   @Test
   public void saveAMajorModification() {
+    context.setUpUserRequester();
+    context.setUpModificationType(false);
+
     Date now = new Date();
     PublicationDetail publication = context.getPublication("100");
     PublicationDetail updated = publication.copy();
@@ -111,43 +106,185 @@ public class ContributionTrackingServiceIT {
     withinTransaction(() -> trackingService.update(publication, updated));
 
     TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
-    context.assertThatRecordMatches(event, TrackedActionType.MAJOR_UPDATE, updated, now);
+    context.assertThatRecordMatches(event, TrackedActionType.MAJOR_UPDATE, updated);
   }
 
   @Test
   public void saveAMinorModification() {
+    context.setUpUserRequester();
+    context.setUpModificationType(true);
+
     Date now = new Date();
     PublicationDetail publication = context.getPublication("100");
     PublicationDetail updated = publication.copy();
     updated.setUpdateDate(now);
-    updated.setUpdaterId("1");
-
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getHeader("CONTRIBUTION_MODIFICATION_CONTEXT")).thenReturn("{\"isMinor\": true}");
-    modificationContextHandler.parseForProperty(request);
+    updated.setUpdaterId(User.getCurrentRequester().getId());
 
     withinTransaction(() -> trackingService.update(publication, updated));
 
     TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
-    context.assertThatRecordMatches(event, TrackedActionType.MINOR_UPDATE, updated, now);
+    context.assertThatRecordMatches(event, TrackedActionType.MINOR_UPDATE, updated);
+  }
+
+  @Test
+  public void saveASimpleModification() {
+    context.setUpUserRequester();
+
+    Date now = new Date();
+    PublicationDetail publication = context.getPublication("100");
+    PublicationDetail updated = publication.copy();
+    updated.setUpdateDate(now);
+    updated.setUpdaterId(User.getCurrentRequester().getId());
+
+    withinTransaction(() -> trackingService.update(publication, updated));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.UPDATE, updated);
+  }
+
+  @Test
+  public void saveASimpleModificationInABatchProcess() {
+    // no requester in a batch process
+
+    Date now = new Date();
+    PublicationDetail publication = context.getPublication("100");
+    PublicationDetail updated = publication.copy();
+    updated.setUpdateDate(now);
+    updated.setUpdaterId("3");
+
+    withinTransaction(() -> trackingService.update(publication, updated));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.UPDATE, updated);
+  }
+
+  @Test
+  public void saveASimpleModificationWithoutAnyUpdaterInABatchProcess() {
+    // no requester in a batch process
+
+    Date now = new Date();
+    PublicationDetail publication = context.getPublication("100");
+    PublicationDetail updated = publication.copy();
+    updated.setUpdateDate(now);
+    updated.setUpdaterId(null);
+
+    withinTransaction(() -> trackingService.update(publication, updated));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.UPDATE, updated);
   }
 
   @Test
   public void saveADeletion() {
-    Date now = new Date();
+    context.setUpUserRequester();
+
     PublicationDetail publication = context.getPublication("100");
 
     withinTransaction(() -> trackingService.delete(publication));
 
     TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
-    assertThat(event, notNullValue());
-    assertThat(event.contrib.getLocalId(), is(publication.getId()));
-    assertThat(event.contrib.getType(), is(publication.getContributionType()));
-    assertThat(event.contrib.getComponentInstanceId(), is(publication.getInstanceId()));
-    assertThat(event.action.getType(), is(TrackedActionType.DELETION));
-    assertThat(event.action.getUser(), is(User.getCurrentRequester()));
-    // TODO once hamcrest-date is available: use it to compare two non-accurate dates
-    //assertThat(event.action.getDateTime().toInstant(), is(now.toInstant()));
+    context.assertThatRecordMatches(event, TrackedActionType.DELETION, publication);
+  }
+
+  @Test
+  public void saveADeletionInABatchProcess() {
+    // no requester in a batch process
+
+    PublicationDetail publication = context.getPublication("100");
+
+    withinTransaction(() -> trackingService.delete(publication));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.DELETION, publication);
+  }
+
+  @Test
+  public void saveACreation() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = context.getPublication("100");
+
+    withinTransaction(() -> trackingService.create(publication));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.CREATION, publication);
+  }
+
+  @Test
+  public void saveACreationInABatchProcess() {
+    // no requester in a batch process
+
+    PublicationDetail publication = context.getPublication("100");
+
+    withinTransaction(() -> trackingService.create(publication));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.CREATION, publication);
+  }
+
+  @Test
+  public void saveACreationWithoutAnyCreatorInABatchProcess() {
+    // no requester in a batch process
+
+    PublicationDetail publication = context.getPublication("100");
+    publication.setCreatorId(null);
+
+    withinTransaction(() -> trackingService.create(publication));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.CREATION, publication);
+  }
+
+  @Test
+  public void saveAnInnerMove() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = context.getPublication("100");
+
+    withinTransaction(() -> trackingService.move(publication, publication));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.INNER_MOVE, publication);
+  }
+
+  @Test
+  public void saveAnOuterMove() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = context.getPublication("100");
+    PublicationDetail moved = publication.copy();
+    moved.setPk(new PublicationPK(publication.getId(), "kmelia100"));
+
+    withinTransaction(() -> trackingService.move(publication, moved));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.OUTER_MOVE, publication);
+  }
+
+  @Test
+  public void saveAnInnerMoveInABatchProcess() {
+    // no requester in a batch process
+
+    PublicationDetail publication = context.getPublication("100");
+
+    withinTransaction(() -> trackingService.move(publication, publication));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.INNER_MOVE, publication);
+  }
+
+  @Test
+  public void saveAnOuterMoveInABatchProcess() {
+    // no requester in a batch process
+
+    PublicationDetail publication = context.getPublication("100");
+    PublicationDetail moved = publication.copy();
+    moved.setPk(new PublicationPK(publication.getId(), "kmelia100"));
+
+    withinTransaction(() -> trackingService.move(publication, moved));
+
+    TrackingEventRecord event = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(event, TrackedActionType.OUTER_MOVE, publication);
   }
 
   private void withinTransaction(final Runnable runnable) {

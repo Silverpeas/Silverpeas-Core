@@ -74,5 +74,12 @@ public class TestUserProvider implements UserProvider {
     return currentRequester;
   }
 
+  @Override
+  public User getSystemUser() {
+    User user = mock(User.class);
+    when(user.getId()).thenReturn("-1");
+    return user;
+  }
+
 }
   

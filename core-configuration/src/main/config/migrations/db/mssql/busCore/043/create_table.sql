@@ -256,6 +256,7 @@ CREATE TABLE ST_UserFavoriteSpaces
 CREATE TABLE SB_Contribution_Tracking
 (
     id                  VARCHAR(40) NOT NULL,
+    context             VARCHAR(255) DEFAULT '',
     contrib_id          VARCHAR(40) NOT NULL,
     contrib_type        VARCHAR(40) NOT NULL,
     contrib_instanceId  VARCHAR(50) NOT NULL,

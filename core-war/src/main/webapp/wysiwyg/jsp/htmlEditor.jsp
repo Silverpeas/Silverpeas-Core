@@ -75,7 +75,7 @@
     actionWysiwyg = "Load";
   }
 
-  ContributionOperationContextPropertyHandler.parseRequest(request;
+  ContributionOperationContextPropertyHandler.parseRequest(request);
 
   if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) ||
       "SaveHtml".equals(actionWysiwyg)) {

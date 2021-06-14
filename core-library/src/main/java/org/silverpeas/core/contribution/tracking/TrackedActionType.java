@@ -54,5 +54,13 @@ public enum TrackedActionType {
   /**
    * A contribution has been deleted.
    */
-  DELETION
+  DELETION,
+  /**
+   * A contribution has been moved from a component instance to another one in Silverpeas.
+   */
+  OUTER_MOVE,
+  /**
+   * A contribution has been moved from a node to another one in the same application in Silverpeas.
+   */
+  INNER_MOVE
 }
