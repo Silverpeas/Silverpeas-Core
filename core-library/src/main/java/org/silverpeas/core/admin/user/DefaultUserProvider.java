@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Provider;
 
@@ -34,8 +35,22 @@ import org.silverpeas.core.annotation.Provider;
 @Provider
 public class DefaultUserProvider implements UserProvider {
 
+  private static final String SYSTEM_USER_ID = "-1";
+
   @Override
   public User getUser(final String userId) {
+    if (userId.equals(SYSTEM_USER_ID)) {
+      return getSystemUser();
+    }
     return OrganizationController.get().getUserDetail(userId);
+  }
+
+  @Override
+  public User getSystemUser() {
+    UserDetail user = new UserDetail();
+    user.setId(SYSTEM_USER_ID);
+    user.setFirstName("SYSTEM");
+    user.setLastName("SYSTEM");
+    return user;
   }
 }

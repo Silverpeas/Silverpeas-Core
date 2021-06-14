@@ -57,5 +57,12 @@ public class ContributionEventProcessor
     ServiceProvider.getAllServices(ContributionDeletion.class)
         .forEach(s -> s.delete(event.getTransition().getBefore()));
   }
+
+  @Override
+  public void onCreation(final AbstractResourceEvent<? extends Contribution> event)
+      throws Exception {
+    ServiceProvider.getAllServices(ContributionCreation.class)
+        .forEach(s -> s.create(event.getTransition().getAfter()));
+  }
 }
   

@@ -50,12 +50,12 @@ import static org.mockito.Mockito.*;
 import static org.silverpeas.core.contribution.tracking.ContributionTrackingTestContext.YESTERDAY;
 
 /**
- * Unit tests on the tracking for deletions of contributions.
+ * Unit tests on the tracking for creation of contributions.
  * @author mmoquillon
  */
 @EnableSilverTestEnv
 @TestManagedBeans({DefaultSilverpeasComponentInstanceProvider.class, Transaction.class})
-class ContributionTrackingDeletionTest {
+class ContributionTrackingCreationTest {
 
   @RegisterExtension
   static SettingBundleStub contributionSettings =
@@ -73,56 +73,56 @@ class ContributionTrackingDeletionTest {
   public void setup() {
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    context.initMocks();
     contributionSettings.put("contribution.modification.behavior.minor.componentNames", "kmelia");
+    context.initMocks();
   }
 
   @Test
-  @DisplayName("No tracking is performed when deleting a no tracked contribution")
-  void deletionDoesntImplyATrackedContribution() {
+  @DisplayName("No tracking is performed when creating a no tracked contribution")
+  void creationDoesntImplyATrackedContribution() {
     context.setUpRequester();
 
     User requester = context.getRequester();
     ContributionIdentifier id = ContributionIdentifier.from("app32", "42", "NoTrackedContribution");
     NoTrackedContribution contribution = new NoTrackedContribution(id, YESTERDAY, requester);
 
-    service.delete(contribution);
+    service.create(contribution);
     verify(repository, never()).save(any(ContributionTrackingEvent.class));
   }
 
   @Test
-  @DisplayName("No tracking is performed when deleting a tracked contribution in a non tracked " +
+  @DisplayName("No tracking is performed when creating a tracked contribution in a non tracked " +
       "application instance")
-  void deletionImpliesATrackedContributionInANonTrackedApp() {
+  void creationImpliesATrackedContributionInANonTrackedApp() {
     context.setUpRequester();
 
     PublicationDetail publication = context.getPublication("Toto12");
 
-    service.delete(publication);
+    service.create(publication);
     verify(repository, never()).save(any(ContributionTrackingEvent.class));
   }
 
   @Test
-  @DisplayName("Tracking is performed when deleting a tracked contribution in a tracked " +
+  @DisplayName("Tracking is performed when creating a tracked contribution in a tracked " +
       "application instance")
-  void deletionImpliesATrackedContributionInATrackedApp() {
+  void creationImpliesATrackedContributionInATrackedApp() {
     context.setUpRequester();
 
     PublicationDetail publication = context.getPublication("kmelia2");
 
-    service.delete(publication);
+    service.create(publication);
     verify(repository, times(1)).save(any(ContributionTrackingEvent.class));
   }
 
   @Test
-  @DisplayName("Saved Tracking event about a deletion is correctly set")
-  void deletionSavesACorrectTrackingEventAboutTheModification() {
+  @DisplayName("Saved Tracking event about a creation is correctly set")
+  void creationSavesACorrectTrackingEventAboutTheModification() {
     context.setUpRequester();
 
     PublicationDetail publication = context.getPublication("kmelia2");
     when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
       ContributionTrackingEvent event = i.getArgument(0);
-      assertThat(event.getAction().getType(), is(TrackedActionType.DELETION));
+      assertThat(event.getAction().getType(), is(TrackedActionType.CREATION));
       assertThat(event.getAction().getUser(), is(context.getRequester()));
       assertThat(event.getAction().getDateTime(),
           within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
@@ -134,18 +134,45 @@ class ContributionTrackingDeletionTest {
       return null;
     });
 
-    service.delete(publication);
+    service.create(publication);
   }
 
   @Test
-  @DisplayName("Saved Tracking event about a deletion in a batch process is correctly set")
-  void deletionInBatchProcessSavesACorrectTrackingEventAboutTheModification() {
+  @DisplayName("Saved Tracking event about a creation in a batch process is correctly set")
+  void creationInABatchProcessSavesACorrectTrackingEventAboutTheModification() {
     // no requester in a batch process
 
     PublicationDetail publication = context.getPublication("kmelia2");
+
     when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
       ContributionTrackingEvent event = i.getArgument(0);
-      assertThat(event.getAction().getType(), is(TrackedActionType.DELETION));
+      assertThat(event.getAction().getType(), is(TrackedActionType.CREATION));
+      assertThat(event.getAction().getUser(), is(User.getById(publication.getCreatorId())));
+      assertThat(event.getAction().getDateTime(),
+          within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
+      assertThat(event.getContributionId().getType(), is(publication.getContributionType()));
+      assertThat(event.getContributionId().getComponentInstanceId(),
+          is(publication.getInstanceId()));
+      assertThat(event.getContributionId().getLocalId(), is(publication.getId()));
+      assertThat(event.getContext().isEmpty(), is(true));
+      return null;
+    });
+
+    service.create(publication);
+  }
+
+  @Test
+  @DisplayName("Saved Tracking event about a creation in a batch process without any creator is " +
+      "correctly set")
+  void creationInABatchProcessWithoutAnyCreatorSavesACorrectTrackingEventAboutTheModification() {
+    // no requester in a batch process
+
+    PublicationDetail publication = context.getPublication("kmelia2");
+    publication.setCreatorId(null);
+
+    when(repository.save(any(ContributionTrackingEvent.class))).thenAnswer(i -> {
+      ContributionTrackingEvent event = i.getArgument(0);
+      assertThat(event.getAction().getType(), is(TrackedActionType.CREATION));
       assertThat(event.getAction().getUser(), is(User.getSystemUser()));
       assertThat(event.getAction().getDateTime(),
           within(1, ChronoUnit.MINUTES, OffsetDateTime.now()));
@@ -157,6 +184,6 @@ class ContributionTrackingDeletionTest {
       return null;
     });
 
-    service.delete(publication);
+    service.create(publication);
   }
 }

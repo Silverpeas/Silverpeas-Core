@@ -94,6 +94,42 @@ CREATE TABLE SB_Node_NodeI18N
     CONSTRAINT PK_Node_NodeI18N PRIMARY KEY(id)
 );
 
+CREATE TABLE SB_SeeAlso_Link
+(
+    id			        INT		        NOT NULL,
+    objectId		    INT		        NOT NULL,
+    objectInstanceId	VARCHAR (50)	NOT NULL,
+    targetId		    INT		        NOT NULL,
+    targetInstanceId	VARCHAR (50)	NOT NULL
+);
+
+CREATE TABLE SB_Thumbnail_Thumbnail
+(
+    instanceId		        VARCHAR (50) NOT NULL,
+    objectId              	INT	NOT NULL,
+    objectType              INT	NOT NULL,
+    originalAttachmentName  VARCHAR(250) NOT NULL,
+    modifiedAttachmentName	VARCHAR(250) NULL,
+    mimeType		        VARCHAR(250) NULL,
+    xStart	                INT          NULL,
+    yStart	                INT          NULL,
+    xLength	                INT          NULL,
+    yLength	                INT          NULL,
+    CONSTRAINT PK_Thumbnail_Thumbnail PRIMARY KEY (objectId, objectType, instanceId)
+);
+
+CREATE TABLE SB_Notation_Notation
+(
+    id           INT         NOT NULL,
+    instanceId   VARCHAR(50) NOT NULL,
+    externalId   VARCHAR(50) NOT NULL,
+    externalType VARCHAR(50) NOT NULL,
+    author       VARCHAR(50) NOT NULL,
+    note         INT         NOT NULL,
+    CONSTRAINT PK_SB_Notation_Notation PRIMARY KEY (id),
+    CONSTRAINT UN_SB_Notation_Notation UNIQUE (instanceId, externalId, externalType, author)
+);
+
 CREATE TABLE SB_Publication_Publi
 (
   pubId                INT           NOT NULL,
@@ -159,13 +195,14 @@ CREATE TABLE SB_Publication_Validation
 
 CREATE TABLE SB_Contribution_Tracking
 (
-    id                  VARCHAR(40) NOT NULL,
-    contrib_id          VARCHAR(40) NOT NULL,
-    contrib_type        VARCHAR(40) NOT NULL,
-    contrib_instanceId  VARCHAR(50) NOT NULL,
-    action_type         VARCHAR(20) NOT NULL,
-    action_date         TIMESTAMP   NOT NULL,
-    action_by           VARCHAR(50) NOT NULL,
+    id                  VARCHAR(40)  NOT NULL,
+    context             VARCHAR(255) NULL DEFAULT '',
+    contrib_id          VARCHAR(40)  NOT NULL,
+    contrib_type        VARCHAR(40)  NOT NULL,
+    contrib_instanceId  VARCHAR(50)  NOT NULL,
+    action_type         VARCHAR(20)  NOT NULL,
+    action_date         TIMESTAMP    NOT NULL,
+    action_by           VARCHAR(50)  NOT NULL,
     CONSTRAINT PK_CONTRIBUTION_TRACKING PRIMARY KEY (id)
 );
 

@@ -33,29 +33,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.contribution.ContributionEventProcessor;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-
+import java.io.File;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Integration tests on the tracking system about the contribution modifications through the
@@ -71,10 +69,10 @@ public class ContributionModificationTrackingIT {
   @Inject
   PublicationService publicationService;
 
-  @Inject
-  ContributionModificationContextHandler modificationContextHandler;
-
   TestContext context = new TestContext();
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TestContext.TABLE_CREATION_SCRIPT)
@@ -83,6 +81,7 @@ public class ContributionModificationTrackingIT {
   @Deployment
   public static Archive<WebArchive> createDeployment() {
     return WarBuilder4Publication.onWarForTestClass(ContributionTrackingServiceIT.class)
+        .addJcrFeatures()
         .addClasses(ContributionModificationContextHandler.class,
             ContributionOperationContextPropertyHandler.class, ContributionEventProcessor.class)
         .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")
@@ -92,14 +91,12 @@ public class ContributionModificationTrackingIT {
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     assertThat(publicationService, notNullValue());
-    assertThat(modificationContextHandler, notNullValue());
 
-    SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    User currentUser = User.getById("1");
-    sessionCacheService.newSessionCache(currentUser);
+    File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
+    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    WAComponentRegistry.get().init();
   }
 
   @After
@@ -108,7 +105,10 @@ public class ContributionModificationTrackingIT {
   }
 
   @Test
-  public void aPublicationHasAMajorUpdate() {
+  public void aPublicationHasAMajorUpdateWithExplicitUpdateDate() {
+    context.setUpUserRequester();
+    context.setUpModificationType(false);
+
     Date now = new Date();
     PublicationDetail publication = context.getPublication("100");
     publication.setUpdateDate(now);
@@ -117,23 +117,156 @@ public class ContributionModificationTrackingIT {
     publicationService.setDetail(publication, true);
 
     TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
-    context.assertThatRecordMatches(record, TrackedActionType.MAJOR_UPDATE, publication, now);
+    context.assertThatRecordMatches(record, TrackedActionType.MAJOR_UPDATE, publication);
   }
 
   @Test
-  public void aPublicationHasAMinorUpdate() {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getHeader("CONTRIBUTION_MODIFICATION_CONTEXT")).thenReturn("{\"isMinor\": true}");
-    modificationContextHandler.parseForProperty(request);
+  public void aPublicationHasAMinorUpdateWithExplicitUpdateDate() {
+    context.setUpUserRequester();
+    context.setUpModificationType(true);
 
     PublicationDetail publication = context.getPublication("100");
-    Date previous = publication.getLastUpdateDate();
     publication.setUpdateDate(new Date());
     publication.setUpdaterId(User.getCurrentRequester().getId());
 
     publicationService.setDetail(publication, true);
 
     TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
-    context.assertThatRecordMatches(record, TrackedActionType.MINOR_UPDATE, publication, previous);
+    context.assertThatRecordMatches(record, TrackedActionType.MINOR_UPDATE, publication);
+  }
+
+  @Test
+  public void aPublicationHasAnUpdateWithExplicitUpdateDate() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = context.getPublication("100");
+    publication.setUpdateDate(new Date());
+    publication.setUpdaterId(User.getCurrentRequester().getId());
+
+    publicationService.setDetail(publication, true);
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.UPDATE, publication);
+  }
+
+  @Test
+  public void aPublicationHasAMajorDefaultUpdate() {
+    context.setUpUserRequester();
+    context.setUpModificationType(false);
+
+    PublicationDetail publication = context.getPublication("100");
+    publication.setUpdaterId("3");
+
+    publicationService.setDetail(publication);
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.MAJOR_UPDATE, publication);
+  }
+
+  @Test
+  public void aPublicationHasAMinorDefaultUpdate() {
+    context.setUpUserRequester();
+    context.setUpModificationType(true);
+
+    PublicationDetail publication = context.getPublication("100");
+    publication.setUpdaterId("3");
+
+    publicationService.setDetail(publication);
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.MINOR_UPDATE, publication);
+  }
+
+  @Test
+  public void aPublicationHasADefaultUpdate() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = context.getPublication("100");
+    publication.setUpdaterId(User.getCurrentRequester().getId());
+
+    publicationService.setDetail(publication);
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.UPDATE, publication);
+  }
+
+  @Test
+  public void aPublicationIsUpdatedByABatchProcess() {
+    // no requester behind a batch process
+    // a publication update in a batch process is always a simple one
+
+    PublicationDetail publication = context.getPublication("100");
+    publication.setUpdaterId("3");
+
+    publicationService.setDetail(publication);
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.UPDATE, publication);
+  }
+
+  @Test
+  public void aPublicationIsDeleted() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = context.getPublication("100");
+
+    publicationService.removePublication(publication.getPK());
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.DELETION, publication);
+  }
+
+  @Test
+  public void aPublicationIsDeletedInABatchProcess() {
+    // no requester behind a batch process
+
+    PublicationDetail publication = context.getPublication("100");
+
+    publicationService.removePublication(publication.getPK());
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(publication.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.DELETION, publication);
+  }
+
+  @Test
+  public void aPublicationIsCreated() {
+    context.setUpUserRequester();
+
+    PublicationDetail publication = new PublicationDetail();
+    publication.setPk(new PublicationPK(PublicationPK.UNKNOWN_ID, TestContext.KMELIA_ID));
+    publication.setName("A new publication");
+    publication.setDescription("A new publication for testing purpose");
+    publication.setCreatorId(User.getCurrentRequester().getId());
+    publication.setCreationDate(new Date());
+    publication.setAuthor(publication.getCreatorId());
+    publication.setStatus(PublicationDetail.VALID_STATUS);
+    publication.setIndexOperation(IndexManager.NONE);
+
+    PublicationPK pk = publicationService.createPublication(publication);
+    PublicationDetail saved = context.getPublication(pk.getId());
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(saved.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.CREATION, saved);
+  }
+
+  @Test
+  public void aPublicationIsCreatedInABatchProcess() {
+    // no requester behind a batch process
+
+    PublicationDetail publication = new PublicationDetail();
+    publication.setPk(new PublicationPK(PublicationPK.UNKNOWN_ID, TestContext.KMELIA_ID));
+    publication.setName("A new publication");
+    publication.setDescription("A new publication for testing purpose");
+    publication.setCreatorId("-3");
+    publication.setCreationDate(new Date());
+    publication.setAuthor(publication.getCreatorId());
+    publication.setStatus(PublicationDetail.VALID_STATUS);
+    publication.setIndexOperation(IndexManager.NONE);
+
+    PublicationPK pk = publicationService.createPublication(publication);
+    PublicationDetail saved = context.getPublication(pk.getId());
+
+    TestContext.TrackingEventRecord record = context.getLastTrackingEventOn(saved.getId());
+    context.assertThatRecordMatches(record, TrackedActionType.CREATION, saved);
   }
 }

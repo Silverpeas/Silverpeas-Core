@@ -74,4 +74,12 @@ public interface UserProvider {
   default User getMainAdministrator() {
     return getUser("0");
   }
+
+  /**
+   * Gets the system user in Silverpeas. A system user is virtuel one under which some userless
+   * processes are performed like the batches one.
+   * @return the system user of Silverpeas (a virtual user, id est without any user account)
+   */
+  User getSystemUser();
+
 }
