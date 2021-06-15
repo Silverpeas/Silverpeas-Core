@@ -36,7 +36,11 @@ INSERT INTO sb_node_node (nodeid, nodename, nodedescription, nodecreationdate, n
 VALUES (0, 'Accueil', 'La Racine', '2016/01/14', '2', '/', 1, -1, '', 'Visible', 'kmelia200', NULL, 0, NULL, -1),
        (1, 'Corbeille', 'Vous trouvez ici les publications que vous avez supprimé', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia200', NULL, 0, NULL, -1),
        (2, 'Déclassées', 'Vos publications inaccessibles se retrouvent ici', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia200', NULL, 0, NULL, -1),
-       (110, 'Les publications', '', '2016/01/14', '2', '/0/', 2, 0, NULL, 'Invisible', 'kmelia200', 'default', 3, 'fr', -1);
+       (110, 'Les publications', '', '2016/01/14', '2', '/0/', 2, 0, NULL, 'Visible', 'kmelia200', 'default', 3, 'fr', -1),
+       (111, 'Archives', '', '2016/01/14', '2', '/0/', 2, 0, NULL, 'Visible', 'kmelia200', 'default', 4, 'fr', -1),
+       (0, 'Accueil', 'La Racine', '2016/01/14', '2', '/', 1, -1, '', 'Visible', 'kmelia300', NULL, 0, NULL, -1),
+       (1, 'Corbeille', 'Vous trouvez ici les publications que vous avez supprimé', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia300', NULL, 0, NULL, -1),
+       (2, 'Déclassées', 'Vos publications inaccessibles se retrouvent ici', '2016/01/14', '2', '/0/', 2, 0, '', 'Invisible', 'kmelia300', NULL, 0, NULL, -1);
 
 /**
  * Links between nodes and publications in Kmelia instances
