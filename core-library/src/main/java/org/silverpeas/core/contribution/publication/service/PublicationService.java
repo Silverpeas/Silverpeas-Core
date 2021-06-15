@@ -68,7 +68,8 @@ public interface PublicationService {
 
   /**
    * Creates in Silverpeas the specified publication. It persists it into the Silverpeas data
-   * source and a new identifier is set for this publication.
+   * source and a new identifier is set for this publication. A {@link ResourceEvent.Type#CREATION}
+   * event is sent once the publication is created.
    * @param detail the detail on the publication to persist.
    * @return the identifying key of the publication so that it can be retrieved later in the
    * data source by this key.
@@ -76,7 +77,11 @@ public interface PublicationService {
   PublicationPK createPublication(PublicationDetail detail);
 
   /**
-   * Moves the specified publication to the specified father and indexes or not it.
+   * Moves the specified publication to the specified father and indexes or not it. The father can
+   * be either a node in the same component instance or a node in another component instance. No
+   * {@link ResourceEvent.Type#MOVE} event is sent; for doing please use one the move done the
+   * {@link PublicationService#setDetail(PublicationDetail, boolean, ResourceEvent.Type)} method
+   * by specifying the {@link ResourceEvent.Type#MOVE} event as last parameter.
    * @param pubPK the identifying key of the publication to move.
    * @param toFatherPK the new father of the publication.
    * @param indexIt a boolean indicating if the publication must be indexed.
@@ -95,19 +100,24 @@ public interface PublicationService {
   void changePublicationOrder(PublicationPK pubPK, NodePK fatherPK, int direction);
 
   /**
-   * Removes the specified publication.
+   * Removes the specified publication. The {@link ResourceEvent.Type#DELETION} event is sent once
+   * the publication is removed.
    * @param pubPK the identifying key of the publication to remove.
    */
   void removePublication(PublicationPK pubPK);
 
   /**
-   * Updates the specified publication. The update date isn't updated.
+   * Updates the specified publication. The update date isn't updated in given the publication
+   * detail.
+   * The {@link ResourceEvent.Type#UPDATE} event is sent once the publication is updated.
    * @param detail the detail of the publication from which it has to be updated.
    */
   void setDetail(PublicationDetail detail);
 
   /**
-   * Updates the specified publication.
+   * Updates the specified publication and specify if the update date property of the publication
+   * detail has to be used as update date.
+   * The {@link ResourceEvent.Type#UPDATE} event is sent once the publication is updated.
    * @param detail the detail of the publication from which it has to be updated.
    * @param forceUpdateDate a boolean indicating if the update date has to be set with date of this
    * update.
@@ -115,7 +125,11 @@ public interface PublicationService {
   void setDetail(PublicationDetail detail, boolean forceUpdateDate);
 
   /**
-   * Updates the specified publication.
+   * Updates the specified publication and specify if the update date property of the publication
+   * detail has to be used as update date. The kind of update is specified by the given event type:
+   * it is either a simple publication update or an update issuing from a publication move
+   * (some publication properties can require to be updated after a move but they aren't related to
+   * a publication modification).
    * @param detail the detail of the publication from which it has to be updated.
    * @param forceUpdateDate a boolean indicating if the update date has to be set with date of this
    * update.

@@ -209,9 +209,12 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public void movePublication(PublicationPK pk, NodePK toFatherPK, boolean indexIt) {
     try (Connection con = getConnection()) {
       deleteIndex(pk);
-      PublicationDAO.changeInstanceId(con, pk, toFatherPK.getInstanceId());
-      moveRating(pk, toFatherPK.getInstanceId());
-      pk.setComponentName(toFatherPK.getInstanceId());
+      if (! toFatherPK.getInstanceId().equals(pk.getInstanceId())) {
+        // move to another component instance
+        PublicationDAO.changeInstanceId(con, pk, toFatherPK.getInstanceId());
+        moveRating(pk, toFatherPK.getInstanceId());
+        pk.setComponentName(toFatherPK.getInstanceId());
+      }
       PublicationFatherDAO.removeAllFathers(con, pk);
       PublicationFatherDAO.addFather(con, pk, toFatherPK);
       if (indexIt) {
