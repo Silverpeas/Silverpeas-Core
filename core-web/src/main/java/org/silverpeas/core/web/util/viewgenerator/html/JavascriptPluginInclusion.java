@@ -885,6 +885,7 @@ public class JavascriptPluginInclusion {
    */
   static ElementContainer includeChat(final ElementContainer xhtml) {
     if (ChatServer.isEnabled()) {
+      final JavascriptSettingProducer settingBundle = settingVariableName("SilverChatSettings");
       final String chatDir = getApplicationURL() + "/chat/";
       final ChatSettings chatSettings = ChatSettings.get();
       final String silverpeasChatClientId = chatSettings.getSilverpeasChatClientId();
@@ -903,6 +904,7 @@ public class JavascriptPluginInclusion {
         xhtml.addElement(script(converseDir + "converse.min.js"));
         xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
         if (chatSettings.isVisioEnabled()) {
+          settingBundle.add("v.u", chatSettings.getVisioUrl());
           xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
         }
         if (chatSettings.isScreencastEnabled()) {
@@ -917,8 +919,7 @@ public class JavascriptPluginInclusion {
       }
       xhtml.addElement(link(chatDir + "css/silverchat.css"));
       xhtml.addElement(link(chatDir + "css/silverpeas-converse.css"));
-      xhtml.addElement(scriptContent(
-          settingVariableName("SilverChatSettings")
+      xhtml.addElement(scriptContent(settingBundle
               .add("un.d.i.u", getApplicationURL() + getUserNotificationDesktopIconUrl())
               .produce()));
     }

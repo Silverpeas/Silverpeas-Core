@@ -699,6 +699,10 @@
       <param-value>org.silverpeas.web.wopi.WopiWebController</param-value>
     </init-param>
   </servlet>
+  <servlet>
+    <servlet-name>VisioRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.web.chat.VisioServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>LoginDispatcher</servlet-name>
@@ -1106,6 +1110,10 @@
   <servlet-mapping>
     <servlet-name>WopiRequestRouter</servlet-name>
     <url-pattern>/Rwopi/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>VisioRequestRouter</servlet-name>
+    <url-pattern>/visio/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>
