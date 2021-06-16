@@ -51,6 +51,14 @@
 
   var __displayFullscreenModalBackground = FS_MANAGER.isWindowCompatible();
 
+  // Little hack to prevent some unexpected errors when escape key is
+  // pressed during an ajax request
+  const __preventEscape = function(e) {
+    if (e.keyCode === 27) {
+      e.preventDefault();
+    }
+  };
+
   $.popup = {
     /**
      * Shows a waiting information. Usually used while the popup is rendering or when the treatment
@@ -63,14 +71,7 @@
                 'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
         $(document.body).append($waiting);
         $waiting.popup("waiting");
-
-        // Little hack to prevent some unexpected errors when escape key is
-        // pressed during an ajax request
-        $waiting.dialog("widget").keydown(function(e) {
-          if (e.keyCode === 27) {
-            e.preventDefault();
-          }
-        });
+        $waiting.dialog("widget").keydown(__preventEscape);
       }
       $waiting.dialog("open");
     },
@@ -786,11 +787,7 @@
 
     // Little hack to prevent some unexpected errors when escape key is
     // pressed during an ajax request
-    $containerElement.addEventListener('keydown', function(e) {
-      if (e.keyCode === 27) {
-        e.preventDefault();
-      }
-    });
+    $containerElement.addEventListener('keydown', __preventEscape);
 
     // Handling HTML forms in order to close the dialog on submit action.
     // As jQuery Handles only jQuery triggering, jQuery method and the standard one must be

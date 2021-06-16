@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.persistence.datasource.model.jpa.InstantAttributeConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ServiceProvider;
@@ -60,6 +61,7 @@ public class TestContext {
   static final String TABLE_CREATION_SCRIPT = "create-table.sql";
   static final String DATASET_SQL_SCRIPT = "test-publication-dataset.sql";
   static final String KMELIA_ID = "kmelia200";
+  private static final InstantAttributeConverter INSTANT_CONVERTER = new InstantAttributeConverter();
 
   /**
    * Sets up a user requester of the current test.
@@ -148,7 +150,7 @@ public class TestContext {
             String contribInstanceId = row.getString("contrib_instanceId");
             TrackedActionType actionType = TrackedActionType.valueOf(row.getString("action_type"));
             User actionUser = User.getById(row.getString("action_by"));
-            Instant actionDate = row.getTimestamp("action_date").toInstant();
+            Instant actionDate = INSTANT_CONVERTER.convertToEntityAttribute(row.getTimestamp("action_date"));
             record.action = new TrackedAction(actionType, actionDate, actionUser);
             record.contrib = ContributionIdentifier.from(contribInstanceId, contribId, contribType);
             return record;
