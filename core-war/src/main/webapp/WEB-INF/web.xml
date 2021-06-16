@@ -689,6 +689,10 @@
       <param-value>org.silverpeas.web.wbe.WbeWebController</param-value>
     </init-param>
   </servlet>
+  <servlet>
+    <servlet-name>VisioRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.web.chat.VisioServlet</servlet-class>
+  </servlet>
 
   <!-- CMIS endpoints -->
 
@@ -1133,6 +1137,10 @@
   <servlet-mapping>
     <servlet-name>WbeRequestRouter</servlet-name>
     <url-pattern>/Rwbe/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>VisioRequestRouter</servlet-name>
+    <url-pattern>/visio/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

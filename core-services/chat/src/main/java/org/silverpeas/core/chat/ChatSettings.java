@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
+import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
 
 /**
  * Setting properties of the chat service. It loads the
@@ -51,6 +53,7 @@ public class ChatSettings {
 
   private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.chat.settings.chat");
+  private static final String CHAT_CLIENT_PREFIX = "chat.client.";
   private final String xmppBaseUrl;
 
   /**
@@ -86,7 +89,41 @@ public class ChatSettings {
    * @return true of enabled, false otherwise.
    */
   public boolean isVisioEnabled() {
-    return settings.getBoolean("chat.client." + getSilverpeasChatClientId() + ".visio.enabled", true);
+    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.enabled", true);
+  }
+
+  /**
+   * Gets the URL that permits to perform the visio into an iframe.
+   * @return a string representing an URL.
+   */
+  public String getVisioUrl() {
+    if (isVisioEnabled()) {
+      final String url = settings.getString(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.url", "/visio");
+      return url.startsWith("http") ? url : getCurrentServerURL() + getApplicationURL() + url;
+    }
+    return EMPTY;
+  }
+
+  /**
+   * Gets the internal visio starter page that permits to perform the visio into an iframe.
+   * @return a string representing a domain server.
+   */
+  public String getVisioDomainServer() {
+    if (isVisioEnabled()) {
+      return settings.getString(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.domainServer", "meet.jit.si");
+    }
+    return EMPTY;
+  }
+
+  /**
+   * Gets the JWT token in order to get rights to use the visio services.
+   * @return a string representing a JWT token.
+   */
+  public String getVisioJwt() {
+    if (isVisioEnabled()) {
+      return settings.getString(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".visio.jwt", "");
+    }
+    return EMPTY;
   }
 
   /**
@@ -94,7 +131,7 @@ public class ChatSettings {
    * @return true of enabled, false otherwise.
    */
   public boolean isScreencastEnabled() {
-    return settings.getBoolean("chat.client." + getSilverpeasChatClientId() + ".screencast.enabled", true);
+    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".screencast.enabled", true);
   }
 
   /**
