@@ -108,6 +108,8 @@ import static org.mockito.Mockito.*;
  */
 public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolver, BeforeEachCallback {
 
+  private static final String SYSTEM = "SYSTEM";
+
   /**
    * Injects in the unit test class all the fields that are annotated with one of the supported
    * annotations by {@link SilverTestEnv} extension ({@link TestManagedMock}, {@link TestManagedBean},
@@ -225,8 +227,8 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
     User systemUser = mock(User.class);
     when(systemUser.getId()).thenReturn("-1");
-    when(systemUser.getFirstName()).thenReturn("SYSTEM");
-    when(systemUser.getLastName()).thenReturn("SYSTEM");
+    when(systemUser.getFirstName()).thenReturn(SYSTEM);
+    when(systemUser.getLastName()).thenReturn(SYSTEM);
     when(mock.getSystemUser()).thenReturn(systemUser);
     Method requesterProvider = recursivelyFindRequesterProvider(test);
     if (requesterProvider != null) {
@@ -396,8 +398,8 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     when(userProvider.getSystemUser()).thenAnswer( i -> {
       User systemUser = mock(User.class);
       when(systemUser.getId()).thenReturn("-1");
-      when(systemUser.getLastName()).thenReturn("SYSTEM");
-      when(systemUser.getFirstName()).thenReturn("SYSTEM");
+      when(systemUser.getLastName()).thenReturn(SYSTEM);
+      when(systemUser.getFirstName()).thenReturn(SYSTEM);
       return systemUser;
     });
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class)).thenReturn(
