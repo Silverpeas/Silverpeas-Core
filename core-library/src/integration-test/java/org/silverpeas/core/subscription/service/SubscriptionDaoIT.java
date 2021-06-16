@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
@@ -41,13 +42,14 @@ import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
@@ -60,7 +62,6 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
 
   private static final String INSTANCE_ID = "kmelia60";
   private static final String FORUM_INSTANCE_ID = "forum60";
-  private SubscriptionDao subscriptionDao = new SubscriptionDao();
 
   private static final String TABLE_CREATION_SCRIPT = "/node-create-database.sql";
   private static final String DATASET_XML_SCRIPT = "node-actors-test-dataset.xml";
@@ -68,6 +69,9 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
       new DbUnitLoadingRule(TABLE_CREATION_SCRIPT, DATASET_XML_SCRIPT);
+
+  @Inject
+  private SubscriptionDao subscriptionDao;
 
   private Connection connection;
 
@@ -383,7 +387,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     pk.setSpace("100");
     Subscription subscription =
-        new PKSubscription("200", PKSubscriptionResource.from(pk, FORUM));
+        new TestForumSubscription("200", new TestForumSubscriptionResource(pk));
     assertAddSubscription(subscription);
     assertThat(subscription.getSubscriber().getId(), is("200"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
@@ -542,7 +546,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     String userId = "126";
     Subscription subscription =
-        new PKSubscription(userId, new PKSubscriptionResource(pk, FORUM));
+        new TestForumSubscription(userId, new TestForumSubscriptionResource(pk));
     assertRemoveSubscription(subscription, 1);
   }
 
@@ -562,7 +566,10 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(result, hasSize(nbBeforeRemove));
     assertThat(result, hasItem(subscription));
 
-    subscriptionDao.remove(getConnection(), subscription);
+    Transaction.getTransaction().perform(() -> {
+      subscriptionDao.remove(getConnection(), subscription);
+      return null;
+    });
 
     // Verifying that subscription doesn't exist
     result = subscriptionDao.
@@ -610,10 +617,13 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
         INSTANCE_ID);
     assertThat(result, hasSize(2));
 
-    subscriptionDao.removeByResource(getConnection(),
-        NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)));
-    subscriptionDao.removeByResource(getConnection(),
-        NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)));
+    Transaction.getTransaction().perform(() -> {
+      subscriptionDao.removeByResource(getConnection(),
+          NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)));
+      subscriptionDao.removeByResource(getConnection(),
+          NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)));
+      return null;
+    });
 
     // Verifying the deleted subscriptions
     result = selectSubscriptionsBySubscriberAndInstanceId(getConnection(), userSubscriber,

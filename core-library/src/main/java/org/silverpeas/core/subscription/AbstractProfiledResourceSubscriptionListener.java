@@ -60,6 +60,10 @@ public abstract class AbstractProfiledResourceSubscriptionListener<R extends Ser
     }
   }
 
+  protected SubscriptionService getSubscriptionService() {
+    return subscriptionService;
+  }
+
   protected abstract SubscriptionResource getSubscriptionResource(final R resource);
 
   protected abstract boolean isSubscriptionEnabled(final R resource);

@@ -23,16 +23,13 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-
-import java.util.Date;
 
 /**
  * A subscription related to a resource behind a Primary PK.
  */
-public class PKSubscription extends AbstractSubscription {
+public class PKSubscription<R extends PKSubscriptionResource> extends AbstractSubscription<R> {
 
   /**
    * PK subscription constructor for which the type of the subscriber is USER and the
@@ -40,19 +37,8 @@ public class PKSubscription extends AbstractSubscription {
    * @param subscriberId id of the subscriber
    * @param subscriptionResource representation of the resource subscription
    */
-  public PKSubscription(final String subscriberId,
-      final PKSubscriptionResource subscriptionResource) {
+  protected PKSubscription(final String subscriberId, final R subscriptionResource) {
     super(UserSubscriptionSubscriber.from(subscriberId), subscriptionResource, subscriberId);
-  }
-
-  /**
-   * PK subscription constructor for a subscriber that handles the subscription too.
-   * @param subscriber the subscriber
-   * @param subscriptionResource representation of the resource subscription
-   */
-  public PKSubscription(final SubscriptionSubscriber subscriber,
-      final PKSubscriptionResource subscriptionResource) {
-    super(subscriber, subscriptionResource, subscriber.getId());
   }
 
   /**
@@ -61,17 +47,8 @@ public class PKSubscription extends AbstractSubscription {
    * @param subscriptionResource representation of the resource subscription
    * @param creatorId the user id that has handled the subscription
    */
-  public PKSubscription(final SubscriptionSubscriber subscriber,
-      final PKSubscriptionResource subscriptionResource, final String creatorId) {
+  protected PKSubscription(final SubscriptionSubscriber subscriber, final R subscriptionResource,
+      final String creatorId) {
     super(subscriber, subscriptionResource, SubscriptionMethod.UNKNOWN, creatorId, null);
-  }
-
-  /**
-   * @see AbstractSubscription
-   */
-  protected PKSubscription(final SubscriptionSubscriber subscriber,
-      final SubscriptionResource resource, final SubscriptionMethod subscriptionMethod,
-      final String creatorId, final Date creationDate) {
-    super(subscriber, resource, subscriptionMethod, creatorId, creationDate);
   }
 }

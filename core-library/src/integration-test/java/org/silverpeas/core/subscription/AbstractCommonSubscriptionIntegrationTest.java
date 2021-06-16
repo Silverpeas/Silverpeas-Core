@@ -29,8 +29,11 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService;
+import org.silverpeas.core.subscription.service.PKSubscription;
+import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
@@ -55,7 +58,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   /**
    * The resource is a forum. Used by component instances handling forums.
    */
-  protected static final SubscriptionResourceType FORUM = new SubscriptionResourceType() {
+  protected static final SubscriptionContributionType FORUM = new SubscriptionContributionType() {
     private static final long serialVersionUID = -1130015664194572265L;
 
     @Override
@@ -72,7 +75,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   /**
    * The resource is a message in a given forum. Used by component instances handling forums.
    */
-  protected static final SubscriptionResourceType FORUM_MESSAGE = new SubscriptionResourceType() {
+  protected static final SubscriptionContributionType FORUM_MESSAGE = new SubscriptionContributionType() {
     private static final long serialVersionUID = 6385822460694305970L;
 
     @Override
@@ -108,8 +111,12 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   @Before
   public void setup() throws Exception {
     ServiceProvider.getService(DefaultResourceSubscriptionService.class).init();
-    SubscriptionResourceTypeRegistry.get().add(FORUM);
-    SubscriptionResourceTypeRegistry.get().add(FORUM_MESSAGE);
+    SubscriptionFactory.get().register(FORUM,
+        (r, s, i) -> new TestForumSubscriptionResource(new ResourceReference(r, i)),
+        (s, r, c) -> new TestForumSubscription(s, (TestForumSubscriptionResource) r, c));
+    SubscriptionFactory.get().register(FORUM_MESSAGE,
+        (r, s, i) -> new TestForumMessageSubscriptionResource(new ResourceReference(r, i)),
+        (s, r, c) -> new TestForumMessageSubscription(s, (TestForumMessageSubscriptionResource) r, c));
   }
 
   @SuppressWarnings("unchecked")
@@ -122,5 +129,33 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
         "Clearing ResourceSubscriptionProvider.componentImplementations which contains {0} " +
             "implementation {0,choice, 1#instance| 1<instances}", map.size());
     map.clear();
+  }
+
+  public static class TestForumSubscriptionResource extends PKSubscriptionResource {
+    public TestForumSubscriptionResource(final ResourceReference pk) {
+      super(pk, FORUM);
+    }
+  }
+  public static class TestForumSubscription extends PKSubscription<TestForumSubscriptionResource> {
+    public TestForumSubscription(final String subscriberId,
+        final TestForumSubscriptionResource resource) {
+      super(subscriberId, resource);
+    }
+    public TestForumSubscription(final SubscriptionSubscriber subscriber,
+        final TestForumSubscriptionResource resource, final String creatorId) {
+      super(subscriber, resource, creatorId);
+    }
+  }
+
+  public static class TestForumMessageSubscriptionResource extends PKSubscriptionResource {
+    public TestForumMessageSubscriptionResource(final ResourceReference pk) {
+      super(pk, FORUM_MESSAGE);
+    }
+  }
+  public static class TestForumMessageSubscription extends PKSubscription<TestForumMessageSubscriptionResource> {
+    public TestForumMessageSubscription(final SubscriptionSubscriber subscriber,
+        final TestForumMessageSubscriptionResource resource, final String creatorId) {
+      super(subscriber, resource, creatorId);
+    }
   }
 }

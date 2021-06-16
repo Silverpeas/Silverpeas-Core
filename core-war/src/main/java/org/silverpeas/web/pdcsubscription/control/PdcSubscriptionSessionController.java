@@ -23,9 +23,6 @@
  */
 package org.silverpeas.web.pdcsubscription.control;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -34,13 +31,12 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionService;
 import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionFactory;
+import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.PKSubscription;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
+import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -56,8 +52,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
-import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
+import static org.silverpeas.core.subscription.SubscriptionResourceType.from;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = 3130701500269550099L;
@@ -86,51 +81,56 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return SubscriptionServiceProvider.getSubscribeService();
   }
 
-  public NodeService getNodeBm() {
-    return NodeService.get();
-  }
-
   public String getSubscriptionResourceTypeLabel(final SubscriptionResourceType type) {
     return SubscriptionBeanProvider.getSubscriptionTypeListLabel(type, getLanguage());
   }
 
-  public List<AbstractSubscriptionBean> getUserSubscriptionsOfType(final String userId,
-      final SubscriptionResourceType type) {
-    String currentUserId = userId;
-    if (!StringUtil.isDefined(currentUserId)) {
-      currentUserId = getUserId();
-    }
-    final List<AbstractSubscriptionBean> subscribes = SubscriptionBeanProvider
-        .getByUserSubscriberAndSubscriptionResourceType(type, currentUserId, getLanguage());
+  public List<SubscriptionCategory> getSubscriptionCategories() {
+    return SubscriptionCategoryWebManager.get().getCategories(this);
+  }
+
+  /**
+   * Gets the Subscription category from its identifier.
+   * @param categoryId the identifier of a subscription category.
+   * @return a {@link SubscriptionCategory} instance.
+   */
+  public SubscriptionCategory getSubscriptionCategory(final String categoryId) {
+    return getSubscriptionCategories().stream()
+        .filter(c -> c.getId().equals(categoryId))
+        .findFirst()
+        .orElseGet(() -> getSubscriptionCategories().stream()
+            .filter(c -> c.getId().equals(CommonSubscriptionResourceConstants.COMPONENT.getName()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("COMPONENT category MUST exists")));
+  }
+
+  public List<AbstractSubscriptionBean> getUserSubscriptionsOfCategory(final String userId,
+      final SubscriptionCategory category) {
+    final String currentUserId = StringUtil.isDefined(userId) ? userId : getUserId();
+    final List<AbstractSubscriptionBean> subscribes = category.getHandledTypes()
+        .stream()
+        .flatMap(t -> SubscriptionBeanProvider.getByUserSubscriberAndSubscriptionResourceType(t,
+            currentUserId, getLanguage()).stream())
+        .collect(Collectors.toList());
     subscribes.sort(new SubscriptionComparator());
     return subscribes;
   }
 
-  public void deleteUserSubscriptionsOfType(final String[] selectedItems,
-      final SubscriptionResourceType type) {
-    final List<Subscription> subscriptionsToDeleted = Stream.of(selectedItems)
-        .map(i -> {
-          // exploding data
-          final String[] subscriptionIdentifiers = i.split("-");
-          final String resourceId = subscriptionIdentifiers[0];
-          final String instanceId = subscriptionIdentifiers[1];
-          final String creatorId = subscriptionIdentifiers[2];
-          final Subscription subscription;
-          if (type == COMPONENT) {
-            subscription = new ComponentSubscription(UserSubscriptionSubscriber.from(getUserId()),
-                instanceId, creatorId);
-          } else if (type == NODE) {
-            subscription = new NodeSubscription(UserSubscriptionSubscriber.from(getUserId()),
-                new NodePK(resourceId, instanceId), creatorId);
-          } else {
-            subscription = new PKSubscription(UserSubscriptionSubscriber.from(getUserId()),
-                PKSubscriptionResource.from(new ResourceReference(resourceId, instanceId), type),
-                creatorId);
-          }
-          return subscription;
-        })
-        .collect(Collectors.toList());
-      getSubscribeService().unsubscribe(subscriptionsToDeleted);
+  public void deleteUserSubscriptions(final String[] selectedItems) {
+    final SubscriptionFactory factory = SubscriptionFactory.get();
+    final List<Subscription> subscriptionsToDeleted = Stream.of(selectedItems).map(i -> {
+      // exploding data
+      final String[] subscriptionIdentifiers = i.split("@");
+      final SubscriptionResourceType type = from(subscriptionIdentifiers[0]);
+      final String resourceId = subscriptionIdentifiers[1];
+      final String instanceId = subscriptionIdentifiers[2];
+      final String creatorId = subscriptionIdentifiers[3];
+      final SubscriptionResource subscriptionResource = factory.createSubscriptionResourceInstance(
+          type, resourceId, null, instanceId);
+      return factory.createSubscriptionInstance(
+          UserSubscriptionSubscriber.from(getUserId()), subscriptionResource, creatorId);
+    }).collect(Collectors.toList());
+    getSubscribeService().unsubscribe(subscriptionsToDeleted);
   }
 
   public List<PdcSubscription> getUserPDCSubscription() {

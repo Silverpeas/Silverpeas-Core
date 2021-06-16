@@ -21,33 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.subscription;
+package org.silverpeas.core.contribution.publication.subscription;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.subscription.CalendarSubscriptionResource;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.subscription.service.PKSubscriptionResource;
-
-import static org.silverpeas.core.calendar.subscription.CalendarSubscriptionConstants.CALENDAR;
 
 /**
  * @author silveryocha
  */
-public class CalendarSubscriptionResource extends PKSubscriptionResource {
+public class PublicationSubscriptionResource extends PKSubscriptionResource {
 
   /**
-   * A way to get an instance of a forum subscription resource.
-   * @param calendar a calendar instance.
+   * A way to get an instance of a publication subscription resource.
+   * @param pk a reference to a publication.
    * @return the corresponding {@link CalendarSubscriptionResource} instance.
    */
-  public static CalendarSubscriptionResource from(final Calendar calendar) {
-    return new CalendarSubscriptionResource(new ResourceReference(calendar.getId(), calendar.getComponentInstanceId()));
+  public static PublicationSubscriptionResource from(PublicationPK pk) {
+    return new PublicationSubscriptionResource(pk);
+  }
+
+  /**
+   * A way to get an instance of a publication subscription resource.
+   * @param publication a reference to a publication.
+   * @return the corresponding {@link CalendarSubscriptionResource} instance.
+   */
+  public static PublicationSubscriptionResource from(PublicationDetail publication) {
+    return new PublicationSubscriptionResource(publication.getPK());
   }
 
   /**
    * Default constructor
-   * @param reference a calendar reference.
+   * @param pk the {@link org.silverpeas.core.ResourceReference} to a publication.
    */
-  public CalendarSubscriptionResource(final ResourceReference reference) {
-    super(reference, CALENDAR);
+  protected PublicationSubscriptionResource(final PublicationPK pk) {
+    super(pk, PublicationSubscriptionConstants.PUBLICATION);
   }
 }

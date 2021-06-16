@@ -21,45 +21,51 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+package org.silverpeas.web.pdcsubscription.control;
 
-import java.io.Serializable;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
+
+import java.util.List;
 
 /**
- * The type of a resource that can be targeted by a subscription.
- * @author Yohann Chastagnier
+ * The default implementation is directly mapped to a {@link SubscriptionResourceType} instance.
+ * @author silveryocha
  */
-public interface SubscriptionResourceType extends Serializable {
+public class DefaultSubscriptionCategory extends SubscriptionCategory {
 
-  /**
-   * Is this type is valid? It is valid if the type of the resource isn't unknown.
-   * @return true if the type of the resource targeted by a subscription is known, false otherwise.
-   */
-  default boolean isValid() {
-    return true;
+  private final SubscriptionResourceType type;
+
+  public DefaultSubscriptionCategory(final PdcSubscriptionSessionController ctrl,
+      final SubscriptionResourceType type) {
+    super(ctrl);
+    this.type = type;
   }
 
-  /**
-   * Indicates a priority which can be used by UI as example.
-   * @return an integer which lowest value means the highest priority.
-   */
-  int priority();
+  @Override
+  public String getId() {
+    return type.getName();
+  }
 
-  /**
-   * Gets the name of the subscription type.
-   * <p>
-   *   '@' character is not authorized because it is used internally for technical purposes.
-   * </p>
-   * @return a string.
-   */
-  @JsonValue
-  String getName();
+  @Override
+  public int priority() {
+    return type.priority();
+  }
 
-  @JsonCreator
-  static SubscriptionResourceType from(String name) {
-    return SubscriptionFactory.get().getSubscriptionResourceTypeByName(name);
+  @Override
+  public String getLabel() {
+    return SubscriptionBeanProvider.getSubscriptionTypeListLabel(type, getCtrl().getLanguage());
+  }
+
+  @Override
+  public String getResourceTypeLabel() {
+    return StringUtil.EMPTY;
+  }
+
+  @Override
+  public List<SubscriptionResourceType> getHandledTypes() {
+    return List.of(type);
   }
 }

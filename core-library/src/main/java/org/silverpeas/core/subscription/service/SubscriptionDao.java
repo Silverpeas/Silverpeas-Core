@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -39,6 +39,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,14 +51,28 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.*;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.UNKNOWN;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * Class declaration
- * @author
+ * @author silveryocha
  */
 @Repository
 public class SubscriptionDao {
+
+  private static final String SUBSCRIBE_TABLE = "subscribe";
+  private static final String RESOURCE_ID = "resourceId";
+  private static final String RESOURCE_ID_CLAUSE = "resourceId = ?";
+  private static final String RESOURCE_TYPE = "resourceType";
+  private static final String RESOURCE_TYPE_CLAUSE = "resourceType = ?";
+  private static final String INSTANCE_ID = "instanceId";
+  private static final String INSTANCE_ID_CLAUSE = "instanceId = ?";
+  private static final String SUBSCRIBER_ID = "subscriberId";
+  private static final String SUBSCRIBER_ID_CLAUSE = "subscriberId = ?";
+  private static final String SUBSCRIBER_TYPE = "subscriberType";
+  private static final String SUBSCRIBER_TYPE_CLAUSE = "subscriberType = ?";
+  private static final String SUBSCRIPTION_METHOD = "subscriptionMethod";
+  private static final String SUBSCRIPTION_METHOD_CLAUSE = "subscriptionMethod = ?";
 
   private static final String SUBSCRIBE_COLUMNS =
       "subscriberId, subscriberType, subscriptionMethod, resourceId, resourceType, space, " +
@@ -66,27 +81,13 @@ public class SubscriptionDao {
   private static final String ADD_SUBSCRIPTION =
       "INSERT INTO subscribe (" + SUBSCRIBE_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
-  private static final String REMOVE_SUBSCRIPTION =
-      "DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod" +
-          " = ? AND resourceId = ? AND resourceType = ? AND instanceId = ?";
-
   private static final String REMOVE_SUBSCRIPTIONS_BY_SUBSCRIBER =
       "DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
-
-  private static final String REMOVE_SUBSCRIPTIONS_BY_RESOURCE =
-      "DELETE FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
 
   private static final String REMOVE_SUBSCRIPTIONS_BY_INSTANCEID =
       "DELETE FROM subscribe WHERE instanceId = ?";
 
-  private static final String SELECT_SUBSCRIBERS_BY_RESOURCE =
-      "SELECT subscriberId, subscriberType FROM subscribe " +
-          "WHERE resourceId = ? AND resourceType = ? AND instanceId = ?";
-
   private static final String SELECT = "SELECT ";
-  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION = SELECT + SUBSCRIBE_COLUMNS +
-      " FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod = ? " +
-      "AND resourceId = ? AND resourceType = ? AND instanceId = ?";
 
   private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER = SELECT + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
@@ -94,12 +95,8 @@ public class SubscriptionDao {
   private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_COMPONENT =
       SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER + " AND instanceId = ?";
 
-  private static final String SELECT_SUBSCRIPTIONS_BY_RESOURCE = SELECT + SUBSCRIBE_COLUMNS +
-      " FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
-
-  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE =
-      SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER +
-          "  AND instanceId = ? AND resourceId = ? AND resourceType = ?";
+  @Inject
+  private SubscriptionFactory factory;
 
   /**
    * Method declaration
@@ -147,20 +144,16 @@ public class SubscriptionDao {
    *
    */
   public void remove(Connection con, Subscription subscription) throws SQLException {
-
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTION);
-      prepStmt.setString(1, subscription.getSubscriber().getId());
-      prepStmt.setString(2, subscription.getSubscriber().getType().getName());
-      prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
-      prepStmt.setString(4, subscription.getResource().getId());
-      prepStmt.setString(5, subscription.getResource().getType().getName());
-      prepStmt.setString(6, subscription.getResource().getInstanceId());
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+    final SubscriptionSubscriber subscriber = subscription.getSubscriber();
+    final SubscriptionResource resource = subscription.getResource();
+    JdbcSqlQuery.createDeleteFor(SUBSCRIBE_TABLE)
+        .where(SUBSCRIBER_ID_CLAUSE, subscriber.getId())
+        .and(SUBSCRIBER_TYPE_CLAUSE, subscriber.getType().getName())
+        .and(SUBSCRIPTION_METHOD_CLAUSE, subscription.getSubscriptionMethod().getName())
+        .and(RESOURCE_ID_CLAUSE, resource.getId())
+        .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())
+        .and(INSTANCE_ID_CLAUSE, resource.getInstanceId())
+        .executeWith(con);
   }
 
   /**
@@ -190,16 +183,11 @@ public class SubscriptionDao {
    *
    */
   public void removeByResource(Connection con, SubscriptionResource resource) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_RESOURCE);
-      prepStmt.setString(1, resource.getInstanceId());
-      prepStmt.setString(2, resource.getId());
-      prepStmt.setString(3, resource.getType().getName());
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+    JdbcSqlQuery.createDeleteFor(SUBSCRIBE_TABLE)
+        .where(RESOURCE_ID_CLAUSE, resource.getId())
+        .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())
+        .and(INSTANCE_ID_CLAUSE, resource.getInstanceId())
+        .executeWith(con);
   }
 
   public void removeByInstanceId(Connection con, String instanceId) throws SQLException {
@@ -218,21 +206,16 @@ public class SubscriptionDao {
    *
    */
   public boolean existsSubscription(Connection con, Subscription subscription) throws SQLException {
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION);
-      prepStmt.setString(1, subscription.getSubscriber().getId());
-      prepStmt.setString(2, subscription.getSubscriber().getType().getName());
-      prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
-      prepStmt.setString(4, subscription.getResource().getId());
-      prepStmt.setString(5, subscription.getResource().getType().getName());
-      prepStmt.setString(6, subscription.getResource().getInstanceId());
-      rs = prepStmt.executeQuery();
-      return rs.next();
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+    final SubscriptionSubscriber subscriber = subscription.getSubscriber();
+    final SubscriptionResource resource = subscription.getResource();
+    return JdbcSqlQuery.createCountFor(SUBSCRIBE_TABLE)
+        .where(SUBSCRIBER_ID_CLAUSE, subscriber.getId())
+        .and(SUBSCRIBER_TYPE_CLAUSE, subscriber.getType().getName())
+        .and(SUBSCRIPTION_METHOD_CLAUSE, subscription.getSubscriptionMethod().getName())
+        .and(RESOURCE_ID_CLAUSE, resource.getId())
+        .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())
+        .and(INSTANCE_ID_CLAUSE, resource.getInstanceId())
+        .executeUniqueWith(con, r -> r.getLong(1) > 0L);
   }
 
   /**
@@ -295,25 +278,17 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    String methodQueryPart = "";
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect(SUBSCRIBE_COLUMNS)
+        .from(SUBSCRIBE_TABLE)
+        .where(RESOURCE_ID_CLAUSE, resource.getId())
+        .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName());
+    if (isDefined(resource.getInstanceId())) {
+      query = query.and(INSTANCE_ID_CLAUSE, resource.getInstanceId());
+    }
     if (method != null && !SubscriptionMethod.UNKNOWN.equals(method)) {
-      methodQueryPart = " AND subscriptionMethod = ?";
+      query = query.and(SUBSCRIPTION_METHOD_CLAUSE, method.getName());
     }
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_RESOURCE + methodQueryPart);
-      prepStmt.setString(1, resource.getInstanceId());
-      prepStmt.setString(2, resource.getId());
-      prepStmt.setString(3, resource.getType().getName());
-      if (method != null && StringUtil.isDefined(methodQueryPart)) {
-        prepStmt.setString(4, method.getName());
-      }
-      rs = prepStmt.executeQuery();
-      return toList(rs);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+    return new SubscriptionList(query.executeWith(con, this::createSubscriptionInstance));
   }
 
   /**
@@ -327,21 +302,14 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsBySubscriberAndResource(Connection con,
       SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE);
-      prepStmt.setString(1, subscriber.getId());
-      prepStmt.setString(2, subscriber.getType().getName());
-      prepStmt.setString(3, resource.getInstanceId());
-      prepStmt.setString(4, resource.getId());
-      prepStmt.setString(5, resource.getType().getName());
-      rs = prepStmt.executeQuery();
-      return toList(rs);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+    return new SubscriptionList(JdbcSqlQuery.createSelect(SUBSCRIBE_COLUMNS)
+        .from(SUBSCRIBE_TABLE)
+        .where(SUBSCRIBER_ID_CLAUSE, subscriber.getId())
+        .and(SUBSCRIBER_TYPE_CLAUSE, subscriber.getType().getName())
+        .and(RESOURCE_ID_CLAUSE, resource.getId())
+        .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())
+        .and(INSTANCE_ID_CLAUSE, resource.getInstanceId())
+        .executeWith(con, this::createSubscriptionInstance));
   }
 
   /**
@@ -387,32 +355,22 @@ public class SubscriptionDao {
    */
   private void findSubscribers(Connection con, SubscriptionResource resource,
       Collection<SubscriptionSubscriber> result, SubscriptionMethod method) throws SQLException {
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    String methodQueryPart = "";
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect("subscriberId, subscriberType")
+        .from(SUBSCRIBE_TABLE)
+        .where(RESOURCE_ID_CLAUSE, resource.getId())
+        .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())
+        .and(INSTANCE_ID_CLAUSE, resource.getInstanceId());
     if (method != null && !SubscriptionMethod.UNKNOWN.equals(method)) {
-      methodQueryPart = " AND subscriptionMethod = ?";
+      query = query.and(SUBSCRIPTION_METHOD_CLAUSE, method.getName());
     }
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_BY_RESOURCE + methodQueryPart);
-      prepStmt.setString(1, resource.getId());
-      prepStmt.setString(2, resource.getType().getName());
-      prepStmt.setString(3, resource.getInstanceId());
-      if (method != null && StringUtil.isDefined(methodQueryPart)) {
-        prepStmt.setString(4, method.getName());
+    query.executeWith(con, r -> {
+      final SubscriptionSubscriber subscriber = createSubscriberInstance(r.getString(1),
+          SubscriberType.from(r.getString(2)));
+      if (subscriber != null) {
+        result.add(subscriber);
       }
-      rs = prepStmt.executeQuery();
-      SubscriptionSubscriber subscriber;
-      while (rs.next()) {
-        subscriber = createSubscriberInstance(rs.getString("subscriberId"),
-            SubscriberType.from(rs.getString("subscriberType")));
-        if (subscriber != null) {
-          result.add(subscriber);
-        }
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+      return null;
+    });
   }
 
   /**
@@ -439,74 +397,35 @@ public class SubscriptionDao {
    * @return null if it is not possible to instance a subscription object.
    * @throws SQLException
    */
+  @SuppressWarnings("rawtypes")
   private Subscription createSubscriptionInstance(ResultSet rs) throws SQLException {
-    SubscriberType subscriberType = SubscriberType.from(rs.getString("subscriberType"));
+    SubscriberType subscriberType = SubscriberType.from(rs.getString(SUBSCRIBER_TYPE));
     SubscriptionSubscriber subscriber =
-        createSubscriberInstance(rs.getString("subscriberId"), subscriberType);
+        createSubscriberInstance(rs.getString(SUBSCRIBER_ID), subscriberType);
     SubscriptionMethod subscriptionMethod =
-        SubscriptionMethod.from(rs.getString("subscriptionMethod"));
+        SubscriptionMethod.from(rs.getString(SUBSCRIPTION_METHOD));
     SubscriptionResourceType resourceType =
-        SubscriptionResourceType.from(rs.getString("resourceType"));
-    SubscriptionResource resource =
-        createResourceInstance(rs.getString("resourceId"), resourceType, rs.getString("space"),
-            rs.getString("instanceId"));
-
+        SubscriptionResourceType.from(rs.getString(RESOURCE_TYPE));
+    SubscriptionResource resource = factory.createSubscriptionResourceInstance(resourceType,
+        rs.getString(RESOURCE_ID), rs.getString("space"), rs.getString(INSTANCE_ID));
     // Checking that data are not corrupted
-    if (!subscriptionMethod.isValid() || subscriber == null ||
-        resource == null) {
-      SilverLogger.getLogger(this)
-          .warn(
-              "The subscription method is'nt valid or either the subscriber or the resource is'nt defined");
+    if (!subscriptionMethod.isValid() || subscriber == null || resource == null) {
+      SilverLogger.getLogger(this).warn(
+          "The subscription method is'nt valid or either the subscriber or the resource is'nt defined");
       return null;
     }
-
+    if (UNKNOWN.equals(resourceType)) {
+      throw new AssertionError("There is no reason to be here !");
+    }
     String creatorId = rs.getString("creatorId");
     Date creationDate = rs.getTimestamp("creationDate");
     if (creationDate.getTime() <= 0) {
       creationDate = null;
     }
-
-    final Subscription subscription;
-    if (NODE.equals(resourceType)) {
-      subscription = new NodeSubscription(subscriber, resource, subscriptionMethod, creatorId,
-          creationDate);
-    } else if (COMPONENT.equals(resourceType)) {
-      subscription = new ComponentSubscription(subscriber, resource, subscriptionMethod, creatorId,
-          creationDate);
-    } else {
-      if (UNKNOWN.equals(resourceType)) {
-        throw new AssertionError("There is no reason to be here !");
-      }
-      subscription = new PKSubscription(subscriber, resource, subscriptionMethod, creatorId,
-          creationDate);
-    }
+    final AbstractSubscription subscription = factory.createSubscriptionInstance(subscriber, resource, creatorId);
+    subscription.setSubscriptionMethod(subscriptionMethod);
+    subscription.setCreationDate(creationDate);
     return subscription;
-  }
-
-  /**
-   * Create a resource.
-   * @param resourceId identifier of the aimed resource
-   * @param resourceType type of the aimed resource
-   * @param space space from which comes the resource
-   * @param instanceId component instance identifier from which comes the resource
-   * @return null resource type is unknown.
-   */
-  private SubscriptionResource createResourceInstance(String resourceId,
-      SubscriptionResourceType resourceType, String space, String instanceId) {
-    final SubscriptionResource resource;
-    if (NODE.equals(resourceType)) {
-      resource = new NodeSubscriptionResource(new NodePK(resourceId, space, instanceId));
-    } else if (COMPONENT.equals(resourceType)) {
-      resource = new ComponentSubscriptionResource(instanceId);
-    } else {
-      if (UNKNOWN.equals(resourceType)) {
-        resource = null;
-      } else {
-        resource = new PKSubscriptionResource(new ResourceReference(resourceId, instanceId),
-            resourceType);
-      }
-    }
-    return resource;
   }
 
   /**

@@ -24,18 +24,11 @@
 
 package org.silverpeas.core.webapi.subscribe;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-import org.silverpeas.core.subscription.service.PKSubscription;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.PathParam;
@@ -43,7 +36,6 @@ import javax.ws.rs.WebApplicationException;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
-import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
@@ -80,17 +72,11 @@ public abstract class AbstractSubscriptionResource extends RESTWebService {
     if (type == null || !type.isValid()) {
       throw new WebApplicationException("type not found", BAD_REQUEST);
     }
-    final SubscriptionResource subscriptionResource;
-    if (type == COMPONENT) {
-      subscriptionResource = ComponentSubscriptionResource.from(componentId);
-    } else if (type == NODE) {
+    if (type != COMPONENT) {
       checkResourceId(resourceId);
-      subscriptionResource = NodeSubscriptionResource.from(new NodePK(resourceId, componentId));
-    } else {
-      checkResourceId(resourceId);
-      subscriptionResource = PKSubscriptionResource.from(new ResourceReference(resourceId, componentId), type);
     }
-    return subscriptionResource;
+    return SubscriptionFactory.get()
+        .createSubscriptionResourceInstance(type, resourceId, null, componentId);
   }
 
   /**
@@ -105,19 +91,12 @@ public abstract class AbstractSubscriptionResource extends RESTWebService {
     if (type == null || !type.isValid()) {
       throw new WebApplicationException("type not found", BAD_REQUEST);
     }
-    final Subscription subscriptionResource;
-    if (type == COMPONENT) {
-      subscriptionResource = new ComponentSubscription(subscriber, componentId, getUser().getId());
-    } else if (type == NODE) {
+    if (type != COMPONENT) {
       checkResourceId(resourceId);
-      subscriptionResource = new NodeSubscription(subscriber, new NodePK(resourceId, componentId),
-          getUser().getId());
-    } else {
-      checkResourceId(resourceId);
-      subscriptionResource = new PKSubscription(subscriber,
-          (PKSubscriptionResource) getSubscriptionResource(type, resourceId), getUser().getId());
     }
-    return subscriptionResource;
+    final SubscriptionResource resource = getSubscriptionResource(type, resourceId);
+    return SubscriptionFactory.get()
+        .createSubscriptionInstance(subscriber, resource, getUser().getId());
   }
 
   private void checkResourceId(final String resourceId) {

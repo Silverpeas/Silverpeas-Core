@@ -212,8 +212,6 @@ public class PublicationAccessController extends AbstractAccessController<Public
       String userId, PublicationPK publicationPK) {
     final String instanceId = publicationPK.getInstanceId();
     final String pubId = publicationPK.getId();
-    final Set<SilverpeasRole> componentUserRoles = componentAccessController.getUserRoles(userId, instanceId, context);
-    final boolean componentUserAuthorized = componentAccessController.isUserAuthorized(componentUserRoles);
     if (isNotCreationContext(pubId, instanceId)) {
       final DataManager dataManager = getDataManager(context);
       final boolean needPubLoading = !isSearchActionFrom(dataManager.operations) && !dataManager.isLotOfDataMode();
@@ -222,11 +220,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
           : null;
       if ((needPubLoading && pubDetail == null)
           || (isTopicTrackerSupported(instanceId, context)
-              && fillTopicTrackerRoles(userRoles, context, userId, componentUserAuthorized, publicationPK))) {
+              && fillTopicTrackerRoles(userRoles, context, userId, publicationPK))) {
           return;
       }
     }
-    if (componentUserAuthorized) {
+    final Set<SilverpeasRole> componentUserRoles = componentAccessController.getUserRoles(userId, instanceId, context);
+    if (componentAccessController.isUserAuthorized(componentUserRoles)) {
       userRoles.addAll(componentUserRoles);
     }
   }
@@ -241,39 +240,16 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * @param userRoles the {@link Set} to fill.
    * @param context the context.
    * @param userId the identifier of the current user.
-   * @param componentUserAuthorized is user authorized at component level according to operation context.
    * @param pubPK the publication primary key.
    * @return true if roles have been handled, false otherwise.
    */
   private boolean fillTopicTrackerRoles(final Set<SilverpeasRole> userRoles,
-      final AccessControlContext context, final String userId,
-      final boolean componentUserAuthorized, final PublicationPK pubPK) {
-    boolean rolesProcessed = false;
-    if (!componentUserAuthorized) {
-      if (isPersistActionFrom(context.getOperations())) {
-        final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-        if (componentDataManager.isRightOnTopicsEnabled(pubPK.getInstanceId())) {
-          // If rights are handled on folders, folder rights are checked !
-          rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubPK);
-        } else {
-          rolesProcessed = true;
-        }
-      } else {
-        // Check if an alias of publication is authorized
-        // (special treatment in case of the user has no access right on component instance)
-        rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
-      }
-    } else {
-      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-      if (componentDataManager.isRightOnTopicsEnabled(pubPK.getInstanceId())) {
-        // If rights are handled on folders, folder rights are checked !
-        rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubPK);
-        if (rolesProcessed && CollectionUtil.isEmpty(userRoles)) {
-          // if the publication is not on root node and if user has no rights on folder, check if
-          // an alias of publication is authorized
-          fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
-        }
-      }
+      final AccessControlContext context, final String userId, final PublicationPK pubPK) {
+    boolean rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubPK);
+    if (rolesProcessed && CollectionUtil.isEmpty(userRoles)) {
+      // if the publication is not on root node and if user has no rights on folder, check if
+      // an alias of publication is authorized
+      rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
     }
     return rolesProcessed;
   }

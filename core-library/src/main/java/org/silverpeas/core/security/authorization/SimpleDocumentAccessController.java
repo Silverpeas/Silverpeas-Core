@@ -86,29 +86,30 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         ComponentAccessController.getDataManager(context);
     if (componentDataManager.isTopicTrackerSupported(object.getInstanceId())) {
       final String foreignId = object.getForeignId();
-      final PublicationPK pubPk = new PublicationPK(foreignId, object.getInstanceId());
-      final Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController().getUserRoles(userId, pubPk, context);
-      final PublicationDetail publicationDetail = PublicationAccessController.getDataManager(context).getCurrentPublication();
-      if (publicationDetail != null) {
-        // PublicationDetail has been loaded by PublicationAccessController processing,
-        // publicationUserRoles are the one of the publication
-        return isUserAuthorizedByContext(false, userId, object, context, publicationUserRoles,
-            publicationDetail.getCreatorId());
-
+      final Set<SilverpeasRole> parentUserRoles;
+      if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
+        String nodeId = foreignId.substring("Node_".length());
+        final NodePK nodePK = new NodePK(nodeId, object.getInstanceId());
+        parentUserRoles = getNodeAccessController().getUserRoles(userId, nodePK, context);
+        return getNodeAccessController().isUserAuthorized(parentUserRoles) &&
+            isUserAuthorizedByContext(true, userId, object, context, parentUserRoles, "unknown");
       } else {
-        // PublicationDetail has been loaded by PublicationAccessController processing,
-        // publicationUserRoles are the one of the component instance
-        componentUserRoles = publicationUserRoles;
-        componentAccessAuthorized = getComponentAccessController().isUserAuthorized(componentUserRoles);
-        if (componentAccessAuthorized && isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
-          String nodeId = foreignId.substring("Node_".length());
-          final Set<SilverpeasRole> nodeUserRoles =
-              getNodeAccessController().getUserRoles(userId, new NodePK(nodeId, object.
-                  getInstanceId()), context);
-          return getNodeAccessController().isUserAuthorized(nodeUserRoles) &&
-              isUserAuthorizedByContext(true, userId, object, context, nodeUserRoles, "unknown");
+        final PublicationPK pubPk = new PublicationPK(foreignId, object.getInstanceId());
+        parentUserRoles = getPublicationAccessController().getUserRoles(userId, pubPk, context);
+        final PublicationDetail publicationDetail = PublicationAccessController.getDataManager(
+            context).getCurrentPublication();
+        if (publicationDetail != null) {
+          // PublicationDetail has been loaded by PublicationAccessController processing,
+          // parentUserRoles are the one of the publication
+          return isUserAuthorizedByContext(false, userId, object, context, parentUserRoles,
+              publicationDetail.getCreatorId());
         }
       }
+
+      // PublicationDetail has been loaded but not found,
+      // parentUserRoles are the one of the component instance
+      componentUserRoles = parentUserRoles;
+      componentAccessAuthorized = getComponentAccessController().isUserAuthorized(componentUserRoles);
     }
 
     // Component access control

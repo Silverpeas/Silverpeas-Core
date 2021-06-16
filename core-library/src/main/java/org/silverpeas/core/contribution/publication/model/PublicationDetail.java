@@ -1117,7 +1117,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     clone.setValidateDate(validateDate);
     clone.setValidatorId(validatorId);
     clone.setVersion(version);
-
+    clone.alias = alias;
+    clone.authorizedLocation = authorizedLocation;
     return clone;
   }
 

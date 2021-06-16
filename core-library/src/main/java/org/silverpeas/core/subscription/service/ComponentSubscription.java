@@ -23,16 +23,13 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-
-import java.util.Date;
 
 /**
  * @author ehugonnet
  */
-public class ComponentSubscription extends AbstractSubscription {
+public class ComponentSubscription extends AbstractSubscription<ComponentSubscriptionResource> {
 
   /**
    * Component subscription constructor for which the type of the subscriber is USER.
@@ -56,21 +53,23 @@ public class ComponentSubscription extends AbstractSubscription {
   /**
    * Component subscription constructor for a subscriber that handles the subscription too.
    * @param subscriber the subscriber
-   * @param instanceId component instance id aimed by the subscription
+   * @param resource component instance subscription
    * @param creatorId the user id that has handled the subscription
    */
-  public ComponentSubscription(final SubscriptionSubscriber subscriber, final String instanceId,
-      final String creatorId) {
-    super(subscriber, ComponentSubscriptionResource.from(instanceId), SubscriptionMethod.UNKNOWN,
-        creatorId, null);
+  public ComponentSubscription(final SubscriptionSubscriber subscriber,
+      final ComponentSubscriptionResource resource, final String creatorId) {
+    super(subscriber, resource, creatorId);
   }
 
   /**
-   * @see AbstractSubscription
+   * Component subscription constructor for a subscriber that handles the subscription too.
+   * @param subscriber the subscriber
+   * @param instanceId component instance id aimed by the subscription
+   * @param creatorId the user id that has handled the subscription
    */
-  protected ComponentSubscription(final SubscriptionSubscriber subscriber,
-      final SubscriptionResource resource, final SubscriptionMethod subscriptionMethod,
-      final String creatorId, final Date creationDate) {
-    super(subscriber, resource, subscriptionMethod, creatorId, creationDate);
+  protected ComponentSubscription(final SubscriptionSubscriber subscriber, final String instanceId,
+      final String creatorId) {
+    super(subscriber, ComponentSubscriptionResource.from(instanceId), SubscriptionMethod.UNKNOWN,
+        creatorId, null);
   }
 }

@@ -23,13 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry" %>
-<%@ page import="java.util.stream.Collectors" %>
-
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ include file="check.jsp" %>
@@ -48,13 +46,13 @@
 <fmt:message var="operationsLabel" key="Operations"/>
 
 <c:set var="controller" value="<%=sessionController%>"/>
-<c:set var="subscriptionResourceTypes" value="<%=SubscriptionResourceTypeRegistry.get().streamAll().collect( Collectors.toList())%>"/>
+<c:set var="subscriptionResourceCategrories" value="${controller.subscriptionCategories}"/>
 
 <c:set var="subscriptions" value="${requestScope.subscriptions}"/>
 <jsp:useBean id="subscriptions" type="java.util.List<org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean>"/>
 <c:set var="userId" value="${requestScope.userId}"/>
-<c:set var="subResType" value="${requestScope.subResType}"/>
-<jsp:useBean id="subResType" type="org.silverpeas.core.subscription.SubscriptionResourceType"/>
+<c:set var="subResCategory" value="${requestScope.subResCategory}"/>
+<jsp:useBean id="subResCategory" type="org.silverpeas.web.pdcsubscription.control.SubscriptionCategory"/>
 <c:set var="action" value="${requestScope.action}"/>
 <c:set var="isReadOnly" value="${action eq 'showUserSubscriptions'}"/>
 
@@ -96,31 +94,35 @@
     </c:if>
     <view:window>
       <view:tabs>
-        <c:forEach var="subscriptionResourceType" items="${subscriptionResourceTypes}">
-          <c:set var="selectedType" value="${subscriptionResourceType eq subResType}"/>
-          <c:url var="tabUrl" value="${'ViewSubscriptionOfType'}">
+        <c:forEach var="subscriptionResourceCategrory" items="${subscriptionResourceCategrories}">
+          <c:set var="selectedType" value="${subscriptionResourceCategrory.id eq subResCategory.id}"/>
+          <c:url var="tabUrl" value="${'ViewSubscriptionOfCategory'}">
             <c:param name="userId" value="${userId}"/>
-            <c:param name="subResType" value="${subscriptionResourceType.name}"/>
+            <c:param name="subResCategory" value="${subscriptionResourceCategrory.id}"/>
             <c:param name="action" value="${action}"/>
           </c:url>
-          <view:tab label="${controller.getSubscriptionResourceTypeLabel(subscriptionResourceType)}"
-                    action="${selectedType ? 'javascript:void(0)' : tabUrl}" selected="${selectedType}" name="${subscriptionResourceType.name}"/>
+          <view:tab label="${subscriptionResourceCategrory.label}"
+                    action="${selectedType ? 'javascript:void(0)' : tabUrl}" selected="${selectedType}" name="${subscriptionResourceCategrory.id}"/>
         </c:forEach>
         <view:tab label="${pdcTypeLabel}"
                   action="${isReadOnly ? 'showUserSubscriptions' : 'ViewSubscriptionTaxonomy'}?userId=${userId}" selected="false" name="PDC"/>
       </view:tabs>
       <view:frame>
-        <form name="readForm" action="DeleteSubscriptionOfType" method="post">
+        <c:set var="isSeveralResourceTypes" value="${fn:length(subResCategory.handledTypes) > 1}"/>
+        <form name="readForm" action="DeleteSubscriptionOfCategory" method="post">
           <input type="hidden" name="mode"/>
-          <input type="hidden" name="subResType" value="${subResType.name}"/>
-          <c:url var="arrayUrl" value="${'ViewSubscriptionOfType'}">
+          <input type="hidden" name="subResCategory" value="${subResCategory.id}"/>
+          <c:url var="arrayUrl" value="${'ViewSubscriptionOfCategory'}">
             <c:param name="userId" value="${userId}"/>
-            <c:param name="subResType" value="${subResType.name}"/>
+            <c:param name="subResCategory" value="${subResCategory.id}"/>
             <c:param name="action" value="${action}"/>
           </c:url>
-        <view:arrayPane var="ViewSubscriptionOfTypeList" routingAddress="${arrayUrl}" numberLinesPerPage="25">
+        <view:arrayPane var="ViewSubscriptionOfCategoryList" routingAddress="${arrayUrl}" numberLinesPerPage="25">
           <view:arrayColumn title="${subscriptionTypeLabel}" sortable="true"/>
-          <view:arrayColumn title="${controller.getSubscriptionResourceTypeLabel(subResType)}"/>
+          <c:if test="${isSeveralResourceTypes}">
+            <view:arrayColumn title="${subResCategory.resourceTypeLabel}" sortable="true"/>
+          </c:if>
+          <view:arrayColumn title="${subResCategory.label}"/>
           <c:if test="${not isReadOnly}">
             <view:arrayColumn title="${operationsLabel}" sortable="false"/>
           </c:if>
@@ -134,6 +136,9 @@
             </c:if>
             <view:arrayLine classes="${validityCssClasses(isSubscriptionValid)}">
               <view:arrayCellText text="${subscriptionTypeLabel}" classes="${validityCssClasses(isSubscriptionValid)}"/>
+              <c:if test="${isSeveralResourceTypes}">
+                <view:arrayCellText text="${controller.getSubscriptionResourceTypeLabel(subscription.resource.type)}" classes="${validityCssClasses(isSubscriptionValid)}"/>
+              </c:if>
               <c:choose>
                 <c:when test="${not isReadOnly and isSubscriptionValid}">
                   <view:arrayCellText>
@@ -147,7 +152,7 @@
               <c:if test="${not isReadOnly and not subscription.readOnly}">
                 <view:arrayCellCheckbox name="subscriptionCheckbox"
                                         checked="false"
-                                        value="${subscription.resource.id}-${subscription.resource.instanceId}-${subscription.creatorId}"/>
+                                        value="${subscription.resource.type.name}@${subscription.resource.id}@${subscription.resource.instanceId}@${subscription.creatorId}"/>
               </c:if>
             </view:arrayLine>
           </view:arrayLines>
