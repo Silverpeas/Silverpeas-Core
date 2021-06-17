@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.test.util.lang.TestSystemWrapper;
@@ -78,7 +79,7 @@ import static org.mockito.Mockito.*;
  * Prepares the environment specific to Silverpeas to run unit tests.
  * <p>Firstly, it mocks the container of beans and set ups it for the tests with some of the
  * common beans in Silverpeas: {@link UserProvider}, {@link GroupProvider}, {@link SystemWrapper},
- * {@link ManagedThreadPool}, and the logging system.
+ * {@link I18n}, {@link ManagedThreadPool}, and the logging system.
  * </p>
  * <p>
  * Secondly it scans for fields and parameters annotated with {@link TestManagedBean} and
@@ -385,11 +386,19 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   }
 
   private void mockCommonBeans(final Object testInstance) {
+    mockI18n();
     mockUserProvider();
     mockGroupProvider();
     mockSystemWrapper(testInstance);
     mockLoggingSystem();
     mockManagedThreadFactory();
+  }
+
+  private void mockI18n() {
+    I18n i18n = mock(I18n.class);
+    when(i18n.getDefaultLanguage()).thenReturn("fr");
+    when(i18n.getSupportedLanguages()).thenReturn(Set.of("fr", "en", "de"));
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(I18n.class)).thenReturn(i18n);
   }
 
   private void mockUserProvider() {

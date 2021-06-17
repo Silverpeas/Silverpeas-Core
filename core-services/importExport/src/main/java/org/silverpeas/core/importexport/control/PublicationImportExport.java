@@ -142,11 +142,17 @@ public class PublicationImportExport {
       motsClefs = settings.getPublicationForAllFiles().getKeywords();
       content = settings.getPublicationForAllFiles().getContentPagePath();
     }
-    PublicationDetail publication =
-        new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
-            settings.getUser().getId(), "1", null, motsClefs, content);
+
+    PublicationDetail publication = PublicationDetail.builder(settings.getContentLanguage())
+        .setNameAndDescription(nomPub, description)
+        .created(creationDate, settings.getUser().getId())
+        .setBeginDateTime(new Date(), null)
+        .setImportance(1)
+        .setKeywords(motsClefs)
+        .setContentPagePath(content)
+        .build();
+
     publication.setTargetValidatorId(settings.getTargetValidatorIds());
-    publication.setLanguage(settings.getContentLanguage());
     if (lastModificationDate != null) {
       publication.setUpdateDate(lastModificationDate);
       publication.setUpdateDataMustBeSet(true);
