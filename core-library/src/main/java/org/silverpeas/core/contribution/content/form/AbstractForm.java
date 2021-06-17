@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
@@ -339,6 +340,7 @@ public abstract class AbstractForm implements Form {
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, pagesContext.getLanguage());
     }
   }
 
