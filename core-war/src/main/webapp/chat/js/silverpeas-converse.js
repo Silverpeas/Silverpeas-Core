@@ -100,7 +100,7 @@
    * @private
    */
   function __setupResize(chatOptions) {
-    if (!spWindow) {
+    if (!window.spWindow) {
       return;
     }
     chatOptions.whitelisted_plugins.push('silverpeas-resize');
@@ -202,7 +202,7 @@
    * @private
    */
   function __setupNotificationAddons(chatOptions) {
-    if (!spLayout) {
+    if (!window.spLayout) {
       return;
     }
     chatOptions.whitelisted_plugins.push('silverpeas-notification');
@@ -311,7 +311,7 @@
     };
     this.init = function(chatOptions) {
       __settings = extendsObject(__settings, chatOptions);
-      if (spWindow) {
+      if (window.spWindow) {
         __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
       }
       if (__settings.visioEnabled) {
