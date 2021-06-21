@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.space.quota.process.check;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
@@ -33,6 +34,7 @@ import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorage
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
@@ -46,9 +48,15 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset.from;
+import static org.silverpeas.core.admin.space.quota.process.check.SpaceDataStorageQuotaCountingOffset.from;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
 /**
  * @author Yohann Chastagnier
@@ -56,6 +64,8 @@ import java.util.Set;
 @Service
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   private static boolean dataStorageInSpaceQuotaActivated;
+
+  private static final String PREVIOUS_CACHE_KEY = "DataStorageQuotaProcessCheck@previous@key";
 
   static {
     final SettingBundle settings = ResourceLocator.getSettingBundle(
@@ -73,6 +83,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
    * AbstractFileProcessCheck#checkFiles(org.silverpeas.process
    * .management.ProcessExecutionContext, FileHandler)
    */
+  @SuppressWarnings("unchecked")
   @Override
   public void checkFiles(final ProcessExecutionContext processExecutionContext,
       final FileHandler fileHandler) {
@@ -84,13 +95,24 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
 
     // Treatment on write only
     if (IOAccess.READ_WRITE.equals(fileHandler.getIoAccess())) {
-
       // Checking data storage quota on each space detected
-      for (final SpaceInst space : identifyHandledSpaces(processExecutionContext, fileHandler)) {
+      final Collection<SpaceInst> spaces = identifyHandledSpaces(processExecutionContext, fileHandler);
+      final Map<String, SimpleQuotaCountingOffset> previousSpaceOffsets =
+          getRequestCacheService().getCache()
+          .computeIfAbsent(PREVIOUS_CACHE_KEY, Map.class, () -> new HashMap<>(spaces.size()));
+      for (final SpaceInst space : spaces) {
         try {
+          final String spaceId = space.getId();
+          final SimpleQuotaCountingOffset previousOffset = previousSpaceOffsets.computeIfAbsent(
+              spaceId, k -> from(0));
+          final long spaceOffset = from(space, fileHandler).getOffset();
+          SimpleQuotaCountingOffset currentOffset = from(
+              SimulationActionProcessProcessor.get().isSimulationProcessPerforming() ?
+                  spaceOffset + previousOffset.getOffset() :
+                  spaceOffset);
           SpaceServiceProvider.getDataStorageSpaceQuotaService()
-              .verify(DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota(),
-                  SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
+              .verify(DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota(), currentOffset);
+          previousSpaceOffsets.put(spaceId, currentOffset);
         } catch (final QuotaException quotaException) {
           SilverLogger.getLogger(this).silent(quotaException);
 

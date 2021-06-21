@@ -41,8 +41,8 @@ public class SimulationElementConversionProcess
     extends AbstractFileProcess<ProcessExecutionContext> {
 
   private final Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements;
-  private final ResourceReference targetPK;
-  private final ActionType actionType;
+  final ResourceReference targetPK;
+  final ActionType actionType;
 
  SimulationElementConversionProcess(
       final Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements,
