@@ -68,7 +68,7 @@ public class VisioServlet extends SilverpeasHttpServlet {
     if (user != null) {
       req.setAttribute("userName", user.getDisplayedName());
       req.setAttribute("userAvatarUrl",
-          getFullApplicationURL(req) + getImageURL(user.getAvatar(), "60x60"));
+          getFullApplicationURL(req) + getImageURL(user.getAvatar(), "240x240"));
     }
     try {
       redirectOrForwardService(req, res, "/chat/jsp/jitsi.jsp");
