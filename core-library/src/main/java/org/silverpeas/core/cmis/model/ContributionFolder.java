@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.cmis.model;
 
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -32,6 +33,8 @@ import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A folder of user contributions managed within an application in Silverpeas. Such a folder is a
@@ -45,6 +48,9 @@ import java.util.List;
  */
 public class ContributionFolder extends CmisFolder {
 
+  /**
+   * The identifier of its CMIS type.
+   */
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_FOLDER;
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
@@ -74,6 +80,11 @@ public class ContributionFolder extends CmisFolder {
     this.id = id;
   }
 
+  @Override
+  public String getSymbol() {
+    return "";
+  }
+
   public String getApplicationId() {
     return id.getComponentInstanceId();
   }
@@ -101,6 +112,17 @@ public class ContributionFolder extends CmisFolder {
   @Override
   public TypeId getTypeId() {
     return CMIS_TYPE;
+  }
+
+  @Override
+  protected Supplier<Set<Action>> getAllowableActionsSupplier() {
+    return () -> completeWithContributionFolderActions(
+        completeWithFolderActions(theCommonActions()));
+  }
+
+  private Set<Action> completeWithContributionFolderActions(final Set<Action> actions) {
+    actions.add(Action.CAN_CREATE_FOLDER);
+    return actions;
   }
 }
   

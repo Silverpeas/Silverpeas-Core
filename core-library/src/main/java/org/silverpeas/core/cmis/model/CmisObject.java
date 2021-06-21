@@ -94,6 +94,15 @@ public abstract class CmisObject extends ObjectDataImpl {
   }
 
   /**
+   * Gets the possible UTF-8 symbol representing the type of this CMIS object. It acts as an icon
+   * but instead of being a regular image the icon is encoded in UTF-8. Its goal is to mark the
+   * concrete type of the CMIS object upon its basic CMIS one (that is folder, document, ...)
+   * @return the UTF-8 symbol representing the type of this object or an empty String if no symbol
+   * is defined.
+   */
+  public abstract String getSymbol();
+
+  /**
    * Is this CMIS object file-able into the CMIS objects tree?
    * @return true if the object can be put in the CMIS objects tree as a node or a leaf of that
    * tree. False otherwise

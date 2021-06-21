@@ -37,6 +37,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
@@ -55,6 +56,8 @@ public class SilverpeasObjectsTree {
 
   private final Set<TreeNode> rootSpaces = new HashSet<>();
   private final Map<String, TreeNode> cache = new HashMap<>();
+
+  private int customLocalIdCount = 100;
 
   public void clear() {
     cache.forEach((id, treeNode) -> {
@@ -182,6 +185,15 @@ public class SilverpeasObjectsTree {
     return parentNode.addChild(pub);
   }
 
+  public TreeNode addPublication(PublicationDetail publication, String folderId) {
+    TreeNode parentNode = cache.get(folderId);
+    ContributionIdentifier folder = ContributionIdentifier.decode(folderId);
+    PublicationPK pk = new PublicationPK(String.valueOf(customLocalIdCount++),
+        folder.getComponentInstanceId());
+    publication.setPk(pk);
+    return parentNode.addChild(publication);
+  }
+
   public TreeNode addDocument(int localId, String pubId, String name, String description) {
     TreeNode parentNode = cache.get(pubId);
     int order = parentNode.getChildren().size() + 1;
@@ -189,9 +201,14 @@ public class SilverpeasObjectsTree {
     SimpleDocumentPK pk =
         new SimpleDocumentPK(String.valueOf(localId), pub.getComponentInstanceId());
     Date today = new Date();
-    SimpleAttachment attachment =
-        new SimpleAttachment(name + ".pdf", LANGUAGE, name, description, 102400, "application/pdf",
-            "0", today, null);
+    SimpleAttachment attachment = SimpleAttachment.builder(LANGUAGE)
+        .setFilename(name + ".pdf")
+        .setTitle(name)
+        .setDescription(description)
+        .setSize(102400L)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", today)
+        .build();
     SimpleDocument doc = new SimpleDocument(pk, pub.getLocalId(), order, false, attachment);
     doc.setDocumentType(DocumentType.attachment);
     doc.setCreationDate(today);

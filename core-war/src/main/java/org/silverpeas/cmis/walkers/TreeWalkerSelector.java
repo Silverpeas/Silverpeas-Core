@@ -25,12 +25,15 @@
 package org.silverpeas.cmis.walkers;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cmis.model.TypeId;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -86,7 +89,25 @@ public class TreeWalkerSelector {
    * identifier or nothing.
    */
   protected Optional<AbstractCmisObjectsTreeWalker> selectByObjectId(final String objectId) {
-    return walkers.stream().filter(w -> w.isSupported(objectId)).findFirst();
+    Objects.requireNonNull(objectId);
+    return walkers.stream().filter(w -> w.isObjectSupported(objectId)).findFirst();
+  }
+
+  /**
+   * Selects an instance of {@link CmisObjectsTreeWalker} that knows how to browse for and to handle
+   * the specified type of CMIS objects. It must exist a walker handling such a type otherwise a
+   * {@link CmisRuntimeException} is thrown to remind the developer this missing has to be fixed!
+   * @param typeId a unique identifier of a CMIS type.
+   * @return an instance of a concrete type of {@link CmisObjectsTreeWalker} that has the knowledge
+   * to handle the type of CMIS objects.
+   */
+  protected AbstractCmisObjectsTreeWalker selectByObjectTypeId(final TypeId typeId) {
+    Objects.requireNonNull(typeId);
+    return walkers.stream()
+        .filter(w -> w.isTypeSupported(typeId))
+        .findFirst()
+        .orElseThrow(() -> new CmisRuntimeException(
+            String.format("CMIS type %s not supported as expected!", typeId)));
   }
 }
   

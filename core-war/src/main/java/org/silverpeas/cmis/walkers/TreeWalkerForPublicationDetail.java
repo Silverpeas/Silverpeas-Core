@@ -29,19 +29,31 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisServiceUnavailableException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.core.cmis.model.Publication;
+import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.Document;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.CoreContributionType;
+import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -49,11 +61,14 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,38 +96,134 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   }
 
   @Override
+  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    throw new CmisNotSupportedException("The update isn't supported by publications");
+  }
+
+  /**
+   * The walker takes in charge the creation of document files from the specified CMIS properties,
+   * but it delegates this task to the walker dedicated to handle Silverpeas documents by invoking
+   * its {@link AbstractCmisObjectsTreeWalker#createObjectData(CmisProperties, ContentStream,
+   * String)} method.
+   * @param folderId the unique identifier of a publication in the CMIS objects tree.
+   * @param properties the CMIS properties of the {@link SimpleDocument} to create.
+   * @param contentStream a stream on the document's content. Must not be null.
+   * @param language the ISO 639-1 code of the language in which the textual folder properties are
+   * expressed.
+   * @return the {@link org.silverpeas.core.cmis.model.DocumentFile} instance that has been created
+   * and attached to the {@link Publication} object identified by the folderId parameter.
+   */
+  @Override
+  public CmisObject createChildData(final String folderId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    PublicationDetail publication = getSilverpeasObjectById(folderId);
+    properties.setParentObjectId(publication.getIdentifier()
+        .asString());
+    properties.setIndexed(publication.isIndexable());
+    AbstractCmisObjectsTreeWalker walker =
+        getTreeWalkerSelector().selectByObjectTypeId(properties.getObjectTypeId());
+    return walker.createObjectData(properties, contentStream, language);
+  }
+
+  @Override
+  protected CmisObject createObjectData(final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    ContributionIdentifier parentId = ContributionIdentifier.decode(properties.getParentObjectId());
+    PublicationDetail publication = createPublicationDetailFrom(properties, language);
+    CmisContributionsProvider provider =
+        CmisContributionsProvider.getByAppId(parentId.getComponentInstanceId());
+    I18nContribution created = provider.createContributionInFolder(publication, parentId, language);
+    return encodeToCmisObject(created, language);
+  }
+
+  /**
+   * Creates a new {@link PublicationDetail} instance from the specified CMIS properties and in the
+   * given language.
+   * @param properties the CMIS properties of a {@link Publication} object.
+   * @param language the ISO 639-1 code of the language in which the textual properties are
+   * expressed.
+   * @return a {@link PublicationDetail} instance.
+   */
+  protected PublicationDetail createPublicationDetailFrom(final CmisProperties properties,
+      final String language) {
+    String componentInstanceId;
+    Date now = new Date();
+    String parentId = properties.getParentObjectId();
+    if (ContributionIdentifier.isValid(parentId)) {
+      ContributionIdentifier folderId =
+          ContributionIdentifier.decode(properties.getParentObjectId());
+      componentInstanceId = folderId.getComponentInstanceId();
+    } else {
+      componentInstanceId = parentId;
+    }
+    PublicationDetail publication = PublicationDetail.builder(language)
+        .setPk(new PublicationPK(ResourceReference.UNKNOWN_ID, componentInstanceId))
+        .setNameAndDescription(properties.getName(), properties.getDescription())
+        .created(now, User.getCurrentRequester().getId())
+        .updated(now, User.getCurrentRequester().getId())
+        .setBeginDateTime(now, "")
+        .setImportance(1)
+        .build();
+    publication.setInfoId("0");
+    publication.setCloneId("-1");
+    return publication;
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   protected PublicationDetail getSilverpeasObjectById(final String objectId) {
-    return publicationService.getDetail(asPublicationPK(objectId));
+    try {
+      PublicationDetail publication = publicationService.getDetail(asPublicationPK(objectId));
+      if (publication == null) {
+        throw new CmisObjectNotFoundException(String.format("Publication %s not found", objectId));
+      }
+      return publication;
+    } catch (Exception e) {
+      throw new CmisServiceUnavailableException(e.getMessage());
+    }
   }
 
   @Override
   protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
       final ResourceIdentifier parentId, final User user) {
+    ContributionIdentifier folderId = (ContributionIdentifier) parentId;
     String language = user.getUserPreferences().getLanguage();
-    ResourceReference ref = ResourceReference.to((ContributionIdentifier)parentId);
+    ResourceReference ref = ResourceReference.to(folderId);
     return attachmentService.listDocumentsByForeignKey(ref, language)
         .stream()
+        .filter(a -> a.isPublic() || (a.canBeAccessedBy(user) && (a.isDownloadAllowedForReaders() ||
+            a.isDownloadAllowedForRolesFrom(user))))
         .map(Document::new);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  protected Publication createCmisObject(final LocalizedResource resource, final String language) {
+  protected Publication encodeToCmisObject(final LocalizedResource resource, final String language) {
     PublicationDetail pub = (PublicationDetail) resource;
     ContributionIdentifier folder = getFolder(pub);
     return CmisObjectFactory.getInstance().createPublication(pub, folder, language);
   }
 
   @Override
-  protected boolean isSupported(final String objectId) {
+  protected boolean isObjectSupported(final String objectId) {
     try {
-      return ContributionIdentifier.decode(objectId)
-          .getType()
-          .equals(PublicationDetail.getResourceType());
-    } catch (IllegalArgumentException e) {
+      String type =  ContributionIdentifier.decode(objectId).getType();
+      if (type.equals(PublicationDetail.TYPE)) {
+        return true;
+      } else if (type.equals(CoreContributionType.UNKNOWN.name())) {
+        return getSilverpeasObjectById(objectId) != null;
+      } else {
+        return false;
+      }
+    } catch (IllegalArgumentException| SilverpeasRuntimeException e) {
       return false;
     }
+  }
+
+  @Override
+  protected boolean isTypeSupported(final TypeId typeId) {
+    return typeId == TypeId.SILVERPEAS_PUBLICATION;
   }
 
   @Override
@@ -146,8 +257,8 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
     String folderId = getFolder(pub).asString();
     AbstractCmisObjectsTreeWalker walker = getTreeWalkerSelector().selectByObjectIdOrFail(folderId);
     LocalizedResource folder = walker.getSilverpeasObjectById(folderId);
-    CmisFolder cmisParent = walker.createCmisObject(folder, language);
-    CmisObject cmisObject = createCmisObject(pub, language);
+    CmisFolder cmisParent = walker.encodeToCmisObject(folder, language);
+    CmisObject cmisObject = encodeToCmisObject(pub, language);
     ObjectParentData parentData = buildObjectParentData(cmisParent, cmisObject, filtering);
     return Collections.singletonList(parentData);
   }

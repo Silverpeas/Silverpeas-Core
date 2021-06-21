@@ -66,8 +66,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
@@ -99,16 +99,25 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   public void setUpJcr() throws Exception {
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
-      if (!session.getRootNode().hasNode(instanceId)) {
-        session.getRootNode().addNode(instanceId, NT_FOLDER);
+      if (!session.getRootNode()
+          .hasNode(instanceId)) {
+        session.getRootNode()
+            .addNode(instanceId, NT_FOLDER);
       }
-      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      Date creationDate = RandomGenerator.getRandomCalendar()
+          .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node18";
-      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test",
-              "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-              MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       existingFrDoc = new DocumentRepository().createDocument(session, document);
       document.setPK(existingFrDoc);
@@ -116,10 +125,16 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node19";
-      document = new SimpleDocument(emptyId, foreignId, 0, false,
-          new SimpleAttachment("test.docx", "en", "My test document", "This is a test document",
-              "This is a test".getBytes(Charsets.UTF_8).length, MimeTypes.WORD_2007_MIME_TYPE, "0",
-              creationDate, "18"));
+      attachment = SimpleAttachment.builder("en")
+          .setFilename("test.docx")
+          .setTitle("My test document")
+          .setDescription("This is a test document")
+          .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.WORD_2007_MIME_TYPE)
+          .setCreationData("0", creationDate)
+          .setFormId("18")
+          .build();
+      document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       existingEnDoc = documentRepository.createDocument(session, document);
       document.setPK(existingEnDoc);
@@ -176,12 +191,12 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
+    assertThat(out.toString(Charsets.UTF_8), is("Ceci est un test"));
     InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     instance.updateAttachment(document, content, false, false);
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
+    assertThat(out.toString(Charsets.UTF_8), is("This is a test"));
   }
 
   /**
@@ -193,18 +208,18 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
+    assertThat(out.toString(Charsets.UTF_8), is("Ceci est un test"));
     currentLang = "en";
     InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     document.setLanguage(currentLang);
     instance.updateAttachment(document, content, false, false);
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
+    assertThat(out.toString(Charsets.UTF_8), is("This is a test"));
     currentLang = "fr";
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
+    assertThat(out.toString(Charsets.UTF_8), is("Ceci est un test"));
   }
 
   /**
@@ -217,7 +232,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
+    assertThat(out.toString(Charsets.UTF_8), is("Ceci est un test"));
     currentLang = "en";
     document.setLanguage(currentLang);
     instance.updateAttachment(document, file, false, false);
@@ -227,7 +242,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     currentLang = "fr";
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
-    assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
+    assertThat(out.toString(Charsets.UTF_8), is("Ceci est un test"));
   }
 
   /**
@@ -399,13 +414,20 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testCreateAttachmentFromInputStream() {
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", creationDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
     InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
     SimpleDocument result = instance.createAttachment(document, content);
     assertThat(result, is(notNullValue()));
@@ -417,13 +439,20 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testCreateIndexedAttachmentFromInputStream() {
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", creationDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
     InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
     SimpleDocument result = instance.createAttachment(document, content, true);
     assertThat(result, is(notNullValue()));
@@ -435,13 +464,20 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testCreateAttachmentFromInputStreamWithCallback() {
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", creationDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
     InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
     SimpleDocument result = instance.createAttachment(document, content, true, true);
     assertThat(result, is(notNullValue()));
@@ -454,13 +490,20 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testCreateAttachmentIndexedCallbackFromFile() throws URISyntaxException {
     File file = getDocumentNamed("/LibreOffice.odt");
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", file.length(), MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
-        creationDate, "5"));
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize(file.length())
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", creationDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
     SimpleDocument result = instance.createAttachment(document, file, true, true);
     assertThat(result, is(notNullValue()));
     checkFrenchFileSimpleDocument(result);
@@ -472,13 +515,20 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testCreateAttachmentNotIndexedFromFile() throws URISyntaxException {
     File file = getDocumentNamed("/LibreOffice.odt");
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", file.length(), MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
-        creationDate, "5"));
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize(file.length())
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", creationDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
     SimpleDocument result = instance.createAttachment(document, file, false);
     assertThat(result, is(notNullValue()));
     checkFrenchFileSimpleDocument(result);
@@ -490,13 +540,20 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testCreateAttachmentFromFile() throws Exception {
     File file = getDocumentNamed("/LibreOffice.odt");
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", file.length(), MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
-        creationDate, "5"));
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize(file.length())
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", creationDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
     SimpleDocument result = instance.createAttachment(document, file);
     assertThat(result, is(notNullValue()));
     checkFrenchFileSimpleDocument(result);
@@ -816,50 +873,74 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
-      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      Date creationDate = RandomGenerator.getRandomCalendar()
+          .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = foreignKey.getId();
-      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 10, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment1 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 1")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment1);
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
       documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 2")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false, attachment2);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
       documentRepository.storeContent(document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment3 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 3")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false, attachment3);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
       documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document4 = new SimpleDocument(emptyId, "node49", 0, false,
-          new SimpleAttachment("test.docx", "en", "My test document 4",
-          "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      SimpleAttachment attachment4 = SimpleAttachment.builder("en")
+          .setFilename("test.docx")
+          .setTitle("My test document 4")
+          .setDescription("This is a test document")
+          .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.WORD_2007_MIME_TYPE)
+          .setCreationData("0", creationDate)
+          .setFormId("18")
+          .build();
+      SimpleDocument document4 = new SimpleDocument(emptyId, "node49", 0, false, attachment4);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
       documentRepository.storeContent(document4, content);
       session.save();
-      List<SimpleDocument> result =
-          instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
@@ -882,10 +963,16 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
       // Create new document
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document5 = new SimpleDocument(emptyId, foreignId, 0, false,
-          new SimpleAttachment("test.docx", "en", "My test document 5",
-              "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-              MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      SimpleAttachment attachment5 = SimpleAttachment.builder("en")
+          .setFilename("test.docx")
+          .setTitle("My test document 5")
+          .setDescription("This is a test document")
+          .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.WORD_2007_MIME_TYPE)
+          .setCreationData("0", creationDate)
+          .setFormId("18")
+          .build();
+      SimpleDocument document5 = new SimpleDocument(emptyId, foreignId, 0, false, attachment5);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document5);
       document5.setPK(id);
@@ -928,50 +1015,74 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
-      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      Date creationDate = RandomGenerator.getRandomCalendar()
+          .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = foreignKey.getId();
-      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 5, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment1 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 1")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 5, false, attachment1);
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
       documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 50, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 2")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 50, false, attachment2);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
       documentRepository.storeContent(document2, content);
 
+      SimpleAttachment attachment3 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 3")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false, attachment3);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
       documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document4 = new SimpleDocument(emptyId, "node49", 0, false,
-          new SimpleAttachment("test.docx", "en", "My test document 4",
-          "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      SimpleAttachment attachment4 = SimpleAttachment.builder("en")
+          .setFilename("test.docx")
+          .setTitle("My test document 4")
+          .setDescription("This is a test document")
+          .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.WORD_2007_MIME_TYPE)
+          .setCreationData("0", creationDate)
+          .setFormId("18")
+          .build();
+      SimpleDocument document4 = new SimpleDocument(emptyId, "node49", 0, false, attachment4);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
       documentRepository.storeContent(document4, content);
       session.save();
-      List<SimpleDocument> result =
-          instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document3));
@@ -994,10 +1105,16 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       assertThat(result.get(2), SimpleDocumentMatcher.matches(document2));
       // Create new document
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document5 = new SimpleDocument(emptyId, foreignId, 0, false,
-          new SimpleAttachment("test.docx", "en", "My test document 5",
-              "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-              MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      SimpleAttachment attachment5 = SimpleAttachment.builder("en")
+          .setFilename("test.docx")
+          .setTitle("My test document 5")
+          .setDescription("This is a test document")
+          .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.WORD_2007_MIME_TYPE)
+          .setCreationData("0", creationDate)
+          .setFormId("18")
+          .build();
+      SimpleDocument document5 = new SimpleDocument(emptyId, foreignId, 0, false, attachment5);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document5);
       document5.setPK(id);
@@ -1052,33 +1169,52 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
-      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      Date creationDate = RandomGenerator.getRandomCalendar()
+          .getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = foreignKey.getId();
-      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 10, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment1 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 1")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment1);
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
       documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 2")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false, attachment2);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
       documentRepository.storeContent(document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      SimpleAttachment attachment3 = SimpleAttachment.builder("fr")
+          .setFilename("test.odp")
+          .setTitle("Mon document de test 3")
+          .setDescription("Ceci est un document de test")
+          .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData("10", creationDate)
+          .setFormId("5")
+          .build();
+      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false, attachment3);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
@@ -1086,18 +1222,23 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
-      SimpleDocument document4 = new SimpleDocument(emptyId, foreignId, 0, false,
-          new SimpleAttachment("test.docx", "en", "My test document 4",
-          "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      SimpleAttachment attachment4 = SimpleAttachment.builder("en")
+          .setFilename("test.docx")
+          .setTitle("My test document 4")
+          .setDescription("This is a test document")
+          .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+          .setContentType(MimeTypes.WORD_2007_MIME_TYPE)
+          .setCreationData("0", creationDate)
+          .setFormId("18")
+          .build();
+      SimpleDocument document4 = new SimpleDocument(emptyId, foreignId, 0, false, attachment4);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
       documentRepository.storeContent(document4, content);
 
       session.save();
-      List<SimpleDocument> result =
-          instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
@@ -1200,40 +1341,71 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentsRequiringWarning() {
-    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
-        Charsets.UTF_8));
+    ByteArrayInputStream content =
+        new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
     String owner = "10";
     Calendar today = Calendar.getInstance();
     DateUtil.setAtBeginOfDay(today);
-    SimpleDocument warningDoc1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    SimpleAttachment attachment1 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("18")
+        .build();
+    SimpleDocument warningDoc1 =
+        new SimpleDocument(emptyId, foreignId, 10, false, owner, attachment1);
     warningDoc1.setAlert(today.getTime());
     instance.createAttachment(warningDoc1, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument notWarningDoc2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test",
-        "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-        "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
-    notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
+    SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("5")
+        .build();
+    SimpleDocument notWarningDoc2 =
+        new SimpleDocument(emptyId, foreignId, 15, false, owner, attachment2);
+    notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today)
+        .getTime());
     instance.createAttachment(notWarningDoc2, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument warningDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    SimpleAttachment attachment3 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("18")
+        .build();
+    SimpleDocument warningDoc3 =
+        new SimpleDocument(emptyId, foreignId, 20, false, owner, attachment3);
     warningDoc3.setAlert(today.getTime());
     instance.createAttachment(warningDoc3, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument notWarningDoc4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test",
-        "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-        "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
+    SimpleAttachment attachment4 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("5")
+        .build();
+    SimpleDocument notWarningDoc4 =
+        new SimpleDocument(emptyId, foreignId, 25, false, owner, attachment4);
     Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
     notWarningDoc4.setAlert(beforeDate.getTime());
     instance.createAttachment(notWarningDoc4, content);
@@ -1248,40 +1420,71 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testListExpiringDocuments() {
-    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
-        Charsets.UTF_8));
+    ByteArrayInputStream content =
+        new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
     String owner = "10";
     Calendar today = Calendar.getInstance();
     DateUtil.setAtBeginOfDay(today);
-    SimpleDocument expiringDoc1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    SimpleAttachment attachment1 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("18")
+        .build();
+    SimpleDocument expiringDoc1 =
+        new SimpleDocument(emptyId, foreignId, 10, false, owner, attachment1);
     expiringDoc1.setExpiry(today.getTime());
     instance.createAttachment(expiringDoc1, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument notExpiringDoc2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test",
-        "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-        "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
-    notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
+    SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("5")
+        .build();
+    SimpleDocument notExpiringDoc2 =
+        new SimpleDocument(emptyId, foreignId, 15, false, owner, attachment2);
+    notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today)
+        .getTime());
     instance.createAttachment(notExpiringDoc2, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument expiringDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    SimpleAttachment attachment3 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("18")
+        .build();
+    SimpleDocument expiringDoc3 =
+        new SimpleDocument(emptyId, foreignId, 20, false, owner, attachment3);
     expiringDoc3.setExpiry(today.getTime());
     instance.createAttachment(expiringDoc3, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument notExpiringDoc4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", RandomGenerator.getRandomCalendar().getTime(),
-        "5"));
+    SimpleAttachment attachment4 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("5")
+        .build();
+    SimpleDocument notExpiringDoc4 =
+        new SimpleDocument(emptyId, foreignId, 25, false, owner, attachment4);
     Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
     notExpiringDoc4.setExpiry(beforeDate.getTime());
     instance.createAttachment(notExpiringDoc4, content);
@@ -1296,40 +1499,72 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentsToUnlock() {
-    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
-        Charsets.UTF_8));
+    ByteArrayInputStream content =
+        new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
     String owner = "10";
     Calendar today = Calendar.getInstance();
     DateUtil.setAtBeginOfDay(today);
-    SimpleDocument docToLeaveLocked1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    SimpleAttachment attachment1 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("18")
+        .build();
+    SimpleDocument docToLeaveLocked1 =
+        new SimpleDocument(emptyId, foreignId, 10, false, owner, attachment1);
     docToLeaveLocked1.setExpiry(today.getTime());
     instance.createAttachment(docToLeaveLocked1, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument docToUnlock2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test",
-        "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-        "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
-    docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
+    SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("5")
+        .build();
+    SimpleDocument docToUnlock2 =
+        new SimpleDocument(emptyId, foreignId, 15, false, owner, attachment2);
+    docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today)
+        .getTime());
     instance.createAttachment(docToUnlock2, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
-    docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
+    SimpleAttachment attachment3 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("18")
+        .build();
+    SimpleDocument docToUnlock3 =
+        new SimpleDocument(emptyId, foreignId, 20, false, owner, attachment3);
+    docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today)
+        .getTime());
     instance.createAttachment(docToUnlock3, content);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test",
-        "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-        "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
+    SimpleAttachment attachment4 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar()
+            .getTime())
+        .setFormId("5")
+        .build();
+    SimpleDocument docToLeaveLocked4 =
+        new SimpleDocument(emptyId, foreignId, 25, false, owner, attachment4);
     Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
     docToLeaveLocked4.setExpiry(beforeDate.getTime());
     instance.createAttachment(docToLeaveLocked4, content);
@@ -1344,8 +1579,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentLockedByUser() {
-    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
-        Charsets.UTF_8));
+    ByteArrayInputStream content =
+        new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String otherInstanceId = "kmelia38";
     String otherOwner = "25";
@@ -1353,37 +1588,66 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     String owner = "10";
     Calendar today = Calendar.getInstance();
     DateUtil.setAtBeginOfDay(today);
-    Date createdDate = RandomGenerator.getRandomCalendar().getTime();
-    SimpleDocument docToLeaveLocked1 = new SimpleDocument(emptyId, foreignId, 10, false, otherOwner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", createdDate, "18"));
+    Date createdDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    SimpleAttachment attachment1 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", createdDate)
+        .setFormId("18")
+        .build();
+    SimpleDocument docToLeaveLocked1 =
+        new SimpleDocument(emptyId, foreignId, 10, false, otherOwner, attachment1);
     docToLeaveLocked1.setExpiry(today.getTime());
     instance.createAttachment(docToLeaveLocked1, content);
     emptyId = new SimpleDocumentPK("-1", otherInstanceId);
     createdDate = new Date(createdDate.getTime() + 36000000);
-    SimpleDocument docToUnlock2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", createdDate,
-        "5"));
-    docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
+    SimpleAttachment attachment2 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", createdDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument docToUnlock2 =
+        new SimpleDocument(emptyId, foreignId, 15, false, owner, attachment2);
+    docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today)
+        .getTime());
     instance.createAttachment(docToUnlock2, content);
     createdDate = new Date(createdDate.getTime() + 36000000);
     emptyId = new SimpleDocumentPK("-1", instanceId);
-    SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
-        new SimpleAttachment("test.pdf", "en", "My test document",
-        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", createdDate, "18"));
-    docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
+    SimpleAttachment attachment3 = SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", createdDate)
+        .setFormId("18")
+        .build();
+    SimpleDocument docToUnlock3 =
+        new SimpleDocument(emptyId, foreignId, 20, false, owner, attachment3);
+    docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today)
+        .getTime());
     instance.createAttachment(docToUnlock3, content);
     createdDate = new Date(createdDate.getTime() + 36000000);
     emptyId = new SimpleDocumentPK("-1", otherInstanceId);
-    SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, otherOwner,
-        new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", createdDate,
-        "5"));
+    SimpleAttachment attachment4 = SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", createdDate)
+        .setFormId("5")
+        .build();
+    SimpleDocument docToLeaveLocked4 =
+        new SimpleDocument(emptyId, foreignId, 25, false, otherOwner, attachment4);
     Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
     docToLeaveLocked4.setExpiry(beforeDate.getTime());
     instance.createAttachment(docToLeaveLocked4, content);

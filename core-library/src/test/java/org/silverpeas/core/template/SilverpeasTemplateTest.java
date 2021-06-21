@@ -37,7 +37,7 @@ import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_CUSTOM_DI
 import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_ROOT_DIR;
 
 @EnableSilverTestEnv
-public class SilverpeasTemplateTest {
+class SilverpeasTemplateTest {
 
   private Properties configuration;
 
@@ -50,7 +50,7 @@ public class SilverpeasTemplateTest {
   }
 
   @Test
-  public void applyFileTemplateWithSimpleAttribute() throws Exception {
+  void applyFileTemplateWithSimpleAttribute() throws Exception {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String attributeString = "single";
@@ -60,7 +60,7 @@ public class SilverpeasTemplateTest {
   }
 
   @Test
-  public void applyStringTemplateWithSimpleAttribute() throws Exception {
+  void applyStringTemplateWithSimpleAttribute() throws Exception {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String attributeString = "single";
@@ -70,7 +70,7 @@ public class SilverpeasTemplateTest {
   }
 
   @Test
-  public void applyStringTemplateWithArrayAttribute() throws Exception {
+  void applyStringTemplateWithArrayAttribute() throws Exception {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String[] attributeList = new String[2];
@@ -82,7 +82,7 @@ public class SilverpeasTemplateTest {
   }
 
   @Test
-  public void applyFileTemplateWithArrayAttribute() throws Exception {
+  void applyFileTemplateWithArrayAttribute() throws Exception {
     SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     String[] attributeList = new String[2];

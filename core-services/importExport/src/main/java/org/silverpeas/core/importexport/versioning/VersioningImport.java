@@ -97,15 +97,22 @@ public class VersioningImport {
         if (attachment.getCreationDate() == null) {
           attachment.setCreationDate(new Date());
         }
-        HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null, componentId),
-            objectId, -1, attachment.getAuthor(), new SimpleAttachment(attachment.getLogicalName(),
-            null, attachment.getTitle(), attachment.getDescription(), attachment.
-            getSize(), attachment.getType(), "" + user.getId(), attachment.getCreationDate(),
-            attachment.getXmlForm()));
+        SimpleAttachment copy = SimpleAttachment.builder()
+            .setFilename(attachment.getLogicalName())
+            .setTitle(attachment.getTitle())
+            .setDescription(attachment.getDescription())
+            .setSize(attachment.getSize())
+            .setContentType(attachment.getType())
+            .setCreationData(user.getId(), attachment.getCreationDate())
+            .setFormId(attachment.getXmlForm())
+            .build();
+        HistorisedDocument version =
+            new HistorisedDocument(new SimpleDocumentPK(null, componentId), objectId, -1,
+                attachment.getAuthor(), copy);
         version.setPublicDocument(versionType == DocumentVersion.TYPE_PUBLIC_VERSION);
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-        AttachmentServiceProvider.getAttachmentService().createAttachment(version,
-            content, indexIt);
+        AttachmentServiceProvider.getAttachmentService()
+            .createAttachment(version, content, indexIt);
       }
 
       if (attachment.isRemoveAfterImport()) {
@@ -214,11 +221,18 @@ public class VersioningImport {
     if (xmlContent != null) {
       xmlFormId = xmlContent.getName();
     }
-    SimpleDocument existingDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
-        getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
-        getLogicalName(), I18NHelper.DEFAULT_LANGUAGE,
-        document.getName(), document.getDescription(), version.getSize(), version.
-        getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
+    SimpleAttachment attachment = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+        .setFilename(version.getLogicalName())
+        .setTitle(document.getName())
+        .setDescription(document.getDescription())
+        .setSize(version.getSize())
+        .setContentType(version.getMimeType())
+        .setCreationData(String.valueOf(version.getAuthorId()), version.getCreationDate())
+        .setFormId(xmlFormId)
+        .build();
+    SimpleDocument existingDocument =
+        new HistorisedDocument(new SimpleDocumentPK(null, objectPK.getInstanceId()),
+            objectPK.getId(), -1, attachment);
 
     existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
     existingDocument.setPublicDocument(isPublic);

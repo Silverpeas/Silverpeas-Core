@@ -25,17 +25,22 @@
 package org.silverpeas.cmis;
 
 import org.apache.chemistry.opencmis.commons.BasicPermissions;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.data.PermissionMapping;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyId;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.*;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AclCapabilitiesDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.CreatablePropertyTypesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.NewTypeSettableAttributesImpl;
@@ -45,6 +50,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabili
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.cmis.SilverpeasCmisSettings;
 import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
@@ -60,15 +66,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * A CMIS repository implementation for Silverpeas. Its responsibility is to provide an access
- * to the data in Silverpeas that is conform to the CMIS 1.1 specification and by taking into
- * account of the CMIS service capabilities that are supported as well as of its constrained support
- * of those capabilities.
+ * A CMIS repository implementation for Silverpeas. Its responsibility is to provide access to the
+ * data in Silverpeas, conforming to the CMIS 1.1 specification, by taking into account the CMIS
+ * service capabilities that are supported as well as of the constrained support of those
+ * capabilities by Silverpeas.
  * <p>
- * Behind the scene, it defines the capabilities actually supported and
- * delegates the knowledge of how the CMIS objects and the Silverpeas objects are mapped to a
- * manager. The access to the Silverpeas objects is done through this manager and it is
- * controlled by the repository itself according to the supported CMIS service capabilities.
+ * Behind the scene, it defines the capabilities actually supported and delegates to a type manager
+ * the knowledge of what are the CMIS types for each kind of Silverpeas objects exposed by CMIS and
+ * to an object manager the knowledge of how the CMIS and the Silverpeas objects are mapped between
+ * them. The access to the Silverpeas objects is done through this manager and it is controlled by
+ * the repository itself according to the supported CMIS service capabilities.
  * </p>
  * @author mmoquillon
  */
@@ -401,6 +408,87 @@ public class SilverpeasCmisRepository {
     return objectManager.getContentStream(objectId, language, start, size);
   }
 
+  private static String getObjectTypeId(Properties properties) {
+    PropertyData<?> typeProperty = properties.getProperties()
+        .get(PropertyIds.OBJECT_TYPE_ID);
+    if (!(typeProperty instanceof PropertyId)) {
+      throw new CmisInvalidArgumentException("Type Id must be set!");
+    }
+
+    String typeId = ((PropertyId) typeProperty).getFirstValue();
+    if (typeId == null) {
+      throw new CmisInvalidArgumentException("Type Id must be set!");
+    }
+
+    return typeId;
+  }
+
+  /**
+   * Creates a folder object of a given type (provided by the cmis:objectTypeId property) in the
+   * specified parent folder. If the parent doesn't support the creation of such a folder type, then
+   * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception
+   * is thrown.
+   * @param properties the property values that must be applied to the newly created folder object
+   * @param parentId the identifier for the parent folder
+   * @return the ID of the newly created folder
+   */
+  public String createFolder(final Properties properties, final String parentId) {
+    checkObjectTypeDefinition(properties, BaseTypeId.CMIS_FOLDER);
+
+    User currentUser = User.getCurrentRequester();
+    String language = currentUser.getUserPreferences().getLanguage();
+    CmisObject object = objectManager.createFolder(parentId, properties, language);
+    return object.getId();
+  }
+
+  /**
+   * Creates a document object of the specified type (given by the cmis:objectTypeId property) in
+   * the specified location and with the given content.
+   *
+   * @param properties
+   *            the property values that must be applied to the newly created
+   *            folder object
+   * @param folderId
+   *            the identifier for the parent folder
+   * @param stream
+   *            the stream on the document's content. The stream is consumed but not closed by this
+   *            method.
+   * @return the ID of the newly created document
+   */
+  public String createDocument(final Properties properties, final String folderId,
+      final ContentStream stream) {
+    checkObjectTypeDefinition(properties, BaseTypeId.CMIS_DOCUMENT);
+
+    User currentUser = User.getCurrentRequester();
+    String language = currentUser.getUserPreferences().getLanguage();
+    CmisObject object = objectManager.createDocument(folderId, properties, stream, language);
+    return object.getId();
+  }
+
+  /**
+   * Updates the specified document object by setting its content with the one in the given stream.
+   * The stream in <code>contentStream</code> is consumed but not closed by this method.
+   *
+   * @param documentId
+   *            the identifier for the document.
+   * @param overwrite
+   *            If {@code true}, then the repository must
+   *            replace the existing content stream for the object (if any)
+   *            with the input content stream. If {@code false}, then the
+   *            repository must only set the input content stream for the
+   *            object if the object currently does not have a content stream
+   *            (default is {@code true})
+   * @param contentStream
+   *            the stream on the document's content. The stream is consumed but not closed by this
+   *            method.
+   */
+  public void updateDocument(final String documentId, final boolean overwrite,
+      final ContentStream contentStream) {
+    User currentUser = User.getCurrentRequester();
+    String language = currentUser.getUserPreferences().getLanguage();
+    objectManager.updateDocument(documentId, overwrite, contentStream, language);
+  }
+
   private List<ObjectInFolderContainer> getObjectInFolderContainers(final String folderId,
       final BigInteger depth, final String filter, final Boolean includeAllowableActions,
       final IncludeRelationships includeRelationships, final Boolean includePathSegment,
@@ -492,7 +580,7 @@ public class SilverpeasCmisRepository {
 
   private static void setObjectCapabilities(final RepositoryCapabilitiesImpl capabilities) {
     // object capabilities
-    capabilities.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.NONE);
+    capabilities.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.ANYTIME);
     capabilities.setCapabilityChanges(CapabilityChanges.NONE);
     capabilities.setCapabilityRendition(CapabilityRenditions.NONE);
   }
@@ -517,6 +605,21 @@ public class SilverpeasCmisRepository {
     pm.setPermissions(Collections.singletonList(permission));
 
     return pm;
+  }
+
+  private void checkObjectTypeDefinition(Properties properties, BaseTypeId expectedTypeId) {
+    if (properties == null) {
+      throw new CmisInvalidArgumentException("Properties of the object to create should be set!");
+    }
+    String typeId = getObjectTypeId(properties);
+    TypeDefinition type = getTypeDefinition(typeId);
+    if (type == null) {
+      throw new CmisObjectNotFoundException(String.format("Unknown type: %s", typeId));
+    }
+    if (type.getBaseTypeId() != expectedTypeId) {
+      throw new CmisInvalidArgumentException(
+          String.format("Type %s isn't %s", typeId, expectedTypeId.value()));
+    }
   }
 }
   

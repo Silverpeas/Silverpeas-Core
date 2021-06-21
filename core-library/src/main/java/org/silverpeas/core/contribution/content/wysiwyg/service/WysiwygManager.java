@@ -385,17 +385,24 @@ public class WysiwygManager implements WysiwygContentRepository {
       return;
     }
     LocalizedContribution contribution = content.getContribution();
-    String fileName =
-        getWysiwygFileName(contribution.getIdentifier().getLocalId(), contribution.getLanguage());
+    String fileName = getWysiwygFileName(contribution.getIdentifier()
+        .getLocalId(), contribution.getLanguage());
     String language = I18NHelper.checkLanguage(contribution.getLanguage());
     String textHtml = content.getData();
-    String userId = content.getAuthor().getId();
-    SimpleDocumentPK docPk =
-        new SimpleDocumentPK(null, content.getContribution().getIdentifier().getComponentInstanceId());
-    SimpleDocument document =
-        new SimpleDocument(docPk, contribution.getIdentifier().getLocalId(), 0, false, userId,
-            new SimpleAttachment(fileName, language, fileName, null, textHtml.length(),
-                MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
+    String userId = content.getAuthor()
+        .getId();
+    SimpleDocumentPK docPk = new SimpleDocumentPK(null, content.getContribution()
+        .getIdentifier()
+        .getComponentInstanceId());
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(fileName)
+        .setSize(textHtml.length())
+        .setContentType(MimeTypes.HTML_MIME_TYPE)
+        .setCreationData(userId, new Date())
+        .build();
+    SimpleDocument document = new SimpleDocument(docPk, contribution.getIdentifier()
+        .getLocalId(), 0, false, userId, attachment);
     document.setDocumentType(context);
     AttachmentServiceProvider.getAttachmentService()
         .createAttachment(document, new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)),

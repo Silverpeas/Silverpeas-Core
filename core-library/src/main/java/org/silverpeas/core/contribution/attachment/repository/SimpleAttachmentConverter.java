@@ -38,7 +38,7 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 class SimpleAttachmentConverter extends AbstractJcrConverter {
 
   public SimpleAttachment convertNode(Node node) throws RepositoryException {
-    SimpleAttachment attachment = new SimpleAttachment();
+    SimpleAttachment attachment = SimpleAttachment.builder().build();
     attachment.setContentType(getStringProperty(node, JCR_MIMETYPE));
     attachment.setCreationDate(getDateProperty(node, SLV_PROPERTY_CREATION_DATE));
     attachment.setCreatedBy(getStringProperty(node, SLV_PROPERTY_CREATOR));

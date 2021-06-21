@@ -24,6 +24,7 @@
 
 package org.silverpeas.cmis;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ import org.silverpeas.cmis.walkers.TreeWalkerForPublicationDetail;
 import org.silverpeas.cmis.walkers.TreeWalkerForSimpleDocument;
 import org.silverpeas.cmis.walkers.TreeWalkerForSpaceInst;
 import org.silverpeas.cmis.walkers.TreeWalkerSelector;
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
@@ -51,8 +53,10 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
+import org.silverpeas.core.cmis.SilverpeasCmisSettings;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -73,6 +77,7 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
+import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -85,9 +90,15 @@ import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.inject.Named;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
@@ -99,8 +110,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * This class is to defines the whole environment required to run tests against the CMIS support of
@@ -118,6 +128,9 @@ public abstract class CMISEnvForTests {
 
   // the organizational schema of Silverpeas
   protected static SilverpeasObjectsTree organization = new SilverpeasObjectsTree();
+
+   // the default file used as the content of any documents for which the file isn't i
+  private static final String DEFAULT_CONTENT_FILENAME = "HistoryOfSmalltalk.pdf";
 
   // the personalization service is used through the User interface to get the preferences of
   // the current user behind the request (to get its default language)
@@ -181,7 +194,7 @@ public abstract class CMISEnvForTests {
     return new Class<?>[]{TreeWalkerSelector.class, TreeWalkerForComponentInst.class,
         TreeWalkerForSpaceInst.class, TreeWalkerForNodeDetail.class,
         TreeWalkerForPublicationDetail.class, TreeWalkerForSimpleDocument.class,
-        CmisObjectsTreeWalkerDelegator.class};
+        CmisObjectsTreeWalkerDelegator.class, SilverpeasCmisSettings.class};
   }
 
   /**
@@ -219,7 +232,7 @@ public abstract class CMISEnvForTests {
   }
 
   @BeforeEach
-  public void prepareMock() {
+  public void prepareMock(MavenTestEnv mavenTestEnv) {
     when(userProvider.getUser(anyString())).then((Answer<User>) invocation -> {
       String userId = invocation.getArgument(0);
       User theUser;
@@ -240,38 +253,32 @@ public abstract class CMISEnvForTests {
 
     when(componentDataProvider.isWorkflow(anyString())).thenReturn(false);
 
-    when(componentInstanceProvider.getComponentName(anyString())).then(
-        (Answer<String>) invocation -> {
-          String appId = invocation.getArgument(0);
-          return ComponentInst.getComponentName(appId);
-        });
+    when(componentInstanceProvider.getComponentName(anyString())).then((Answer<String>) invocation -> {
+      String appId = invocation.getArgument(0);
+      return ComponentInst.getComponentName(appId);
+    });
 
-    when(userProvider.getMainAdministrator()).then(
-        (Answer<User>) invocation -> userProvider.getUser("0"));
+    when(userProvider.getMainAdministrator()).then((Answer<User>) invocation -> userProvider.getUser("0"));
 
-    when(
-        spaceAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
+    when(spaceAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
         true);
     when(spaceAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
-    when(componentAccessControl.isUserAuthorized(anyString(),
-        any(ResourceIdentifier.class))).thenReturn(true);
+    when(componentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
-    when(componentAccessControl.filterAuthorizedByUser(anyCollection(), anyString())).then(
-        (Answer<Stream<String>>) invocation -> {
-          Collection<String> compInstIds = invocation.getArgument(0);
-          return compInstIds.stream();
-        });
+    when(componentAccessControl.filterAuthorizedByUser(anyCollection(), anyString())).then((Answer<Stream<String>>) invocation -> {
+      Collection<String> compInstIds = invocation.getArgument(0);
+      return compInstIds.stream();
+    });
     when(nodeAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
         true);
     when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
-    when(publicationAccessControl.isUserAuthorized(anyString(),
-        any(ResourceIdentifier.class))).thenReturn(true);
-    when(publicationAccessControl.isUserAuthorized(anyString(),
-        any(PublicationDetail.class))).thenReturn(true);
-    when(documentAccessControl.isUserAuthorized(anyString(),
-        any(ResourceIdentifier.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(), any(PublicationDetail.class))).thenReturn(true);
+    when(documentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
     when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class))).thenReturn(
         true);
+    when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class), any(
+        AccessControlContext.class))).thenReturn(true);
 
     when(waComponentRegistry.getWAComponent(startsWith("kmelia"))).then(m -> {
       final String instanceId = m.getArgument(0, String.class);
@@ -284,74 +291,66 @@ public abstract class CMISEnvForTests {
     when(organizationController.isComponentAvailableToUser(anyString(), anyString())).thenReturn(
         true);
 
-    when(organizationController.getSpaceInstLightById(anyString())).then(
-        (Answer<SpaceInstLight>) invocation -> {
-          String spaceId = invocation.getArgument(0);
-          return getInTreeAndApply(spaceId, n -> {
-            LocalizedResource object = n.getObject();
-            return object instanceof SpaceInstLight ? (SpaceInstLight) object : null;
-          });
-        });
+    when(organizationController.getSpaceInstLightById(anyString())).then((Answer<SpaceInstLight>) invocation -> {
+      String spaceId = invocation.getArgument(0);
+      return getInTreeAndApply(spaceId, n -> {
+        LocalizedResource object = n.getObject();
+        return object instanceof SpaceInstLight ? (SpaceInstLight) object : null;
+      });
+    });
 
-    when(organizationController.getComponentInstLight(anyString())).then(
-        (Answer<ComponentInstLight>) invocation -> {
-          String compInstId = invocation.getArgument(0);
-          return getInTreeAndApply(compInstId, n -> {
-            LocalizedResource object = n.getObject();
-            return object instanceof ComponentInstLight ? (ComponentInstLight) object : null;
-          });
-        });
+    when(organizationController.getComponentInstLight(anyString())).then((Answer<ComponentInstLight>) invocation -> {
+      String compInstId = invocation.getArgument(0);
+      return getInTreeAndApply(compInstId, n -> {
+        LocalizedResource object = n.getObject();
+        return object instanceof ComponentInstLight ? (ComponentInstLight) object : null;
+      });
+    });
 
-    when(organizationController.getComponentInstance(anyString())).then(
-        (Answer<Optional<SilverpeasComponentInstance>>) invocation -> {
-          String compInstId = invocation.getArgument(0);
-          return Optional.ofNullable(organizationController.getComponentInstLight(compInstId));
-        });
+    when(organizationController.getComponentInstance(anyString())).then((Answer<Optional<SilverpeasComponentInstance>>) invocation -> {
+      String compInstId = invocation.getArgument(0);
+      return Optional.ofNullable(organizationController.getComponentInstLight(compInstId));
+    });
 
-    when(organizationController.getAllComponentIds(anyString())).then(
-        (Answer<String[]>) invocation -> {
-          String spaceId = invocation.getArgument(0);
-          return getInTreeAndApply(spaceId, n -> n.getChildren()
-              .stream()
-              .map(TreeNode::getObject)
-              .filter(o -> o instanceof ComponentInstLight)
-              .map(o -> o.getIdentifier().asString())
-              .toArray(String[]::new));
-        });
+    when(organizationController.getAllComponentIds(anyString())).then((Answer<String[]>) invocation -> {
+      String spaceId = invocation.getArgument(0);
+      return getInTreeAndApply(spaceId, n -> n.getChildren()
+          .stream()
+          .map(TreeNode::getObject)
+          .filter(o -> o instanceof ComponentInstLight)
+          .map(o -> o.getIdentifier().asString())
+          .toArray(String[]::new));
+    });
 
-    when(organizationController.getAllowedSubSpaceIds(anyString(), anyString())).then(
-        (Answer<String[]>) invocation -> {
-          String spaceId = invocation.getArgument(1);
-          return getInTreeAndApply(spaceId, n -> n.getChildren()
-              .stream()
-              .map(TreeNode::getObject)
-              .filter(o -> o instanceof SpaceInstLight)
-              .map(o -> o.getIdentifier().asString())
-              .toArray(String[]::new));
-        });
+    when(organizationController.getAllowedSubSpaceIds(anyString(), anyString())).then((Answer<String[]>) invocation -> {
+      String spaceId = invocation.getArgument(1);
+      return getInTreeAndApply(spaceId, n -> n.getChildren()
+          .stream()
+          .map(TreeNode::getObject)
+          .filter(o -> o instanceof SpaceInstLight)
+          .map(o -> o.getIdentifier().asString())
+          .toArray(String[]::new));
+    });
 
     when(organizationController.getAllRootSpaceIds(anyString())).then(
-        (Answer<String[]>) invocation -> applyOnRootNodes(
-            rootNodes -> rootNodes.stream().map(TreeNode::getId).toArray(String[]::new)));
+        (Answer<String[]>) invocation -> applyOnRootNodes(rootNodes -> rootNodes.stream().map(TreeNode::getId).toArray(String[]::new)));
 
-    when(organizationController.getPathToSpace(anyString())).then(
-        (Answer<List<SpaceInstLight>>) invocation -> {
-          String spaceId = invocation.getArgument(0);
-          return getInTreeAndApply(spaceId, n -> n.getPath()
-              .stream()
-              .map(s -> (SpaceInstLight) s.getObject())
-              .collect(Collectors.toList()));
-        });
+    when(organizationController.getPathToSpace(anyString())).then((Answer<List<SpaceInstLight>>) invocation -> {
+      String spaceId = invocation.getArgument(0);
+      return getInTreeAndApply(spaceId, n -> n.getPath()
+          .stream()
+          .map(s -> (SpaceInstLight) s.getObject())
+          .collect(Collectors.toList()));
+    });
 
-    when(organizationController.getPathToComponent(anyString())).then(
-        (Answer<List<SpaceInstLight>>) invocation -> {
-          String compInstId = invocation.getArgument(0);
-          return getInTreeAndApply(compInstId, n -> n.getParent()
-              .getPath()
-              .stream()
-              .map(s -> (SpaceInstLight) s.getObject())
-              .collect(Collectors.toList()));
-        });
+    when(organizationController.getPathToComponent(anyString())).then((Answer<List<SpaceInstLight>>) invocation -> {
+      String compInstId = invocation.getArgument(0);
+      return getInTreeAndApply(compInstId, n -> n.getParent()
+          .getPath()
+          .stream()
+          .map(s -> (SpaceInstLight) s.getObject())
+          .collect(Collectors.toList()));
+    });
 
     when(nodeService.getDetail(any(NodePK.class))).then((Answer<NodeDetail>) invocation -> {
       NodePK nodePK = invocation.getArgument(0);
@@ -362,17 +361,16 @@ public abstract class CMISEnvForTests {
       });
     });
 
-    when(nodeService.getChildrenDetails(any(NodePK.class))).then(
-        (Answer<Collection<NodeDetail>>) invocation -> {
-          NodePK nodePK = invocation.getArgument(0);
-          ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
-          return getInTreeAndApply(id.asString(), n -> n.getChildren()
-              .stream()
-              .map(TreeNode::getObject)
-              .filter(o -> o instanceof NodeDetail)
-              .map(o -> (NodeDetail) o)
-              .collect(Collectors.toList()));
-        });
+    when(nodeService.getChildrenDetails(any(NodePK.class))).then((Answer<Collection<NodeDetail>>) invocation -> {
+      NodePK nodePK = invocation.getArgument(0);
+      ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
+      return getInTreeAndApply(id.asString(), n -> n.getChildren()
+          .stream()
+          .map(TreeNode::getObject)
+          .filter(o -> o instanceof NodeDetail)
+          .map(o -> (NodeDetail) o)
+          .collect(Collectors.toList()));
+    });
 
     when(nodeService.getPath(any(NodePK.class))).then((Answer<NodePath>) invocation -> {
       NodePK nodePK = invocation.getArgument(0);
@@ -385,8 +383,7 @@ public abstract class CMISEnvForTests {
       return path;
     });
 
-    when(contributionsProvider.getAllowedRootContributions(any(ResourceIdentifier.class),
-        any(User.class))).then((Answer<List<I18nContribution>>) invocation -> {
+    when(contributionsProvider.getAllowedRootContributions(any(ResourceIdentifier.class), any(User.class))).then((Answer<List<I18nContribution>>) invocation -> {
       ResourceIdentifier appId = invocation.getArgument(0);
       ContributionIdentifier id =
           ContributionIdentifier.from(appId.asString(), NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
@@ -405,6 +402,29 @@ public abstract class CMISEnvForTests {
           .map(TreeNode::getObject)
           .map(I18nContribution.class::cast)
           .collect(Collectors.toList()));
+    });
+
+    when(contributionsProvider.createContribution(any(PublicationDetail.class),
+        any(BasicIdentifier.class), anyString())).then((Answer<I18nContribution>) invocation -> {
+          PublicationDetail pub = invocation.getArgument(0);
+          BasicIdentifier appId = invocation.getArgument(1);
+          NodeDetail root = getInTreeAndApply(appId.asString(), a ->
+            a.getChildren().stream()
+                .map(n -> (NodeDetail) n.getObject())
+                .filter(NodeDetail::isRoot)
+                .findFirst()
+                .orElseThrow());
+          TreeNode pubNode = organization.addPublication(pub, root.getIdentifier().asString());
+          return (I18nContribution) pubNode.getObject();
+    });
+
+    when(contributionsProvider.createContributionInFolder(any(PublicationDetail.class),
+        any(ContributionIdentifier.class), anyString())).then((Answer<I18nContribution>) invocation -> {
+      PublicationDetail pub = invocation.getArgument(0);
+      ContributionIdentifier nodeId = invocation.getArgument(1);
+      TreeNode pubNode = getInTreeAndApply(nodeId.asString(), n ->
+        organization.addPublication(pub, nodeId.asString()));
+      return (I18nContribution) pubNode.getObject();
     });
 
     when(publicationService.getDetail(any(PublicationPK.class))).then(
@@ -457,6 +477,41 @@ public abstract class CMISEnvForTests {
           .map(a -> (SimpleDocument) a)
           .collect(SimpleDocumentList::new, SimpleDocumentList::add, SimpleDocumentList::addAll));
     });
+
+    when(attachmentService.createAttachment(any(SimpleDocument.class),
+        any(File.class), anyBoolean(), anyBoolean())).then((Answer<SimpleDocument>) invocation -> {
+      SimpleDocument document = invocation.getArgument(0);
+      document.getPk().setId("1000");
+      ContributionIdentifier pubId = ContributionIdentifier.from(document.getInstanceId(),
+          document.getForeignId(), PublicationDetail.getResourceType());
+      getInTreeAndApply(pubId.asString(), n -> n.addChild(document));
+      return document;
+    });
+
+    doAnswer(i -> {
+      OutputStream output = i.getArgument(0);
+      SimpleDocumentPK pk = i.getArgument(1);
+      long offset = i.getArgument(3);
+      long length = i.getArgument(4);
+      ContributionIdentifier id =
+          ContributionIdentifier.from(pk, DocumentType.attachment.getName());
+      return getInTreeAndApply(id.asString(), n -> {
+        SimpleDocument doc = (SimpleDocument) n.getObject();
+        String fileName = doc.getAttachment().getFilename();
+        File content = new File(mavenTestEnv.getResourceTestDirFile(), fileName);
+        if (!content.exists()) {
+          content = new File(mavenTestEnv.getResourceTestDirFile(), DEFAULT_CONTENT_FILENAME);
+        }
+        try {
+          FileInputStream input = new FileInputStream(content);
+          IOUtils.copyLarge(input, output, offset, length);
+        } catch (IOException e) {
+          throw new AttachmentException(e);
+        }
+        return null;
+      });
+    }).when(attachmentService).getBinaryContent(any(OutputStream.class), any(SimpleDocumentPK.class),
+        any(String.class), anyLong(), anyLong());
   }
 
   @BeforeAll
@@ -482,6 +537,7 @@ public abstract class CMISEnvForTests {
         "Make it simple; make it better.");
     organization.addDocument(1, pub1.getId(), "HistoryOfSmalltalk",
         "The history of Smalltalk told by Alan Kay himself");
+
     organization.addDocument(2, pub1.getId(), "Computer Programming Using GNU Smalltalk", "");
     organization.addDocument(3, pub1.getId(), "Developing Applications with Smalltalk and CouchDB",
         "");

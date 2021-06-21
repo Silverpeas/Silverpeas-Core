@@ -39,13 +39,13 @@ import static org.hamcrest.Matchers.not;
  * @author ehugonnet
  */
 @UnitTest
-public class HistoryDocumentSorterTest {
+class HistoryDocumentSorterTest {
 
  /**
    * Test of compare method, of class VersionSimpleDocumentComparator.
    */
   @Test
-  public void testSortHistory() {
+  void testSortHistory() {
     SimpleDocument doc1v1 = new SimpleDocument();
     doc1v1.setNodeName("doc1v1");
     doc1v1.setVersionIndex(1);

@@ -38,7 +38,16 @@ import java.util.List;
  */
 public class Application extends CmisFolder {
 
+  /**
+   * The identifier of its CMIS type.
+   */
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_APPLICATION;
+
+  /**
+   * The UTF-8 symbol representing the type of this CMIS object. It acts as an icon but instead
+   * of being a regular image the icon is encoded in UTF-8.
+   */
+  public static final String SYMBOL = "\uD83D\uDDC2";
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
     return Arrays.asList(TypeId.SILVERPEAS_FOLDER, TypeId.SILVERPEAS_PUBLICATION);
@@ -53,6 +62,11 @@ public class Application extends CmisFolder {
    */
   Application(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
+  }
+
+  @Override
+  public String getSymbol() {
+    return SYMBOL;
   }
 
   @Override

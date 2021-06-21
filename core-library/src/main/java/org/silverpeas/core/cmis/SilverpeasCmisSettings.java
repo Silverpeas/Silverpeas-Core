@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * the GPL, you may redistribute this Program in connection with Free/Lib
+ * Open Source Software ("FLOSS") applications as described in Silverpeas
+ * FLOSS exception. You should have received a copy of the text describin
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,11 +18,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public Licen
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-package org.silverpeas.cmis;
+package org.silverpeas.core.cmis;
 
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ResourceLocator;

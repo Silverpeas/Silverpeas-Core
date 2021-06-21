@@ -237,15 +237,20 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
         if (!documentExists(document)) {
           String userId = "0";
           DocumentType documentType = DocumentType.attachment;
-          SimpleDocument documentSource = getSourceDocument(fileName, new ResourceReference(
-              publicationId, componentId));
+          SimpleDocument documentSource =
+              getSourceDocument(fileName, new ResourceReference(publicationId, componentId));
           if (documentSource != null) {
             userId = documentSource.getCreatedBy();
             documentType = documentSource.getDocumentType();
           }
-          document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
-              publicationId, 0, isVersioned, new SimpleAttachment(fileName, null,
-              null, null, file.length(), mimeType, userId, new Date(), null));
+          SimpleAttachment attachment = SimpleAttachment.builder()
+              .setFilename(fileName)
+              .setSize(file.length())
+              .setContentType(mimeType)
+              .setCreationData(userId, new Date())
+              .build();
+          document = new SimpleDocument(new SimpleDocumentPK(null, componentId), publicationId, 0,
+              isVersioned, attachment);
           document.setDocumentType(documentType);
           attachmentService.createAttachment(document, file, false);
         }

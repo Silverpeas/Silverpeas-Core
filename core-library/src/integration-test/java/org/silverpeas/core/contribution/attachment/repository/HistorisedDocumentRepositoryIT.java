@@ -547,14 +547,27 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   private SimpleAttachment createEnglishVersionnedAttachment() {
-    return new SimpleAttachment("test.pdf", "en", "My test document", "This is a test document",
-        14L, MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18");
+    return SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize(14L)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", RandomGenerator.getRandomCalendar().getTime())
+        .setFormId("18")
+        .build();
   }
 
   private SimpleAttachment createFrenchVersionnedAttachment() {
-    return new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test", 28L, MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
-        RandomGenerator.getRandomCalendar().getTime(), "5");
+    return SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize(28L)
+        .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+        .setCreationData("10", RandomGenerator.getRandomCalendar().getTime())
+        .setFormId("5")
+        .build();
   }
 
   private void checkEnglishSimpleDocument(SimpleDocument doc) {

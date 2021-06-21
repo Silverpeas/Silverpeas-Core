@@ -55,7 +55,7 @@ public class StubbedAttachmentService extends SimpleDocumentService {
       attachmentDetail = new SimpleDocument();
       attachmentDetail.setPK(attachmentPK);
       attachmentDetail.setOldSilverpeasId(Long.parseLong(attachmentPK.getId()));
-      attachmentDetail.setAttachment(new SimpleAttachment());
+      attachmentDetail.setAttachment(SimpleAttachment.builder().build());
       attachmentDetail.setFilename("originalFileName" + attachmentPK.getId());
     }
     return attachmentDetail;

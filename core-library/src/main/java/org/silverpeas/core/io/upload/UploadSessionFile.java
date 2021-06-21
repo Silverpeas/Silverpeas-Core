@@ -33,20 +33,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class represents a file which will be uploaded, or, has been uploaded, on the server.
+ * This class represents a file which will be uploaded, or, has been uploaded, on the server within
+ * the context of a files upload session (represented by an {@link UploadSession} instance.
  * @author Yohann Chastagnier
  */
 public class UploadSessionFile {
 
-  private UploadSession uploadSession;
-  private String fullPath;
-  private File serverFile;
+  private final UploadSession uploadSession;
+  private final String fullPath;
+  private final File serverFile;
 
   /**
    * Hidden constructor.
-   * @param uploadSession the upload session.
-   * @param fullPath the full path into the session.
-   * @param serverFile the (temporary) file on the server filesystem.
+   * @param uploadSession the files upload session.
+   * @param fullPath the full path relative to the root folder of the given session.
+   * @param serverFile the (temporary) physical file on the server filesystem.
    */
   UploadSessionFile(UploadSession uploadSession, String fullPath, File serverFile) {
     this.uploadSession = uploadSession;
@@ -54,29 +55,38 @@ public class UploadSessionFile {
     this.serverFile = serverFile;
   }
 
+  /**
+   * Gets the files upload session for which this file is defined.
+   * @return the {@link UploadSession} instance to which this file belongs.
+   */
   public UploadSession getUploadSession() {
     return uploadSession;
   }
 
+  /**
+   * Gets the full path of this file relative to the root folder of the underlying files upload
+   * session.
+   * @return the path of the file relative to the upload session's root folder.
+   */
   public String getFullPath() {
     return fullPath;
   }
 
   /**
-   * Loads the data to access the file on server if it has not been done, noting is performed
-   * otherwise.
-   * @return the file on the server.
-   * @throws Exception
+   * Gets the physical representation on the server filesystem of this file.
+   * @return the file on the Silverpeas server.
    */
   public File getServerFile() {
     return serverFile;
   }
 
   /**
-   * Writes the given input stream into the physical file.<br>
+   * Writes the given input stream into the physical file referred by the
+   * {@link UploadSessionFile#getServerFile()} method.<br>
    * Closes the input stream at the end.
-   * @param uploadedInputStream
-   * @throws IOException
+   * @param uploadedInputStream an input stream on a content to read.
+   * @throws IOException if an error occurs while reading the input stream and writing the content
+   * onto the physical file.
    */
   public void write(InputStream uploadedInputStream) throws IOException {
     getUploadSession().markFileWritingInProgress(this);

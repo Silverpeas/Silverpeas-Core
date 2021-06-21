@@ -35,6 +35,7 @@ import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 
@@ -91,8 +92,15 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
     Date updateDate = RandomGenerator.getRandomCalendar().getTime();
     try (JcrSession session = openSystemSession()) {
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);
-      SimpleAttachment expResult = new SimpleAttachment(fileName, language, title,
-          description, 15L, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate, formId);
+      SimpleAttachment expResult = SimpleAttachment.builder(language)
+          .setFilename(fileName)
+          .setTitle(title)
+          .setDescription(description)
+          .setSize(15L)
+          .setContentType(MimeTypes.PDF_MIME_TYPE)
+          .setCreationData(creatorId, creationDate)
+          .setFormId(formId)
+          .build();
       expResult.setLastUpdateDate(updateDate);
       expResult.setUpdatedBy(updatedBy);
       assertThat(expResult.equals(expResult), is(true));
@@ -127,8 +135,14 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
     String title = "Mon document de test";
     String description = "Ceci est un document de test";
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    SimpleAttachment attachment = new SimpleAttachment(fileName, language, title,
-        description, 12L, MimeTypes.PDF_MIME_TYPE, "0", creationDate, null);
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize(12L)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData("0", creationDate)
+        .build();
     String nodeName = attachment.getNodeName();
     try (JcrSession session = openSystemSession()) {
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);

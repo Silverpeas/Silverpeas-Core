@@ -120,10 +120,16 @@ public abstract class AbstractViewerIT {
 
   protected SimpleDocument getSimpleDocumentNamed(final String name) {
     final File document = getDocumentNamed(name);
+    SimpleAttachment attachment = SimpleAttachment.builder("fr")
+        .setFilename(name)
+        .setTitle("title")
+        .setDescription("description")
+        .setSize(document.length())
+        .setContentType("contentType")
+        .setCreationData("me", new Date())
+        .build();
     return new SimpleDocument(new SimpleDocumentPK("simple_doc_UUID_" + name, "instanceId"),
-        "foreignId", 0, false,
-        new SimpleAttachment(name, "fr", "title", "description", document.length(), "contentType",
-            "me", new Date(), null)) {
+        "foreignId", 0, false, attachment) {
       private static final long serialVersionUID = 4437882040649114634L;
 
       @Override

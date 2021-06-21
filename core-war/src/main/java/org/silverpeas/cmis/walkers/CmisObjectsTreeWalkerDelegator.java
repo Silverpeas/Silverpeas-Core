@@ -30,6 +30,7 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
@@ -47,6 +48,20 @@ public class CmisObjectsTreeWalkerDelegator implements CmisObjectsTreeWalker {
 
   @Inject
   private TreeWalkerSelector selector;
+
+  @Override
+  public CmisObject createChildData(final String folderId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    return selector.selectByObjectIdOrFail(folderId)
+        .createChildData(folderId, properties, contentStream, language);
+  }
+
+  @Override
+  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    return selector.selectByObjectIdOrFail(objectId)
+        .updateObjectData(objectId, properties, contentStream, language);
+  }
 
   @Override
   public CmisObject getObjectData(final String objectId, final Filtering filtering) {
@@ -78,7 +93,8 @@ public class CmisObjectsTreeWalkerDelegator implements CmisObjectsTreeWalker {
   @Override
   public ContentStream getContentStream(final String objectId, final String language,
       final long offset, final long length) {
-    return selector.selectByObjectIdOrFail(objectId).getContentStream(objectId, language, offset, length);
+    return selector.selectByObjectIdOrFail(objectId)
+        .getContentStream(objectId, language, offset, length);
   }
 }
   

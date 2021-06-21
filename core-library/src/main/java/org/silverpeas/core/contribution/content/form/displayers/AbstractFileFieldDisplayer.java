@@ -24,7 +24,6 @@
 package org.silverpeas.core.contribution.content.form.displayers;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -67,8 +66,12 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   protected SimpleDocument createSimpleDocument(String objectId, String componentId, FileItem item,
       String fileName, String userId, boolean versionned) throws IOException {
     SimpleDocumentPK documentPk = new SimpleDocumentPK(null, componentId);
-    SimpleAttachment attachment = new SimpleAttachment(fileName, null, null, null, item.getSize(),
-        FileUtil.getMimeType(fileName), userId, new Date(), null);
+    SimpleAttachment attachment = SimpleAttachment.builder()
+        .setFilename(fileName)
+        .setSize(item.getSize())
+        .setContentType(FileUtil.getMimeType(fileName))
+        .setCreationData(userId, new Date())
+        .build();
     SimpleDocument document;
     if (versionned) {
       document = new HistorisedDocument(documentPk, objectId, 0, attachment);
@@ -76,11 +79,9 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       document = new SimpleDocument(documentPk, objectId, 0, false, null, attachment);
     }
     document.setDocumentType(DocumentType.form);
-    InputStream in = item.getInputStream();
-    try {
-      return AttachmentServiceProvider.getAttachmentService().createAttachment(document, in, false);
-    } finally {
-      IOUtils.closeQuietly(in);
+    try (InputStream in = item.getInputStream()) {
+      return AttachmentServiceProvider.getAttachmentService()
+          .createAttachment(document, in, false);
     }
   }
 
@@ -173,11 +174,8 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         if (StringUtil.startsWith(fileLinkOnApplication, "/")) {
           // The identifier is a link to a file of an application.
           // The attachment identifier becomes the file link.
-          if (isDeletion(operation, fileLinkOnApplication)) {
-            attachmentId = null;
-          } else {
-            attachmentId = fileLinkOnApplication;
-          }
+          attachmentId =
+              isDeletion(operation, fileLinkOnApplication) ? null : fileLinkOnApplication;
         }
       }
 
@@ -186,15 +184,10 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         boolean isUpdate = StringUtil.isDefined(currentAttachmentId) && StringUtil.isDefined(
             attachmentId) && !currentAttachmentId.equals(attachmentId);
         boolean isAddOrUpdate = StringUtil.isDefined(attachmentId);
-        if (isDeletionOfCurrent || isUpdate) {
-
-          // Deletion of content
-          if (!StringUtil.startsWith(currentAttachmentId, "/")) {
-            // Current attachment identifier is a real one and is not a link to a resource of an
-            // application. So, deleting the previous attachment.
-            deleteAttachment(currentAttachmentId, pageContext);
-          }
-
+        if ((isDeletionOfCurrent || isUpdate) && !StringUtil.startsWith(currentAttachmentId, "/")) {
+          // Current attachment identifier is a real one and is not a link to a resource of an
+          // application. So, deleting the previous attachment.
+          deleteAttachment(currentAttachmentId, pageContext);
         } else if (!isAddOrUpdate) {
 
           // Same value
@@ -284,8 +277,6 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * is used for trace purpose.
    */
   protected void checkFieldType(final String typeName, final String contextCall) {
-    if (!Field.TYPE_FILE.equals(typeName)) {
-
-    }
+    // nothing for instance
   }
 }

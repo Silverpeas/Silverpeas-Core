@@ -136,21 +136,25 @@ public class AttachmentImportExport {
 
     // Verification s'il existe un attachment de meme nom, si oui, ajout
     // d'un suffixe au nouveau fichier
-    logicalName = computeUniqueName(attachment, 0, existingAttachments, logicalName,
-        updateRule);
+    logicalName = computeUniqueName(attachment, 0, existingAttachments, logicalName, updateRule);
     attachment.setLogicalName(logicalName);
 
     Date creationDate = attachment.getCreationDate();
     if (creationDate == null) {
       creationDate = new Date();
     }
-    final SimpleDocument documentToCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
-        new SimpleAttachment(attachment.getLogicalName(), null, attachment.
-        getTitle(), attachment.getDescription(), attachment.getSize(),
-        FileUtil.getMimeType(attachment.getPhysicalName()), userId, creationDate, attachment.
-        getXmlForm()));
-    return getAttachmentService()
-        .createAttachment(documentToCreate, input, indexIt);
+    final SimpleAttachment copy = SimpleAttachment.builder()
+        .setFilename(attachment.getLogicalName())
+        .setTitle(attachment.getTitle())
+        .setDescription(attachment.getDescription())
+        .setSize(attachment.getSize())
+        .setContentType(FileUtil.getMimeType(attachment.getPhysicalName()))
+        .setCreationData(userId, creationDate)
+        .setFormId(attachment.getXmlForm())
+        .build();
+    final SimpleDocument documentToCreate =
+        new SimpleDocument(attachmentPk, pubId, -1, false, copy);
+    return getAttachmentService().createAttachment(documentToCreate, input, indexIt);
   }
 
   private String computeUniqueName(AttachmentDetail attachment, int increment,

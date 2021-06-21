@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.attachment.model;
 
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -50,20 +51,26 @@ public class SimpleAttachment implements Serializable {
   private Date updated;
   private String xmlFormId;
 
-  public SimpleAttachment(String filename, String language, String title, String description,
-      long size, String contentType, String createdBy, Date created, String xmlFormId) {
-    this.filename = filename;
-    this.language = I18NHelper.checkLanguage(language);
-    this.title = title;
-    this.description = description;
-    this.size = size;
-    this.contentType = contentType;
-    this.createdBy = createdBy;
-    setCreationDate(created);
-    this.xmlFormId = xmlFormId;
+  /**
+   * Constructs a new {@link Builder} of {@link SimpleAttachment} instances for the specified
+   * language.
+   * @param language the ISO 639-1 code of the language.
+   * @return a {@link Builder} of {@link SimpleAttachment} instances.
+   */
+  public static Builder builder(final String language) {
+    return new Builder(language);
   }
 
-  public SimpleAttachment() {
+  /**
+   * Creates a new {@link Builder} of {@link SimpleAttachment} instances for the default language
+   * as defined in {@link I18n}.
+   * @return a {@link Builder} of {@link SimpleAttachment} instances.
+   */
+  public static Builder builder() {
+    return new Builder(I18n.get().getDefaultLanguage());
+  }
+
+  private SimpleAttachment() {
   }
 
   public SimpleAttachment(final SimpleAttachment attachment) {
@@ -247,9 +254,104 @@ public class SimpleAttachment implements Serializable {
 
   @Override
   public String toString() {
-    return "SimpleAttachment{" + "filename=" + filename + ", language=" + language + ", title="
-        + title + ", description=" + description + ", size=" + size + ", contentType=" + contentType
-        + ", createdBy=" + createdBy + ", created=" + created + ", updatedBy=" + updatedBy
-        + ", updated=" + updated + ", xmlFormId=" + xmlFormId + '}';
+    return "SimpleAttachment{" + "filename=" + filename + ", language=" + language + ", title=" +
+        title + ", description=" + description + ", size=" + size + ", contentType=" + contentType +
+        ", createdBy=" + createdBy + ", created=" + created + ", updatedBy=" + updatedBy +
+        ", updated=" + updated + ", xmlFormId=" + xmlFormId + '}';
+  }
+
+  public static class Builder {
+
+    private final SimpleAttachment attachment = new SimpleAttachment();
+
+    /**
+     * Creates a new {@link Builder} of {@link SimpleAttachment} instances for the specified
+     * language.
+     * @param language the ISO 639-1 code of the language.
+     */
+    private Builder(final String language) {
+      attachment.setLanguage(language);
+    }
+
+    /**
+     * Sets the name of the file that contains the content. The file represents in the physical
+     * storage the attachment.
+     * @param filename the name of the file to which the attachment is related.
+     * @return itself.
+     */
+    public Builder setFilename(final String filename) {
+      attachment.setFilename(filename);
+      return this;
+    }
+
+    /**
+     * Sets the title of the attachment.
+     * @param title the attachment title.
+     * @return itself.
+     */
+    public Builder setTitle(final String title) {
+      attachment.setTitle(title);
+      return this;
+    }
+
+    /**
+     * Sets a short description about the content of the attachment.
+     * @param description a simple textual description.
+     * @return itself.
+     */
+    public Builder setDescription(final String description) {
+      attachment.setDescription(description);
+      return this;
+    }
+
+    /**
+     * Sets the size of the content of the attachment.
+     * @param size the size of the file in bytes.
+     * @return itself.
+     */
+    public Builder setSize(long size) {
+      attachment.setSize(size);
+      return this;
+    }
+
+    /**
+     * Sets the type of the content in the file.
+     * @param contentType a MIME type code defining the type of the content of the attachment.
+     * @return itself.
+     */
+    public Builder setContentType(final String contentType) {
+      attachment.setContentType(contentType);
+      return this;
+    }
+
+    /**
+     * Sets the data of the creation of the attachment (and hence of the file under the hood).
+     * @param creator the unique identifier of a user in Silverpeas.
+     * @param creationDate the datetime at which the attachment was created.
+     * @return itself.
+     */
+    public Builder setCreationData(final String creator, final Date creationDate) {
+      attachment.setCreatedBy(creator);
+      attachment.setCreationDate(creationDate);
+      return this;
+    }
+
+    /**
+     * In the case the content is a form stored in an XML file, sets its unique identifier.
+     * @param formId the unique identifier of a XML form instance in Silverpeas.
+     * @return itself.
+     */
+    public Builder setFormId(final String formId) {
+      attachment.setXmlFormId(formId);
+      return this;
+    }
+
+    /**
+     * Builds the attachment from the parameters previously set with the builder.
+     * @return a {@link SimpleAttachment} instance.
+     */
+    public SimpleAttachment build() {
+      return attachment;
+    }
   }
 }
