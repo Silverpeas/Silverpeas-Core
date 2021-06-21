@@ -24,18 +24,14 @@
 package org.silverpeas.core.process.annotation;
 
 import org.jetbrains.annotations.NotNull;
-import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.process.ProcessProvider;
-import org.silverpeas.core.process.management.ProcessExecutionContext;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.AnnotationUtil;
 import org.silverpeas.core.util.annotation.Language;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;
@@ -43,9 +39,10 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.util.annotation.AnnotationUtil.getAnnotatedValues;
 
 /**
  * Interceptor that handle a simulation of actions performed by a caller.
@@ -59,10 +56,8 @@ import java.util.Map;
 @Priority(Interceptor.Priority.APPLICATION)
 public class SimulationActionProcessAnnotationInterceptor {
 
-  private static final String SIMULATION_PROCESS_PERFORMED = "@SIMULATION_PROCESS_PERFORMED@";
-
   @AroundInvoke
-  public Object intercept(InvocationContext invocationContext) throws Exception {
+  public Object intercept(InvocationContext invocationContext) {
 
     // Retrieving the method annotations
     Map<Class<? extends Annotation>, Annotation> methodAnnotations =
@@ -78,91 +73,37 @@ public class SimulationActionProcessAnnotationInterceptor {
 
   protected Object perform(InvocationContext context,
       Map<Class<? extends Annotation>, Annotation> methodAnnotations,
-      Map<Class<? extends Annotation>, List<Object>> annotatedParametersValues) throws Exception {
-
-    // Simulation is processed only if no simulation is already working
-    if (CacheServiceProvider.getRequestCacheService()
-        .getCache()
-        .get(SIMULATION_PROCESS_PERFORMED) == null) {
-      try {
-
-        // Master annotation
-        final SimulationActionProcess simulationActionProcess =
-            getSimulationActionProcess(methodAnnotations);
-
-        // Action
-        final Action actionType = getAction(methodAnnotations);
-
-        // Retrieving aimed parameter values
-        final List<Object> languages =
-            AnnotationUtil.getAnnotatedValues(annotatedParametersValues, Language.class);
-        String language = languages.isEmpty() ? null : (String) languages.get(0);
-        final List<ResourceReference> sourcePKs =
-            AnnotationUtil.getAnnotatedValues(annotatedParametersValues, SourcePK.class);
-        final List<ResourceReference> targetPKs =
-            AnnotationUtil.getAnnotatedValues(annotatedParametersValues, TargetPK.class);
-        final List<Object> sourceObjects =
-            AnnotationUtil.getAnnotatedValues(annotatedParametersValues, SourceObject.class);
-
-        // Performing verify if necessary
-        if ((!sourcePKs.isEmpty() || !sourceObjects.isEmpty()) && !targetPKs.isEmpty()) {
-
-          // Element container
-          Map<Class<SimulationElement<?>>, List<SimulationElement<?>>> elements = new HashMap<>();
-
-          // Processing for each target
-          for (ResourceReference targetPK : targetPKs) {
-
-            // Element lister
-            Constructor<? extends SimulationElementLister> constructor =
-                simulationActionProcess.elementLister().getDeclaredConstructor();
-            SimulationElementLister elementLister = constructor.newInstance();
-            elementLister.setActionType(actionType.value());
-            elementLister.setElements(elements);
-
-            // Browsing sourcePKs
-            sourcePKs.stream()
-                .filter(sourcePK -> ActionType.MOVE != actionType.value() ||
-                    !sourcePK.getInstanceId().equals(targetPK.getInstanceId()))
-                .forEach(sourcePK -> elementLister.listElements(sourcePK, language));
-
-            // Browsing sourceObjects
-            sourceObjects.forEach(
-                sourceObject -> elementLister.listElements(sourceObject, language, targetPK));
-
-            ProcessProvider.getProcessManagement().execute(
-                new SimulationElementConversionProcess(elements, targetPK, actionType.value()), new ProcessExecutionContext(targetPK.getInstanceId()));
-          }
-
-          // Indicating that a functional check has been performed
-          CacheServiceProvider.getRequestCacheService()
-              .getCache()
-              .put(SIMULATION_PROCESS_PERFORMED, true);
-        } else {
-          SilverLogger.getLogger(this)
-              .warn(
-                  "Intercepted method ''{0}'', but SourcePK, SourceObject or TargetPK annotations " +
-                      "are missing on parameter specifications...",
-                  context.getMethod().getName());
-        }
-
-        // Invoking finally the proxy method initially called
-        return proceed(context);
-
-      } catch (Exception e) {
-        SilverLogger.getLogger(this)
-            .error("Error in intercepted method: " + context.getMethod().getName(), e);
-        throw e;
-      } finally {
-
-        // Removing the flag indicating that a functional check has been performed (out of the
-        // service)
-        CacheServiceProvider.getRequestCacheService().getCache().remove(SIMULATION_PROCESS_PERFORMED);
-      }
-    }
-
-    // Invoking finally the proxy method initially called
-    return proceed(context);
+      Map<Class<? extends Annotation>, List<Object>> annotatedParametersValues) {
+    return SimulationActionProcessProcessor.get()
+      .withContext(s -> {
+            final List<ResourceReference> sourcePKs = getAnnotatedValues(annotatedParametersValues, SourcePK.class);
+            s.getSourcePKs().addAll(sourcePKs);
+            final List<Object> sourceObjects = getAnnotatedValues(annotatedParametersValues, SourceObject.class);
+            s.getSourceObjects().addAll(sourceObjects);
+          })
+          .listElementsWith(() -> {
+            final SimulationActionProcess simulationActionProcess = getSimulationActionProcess(methodAnnotations);
+            try {
+              final Constructor<? extends SimulationElementLister> constructor = simulationActionProcess.elementLister().getDeclaredConstructor();
+              return constructor.newInstance();
+            } catch (Exception e) {
+              throw new SilverpeasRuntimeException(e);
+            }
+          })
+          .byAction(() -> {
+            final Action actionType = getAction(methodAnnotations);
+            return actionType.value();
+          })
+      .toTargets(t -> {
+        final List<ResourceReference> targetPKs = getAnnotatedValues(annotatedParametersValues, TargetPK.class);
+        t.getTargetPKs().addAll(targetPKs);
+      })
+      .setLanguage(() -> {
+        final List<Object> languages = getAnnotatedValues(annotatedParametersValues, Language.class);
+        return languages.isEmpty() ? null : (String) languages.get(0);
+      })
+      .fromMethod(context.getMethod())
+      .execute(() -> proceed(context));
   }
 
   @NotNull
