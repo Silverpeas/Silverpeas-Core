@@ -58,6 +58,10 @@
       let firstLoad = true;
       const domain = '${domain}';
       const options = {
+        configOverwrite : {
+          requireDisplayName : true,
+          prejoinPageEnabled : true
+        },
         roomName: '${roomId}',
         jwt: '${jwt}',
         userInfo: {

@@ -100,6 +100,9 @@
    * @private
    */
   function __setupResize(chatOptions) {
+    if (!spWindow) {
+      return;
+    }
     chatOptions.whitelisted_plugins.push('silverpeas-resize');
     converse.plugins.add('silverpeas-resize', {
       dependencies: ["converse-dragresize"],
@@ -199,6 +202,9 @@
    * @private
    */
   function __setupNotificationAddons(chatOptions) {
+    if (!spLayout) {
+      return;
+    }
     chatOptions.whitelisted_plugins.push('silverpeas-notification');
     converse.plugins.add('silverpeas-notification', {
       initialize : function() {
@@ -305,7 +311,9 @@
     };
     this.init = function(chatOptions) {
       __settings = extendsObject(__settings, chatOptions);
-      __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
+      if (spWindow) {
+        __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
+      }
       if (__settings.visioEnabled) {
         __settings.whitelisted_plugins.push('jitsimeet');
       }
