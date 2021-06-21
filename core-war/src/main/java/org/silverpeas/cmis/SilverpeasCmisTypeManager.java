@@ -155,8 +155,9 @@ public class SilverpeasCmisTypeManager {
     docType.setQueryName(TypeId.SILVERPEAS_DOCUMENT.value());
     docType.setDisplayName("Document files");
     docType.setDescription("A document attached to a given publication");
+    docType.setIsFulltextIndexed(true);
     docType.setIsCreatable(true);
-    docType.setContentStreamAllowed(ContentStreamAllowed.ALLOWED);
+    docType.setContentStreamAllowed(ContentStreamAllowed.REQUIRED);
     docType.setIsVersionable(false);
     docType.setTypeMutability(typeDefinitionFactory.createTypeMutability(false, false, false));
     removeQueryableAndOrderableFlags(docType);

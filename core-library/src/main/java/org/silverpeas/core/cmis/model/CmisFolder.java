@@ -112,7 +112,7 @@ public abstract class CmisFolder extends CmisFile implements Folding {
     return actions;
   }
 
-  private Set<Action> completeWithFolderActions(final Set<Action> actions) {
+  protected Set<Action> completeWithFolderActions(final Set<Action> actions) {
     actions.add(Action.CAN_GET_FOLDER_PARENT);
     return completeWithCommonFolderActions(completeWithFileActions(actions));
   }

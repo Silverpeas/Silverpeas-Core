@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Provider;
+import org.silverpeas.core.cmis.SilverpeasCmisSettings;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -68,11 +69,12 @@ public class CmisObjectFactory {
    * CMIS objects. It corresponds in Silverpeas to the container of all root workspaces.
    * @return the root space.
    */
-  public Space createRootSpace() {
+  public Space createRootSpace(final String language) {
     final User admin = User.getMainAdministrator();
     final Date spawningDate =
         admin.getCreationDate() != null ? admin.getCreationDate() : admin.getStateSaveDate();
-    return new Space(Space.ROOT_ID, "Root Space", "en")
+    String name = SilverpeasCmisSettings.get().getRepositoryName();
+    return new Space(Space.ROOT_ID, name, language)
         .setParentId(null)
         .setDescription("The Collaborative's root space")
         .setCreator(admin.getDisplayedName())
@@ -110,7 +112,8 @@ public class CmisObjectFactory {
         .setParentId(fatherId)
         .setDescription(space.getDescription(language))
         .setCreator(creator.getDisplayedName())
-        .setCreationDate(space.getCreationDate().getTime())
+        .setCreationDate(space.getCreationDate()
+            .getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
         .setAcesSupplier(this::theCommonsACE);
@@ -128,16 +131,19 @@ public class CmisObjectFactory {
     final long lastModificationDate;
     if (component.getUpdatedBy() < 0) {
       lastModifier = creator;
-      lastModificationDate = component.getCreationDate().getTime();
+      lastModificationDate = component.getCreationDate()
+          .getTime();
     } else {
       lastModifier = User.getById(String.valueOf(component.getUpdatedBy()));
-      lastModificationDate = component.getLastUpdateDate().getTime();
+      lastModificationDate = component.getLastUpdateDate()
+          .getTime();
     }
     return new Application(component.getIdentifier(), component.getName(language), language)
         .setParentId(component.getSpaceId())
         .setDescription(component.getDescription(language))
         .setCreator(creator.getDisplayedName())
-        .setCreationDate(component.getCreationDate().getTime())
+        .setCreationDate(component.getCreationDate()
+            .getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
         .setAcesSupplier(this::theCommonsACE);
@@ -212,10 +218,11 @@ public class CmisObjectFactory {
       updater = document.getLastUpdater();
     }
     return new DocumentFile(document.getIdentifier(), document.getFilename(), document.getLanguage())
-        .setTitle(document.getName())
+        .setTitle(document.getTitle())
         .setLastComment(document.getComment())
         .setMimeType(document.getContentType())
         .setSize(document.getSize())
+        .setReadOnly(document.isReadOnly())
         .setParentId(parentId.asString())
         .setDescription(document.getDescription())
         .setCreator(document.getCreator().getDisplayedName())

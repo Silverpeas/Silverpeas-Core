@@ -36,7 +36,7 @@ import java.util.List;
  * A provider of user contributions in order to be exposed through the Silverpeas implementation of
  * the CMIS objects tree. Each application that has to expose some of its contributions must
  * implements this interface by a CDI managed bean. The bean will be then discovered by the CMIS
- * system in order to get some of the contributions managed by the application. For doing, the
+ * system in order to get some contributions managed by the application. For doing, the
  * bean has to be annotated with the @{@link javax.inject.Named} qualifier with as value the name
  * of the application following by the suffix {@code ContributionsProvider}. The way the
  * contributions are handled in the application or the concrete type of the contribution is left
@@ -56,8 +56,10 @@ public interface CmisContributionsProvider {
    * Gets a provider of user contributions managed by the specified application.
    * @param appId the unique identifier of an application in Silverpeas.
    * @return a {@link CmisContributionsProvider} instance.
+   * @throws IllegalStateException if no such {@link CmisContributionsProvider} instance can be
+   * found.
    */
-  static CmisContributionsProvider getById(final String appId) {
+  static CmisContributionsProvider getByAppId(final String appId) {
     return ServiceProvider.getServiceByComponentInstanceAndNameSuffix(appId,
         CmisContributionsProvider.Constants.NAME_SUFFIX);
   }
@@ -90,4 +92,34 @@ public interface CmisContributionsProvider {
    */
   List<I18nContribution> getAllowedContributionsInFolder(final ContributionIdentifier folder,
       final User user);
+
+  /**
+   * Creates the specified contribution into the specified application.
+   * If the application doesn't yet support the creation by CMIS of the specified contribution, then
+   * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception
+   * has to be thrown.
+   * @param contribution the localized contribution to create.
+   * @param app the unique identifier of the Silverpeas application in which the contribution has
+   * to be created and then managed.
+   * @param language the language in which is authored the contribution.
+   * @return the instance of the created contribution. It can be different of the one passed as
+   * argument.
+   */
+  I18nContribution createContribution(final I18nContribution contribution,
+      final ResourceIdentifier app, final String language);
+
+  /**
+   * Creates the specified contribution into the specified folder.
+   * If the application doesn't yet support the creation by CMIS of the specified contribution, then
+   * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception
+   * has to be thrown.
+   * @param contribution the localized contribution to create.
+   * @param folder the unique identifier of the folder in which the contribution has to be added
+   * once created.
+   * @param language the language in which is authored the contribution.
+   * @return the instance of the created contribution. It can be different of the one passed as
+   * argument.
+   */
+  I18nContribution createContributionInFolder(final I18nContribution contribution,
+      final ContributionIdentifier folder, final String language);
 }

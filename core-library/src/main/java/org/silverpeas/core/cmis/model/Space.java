@@ -43,8 +43,21 @@ import java.util.List;
  */
 public class Space  extends CmisFolder {
 
+  /**
+   * The unique identifier of the virtual root space.
+   */
   public static final BasicIdentifier ROOT_ID = new BasicIdentifier(0,"WA0");
+
+  /**
+   * The identifier of its CMIS type.
+   */
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_SPACE;
+
+  /**
+   * The UTF-8 symbol representing the type of this CMIS object. It acts as an icon but instead
+   * of being a regular image the icon is encoded in UTF-8.
+   */
+  public static final String SYMBOL = "\u2617";
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
     return Arrays.asList(TypeId.SILVERPEAS_SPACE, TypeId.SILVERPEAS_APPLICATION);
@@ -63,6 +76,11 @@ public class Space  extends CmisFolder {
    */
   Space(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
+  }
+
+  @Override
+  public String getSymbol() {
+    return SYMBOL;
   }
 
   @Override

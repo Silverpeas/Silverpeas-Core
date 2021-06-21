@@ -24,7 +24,6 @@
 package org.silverpeas.core.io.upload;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -46,26 +45,29 @@ import java.util.Map;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * Representation of an uploaded file.<br>
- * Each {@link UploadedFile} is associated to a unique {@link UploadSession} instance. So, it can
- * not be possible to get several {@link UploadedFile} from an {@link UploadSession}.
+ * Representation of an uploaded file.<br> Each {@link UploadedFile} is associated to a unique
+ * {@link UploadSession} instance. So, it can not be possible to get several {@link UploadedFile}
+ * from an {@link UploadSession}.
  * @author Yohann Chastagnier
  */
 public class UploadedFile {
 
-  private UploadSession uploadSession;
-  private File file;
-  private String title;
-  private String description;
-  private String uploader;
+  private final UploadSession uploadSession;
+  private final File file;
+  private final String title;
+  private final String description;
+  private final String uploader;
 
   /**
-   * Creates a representation of an uploaded file from HttpServletRequest and a given uploaded file
+   * Creates a representation of an uploaded file from the specified file parameters, the upload
+   * session identifier and the user uploading the file.
    * identifier.
-   * @param parameters
-   * @param uploadSessionId
-   * @param uploader
-   * @return
+   * @param parameters upload parameters in which are provided data about the file (title,
+   * description, ...)
+   * @param uploadSessionId the unique identifier of a files upload session.
+   * @param uploader the user that has uploaded a file.
+   * @return an {@link UploadedFile} instance corresponding to a file that has been uploaded by a
+   * user.
    */
   public static UploadedFile from(Map<String, String[]> parameters, String uploadSessionId,
       User uploader) {
@@ -75,13 +77,6 @@ public class UploadedFile {
         parameters.get(uploadSessionId + "-description")[0], uploader.getId());
   }
 
-  /**
-   * Default constructor.
-   * @param uploadSession
-   * @param file
-   * @param title
-   * @param description
-   */
   private UploadedFile(final UploadSession uploadSession, final File file, final String title,
       final String description, String uploader) {
     this.uploadSession = uploadSession;
@@ -92,8 +87,8 @@ public class UploadedFile {
   }
 
   /**
-   * Gets the identifier of the uploaded file.
-   * @return
+   * Gets the upload files session.
+   * @return the session in which this file has been uploaded.
    */
   public UploadSession getUploadSession() {
     return uploadSession;
@@ -101,7 +96,7 @@ public class UploadedFile {
 
   /**
    * Gets the uploaded file.
-   * @return
+   * @return a {@link File} instance of the uploaded file.
    */
   public File getFile() {
     return file;
@@ -109,7 +104,7 @@ public class UploadedFile {
 
   /**
    * Gets the title filled by the user for the uploaded file.
-   * @return
+   * @return the title of the content of the file.
    */
   public String getTitle() {
     return title;
@@ -117,7 +112,7 @@ public class UploadedFile {
 
   /**
    * Gets the description filled by the user for the uploaded file.
-   * @return
+   * @return a short description about the content of the file.
    */
   public String getDescription() {
     return description;
@@ -132,14 +127,14 @@ public class UploadedFile {
   }
 
   /**
-   * Register an attachment attached in relation to the given contribution identifiers. Please
-   * notice that the original content is deleted from its original location. For now, as this
-   * method
-   * is exclusively used for contribution creations, the treatment doesn't search for existing
-   * attachments. In the future and if updates will be handled, the treatment must evolve to search
-   * for existing attachments ...
-   * @param contributionId the identifier of a contribution.
+   * Registers in Silverpeas a document attached to the given contribution and for which this file
+   * stores its content. Please notice that the uploaded content is deleted from its original
+   * location. For now, as this method is exclusively used for contribution creations, the treatment
+   * doesn't search for existing attachments. In the future and if updates will be handled, the
+   * treatment must evolve to search for existing attachment related to the contribution.
+   * @param contributionId the identifier of a contribution in Silverpeas.
    * @param contributionLanguage the language in which the contribution is authored.
+   * @param indexIt should the content of the file be indexed?
    */
   public void registerAttachment(ContributionIdentifier contributionId, String contributionLanguage,
       boolean indexIt) {
@@ -147,23 +142,13 @@ public class UploadedFile {
         contributionLanguage, indexIt);
   }
 
-  /**
-   * Register an attachment in relation to the given contribution identifiers. Please notice that
-   * the original content is deleted from its original location. For now, as this method is
-   * exclusively used for contribution creations, the treatment doesn't search for existing
-   * attachments. In the future and if updates will be handled, the treatment must evolve to search
-   * for existing attachments ...
-   * @param resourceId
-   * @param componentInstanceId
-   * @param contributionLanguage
-   * @param indexIt
-   */
   private void registerAttachment(String resourceId, String componentInstanceId,
       String contributionLanguage, boolean indexIt) {
 
     // Retrieve the simple document
-    SimpleDocument document = retrieveSimpleDocument(new ResourceReference(resourceId, componentInstanceId),
-        contributionLanguage);
+    SimpleDocument document =
+        createSimpleDocument(new ResourceReference(resourceId, componentInstanceId),
+            contributionLanguage);
 
     // Create attachment (please read the method documentation ...)
     AttachmentServiceProvider.getAttachmentService()
@@ -173,58 +158,51 @@ public class UploadedFile {
     markAsProcessed();
   }
 
-  /**
-   * Retrieve the SimpleDocument in relation with uploaded file. For now, as this method is
-   * exclusively used for contribution creations, the treatment doesn't search for existing
-   * attachments. In the future and if updates will be handled, the treatment must evolve to search
-   * for existing attachments ...
-   * @param contributionLanguage (be careful, not the user language ...)
-   * @return
-   */
-  public SimpleDocument retrieveSimpleDocument(WAPrimaryKey resourcePk,
+  private SimpleDocument createSimpleDocument(ResourceReference contribution,
       String contributionLanguage) {
 
     // Contribution language
     String lang = I18NHelper.checkLanguage(contributionLanguage);
 
     // Title and description
-    String title = defaultStringIfNotDefined(getTitle());
-    String description = defaultStringIfNotDefined(getDescription());
+    String theTitle = defaultStringIfNotDefined(getTitle());
+    String theDescription = defaultStringIfNotDefined(getDescription());
     if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
-        !StringUtil.isDefined(title)) {
+        !StringUtil.isDefined(theTitle)) {
       MetadataExtractor extractor = MetadataExtractor.get();
       MetaData metadata = extractor.extractMetadata(getFile());
       if (StringUtil.isDefined(metadata.getTitle())) {
-        title = metadata.getTitle();
+        theTitle = metadata.getTitle();
       }
-      if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
-        description = metadata.getSubject();
+      if (!StringUtil.isDefined(theDescription) && StringUtil.isDefined(metadata.getSubject())) {
+        theDescription = metadata.getSubject();
       }
     }
     // Simple document PK
-    SimpleDocumentPK pk = new SimpleDocumentPK(null, resourcePk);
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, contribution);
 
     // Simple document
-    SimpleDocument document = new SimpleDocument(pk, resourcePk.getId(), 0, false, null,
-        new SimpleAttachment(getFile().getName(), lang, title, description, getFile().length(),
-            FileUtil.getMimeType(getFile().getPath()), uploader, DateUtil.getNow(), null)
-    );
+    SimpleAttachment attachment = SimpleAttachment.builder(lang)
+        .setFilename(getFile().getName())
+        .setTitle(theTitle)
+        .setDescription(theDescription)
+        .setSize(getFile().length())
+        .setContentType(FileUtil.getMimeType(getFile().getPath()))
+        .setCreationData(uploader, DateUtil.getNow())
+        .build();
+    SimpleDocument document =
+        new SimpleDocument(pk, contribution.getId(), 0, false, null, attachment);
 
     // Simple document details
     document.setLanguage(lang);
-    document.setTitle(title);
-    document.setDescription(description);
+    document.setTitle(theTitle);
+    document.setDescription(theDescription);
     document.setSize(getFile().length());
 
     // Result
     return document;
   }
 
-  /**
-   * Gets an uploaded file from a given upload session.
-   * @param uploadSession
-   * @return
-   */
   private static File getUploadedFile(UploadSession uploadSession) {
     File[] files = uploadSession.getRootFolderFiles();
     if (files.length != 1) {

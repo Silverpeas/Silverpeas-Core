@@ -36,6 +36,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.persistence.jcr.SilverpeasJcrSchemaRegistering;
+import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -209,24 +210,39 @@ public class JcrContext implements TestRule {
   }
 
   public SimpleAttachment defaultENContent() {
-    return new SimpleAttachment("test.pdf", "en", "My test document", "This is a test document",
-        "This is a test document".getBytes(org.apache.commons.io.Charsets.UTF_8).length,
-        MimeTypes.OCTET_STREAM, "0", randomDate(), "18");
-
+    return SimpleAttachment.builder("en")
+        .setFilename("test.pdf")
+        .setTitle("My test document")
+        .setDescription("This is a test document")
+        .setSize("This is a test document".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.OCTET_STREAM)
+        .setCreationData("0", randomDate())
+        .setFormId("18")
+        .build();
   }
 
   public SimpleAttachment defaultFRContent() {
-    return new SimpleAttachment("test.odp", "fr", "Mon document de test",
-        "Ceci est un document de test",
-        "Ceci est un document de test".getBytes(org.apache.commons.io.Charsets.UTF_8).length,
-        MimeTypes.PLAIN_TEXT, "10", randomDate(), "5");
+    return SimpleAttachment.builder("fr")
+        .setFilename("test.odp")
+        .setTitle("Mon document de test")
+        .setDescription("Ceci est un document de test")
+        .setSize("Ceci est un document de test".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PLAIN_TEXT)
+        .setCreationData("10", randomDate())
+        .setFormId("5")
+        .build();
   }
 
   public SimpleAttachment defaultDEContent() {
-    return new SimpleAttachment("test.docx", "de", "Mein Test-Dokument",
-        "Dies ist ein Testdokument",
-        "Dies ist ein Testdokument".getBytes(org.apache.commons.io.Charsets.UTF_8).length,
-        MimeTypes.XML, "10", randomDate(), "2");
+    return SimpleAttachment.builder("de")
+        .setFilename("test.docx")
+        .setTitle("Mein Test-Dokument")
+        .setDescription("Dies ist ein Testdokument")
+        .setSize("Dies ist ein Testdokument".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.XML)
+        .setCreationData("10", randomDate())
+        .setFormId("2")
+        .build();
   }
 
   protected Date randomDate() {

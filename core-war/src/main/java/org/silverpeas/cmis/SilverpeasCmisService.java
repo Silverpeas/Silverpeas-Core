@@ -24,23 +24,18 @@
 
 package org.silverpeas.cmis;
 
-import org.apache.chemistry.opencmis.commons.data.ContentStream;
-import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
-import org.apache.chemistry.opencmis.commons.data.ObjectData;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
-import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.data.*;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
+import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.impl.server.ObjectInfoImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.server.support.wrapper.CallContextAwareCmisService;
 import org.silverpeas.cmis.util.CmisDateConverter;
 import org.silverpeas.core.annotation.WebService;
@@ -61,17 +56,18 @@ import java.util.stream.Stream;
 
 /**
  * A web service implementing all the services defined in the CMIS specification and that a
- * CMIS-compliant web application must satisfy as well as some additional services of optional
- * CMIS capabilities. It requires the user to be authenticated; it validates then its credentials.
+ * CMIS-compliant web application must satisfy as well as some additional services of optional CMIS
+ * capabilities. It requires the user to be authenticated; it validates then its credentials.
  * <p>
  * This implementation of the CMIS services is returned to the OpenCMIS framework to perform the
- * CMIS operations requested by a client through one of the supported protocol binding
- * (SOAP-based Web Service, AtomPub or web browser specific). Behind the scene, the processing of
- * the operation is delegated to the CMIS repository targeted by the request. In the current
- * implementation for Silverpeas, only one repository is defined and that repository is the entry
- * point to the whole resources handled and stored in Silverpeas. If the targeted CMIS repository
- * doesn't match this single repository, then a {@link CmisObjectNotFoundException} exception
- * is thrown.
+ * CMIS operations requested by a client through one of the supported protocol binding (SOAP-based
+ * Web Service, AtomPub or web browser specific). Behind the scene, the processing of the operation
+ * is delegated to the CMIS repository targeted by the request. The service will build {@link
+ * org.apache.chemistry.opencmis.commons.server.ObjectInfo} data from the CMIS objects returned by
+ * the repository for AtomPub requests. In the current implementation for Silverpeas, only one
+ * repository is defined and that repository is the entry point to the whole resources handled and
+ * stored in Silverpeas. If the targeted CMIS repository doesn't match this single repository, then
+ * a {@link CmisObjectNotFoundException} exception is thrown.
  * </p>
  * @author mmoquillon
  */
@@ -259,6 +255,31 @@ public class SilverpeasCmisService extends AbstractCmisService
       final ExtensionsData extension) {
     final SilverpeasCmisRepository repository = getRepository(repositoryId);
     return repository.getContentStream(objectId, offset, length);
+  }
+
+  @Override
+  public String createFolder(final String repositoryId, final Properties properties,
+      final String folderId, final List<String> policies, final Acl addAces, final Acl removeAces,
+      final ExtensionsData extension) {
+    final SilverpeasCmisRepository repository = getRepository(repositoryId);
+    return repository.createFolder(properties, folderId);
+  }
+
+  @Override
+  public String createDocument(final String repositoryId, final Properties properties,
+      final String folderId, final ContentStream contentStream,
+      final VersioningState versioningState, final List<String> policies, final Acl addAces,
+      final Acl removeAces, final ExtensionsData extension) {
+    final SilverpeasCmisRepository repository = getRepository(repositoryId);
+    return repository.createDocument(properties, folderId, contentStream);
+  }
+
+  @Override
+  public void setContentStream(String repositoryId, Holder<String> objectId, Boolean overwriteFlag,
+      Holder<String> changeToken, ContentStream contentStream, ExtensionsData extension) {
+    final SilverpeasCmisRepository repository = getRepository(repositoryId);
+    repository.updateDocument(objectId.getValue(), overwriteFlag == null || overwriteFlag,
+        contentStream);
   }
 
   private void buildObjectInfo(final SilverpeasCmisRepository repository, final String objectId,

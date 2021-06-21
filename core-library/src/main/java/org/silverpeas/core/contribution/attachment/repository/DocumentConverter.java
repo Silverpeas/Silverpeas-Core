@@ -123,7 +123,7 @@ class DocumentConverter extends AbstractJcrConverter {
       historisedDocument.setVersionIndex(versionIndex);
     } catch (RepositoryException ex) {
       if (ex.getCause() instanceof NoSuchItemStateException) {
-        historisedDocument.setHistory(new ArrayList<SimpleDocumentVersion>(0));
+        historisedDocument.setHistory(new ArrayList<>(0));
       } else {
         throw ex;
       }

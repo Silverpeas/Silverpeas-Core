@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.apache.commons.lang3.CharEncoding;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -38,6 +37,7 @@ import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.MimeTypes;
 
 import javax.jcr.Node;
@@ -45,9 +45,9 @@ import javax.jcr.nodetype.NodeType;
 import java.util.Calendar;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
@@ -92,29 +92,42 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = false;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
 
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleDocument expectedResult = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
-        formId));
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
+    SimpleDocument expectedResult =
+        new SimpleDocument(new SimpleDocumentPK("-1", instanceId), foreignId, order, versionned,
+            owner, attachment);
     expectedResult.setReservation(reservation.getTime());
     expectedResult.setAlert(alert.getTime());
     expectedResult.setExpiry(expiry.getTime());
     expectedResult.setComment(comment);
     expectedResult.setOldSilverpeasId(oldSilverpeasId);
-    expectedResult.getAttachment().setLastUpdateDate(updateDate);
-    expectedResult.getAttachment().setUpdatedBy(updatedBy);
+    expectedResult.getAttachment()
+        .setLastUpdateDate(updateDate);
+    expectedResult.getAttachment()
+        .setUpdatedBy(updatedBy);
     expectedResult.setMajorVersion(1);
     expectedResult.setMinorVersion(2);
     expectedResult.setNodeName("attach_" + oldSilverpeasId);
     try (JcrSession session = openSystemSession()) {
-      Node documentNode = session.getRootNode().getNode(instanceId).addNode(
-          SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
+      Node documentNode = session.getRootNode()
+          .getNode(instanceId)
+          .addNode(SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
       documentNode.setProperty(SLV_PROPERTY_FOREIGN_KEY, foreignId);
       documentNode.setProperty(SLV_PROPERTY_VERSIONED, versionned);
       documentNode.setProperty(SLV_PROPERTY_ORDER, order);
@@ -176,21 +189,29 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = false;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
 
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleAttachment expectedResult =
-        new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
-        formId);
+    SimpleAttachment expectedResult = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
     expectedResult.setLastUpdateDate(updateDate);
     expectedResult.setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
-      Node documentNode = session.getRootNode().getNode(instanceId).addNode(
-          SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
+      Node documentNode = session.getRootNode()
+          .getNode(instanceId)
+          .addNode(SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
       documentNode.setProperty(SLV_PROPERTY_FOREIGN_KEY, foreignId);
       documentNode.setProperty(SLV_PROPERTY_VERSIONED, versionned);
       documentNode.setProperty(SLV_PROPERTY_ORDER, order);
@@ -276,17 +297,26 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = false;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
 
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner,
-        new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
-        formId));
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
+    SimpleDocument document =
+        new SimpleDocument(new SimpleDocumentPK("-1", instanceId), foreignId, order, versionned,
+            owner, attachment);
     document.setReservation(reservation.getTime());
     document.setAlert(alert.getTime());
     document.setExpiry(expiry.getTime());
@@ -358,17 +388,26 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = false;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
 
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner,
-        new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
-        creationDate, formId));
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
+    SimpleDocument document =
+        new SimpleDocument(new SimpleDocumentPK("-1", instanceId), foreignId, order, versionned,
+            owner, attachment);
     document.setReservation(reservation.getTime());
     document.setAlert(alert.getTime());
     document.setExpiry(expiry.getTime());
@@ -436,16 +475,25 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = false;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleAttachment attachment = new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
-        creationDate, formId);
-    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner, attachment);
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
+    SimpleDocument document =
+        new SimpleDocument(new SimpleDocumentPK("-1", instanceId), foreignId, order, versionned,
+            owner, attachment);
     document.setReservation(reservation.getTime());
     document.setAlert(alert.getTime());
     document.setExpiry(expiry.getTime());
@@ -458,8 +506,9 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     document.getAttachment().setLastUpdateDate(updateDate);
     document.getAttachment().setUpdatedBy(updatedBy);
     try (JcrSession session = openSystemSession()) {
-      Node documentNode = session.getRootNode().getNode(instanceId).addNode(
-          SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
+      Node documentNode = session.getRootNode()
+          .getNode(instanceId)
+          .addNode(SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
       instance.fillNode(document, documentNode);
       fileName = "essai.odp";
       title = "Mon titre";
@@ -467,19 +516,31 @@ public class DocumentConverterIT extends JcrIntegrationIT {
       creatorId = "73";
       formId = "38";
       creationDate = new Date();
-      attachment =
-          new SimpleAttachment(fileName, language, title, description, 18,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, creatorId, creationDate, formId);
+      attachment = SimpleAttachment.builder(language)
+          .setFilename(fileName)
+          .setTitle(title)
+          .setDescription(description)
+          .setSize(18)
+          .setContentType(MimeTypes.MIME_TYPE_OO_PRESENTATION)
+          .setCreationData(creatorId, creationDate)
+          .setFormId(formId)
+          .build();
       instance.addAttachment(documentNode, attachment);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
-      assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
-      assertThat(attachNode.getProperty(SLV_PROPERTY_CREATOR).getString(), is(creatorId));
-      assertThat(attachNode.getProperty(JCR_LANGUAGE).getString(), is(language));
-      assertThat(attachNode.getProperty(JCR_TITLE).getString(), is(title));
-      assertThat(attachNode.getProperty(JCR_DESCRIPTION).getString(), is(description));
-      assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis(),
-          is(creationDate.getTime()));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_NAME)
+          .getString(), is(fileName));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_CREATOR)
+          .getString(), is(creatorId));
+      assertThat(attachNode.getProperty(JCR_LANGUAGE)
+          .getString(), is(language));
+      assertThat(attachNode.getProperty(JCR_TITLE)
+          .getString(), is(title));
+      assertThat(attachNode.getProperty(JCR_DESCRIPTION)
+          .getString(), is(description));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE)
+          .getDate()
+          .getTimeInMillis(), is(creationDate.getTime()));
       assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
       assertThat(attachNode.hasProperty(JCR_LAST_MODIFIED_BY), is(false));
       assertThat(attachNode.hasProperty(JCR_LAST_MODIFIED), is(false));
@@ -508,16 +569,25 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = false;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner,
-        new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
-        creationDate, formId));
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
+    SimpleDocument document =
+        new SimpleDocument(new SimpleDocumentPK("-1", instanceId), foreignId, order, versionned,
+            owner, attachment);
     document.setReservation(reservation.getTime());
     document.setAlert(alert.getTime());
     document.setExpiry(expiry.getTime());
@@ -558,17 +628,26 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     boolean versionned = true;
     String owner = "25";
     int order = 10;
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+    Date creationDate = RandomGenerator.getRandomCalendar()
+        .getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar()
+        .getTime();
 
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
-        foreignId, order, versionned, owner,
-        new SimpleAttachment(fileName, language, title, description,
-        "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
-        formId));
+    SimpleAttachment attachment = SimpleAttachment.builder(language)
+        .setFilename(fileName)
+        .setTitle(title)
+        .setDescription(description)
+        .setSize("my test content".getBytes(Charsets.UTF_8).length)
+        .setContentType(MimeTypes.PDF_MIME_TYPE)
+        .setCreationData(creatorId, creationDate)
+        .setFormId(formId)
+        .build();
+    SimpleDocument document =
+        new SimpleDocument(new SimpleDocumentPK("-1", instanceId), foreignId, order, versionned,
+            owner, attachment);
     document.setReservation(reservation.getTime());
     document.setAlert(alert.getTime());
     document.setExpiry(expiry.getTime());

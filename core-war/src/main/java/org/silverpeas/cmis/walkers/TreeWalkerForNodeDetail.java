@@ -29,15 +29,21 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.CmisFolder;
+import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.ContributionFolder;
+import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -74,9 +80,58 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
+  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    throw new CmisNotSupportedException("The update isn't supported by folders");
+  }
+
+  /**
+   * The walker takes in charge the creation of the contributions that can be added into a
+   * folder/topic/category represented by a {@link NodeDetail} object for a given Silverpeas
+   * application instance. Because the creation of nodes aren't allowed by Silverpeass through CMIS,
+   * only publications can be done as children of a node.
+   * <p>
+   * Some CMIS clients aren't smart enough to distinct the creation of a publication from a node as
+   * they are both extended from the
+   * {@link org.apache.chemistry.opencmis.commons.enums.BaseTypeId#CMIS_FOLDER} type. So, this
+   * will create automatically a publication even a node is asked for creation.
+   * </p>
+   * @param folderId the unique identifier of the {@link NodeDetail} instance.
+   * @param properties the CMIS properties of the child to create.
+   * @param contentStream a stream on a content. Should be null.
+   * @param language the ISO 639-1 code of the language in which the textual folder properties are
+   * expressed.
+   * @return the {@link org.silverpeas.core.cmis.model.Publication} instance that has been created
+   * and added into the {@link ContributionFolder} identified by the given folderId parameter.
+   */
+  @Override
+  public CmisObject createChildData(final String folderId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    NodeDetail folder = getSilverpeasObjectById(folderId);
+    properties.setParentObjectId(folder.getIdentifier().asString());
+    TypeId typeId = properties.getObjectTypeId();
+    if (typeId == TypeId.SILVERPEAS_FOLDER) {
+      typeId = TypeId.SILVERPEAS_PUBLICATION;
+      properties.setObjectTypeId(typeId);
+    }
+    AbstractCmisObjectsTreeWalker treeWalker = getTreeWalkerSelector().selectByObjectTypeId(typeId);
+    return treeWalker.createObjectData(properties, contentStream, language);
+  }
+
+  @Override
+  protected CmisObject createObjectData(final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    throw new CmisNotSupportedException("Creation of folders aren't supported");
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   protected NodeDetail getSilverpeasObjectById(final String objectId) {
-    return nodeService.getDetail(asNodePk(objectId));
+    try {
+      return nodeService.getDetail(asNodePk(objectId));
+    } catch (SilverpeasRuntimeException e) {
+      throw new CmisObjectNotFoundException(String.format("Folder %s not found", objectId));
+    }
   }
 
   @Override
@@ -88,18 +143,30 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
 
   @Override
   @SuppressWarnings("unchecked")
-  protected ContributionFolder createCmisObject(final LocalizedResource resource,
+  protected ContributionFolder encodeToCmisObject(final LocalizedResource resource,
       final String language) {
     return getObjectFactory().createContributionFolder((NodeDetail) resource, language);
   }
 
   @Override
-  protected boolean isSupported(final String objectId) {
+  protected boolean isObjectSupported(final String objectId) {
     try {
-      return ContributionIdentifier.decode(objectId).getType().equals(NodeDetail.TYPE);
-    } catch (IllegalArgumentException e) {
+      String type =  ContributionIdentifier.decode(objectId).getType();
+      if (type.equals(NodeDetail.TYPE)) {
+        return true;
+      } else if (type.equals(CoreContributionType.UNKNOWN.name())) {
+        return getSilverpeasObjectById(objectId) != null;
+      } else {
+        return false;
+      }
+    } catch (IllegalArgumentException|SilverpeasRuntimeException e) {
       return false;
     }
+  }
+
+  @Override
+  protected boolean isTypeSupported(final TypeId typeId) {
+    return typeId == TypeId.SILVERPEAS_FOLDER;
   }
 
   @Override
@@ -130,7 +197,7 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
         asFolderId(node.getFatherPK());
     AbstractCmisObjectsTreeWalker walker = getTreeWalkerSelector().selectByObjectIdOrFail(fatherId);
     LocalizedResource parent = walker.getSilverpeasObjectById(fatherId);
-    final CmisFolder cmisParent = walker.createCmisObject(parent, language);
+    final CmisFolder cmisParent = walker.encodeToCmisObject(parent, language);
     final CmisFolder cmisObject = getObjectFactory().createContributionFolder(node, language);
     final ObjectParentData parentData = buildObjectParentData(cmisParent, cmisObject, filtering);
     return Collections.singletonList(parentData);
@@ -139,7 +206,7 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
   private Stream<LocalizedResource> getAllowedChildrenOfNode(final ContributionIdentifier nodeId,
       final User user) {
     CmisContributionsProvider provider =
-        CmisContributionsProvider.getById(nodeId.getComponentInstanceId());
+        CmisContributionsProvider.getByAppId(nodeId.getComponentInstanceId());
     return provider.getAllowedContributionsInFolder(nodeId, user)
         .stream()
         .filter(isNotBinNeitherUnclassified)

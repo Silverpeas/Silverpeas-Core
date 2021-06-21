@@ -273,7 +273,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public String[] getParameterValues(String name) {
     String[] values = super.getParameterValues(name);
-    if (values == null && isContentInMultipart() && !isSOAPRequest()) {
+    if (values == null && isContentInMultipart() && isNotSOAPRequest() && isNotCmis()) {
       // in some circumstances (like SOAP) we don't have to consume the request input stream as it
       // later requires to be directly read
       List<String> listOfValues =
@@ -295,7 +295,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public Enumeration<String> getParameterNames() {
     Enumeration<String> names = super.getParameterNames();
-    if (!names.hasMoreElements() && isContentInMultipart() && !isSOAPRequest()) {
+    if (!names.hasMoreElements() && isContentInMultipart() && isNotSOAPRequest() && isNotCmis()) {
       // in some circumstances (like SOAP) we don't have to consume the request input stream as it
       // later requires to be directly read
       List<FileItem> items = getFileItems();
@@ -325,7 +325,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public Map<String, String[]> getParameterMap() {
     Map<String, String[]> map = super.getParameterMap();
-    if (map.isEmpty() && isContentInMultipart() && !isSOAPRequest()) {
+    if (map.isEmpty() && isContentInMultipart() && isNotSOAPRequest() && isNotCmis()) {
       // in some circumstances (like SOAP) we don't have to consume the request input stream as it
       // later requires to be directly read
       List<FileItem> items = getFileItems();
@@ -405,7 +405,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public String getParameter(String name) {
     String value = super.getParameter(name);
-    if (value == null && isContentInMultipart() && !isSOAPRequest()) {
+    if (value == null && isContentInMultipart() && isNotSOAPRequest() && isNotCmis()) {
       // in some circumstances (like SOAP) we don't have to consume the request input stream as it
       // later requires to be directly read
       value = FileUploadUtil.getParameter(getFileItems(), name, null, getCharacterEncoding());
@@ -609,7 +609,11 @@ public class HttpRequest extends HttpServletRequestWrapper {
     return encoding;
   }
 
-  private boolean isSOAPRequest() {
-    return getHeader("SOAPAction") != null || getContentType().contains("soap");
+  private boolean isNotSOAPRequest() {
+    return getHeader("SOAPAction") == null && !getContentType().contains("soap");
+  }
+
+  private boolean isNotCmis() {
+    return !getRequestURI().contains("cmis");
   }
 }

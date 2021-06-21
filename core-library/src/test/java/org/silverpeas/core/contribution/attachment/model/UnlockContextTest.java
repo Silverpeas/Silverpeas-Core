@@ -33,13 +33,13 @@ import static org.hamcrest.Matchers.is;
  * @author ehugonnet
  */
 @UnitTest
-public class UnlockContextTest {
+class UnlockContextTest {
 
   /**
    * Test of addOption method, of class UnlockContext.
    */
   @Test
-  public void testAddOption() {
+  void testAddOption() {
     UnlockContext context = new UnlockContext("12", "111", "fr");
     assertThat(context.isForce(), is(false));
     assertThat(context.isPublicVersion(), is(true));
@@ -59,7 +59,7 @@ public class UnlockContextTest {
    * Test of isPublicVersion method, of class UnlockContext.
    */
   @Test
-  public void testIsPublicVersion() {
+  void testIsPublicVersion() {
     UnlockContext context = new UnlockContext("12", "111", "fr");
     assertThat(context.isPublicVersion(), is(true));
   }
@@ -68,7 +68,7 @@ public class UnlockContextTest {
    * Test of isForce method, of class UnlockContext.
    */
   @Test
-  public void testIsForce() {
+  void testIsForce() {
     UnlockContext context = new UnlockContext("12", "111", "fr");
     assertThat(context.isForce(), is(false));
     context.addOption(UnlockOption.FORCE);
@@ -81,7 +81,7 @@ public class UnlockContextTest {
    * Test of isUpload method, of class UnlockContext.
    */
   @Test
-  public void testIsUpload() {
+  void testIsUpload() {
     UnlockContext context = new UnlockContext("12", "111", "fr");
     assertThat(context.isUpload(), is(false));
     context.addOption(UnlockOption.UPLOAD);
@@ -94,7 +94,7 @@ public class UnlockContextTest {
    * Test of isWebdav method, of class UnlockContext.
    */
   @Test
-  public void testIsWebdav() {
+  void testIsWebdav() {
     UnlockContext context = new UnlockContext("12", "111", "fr");
     assertThat(context.isWebdav(), is(false));
     context.addOption(UnlockOption.WEBDAV);

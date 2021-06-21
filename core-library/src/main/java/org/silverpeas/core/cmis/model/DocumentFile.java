@@ -45,12 +45,17 @@ import java.util.function.Supplier;
  */
 public class DocumentFile extends CmisFile implements Fileable {
 
+  /**
+   * The identifier of its CMIS type.
+   */
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_DOCUMENT;
+
   private final ContributionIdentifier id;
   private long size;
   private String mimeType;
   private String title;
   private String lastComment = "";
+  private boolean readOnly = false;
 
   /**
    * Constructs a new document with the specified identifier, filename and language.
@@ -61,6 +66,11 @@ public class DocumentFile extends CmisFile implements Fileable {
   public DocumentFile(final ContributionIdentifier id, final String fileName, final String language) {
     super(id, fileName, language);
     this.id = id;
+  }
+
+  @Override
+  public String getSymbol() {
+    return "";
   }
 
   /**
@@ -137,6 +147,15 @@ public class DocumentFile extends CmisFile implements Fileable {
   }
 
   /**
+   * Is this document read-only? If read-only, its content cannot be modified. This case occurs for
+   * example when the document is locked by a user in Silverpeas.
+   * @return true if the content of this document cannot be modified. False otherwise.
+   */
+  public boolean isReadOnly() {
+    return this.readOnly;
+  }
+
+  /**
    * Sets the size of this document.
    * @param size the size in bytes.
    * @return itself.
@@ -178,6 +197,12 @@ public class DocumentFile extends CmisFile implements Fileable {
     return this;
   }
 
+
+  public DocumentFile setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+    return this;
+  }
+
   @Override
   protected Supplier<Set<Action>> getAllowableActionsSupplier() {
     return () -> completeWithDocumentActions(completeWithFileActions(theCommonActions()));
@@ -186,6 +211,9 @@ public class DocumentFile extends CmisFile implements Fileable {
   private Set<Action> completeWithDocumentActions(final Set<Action> actions) {
     actions.add(Action.CAN_GET_ALL_VERSIONS);
     actions.add(Action.CAN_GET_CONTENT_STREAM);
+    if (!isReadOnly()) {
+      actions.add(Action.CAN_SET_CONTENT_STREAM);
+    }
     return actions;
   }
 }

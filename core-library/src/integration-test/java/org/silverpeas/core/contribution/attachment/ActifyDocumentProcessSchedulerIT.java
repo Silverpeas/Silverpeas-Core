@@ -52,6 +52,8 @@ import org.silverpeas.core.util.MimeTypes;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -357,9 +359,14 @@ public class ActifyDocumentProcessSchedulerIT {
       when(attachmentService.listDocumentsByForeignKey(any(ResourceReference.class), eq((String) null)))
           .thenReturn(new SimpleDocumentList<>());
       if (isVersioned()) {
+        java.util.Date yesterday = java.util.Date.from(OffsetDateTime.now().minusDays(1).toInstant());
         String lastFilename = ACTIFY_DOCUMENT_PREFIX + (actifyDocuments - 1) + ".3d";
-        SimpleAttachment existingAttachment = new SimpleAttachment(lastFilename, null,
-            null, null, 30, MimeTypes.SPINFIRE_MIME_TYPE, null, Date.yesterday(), null);
+        SimpleAttachment existingAttachment = SimpleAttachment.builder()
+            .setFilename(lastFilename)
+            .setSize(30)
+            .setContentType(MimeTypes.SPINFIRE_MIME_TYPE)
+            .setCreationData(null, yesterday)
+            .build();
         SimpleDocument existingDocument = new SimpleDocument(new SimpleDocumentPK(UUID.randomUUID().
             toString(), instanceId), publicationId, 0, versioned, existingAttachment);
         when(attachmentService.findExistingDocument(any(SimpleDocumentPK.class), eq(lastFilename),

@@ -97,4 +97,22 @@ public enum TypeId {
     }
     throw new IllegalArgumentException(v);
   }
+
+  @Override
+  public String toString() {
+    switch (this) {
+      case SILVERPEAS_SPACE:
+        return "collaborative space";
+      case SILVERPEAS_APPLICATION:
+        return "application";
+      case SILVERPEAS_FOLDER:
+        return "node";
+      case SILVERPEAS_PUBLICATION:
+        return "publication";
+      case SILVERPEAS_DOCUMENT:
+        return "attached document";
+      default:
+        return name();
+    }
+  }
 }

@@ -33,10 +33,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This manager permits to retrieve from {@link HttpServletRequest} a collection of
- * {@link UploadedFile}.<br>
- * This class must be used when silverpeas-fileUpload Silverpeas Javascript Plugin is used on
- * client-side.<br>
+ * This manager allows to retrieve from a {@link HttpServletRequest} or a dictionary of parameters
+ * a collection of {@link UploadedFile}.
+ * <p>
+ * This class must be used when <code>silverpeas-fileUpload</code> Silverpeas Javascript Plugin is
+ * used at the client-side.
+ * </p>
  * @author Yohann Chastagnier
  */
 public class FileUploadManager {
@@ -48,9 +50,11 @@ public class FileUploadManager {
   }
 
   /**
-   * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
+   * Retrieves from the given {@link HttpServletRequest} instance a collection of
+   * {@link UploadedFile} objects.
+   * @param request an incoming HTTP request.
+   * @param uploader the user behind the upload of files.
    */
-  @SuppressWarnings("unchecked")
   public static List<UploadedFile> getUploadedFiles(HttpServletRequest request,
       final User uploader) {
     Map<String, String[]> parameters = null;
@@ -61,9 +65,11 @@ public class FileUploadManager {
   }
 
   /**
-   * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
+   * Retrieves from the given dictionary of uploaded files parameters a collection of
+   * {@link UploadedFile} objects.
+   * @param parameters a dictionary of files parameters (title, description, ...)
+   * @param uploader the user behind the upload of files.
    */
-  @SuppressWarnings("unchecked")
   public static List<UploadedFile> getUploadedFiles(Map<String, String[]> parameters,
       final User uploader) {
     List<UploadedFile> uploadedFiles = new ArrayList<>();
@@ -76,7 +82,7 @@ public class FileUploadManager {
         }
       });
 
-      // Security : unexisting uploaded files are removed from the result.
+      // Security : non-existing uploaded files are removed from the result.
       uploadedFiles.remove(null);
       Iterator<UploadedFile> it = uploadedFiles.iterator();
       while (it.hasNext()) {

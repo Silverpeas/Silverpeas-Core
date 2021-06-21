@@ -46,7 +46,7 @@ public interface Form {
    * <li>a field has not the required type.</li>
    * </ul>
    */
-  public void displayScripts(JspWriter out, PagesContext pagesContext);
+  void displayScripts(JspWriter out, PagesContext pagesContext);
 
   /**
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
@@ -57,10 +57,10 @@ public interface Form {
    * <li>a field has not the required type.</li>
    * </ul>
    */
-  public void display(JspWriter out, PagesContext pagesContext,
+  void display(JspWriter out, PagesContext pagesContext,
       DataRecord record) throws FormException;
 
-  public void display(JspWriter out, PagesContext pagesContext) throws FormException;
+  void display(JspWriter out, PagesContext pagesContext) throws FormException;
 
   /**
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
@@ -69,7 +69,7 @@ public interface Form {
    * @throws FormException if the field type is not a managed type or if the field doesn't accept
    * the new value.
    */
-  public List<String> updateWysiwyg(List<FileItem> items,
+  List<String> updateWysiwyg(List<FileItem> items,
       DataRecord record, PagesContext pagesContext)
       throws FormException;
 
@@ -80,7 +80,7 @@ public interface Form {
    * @throws FormException if the field type is not a managed type or if the field doesn't accept
    * the new value.
    */
-  public List<String> update(List<FileItem> items,
+  List<String> update(List<FileItem> items,
       DataRecord record, PagesContext pagesContext)
       throws FormException;
 
@@ -91,39 +91,39 @@ public interface Form {
    * @throws FormException if the field type is not a managed type or  if the field doesn't
    * accept the new value.
    */
-  public List<String> update(List<FileItem> items,
+  List<String> update(List<FileItem> items,
       DataRecord record, PagesContext pagesContext, boolean updateWysiwyg)
       throws FormException;
 
   /**
    * Get the form title
    */
-  public String getTitle();
+  String getTitle();
 
   /**
    * Gets the template of all fields that make this form
    * @return a List of FieldTemplate
    */
-  public List<FieldTemplate> getFieldTemplates();
+  List<FieldTemplate> getFieldTemplates();
 
-  public String toString(PagesContext pagesContext, DataRecord record);
+  String toString(PagesContext pagesContext, DataRecord record);
 
-  public String toString(PagesContext pagesContext);
+  String toString(PagesContext pagesContext);
 
-  public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);
+  boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);
 
-  public void setFormName(String name);
+  void setFormName(String name);
 
-  public void setData(DataRecord data);
+  void setData(DataRecord data);
 
   /**
    * Defines if this form is a 'view' form (opposite to an 'update' form)
    * A 'view' form may have some specific behaviors like to not display empty fields
    * @param viewForm true if this form is a 'view' form
    */
-  public void setViewForm(boolean viewForm);
+  void setViewForm(boolean viewForm);
 
-  public String getFormName();
+  String getFormName();
 
-  public DataRecord getData();
+  DataRecord getData();
 }

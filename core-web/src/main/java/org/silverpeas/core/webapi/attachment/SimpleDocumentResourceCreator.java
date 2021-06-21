@@ -174,19 +174,31 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
           publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
           needCreation = document == null;
           if (needCreation) {
-            document = new HistorisedDocument(pk, uploadData.getForeignId(), 0, userId,
-                new SimpleAttachment(uploadedFilename, lang, title, description,
-                    uploadData.getRequestFile().getSize(), FileUtil.getMimeType(tempFile.getPath()),
-                    userId, new Date(), null));
+            SimpleAttachment attachment = SimpleAttachment.builder(lang)
+                .setFilename(uploadedFilename)
+                .setTitle(title)
+                .setDescription(description)
+                .setSize(uploadData.getRequestFile()
+                    .getSize())
+                .setContentType(FileUtil.getMimeType(tempFile.getPath()))
+                .setCreationData(userId, new Date())
+                .build();
+            document = new HistorisedDocument(pk, uploadData.getForeignId(), 0, userId, attachment);
             document.setDocumentType(attachmentContext);
           }
           document.setPublicDocument(publicDocument);
           document.setComment(uploadData.getComment());
         } else {
-          document = new SimpleDocument(pk, uploadData.getForeignId(), 0, false, null,
-              new SimpleAttachment(uploadedFilename, lang, title, description,
-                  uploadData.getRequestFile().getSize(), FileUtil.getMimeType(tempFile.getPath()),
-                  userId, new Date(), null));
+          SimpleAttachment attachment = SimpleAttachment.builder(lang)
+              .setFilename(uploadedFilename)
+              .setTitle(title)
+              .setDescription(description)
+              .setSize(uploadData.getRequestFile()
+                  .getSize())
+              .setContentType(FileUtil.getMimeType(tempFile.getPath()))
+              .setCreationData(userId, new Date())
+              .build();
+          document = new SimpleDocument(pk, uploadData.getForeignId(), 0, false, null, attachment);
           document.setDocumentType(attachmentContext);
         }
         document.setLanguage(lang);

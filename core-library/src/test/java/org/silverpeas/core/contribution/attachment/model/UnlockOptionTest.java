@@ -33,13 +33,13 @@ import static org.hamcrest.Matchers.is;
  * @author ehugonnet
  */
 @UnitTest
-public class UnlockOptionTest {
+class UnlockOptionTest {
 
   /**
    * Test of isSelected method, of class UnlockOption.
    */
   @Test
-  public void testIsSelected() {
+  void testIsSelected() {
     assertThat(UnlockOption.FORCE.isSelected(0), is(false));
     assertThat(UnlockOption.PRIVATE_VERSION.isSelected(0), is(false));
     assertThat(UnlockOption.FORCE.isSelected(9), is(true));
@@ -51,7 +51,7 @@ public class UnlockOptionTest {
    * Test of addOption method, of class UnlockOption.
    */
   @Test
-  public void testAddOption() {
+  void testAddOption() {
     int value = 0;
     value = UnlockOption.FORCE.addOption(value);
     assertThat(value, is(8));
@@ -65,7 +65,7 @@ public class UnlockOptionTest {
    * Test of addOption method, of class UnlockOption.
    */
   @Test
-  public void testRemoveOption() {
+  void testRemoveOption() {
     int value = 0;
     value = UnlockOption.FORCE.removeOption(value);
     assertThat(value, is(0));

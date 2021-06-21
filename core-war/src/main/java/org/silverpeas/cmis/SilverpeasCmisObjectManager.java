@@ -28,7 +28,12 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
+import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.cmis.walkers.AbstractCmisObjectsTreeWalker;
 import org.silverpeas.cmis.walkers.CmisObjectsTreeWalker;
 import org.silverpeas.core.annotation.Service;
@@ -40,29 +45,113 @@ import java.util.List;
 /**
  * A manager of CMIS objects that are stored into Silverpeas. It is responsible to map the
  * organizational resources (spaces, component instances, etc.) and contributions in Silverpeas to
- * the organizational tree of CMIS objects (folders, documents, relationships, and so on). It is
- * the one that has the knowledge of how the Silverpeas objects are mapped to the CMIS objects
- * while satisfying the CMIS specification requirements. It is dedicated to be used by a CMIS
- * repository implementation.
+ * the organizational tree of CMIS objects (folders, documents, relationships, and so on). It is the
+ * one that has the knowledge of how the Silverpeas objects are mapped to the CMIS objects while
+ * satisfying the CMIS specification requirements. It is dedicated to be used by a CMIS repository
+ * implementation.
  * <p>
- * In order to facilitate the mapping between the organizational tree of a CMIS objects and the
+ * In order to facilitate the mapping between the organizational tree of CMIS objects and the
  * organization of the Silverpeas resources, the manager defines a one-to-one correspondence of its
  * methods with those of the CMIS services. Hence, the client of the manager has just to delegate
  * the CMIS service's operation by invoking one of the manager's method with the correct parameters
  * correspondence.
  * </p>
  * <p>
- * The walking down/up and the modification operations on the CMIS objects tree (and therefore their
- * corresponding Silverpeas resources and contributions) is performed by a
- * {@link AbstractCmisObjectsTreeWalker} instance that knows both how to walk down/up a subtree and how to
- * perform CRUD operations on the object of that subtree by the type of the object that is passed
- * through. For example, the walking down a subtree isn't done identically when rooted to a space
- * than when rooted to an application (as they don't accept the same children type).
+ * The walking through the tree of CMIS objects and the modification operations on those objects
+ * (and therefore their corresponding Silverpeas resources and contributions) is performed by a
+ * {@link AbstractCmisObjectsTreeWalker} instance that knows both how to walk through a given
+ * subtree and how to perform CRUD operations on the objects of that subtree according to the type
+ * of these objects. For example, the walking down a subtree isn't done identically when rooted to a
+ * space than when rooted to an application (as they don't accept the same children type) and don't
+ * support necessary the same operations.
  * </p>
  * @author mmoquillon
  */
 @Service
 public class SilverpeasCmisObjectManager {
+
+  private static final String FOLDER = "folder";
+
+  /**
+   * Creates into the specified parent folder a {@link org.silverpeas.core.cmis.model.CmisObject}
+   * object from its specified CMIS properties expressed in the given language. The concrete type of
+   * the CMIS object to create is given by the
+   * {@link org.apache.chemistry.opencmis.commons.PropertyIds#OBJECT_TYPE_ID}
+   * property. If the creation of instances of such concrete type isn't supported, then a {@link
+   * org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception is
+   * thrown.
+   * @param folderId the unique identifier of the parent folder.
+   * @param properties the CMIS properties of the object to create.
+   * @param language the ISO 639-1 code of the language in which the textual properties are
+   * expressed.
+   * @return the unique identifier of the newly created CMIS object.
+   */
+  public CmisObject createFolder(final String folderId, final Properties properties,
+      final String language) {
+    checkArgumentNotNull(FOLDER, folderId);
+    checkArgumentNotNull("properties", properties);
+
+    CmisProperties cmisProperties = new CmisProperties(properties);
+    checkTypeIdIsCorrect(BaseTypeId.CMIS_FOLDER, cmisProperties.getObjectTypeId().getBaseTypeId());
+    return CmisObjectsTreeWalker.getInstance()
+        .createChildData(folderId, cmisProperties, null, language);
+  }
+
+  /**
+   * Creates into the specified parent folder a {@link org.silverpeas.core.cmis.model.DocumentFile}
+   * object from its specified CMIS properties and from the specified content both expressed in the
+   * given language. The concrete type of the CMIS object to create is given by the {@link
+   * org.apache.chemistry.opencmis.commons.PropertyIds#OBJECT_TYPE_ID} property and must be {@link
+   * org.silverpeas.core.cmis.model.TypeId#SILVERPEAS_DOCUMENT} otherwise a {@link
+   * org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception is
+   * thrown. If an error occurs while storing the content stream, then a {@link
+   * CmisStorageException} exception is thrown.
+   * @param folderId the unique identifier of the parent folder.
+   * @param properties the CMIS properties of the document to create.
+   * @param content a stream on the document's content to store into a file in Silverpeas. The
+   * stream is consumed but not closed by this method.
+   * @param language the ISO 639-1 code of the language in which the textual properties are
+   * expressed.
+   * @return the unique identifier of the newly created CMIS object.
+   */
+  public CmisObject createDocument(final String folderId, final Properties properties,
+      final ContentStream content, final String language) {
+    checkArgumentNotNull(FOLDER, folderId);
+    checkArgumentNotNull("properties", properties);
+
+    CmisProperties cmisProperties = new CmisProperties(properties);
+    checkTypeIdIsCorrect(cmisProperties.getObjectTypeId()
+        .getBaseTypeId(), BaseTypeId.CMIS_DOCUMENT);
+    return CmisObjectsTreeWalker.getInstance()
+        .createChildData(folderId, cmisProperties, content, language);
+  }
+
+  /**
+   * Updates the specified document with the new content provided by the given stream.
+   * @param documentId the unique identifier of the document to update.
+   * @param overwrite indicates if the document's content must be overwritten by the new one or just
+   * to set the content for an empty document. In this last case, if the document isn't really empty
+   * then a
+   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException}
+   * is thrown.
+   * @param contentStream a stream on the document's content to store into a file in Silverpeas. The
+   * stream is consumed but not closed by this method.
+   * @param language the ISO 639-1 code of the language in which the textual properties are
+   * expressed.
+   */
+  public void updateDocument(final String documentId, final boolean overwrite,
+      final ContentStream contentStream, final String language) {
+    checkArgumentNotNull(FOLDER, documentId);
+    checkArgumentNotNull("content stream", contentStream);
+
+    // by default, in Silverpeas, a document must have a content!
+    if (!overwrite) {
+      throw new CmisContentAlreadyExistsException("The content of the document " + documentId +
+          " already exist");
+    }
+    CmisObjectsTreeWalker.getInstance()
+        .updateObjectData(documentId, new CmisProperties(), contentStream, language);
+  }
 
   /**
    * Gets the specified object in Silverpeas.
@@ -105,7 +194,7 @@ public class SilverpeasCmisObjectManager {
    */
   public ObjectInFolderList getChildren(final String folderId, final Filtering filtering,
       final Paging paging) {
-    checkArgumentNotNull("folder", folderId);
+    checkArgumentNotNull(FOLDER, folderId);
     return CmisObjectsTreeWalker.getInstance().getChildrenData(folderId, filtering, paging);
   }
 
@@ -127,7 +216,7 @@ public class SilverpeasCmisObjectManager {
    */
   public List<ObjectInFolderContainer> getDescendants(final String folderId,
       final Filtering filtering, final long depth) {
-    checkArgumentNotNull("folder", folderId);
+    checkArgumentNotNull(FOLDER, folderId);
     return CmisObjectsTreeWalker.getInstance().getSubTreeData(folderId, filtering, depth);
   }
 
@@ -148,6 +237,7 @@ public class SilverpeasCmisObjectManager {
    * Gets the content of the specified object starting at the given position and at the specified
    * size.
    * @param objectId the unique identifier of an object in Silverpeas.
+   * @param language the ISO 639-1 code of the language of the object's content to get.
    * @param start the starting position in bytes of the content to get.
    * @param size the size of the content, from the starting position, to get.
    * @return a stream on the object's content.
@@ -160,7 +250,13 @@ public class SilverpeasCmisObjectManager {
   private static void checkArgumentNotNull(final String argName, final Object arg) {
     if (arg == null) {
       final String name = argName.substring(0, 1).toUpperCase() + argName.substring(1);
-      throw new CmisInvalidArgumentException(name + " is not valid!");
+      throw new CmisInvalidArgumentException(name + " should be set!");
+    }
+  }
+
+  private static void checkTypeIdIsCorrect(final BaseTypeId expected, final BaseTypeId actual) {
+    if (expected != actual) {
+      throw new CmisInvalidArgumentException("Object type should be a " + expected.value());
     }
   }
 }

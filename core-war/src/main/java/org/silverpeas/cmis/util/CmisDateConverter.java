@@ -38,7 +38,7 @@ public class CmisDateConverter {
   }
 
   /**
-   * Converts milliseconds into a {@link GregorianCalendar} object, setting
+   * Converts milliseconds from Epoch into a {@link GregorianCalendar} object, setting
    * the timezone to GMT and cutting milliseconds off.
    */
   public static GregorianCalendar millisToCalendar(long millis) {
@@ -46,6 +46,15 @@ public class CmisDateConverter {
     calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
     calendar.setTimeInMillis((long) (Math.ceil((double) millis / 1000) * 1000));
     return calendar;
+  }
+
+  /**
+   * Converts a date in the GregorianCalendar calendar into the number of milliseconds from Epoch.
+   * @param calendar a {@link GregorianCalendar} object.
+   * @return the number of milliseconds from Epoch.
+   */
+  public static long calendarToMillis(GregorianCalendar calendar) {
+    return calendar != null ? calendar.getTimeInMillis() : null;
   }
 }
   

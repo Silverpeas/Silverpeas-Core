@@ -32,6 +32,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedExceptio
 import org.jetbrains.annotations.NotNull;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -41,6 +42,7 @@ import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
+import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.Pair;
@@ -77,14 +79,25 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
+  protected CmisObject createObjectData(final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    throw new CmisNotSupportedException("Creation of collaborative spaces aren't supported");
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
-  protected Space createCmisObject(final LocalizedResource space, final String language) {
+  protected Space encodeToCmisObject(final LocalizedResource space, final String language) {
     return getObjectFactory().createSpace((SpaceInstLight) space, language);
   }
 
   @Override
-  protected boolean isSupported(final String objectId) {
+  protected boolean isObjectSupported(final String objectId) {
     return Space.isSpace(objectId);
+  }
+
+  @Override
+  protected boolean isTypeSupported(final TypeId typeId) {
+    return typeId == TypeId.SILVERPEAS_SPACE;
   }
 
   @Override
@@ -103,7 +116,7 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   @Override
   public CmisObject getObjectData(final String objectId, final Filtering filtering) {
     if (Space.ROOT_ID.asString().equals(objectId)) {
-      final CmisObject rootSpace = getObjectFactory().createRootSpace();
+      final CmisObject rootSpace = getObjectFactory().createRootSpace(filtering.getLanguage());
       setObjectDataFields(rootSpace, filtering);
       return rootSpace;
     } else {
@@ -114,7 +127,7 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   @Override
   public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
     if (CmisFile.PATH_SEPARATOR.equals(path)) {
-      final CmisFile rootSpace = getObjectFactory().createRootSpace();
+      final CmisFile rootSpace = getObjectFactory().createRootSpace(filtering.getLanguage());
       setObjectDataFields(rootSpace, filtering);
       return rootSpace;
     } else {
@@ -162,6 +175,31 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
       final long offset, final long length) {
     throw new CmisNotSupportedException(
         "The content stream isn't supported by collaborative spaces");
+  }
+
+  @Override
+  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    throw new CmisNotSupportedException("The update isn't supported by spacess");
+  }
+
+  /**
+   * The creation of children of collaborative spaces (both inner spaces and application instances)
+   * isn't supported by our CMIS implementation.
+   * @param folderId the unique identifier of a collaborative space in the CMIS objects tree.
+   * @param properties the CMIS properties of the child to create (either another collaborative
+   * space or an application instances)
+   * @param contentStream a stream on a content. Should be null.
+   * @param language the ISO 639-1 code of the language in which the textual folder properties are
+   * expressed.
+   * @return nothing. A {@link CmisNotSupportedException} exception is thrown.
+   */
+  @Override
+  public CmisObject createChildData(final String folderId, final CmisProperties properties,
+      final ContentStream contentStream, final String language) {
+    TypeId typeId = properties.getObjectTypeId();
+    throw new CmisNotSupportedException("Creation of " + typeId.toString() +
+        " not supported in collaborative spaces");
   }
 
   @Override
@@ -217,10 +255,10 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
     final CmisFolder cmisChild = getObjectFactory().createSpace(space, filtering.getLanguage());
     final CmisFolder cmisParent;
     if (rootSpaceId.equals(fatherId)) {
-      cmisParent = getObjectFactory().createRootSpace();
+      cmisParent = getObjectFactory().createRootSpace(filtering.getLanguage());
     } else {
       final SpaceInstLight father = getController().getSpaceInstLightById(fatherId);
-      cmisParent = createCmisObject(father, filtering.getLanguage());
+      cmisParent = encodeToCmisObject(father, filtering.getLanguage());
     }
     final ObjectParentData parentData = buildObjectParentData(cmisParent, cmisChild, filtering);
     return Collections.singletonList(parentData);

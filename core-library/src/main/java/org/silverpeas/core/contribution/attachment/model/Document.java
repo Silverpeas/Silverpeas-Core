@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
+import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.LocalizedAttachment;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.I18n;
-import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * </p>
  * @author mmoquillon
  */
-public class Document implements LocalizedAttachment, LocalizedResource {
+public class Document implements I18nContribution, LocalizedAttachment {
 
   private final ContributionIdentifier id;
   private final SimpleDocument master;
@@ -199,7 +199,7 @@ public class Document implements LocalizedAttachment, LocalizedResource {
           .map(l -> service.searchDocumentById(pk, l))
           .filter(Objects::nonNull)
           .findFirst()
-          .orElseThrow(() -> new CmisObjectNotFoundException(
+          .orElseThrow(() -> new NotFoundException(
               "No such document " + id.asString() + " in whatever language"));
     }
     return document;

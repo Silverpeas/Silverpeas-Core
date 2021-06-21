@@ -307,16 +307,29 @@ public class RepositoriesTypeManager {
     final boolean needCreation = (document == null || !document.isVersioned());
     if (needCreation) {
       if (descriptor.isComponentVersionActivated()) {
+        SimpleAttachment attachment = SimpleAttachment.builder(descriptor.contentLanguage)
+            .setFilename(fileName)
+            .setTitle(fileName)
+            .setDescription("")
+            .setSize(fileSize)
+            .setContentType(mimeType)
+            .setCreationData(descriptor.getCurrentUser()
+                .getId(), descriptor.getCreationDate())
+            .build();
         document = new HistorisedDocument(documentPK, descriptor.resourceId, 0,
-            descriptor.getCurrentUser().getId(),
-            new SimpleAttachment(fileName, descriptor.getContentLanguage(), fileName, "", fileSize,
-                mimeType, descriptor.getCurrentUser().getId(), descriptor.getCreationDate(), null));
+            descriptor.getCurrentUser()
+                .getId(), attachment);
         document.setPublicDocument(publicVersion);
       } else {
+        SimpleAttachment attachment = SimpleAttachment.builder(descriptor.contentLanguage)
+            .setFilename(fileName)
+            .setSize(fileSize)
+            .setContentType(mimeType)
+            .setCreationData(descriptor.getCurrentUser()
+                .getId(), descriptor.getCreationDate())
+            .build();
         document = new SimpleDocument(new SimpleDocumentPK(null, descriptor.getComponentId()),
-            descriptor.getResourceId(), 0, false,
-            new SimpleAttachment(fileName, descriptor.getContentLanguage(), null, null, fileSize,
-                mimeType, descriptor.getCurrentUser().getId(), descriptor.getCreationDate(), null));
+            descriptor.getResourceId(), 0, false, attachment);
       }
       document.setDocumentType(descriptor.getDocumentType());
       setMetadata(document, descriptor.getFile());

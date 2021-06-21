@@ -51,7 +51,7 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   public HistorisedDocument() {
-    super(new SimpleDocumentPK(null), null, 0, true, new SimpleAttachment());
+    super(new SimpleDocumentPK(null), null, 0, true, SimpleAttachment.builder().build());
   }
 
   public HistorisedDocument(SimpleDocument doc) {
@@ -98,7 +98,7 @@ public class HistorisedDocument extends SimpleDocument {
    */
   public List<SimpleDocumentVersion> getFunctionalHistory() {
     if (functionalHistory == null && history != null) {
-      functionalHistory = new ArrayList<SimpleDocumentVersion>(history.size());
+      functionalHistory = new ArrayList<>(history.size());
       String lastVersion = getVersion();
       for (SimpleDocumentVersion currentDocumentVersion : history) {
         String currentVersion = currentDocumentVersion.getVersion();
@@ -118,7 +118,7 @@ public class HistorisedDocument extends SimpleDocument {
 
   public List<SimpleDocument> getPublicVersions() {
     List<SimpleDocument> publicVersions =
-        new ArrayList<SimpleDocument>(getFunctionalHistory().size());
+        new ArrayList<>(getFunctionalHistory().size());
     for (SimpleDocument document : getFunctionalHistory()) {
       if (document.isPublic()) {
         publicVersions.add(document);
@@ -150,5 +150,15 @@ public class HistorisedDocument extends SimpleDocument {
       return getHistory().get(0);
     }
     return null;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

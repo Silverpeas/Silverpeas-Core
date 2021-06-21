@@ -45,8 +45,11 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cmis.model.Application;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
+import org.silverpeas.core.cmis.model.ContributionFolder;
+import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -89,7 +92,7 @@ import static org.silverpeas.cmis.util.CmisDateConverter.millisToCalendar;
 @DisplayName(
     "Test the mapping between the CMIS objects tree and an organizational schema of Silverpeas " +
         "resources")
-class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
+class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
 
   @Test
   @DisplayName("Getting the CMIS data of a Silverpeas object not exposed through the CMIS should " +
@@ -137,7 +140,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
         containsInAnyOrder(CAN_GET_FOLDER_TREE, CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS,
             CAN_GET_CHILDREN, CAN_GET_ACL));
 
-    final Space root = new CmisObjectFactory().createRootSpace();
+    final Space root = new CmisObjectFactory().createRootSpace("en");
     User admin = User.getById("0");
     Map<String, PropertyData<?>> props = data.getProperties().getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(Space.ROOT_ID.asString()));
@@ -722,7 +725,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     AllowableActions actions = data.getAllowableActions();
     assertThat(actions.getAllowableActions(),
         containsInAnyOrder(CAN_GET_FOLDER_TREE, CAN_GET_OBJECT_PARENTS, CAN_GET_FOLDER_PARENT,
-            CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS, CAN_GET_CHILDREN, CAN_GET_ACL));
+            CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS, CAN_GET_CHILDREN, CAN_GET_ACL,
+            CAN_CREATE_FOLDER));
 
     assertProperties(data.getProperties(), node);
   }
@@ -743,7 +747,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     AllowableActions actions = data.getAllowableActions();
     assertThat(actions.getAllowableActions(),
         containsInAnyOrder(CAN_GET_FOLDER_TREE, CAN_GET_OBJECT_PARENTS, CAN_GET_FOLDER_PARENT,
-            CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS, CAN_GET_CHILDREN, CAN_GET_ACL));
+            CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS, CAN_GET_CHILDREN, CAN_GET_ACL,
+            CAN_CREATE_DOCUMENT));
 
     assertProperties(data.getProperties(), publication);
   }
@@ -763,7 +768,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     AllowableActions actions = data.getAllowableActions();
     assertThat(actions.getAllowableActions(),
         containsInAnyOrder(CAN_GET_ALL_VERSIONS, CAN_GET_PROPERTIES, CAN_GET_ACL,
-            CAN_GET_OBJECT_PARENTS, CAN_GET_CONTENT_STREAM));
+            CAN_GET_OBJECT_PARENTS, CAN_GET_CONTENT_STREAM, CAN_SET_CONTENT_STREAM));
 
     assertProperties(data.getProperties(), doc);
   }
@@ -960,10 +965,11 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.IS_LATEST_VERSION).getFirstValue(), is(true));
     assertThat(props.get(PropertyIds.IS_MAJOR_VERSION).getFirstValue(), is(true));
     assertThat(props.get(PropertyIds.IS_LATEST_MAJOR_VERSION).getFirstValue(), is(true));
-    assertThat(props.get(PropertyIds.VERSION_LABEL).getFirstValue(), is(doc.getTitle()));
+    assertThat(props.get(PropertyIds.VERSION_LABEL).getFirstValue(), nullValue());
     assertThat(props.get(PropertyIds.VERSION_SERIES_ID).getFirstValue(),
-        is(doc.getIdentifier().asString()));
-    assertThat(props.get(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT).getFirstValue(), is(false));
+        is(doc.getIdentifier().asString() + ":versions"));
+    assertThat(props.get(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT).getFirstValue(),
+        is(false));
     assertThat(props.get(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY).getFirstValue(), nullValue());
     assertThat(props.get(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID).getFirstValue(), nullValue());
     assertThat(props.get(PropertyIds.CHECKIN_COMMENT).getFirstValue(), is(comment));
@@ -975,7 +981,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
         is(doc.getContentType()));
     assertThat(props.get(PropertyIds.CONTENT_STREAM_FILE_NAME).getFirstValue(),
         is(doc.getFilename()));
-    assertThat(props.get(PropertyIds.CONTENT_STREAM_ID).getFirstValue(), nullValue());
+    assertThat(props.get(PropertyIds.CONTENT_STREAM_ID).getFirstValue(),
+        is(doc.getIdentifier().asString() + ":content"));
   }
 }
   

@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.cmis.model;
 
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -31,6 +32,8 @@ import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A publication in Silverpeas. A publication is a contribution of a user that gathers one or more
@@ -48,7 +51,15 @@ import java.util.List;
  */
 public class Publication extends CmisFolder {
 
+  /**
+   * The identifier of its CMIS type.
+   */
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_PUBLICATION;
+  /**
+   * The UTF-8 symbol representing the type of this CMIS object. It acts as an icon but instead
+   * of being a regular image the icon is encoded in UTF-8.
+   */
+  public static final String SYMBOL = "\uD83D\uDCD4";
 
   private final ContributionIdentifier id;
 
@@ -71,6 +82,11 @@ public class Publication extends CmisFolder {
 
   public String getApplicationId() {
     return id.getComponentInstanceId();
+  }
+
+  @Override
+  public String getSymbol() {
+    return SYMBOL;
   }
 
   @Override
@@ -109,6 +125,16 @@ public class Publication extends CmisFolder {
   @Override
   public TypeId getTypeId() {
     return CMIS_TYPE;
+  }
+
+  @Override
+  protected Supplier<Set<Action>> getAllowableActionsSupplier() {
+    return () -> completeWithPublicationActions(completeWithFolderActions(theCommonActions()));
+  }
+
+  private Set<Action> completeWithPublicationActions(final Set<Action> actions) {
+    actions.add(Action.CAN_CREATE_DOCUMENT);
+    return actions;
   }
 }
   

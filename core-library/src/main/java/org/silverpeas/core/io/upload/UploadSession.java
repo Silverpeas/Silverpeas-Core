@@ -46,9 +46,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 /**
- * Manage a session of file & folder upload. Each file is saved in a temporary folder the server.
+ * A session of files and folders uploads. Each file is saved in a temporary folder in the server
+ * whose the name is derived from the session identifier. A user in Silverpeas can upload one or
+ * several files. For latter, in order to avoid to process each file one by one, the {@link
+ * UploadSession} is a way to identify a set of uploaded files to process in a whole.
+ * <p>
  * The different treatments which use this mechanism must use all the services provided by {@link
  * FileUploadManager} and {@link UploadedFile} in order to save definitely the uploaded files.
+ * </p>
  * @author Yohann Chastagnier
  */
 public class UploadSession {
@@ -58,23 +63,19 @@ public class UploadSession {
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();
   private static final String UPLOAD_SESSION_CACHE_KEY_PREFIX = "@@@_instance_for_";
 
-  private String uploadSessionId;
+  private final String uploadSessionId;
   private File uploadSessionFolder;
   private String componentInstanceId;
-  private Map<String, String> componentInstanceParameters = new HashMap<>();
-  private Map<String, Boolean> currentFileWritings = new ConcurrentHashMap<>();
+  private final Map<String, String> componentInstanceParameters = new HashMap<>();
+  private final Map<String, Boolean> currentFileWritings = new ConcurrentHashMap<>();
 
-  /**
-   * Hidden constructor.
-   * @param uploadSessionId
-   */
   private UploadSession(String uploadSessionId) {
     this.uploadSessionId = uploadSessionId;
   }
 
   /**
-   * Sets the component instance id associated to the upload session.
-   * @param componentInstanceId
+   * Sets the identifier of the component instance associated with the files uploads session.
+   * @param componentInstanceId the unique identifier of an existing component instance.
    */
   public UploadSession forComponentInstanceId(final String componentInstanceId) {
     this.componentInstanceId = componentInstanceId;
@@ -82,8 +83,9 @@ public class UploadSession {
   }
 
   /**
-   * Indicates if the current user is authorized to perform this upload session.
-   * @param componentInstanceId
+   * Indicates if the current user is authorized to perform this files upload session in the context
+   * of the given component instance.
+   * @param componentInstanceId the unique identifier of a component instance.
    */
   public boolean isUserAuthorized(final String componentInstanceId) {
     return StringUtil.isDefined(getComponentInstanceId()) &&
@@ -101,7 +103,7 @@ public class UploadSession {
   }
 
   /**
-   * Gets the component instance id if any associated.
+   * Gets the component instance identifier if any.
    * @return a string.
    */
   public String getComponentInstanceId() {
@@ -109,10 +111,10 @@ public class UploadSession {
   }
 
   /**
-   * Gets the parameter value of a component instance. The component instance is the one passed on
-   * file uploads. If no component instance identifier has been passed, then nothing is done.
-   * @return a string that represents the parameter value, empty value if the component instance
-   * identifier is unknown or if the parameter is not defined for component instance.
+   * Gets the parameter value of a component instance. The component instance is the one set in this
+   * session. If no component instance identifier has been set, then nothing is done.
+   * @return a string that represents the parameter value or an empty value if either the component
+   * instance identifier is unknown or the parameter is not defined for the component instance.
    */
   public String getComponentInstanceParameterValue(String parameterName) {
     String parameterValue = null;
@@ -165,12 +167,11 @@ public class UploadSession {
   }
 
   /**
-   * Gets a new upload file from the session.
-   * If the file path is currently in writing mode, the the {@link
-   * UploadSessionFile#getServerFile()} of the returned instance is null.
-   * @param fullPath the path of the file into the session.
-   * @return
-   * @throws Exception
+   * Gets the file that was or will be uploaded within this session and located at the specified
+   * path relative the root folder of this session. If the file path is currently in writing mode,
+   * the {@link UploadSessionFile#getServerFile()} of the returned instance is null.
+   * @param fullPath the path of the file relative to the root folder of the session.
+   * @return the {@link UploadSessionFile} instance at the specified relative path.
    */
   public synchronized UploadSessionFile getUploadSessionFile(String fullPath) {
     initialize();
@@ -178,7 +179,7 @@ public class UploadSession {
   }
 
   /**
-   * Gets the root folder on the server of the upload session.<br>
+   * Gets the root folder on the server of the files upload session.<br>
    * If the folder does not yet exist, then it is created.
    * @return a {@link File} that represents the upload session folder.
    */
@@ -209,7 +210,11 @@ public class UploadSession {
     if (!isHandledOnFileSystem()) {
       uploadSessionFolder = new File(FileRepositoryManager.getTemporaryPath(), uploadSessionId);
       if (!uploadSessionFolder.exists()) {
-        uploadSessionFolder.mkdirs();
+        boolean created = uploadSessionFolder.mkdirs();
+        if (!created) {
+          SilverLogger.getLogger(this)
+              .warn("The root folder of the session " + uploadSessionId + " cannot be created!");
+        }
       }
     }
   }
@@ -257,13 +262,13 @@ public class UploadSession {
   }
 
   /**
-   * Creates a new upload session id if given is not defined.
+   * Creates a new upload session identifier if the given one is not defined.
    * Returns the given one if it is defined.
-   * @param uploadSessionIdFromRequest
-   * @return the session upload id as string.
+   * @param uploadSessionId a files upload session identifier.
+   * @return either the specified session identifier or a new one.
    */
-  private static String handleUploadSessionId(String uploadSessionIdFromRequest) {
-    return StringUtil.isDefined(uploadSessionIdFromRequest) ? uploadSessionIdFromRequest :
+  private static String handleUploadSessionId(String uploadSessionId) {
+    return StringUtil.isDefined(uploadSessionId) ? uploadSessionId :
         UUID.randomUUID().toString();
   }
 
@@ -278,9 +283,9 @@ public class UploadSession {
   }
 
   /**
-   * Register the session in cache in order to clean the session folders in case of user
-   * disconnection during an upload.
-   * @param uploadSession
+   * Registers the identifier of the specified session in the session cache in order to clean the
+   * session's root folder in case of a user disconnection during a file upload.
+   * @param uploadSession a files upload session.
    */
   @SuppressWarnings("unchecked")
   private static void registerSessionInCache(UploadSession uploadSession) {
@@ -299,9 +304,9 @@ public class UploadSession {
   }
 
   /**
-   * Register the session in cache in order to clean the session folders in case of user
-   * disconnection during an upload.
-   * @param uploadSession
+   * Removes the identifier of the specified session from the session cache in order to clean the
+   * session's root folder and all of its temporary allocated resources.
+   * @param uploadSession a files upload session.
    */
   @SuppressWarnings("unchecked")
   private static void removeSessionFromCache(UploadSession uploadSession) {

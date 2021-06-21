@@ -32,21 +32,25 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisObject;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
 /**
- * A walker of a CMIS objects tree whose each node is mapped to a given Silverpeas organizational
- * resource or to a given user contribution. The root of the tree is a virtual container of all of
- * the Silverpeas root spaces. The walker provides a functional view to access the CMIS objects but
- * behind de scene it walks across the organizational schema of Silverpeas by using its different
- * services. Because the way to access an object in Silverpeas (and hence to browse the CMIS objects
- * tree) depends on the types of the Silverpeas objects implied in a walk of the CMIS tree, the
- * implementation of the walker is left to more concrete walkers specifically designed to handle a
- * peculiar type of a Silverpeas object.
+ * A walker of a CMIS objects tree whose each node and leaf are mapped to a given Silverpeas
+ * organizational resource or to a given user contribution. The root of the tree is a virtual
+ * container of all the Silverpeas root spaces. The walker provides a functional view to access the
+ * CMIS objects but behind de scene it walks across the organizational schema of Silverpeas by using
+ * its different services. Because the way to access an object in Silverpeas (and hence to browse
+ * the CMIS objects tree) depends on the types of the Silverpeas objects implied in a walk of the
+ * CMIS tree, the implementation of the walker is left to more concrete walkers specifically
+ * designed to handle a peculiar type of Silverpeas objects. And consequently as each type of
+ * Silverpeas objects is mapped to a peculiar type of a CMIS object, those concrete walkers are also
+ * dedicated to handle, in their functional view, a peculiar type of CMIS objects.
  * @author mmoquillon
  */
 public interface CmisObjectsTreeWalker {
@@ -60,11 +64,66 @@ public interface CmisObjectsTreeWalker {
   }
 
   /**
+   * Creates into the specified CMIS folder a new {@link CmisObject} child from the specified CMIS
+   * data properties and in the given language. If the child is a document then the content stream
+   * must be not null, otherwise, for any other object types, it is ignored even if it is set.
+   * The type of the child to create is provided by the
+   * {@link org.apache.chemistry.opencmis.commons.PropertyIds#OBJECT_TYPE_ID} property.
+   * <p>
+   * If the content stream isn't set whereas the object to create is a document, then a
+   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException} is thrown.
+   * </p>
+   * <p>
+   * If the content stream is set whereas the object to create isn't a document, it is simply
+   * ignored.
+   * </p>
+   * <p>
+   * If an error occurs while registering the content from the specified content stream, then
+   * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException} is thrown.
+   * </p>
+   * @param folderId the unique identifier of a folder in the CMIS objects tree.
+   * @param properties the CMIS properties of the child to create.
+   * @param contentStream a stream on a content from which a document has to be created.
+   * @param language the ISO 639-1 code of the language in which the textual properties of the
+   * object as well as the content (if any) are expressed.
+   * @return the created {@link CmisObject} object corresponding to the given CMIS properties.
+   */
+  CmisObject createChildData(String folderId, CmisProperties properties,
+      ContentStream contentStream, String language);
+
+
+  /**
+   * Updates the specified CMIS object from the specified CMIS data properties and in the given
+   * language. If the object is a document then the content stream must be not null, otherwise, for
+   * any other object types, it is ignored even if it is set.
+   * <p>
+   * If the content stream isn't set whereas the object to create is a document, then a {@link
+   * org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException} is thrown.
+   * </p>
+   * <p>
+   * If the content stream is set whereas the object to create isn't a document, it is simply
+   * ignored.
+   * </p>
+   * <p>
+   * If an error occurs while registering the content from the specified content stream, then a
+   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException} is thrown.
+   * </p>
+   * @param objectId the unique identifier of an object in the CMIS objects tree.
+   * @param properties the CMIS properties of the object to update.
+   * @param contentStream a stream on a content from which a document has to be updated.
+   * @param language the ISO 639-1 code of the language in which the textual properties of the
+   * object as well as the content (if any) are expressed.
+   * @return the updated {@link CmisObject} object corresponding to the given CMIS properties.
+   */
+  CmisObject updateObjectData(String objectId, CmisProperties properties,
+      ContentStream contentStream, String language);
+
+  /**
    * Gets the CMIS data of the Silverpeas object uniquely identified by the specified identifier.
    * Only the data satisfying the given filtering rules are returned.
    * @param objectId the unique identifier of a Silverpeas object.
    * @param filtering the filtering rules to apply on the data.
-   * @return an {@link ObjectData} instance that provides the CMIS data of the specified Silverpeas
+   * @return a {@link CmisObject} instance that provides the CMIS data of the specified Silverpeas
    * object.
    */
   CmisObject getObjectData(String objectId, Filtering filtering);
@@ -142,13 +201,14 @@ public interface CmisObjectsTreeWalker {
    * Gets a stream on the content of the specified object, starting at the given offset position and
    * upto the given length.
    * @param objectId the unique identifier of the object in the CMIS objects tree.
-   * @param language the ISO 631-1 code of the language of the content to fetch. If no content
+   * @param language the ISO 639-1 code of the language of the content to fetch. If no content
    * exists in the specified language, then it is the content for the first language found that will
-   * be returned (see {@link org.silverpeas.core.i18n.I18NHelper#allContentLanguageCodes}).
+   * be returned (see {@link I18n#getSupportedLanguages()}).
    * @param offset the position in bytes in the content to start the stream.
    * @param length the length in bytes of the stream, id est the length of the content to read by
    * the stream.
    * @return a {@link ContentStream} instance.
    */
   ContentStream getContentStream(String objectId, String language, long offset, long length);
+
 }

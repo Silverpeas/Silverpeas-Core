@@ -1560,12 +1560,18 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     FileUtils.write(legacyWysiwyg, content);
   }
 
-  private SimpleDocument createImageContent(String componentId, String resourceId)
-      throws Exception {
+  private SimpleDocument createImageContent(String componentId, String resourceId) {
+    SimpleAttachment attachment = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+        .setFilename("imageFileName")
+        .setTitle("imageTitle")
+        .setDescription("imageDescription")
+        .setSize(0)
+        .setContentType(MimeTypes.PLAIN_TEXT_MIME_TYPE)
+        .setCreationData("1", new Date())
+        .build();
     SimpleDocument image =
         new SimpleDocument(new SimpleDocumentPK("-1", componentId), resourceId, 0, false,
-            new SimpleAttachment("imageFileName", I18NHelper.DEFAULT_LANGUAGE, "imageTitle",
-                "imageDescription", 0, MimeTypes.PLAIN_TEXT_MIME_TYPE, "1", new Date(), null));
+            attachment);
     image.setDocumentType(DocumentType.image);
     return AttachmentServiceProvider.getAttachmentService()
         .createAttachment(image, new ByteArrayInputStream("ImageContent".getBytes()));
