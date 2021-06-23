@@ -67,7 +67,7 @@ public class PagesContext implements Serializable {
   String serverURL;
   boolean designMode;
   SharingContext sharingContext;
-  Map<String, String> searchOperators = new HashMap();
+  transient Map<String, String> searchOperators = new HashMap<>();
   boolean formSkippable = false;
   String elementToHideWhenSkipping;
   String domainId;
