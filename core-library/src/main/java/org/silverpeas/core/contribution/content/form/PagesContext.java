@@ -27,13 +27,14 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.util.SharingContext;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * The page context where a form is displayed.
  */
-public class PagesContext {
+public class PagesContext implements Serializable {
   public static final int ON_UPDATE_REPLACE_EMPTY_VALUES = 0;
   public static final int ON_UPDATE_IGNORE_EMPTY_VALUES = 1;
 
