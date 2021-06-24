@@ -95,6 +95,18 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   private transient List<GlobalSilverContent> lastResults = null;
   private boolean allowPasswordChange;
 
+  /**
+   * Gets the {@link MainSessionController} instance set in the current user session. If the session
+   * doesn't refer any identified user, then null is returned.
+   * @param session the current HTTP session
+   * @return the {@link MainSessionController} instance attached to the current user session or null
+   * if there is no identified user in the current HTTP session.
+   */
+  public static MainSessionController getInstance(final HttpSession session) {
+    return (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  }
+
   public static boolean isAppInMaintenance() {
     return appInMaintenance;
   }
