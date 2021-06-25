@@ -27,21 +27,22 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
 import org.silverpeas.core.notification.sse.behavior.AfterSentToAllContexts;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
+import org.silverpeas.core.notification.sse.behavior.SendEveryAmountOfTime;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.JSONCodec;
+
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * This server event is sent on successful user session opening and on user session ending.
  * @author Yohann Chastagnier.
  */
 public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysLastStored,
-    AfterSentToAllContexts {
+    AfterSentToAllContexts, SendEveryAmountOfTime {
 
   private static final Object DATA_MUTEX = new Object();
-  private static final String IS_OPENING_ATTR_NAME = "isOpening";
-  private static final String IS_CLOSING_ATTR_NAME = "isClosing";
   private static final String NB_CONNECTED_USERS_ATTR_NAME = "nbConnectedUsers";
 
   private static final ServerEventName EVENT_NAME = () -> "USER_SESSION";
@@ -50,6 +51,7 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
   private final boolean opening;
   private final SessionManagement sessionManagement;
   private String data = null;
+  private boolean waitingFor = false;
 
   /**
    * Hidden constructor.
@@ -71,8 +73,24 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
   }
 
   @Override
+  public boolean hasWaitingFor() {
+    return waitingFor;
+  }
+
+  @Override
+  public void markAsWaitingFor() {
+    waitingFor = true;
+  }
+
+  @Override
   public ServerEventName getName() {
     return EVENT_NAME;
+  }
+
+  @Override
+  public String subType() {
+    final User emitter = emitterSession.getUserDetail();
+    return emitter.isDomainRestricted() ? ("DOM" + emitter.getDomainId()) : EMPTY;
   }
 
   @Override
@@ -108,8 +126,6 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
     withData((receiverSessionId, receiver) -> {
       final int nbConnectedUsers = sessionManagement.getNbConnectedUsersList(receiver) - 1;
       return JSONCodec.encodeObject(jsonObject -> jsonObject
-          .put(IS_OPENING_ATTR_NAME, this.opening)
-          .put(IS_CLOSING_ATTR_NAME, !this.opening)
           .put(NB_CONNECTED_USERS_ATTR_NAME, nbConnectedUsers));
     });
     return this;

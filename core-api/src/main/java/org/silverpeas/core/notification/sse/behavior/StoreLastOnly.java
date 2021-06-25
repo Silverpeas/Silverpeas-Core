@@ -25,7 +25,6 @@ package org.silverpeas.core.notification.sse.behavior;
 
 import org.silverpeas.core.notification.sse.ServerEvent;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
-import org.silverpeas.core.util.StringUtil;
 
 /**
  * If an event implements this interface, the last added will be stored and the previous one will
@@ -33,13 +32,14 @@ import org.silverpeas.core.util.StringUtil;
  * all {@link ServerEvent}.
  * @author Yohann Chastagnier
  */
-public interface StoreLastOnly {
+public interface StoreLastOnly extends ServerEvent {
 
   /**
    * Gets the discriminator used into the store to detect same event instances.
    * @return the discriminator as string.
    */
   default String getStoreDiscriminator() {
-    return StringUtil.EMPTY;
+    final String subType = subType();
+    return subType.length() == 0 ? getName().asString() : (getName().asString() + "|" + subType);
   }
 }

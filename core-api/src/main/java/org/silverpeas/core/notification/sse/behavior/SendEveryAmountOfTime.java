@@ -24,11 +24,28 @@
 package org.silverpeas.core.notification.sse.behavior;
 
 import org.silverpeas.core.notification.sse.ServerEvent;
-import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 
 /**
- * If an event implements this interface, it will not be stored into the store handled by {@link
- * ServerEventDispatcherTask} in charge of dispatching all {@link ServerEvent}.
+ * If an event implements this interface, its sending is performed by a JOB which is triggered
+ * every an amount of time. It permits to limit the load when lot of event can be thrown.
+ * <p>
+ * It has no impact about store management.
+ * </p>
+ * <p>
+ *  This behavior is only possible with {@link StoreLastOnly} behavior.
+ * </p>
  * @author Yohann Chastagnier
  */
-public interface IgnoreStoring extends ServerEvent {}
+public interface SendEveryAmountOfTime extends StoreLastOnly {
+
+  /**
+   * Indicates of the {@link ServerEvent} has already been waiting for send.
+   * @return true if it has already, false otherwise.
+   */
+  boolean hasWaitingFor();
+
+  /**
+   * Indicates that the {@link ServerEvent} will be waiting for a while before to be sent.
+   */
+  void markAsWaitingFor();
+}
