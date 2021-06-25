@@ -29,7 +29,9 @@ import org.silverpeas.core.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
@@ -69,6 +71,14 @@ public interface ServerEvent {
    * @return the name as unique {@link ServerEventName} instance.
    */
   ServerEventName getName();
+
+  /**
+   * Gets the sub type the event if any.
+   * @return the sub type of the event if any, empty string otherwise.
+   */
+  default String subType() {
+    return EMPTY;
+  }
 
   /**
    * The data to send.
@@ -135,8 +145,9 @@ public interface ServerEvent {
       }
     }
     sb.append("\n\n");
-    response.getWriter().append(sb.toString());
-    response.flushBuffer();
+    final PrintWriter writer = response.getWriter();
+    writer.append(sb.toString());
+    writer.flush();
     return true;
   }
 
