@@ -46,6 +46,7 @@ import java.util.Set;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractResourceEvent<T extends Serializable> implements ResourceEvent<T> {
+  private static final long serialVersionUID = 8036157397157376709L;
 
   @XmlElement
   private Type type;
@@ -70,7 +71,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
     this.type = type;
     if (type == Type.CREATION) {
       this.transition = StateTransition.transitionBetween(null, resource[0]);
-    } else if (type == Type.UNLOCK || type == Type.UPDATE) {
+    } else if (type == Type.UNLOCK || type == Type.UPDATE || type == Type.MOVE) {
       this.transition = StateTransition.transitionBetween(resource[0], resource[1]);
     } else if (type == Type.REMOVING) {
       this.transition = StateTransition.transitionBetween(resource[0], resource[0]);

@@ -4,12 +4,12 @@ values (100, 1, 'A kmelia 100', 'kmelia', 1, 0, 0, 1),
        (300, 1, 'A kmelia 300', 'kmelia', 3, 0, 1, 0);
 
 insert into sb_publication_publifather (pubid, nodeid, instanceid, aliasuserid, aliasdate, puborder)
-values (100, 110, 'kmelia100', 0, '2009/10/18', 0),
-       (101, 110, 'kmelia100', 0, '2009/10/18', 5),
-       (200, 210, 'kmelia200', 0, '2009/10/18', 0),
-       (201, 210, 'kmelia200', 0, '2009/10/18', 5),
-       (202, 210, 'kmelia300', 0, '2009/10/18', 5),
-       (301, 310, 'kmelia300', 0, '2009/10/18', 5);
+values (100, 110, 'kmelia100', NULL, NULL, 0),
+       (101, 110, 'kmelia100', NULL, NULL, 5),
+       (200, 210, 'kmelia200', NULL, NULL, 0),
+       (201, 210, 'kmelia200', NULL, NULL, 5),
+       (202, 210, 'kmelia300', NULL, NULL, 5),
+       (301, 310, 'kmelia300', NULL, NULL, 5);
 
 insert into sb_publication_publi (pubid, infoid, pubname, pubdescription, pubcreationdate, pubbegindate, pubenddate,
                                   pubcreatorid, pubimportance, pubversion, pubkeywords, pubcontent, pubstatus,
@@ -38,10 +38,6 @@ values (100, '0', 'Publication 1', 'Publication Valide avec dates ok', '2008/11/
        (202, '0', 'Publication 2', 'Publication Valide avec updatedate trop vieille', '2008/11/18', '2009/10/18', '2020/12/18',
         '100', '1', NULL, 'test', 'Contenu de la publication 2', 'Valid',
         '2009/11/15', 'kmelia200', '200', '2008/11/18', '300',
-        '01:10', '20:35', 'Bart Simpson', NULL, -1, NULL, 'fr'),
-       (201, '0', 'Publication 2', 'Publication Draft avec dates ok', '2008/11/18', '2009/10/18', '2020/12/18',
-        '101', '5', NULL, 'test', 'Contenu de la publication 2', 'Draft',
-        '2010/10/29', 'kmelia200', '200', '2008/11/18', '300',
         '01:10', '20:35', 'Bart Simpson', NULL, -1, NULL, 'fr'),
        (301, '0', 'Publication 2', 'Publication Valide avec dates ok dans kmelia hors scope', '2008/11/18', '2009/10/18', '2020/12/18',
         '101', '5', NULL, 'test', 'Contenu de la publication 2', 'Valid',

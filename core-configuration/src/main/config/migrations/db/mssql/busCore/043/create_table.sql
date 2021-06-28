@@ -252,3 +252,15 @@ CREATE TABLE ST_UserFavoriteSpaces
   userid      INT   NOT NULL,
   spaceid     INT   NOT NULL
 );
+
+CREATE TABLE SB_Contribution_Tracking
+(
+    id                  VARCHAR(40) NOT NULL,
+    context             VARCHAR(255) DEFAULT '',
+    contrib_id          VARCHAR(40) NOT NULL,
+    contrib_type        VARCHAR(40) NOT NULL,
+    contrib_instanceId  VARCHAR(50) NOT NULL,
+    action_type         VARCHAR(20) NOT NULL,
+    action_date         DATETIME2   NOT NULL,
+    action_by           VARCHAR(50) NOT NULL
+);

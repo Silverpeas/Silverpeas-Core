@@ -98,6 +98,7 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.persistence.Transaction.getTransaction;
 
 /**
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
@@ -182,6 +183,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       loadTranslations(detail);
       detail.setIndexOperation(indexOperation);
       createIndex(detail, false);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, detail);
       return detail.getPK();
     } catch (Exception re) {
       throw new PublicationRuntimeException(re);
@@ -207,9 +209,12 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public void movePublication(PublicationPK pk, NodePK toFatherPK, boolean indexIt) {
     try (Connection con = getConnection()) {
       deleteIndex(pk);
-      PublicationDAO.changeInstanceId(con, pk, toFatherPK.getInstanceId());
-      moveRating(pk, toFatherPK.getInstanceId());
-      pk.setComponentName(toFatherPK.getInstanceId());
+      if (! toFatherPK.getInstanceId().equals(pk.getInstanceId())) {
+        // move to another component instance
+        PublicationDAO.changeInstanceId(con, pk, toFatherPK.getInstanceId());
+        moveRating(pk, toFatherPK.getInstanceId());
+        pk.setComponentName(toFatherPK.getInstanceId());
+      }
       PublicationFatherDAO.removeAllFathers(con, pk);
       PublicationFatherDAO.addFather(con, pk, toFatherPK);
       if (indexIt) {
@@ -324,9 +329,16 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   @Transactional
   public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
-    try (Connection con = getConnection()) {
+    setDetail(detail, false, ResourceEvent.Type.UPDATE);
+  }
+
+  @Override
+  @Transactional
+  public void setDetail(PublicationDetail detail, boolean forceUpdateDate,
+      ResourceEvent.Type evenType) {
+    try {
       int indexOperation = detail.getIndexOperation();
-      updateDetail(detail, forceUpdateDate);
+      updateDetail(detail, forceUpdateDate, evenType);
       if (detail.isRemoveTranslation()) {
         WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(),
             detail.getLanguage());
@@ -346,15 +358,24 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       } else if (indexOperation == IndexManager.REMOVE) {
         deleteIndex(detail.getPK());
       }
-    } catch (SQLException | FormException | PublicationTemplateException re) {
+    } catch (FormException | PublicationTemplateException re) {
       throw new PublicationRuntimeException(re);
     }
   }
 
-  private void updateDetail(PublicationDetail pubDetail, boolean forceUpdateDate) {
+  private void updateDetail(PublicationDetail pubDetail, boolean forceUpdateDate,
+      ResourceEvent.Type eventType) {
     try (Connection con = getConnection()) {
-      PublicationDetail publi = PublicationDAO.loadRow(con, pubDetail.getPK());
+      final PublicationPK newPK = pubDetail.getPK();
+      PublicationDetail publi = getTransaction().performNew(() -> {
+        try (Connection subCon = DBUtil.openConnection()) {
+          return PublicationDAO.loadRow(subCon, newPK);
+        }
+      });
       PublicationDetail before = publi.copy();
+      Optional.of(eventType)
+          .filter(ResourceEvent.Type.MOVE::equals)
+          .ifPresent(t -> publi.setPk(newPK));
       String oldName = publi.getName();
       String oldDesc = publi.getDescription();
       String oldKeywords = publi.getKeywords();
@@ -391,7 +412,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
       loadTranslations(publi);
       PublicationDAO.storeRow(con, publi);
-      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, before, publi);
+      notifier.notifyEventOn(eventType, before, publi);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -400,7 +421,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private void loadTranslation(final Connection con, final PublicationDetail publi)
       throws SQLException {
     List<PublicationI18N> translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
-    if (translations != null && !translations.isEmpty()) {
+    if (!translations.isEmpty()) {
       PublicationI18N translation = translations.get(0);
       publi.setLanguage(translation.getLanguage());
       publi.setName(translation.getName());
@@ -455,8 +476,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     if (pubDetail.getStatus() != null) {
       publi.setStatus(pubDetail.getStatus());
     }
-    publi.setUpdaterId(pubDetail.getUpdaterId());
-    if (pubDetail.isUpdateDateMustBeSet()) {
+    if (pubDetail.isUpdateDataMustBeSet()) {
+      publi.setUpdaterId(pubDetail.getUpdaterId());
       copyUpdateDate(pubDetail, publi, forceUpdateDate);
     }
     if (pubDetail.getValidatorId() != null) {

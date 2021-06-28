@@ -29,11 +29,12 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://silverpeas.org/xml/ns/migration https://www.silverpeas.org/xsd/migration.xsd">
 
-  <current version="042">
+  <current version="043">
     <script name="create_table.sql" type="sql"/>
     <script name="create_table_production.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
     <script name="create_constraint_production.sql" type="sql"/>
+    <script name="create_index.sql" type="sql"/>
     <script name="create_index_production.sql" type="sql"/>
     <script name="init.sql" type="sql"/>
     <script name="init_production.sql" type="sql"/>
@@ -70,6 +71,10 @@
 
   <upgrade fromVersion="041">
     <script name="updateBlankedUsers.sql" type="sql"/>
+  </upgrade>
+
+  <upgrade fromVersion="042">
+    <script name="new_table.sql" type="sql"/>
   </upgrade>
 
 </migration>

@@ -31,7 +31,6 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
@@ -41,6 +40,7 @@
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
+<%@ page import="org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
@@ -75,7 +75,7 @@
     actionWysiwyg = "Load";
   }
 
-  UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+  ContributionOperationContextPropertyHandler.parseRequest(request);
 
   if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) ||
       "SaveHtml".equals(actionWysiwyg)) {
@@ -251,15 +251,17 @@
 <c:set var="isHtmlLoadingContext" value="${actionWysiwyg eq 'Load' or actionWysiwyg eq 'Refresh'}"/>
 <c:set var="handledSubscriptionType" value="${param.handledSubscriptionType}"/>
 <c:set var="handledSubscriptionResourceId" value="${param.handledSubscriptionResourceId}"/>
-<c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
+<c:set var="contributionManagementContext" value="${requestScope.contributionManagementContext}"/>
 <c:set var="wysiwygTextValue" value="<%=wysiwygTextValue%>"/>
-<c:if test="${not empty subscriptionManagementContext}">
-  <jsp:useBean id="subscriptionManagementContext" type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"/>
-  <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
-              and subscriptionManagementContext.entityStatusAfterPersistAction.validated
-              and subscriptionManagementContext.entityPersistenceAction.update}">
-    <c:set var="handledSubscriptionType" value="${subscriptionManagementContext.linkedSubscriptionResource.type.name}"/>
-    <c:set var="handledSubscriptionResourceId" value="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
+<c:set var="isModificationContextEnabled" value="${false}"/>
+<c:if test="${not empty contributionManagementContext}">
+  <jsp:useBean id="contributionManagementContext" type="org.silverpeas.core.contribution.util.ContributionManagementContext"/>
+  <c:if test="${contributionManagementContext.entityStatusBeforePersistAction.validated
+              and contributionManagementContext.entityStatusAfterPersistAction.validated
+              and contributionManagementContext.entityPersistenceAction.update}">
+    <c:set var="isModificationContextEnabled" value="${true}"/>
+    <c:set var="handledSubscriptionType" value="${contributionManagementContext.linkedSubscriptionResource.type.name}"/>
+    <c:set var="handledSubscriptionResourceId" value="${contributionManagementContext.linkedSubscriptionResource.id}"/>
   </c:if>
 </c:if>
 <c:set var="isHandledSubscriptionConfirmation"
@@ -269,6 +271,7 @@
 <view:sp-head-part noLookAndFeel="${not isHtmlLoadingContext}">
   <c:if test="${isHtmlLoadingContext}">
     <view:includePlugin name="wysiwyg"/>
+    <view:includePlugin name="contributionmodictx"/>
     <view:includePlugin name="subscription"/>
   </c:if>
 </view:sp-head-part>
@@ -406,28 +409,41 @@
 
     jQuery(document).ready(function() {
       jQuery(document.recupHtml).submit(function() {
-        <c:choose>
-          <c:when test="${silfn:isDefined(wysiwygTextValue) and isHandledSubscriptionConfirmation}">
-          jQuery.subscription.confirmNotificationSendingOnUpdate({
-            comment : {
-              saveNote : ${silfn:booleanValue(commentActivated)},
-              contributionLocalId : '<%=objectId%>',
-              contributionType : '<%=objectType%>',
-              contributionIndexable : <%=indexIt%>
-            },
-            subscription : {
-              componentInstanceId : '<%=componentId%>',
-              type : '${handledSubscriptionType}',
-              resourceId : '${handledSubscriptionResourceId}'
-            }, callback : function() {
-              commit.call(this, false);
-            }
-          });
-          </c:when>
-          <c:otherwise>
+        const contributionId = {
+          componentInstanceId : '<%=componentId%>',
+          localId : '<%=objectId%>',
+          type : '<%=objectType%>'
+        };
+        jQuery.contributionModificationContext.validateOnUpdate({
+          contributionId : contributionId,
+          status : ${silfn:isDefined(wysiwygTextValue)  and isModificationContextEnabled
+           ? 'undefined'
+           : '$.contributionModificationContext.statuses.CREATION'},
+          callback : function() {
+            <c:choose>
+            <c:when test="${silfn:isDefined(wysiwygTextValue) and isHandledSubscriptionConfirmation}">
+            jQuery.subscription.confirmNotificationSendingOnUpdate({
+              comment : {
+                saveNote : ${silfn:booleanValue(commentActivated)},
+                contributionLocalId : contributionId.localId,
+                contributionType : contributionId.type,
+                contributionIndexable : <%=indexIt%>
+              },
+              subscription : {
+                componentInstanceId : '<%=componentId%>',
+                type : '${handledSubscriptionType}',
+                resourceId : '${handledSubscriptionResourceId}'
+              },
+              callback : function() {
+                commit.call(this, false);
+              }
+            });
+            </c:when>
+            <c:otherwise>
             commit.call(this, ${silfn:isNotDefined(wysiwygTextValue) ? 'true' : 'false'});
-          </c:otherwise>
-        </c:choose>
+            </c:otherwise>
+            </c:choose>
+        }});
         return false;
       });
     });

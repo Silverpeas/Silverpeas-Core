@@ -81,3 +81,5 @@ ALTER TABLE st_instance_modelused ADD
 ALTER TABLE ST_UserFavoriteSpaces ADD CONSTRAINT PK_UserFavoriteSpaces PRIMARY KEY (id);
 ALTER TABLE ST_UserFavoriteSpaces ADD CONSTRAINT FK_UserFavoriteSpaces_1 FOREIGN KEY (userid) REFERENCES ST_User(id);
 ALTER TABLE ST_UserFavoriteSpaces ADD CONSTRAINT FK_UserFavoriteSpaces_2 FOREIGN KEY (spaceid) REFERENCES ST_Space(id);
+
+ALTER TABLE SB_ContributionTracking ADD CONSTRAINT PK_CONTRIBUTION_TRACKING PRIMARY KEY (id);

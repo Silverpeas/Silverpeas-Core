@@ -26,10 +26,10 @@ package org.silverpeas.web.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.importexport.control.RepositoriesTypeManager;
 import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -111,7 +111,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
         throwHttpForbiddenError();
       }
 
-      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+      ContributionOperationContextPropertyHandler.parseRequest(request);
 
       final String resourceId = request.getParameter("ResourceId");
       final String contentLanguage = checkLanguage(request.getParameter("ContentLanguage"));

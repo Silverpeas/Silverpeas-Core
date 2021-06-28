@@ -79,6 +79,16 @@ public interface User extends Serializable, Comparable<User> {
   }
 
   /**
+   * Gets the system user of Silverpeas. It is a virtual user (that is to say a user without any
+   * account in Silverpeas) used in some processes that are triggered by no real users or executed
+   * for one or more users but by the system itself (like batch processes).
+   * @return the system user of Silverpeas.
+   */
+  static User getSystemUser() {
+    return UserProvider.get().getSystemUser();
+  }
+
+  /**
    * The unique identifier of the user into Silverpeas.
    * @return identifier as string.
    */

@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.attachment;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
@@ -37,7 +38,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
@@ -105,7 +105,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteDocument() {
-    UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+    ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(null);
     document.setUpdatedBy(getUser().getId());
     AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
@@ -120,7 +120,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("content/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteContent(final @PathParam("lang") String lang) {
-    UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+    ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(lang);
     AttachmentServiceProvider.getAttachmentService().removeContent(document, lang, false);
   }
@@ -176,7 +176,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   protected SimpleDocumentEntity updateSimpleDocument(SimpleDocumentUploadData uploadData,
       String filename) throws IOException {
     try {
-      UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+      ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
 
       SimpleDocument document = getSimpleDocument(uploadData.getLanguage());
       boolean isPublic = false;
@@ -429,7 +429,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public String unlockDocument(@FormParam("force") final boolean force,
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
-    UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+    ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(DEFAULT_LANGUAGE);
     UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUser().getId(),
         DEFAULT_LANGUAGE, comment);

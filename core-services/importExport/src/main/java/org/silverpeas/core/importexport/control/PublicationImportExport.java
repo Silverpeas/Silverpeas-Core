@@ -149,7 +149,7 @@ public class PublicationImportExport {
     publication.setLanguage(settings.getContentLanguage());
     if (lastModificationDate != null) {
       publication.setUpdateDate(lastModificationDate);
-      publication.setUpdateDateMustBeSet(true);
+      publication.setUpdateDataMustBeSet(true);
     }
     return publication;
   }
