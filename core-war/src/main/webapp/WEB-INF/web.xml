@@ -690,6 +690,10 @@
     </init-param>
   </servlet>
   <servlet>
+    <servlet-name>Proxy</servlet-name>
+    <servlet-class>org.silverpeas.core.web.proxy.ProxyServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>VisioRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.chat.VisioServlet</servlet-class>
   </servlet>
@@ -1137,6 +1141,10 @@
   <servlet-mapping>
     <servlet-name>WbeRequestRouter</servlet-name>
     <url-pattern>/Rwbe/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Proxy</servlet-name>
+    <url-pattern>/proxy/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>VisioRequestRouter</servlet-name>
