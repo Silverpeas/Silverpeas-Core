@@ -162,7 +162,8 @@ public class ServerEventDispatcherTask
    * @param serverEventToDispatch the server event to dispatch.
    */
   public static void dispatch(ServerEvent serverEventToDispatch) {
-    if (isSseEnabledFor(serverEventToDispatch)) {
+    if (isSseEnabledFor(serverEventToDispatch) &&
+        ServerEventWaitForManager.get().mustSendImmediately(serverEventToDispatch)) {
       ServerEventDispatchRequest request = new ServerEventDispatchRequest(serverEventToDispatch);
       push(request);
     }
@@ -189,7 +190,7 @@ public class ServerEventDispatcherTask
     @Override
     public String getReplacementId() {
       return serverEventToDispatch instanceof StoreLastOnly ?
-          serverEventToDispatch.getName().asString() :
+          ((StoreLastOnly) serverEventToDispatch).getStoreDiscriminator() :
           null;
     }
 

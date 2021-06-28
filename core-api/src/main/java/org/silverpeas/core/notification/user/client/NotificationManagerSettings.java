@@ -25,6 +25,8 @@ package org.silverpeas.core.notification.user.client;
 
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.notification.sse.ServerEvent;
+import org.silverpeas.core.notification.sse.ServerEvent.ServerEventName;
+import org.silverpeas.core.notification.sse.behavior.SendEveryAmountOfTime;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.util.ResourceLocator;
@@ -262,6 +264,23 @@ public class NotificationManagerSettings {
     return isSseEnabled() && settings
         .getBoolean("notification.sse.event." + serverEvent.getName().asString() + ".enabled",
             true);
+  }
+
+
+  /**
+   * Gets the every amount of second a JOB MUST handle the send of a {@link ServerEvent} type.
+   * <p>
+   *   Only event implementing {@link SendEveryAmountOfTime} interface are managed by
+   *   this parameter.
+   * </p>
+   * <p>
+   *   0 or negative value means no JOB management.
+   * </p>
+   * @return an integer representing an amount of seconds.
+   */
+  public static int sendEveryAmountOfSecondsFor(final ServerEventName serverEventName) {
+    return settings.getInteger(
+        "notification.sse." + serverEventName.asString() + ".send.every", 0);
   }
 
   /**

@@ -47,7 +47,7 @@ public class SchedulerProvider {
    * @return an instance of the actual scheduler implementation.
    */
   public static Scheduler getVolatileScheduler() {
-    return ServiceProvider.getService(Scheduler.class);
+    return ServiceProvider.getSingleton(Scheduler.class);
   }
 
   /**

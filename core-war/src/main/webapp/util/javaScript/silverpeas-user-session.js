@@ -131,9 +131,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
       // a new user session is opened or a user session is closed
       spServerEventSource.addEventListener('USER_SESSION', function(serverEvent) {
         const data = extendsObject({
-          nbConnectedUsers : 0,
-          isOpening : false,
-          isClosing : false
+          nbConnectedUsers : 0
         }, JSON.parse(serverEvent.data));
         __changeConnectedUsersWith(data.nbConnectedUsers);
       }, 'connectedUserListener');
