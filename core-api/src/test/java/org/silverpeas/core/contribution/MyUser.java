@@ -132,6 +132,11 @@ public class MyUser implements User {
   }
 
   @Override
+  public boolean isSystem() {
+    return false;
+  }
+
+  @Override
   public boolean isBlanked() {
     return false;
   }
