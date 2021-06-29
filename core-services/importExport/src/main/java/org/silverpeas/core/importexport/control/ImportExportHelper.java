@@ -25,6 +25,7 @@ package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -56,7 +57,7 @@ public class ImportExportHelper {
   }
 
   public static String checkUserId(String userId, UserDetail importer) {
-    if (OrganizationControllerProvider.getOrganisationController().getUserDetail(userId) != null) {
+    if (User.getById(userId) != null) {
       return userId;
     }
     return importer.getId();

@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -44,7 +43,7 @@ public class PdcUserField extends AbstractField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = "pdcUser";
+  public static final String TYPE = "pdcUser";
 
   /**
    * Returns the type name.
@@ -52,12 +51,6 @@ public class PdcUserField extends AbstractField {
   @Override
   public String getTypeName() {
     return TYPE;
-  }
-
-  /**
-   * The no parameters constructor
-   */
-  public PdcUserField() {
   }
 
   /**
@@ -100,7 +93,7 @@ public class PdcUserField extends AbstractField {
       int index;
       String userCardId;
       String userId;
-      UserDetail user;
+      User user;
       StringBuilder names = new StringBuilder("");
       int begin = 0;
       int end = theUserCardIds.indexOf(',', begin);
@@ -110,7 +103,7 @@ public class PdcUserField extends AbstractField {
         userCardId = userCardIdUserId.substring(0, index);
         userId = userCardIdUserId.substring(index + 1);
 
-        user = OrganizationControllerProvider.getOrganisationController().getUserDetail(userId);
+        user = User.getById(userId);
         if (user == null) {
           names.append("userCardId(").append(userCardId).append(")");
         } else {
@@ -146,6 +139,7 @@ public class PdcUserField extends AbstractField {
    */
   @Override
   public void setValue(String value) throws FormException {
+    // nothing to do
   }
 
   /**
@@ -153,6 +147,7 @@ public class PdcUserField extends AbstractField {
    */
   @Override
   public void setValue(String value, String language) throws FormException {
+    // nothing to do
   }
 
   /**

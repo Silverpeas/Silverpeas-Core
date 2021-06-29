@@ -2401,13 +2401,15 @@ class DefaultAdministration implements Administration {
 
   @Override
   public UserDetail getUserDetail(String sUserId) throws AdminException {
-    if (!StringUtil.isDefined(sUserId) || "-1".equals(sUserId)) {
+    if (!StringUtil.isDefined(sUserId)) {
       return null;
+    } else if (sUserId.equals(UserDetail.SYSTEM_USER_ID)) {
+      return UserDetail.getSystemUser();
     }
 
     final UserDetail ud;
     Optional<UserDetail> optionalUser = cache.getUserDetail(sUserId);
-    if (!optionalUser.isPresent()) {
+    if (optionalUser.isEmpty()) {
       ud = userManager.getUserDetail(sUserId);
       if (ud != null) {
         cache.putUserDetail(sUserId, ud);

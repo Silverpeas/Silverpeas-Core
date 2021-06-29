@@ -34,6 +34,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.DecodingException;
@@ -564,44 +565,39 @@ public class DefaultNotificationManager extends AbstractNotification
     return space.getName();
   }
 
+  private User getUser(final String userId) {
+    User user = UserDetail.getById(userId);
+    if (user != null && !user.isSystem()) {
+      return user;
+    } else {
+      SilverLogger.getLogger(this).warn("No user with id " + userId);
+      return null;
+    }
+  }
+
   private String getUserEmail(final String userId) {
     String valret = "";
-    if (! "-1".equals(userId)) {
-      try {
-        UserDetail uDetail = AdministrationServiceProvider.getAdminService().getUserDetail(userId);
-        valret = uDetail.geteMail();
-      } catch (AdminException e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
+    User user = getUser(userId);
+    if (user != null) {
+      valret = user.geteMail();
     }
     return valret;
   }
 
   private UserAccessLevel getUserAccessLevel(int userId) {
     UserAccessLevel valret = UserAccessLevel.UNKNOWN;
-
-    if (userId > -1) {
-      try {
-        UserDetail uDetail =
-            AdministrationServiceProvider.getAdminService().getUserDetail(Integer.toString(userId));
-        valret = uDetail.getAccessLevel();
-      } catch (AdminException e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
+    User user = getUser(String.valueOf(userId));
+    if (user != null) {
+      valret = user.getAccessLevel();
     }
     return valret;
   }
 
   private String getUserFullName(int userId) {
     String valret = "";
-    if (userId > -1) {
-      try {
-        UserDetail uDetail =
-            AdministrationServiceProvider.getAdminService().getUserDetail(Integer.toString(userId));
-        valret = uDetail.getDisplayedName();
-      } catch (AdminException e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
+    User user = getUser(String.valueOf(userId));
+    if (user != null) {
+      valret = user.getDisplayedName();
     }
     return valret;
   }

@@ -27,9 +27,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -1093,15 +1091,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private void setIndexEntryWithAuthorName(final FullIndexEntry indexEntry,
       final PublicationDetail pubDetail) {
-    try {
-      UserDetail ud =
-          AdministrationServiceProvider.getAdminService().getUserDetail(pubDetail.getCreatorId());
-      if (ud != null) {
-        indexEntry.addTextContent(ud.getDisplayedName());
-      }
-    } catch (AdminException e) {
-      // unable to find user detail, ignore and don't index creator's full
-      // name
+    User ud = User.getById(pubDetail.getCreatorId());
+    if (ud != null) {
+      indexEntry.addTextContent(ud.getDisplayedName());
     }
   }
 

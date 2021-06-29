@@ -41,7 +41,7 @@ public class UserNameGenerator {
   public static span generate(User user, String currentUserId) {
     span userName = new span(org.owasp.encoder.Encode.forHtml(user.getDisplayedName()));
     if (StringUtil.isDefined(currentUserId) && !user.getId().equals(currentUserId) &&
-        !UserDetail.isAnonymousUser(currentUserId)) {
+        !user.isSystem() && !UserDetail.isAnonymousUser(currentUserId)) {
       userName.setClass("userToZoom");
       userName.addAttribute("rel", user.getId());
     }

@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
@@ -57,6 +58,9 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Date;
@@ -70,10 +74,12 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class UserDetail implements User {
 
   public static final String BLANK_NAME = "_Anonymous_";
+  public static final String SYSTEM_USER_ID = "-1";
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
+  private static final String DEFAULT_AVATAR_PROPERTY = "login";
   private static final String AVATAR_PROPERTY =
-      ResourceLocator.getGeneralSettingBundle().getString("avatar.property", "login");
+      ResourceLocator.getGeneralSettingBundle().getString("avatar.property", DEFAULT_AVATAR_PROPERTY);
   private static final String AVATAR_EXTENSION =
       ResourceLocator.getGeneralSettingBundle().getString("avatar.extension", "jpg");
   private static final String AVATAR_BASEURI = "/display/avatar/";
@@ -125,6 +131,16 @@ public class UserDetail implements User {
    */
   public static UserDetail getCurrentRequester() {
     return (UserDetail) User.getCurrentRequester();
+  }
+
+  /**
+   * Gets the system user of Silverpeas. It is a virtual user (that is to say a user without any
+   * account in Silverpeas) used in some processes that are triggered by no real users or executed
+   * for one or more users but by the system itself (like batch processes).
+   * @return the system user of Silverpeas.
+   */
+  public static UserDetail getSystemUser() {
+    return (UserDetail) User.getSystemUser();
   }
 
   /**
@@ -576,6 +592,11 @@ public class UserDetail implements User {
   }
 
   @Override
+  public boolean isSystem() {
+    return getId().equals(SYSTEM_USER_ID);
+  }
+
+  @Override
   public boolean isAnonymous() {
     return getId() != null && getId().equals(getAnonymousUserId());
   }
@@ -667,9 +688,10 @@ public class UserDetail implements User {
 
   @Override
   public String getAvatar() {
-    String avatar = getAvatarFileName();
-    if (isAvatarDefined()) {
-      return AVATAR_BASEURI + avatar;
+    String avatarFileName = getAvatarFileName();
+    Path avatarPath = Paths.get(FileRepositoryManager.getAvatarPath(), getAvatarFileName());
+    if (Files.exists(avatarPath) && Files.isRegularFile(avatarPath)) {
+      return AVATAR_BASEURI + avatarFileName;
     }
     return User.DEFAULT_AVATAR_PATH;
   }
@@ -689,13 +711,18 @@ public class UserDetail implements User {
 
   public String getAvatarFileName() {
     String propertyValue = getLogin();
-    try {
-      String getterName = "get" + Character.toUpperCase(AVATAR_PROPERTY.charAt(0)) +
-          AVATAR_PROPERTY.substring(1);
-      Method getter = getClass().getMethod(getterName);
-      propertyValue = getter.invoke(this).toString();
-    } catch (IllegalAccessException|NoSuchMethodException|InvocationTargetException e) {
-      SilverLogger.getLogger(this).silent(e);
+    if (!AVATAR_PROPERTY.equals(DEFAULT_AVATAR_PROPERTY)) {
+      try {
+        String getterName =
+            "get" + Character.toUpperCase(AVATAR_PROPERTY.charAt(0)) + AVATAR_PROPERTY.substring(1);
+        Method getter = getClass().getMethod(getterName);
+        propertyValue = getter.invoke(this).toString();
+        if (!StringUtil.isDefined(propertyValue)) {
+          propertyValue = getLogin();
+        }
+      } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        SilverLogger.getLogger(this).silent(e);
+      }
     }
     return propertyValue + "." + AVATAR_EXTENSION;
   }

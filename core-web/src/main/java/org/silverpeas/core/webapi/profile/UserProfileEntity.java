@@ -60,8 +60,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   private static final long serialVersionUID = -5011846708353591604L;
 
-  private ServletContext context = ServiceProvider.getService(ServletContext.class);
-  private UserDetail user = null;
+  private transient ServletContext context = ServiceProvider.getService(ServletContext.class);
+  private UserDetail user;
   @XmlElement(required = true)
   private URI uri;
   @XmlElement
@@ -83,6 +83,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   private boolean connected = false;
   @XmlElement(defaultValue = "false")
   private boolean anonymous = false;
+  @XmlElement(defaultValue = "false")
+  private boolean system = false;
 
   protected UserProfileEntity() {
     user = new UserDetail();
@@ -90,6 +92,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   protected UserProfileEntity(UserDetail user) {
     this.user = user;
+    this.system = user.isSystem();
     UserPreferences prefs = getUserPreferences();
     if (prefs != null) {
       this.language = prefs.getLanguage();
@@ -312,6 +315,11 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   @Override
   public boolean isAnonymous() {
     return this.anonymous;
+  }
+
+  @Override
+  public boolean isSystem() {
+    return this.system;
   }
 
   public UserProfileEntity withAsUri(URI userUri) {

@@ -29,10 +29,10 @@ import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
@@ -57,9 +57,6 @@ public class LdapField extends TextField {
   public static final String VARIABLE_LOGIN = "$$login";
 
   private String value = "";
-
-  public LdapField() {
-  }
 
   /**
    * Returns the type name.
@@ -164,8 +161,7 @@ public class LdapField extends TextField {
     // parsing filter -> dynamic variable
     if (filter != null && filter.contains(VARIABLE_LOGIN)) {
       try {
-        String valueLogin = OrganizationControllerProvider.getOrganisationController()
-            .getUserDetail(currentUserId).getLogin();
+        String valueLogin = User.getById(currentUserId).getLogin();
         filter = filter.replace(VARIABLE_LOGIN, valueLogin);
       } catch (Exception e) {
         throw new FormException("LdapField.searchLdap",

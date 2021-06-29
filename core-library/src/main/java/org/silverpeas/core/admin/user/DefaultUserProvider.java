@@ -30,16 +30,23 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Provider;
 
 /**
+ * Implementation by default of the {@link UserProvider} interface.
  * @author Yohann Chastagnier
  */
 @Provider
 public class DefaultUserProvider implements UserProvider {
 
-  private static final String SYSTEM_USER_ID = "-1";
+  private static final UserDetail systemUser = new UserDetail();
+  static {
+    systemUser.setId(UserDetail.SYSTEM_USER_ID);
+    systemUser.setFirstName("");
+    systemUser.setLastName("SYSTEM");
+    systemUser.setLogin("avatar-system");
+  }
 
   @Override
   public User getUser(final String userId) {
-    if (SYSTEM_USER_ID.equals(userId)) {
+    if (UserDetail.SYSTEM_USER_ID.equals(userId)) {
       return getSystemUser();
     }
     return OrganizationController.get().getUserDetail(userId);
@@ -47,10 +54,6 @@ public class DefaultUserProvider implements UserProvider {
 
   @Override
   public User getSystemUser() {
-    UserDetail user = new UserDetail();
-    user.setId(SYSTEM_USER_ID);
-    user.setFirstName("SYSTEM");
-    user.setLastName("SYSTEM");
-    return user;
+    return systemUser;
   }
 }

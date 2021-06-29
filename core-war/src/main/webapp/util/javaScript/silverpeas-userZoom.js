@@ -138,7 +138,7 @@
   }
 
   /**
-   * Returns the HTML element with the user interation tool (including links to chat, to send
+   * Returns the HTML element with the user interaction tool (including links to chat, to send
    * messages, to send an invitation, ...)
    */
   function interactionWith(user) {
@@ -291,7 +291,7 @@
               profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
         User.get(user.id).then(function(theUser) {
           profile = theUser;
-          if (!profile.deletedState && !profile.deactivatedState) {
+          if (!profile.system && !profile.deletedState && !profile.deactivatedState) {
             render($this, profile);
           }
         });

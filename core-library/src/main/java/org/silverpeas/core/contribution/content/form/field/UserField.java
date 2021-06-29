@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -43,7 +43,7 @@ public class UserField extends AbstractField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = "user";
+  public static final String TYPE = "user";
 
   /**
    * Returns the type name.
@@ -51,12 +51,6 @@ public class UserField extends AbstractField {
   @Override
   public String getTypeName() {
     return TYPE;
-  }
-
-  /**
-   * The no parameters constructor
-   */
-  public UserField() {
   }
 
   /**
@@ -92,8 +86,7 @@ public class UserField extends AbstractField {
       return theUserId;
     }
 
-    UserDetail user = OrganizationControllerProvider.getOrganisationController().getUserDetail(
-        getUserId());
+    User user = User.getById(getUserId());
     if (user == null) {
       return "user(" + getUserId() + ")";
     }
@@ -115,6 +108,7 @@ public class UserField extends AbstractField {
    */
   @Override
   public void setValue(String value) throws FormException {
+    // nothing to do
   }
 
   /**
@@ -122,6 +116,7 @@ public class UserField extends AbstractField {
    */
   @Override
   public void setValue(String value, String language) throws FormException {
+    // nothing to do
   }
 
   /**
@@ -148,7 +143,7 @@ public class UserField extends AbstractField {
     if (getUserId() == null) {
       return null;
     }
-    return OrganizationControllerProvider.getOrganisationController().getUserDetail(getUserId());
+    return User.getById(getUserId());
   }
 
   /**
