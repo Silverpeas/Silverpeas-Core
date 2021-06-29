@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.error;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.exception.WithNested;
@@ -177,6 +178,9 @@ public class SilverpeasTransverseErrorUtil {
           throwable = ((RemoteException) throwable).detail;
         } else if (throwable instanceof EJBException) {
           throwable = ((EJBException) throwable).getCausedByException();
+        } else if (throwable instanceof SilverpeasRuntimeException &&
+              throwable.getCause() != null && !throwable.getCause().equals(throwable)) {
+            throwable = throwable.getCause();
         } else {
           throwable = null;
         }
