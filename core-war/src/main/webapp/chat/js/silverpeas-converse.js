@@ -24,6 +24,8 @@
 
 (function() {
 
+  let __converse;
+
   /**
    * Setups the vcard management in order to get the display of user avatar and user name.
    * @private
@@ -252,7 +254,7 @@
       dependencies : ["silverpeas-vcard"],
       initialize : function() {
         const _converse = this._converse;
-        window._converse = _converse;
+        __converse = _converse;
         const urlAsDataPromise = sp.base64.urlAsData(chatOptions.userAvatarUrl);
         const refreshUserAvatar = function() {
           const promises = [];
@@ -301,7 +303,45 @@
             });
           });
         });
-      },
+      }
+    });
+  }
+
+  /**
+   * Setups the chat cache storage management.
+   * @private
+   */
+  function __setupCacheStorageManagement(chatOptions) {
+    chatOptions.whitelisted_plugins.push('silverpeas-cache-storage-management');
+    converse.plugins.add('silverpeas-cache-storage-management', {
+      dependencies : [],
+      initialize : function() {
+        const _converse = this._converse;
+        const clean = function(room, onClose) {
+          if (room.messages.size() > chatOptions.nbMsgMaxCachedPerRoom) {
+            sp.log.debug('message clear performed on', room.get('jid'), 'more than', chatOptions.nbMsgMaxCachedPerRoom, 'messages');
+            room.clearMessages().then(function() {
+              if (!onClose) {
+                return room.fetchMessages();
+              }
+            });
+          } else if (!onClose && room.messages.size() === 0) {
+            sp.log.debug('fetching archived message on', room.get('jid'));
+            return room.fetchArchivedMessages({'before': ''});
+          }
+        };
+        _converse.api.listen.on('afterMessagesFetched', function(room) {
+          return clean(room, false);
+        });
+        _converse.api.listen.on('chatBoxClosed', function (room) {
+          if (room && room.model) {
+            const roomType = room.model.get('type');
+            if (roomType === _converse.CHATROOMS_TYPE || roomType === _converse.PRIVATE_CHAT_TYPE) {
+              clean(room.model, true);
+            }
+          }
+        });
+      }
     });
   }
 
@@ -326,6 +366,7 @@
       __setupSilverpeas(__settings);
       __setupChatboxesAddons(__settings);
       __setupNotificationAddons(__settings);
+      __setupCacheStorageManagement(__settings);
       return this;
     };
     this.start = function() {
@@ -353,7 +394,6 @@
           'muc_domain' : 'conference.' + __settings.domain,
           'locked_muc_domain' : 'hidden',
           'muc_disable_slash_commands' : true,
-          'muc_history_max_stanzas' : 0,
           'locked_muc_nickname' : true,
           'nickname' : __settings.vcard.fn,
           'auto_register_muc_nickname' : true,
@@ -371,8 +411,8 @@
       });
     };
     this.stop = function() {
-      _converse.off();
-      return _converse.api.user.logout();
+      __converse.off();
+      return __converse.api.user.logout();
     };
   }
 })();
