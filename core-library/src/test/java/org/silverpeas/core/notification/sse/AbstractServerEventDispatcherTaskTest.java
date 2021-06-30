@@ -28,6 +28,7 @@ import org.awaitility.core.ThrowingRunnable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask.ServerEventStore;
@@ -35,6 +36,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
 
@@ -56,7 +58,8 @@ import static org.mockito.Mockito.*;
  */
 @EnableSilverTestEnv
 @LoggerLevel(Level.DEBUG)
-@TestManagedBeans({ServerEventDispatcherTask.class, RequestTaskManager.class})
+@TestManagedBeans({ServerEventDispatcherTask.class, RequestTaskManager.class,
+    ServerEventWaitForManager.class})
 abstract class AbstractServerEventDispatcherTaskTest {
 
   final static String EVENT_SOURCE_REQUEST_URI = "/handled";
@@ -86,14 +89,14 @@ abstract class AbstractServerEventDispatcherTaskTest {
     new SseLogger().init();
   }
 
-  ServerEvent newMockedServerEvent(String name, String data) throws Exception {
+  ServerEvent newMockedServerEvent(String name, String data) {
     ServerEvent mock = spy(AbstractServerEvent.class);
     when(mock.getName()).thenReturn(() -> name);
     when(mock.getData(anyString(), any(User.class))).thenReturn(data);
     return mock;
   }
 
-  List<ServerEvent> getStoredServerEvents() throws Exception {
+  List<ServerEvent> getStoredServerEvents() {
     return serverEventStore.getFromId(-1);
   }
 
@@ -129,7 +132,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
     ArgumentCaptor<String> requestContentCaptor = ArgumentCaptor.forClass(String.class);
     verify(mockedAsyncContext.getResponse().getWriter(), atLeast(nbPerform))
         .append(requestContentCaptor.capture());
-    verify(mockedAsyncContext.getResponse(), atLeast(nbPerform)).flushBuffer();
+    verify(mockedAsyncContext.getResponse().getWriter(), atLeast(nbPerform)).flush();
     StringBuilder result = new StringBuilder();
     requestContentCaptor.getAllValues().forEach(result::append);
     return result.toString();

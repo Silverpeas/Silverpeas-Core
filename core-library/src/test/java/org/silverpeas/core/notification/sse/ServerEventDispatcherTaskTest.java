@@ -23,7 +23,11 @@
  */
 package org.silverpeas.core.notification.sse;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.JSONCodec;
 
 import static org.hamcrest.MatcherAssert.assertThat;
