@@ -25,17 +25,14 @@ package org.silverpeas.core.cache.service;
 
 import org.ehcache.Cache;
 import org.ehcache.UserManagedCache;
-import org.ehcache.ValueSupplier;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.builders.UserManagedCacheBuilder;
-import org.ehcache.expiry.Duration;
-import org.ehcache.expiry.Expiry;
+import org.ehcache.expiry.ExpiryPolicy;
 import org.silverpeas.core.cache.model.AbstractCache;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Implementation of the Cache that uses EhCache API.
@@ -50,9 +47,8 @@ final class EhCache extends AbstractCache {
    *
    * @param nbMaxElements maximum capacity of the cache.
    */
-  @SuppressWarnings("unchecked")
   EhCache(long nbMaxElements) {
-    UserManagedCacheBuilder cacheBuilder =
+    var cacheBuilder =
         UserManagedCacheBuilder.newUserManagedCacheBuilder(Object.class, Element.class)
             .withExpiry(new PerElementExpiration());
     if (nbMaxElements > 0) {
@@ -132,7 +128,7 @@ final class EhCache extends AbstractCache {
    * information.
    */
   static class Element {
-    private Object value;
+    private final Object value;
     private int ttl;
     private int tti;
 
@@ -174,40 +170,35 @@ final class EhCache extends AbstractCache {
   /**
    * A custom expiration rule based upon both TTL and TTI for each element in the cache.
    */
-  private class PerElementExpiration implements Expiry<Object, Element> {
+  private static class PerElementExpiration implements ExpiryPolicy<Object, Element> {
 
     @Override
     public Duration getExpiryForCreation(final Object key, final Element value) {
-      Duration expiration = Duration.INFINITE;
+      Duration expiration;
       if (value.getTimeToLive() <= 0 && value.getTimeToIdle() > 0) {
-        expiration = Duration.of(value.getTimeToIdle(), SECONDS);
+        expiration = Duration.ofSeconds(value.getTimeToIdle());
       } else if (value.getTimeToLive() > 0) {
-        expiration = Duration.of(value.getTimeToLive(), SECONDS);
+        expiration = Duration.ofSeconds(value.getTimeToLive());
+      } else {
+        expiration = ExpiryPolicy.INFINITE;
       }
       return expiration;
     }
 
     @Override
-    public Duration getExpiryForAccess(final Object key,
-        final ValueSupplier<? extends Element> value) {
+    public Duration getExpiryForAccess(final Object key, final Supplier<? extends Element> value) {
       Duration expiration = null;
-      Element element = value.value();
+      Element element = value.get();
       if (element.getTimeToIdle() > 0) {
-        expiration = Duration.of(element.getTimeToIdle(), SECONDS);
+        expiration = Duration.ofSeconds(element.getTimeToIdle());
       }
       return expiration;
     }
 
     @Override
-    public Duration getExpiryForUpdate(final Object key,
-        final ValueSupplier<? extends Element> oldValue, final Element newValue) {
-      Duration expiration = Duration.INFINITE;
-      if (newValue.getTimeToLive() <= 0 && newValue.getTimeToIdle() > 0) {
-        expiration = Duration.of(newValue.getTimeToIdle(), SECONDS);
-      } else if (newValue.getTimeToLive() > 0) {
-        expiration = Duration.of(newValue.getTimeToLive(), SECONDS);
-      }
-      return expiration;
+    public Duration getExpiryForUpdate(final Object key, final Supplier<? extends Element> oldValue,
+        final Element newValue) {
+      return getExpiryForCreation(key, newValue);
     }
   }
 }

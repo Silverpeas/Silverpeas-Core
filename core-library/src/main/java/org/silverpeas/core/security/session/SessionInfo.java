@@ -225,13 +225,23 @@ public class SessionInfo implements SilverpeasUserSession {
   }
 
   /**
-   * Is this session is defined? A session is defined if it's a session opened to a user in
+   * Is this session defined? A session is defined if it's a session opened to a user in
    * Silverpeas.
    *
    * @return true if this session is defined, false otherwise.
    */
   public boolean isDefined() {
     return this != NoneSession && this.getUserDetail() != null;
+  }
+
+  /**
+   * Is this session an anonymous one? A session is anonymous when no users are explicitly
+   * authenticated and then identified and the users uses Silverpeas under the cover of an
+   * anonymous user account.
+   * @return true if this session is a defined anonymous one, false otherwise.
+   */
+  public boolean isAnonymous() {
+    return this == AnonymousSession && this.getUserDetail().isAnonymous();
   }
 
   /**
