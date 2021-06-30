@@ -134,7 +134,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
     return (T) this;
   }
 
-  private static long nextId() {
+  private static synchronized long nextId() {
     return idCounter++;
   }
 }
