@@ -79,6 +79,7 @@
             avatar : webContext + '/display/avatar/60x/',
             userAvatarUrl : webContext + '/<%=FileServerUtils.getImageURL(chatUser.getAvatar(), "60x60")%>',
             notificationLogo : (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
+            nbMsgMaxCachedPerRoom : ${chatSettings.maxCachedMsgThresholdPerRoom},
             visioEnabled : ${chatSettings.visioEnabled},
             screencastEnabled : ${chatSettings.screencastEnabled},
             debug : false,

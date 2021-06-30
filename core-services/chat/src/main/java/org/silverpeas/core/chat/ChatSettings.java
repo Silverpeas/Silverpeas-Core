@@ -85,6 +85,15 @@ public class ChatSettings {
   }
 
   /**
+   * Gets for a room the threshold of cached messages over that the messages are clean from the
+   * web browser storage.
+   * @return a threshold as integer.
+   */
+  public int getMaxCachedMsgThresholdPerRoom() {
+    return settings.getInteger(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".maxCachedMsgThresholdPerRoom", 200);
+  }
+
+  /**
    * Indicates if the visio conference is enabled.
    * @return true of enabled, false otherwise.
    */
