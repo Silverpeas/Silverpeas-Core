@@ -63,7 +63,7 @@ import static org.silverpeas.core.util.StringUtil.normalize;
  */
 public class AttachmentImportExport {
 
-  private UserDetail user;
+  private final UserDetail user;
   private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
 
@@ -71,29 +71,10 @@ public class AttachmentImportExport {
     this.user = user;
   }
 
-  /* TODO : à reprendre pour feature_82
-   *
-   * public AttachmentDetail importWysiwygAttachment(String pubId,
-   String componentId, AttachmentDetail attachmentDetail, String context) {
-   AttachmentDetail a_detail = null;
-   this.copyFileWysiwyg(componentId, attachmentDetail, context);
-   if (attachmentDetail.getSize() > 0) {
-   a_detail = this.addAttachmentToPublication(pubId, componentId, attachmentDetail, context,
-   false);
-   }
-   return a_detail;
-   }*/
-  @Deprecated
-  public AttachmentDetail importWysiwygAttachment(String pubId,
-      String componentId, AttachmentDetail attachmentDetail, String context) {
-    return null;
-  }
-
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
       List<AttachmentDetail> attachments, boolean indexIt) throws FileNotFoundException {
     FormTemplateImportExport xmlIE = null;
     for (AttachmentDetail attDetail : attachments) {
-      //TODO check user id
       attDetail.setAuthor(this.user.getId());
       attDetail.setInstanceId(componentId);
       XMLModelContentType xmlContent = attDetail.getXMLModelContentType();
