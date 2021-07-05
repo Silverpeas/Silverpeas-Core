@@ -259,7 +259,7 @@ public class XmlForm extends AbstractForm {
       }
     }
     out.println("</ul>");
-    if (mandatory) {
+    if (mandatory && pageContext.isShowMandatorySnippet()) {
       out.println("<div class=\"legend\">");
       out.println(Util.getMandatorySnippet() + "&nbsp;:&nbsp;" + Util.getString("GML.requiredField",
           language));

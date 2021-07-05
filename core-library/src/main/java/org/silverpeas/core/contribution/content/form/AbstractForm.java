@@ -160,7 +160,12 @@ public abstract class AbstractForm implements Form {
       printJavascriptIgnoreMandatorySnippet(out);
       printJavascriptSkippableSnippet(out);
 
-      out.append("function ifCorrectFormExecute(callback) {\n")
+      String functionName = "ifCorrectFormExecute";
+      if (pagesContext.isMultiFormInPage()) {
+        functionName = "ifCorrectForm"+pagesContext.getFormIndex()+"Execute";
+      }
+
+      out.append("function ").append(functionName).append("(callback) {\n")
           .append("  errorMsg = \"\";\n")
           .append("  errorNb = 0;\n")
           .append("  var field;\n")

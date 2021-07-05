@@ -124,4 +124,6 @@ public interface Form {
   public void setViewForm(boolean viewForm);
 
   public String getFormName();
+
+  public DataRecord getData();
 }
