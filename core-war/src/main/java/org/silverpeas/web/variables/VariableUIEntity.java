@@ -25,7 +25,7 @@ public class VariableUIEntity extends SelectableUIEntity<Variable> {
     super(data, selectedIds);
   }
 
-  private Supplier<VariableScheduledValue> defaultValue =
+  private final Supplier<VariableScheduledValue> defaultValue =
       () -> new VariableScheduledValue("", Period.between(LocalDate.MIN, LocalDate.MAX));
 
   @Override
