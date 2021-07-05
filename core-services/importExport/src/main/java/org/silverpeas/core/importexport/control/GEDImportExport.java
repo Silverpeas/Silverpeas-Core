@@ -837,15 +837,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   }
 
-  public abstract void publicationNotClassifiedOnPDC(String pubId) throws Exception;
+  public abstract void publicationNotClassifiedOnPDC(String pubId);
 
   /**
    * Specific Kmax: Create publication with no nodeFather
    * @param pubDetail
    * @return pubDetail
    */
-  protected abstract PublicationDetail createPublication(PublicationDetail pubDetail)
-      throws Exception;
+  protected abstract PublicationDetail createPublication(PublicationDetail pubDetail);
 
   public Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId)
       throws ImportExportException {
@@ -882,13 +881,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   protected abstract void updatePublication(PublicationDetail pubDetTemp,
-      PublicationDetail pubDetailToCreate, UserDetail userDetail) throws Exception;
+      PublicationDetail pubDetailToCreate, UserDetail userDetail);
 
   protected abstract String createPublicationIntoTopic(PublicationDetail pubDetTemp, NodePK topicPK,
-      UserDetail userDetail) throws Exception;
+      UserDetail userDetail);
 
-  protected abstract void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK)
-      throws Exception;
+  protected abstract void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK);
 
   protected abstract CompletePublication getCompletePublication(PublicationPK pk);
 }
