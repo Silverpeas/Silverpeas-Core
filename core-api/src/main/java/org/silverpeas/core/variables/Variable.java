@@ -34,7 +34,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -50,9 +49,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "sb_variables_variable")
-@NamedQueries({
-    @NamedQuery(name = "allVariables", query = "select v from Variable v order by v.label ASC"),
-    @NamedQuery(name = "currentVariables", query = "select distinct v from Variable v join v.values vv where vv.startDate <= :today and :today <= vv.endDate order by v.label ASC")})
+@NamedQuery(name = "allVariables", query = "select v from Variable v order by v.label ASC")
+@NamedQuery(name = "currentVariables", query = "select distinct v from Variable v join v.values vv where vv.startDate <= :today and :today <= vv.endDate order by v.label ASC")
 public class Variable extends SilverpeasJpaEntity<Variable, UuidIdentifier> implements
     Securable {
 
@@ -64,7 +62,7 @@ public class Variable extends SilverpeasJpaEntity<Variable, UuidIdentifier> impl
 
   @OneToMany(mappedBy = "variable", fetch = FetchType.EAGER, cascade = CascadeType.ALL,
       orphanRemoval = true)
-  private Set<VariableScheduledValue> values = new HashSet<>();
+  private final Set<VariableScheduledValue> values = new HashSet<>();
 
   protected Variable() {
     // default constructor for the persistence engine

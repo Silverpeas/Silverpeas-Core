@@ -283,7 +283,15 @@ public class TemporalConverter {
     Objects.requireNonNull(temporal);
     Instant instant = applyByType(temporal, LOCAL_DATE_TO_INSTANT, LOCAL_DATE_TIME_TO_INSTANT,
         OFFSET_DATE_TIME_TO_INSTANT, ZONED_DATE_TIME_TO_INSTANT, INSTANT_TO_INSTANT);
-    return Date.from(instant);
+    Date date;
+    if (instant == Instant.MIN) {
+      date = new Date(Long.MIN_VALUE);
+    } else if (instant == Instant.MAX) {
+      date = new Date(Long.MAX_VALUE);
+    } else {
+      date = Date.from(instant);
+    }
+    return date;
   }
 
   private static final Conversion<Instant, Instant> INSTANT_TO_INSTANT =
