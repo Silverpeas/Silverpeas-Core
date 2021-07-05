@@ -89,7 +89,9 @@ public class ServerEventDispatcherTask
           .debug(() -> format(
               "Unregistering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}",
               context, synchronizedContexts.size()));
-      context.complete();
+      if (!context.isComplete()) {
+        context.complete();
+      }
     }
   }
 
@@ -98,7 +100,9 @@ public class ServerEventDispatcherTask
    * @return a list of asynchronous context.
    */
   static List<SilverpeasAsyncContext> getAsyncContextSnapshot() {
-    return new ArrayList<>(synchronizedContexts);
+    synchronized (synchronizedContexts) {
+      return synchronizedContexts.stream().collect(Collectors.toList());
+    }
   }
 
   /**
@@ -281,7 +285,7 @@ public class ServerEventDispatcherTask
      * @return the list of context.
      */
     List<SilverpeasAsyncContext> getSafeContexts() {
-      return new ArrayList<>(synchronizedContexts);
+      return getAsyncContextSnapshot();
     }
 
     /**

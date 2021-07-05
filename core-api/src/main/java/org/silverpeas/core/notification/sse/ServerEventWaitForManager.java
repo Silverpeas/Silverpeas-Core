@@ -24,27 +24,31 @@
 
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.sse.behavior.SendEveryAmountOfTime;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
+import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Semaphore;
+import java.util.function.Predicate;
 
 import static java.lang.String.valueOf;
 import static java.text.MessageFormat.format;
-import static java.util.Collections.synchronizedMap;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.sendEveryAmountOfSecondsFor;
+import static org.silverpeas.core.scheduler.SchedulerProvider.getVolatileScheduler;
 
 /**
  * This manager handles all {@link ServerEvent} implementation implementing also
@@ -58,7 +62,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 @Service
 public class ServerEventWaitForManager {
 
-  private static final Map<String, CacheContext> contextsByEventType = synchronizedMap(new HashMap<>());
+  private static final ConcurrentMap<String, CacheContext> contextsByEventType = new ConcurrentHashMap<>();
 
   ServerEventWaitForManager() {
   }
@@ -86,26 +90,13 @@ public class ServerEventWaitForManager {
       mustSendImmediately = serverEvent.hasWaitingFor();
       if (!mustSendImmediately) {
         final String eventType = serverEvent.getStoreDiscriminator();
-        synchronized (contextsByEventType) {
-          final CacheContext context = contextsByEventType.computeIfAbsent(eventType, k -> new CacheContext());
-          if (!context.isJobInitialized()) {
-            mustSendImmediately = true;
-            context.setJob(new ServerEventJob(serverEvent));
-          } else {
-            mustSendImmediately = false;
-            final SendEveryAmountOfTime previousEvent = context.setEvent(serverEvent);
-            if (previousEvent == null) {
+        mustSendImmediately = contextsByEventType
+            .computeIfAbsent(eventType, t -> {
               SseLogger.get()
-                  .debug(() -> format("WAIT FOR - {0} - first event waiting for job execution",
-                      eventType));
-            } else {
-              SseLogger.get()
-                  .debug(() -> format(
-                      "WAIT FOR - {0} - new event replacing a previous to wait for job execution ({1} replacements)",
-                      eventType, valueOf(context.count)));
-            }
-          }
-        }
+                  .debug(() -> format("WAIT FOR - {0} - added into cache of contexts", t));
+              return new CacheContext(t);
+            })
+            .setEvent(serverEvent);
       }
     }
     return mustSendImmediately;
@@ -123,15 +114,15 @@ public class ServerEventWaitForManager {
       super("SEE_JOB_FOR_EVENT_" + event.getStoreDiscriminator());
       this.eventName = event.getName();
       this.eventType = event.getStoreDiscriminator();
-      setOrVerifyJobDelay();
     }
 
-    private void setOrVerifyJobDelay() {
-      final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+    private boolean setOrVerifyJobDelay() {
+      boolean scheduled = false;
       final int newDelayInSeconds = sendEveryAmountOfSecondsFor(eventName);
       if (newDelayInSeconds > 0) {
         try {
           if (delayInSeconds != newDelayInSeconds) {
+            final Scheduler scheduler = getVolatileScheduler();
             if (delayInSeconds != -1) {
               SseLogger.get()
                   .debug(() -> format("WAIT FOR - {0} - JOB - stopping because of changed delay",
@@ -148,26 +139,25 @@ public class ServerEventWaitForManager {
           SilverLogger.getLogger(this).error(e);
         }
         delayInSeconds = newDelayInSeconds;
+        scheduled = true;
       } else {
         try {
           SseLogger.get()
               .debug(() -> format("WAIT FOR - {0} - JOB - stopping because of deactivation",
                   eventType));
-          scheduler.unscheduleJob(getName());
-          clearCacheContext();
+          getVolatileScheduler().unscheduleJob(getName());
         } catch (SchedulerException e) {
           SseLogger.get().error(e);
         }
         delayInSeconds = -1;
       }
+      return scheduled;
     }
 
     @Override
     public void execute(final JobExecutionContext context) {
-      SseLogger.get().debug(() -> format("WAIT FOR - {0} - JOB - invoked", eventType));
-      synchronized (contextsByEventType) {
-        final CacheContext cacheContext = contextsByEventType.get(eventType);
-        final Optional<SendEveryAmountOfTime> event = cacheContext.consumeEvent();
+      contextsByEventType.get(eventType)
+          .consumeEvent("JOB - starts invoke", "JOB - ends invoke", event -> {
         if (event.isPresent()) {
           SseLogger.get()
               .debug(() -> format("WAIT FOR - {0} - JOB - dispatch last event waiting for",
@@ -177,42 +167,105 @@ public class ServerEventWaitForManager {
           SseLogger.get()
               .debug(() -> format("WAIT FOR - {0} - JOB - no event to dispatch", eventType));
         }
-        setOrVerifyJobDelay();
-      }
-    }
-
-    private void clearCacheContext() {
-      contextsByEventType.remove(eventType);
-      SseLogger.get().debug(() -> format("WAIT FOR - {0} - JOB - clearing context cache", eventType));
+        return setOrVerifyJobDelay();
+      });
     }
   }
 
-  private static class CacheContext {
-    private SendEveryAmountOfTime event = null;
-    private int count = 0;
-    private ServerEventJob job = null;
+  private static class CacheContext implements Serializable {
+    private static final long serialVersionUID = 679271503199577304L;
 
-    private SendEveryAmountOfTime setEvent(final SendEveryAmountOfTime event) {
-      final SendEveryAmountOfTime previous = this.event;
-      this.event = event;
+    private final Semaphore semaphore = new Semaphore(1, true);
+    private final String eventType;
+    private transient SendEveryAmountOfTime event;
+    private int count = -1;
+
+    public CacheContext(final String eventType) {
+      this.eventType = eventType;
+    }
+
+    /**
+     * Sets event into context.
+     * <p>
+     * The first set event induced the context initialization. In a such case, this event MUST be
+     * sent immediately.
+     * </p>
+     * @param event a {@link SendEveryAmountOfTime} event instance.
+     * @return true if given event MUST be sent immediately, false otherwise.
+     */
+    private boolean setEvent(final SendEveryAmountOfTime event) {
       event.markAsWaitingFor();
-      count++;
-      return previous;
+      return safeExecute("CONTEXT - try set event into context", "CONTEXT - event set into context",
+          () -> {
+        boolean mustSendImmediately = false;
+        if (count == -1) {
+          SseLogger.get()
+              .debug(() -> format("WAIT FOR - {0} - CONTEXT - first event after context initialization is sent immediately",
+                  eventType));
+          mustSendImmediately = true;
+          count = 0;
+          new ServerEventJob(event).setOrVerifyJobDelay();
+        } else {
+          if (count == 0) {
+            SseLogger.get()
+                .debug(() -> format("WAIT FOR - {0} - CONTEXT - first event waiting for job execution",
+                    eventType));
+          } else {
+            SseLogger.get()
+                .debug(() -> format(
+                    "WAIT FOR - {0} - CONTEXT - new event replacing a previous to wait for job execution ({1} replacements)",
+                    eventType, valueOf(count)));
+          }
+        }
+        this.event = event;
+        count++;
+        return mustSendImmediately;
+      });
     }
 
-    private void setJob(final ServerEventJob job) {
-      this.job = job;
+    /**
+     * Handles the event consume.
+     * <p>
+     * If JOB ends, the cache of context is cleared about the current handled event name.
+     * </p>
+     * @param acquireMsg for debug messages.
+     * @param releaseMsg for debug messages.
+     * @param function a lambda taking as parameter an event and returning true to indicate that
+     * the JOB keep alive to process next events or false to indicate the end of JOB.
+     */
+    private void consumeEvent(final String acquireMsg, final String releaseMsg,
+        final Predicate<Optional<SendEveryAmountOfTime>> function) {
+      safeExecute(acquireMsg, releaseMsg, () -> {
+        if (!Boolean.TRUE.equals(function.test(ofNullable(event)))) {
+          contextsByEventType.remove(eventType);
+          SseLogger.get()
+              .debug(() -> format("WAIT FOR - {0} - CONTEXT - removed from cache of contexts",
+                  eventType));
+        }
+        event = null;
+        count = 0;
+        return null;
+      });
     }
 
-    private Optional<SendEveryAmountOfTime> consumeEvent() {
-      final SendEveryAmountOfTime eventToConsume = this.event;
-      this.event = null;
-      count = 0;
-      return ofNullable(eventToConsume);
-    }
-
-    public boolean isJobInitialized() {
-      return job != null;
+    private <T> T safeExecute(final String acquireMsg, final String releaseMsg, final Process<T> process) {
+      SseLogger.get()
+          .debug(() -> format("WAIT FOR - {0} - {1} ({2} are waiting)",
+              eventType, acquireMsg, valueOf(semaphore.getQueueLength())));
+      try {
+        semaphore.acquire();
+        return process.execute();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new SilverpeasRuntimeException(e);
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      } finally {
+        semaphore.release();
+        SseLogger.get()
+            .debug(() -> format("WAIT FOR - {0} - {1} ({2} are waiting)",
+                eventType, releaseMsg, valueOf(semaphore.getQueueLength())));
+      }
     }
   }
 }
