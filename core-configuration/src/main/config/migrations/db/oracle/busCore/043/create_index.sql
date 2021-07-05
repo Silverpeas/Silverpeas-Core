@@ -1,2 +1,2 @@
-CREATE INDEX IDX_SB_CONTRIBUTION_TRACKING_CONTRIBUTION
+CREATE INDEX IDX_CONTRIBUTION_TRACKING
     ON SB_Contribution_Tracking (contrib_id, contrib_type, contrib_instanceId);
