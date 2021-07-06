@@ -23,24 +23,20 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.SilverpeasException;
-
-/*
- * @author Norbert CHAIX
- * @version 1.0
+/**
+ * Exception thrown when a resource (domain, user, space, ...) isn't found in Silverpeas.
+ * @author mmoquillon
  */
-public class AdminException extends SilverpeasException {
-  private static final long serialVersionUID = 2131319112058819021L;
-
-  public AdminException(final String message, final String... parameters) {
+public class AdminNotFoundException extends AdminException {
+  public AdminNotFoundException(final String message, final String... parameters) {
     super(message, parameters);
   }
 
-  public AdminException(final String message, final Throwable cause) {
+  public AdminNotFoundException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public AdminException(final Throwable cause) {
+  public AdminNotFoundException(final Throwable cause) {
     super(cause);
   }
 }

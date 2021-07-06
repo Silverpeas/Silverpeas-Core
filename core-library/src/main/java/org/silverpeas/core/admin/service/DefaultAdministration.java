@@ -2870,15 +2870,16 @@ class DefaultAdministration implements Administration {
       }
       final Domain domain;
       Optional<Domain> optionalDomain = domainCache.getDomain(domainId);
-      if (!optionalDomain.isPresent()) {
+      if (optionalDomain.isEmpty()) {
         domain = domainDriverManager.getDomain(domainId);
         domainCache.addDomain(domain);
       } else {
         domain = optionalDomain.get();
       }
       return domain;
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting(DOMAIN, domainId), e);
+    } catch (AdminNotFoundException e) {
+      SilverLogger.getLogger(this).warn(e.getMessage());
+      return null;
     }
   }
 

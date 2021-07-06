@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.persistence.DomainRow;
 import org.silverpeas.core.admin.persistence.KeyStoreRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdminNotFoundException;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
@@ -720,7 +721,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Get the domain information
       DomainRow dr = getOrganizationSchema().domain().getDomain(idAsInt(domainId));
       if (dr == null) {
-        throw new AdminException(unknown(DOMAIN, domainId));
+        throw new AdminNotFoundException(unknown(DOMAIN, domainId));
       }
 
       valret = new Domain();
