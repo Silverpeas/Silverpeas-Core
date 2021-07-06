@@ -57,9 +57,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Date;
@@ -687,10 +684,9 @@ public class UserDetail implements User {
 
   @Override
   public String getAvatar() {
-    String avatarFileName = getAvatarFileName();
-    Path avatarPath = Paths.get(FileRepositoryManager.getAvatarPath(), getAvatarFileName());
-    if (Files.exists(avatarPath) && Files.isRegularFile(avatarPath)) {
-      return AVATAR_BASEURI + avatarFileName;
+    File avatar = getAvatarFile();
+    if (avatar.exists() && avatar.isFile()) {
+      return AVATAR_BASEURI + avatar.getName();
     }
     return User.DEFAULT_AVATAR_PATH;
   }
@@ -705,7 +701,7 @@ public class UserDetail implements User {
   }
 
   public boolean isAvatarDefined() {
-    return new File(FileRepositoryManager.getAvatarPath(), getAvatarFileName()).exists();
+    return getAvatarFile().exists();
   }
 
   public String getAvatarFileName() {
@@ -724,6 +720,10 @@ public class UserDetail implements User {
       }
     }
     return propertyValue + "." + AVATAR_EXTENSION;
+  }
+
+  private File getAvatarFile() {
+    return new File(FileRepositoryManager.getAvatarPath(), getAvatarFileName());
   }
 
   @Override
