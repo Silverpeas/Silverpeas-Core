@@ -142,7 +142,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     this.repositoryPath = simpleDocument.getRepositoryPath();
     this.versionMaster = simpleDocument.getVersionMaster();
     this.versionIndex = simpleDocument.getVersionIndex();
-    this.pk = simpleDocument.getPk();
+    this.pk = simpleDocument.getPk().clone();
     this.foreignId = simpleDocument.getForeignId();
     this.order = simpleDocument.getOrder();
     this.versioned = simpleDocument.isVersioned();
@@ -158,8 +158,10 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     this.nodeName = simpleDocument.getNodeName();
     this.comment = simpleDocument.getComment();
     this.documentType = simpleDocument.getDocumentType();
-    this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
-    this.attachment = simpleDocument.getAttachment();
+    this.forbiddenDownloadForRoles = this.forbiddenDownloadForRoles != null ?
+        EnumSet.copyOf(simpleDocument.forbiddenDownloadForRoles) :
+        null;
+    this.attachment = new SimpleAttachment(simpleDocument.getAttachment());
     this.displayableAsContent = simpleDocument.displayableAsContent;
     this.editableSimultaneously = simpleDocument.editableSimultaneously;
   }
@@ -848,8 +850,8 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     }
 
     if (CollectionUtil.isEmpty(getVersionMaster().forbiddenDownloadForRoles)) {
-      // In that case, there is no reason to verify user role informations because it doesn't
-      // exists any restriction for downloading.
+      // In that case, there is no reason to verify user role information because it doesn't
+      // exist any restriction for downloading.
       return true;
     }
 
