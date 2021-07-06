@@ -3404,7 +3404,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
-      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(document.getForbiddenDownloadForRoles(), empty());
       HistorisedDocument docCreated =
           (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(docCreated, is(notNullValue()));
@@ -3517,9 +3517,9 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getMinorVersion(), is(1));
       assertThat(doc.getVersionIndex(), is(4));
       assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
-      assertThat(doc.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(doc.getForbiddenDownloadForRoles(), empty());
       for (SimpleDocumentVersion version : doc.getHistory()) {
-        assertThat(version.getForbiddenDownloadForRoles(), nullValue());
+        assertThat(version.getForbiddenDownloadForRoles(), empty());
       }
     }
   }
@@ -3687,7 +3687,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
-      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(document.getForbiddenDownloadForRoles(), empty());
       HistorisedDocument docCreated =
           (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(docCreated, is(notNullValue()));

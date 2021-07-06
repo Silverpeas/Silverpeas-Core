@@ -1146,7 +1146,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testUpdateAttachmentForbidRoles() {
     SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
-    assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
+    assertThat(documentUpdated.getForbiddenDownloadForRoles(), is(empty()));
 
     // Adding roles that adds technically the downloadable mixin to the SimpleDocument node
     documentUpdated
@@ -1169,7 +1169,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     documentUpdated.addRolesForWhichDownloadIsAllowed(SilverpeasRole.reader);
     instance.updateAttachment(documentUpdated, false, false);
     result = instance.searchDocumentById(existingFrDoc, null);
-    assertThat(result.getForbiddenDownloadForRoles(), nullValue());
+    assertThat(result.getForbiddenDownloadForRoles(), empty());
   }
 
   /**
@@ -1178,7 +1178,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testSwitchAllowingDownloadForReaders() {
     SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
-    assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
+    assertThat(documentUpdated.getForbiddenDownloadForRoles(), empty());
 
     // Forbid download for readers
     instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), false);
@@ -1192,7 +1192,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     // Allow download for readers
     instance.switchAllowingDownloadForReaders(documentUpdated.getPk(), true);
     result = instance.searchDocumentById(existingFrDoc, null);
-    assertThat(result.getForbiddenDownloadForRoles(), nullValue());
+    assertThat(result.getForbiddenDownloadForRoles(), empty());
   }
 
   /**

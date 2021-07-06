@@ -691,13 +691,13 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
       assertThat(result, notNullValue());
       assertThat(result, hasSize(1));
       SimpleDocument documentOfResult = result.get(0);
-      assertThat(documentOfResult.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(), empty());
 
       // Allowing readers (but nothing is saved in JCR)
       instance.switchAllowingDownloadForReaders(documentPK, true);
       documentOfResult = instance.searchDocumentById(documentPK, "fr");
       assertThat(documentOfResult, notNullValue());
-      assertThat(documentOfResult.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(), empty());
 
       // Forbidding readers
       instance.switchAllowingDownloadForReaders(documentPK, false);
@@ -717,7 +717,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
       instance.switchAllowingDownloadForReaders(documentPK, true);
       documentOfResult = instance.searchDocumentById(documentPK, "fr");
       assertThat(documentOfResult, notNullValue());
-      assertThat(documentOfResult.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(documentOfResult.getForbiddenDownloadForRoles(), empty());
 
     }
   }

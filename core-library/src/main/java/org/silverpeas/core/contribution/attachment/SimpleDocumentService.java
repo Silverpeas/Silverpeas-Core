@@ -741,8 +741,7 @@ public class SimpleDocumentService
       SimpleDocument document = repository
           .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
               contentLanguage);
-      SimpleDocument docBeforeUpdate =
-          repository.findDocumentById(session, document.getPk(), contentLanguage);
+      SimpleDocument docBeforeUpdate = new SimpleDocument(document);
       contentLanguage = document.getLanguage();
       boolean updateOfficeContentFromWebDav =
           document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav();
@@ -803,7 +802,7 @@ public class SimpleDocumentService
   private boolean prepareDocumentForUnlocking(final UnlockContext context,
       final SimpleDocument document, final boolean updateOfficeContentFromWebDav) {
     boolean notify = false;
-    if (context.isWebdav() || context.isUpload()) {
+    if (context.isWebdav() && StringUtil.isDefined(document.getEditedBy())) {
       String workerId = document.getEditedBy();
       document.setUpdated(new Date());
       document.setUpdatedBy(workerId);
