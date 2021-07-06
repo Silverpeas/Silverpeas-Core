@@ -260,7 +260,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(0L)));
       assertThat(doc.getCreated(), is(creationDate));
-      assertThat(doc.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(doc.getForbiddenDownloadForRoles(), empty());
       checkEnglishSimpleDocument(doc);
     }
   }
@@ -523,7 +523,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
-      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(document.getForbiddenDownloadForRoles(), empty());
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
@@ -555,7 +555,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
-      assertThat(document.getForbiddenDownloadForRoles(), nullValue());
+      assertThat(document.getForbiddenDownloadForRoles(), empty());
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);

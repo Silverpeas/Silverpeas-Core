@@ -94,7 +94,7 @@ public class SimpleDocument implements Serializable, Securable {
   private String nodeName;
   private String comment;
   private DocumentType documentType = DocumentType.attachment;
-  private Set<SilverpeasRole> forbiddenDownloadForRoles = null;
+  private Set<SilverpeasRole> forbiddenDownloadForRoles = EnumSet.noneOf(SilverpeasRole.class);
   private SimpleAttachment attachment;
   private boolean displayableAsContent = true;
 
@@ -157,7 +157,7 @@ public class SimpleDocument implements Serializable, Securable {
     this.repositoryPath = simpleDocument.getRepositoryPath();
     this.versionMaster = simpleDocument.getVersionMaster();
     this.versionIndex = simpleDocument.getVersionIndex();
-    this.pk = simpleDocument.getPk();
+    this.pk = simpleDocument.getPk().clone();
     this.foreignId = simpleDocument.getForeignId();
     this.order = simpleDocument.getOrder();
     this.versioned = simpleDocument.isVersioned();
@@ -173,8 +173,8 @@ public class SimpleDocument implements Serializable, Securable {
     this.nodeName = simpleDocument.getNodeName();
     this.comment = simpleDocument.getComment();
     this.documentType = simpleDocument.getDocumentType();
-    this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
-    this.attachment = simpleDocument.getAttachment();
+    this.forbiddenDownloadForRoles = EnumSet.copyOf(simpleDocument.forbiddenDownloadForRoles);
+    this.attachment = new SimpleAttachment(simpleDocument.getAttachment());
     this.displayableAsContent = simpleDocument.displayableAsContent;
   }
 
@@ -847,8 +847,8 @@ public class SimpleDocument implements Serializable, Securable {
     }
 
     if (CollectionUtil.isEmpty(getVersionMaster().forbiddenDownloadForRoles)) {
-      // In that case, there is no reason to verify user role informations because it doesn't
-      // exists any restriction for downloading.
+      // In that case, there is no reason to verify user role information because it doesn't
+      // exist any restriction for downloading.
       return true;
     }
 
@@ -907,9 +907,6 @@ public class SimpleDocument implements Serializable, Securable {
   public boolean addRolesForWhichDownloadIsForbidden(
       final Collection<SilverpeasRole> forbiddenRoles) {
     if (CollectionUtil.isNotEmpty(forbiddenRoles)) {
-      if (getVersionMaster().forbiddenDownloadForRoles == null) {
-        getVersionMaster().forbiddenDownloadForRoles = EnumSet.noneOf(SilverpeasRole.class);
-      }
       return getVersionMaster().forbiddenDownloadForRoles.addAll(forbiddenRoles);
     }
     return false;
@@ -944,8 +941,7 @@ public class SimpleDocument implements Serializable, Securable {
    * @return
    */
   public Set<SilverpeasRole> getForbiddenDownloadForRoles() {
-    return (getVersionMaster().forbiddenDownloadForRoles != null) ?
-        Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles) : null;
+    return Collections.unmodifiableSet(getVersionMaster().forbiddenDownloadForRoles);
   }
 
   /**

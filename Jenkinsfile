@@ -29,25 +29,7 @@ mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
     stage('Quality Analysis') {
       steps {
         script {
-          // quality analyse with our SonarQube service is performed only for PR against our main
-          // repository
-          if (env.BRANCH_NAME.startsWith('PR') &&
-              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')) {
-            withSonarQubeEnv {
-              sh """
-mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core \\
-    -Dsonar.organization=silverpeas \\
-    -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
-    -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
-    -Dsonar.pullrequest.base=master \\
-    -Dsonar.pullrequest.provider=github \\
-    -Dsonar.host.url=${SONAR_HOST_URL} \\
-    -Dsonar.login=${SONAR_AUTH_TOKEN}
-"""
-            }
-          } else {
-            echo "It isn't a PR validation for the Silverpeas organization. Nothing to analyse."
-          }
+          echo "No quality analyse for 6.1.x because it is built with Java 8 and SonarQube requires Java 11"
         }
       }
     }

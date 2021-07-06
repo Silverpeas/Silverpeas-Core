@@ -419,7 +419,7 @@ public class SimpleDocumentTest {
     SimpleDocument instance = new SimpleDocument();
     SimpleDocumentPK pk = new SimpleDocumentPK("dummyId", instanceId);
     instance.setPK(pk);
-    assertThat(instance.getForbiddenDownloadForRoles(), nullValue());
+    assertThat(instance.getForbiddenDownloadForRoles(), empty());
 
     assertThat(isDownloadAllowedForRolesFrom(instance, null), is(false));
     assertThat(isDownloadAllowedForRolesFrom(instance, new UserDetailWithRoles()), is(false));
@@ -430,7 +430,7 @@ public class SimpleDocumentTest {
 
     // Forbid empty
     instance.addRolesForWhichDownloadIsForbidden();
-    assertThat(instance.getForbiddenDownloadForRoles(), nullValue());
+    assertThat(instance.getForbiddenDownloadForRoles(), empty());
 
     // Forbid writers
     instance.addRolesForWhichDownloadIsForbidden(SilverpeasRole.writer);
