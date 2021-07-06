@@ -233,7 +233,7 @@ public class NotificationManagerSettings {
    * @return the maximum number of thread for send thread pool.
    */
   public static int getSseSendMaxThreadPool() {
-    return settings.getInteger("notification.sse.send.thread.pool.max", 8);
+    return settings.getInteger("notification.sse.send.thread.pool.max", 0);
   }
 
 

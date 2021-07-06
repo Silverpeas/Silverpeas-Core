@@ -32,9 +32,6 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.getAsyncContextSnapshot;
@@ -83,25 +80,20 @@ class ServerEventJobInitializer implements Initialization {
               asyncContexts.size());
       asyncContexts.forEach(c -> {
         if (!c.isSendPossible()) {
-
           // Sending is no more possible, unregistering the context
           unregisterAsyncContext(c);
-
         } else if (c.isHeartbeat()) {
-
           // Heartbeat is requested
-          try {
-            synchronized (c.getMutex()) {
+          c.safeWrite(() -> {
+            try {
               SseLogger.get().debug("send heartbeat to {0}", c);
-              final HttpServletRequest request = (HttpServletRequest) c.getRequest();
-              final HttpServletResponse response = (HttpServletResponse) c.getResponse();
-              final HeartbeatServerEvent event = HeartbeatServerEvent.createFor(c.getSessionId());
-              event.send(request, response, c.getSessionId(), c.getUser());
+              HeartbeatServerEvent.createFor(c.getSessionId())
+                  .send(c.getRequest(), c.getResponse(), c.getSessionId(), c.getUser());
+            } catch (Exception e) {
+              SseLogger.get().error(e);
+              unregisterAsyncContext(c);
             }
-          } catch (IOException e) {
-            SseLogger.get().error(e);
-            unregisterAsyncContext(c);
-          }
+          });
         }
       });
     }

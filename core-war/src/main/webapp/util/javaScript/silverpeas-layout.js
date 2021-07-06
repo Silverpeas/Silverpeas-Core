@@ -903,6 +903,11 @@
     }.bind(this);
     if (this.isEnabled()) {
       __context.sse = initCommonEventSource();
+      if (__context.sse) {
+        $mainWindow.document.body.onbeforeunload = function() {
+          this.close();
+        }.bind(this);
+      }
     }
   };
 

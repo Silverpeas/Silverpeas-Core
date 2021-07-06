@@ -29,6 +29,7 @@ import org.silverpeas.core.notification.sse.SilverpeasAsyncContext;
 import org.silverpeas.core.notification.sse.SseLogger;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -40,14 +41,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import static java.lang.Math.min;
 import static java.text.MessageFormat.format;
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.registerAsyncContext;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.sendLastServerEventsFromId;
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.getLastServerEventsFromId;
 import static org.silverpeas.core.notification.sse.SilverpeasAsyncContext.wrap;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseAsyncTimeout;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
@@ -60,6 +63,7 @@ import static org.silverpeas.core.security.session.SessionManagementProvider.get
  * @author Yohann Chastagnier
  */
 public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthenticatedHttpServlet {
+  private static final long serialVersionUID = -4766652077117461779L;
 
   private static final Set<String> sseUri = Collections.synchronizedSet(new LinkedHashSet<>());
   private static final String LAST_EVENT_ID_HEADER = "Last-Event-ID";
@@ -129,21 +133,17 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
       }
     }
     final Mutable<ServerEvent> serverEvent = Mutable.empty();
-    try {
-      if (lastServerEventId != null) {
-        silverLogger.debug(
-            () -> format("Sending emitted events since disconnection for sessionId {0} on URI {1}",
-                request.getSession(false).getId(), requestURI));
-        serverEvent.set(RetryServerEvent.createFor(userSessionId, lastServerEventId));
-        lastServerEventId = sendLastServerEventsFromId(request, response, lastServerEventId,
-            userSessionId, sessionUser);
-      } else {
-        serverEvent.set(InitializationServerEvent.createFor(userSessionId));
-      }
-    } catch (IOException e) {
-      SilverLogger.getLogger(this).error(e);
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      return;
+    final List<ServerEvent> notConsumedServerEvent = new ArrayList<>();
+    if (lastServerEventId != null) {
+      silverLogger.debug(
+          () -> format("Sending emitted events since disconnection for sessionId {0} on URI {1}",
+              request.getSession(false).getId(), requestURI));
+      serverEvent.set(RetryServerEvent.createFor(userSessionId, lastServerEventId));
+      final Pair<Long, List<ServerEvent>> result = getLastServerEventsFromId(lastServerEventId);
+      lastServerEventId = result.getFirst();
+      notConsumedServerEvent.addAll(result.getSecond());
+    } else {
+      serverEvent.set(InitializationServerEvent.createFor(userSessionId));
     }
 
     try {
@@ -156,25 +156,33 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
         asyncContext.setTimeout(asyncTimeout);
         asyncContext.setLastServerEventId(lastServerEventId);
         asyncContext.setHeartbeat(heartbeat);
-        serverEvent.ifPresent(event -> {
-          final HttpServletRequest httpRequest = (HttpServletRequest) asyncContext.getRequest();
-          final HttpServletResponse httpResponse = (HttpServletResponse) asyncContext.getResponse();
-          try {
-            event.send(httpRequest, httpResponse, userSessionId, sessionUser);
-          } catch (IOException e) {
-            SilverLogger.getLogger(this).error(e);
-            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            asyncContext.complete();
-          }
-        });
-        registerAsyncContext(asyncContext);
+        send(asyncContext, serverEvent, notConsumedServerEvent);
       } else {
         silverLogger.warn("Strange that the asynchronous context is already started {0}", request.getAsyncContext());
         response.setStatus(HttpServletResponse.SC_CONFLICT);
       }
-    } catch (ServletException | IllegalStateException e) {
+    } catch (IOException | ServletException | IllegalStateException e) {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private void send(final SilverpeasAsyncContext asyncContext,
+      final Mutable<ServerEvent> serverEvent, final List<ServerEvent> notConsumedServerEvent)
+      throws IOException {
+    final HttpServletRequest httpRequest = (HttpServletRequest) asyncContext.getRequest();
+    final HttpServletResponse httpResponse = (HttpServletResponse) asyncContext.getResponse();
+    final String sessionId = asyncContext.getSessionId();
+    final User user = asyncContext.getUser();
+    if (serverEvent.isPresent()) {
+      serverEvent.get().send(httpRequest, httpResponse, sessionId, user);
+    }
+    for (ServerEvent toSendAgain : notConsumedServerEvent) {
+      boolean sent = toSendAgain.send(httpRequest, httpResponse, sessionId, user);
+      if (sent) {
+        SseLogger.get().debug(() -> format("Send of not consumed {0}", toSendAgain));
+      }
+    }
+    registerAsyncContext(asyncContext);
   }
 }

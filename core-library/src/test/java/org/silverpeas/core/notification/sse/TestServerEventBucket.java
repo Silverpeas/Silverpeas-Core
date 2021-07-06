@@ -30,7 +30,10 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * A bucket to receive the different {@link ServerEvent} events coming from server event
@@ -40,7 +43,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class TestServerEventBucket {
 
-  private List<Entry> events = new ArrayList<>();
+  private final List<Entry> events = Collections.synchronizedList(new ArrayList<>());
 
   public void listened(String fromListener, final ServerEvent event) {
     SilverLogger.getLogger(this)
@@ -50,9 +53,16 @@ public class TestServerEventBucket {
   }
 
   public List<ServerEvent> getServerEvents() {
-    List<ServerEvent> serverEvents =
-        events.stream().map(Entry::getEvent).collect(Collectors.toList());
-    return Collections.unmodifiableList(serverEvents);
+    synchronized (events) {
+      return events.stream().map(Entry::getEvent).collect(Collectors.toUnmodifiableList());
+    }
+  }
+
+  public Map<String, List<ServerEvent>> getServerEventsByListener() {
+    synchronized (events) {
+      return events.stream()
+          .collect(groupingBy(e -> e.fromListener, mapping(Entry::getEvent, toList())));
+    }
   }
 
   public boolean isEmpty() {

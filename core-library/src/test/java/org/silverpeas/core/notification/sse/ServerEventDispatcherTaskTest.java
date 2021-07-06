@@ -125,8 +125,8 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
 
   @Test
   void handleEventWithDataOnOneLineWhenOneAsyncContextButClosed() throws Exception {
-    final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    when(mockedAsyncContext.isSendPossible()).thenReturn(false);
+    final SilverpeasAsyncContext4Test mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
+    mockedAsyncContext.markSendIsNotPossible();
     ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
     ServerEvent mockedServerEvent =
         newMockedServerEvent("EVENT_ONE_LINE", "This is a line of data");

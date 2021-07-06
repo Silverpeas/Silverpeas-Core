@@ -35,10 +35,13 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterAsyncContext;
 
 /**
  * This is a wrap of a {@link AsyncContext} instance.
@@ -46,6 +49,8 @@ import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unr
  */
 public class SilverpeasAsyncContext implements AsyncContext {
 
+  private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+  private final SilverpeasAsyncContextManager manager;
   private final AsyncContext wrappedInstance;
   private final String sessionId;
   private final User user;
@@ -58,8 +63,9 @@ public class SilverpeasAsyncContext implements AsyncContext {
   /**
    * Hidden constructor.
    */
-  private SilverpeasAsyncContext(final AsyncContext wrappedInstance, final String sessionId,
-      final User user) {
+  SilverpeasAsyncContext(final SilverpeasAsyncContextManager manager,
+      final AsyncContext wrappedInstance, final String sessionId, final User user) {
+    this.manager = manager;
     this.wrappedInstance = wrappedInstance;
     this.sessionId = sessionId;
     this.user = user;
@@ -79,26 +85,36 @@ public class SilverpeasAsyncContext implements AsyncContext {
       return (SilverpeasAsyncContext) asyncContext;
     }
 
-    final SilverpeasAsyncContext context =
-        new SilverpeasAsyncContext(asyncContext, userSessionId, user);
+    final SilverpeasAsyncContext context = new SilverpeasAsyncContext(
+        SilverpeasAsyncContextManager.get(), asyncContext, userSessionId, user);
     final AsyncListener listener = context.createListener(SilverpeasAsyncListener.class).init(silverLogger, context);
     context.addListener(listener);
     return context;
   }
 
-  /**
-   * Gets the mutex which is the instance itself.
-   * @return the mutex.
-   */
-  public Object getMutex() {
-    return this;
+  <T> T safeRead(final Supplier<T> process) {
+    lock.readLock().lock();
+    try {
+      return process.get();
+    } finally {
+      lock.readLock().unlock();
+    }
+  }
+
+  void safeWrite(final Runnable process) {
+    lock.writeLock().lock();
+    try {
+      process.run();
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   /**
    * Indicates if the send is possible according to the state of the context.
    * @return true if send is possible, false otherwise.
    */
-  boolean isSendPossible() {
+  public boolean isSendPossible() {
     return !isComplete() && !isTimeoutReached() && !hasErrorOccurred();
   }
 
@@ -107,7 +123,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * @return a request URI as string.
    */
   public String getRequestURI() {
-    return ((HttpServletRequest) getRequest()).getRequestURI();
+    return getRequest().getRequestURI();
   }
 
   /**
@@ -131,9 +147,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * @return an identifier as string.
    */
   Long getLastServerEventId() {
-    synchronized (this) {
-      return lastServerEventId;
-    }
+    return safeRead(() -> lastServerEventId);
   }
 
   /**
@@ -141,19 +155,17 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * @param lastServerEventId a last event identifier as long, can be null.
    */
   public void setLastServerEventId(final Long lastServerEventId) {
-    synchronized (this) {
-      this.lastServerEventId = lastServerEventId;
-    }
+    safeWrite(() -> this.lastServerEventId = lastServerEventId);
   }
 
   @Override
-  public ServletRequest getRequest() {
-    return wrappedInstance.getRequest();
+  public HttpServletRequest getRequest() {
+    return (HttpServletRequest) wrappedInstance.getRequest();
   }
 
   @Override
-  public ServletResponse getResponse() {
-    return wrappedInstance.getResponse();
+  public HttpServletResponse getResponse() {
+    return (HttpServletResponse) wrappedInstance.getResponse();
   }
 
   @Override
@@ -178,57 +190,47 @@ public class SilverpeasAsyncContext implements AsyncContext {
 
   @Override
   public void complete() {
-    markAsComplete();
-    wrappedInstance.complete();
-    unregisterAsyncContext(this);
+    markAsComplete(true);
   }
 
   boolean isHeartbeat() {
-    synchronized (getMutex()) {
-      return heartbeat;
-    }
+    return safeRead(() -> heartbeat);
   }
 
   public void setHeartbeat(final boolean heartbeat) {
-    synchronized (getMutex()) {
-      this.heartbeat = heartbeat;
-    }
+    safeWrite(() -> this.heartbeat = heartbeat);
   }
 
-  boolean isComplete() {
-    synchronized (getMutex()) {
-      return complete;
-    }
+  public boolean isComplete() {
+    return safeRead(() -> complete);
   }
 
-  void markAsComplete() {
-    synchronized (getMutex()) {
-      this.complete = true;
-    }
+  void markAsComplete(final boolean performRealComplete) {
+    safeWrite(() -> {
+      if (!this.complete) {
+        this.complete = true;
+        if (performRealComplete) {
+          wrappedInstance.complete();
+        }
+        manager.unregister(this);
+      }
+    });
   }
 
   boolean isTimeoutReached() {
-    synchronized (getMutex()) {
-      return timeout;
-    }
+    return safeRead(() -> timeout);
   }
 
   void markTimeoutAsReached() {
-    synchronized (getMutex()) {
-      this.timeout = true;
-    }
+    safeWrite(() -> this.timeout = true);
   }
 
   boolean hasErrorOccurred() {
-    synchronized (getMutex()) {
-      return error;
-    }
+    return safeRead(() -> error);
   }
 
   void markAsErrorOccurred() {
-    synchronized (getMutex()) {
-      this.error = true;
-    }
+    safeWrite(() -> this.error = true);
   }
 
   @Override
@@ -301,23 +303,22 @@ public class SilverpeasAsyncContext implements AsyncContext {
 
     @Override
     public void onComplete(final AsyncEvent event) throws IOException {
-      context.markAsComplete();
+      context.markAsComplete(false);
       silverLogger.debug("Async context is completed ({0})", context);
-      unregisterAsyncContext(context);
     }
 
     @Override
     public void onTimeout(final AsyncEvent event) throws IOException {
       context.markTimeoutAsReached();
       silverLogger.debug("Async context is timed out ({0})", context);
-      unregisterAsyncContext(context);
+      context.complete();
     }
 
     @Override
     public void onError(final AsyncEvent event) throws IOException {
       context.markAsErrorOccurred();
       silverLogger.debug("Async context thrown an error ({0})", context);
-      unregisterAsyncContext(context);
+      context.markAsComplete(false);
     }
 
     @Override
