@@ -101,7 +101,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
     }
   }
 
-  void safeWrite(final Runnable process) {
+  public void safeWrite(final Runnable process) {
     lock.writeLock().lock();
     try {
       process.run();
