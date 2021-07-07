@@ -21,17 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.notification.sse;
+package org.silverpeas.core.webapi.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.sse.AbstractServerEvent;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 
 /**
  * @author Yohann Chastagnier
  */
-class HeartbeatServerEvent extends AbstractServerEvent implements IgnoreStoring {
+class SessionPreviousCheckServerEvent extends AbstractServerEvent implements IgnoreStoring {
 
-  private static final ServerEventName EVENT_NAME = () -> "HEARTBEAT_EVENT_SOURCE";
+  private static final ServerEventName EVENT_NAME = () -> "PREVIOUS_CHECK_EVENT_SOURCE";
 
   private final String emitterSessionId;
 
@@ -39,13 +40,13 @@ class HeartbeatServerEvent extends AbstractServerEvent implements IgnoreStoring 
    * Hidden constructor.
    * @param emitterSessionId the emitter session id of the event.
    */
-  private HeartbeatServerEvent(final String emitterSessionId) {
+  private SessionPreviousCheckServerEvent(final String emitterSessionId) {
     this.emitterSessionId = emitterSessionId;
-    withData("Event source heartbeat.");
+    withData("Event source check.");
   }
 
-  static HeartbeatServerEvent createFor(final String emitterSessionId) {
-    return new HeartbeatServerEvent(emitterSessionId);
+  static SessionPreviousCheckServerEvent createFor(final String emitterSessionId) {
+    return new SessionPreviousCheckServerEvent(emitterSessionId);
   }
 
   @Override

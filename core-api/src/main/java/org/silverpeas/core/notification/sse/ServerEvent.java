@@ -117,13 +117,6 @@ public interface ServerEvent {
       return false;
     }
 
-    // Configuring the response
-    response.setContentType("text/event-stream");
-    response.setHeader("Cache-Control", "no-cache");
-    response.setHeader("Connection", "keep-alive");
-    response.setHeader("X-Accel-Buffering", "no");
-    response.setCharacterEncoding("UTF-8");
-
     final String eventName = defaultStringIfNotDefined(getName().asString());
     final String eventData = defaultStringIfNotDefined(getData(receiverSessionId, receiver));
     final int capacity = 100 + eventName.length() + eventData.length();

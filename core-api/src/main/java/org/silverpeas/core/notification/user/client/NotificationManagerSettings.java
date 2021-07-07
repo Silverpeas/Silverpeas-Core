@@ -229,11 +229,19 @@ public class NotificationManagerSettings {
   }
 
   /**
+   * Indicates if previous sse context opened with same session id MUST be checked.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isCheckPreviousAsyncContextEnabled() {
+    return settings.getBoolean("notification.sse.async.previous.check", true);
+  }
+
+  /**
    * Gets the number of thread used to perform the send of a server event.
    * @return the maximum number of thread for send thread pool.
    */
   public static int getSseSendMaxThreadPool() {
-    return settings.getInteger("notification.sse.send.thread.pool.max", 8);
+    return settings.getInteger("notification.sse.send.thread.pool.max", 0);
   }
 
 
