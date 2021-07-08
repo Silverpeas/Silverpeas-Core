@@ -75,6 +75,9 @@ public class PagesContext implements Serializable {
   boolean extraSearchFieldPeriod = false;
   boolean extraSearchFieldSpace = false;
 
+  boolean multiFormInPage = false;
+  boolean showMandatorySnippet = true;
+
   public PagesContext() {
   }
 
@@ -105,6 +108,8 @@ public class PagesContext implements Serializable {
     setDomainId(pc.getDomainId());
     setExtraSearchFieldPeriod(pc.isExtraSearchFieldPeriod());
     setExtraSearchFieldSpace(pc.isExtraSearchFieldSpace());
+    setMultiFormInPage(pc.isMultiFormInPage());
+    setShowMandatorySnippet(pc.isShowMandatorySnippet());
   }
 
   public PagesContext(String formIndex, String language) {
@@ -413,5 +418,21 @@ public class PagesContext implements Serializable {
 
   public void setExtraSearchFieldSpace(final boolean extraSearchFieldSpace) {
     this.extraSearchFieldSpace = extraSearchFieldSpace;
+  }
+
+  public boolean isMultiFormInPage() {
+    return multiFormInPage;
+  }
+
+  public void setMultiFormInPage(final boolean multiFormInPage) {
+    this.multiFormInPage = multiFormInPage;
+  }
+
+  public boolean isShowMandatorySnippet() {
+    return showMandatorySnippet;
+  }
+
+  public void setShowMandatorySnippet(final boolean showMandatorySnippet) {
+    this.showMandatorySnippet = showMandatorySnippet;
   }
 }

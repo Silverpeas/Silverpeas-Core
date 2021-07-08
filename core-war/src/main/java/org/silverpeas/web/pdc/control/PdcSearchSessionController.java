@@ -1007,7 +1007,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           titleLink = JAVASCRIPT_PREFIX + markAsReadJS + " spWindow.loadSpace('" + spaceId + "');";
         } else if ("Component".equals(resultType)) {
           // retour sur le composant
-          final String componentInstanceId = result.getId();
+          final String componentInstanceId = result.getInstanceId();
           titleLink = JAVASCRIPT_PREFIX + markAsReadJS + " spWindow.loadComponent('" + componentInstanceId + "');";
         } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           User user = User.getById(result.getId());

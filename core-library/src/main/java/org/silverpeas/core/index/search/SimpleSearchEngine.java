@@ -235,7 +235,7 @@ public class SimpleSearchEngine implements SearchEngine {
     }
     if ("Component".equals(objectType)) {
       // check if component is allowed to current user
-      return isComponentVisible(mie.getObjectId(), allowedComponentIds);
+      return isComponentVisible(mie.getComponent(), allowedComponentIds);
     }
     if (UserIndexation.OBJECT_TYPE.equals(objectType)) {
       return isUserVisible(mie.getObjectId());
