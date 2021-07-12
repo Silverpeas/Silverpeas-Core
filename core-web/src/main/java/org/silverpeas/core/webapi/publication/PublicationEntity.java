@@ -243,12 +243,12 @@ public class PublicationEntity implements WebEntity {
   }
 
   public PublicationDetail toPublicationDetail() {
-    PublicationDetail publication = new PublicationDetail();
-    publication.setPk(new PublicationPK(id, componentId));
-    publication.setName(name);
-    publication.setDescription(description);
-    publication.setKeywords(keywords);
-    publication.setImportance(importance);
+    PublicationDetail publication = PublicationDetail.builder()
+        .setPk(new PublicationPK(id, componentId))
+        .setNameAndDescription(name, description)
+        .setKeywords(keywords)
+        .setImportance(importance)
+        .build();
     publication.setCreatorId(creator.getId());
     if (lastUpdater != null) {
       publication.setUpdaterId(lastUpdater.getId());

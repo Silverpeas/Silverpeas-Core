@@ -102,14 +102,19 @@ public class PublicationDAOIT {
         }
       }
       String keywords = buffer.toString();
-      PublicationDetail detail = new PublicationDetail(pk, name, description, now.getTime(),
-          beginDate.
-          getTime(),
-          endDate.getTime(),
-          creatorId, importance, version, keywords, contenu);
-      detail.setBeginHour(DateUtil.formatTime(beginDate));
-      detail.setEndHour(DateUtil.formatTime(endDate));
+      PublicationDetail detail = PublicationDetail.builder()
+          .setPk(pk)
+          .setNameAndDescription(name, description)
+          .created(now.getTime(), creatorId)
+          .setBeginDateTime(beginDate.getTime(), DateUtil.formatTime(beginDate))
+          .setEndDateTime(endDate.getTime(), DateUtil.formatTime(endDate))
+          .setImportance(importance)
+          .setVersion(version)
+          .setKeywords(keywords)
+          .setContentPagePath(contenu)
+          .build();
       PublicationDAO.insertRow(con, detail);
+
       PublicationDetail result = PublicationDAO.loadRow(con, pk);
       detail.setUpdateDate(now.getTime());
       detail.setUpdaterId(creatorId);

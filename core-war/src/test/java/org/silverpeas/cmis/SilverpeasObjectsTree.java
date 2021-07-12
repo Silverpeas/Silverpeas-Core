@@ -164,8 +164,16 @@ public class SilverpeasObjectsTree {
     ContributionIdentifier folder = ContributionIdentifier.decode(folderId);
     PublicationPK pk = new PublicationPK(String.valueOf(localId), folder.getComponentInstanceId());
     Date today = new Date();
-    PublicationDetail pub =
-        new PublicationDetail(pk, name, description, today, today, null, "0", 1, null, "", "");
+    PublicationDetail pub = PublicationDetail.builder(LANGUAGE)
+        .setPk(pk)
+        .setNameAndDescription(name, description)
+        .created(today, "0")
+        .setImportance(1)
+        .setBeginDateTime(today, null)
+        .setKeywords("")
+        .setContentPagePath("")
+        .build();
+
     pub.setStatus(PublicationDetail.VALID_STATUS);
     pub.setUpdaterId(pub.getCreatorId());
     pub.setUpdateDate(pub.getCreationDate());

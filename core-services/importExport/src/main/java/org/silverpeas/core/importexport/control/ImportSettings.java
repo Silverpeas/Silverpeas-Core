@@ -50,7 +50,7 @@ public class ImportSettings implements Cloneable {
   private int method;
   private String contentLanguage;
   private String targetValidatorIds;
-  private PublicationDetail publicationForAllFiles = new PublicationDetail();
+  private PublicationDetail publicationForAllFiles = PublicationDetail.builder().build();
 
   public ImportSettings(String pathToImport, UserDetail user, String componentId, String folderId,
       boolean draftUsed, boolean poiUsed, int method) {

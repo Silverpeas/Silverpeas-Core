@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
@@ -63,6 +64,7 @@ import org.silverpeas.core.contribution.tracking.ModificationTracked;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
@@ -112,31 +114,32 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     Serializable, WithAttachment, WithThumbnail, WithReminder {
   private static final long serialVersionUID = 9199848912262605680L;
 
+  private static final String EXCHANGE_NAMESPACE = "http://www.silverpeas.org/exchange";
   public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
 
   private PublicationPK pk;
   private String infoId;
-  @XmlElement(name = "creationDate", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "creationDate", namespace = EXCHANGE_NAMESPACE)
   @XmlJavaTypeAdapter(DateAdapter.class)
   private Date creationDate;
-  @XmlElement(name = "beginDate", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "beginDate", namespace = EXCHANGE_NAMESPACE)
   @XmlJavaTypeAdapter(DateAdapter.class)
   private Date beginDate;
-  @XmlElement(name = "endDate", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "endDate", namespace = EXCHANGE_NAMESPACE)
   @XmlJavaTypeAdapter(DateAdapter.class)
   private Date endDate;
-  @XmlElement(name = "creatorId", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "creatorId", namespace = EXCHANGE_NAMESPACE)
   private String creatorId;
-  @XmlElement(name = "creatorName", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "creatorName", namespace = EXCHANGE_NAMESPACE)
   private String creatorName;
-  @XmlElement(name = "importance", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "importance", namespace = EXCHANGE_NAMESPACE)
   private int importance;
-  @XmlElement(name = "version", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "version", namespace = EXCHANGE_NAMESPACE)
   private String version;
-  @XmlElement(name = "keywords", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "keywords", namespace = EXCHANGE_NAMESPACE)
   private String keywords;
   private String content;
-  @XmlElement(name = "status", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "status", namespace = EXCHANGE_NAMESPACE)
   private String status;
   private Date updateDate;
   private String updaterId;
@@ -176,6 +179,26 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   private ContributionRating contributionRating;
 
+  /**
+   * Gets a builder of {@link PublicationDetail} instances for the default language as defined in
+   * {@link I18n#getDefaultLanguage()}. All the textual properties (name, description and keywords)
+   * will be related to this language.
+   * @return a {@link Builder} instance
+   */
+  public static Builder builder() {
+    return new Builder(I18n.get().getDefaultLanguage());
+  }
+
+  /**
+   * Gets a builder of {@link PublicationDetail} instances for the specified language. All the
+   * textual properties (name, description and keywords) will be related to this language.
+   * @param language a ISO 639-1 code of a supported language.
+   * @return a {@link Builder} instance
+   */
+  public static Builder builder(final String language) {
+    return new Builder(language);
+  }
+
   @Override
   protected Class<PublicationI18N> getTranslationType() {
     return PublicationI18N.class;
@@ -184,332 +207,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   /**
    * Default contructor, required for JAXB mapping in importExport.
    */
-  public PublicationDetail() {
+  protected PublicationDetail() {
     // Nothing to do
-  }
-
-  public PublicationDetail(String name, String description, Period visibilityPeriod,
-      String creatorId, String componentId) {
-    this.pk = new PublicationPK("unknown", componentId);
-    setName(name);
-    setDescription(description);
-    setVisibilityPeriod(visibilityPeriod);
-    this.creatorId = creatorId;
-  }
-
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-  }
-
-  /**
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   */
-  public PublicationDetail(String id, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, String importance, String version,
-      String keywords, String content) {
-    this.pk = new PublicationPK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = Integer.parseInt(importance);
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-  }
-
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content, String status) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-  }
-
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content, String status, Date updateDate) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-  }
-
-  /**
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param status
-   * @param updateDate
-   * @param updaterId
-   * @deprecated @param pk
-   */
-  @Deprecated
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content, String status, Date updateDate, String updaterId) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-    this.updaterId = updaterId;
-  }
-
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content, String status, Date updateDate, String updaterId,
-      String author) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-    this.updaterId = updaterId;
-    this.author = author;
-  }
-
-  /**
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param status
-   * @deprecated @param id
-   */
-  @Deprecated
-  public PublicationDetail(String id, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, String importance, String version,
-      String keywords, String content, String status) {
-    this.pk = new PublicationPK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = Integer.parseInt(importance);
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-  }
-
-  public PublicationDetail(String id, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, String importance, String version,
-      String keywords, String content, String status, String updaterId, String author) {
-    this.pk = new PublicationPK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = Integer.parseInt(importance);
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updaterId = updaterId;
-    this.author = author;
-  }
-
-  public PublicationDetail(String id, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, String importance, String version,
-      String keywords, String content, String status, Date updateDate) {
-    this.pk = new PublicationPK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = Integer.parseInt(importance);
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-  }
-
-  public PublicationDetail(String id, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, String importance, String version,
-      String keywords, String content, String status, Date updateDate, String updaterId) {
-    this.pk = new PublicationPK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = Integer.parseInt(importance);
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-    this.updaterId = updaterId;
-  }
-
-  public PublicationDetail(String id, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, String importance, String version,
-      String keywords, String content, String status, Date updateDate, String updaterId,
-      Date validateDate, String validatorId) {
-    this.pk = new PublicationPK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = Integer.parseInt(importance);
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-    this.updaterId = updaterId;
-    this.validateDate = validateDate;
-    this.validatorId = validatorId;
-
-  }
-
-  /**
-   * @param pk
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param status
-   * @param updateDate
-   * @param updaterId
-   * @param validateDate
-   * @param validatorId
-   * @deprecated
-   */
-  @Deprecated
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content, String status, Date updateDate, String updaterId,
-      Date validateDate, String validatorId) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-    this.updaterId = updaterId;
-    this.validateDate = validateDate;
-    this.validatorId = validatorId;
-
-  }
-
-  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
-      Date beginDate, Date endDate, String creatorId, int importance, String version,
-      String keywords, String content, String status, Date updateDate, String updaterId,
-      Date validateDate, String validatorId, String author) {
-    this.pk = pk;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = importance;
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.status = status;
-    this.updateDate = updateDate;
-    this.updaterId = updaterId;
-    this.validateDate = validateDate;
-    this.validatorId = validatorId;
-    this.author = author;
-
   }
 
   public PublicationPK getPK() {
@@ -1003,6 +702,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public void setKeywords(String keywords) {
     this.keywords = keywords;
+    String lang = getLanguage();
+    PublicationI18N translation = getTranslation(lang);
+    translation.setKeywords(keywords);
   }
 
   public void setVersion(String version) {
@@ -1104,6 +806,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public PublicationDetail copy() {
     PublicationDetail clone = new PublicationDetail();
+    clone.setLanguage(getLanguage());
     clone.setAuthor(author);
     clone.setBeginDate(beginDate);
     clone.setBeginHour(beginHour);
@@ -1374,5 +1077,152 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       userId = getCreatorId();
     }
     return userId;
+  }
+
+  /**
+   * A builder of a {@link PublicationDetail} instance by setting some of its properties.
+   */
+  public static class Builder {
+
+    private final PublicationDetail publication = new PublicationDetail();
+
+    Builder(final String language) {
+      publication.setLanguage(language);
+    }
+
+    /**
+     * Builds a {@link PublicationDetail} instance from the properties that were previously set
+     * with this builder.
+     * @return a {@link PublicationDetail} instance.
+     */
+    public PublicationDetail build() {
+      if (publication.getPK() == null) {
+        publication.setPk(new PublicationPK(ResourceReference.UNKNOWN_ID));
+      }
+      return publication;
+    }
+
+    /**
+     * Sets the unique identifier of the {@link PublicationDetail} instance to build.
+     * @param pk a unique identifier of a publication.
+     * @return itself.
+     */
+    public Builder setPk(final PublicationPK pk) {
+      publication.setPk(pk);
+      return this;
+    }
+
+    /**
+     * Sets the creation properties of the {@link PublicationDetail} instance to build.
+     * @param creationDate the date at which the publication was created.
+     * @param creatorId the identifier of the user that created the publication.
+     * @return itself.
+     */
+    public Builder created(final Date creationDate, final String creatorId) {
+      publication.creationDate = creationDate;
+      publication.creatorId = creatorId;
+      return this;
+    }
+
+    /**
+     * Sets the update properties of the {@link PublicationDetail} instance to build.
+     * @param updateDate the date at which the publication was lastly updated.
+     * @param updaterId the identifier of the user that lastly updated the publication.
+     * @return itself.
+     */
+    public Builder updated(final Date updateDate, final String updaterId) {
+      publication.updateDate = updateDate;
+      publication.updaterId = updaterId;
+      return this;
+    }
+
+    /**
+     * Sets the validation properties of the {@link PublicationDetail} instance to build.
+     * @param validateDate the date at which the publication was validated.
+     * @param validatorId the identifier of the user that validated the publication.
+     * @return itself.
+     */
+    public Builder validated(final Date validateDate, final String validatorId) {
+      publication.validateDate = validateDate;
+      publication.validatorId = validatorId;
+      return this;
+    }
+
+    /**
+     * Sets the visibility begin date properties of the {@link PublicationDetail} instance to build.
+     * @param date the day at which the publication begins to be visible.
+     * @param hour the hour at which the publication begins to be visible.
+     * @return itself.
+     */
+    public Builder setBeginDateTime(final Date date, final String hour) {
+      publication.beginDate = date;
+      publication.beginHour = hour;
+      return this;
+    }
+
+    /**
+     * Sets the visibility end date properties of the {@link PublicationDetail} instance to build.
+     * @param date the day at which the publication ends to be visible.
+     * @param hour the hour at which the publication ends to be visible.
+     * @return itself.
+     */
+    public Builder setEndDateTime(final Date date, final String hour) {
+      publication.endDate = date;
+      publication.endHour = hour;
+      return this;
+    }
+
+    /**
+     * Sets the importance of the {@link PublicationDetail} instance to build.
+     * @param importance the importance of the publication. Lower value means more importance.
+     * @return itself.
+     */
+    public Builder setImportance(final int importance) {
+      publication.importance = importance;
+      return this;
+    }
+
+    /**
+     * Sets the keywords of the {@link PublicationDetail} instance to build.
+     * @param keywords the keywords of the publication.
+     * @return itself.
+     */
+    public Builder setKeywords(final String keywords) {
+      publication.keywords = keywords;
+      return this;
+    }
+
+    /**
+     * Sets the URL path where is located the content of the {@link PublicationDetail} instance
+     * to build.
+     * @param contentPagePath the path of the content of the publication.
+     * @return itself.
+     */
+    public Builder setContentPagePath(final String contentPagePath) {
+      publication.content = contentPagePath;
+      return this;
+    }
+
+    /**
+     * Sets the version of the {@link PublicationDetail} instance to build.
+     * @param version the version of the publication.
+     * @return itself.
+     */
+    public Builder setVersion(final String version) {
+      publication.version = version;
+      return this;
+    }
+
+    /**
+     * Sets in the default language the given name and description of the publication to build.
+     * @param name the name of the publication.
+     * @param description the description of the publication.
+     * @return itself.
+     */
+    public Builder setNameAndDescription(final String name, final String description) {
+      publication.setName(name);
+      publication.setDescription(description);
+      return this;
+    }
   }
 }

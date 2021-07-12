@@ -3823,8 +3823,7 @@ public class TestPublicationAccessController {
     }
 
     private PublicationDetail newPublicationWith(final PublicationPK pubPk) {
-      PublicationDetail publi = new PublicationDetail();
-      publi.setPk(pubPk);
+      PublicationDetail publi = PublicationDetail.builder().setPk(pubPk).build();
       publi.setStatus(testContext.pubStatus);
       publi.setCreatorId(testContext.isUserThePublicationAuthor ? USER_ID : "otherUserId");
       if (!testContext.isPubVisible) {

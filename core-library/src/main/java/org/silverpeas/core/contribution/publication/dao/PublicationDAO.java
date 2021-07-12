@@ -436,18 +436,25 @@ public class PublicationDAO extends AbstractDAO {
       if (getSort) {
         order = rs.getInt("pubOrder");
       }
-      pub =
-          new PublicationDetail(pk, name, description, creationDate, beginDate, endDate, creatorId,
-              importance, version, keywords, content, status, updateDate, updaterId, validateDate,
-              validatorId, author);
-
+      pub = PublicationDetail.builder(lang)
+          .setPk(pk)
+          .setNameAndDescription(name, description)
+          .created(creationDate, creatorId)
+          .updated(updateDate, updaterId)
+          .validated(validateDate, validatorId)
+          .setBeginDateTime(beginDate, beginHour)
+          .setEndDateTime(endDate, endHour)
+          .setImportance(importance)
+          .setVersion(version)
+          .setKeywords(keywords)
+          .setContentPagePath(content)
+          .build();
+      pub.setStatus(status);
+      pub.setAuthor(author);
       pub.setInfoId(infoId);
-      pub.setBeginHour(beginHour);
-      pub.setEndHour(endHour);
       pub.setTargetValidatorId(targetValidatorId);
       pub.setCloneId(Integer.toString(tempPubId));
       pub.setCloneStatus(cloneStatus);
-      pub.setLanguage(lang);
       pub.setDraftOutDate(draftOutDate);
       pub.setExplicitRank(order);
     } catch (ParseException e) {
@@ -735,8 +742,7 @@ public class PublicationDAO extends AbstractDAO {
         .executeWith(con, r -> {
           final PublicationPK pk = new PublicationPK(Integer.toString(r.getInt(1)), r.getString(2));
           if (indexedPubPks.containsKey(pk)) {
-            final PublicationDetail pubDetail = new PublicationDetail();
-            pubDetail.setPk(pk);
+            final PublicationDetail pubDetail = PublicationDetail.builder().setPk(pk).build();
             pubDetail.setStatus(r.getString(3));
             pubDetail.setCloneId(Integer.toString(r.getInt(4)));
             pubDetail.setCloneStatus(r.getString(5));

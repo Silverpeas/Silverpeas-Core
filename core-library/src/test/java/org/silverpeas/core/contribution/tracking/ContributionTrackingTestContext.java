@@ -77,10 +77,10 @@ public class ContributionTrackingTestContext {
   }
 
   PublicationDetail getPublication(final String instanceId) {
-    PublicationDetail publi = new PublicationDetail();
-    publi.setPk(new PublicationPK("23", instanceId));
-    publi.setName("My publi");
-    publi.setDescription("A description");
+    PublicationDetail publi = PublicationDetail.builder()
+        .setPk(new PublicationPK("23", instanceId))
+        .setNameAndDescription("My publi", "A description")
+        .build();
     publi.setCreationDate(Date.from(YESTERDAY.toInstant()));
     publi.setCreatorId("1");
     publi.setUpdateDate(publi.getCreationDate());

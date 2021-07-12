@@ -37,8 +37,6 @@ import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ContributionEventProcessor;
-import org.silverpeas.core.contribution.ContributionModificationContextHandler;
-import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -258,10 +256,10 @@ public class ContributionModificationTrackingIT {
 
     Mutable<PublicationPK> pk = Mutable.empty();
     withinTransaction(() -> {
-      PublicationDetail publication = new PublicationDetail();
-      publication.setPk(new PublicationPK(PublicationPK.UNKNOWN_ID, TestContext.KMELIA_ID));
-      publication.setName("A new publication");
-      publication.setDescription("A new publication for testing purpose");
+      PublicationDetail publication = PublicationDetail.builder()
+          .setPk(new PublicationPK(PublicationPK.UNKNOWN_ID, TestContext.KMELIA_ID))
+          .setNameAndDescription("A new publication", "A new publication for testing purpose")
+          .build();
       publication.setCreatorId(User.getCurrentRequester().getId());
       publication.setCreationDate(new Date());
       publication.setAuthor(publication.getCreatorId());
@@ -281,10 +279,10 @@ public class ContributionModificationTrackingIT {
 
     Mutable<PublicationPK> pk = Mutable.empty();
     withinTransaction(() -> {
-      PublicationDetail publication = new PublicationDetail();
-      publication.setPk(new PublicationPK(PublicationPK.UNKNOWN_ID, TestContext.KMELIA_ID));
-      publication.setName("A new publication");
-      publication.setDescription("A new publication for testing purpose");
+      PublicationDetail publication = PublicationDetail.builder()
+          .setPk(new PublicationPK(PublicationPK.UNKNOWN_ID, TestContext.KMELIA_ID))
+          .setNameAndDescription("A new publication", "A new publication for testing purpose")
+          .build();
       publication.setCreatorId("-3");
       publication.setCreationDate(new Date());
       publication.setAuthor(publication.getCreatorId());
