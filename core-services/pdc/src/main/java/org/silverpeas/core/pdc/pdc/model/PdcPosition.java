@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -60,11 +61,12 @@ public class PdcPosition implements Serializable {
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename", valueColumnName = "maxId", pkColumnValue = "PdcPosition", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @NotNull
   @Size(min = 1)
   @Valid
-  private Set<PdcAxisValue> axisValues = new HashSet<PdcAxisValue>();
+  private Set<PdcAxisValue> axisValues = new HashSet<>();
 
   public PdcPosition() {
   }
@@ -141,32 +143,20 @@ public class PdcPosition implements Serializable {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final PdcPosition other = (PdcPosition) obj;
-    if (this.id != null && other.id != null && !this.id.equals(other.id)) {
-      return false;
-    } else if (this.axisValues != other.axisValues && (this.axisValues == null || !this.axisValues.
-        equals(other.axisValues))) {
-      return false;
-    }
-    return true;
+    final PdcPosition that = (PdcPosition) o;
+    return Objects.equals(id, that.id) && Objects.equals(axisValues, that.axisValues);
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    if (this.id != null) {
-      hash = 61 * hash + this.id.hashCode();
-    } else {
-      hash = 61 * hash + (this.axisValues != null ? this.axisValues.hashCode() : 0);
-    }
-    return hash;
+    return Objects.hash(id, axisValues);
   }
 
   @Override
@@ -181,9 +171,9 @@ public class PdcPosition implements Serializable {
    * @throws PdcException if an error occurs while transforming this position.
    */
   public ClassifyPosition toClassifyPosition() throws PdcException {
-    ClassifyPosition position = new ClassifyPosition(new ArrayList<ClassifyValue>());
+    ClassifyPosition position = new ClassifyPosition(new ArrayList<>());
     if (getId() != null) {
-      position.setPositionId(Integer.valueOf(getId()));
+      position.setPositionId(Integer.parseInt(getId()));
     }
     for (PdcAxisValue pdcAxisValue : getValues()) {
       position.getValues().add(pdcAxisValue.toClassifyValue());
@@ -197,7 +187,7 @@ public class PdcPosition implements Serializable {
    * @return a set of values of the specified axis in this position.
    */
   public Set<PdcAxisValue> getValuesOfAxis(String axisId) {
-    Set<PdcAxisValue> valuesOfTheAxis = new HashSet<PdcAxisValue>();
+    Set<PdcAxisValue> valuesOfTheAxis = new HashSet<>();
     for (PdcAxisValue pdcAxisValue : getValues()) {
       if (pdcAxisValue.getAxisId().equals(axisId)) {
         valuesOfTheAxis.add(pdcAxisValue);

@@ -59,8 +59,8 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @Service
 @Transactional
 @Singleton
-public class DefaultPdcClassificationService implements PdcClassificationService,
-    ComponentInstanceDeletion {
+public class DefaultPdcClassificationService
+    implements PdcClassificationService, ComponentInstanceDeletion {
 
   @Inject
   private PdcClassificationRepository classificationRepository;
@@ -71,15 +71,15 @@ public class DefaultPdcClassificationService implements PdcClassificationService
 
   /**
    * Finds a predefined classification on the PdC that was set for any new contents in the specified
-   * node of the specified component instance. If the specified node isn't defined, then the
+   * node of the specified component instance. If the specified node is undefined, then the
    * predefined classification associated with the whole component instance is seeked.
-   *
-   * If no predefined classification is found for the specified node, then it is seeked back upto
-   * the root node (that is the component instance ifself). In the case no predefined classification
-   * is set for the whole component instance, an empty classification is then returned. To get the
-   * predefined classification that is set exactly for the specified node (if any), then use the
+   * <p>
+   * If no predefined classification is found for the specified node, then it is seeked back for
+   * each node in the upper level upto the root node (that is the component instance itself). In the
+   * case no predefined classification is set for the whole component instance (the root node), an
+   * empty classification is then returned. To get the predefined classification that is set exactly
+   * for the specified node (if any), then use the
    * <code>getPreDefinedClassification(java.lang.String, java.lang.String</code> method.
-   *
    * @param nodeId the unique identifier of the node.
    * @param instanceId the unique identifier of the Silverpeas component instance.
    * @return a predefined classification on the PdC ready to be used to classify a content published
@@ -111,12 +111,11 @@ public class DefaultPdcClassificationService implements PdcClassificationService
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the
-   * specified node of the specified component instance. If the specified node isn't defined, then
+   * specified node of the specified component instance. If the specified node is undefined, then
    * the predefined classification associated with the whole component instance is get.
-   *
+   * <p>
    * In the case no predefined classification is set for the specified node or for the component
-   * instance, then a none classification is then returned.
-   *
+   * instance, then a none classification is returned.
    * @param nodeId the unique node identifier.
    * @param instanceId the unique component instance identifier.
    * @return a predefined classification on the PdC associated with the specified node or with the
@@ -169,7 +168,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    * predefined classification will serv for the whole component instance.
    *
    * @param classification either the saved predefined classification or NONE_CLASSIFICATION.
-   * @return
+   * @return the classification on the PdC that was saved.
    */
   @Override
   public PdcClassification savePreDefinedClassification(final PdcClassification classification) {
@@ -364,8 +363,8 @@ public class DefaultPdcClassificationService implements PdcClassificationService
   }
 
   /**
-   * Deletes the resources belonging to the specified component instance. This method is invoked
-   * by Silverpeas when a component instance is being deleted.
+   * Deletes the resources belonging to the specified component instance. This method is invoked by
+   * Silverpeas when a component instance is being deleted.
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override

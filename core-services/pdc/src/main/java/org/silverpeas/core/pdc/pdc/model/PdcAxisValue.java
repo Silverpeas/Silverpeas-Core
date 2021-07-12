@@ -25,10 +25,10 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
+import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -55,22 +55,21 @@ import java.util.function.Consumer;
  */
 @Entity
 @Table(name = "pdcaxisvalue")
-@NamedQueries({
-    @NamedQuery(name = "findByAxisId", query = "from PdcAxisValue where axisId = :axisId")})
+@NamedQuery(name = "findByAxisId", query = "from PdcAxisValue where axisId = :axisId")
 public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
 
   private static final long serialVersionUID = 2345886411781136417L;
   @Transient
-  private TreeNode treeNode;
+  private transient TreeNode treeNode;
   @Transient
-  private TreeNodeList treeNodeParents = new TreeNodeList();
+  private transient TreeNodeList treeNodeParents = new TreeNodeList();
 
   protected PdcAxisValue() {
   }
 
   /**
    * Creates a value of a PdC's axis from the specified tree node. Currently, an axis of the PdC is
-   * persited as an hierarchical tree in which each node is a value of the axis.
+   * persisted as an hierarchical tree in which each node is a value of the axis.
    * @param treeNode the current persistence representation of the axis value.
    * @return a PdC axis value.
    */
@@ -89,8 +88,8 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
   }
 
   /**
-   * Creates a value of a PdC's axis from the specified value information. Currently, an axis of
-   * the PdC is persited as an hierarchical tree in which each node is a value of the axis. The
+   * Creates a value of a PdC's axis from the specified value information. Currently, an axis of the
+   * PdC is persisted as an hierarchical tree in which each node is a value of the axis. The
    * parameters refers the unique identifier of the node and in the tree related to the axis
    * identifier.
    * @param valueId the unique identifier of the existing value.
@@ -98,7 +97,8 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * @return a PdC axis value.
    */
   public static PdcAxisValue aPdcAxisValue(String valueId, String axisId) {
-    return new PdcAxisValue().setId(valueId + PdcAxisValuePk.COMPOSITE_SEPARATOR + axisId);
+    return new PdcAxisValue().setId(
+        valueId + CompositeEntityIdentifier.COMPOSITE_SEPARATOR + axisId);
   }
 
   /**
@@ -152,7 +152,8 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       TreeNode aTreeNode = treeNodeParents.get(lastNodeIndex);
       String valueId = aTreeNode.getPK().getId();
       String axisId = getAxisId();
-      PdcAxisValue pdcAxisValue = new PdcAxisValue().setId(valueId + PdcAxisValuePk.COMPOSITE_SEPARATOR + axisId);
+      PdcAxisValue pdcAxisValue = new PdcAxisValue().setId(
+          valueId + CompositeEntityIdentifier.COMPOSITE_SEPARATOR + axisId);
       parent =
           pdcAxisValue.fromTreeNode(aTreeNode).inAxisId(getAxisId())
               .withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
@@ -237,7 +238,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * @return a copy of this PdC axis value.
    */
   protected PdcAxisValue copy() {
-    PdcAxisValue copy = new PdcAxisValue();
+    PdcAxisValue copy = PdcAxisValue.aPdcAxisValue(getValueId(), getAxisId());
     copy.treeNode = treeNode;
     copy.treeNodeParents = treeNodeParents;
     return copy;

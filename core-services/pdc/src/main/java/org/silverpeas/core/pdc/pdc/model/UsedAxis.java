@@ -252,4 +252,19 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
     return "SB_Pdc_Utilization";
   }
 
+  /**
+   * Copies this used axis except its unique identifier.
+   * @return a value copy of this axis.
+   */
+  public UsedAxis copy() {
+    UsedAxis copy = new UsedAxis();
+    copy.setPK(new UsedAxisPK(-1));
+    copy.instanceId = instanceId;
+    copy.axisId = axisId;
+    copy.mandatory = mandatory;
+    copy.variant = variant;
+    copy.baseValue = baseValue;
+    return copy;
+  }
+
 }

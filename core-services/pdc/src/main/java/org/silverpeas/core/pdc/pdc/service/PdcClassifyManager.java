@@ -36,6 +36,9 @@ import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import java.sql.Connection;
 import java.util.List;
 
+/**
+ * A service of the PdC engine to classify the user contributions onto the PdC.
+ */
 interface PdcClassifyManager {
 
   /**
