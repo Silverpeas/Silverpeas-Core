@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "pdcPosition")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ClassifyPosition extends Position<ClassifyValue> implements java.io.Serializable {
+public class ClassifyPosition extends Position<ClassifyValue> {
   private static final long serialVersionUID = 6588855414301219379L;
 
   public ClassifyPosition() {
@@ -62,7 +63,7 @@ public class ClassifyPosition extends Position<ClassifyValue> implements java.io
 
   /**
    * Return true if the position is empty
-   * @return
+   * @return true if empty, false otherwise.
    */
   public boolean isEmpty() {
     return (getPositionId() == -1 || getValues() == null);
@@ -83,4 +84,29 @@ public class ClassifyPosition extends Position<ClassifyValue> implements java.io
     super.setValues(values);
   }
 
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    ClassifyPosition other = (ClassifyPosition) obj;
+    List<ClassifyValue> values = getValues();
+    List<ClassifyValue> otherValues = other.getValues();
+    if (values.size() != otherValues.size()) {
+      return false;
+    }
+    for (int i = 0; i < values.size(); i++) {
+      if (!values.get(i).equals(otherValues.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    List<ClassifyValue> values = getValues();
+    return Arrays.hashCode(values.toArray(new ClassifyValue[0]));
+  }
 }

@@ -26,6 +26,8 @@ package org.silverpeas.core.pdc.pdc.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.List;
+import java.util.Objects;
+
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -82,8 +84,7 @@ public class ClassifyValue extends org.silverpeas.core.pdc.classification.Value 
             getValue())) {
       return getAxisId() == other.getAxisId() && getValue().equals(other.getValue());
     }
-    return this.fullPath == other.fullPath ||
-        (this.fullPath != null && this.fullPath.equals(other.fullPath));
+    return Objects.equals(this.fullPath, other.fullPath);
   }
 
   @Override

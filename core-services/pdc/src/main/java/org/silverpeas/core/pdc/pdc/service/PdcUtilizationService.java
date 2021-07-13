@@ -31,8 +31,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Interface declaration
- * @author
+ * A service in the PdC engine to filter the PdC's axis per application instance. It defines a
+ * constraining view onto the PdC for a given application instance so that each classification of the
+ * contributions in the application is done onto this view of the PdC.
  */
 public interface PdcUtilizationService {
 
@@ -42,7 +43,7 @@ public interface PdcUtilizationService {
    * @return an UsedAxis
    * @throws PdcException
    */
-  public UsedAxis getUsedAxis(String usedAxisId) throws PdcException;
+  UsedAxis getUsedAxis(String usedAxisId) throws PdcException;
 
   /**
    * Returns all the axis used by a given Job'Peas instance
@@ -50,9 +51,9 @@ public interface PdcUtilizationService {
    * @return a List of UsedAxis
    * @throws PdcException
    */
-  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException;
+  List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
-  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
+  List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
       throws PdcException;
 
   /**
@@ -63,7 +64,7 @@ public interface PdcUtilizationService {
    * valeur de base un ascendant ou un descendant - 1 sinon
    * @throws PdcException
    */
-  public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException;
+  int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException;
 
   /**
    * Update an UsedAxis
@@ -73,7 +74,7 @@ public interface PdcUtilizationService {
    * valeur de base un ascendant ou un descendant - 1 sinon
    * @throws PdcException
    */
-  public int updateUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException;
+  int updateUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException;
 
   /**
    * Delete an used axis
@@ -81,7 +82,7 @@ public interface PdcUtilizationService {
    * @throws PdcException
    *
    */
-  public void deleteUsedAxis(String usedAxisId) throws PdcException;
+  void deleteUsedAxis(String usedAxisId) throws PdcException;
 
   /**
    * Delete a collection of used axis
@@ -89,7 +90,7 @@ public interface PdcUtilizationService {
    * @throws PdcException
    *
    */
-  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
+  void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
 
   /**
    * Delete used axis based on a particular axis
@@ -98,11 +99,11 @@ public interface PdcUtilizationService {
    * @throws PdcException
    *
    */
-  public void deleteUsedAxisByAxisId(Connection con, String axisId) throws PdcException;
+  void deleteUsedAxisByAxisId(Connection con, String axisId) throws PdcException;
 
-  public void deleteUsedAxisByMotherValue(Connection con, String valueId, String axisId,
+  void deleteUsedAxisByMotherValue(Connection con, String valueId, String axisId,
       String treeId) throws PdcException;
 
-  public void updateOrDeleteBaseValue(Connection con, int baseValueToUpdate, int newBaseValue,
+  void updateOrDeleteBaseValue(Connection con, int baseValueToUpdate, int newBaseValue,
       int axisId, String treeId) throws PdcException;
 }

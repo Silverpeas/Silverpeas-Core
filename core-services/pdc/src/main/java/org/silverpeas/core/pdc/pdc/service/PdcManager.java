@@ -39,6 +39,18 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Manager of the PdC (Plan de Classement in French or Classification Plan in English). The PdC is a
+ * multi-dimensional tree of coordinates. The tree defines an ontology in which each axis and
+ * sub-axis are about a semantic topic (for example "Geography") that is refined down to the the
+ * sub-axis and in which each coordinate along each axis is a semantic label (made of one or more
+ * words, for example "Sri Lanka" in the sub-axis "Asia" of the axis "Geography") with or without a
+ * mapped thesaurus. The PdC gives a way to the users to explicitly or automatically color their
+ * contributions with some meanings and from those meanings to find the contributions related by
+ * them. The PdC manager is the low-level object that is responsible to construct such a PdC in
+ * Silverpeas, to filter the PdC's axis per application instance, and to position semantically the
+ * contributions into the PdC.
+ */
 public interface PdcManager {
 
   /**
@@ -46,7 +58,7 @@ public interface PdcManager {
    */
   String PRIMARY_AXIS = "P";
   /**
-   * The secondary axis, often hiden or not used, that made a PdC and that provide more accurate
+   * The secondary axis, often hidden or not used, that made a PdC and that provide more accurate
    * classification information.
    */
   String SECONDARY_AXIS = "S";
@@ -55,18 +67,15 @@ public interface PdcManager {
     return ServiceProvider.getSingleton(PdcManager.class);
   }
 
-  List<GlobalSilverContent> findGlobalSilverContents(
-      SearchContext containerPosition, List<String> componentIds,
-      boolean recursiveSearch, boolean visibilitySensitive);
+  List<GlobalSilverContent> findGlobalSilverContents(SearchContext containerPosition,
+      List<String> componentIds, boolean recursiveSearch, boolean visibilitySensitive);
 
   List<AxisHeader> getAxisByType(String type) throws PdcException;
 
   /**
    * Method declaration
-   *
    * @return
    * @throws PdcException
-   *
    */
   List<AxisHeader> getAxis() throws PdcException;
 
@@ -154,15 +163,12 @@ public interface PdcManager {
 
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
-   *
    * @param axisId
    * @param valueId
    * @return List
    * @throws PdcException
-   *
    */
-  List<String> getDaughterValues(String axisId, String valueId)
-      throws PdcException;
+  List<String> getDaughterValues(String axisId, String valueId) throws PdcException;
 
   /**
    * Return the Value corresponding to the axis done
@@ -182,16 +188,13 @@ public interface PdcManager {
 
   /**
    * Method declaration
-   *
    * @param valueToInsert
    * @param refValue
    * @param axisId
    * @return
    * @throws PdcException
-   *
    */
-  int insertMotherValue(Value valueToInsert, String refValue,
-      String axisId) throws PdcException;
+  int insertMotherValue(Value valueToInsert, String refValue, String axisId) throws PdcException;
 
   /**
    * Déplace une valeur et ses sous-valeurs sous un nouveau père
@@ -202,8 +205,8 @@ public interface PdcManager {
    * @return 1 si valeur soeur de même nom
    * @throws PdcException
    */
-  int moveValueToNewFatherId(Axis axis, Value valueToMove,
-      String newFatherId, int orderNumber) throws PdcException;
+  int moveValueToNewFatherId(Axis axis, Value valueToMove, String newFatherId, int orderNumber)
+      throws PdcException;
 
   /**
    * retourne les droits sur la valeur
@@ -229,8 +232,8 @@ public interface PdcManager {
    * @return
    * @throws PdcException
    */
-  void setManagers(List<String> userIds, List<String> groupIds, String axisId,
-      String valueId) throws PdcException;
+  void setManagers(List<String> userIds, List<String> groupIds, String axisId, String valueId)
+      throws PdcException;
 
   /**
    * supprime tous les droits sur la valeur
@@ -253,8 +256,7 @@ public interface PdcManager {
    * @throws PdcException
    *
    */
-  int createDaughterValue(Value valueToInsert, String refValue,
-      String treeId) throws PdcException;
+  int createDaughterValue(Value valueToInsert, String refValue, String treeId) throws PdcException;
 
   /**
    * Method declaration
@@ -265,8 +267,8 @@ public interface PdcManager {
    * @throws PdcException
    *
    */
-  String createDaughterValueWithId(Value valueToInsert, String refValue,
-      String treeId) throws PdcException;
+  String createDaughterValueWithId(Value valueToInsert, String refValue, String treeId)
+      throws PdcException;
 
   /**
    * Method declaration
@@ -285,8 +287,8 @@ public interface PdcManager {
    * @throws PdcException
    *
    */
-  void deleteValueAndSubtree(Connection con, String valueId,
-      String axisId, String treeId) throws PdcException;
+  void deleteValueAndSubtree(Connection con, String valueId, String axisId, String treeId)
+      throws PdcException;
 
   /**
    * Method declaration
@@ -295,8 +297,8 @@ public interface PdcManager {
    * @throws PdcException
    *
    */
-  String deleteValue(Connection con, String valueId, String axisId,
-      String treeId) throws PdcException;
+  String deleteValue(Connection con, String valueId, String axisId, String treeId)
+      throws PdcException;
 
   /**
    * Method declaration
@@ -314,6 +316,7 @@ public interface PdcManager {
    * ****************************************************************
    */
   /* Methods used by the use case 'settings of using of the taxinomy' */
+
   /**
    * ****************************************************************
    */
@@ -379,79 +382,66 @@ public interface PdcManager {
    * @throws PdcException if an error occurs while getting the PdC axis for the specified component
    * instance.
    */
-  List<UsedAxis> getUsedAxisToClassify(String instanceId, int silverObjectId)
+  List<UsedAxis> getUsedAxisToClassify(String instanceId, int silverObjectId) throws PdcException;
+
+  int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId)
       throws PdcException;
 
-  int addPosition(int silverObjectId, ClassifyPosition position,
-      String sComponentId) throws PdcException;
+  int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId,
+      boolean alertSubscribers) throws PdcException;
 
-  int addPosition(int silverObjectId, ClassifyPosition position,
-      String sComponentId, boolean alertSubscribers) throws PdcException;
-
-  int updatePosition(ClassifyPosition position, String instanceId,
-      int silverObjectId) throws PdcException;
-
-  int updatePosition(ClassifyPosition position, String instanceId,
-      int silverObjectId, boolean alertSubscribers) throws PdcException;
-
-  void deletePosition(int positionId, String sComponentId)
+  int updatePosition(ClassifyPosition position, String instanceId, int silverObjectId)
       throws PdcException;
+
+  int updatePosition(ClassifyPosition position, String instanceId, int silverObjectId,
+      boolean alertSubscribers) throws PdcException;
+
+  void deletePosition(int positionId, String sComponentId) throws PdcException;
 
   void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
       throws PdcException;
 
-  void copyPositions(int fromObjectId, String fromInstanceId,
-      int toObjectId, String toInstanceId) throws PdcException;
-
-  List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
+  void copyPositions(int fromObjectId, String fromInstanceId, int toObjectId, String toInstanceId)
       throws PdcException;
+
+  List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId) throws PdcException;
 
   boolean isClassifyingMandatory(String componentId) throws PdcException;
 
-  List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext,
-      String axisType, String instanceId) throws PdcException;
-
-  List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
-      String axisType, List<String> instanceIds) throws PdcException;
-
-  // public List getFirstLevelAxisValues(SearchContext searchContext, String
-  // axisId) throws PdcException;
-  List<Value> getFirstLevelAxisValuesByInstanceId(SearchContext searchContext,
-      String axisId, String instanceId) throws PdcException;
-
-  List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
-      String axisId, List<String> instanceIds) throws PdcException;
-
-  // recherche globale
-  // public List getPertinentDaughterValues(SearchContext searchContext, String
-  // axisId, String valueId) throws PdcException;
-  // recherche à l'intérieur d'une instance
-  List<Value> getPertinentDaughterValuesByInstanceId(
-      SearchContext searchContext, String axisId, String valueId,
+  List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext, String axisType,
       String instanceId) throws PdcException;
 
-  List<Value> getPertinentDaughterValuesByInstanceIds(
-      SearchContext searchContext, String axisId, String valueId,
+  List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext, String axisType,
       List<String> instanceIds) throws PdcException;
 
-  List<Integer> findSilverContentIdByPosition(
-      SearchContext containerPosition, List<String> alComponentId,
-      String authorId, LocalDate afterDate, LocalDate beforeDate)
+  List<Value> getFirstLevelAxisValuesByInstanceId(SearchContext searchContext, String axisId,
+      String instanceId) throws PdcException;
+
+  List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext, String axisId,
+      List<String> instanceIds) throws PdcException;
+
+  List<Value> getPertinentDaughterValuesByInstanceId(SearchContext searchContext, String axisId,
+      String valueId, String instanceId) throws PdcException;
+
+  List<Value> getPertinentDaughterValuesByInstanceIds(SearchContext searchContext, String axisId,
+      String valueId, List<String> instanceIds) throws PdcException;
+
+  List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
+      List<String> alComponentId, String authorId, LocalDate afterDate, LocalDate beforeDate)
       throws PdcException;
 
   /**
    * Find all the SilverContentId with the given position
    */
-  List<Integer> findSilverContentIdByPosition(
-      SearchContext containerPosition, List<String> alComponentId)
-      throws PdcException;
+  List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
+      List<String> alComponentId) throws PdcException;
 
   List<Value> getDaughters(String refValue, String treeId);
 
   void indexAllAxis() throws PdcException;
 
-  SearchContext getSilverContentIdSearchContext(int nSilverContentId,
-      String sComponentId) throws PdcException;
+  SearchContext getSilverContentIdSearchContext(int nSilverContentId, String sComponentId)
+      throws PdcException;
 
   List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds, String userId);
 }

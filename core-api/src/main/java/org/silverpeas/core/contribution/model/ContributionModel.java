@@ -28,7 +28,7 @@ import org.silverpeas.core.util.filter.Filter;
 /**
  * Model of a contribution. A model is an object representing the business abstraction of a concrete
  * type of a contribution. It provides an interface to access in a more generic way the different
- * business properties of the represented contribution without having to be explicitly know.
+ * business properties of the represented contribution without having to be explicitly known.
  * Business properties mean here the whole interface describing the behaviour of the object.
  * @author mmoquillon
  */

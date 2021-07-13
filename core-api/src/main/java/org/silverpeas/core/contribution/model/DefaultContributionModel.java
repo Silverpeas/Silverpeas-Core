@@ -63,7 +63,6 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
    * @param parameters some parameters useful for property value computation.
    * @return the value of the property
    */
-  @SuppressWarnings("unchecked")
   protected <T> T getByReflection(final String property, final Object... parameters) {
     try {
       return invokeAccessor(property, parameters);
@@ -94,7 +93,7 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
   @SuppressWarnings("unchecked")
   private <T> T invoke(final String property, final Object... parameters)
       throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-    Class[] paramTypes = Stream.of(parameters)
+    Class<?>[] paramTypes = Stream.of(parameters)
         .map(Object::getClass)
         .collect(Collectors.toList())
         .toArray(new Class[parameters.length]);

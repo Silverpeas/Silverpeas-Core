@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -182,8 +182,13 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       if (templateFileName == null) {
         try {
           RecordSet set = getGenericRecordSetManager().getRecordSet(externalId);
-          IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) set.getRecordTemplate();
-          currentTemplateFileName = template.getTemplateName();
+          RecordTemplate template = set.getRecordTemplate();
+          if (template instanceof IdentifiedRecordTemplate) {
+            currentTemplateFileName = ((IdentifiedRecordTemplate) template).getTemplateName();
+          } else {
+            throw new PublicationTemplateException("Unexpected type of data record template: " +
+                template.getClass().getSimpleName());
+          }
         } catch (Exception e) {
           throw new PublicationTemplateException(
               "Fail to get publication template " + templateFileName + " for " + externalId, e);
@@ -587,15 +592,27 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     try {
       // récupération des données du formulaire (via le DataRecord)
       pub = getPublicationTemplate(externalId);
+      if (pub == null) {
+        SilverLogger.getLogger(this)
+            .warn("This template is not yet registered");
+        pub = registerTemplate(externalId, shortName);
+      }
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .warn("This template is not yet registered. Error: " + e.getMessage());
-      try {
-        addDynamicPublicationTemplate(externalId, shortName);
-        pub = getPublicationTemplate(externalId);
-      } catch (Exception templateException) {
-        throw new SilverpeasException("Unable to register template", templateException);
-      }
+      pub = registerTemplate(externalId, shortName);
+    }
+    return pub;
+  }
+
+  private PublicationTemplate registerTemplate(final String externalId, final String shortName)
+      throws SilverpeasException {
+    PublicationTemplate pub;
+    try {
+      addDynamicPublicationTemplate(externalId, shortName);
+      pub = getPublicationTemplate(externalId);
+    } catch (Exception templateException) {
+      throw new SilverpeasException("Unable to register template", templateException);
     }
     return pub;
   }
