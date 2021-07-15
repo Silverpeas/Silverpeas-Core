@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.component.model.PasteDetail;
  * <p>
  * By default, all application instances in Silverpeas can be copied or moved to another location
  * (another space). Nevertheless, by default the resources that are managed in this application
- * instance aren't also processed by the pasting. In order to paste also the resources
+ * instance aren't by default processed by the pasting. In order to paste also the resources
  * managed by the copied or moved application instances, the Silverpeas application has to provide
  * a class that implements this interface and that is qualified by the @Named annotation with
  * as value the name of the application (the first letter in lower case) plus the term

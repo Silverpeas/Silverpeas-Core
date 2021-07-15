@@ -1689,18 +1689,24 @@ public class GlobalPdcManager implements PdcManager {
   public void copyPositions(int fromObjectId, String fromInstanceId, int toObjectId,
       String toInstanceId) throws PdcException {
     List<ClassifyPosition> positions = getPositions(fromObjectId, fromInstanceId);
+    List<ClassifyPosition> existingPositions = getPositions(toObjectId, toInstanceId);
 
     List<UsedAxis> usedAxis = getUsedAxisByInstanceId(toInstanceId);
 
-    ClassifyPosition newPosition;
     for (ClassifyPosition position : positions) {
-      newPosition = checkClassifyPosition(position, usedAxis);
+      if (!isYetSet(existingPositions, position)) {
+        ClassifyPosition newPosition = checkClassifyPosition(position, usedAxis);
 
-      if (newPosition != null) {
-        // copy position
-        addPosition(toObjectId, newPosition, toInstanceId);
+        if (newPosition != null) {
+          // copy position
+          addPosition(toObjectId, newPosition, toInstanceId);
+        }
       }
     }
+  }
+
+  private boolean isYetSet(List<ClassifyPosition> positions, ClassifyPosition position) {
+    return positions.stream().anyMatch(p -> p.equals(position));
   }
 
   private ClassifyPosition checkClassifyPosition(ClassifyPosition position,
@@ -1886,7 +1892,7 @@ public class GlobalPdcManager implements PdcManager {
     for (AxisHeader axisHeader : axis) {
       if (axisHeader.getAxisType().equals(axisType)) {
         axisId = axisHeader.getPK().getId();
-        axisIds.add(new Integer(axisId));
+        axisIds.add(Integer.parseInt(axisId));
       }
     }
 
