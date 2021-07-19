@@ -387,6 +387,16 @@ public class Period implements Serializable {
   }
 
   /**
+   * Is this period an indefinite one? That is to say a period ranging over an indefinite range
+   * of time meaning that whatever any event, it occurs during this period. In Silverpeas, an
+   * indefinite period starts at {@link LocalDate#MIN} and ends at {@link LocalDate#MAX}.
+   * @return true if this period is an indefinite one. False otherwise.
+   */
+  public boolean isIndefinite() {
+    return startsAtMinDate() && endsAtMaxDate();
+  }
+
+  /**
    * Is this period starts at the the minimum supported date/datetime in Java?
    * @return true if this period starts at the minimum date/datetime supported by Java. False
    * otherwise.
