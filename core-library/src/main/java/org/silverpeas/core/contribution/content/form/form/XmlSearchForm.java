@@ -231,7 +231,7 @@ public class XmlSearchForm extends AbstractForm {
 
     String label = Util.getString(prefix + ".label", pc.getLanguage());
 
-    String[] mainSpaceIds = OrganizationController.get().getAllRootSpaceIds();
+    String[] mainSpaceIds = OrganizationController.get().getAllRootSpaceIds(pc.getUserId());
     StringBuilder keys = new StringBuilder();
     StringBuilder values = new StringBuilder();
     for (String spaceId : mainSpaceIds) {
