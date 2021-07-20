@@ -108,6 +108,10 @@ $(function () {
   });
 });
 
+function isSpecialFolder(id) {
+  return id === '1' || id === 'tovalidate' || id === 'notvisibleContributions';
+}
+
 function initTree(instanceId) {
   $("#explorer").jstree('destroy');
   var rootId = "0";
@@ -126,7 +130,7 @@ function initTree(instanceId) {
             if (newData.children) {
               for (var i = 0; i < newData.children.length; i++) {
                 var child = newData.children[i];
-                if (child.id === '1' || child.id === 'tovalidate') {
+                if (isSpecialFolder(child.id)) {
                   child.state.hidden = true;
                 } else {
                   child.children = true;
