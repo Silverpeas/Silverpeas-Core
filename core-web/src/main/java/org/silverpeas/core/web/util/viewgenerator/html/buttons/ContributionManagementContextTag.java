@@ -23,23 +23,14 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.html.SupportedWebPlugins;
-import org.silverpeas.core.html.WebPlugin;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import java.util.Collections;
+import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
-import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.getDynamicSubscriptionJavascriptLoadContent;
 
 /**
  * This TAG can be called into a {@link ButtonTag}.<br>
@@ -52,15 +43,19 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
  *   </ul>
  * </p>
  */
-public class ContributionManagementContextTag extends TagSupport {
-  private static final long serialVersionUID = 6158988849428896473L;
+public class ContributionManagementContextTag extends AbstractContributionManagementContextTag {
+  private static final long serialVersionUID = 7960431491482255658L;
 
   private ContributionIdentifier contributionId;
-  private SubscriptionResourceType subscriptionResourceType = COMPONENT;
-  private String subscriptionResourceId = null;
+  private SubscriptionResourceType subscriptionResourceType;
+  private String subscriptionResourceId;
   private String jsValidationCallbackMethodName;
+  private Boolean contributionIndexable;
+  private Location location;
 
-  private Boolean contributionIndexable = true;
+  public ContributionManagementContextTag() {
+    super();
+  }
 
   public SubscriptionResourceType getSubscriptionResourceType() {
     return subscriptionResourceType;
@@ -86,6 +81,7 @@ public class ContributionManagementContextTag extends TagSupport {
     this.subscriptionResourceId = subscriptionResourceId;
   }
 
+  @Override
   public String getJsValidationCallbackMethodName() {
     return jsValidationCallbackMethodName;
   }
@@ -102,91 +98,32 @@ public class ContributionManagementContextTag extends TagSupport {
     this.contributionIndexable = contributionIndexable;
   }
 
-  @Override
-  public int doEndTag() throws JspException {
-    ButtonTag buttonTag = (ButtonTag) findAncestorWithClass(this, ButtonTag.class);
-    if (buttonTag != null) {
-      buttonTag.setActionPreProcessing("");
-      ElementContainer xhtml = new ElementContainer();
-      xhtml.addElement(WebPlugin.get()
-          .getHtml(SupportedWebPlugins.CONTRIBUTIONMODICTX, getRequest().getUserLanguage()));
-      xhtml.addElement(new script().setType("text/javascript")
-          .addElement(getDynamicSubscriptionJavascriptLoadContent(null)));
-      xhtml.output(pageContext.getOut());
-      buttonTag.setActionPreProcessing(renderJs());
-      return EVAL_PAGE;
-    } else {
-      throw new JspException(this.getClass().getSimpleName() + " must be wrapped by " +
-          ButtonTag.class.getSimpleName());
-    }
+  public Location getLocation() {
+    return location;
+  }
+
+  public void setLocation(final Location location) {
+    this.location = location;
   }
 
   @Override
-  public int doStartTag() throws JspException {
-    return EVAL_BODY_INCLUDE;
+  void init() {
+    contributionId = null;
+    subscriptionResourceType = COMPONENT;
+    subscriptionResourceId = null;
+    jsValidationCallbackMethodName = null;
+    contributionIndexable = true;
+    location = null;
   }
 
-  protected HttpRequest getRequest() {
-    return (HttpRequest) pageContext.getRequest();
-  }
-
-  protected String renderJs() {
-    final ContributionIdentifier cId = ofNullable(getContributionId()).orElseGet(() -> {
-      GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
-          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      final String componentId = gef.getComponentIdOfCurrentRequest();
-      return ContributionIdentifier.from(componentId, componentId, "UNKNOWN");
-    });
-    final StringBuilder sb = new StringBuilder();
-    sb.append("jQuery.contributionModificationContext.validateOnUpdate({");
-    sb.append("  contributionId:{");
-    sb.append("    componentInstanceId:'").append(cId.getComponentInstanceId()).append("',");
-    sb.append("    localId:'").append(cId.getLocalId()).append("',");
-    sb.append("    type:'").append(cId.getType()).append("'");
-    sb.append("  },status: undefined");
-    sb.append("  ,callback: function() {");
-    sb.append(renderSubscriptionJs());
-    sb.append("  }");
-    if (StringUtil.isDefined(getJsValidationCallbackMethodName())) {
-      sb.append("  ,validationCallback:").append(getJsValidationCallbackMethodName());
-    }
-    sb.append("});");
-    return sb.toString();
-  }
-
-  protected String renderSubscriptionJs() {
-    GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
-        .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-
-    final String componentId = gef.getComponentIdOfCurrentRequest();
-    boolean tabComments = StringUtil.getBooleanValue(
-        OrganizationController.get().getComponentParameterValue(componentId, "tabComments"));
-    boolean comments = StringUtil.getBooleanValue(
-        OrganizationController.get().getComponentParameterValue(componentId, "comments"));
-
-    final StringBuilder sb = new StringBuilder();
-    sb.append("jQuery.subscription.confirmNotificationSendingOnUpdate({subscription:{");
-    sb.append("  componentInstanceId:'").append(componentId).append("'");
-    final SubscriptionResourceType type = getSubscriptionResourceType();
-    if (COMPONENT != type) {
-      sb.append("  ,type:").append("$.subscription.subscriptionType.").append(type.getName());
-      sb.append("  ,resourceId:'").append(getSubscriptionResourceId()).append("'");
-    }
-    sb.append("  },callback: function() {");
-    sb.append("    {action};");
-    sb.append("  }");
-    if (StringUtil.isDefined(getJsValidationCallbackMethodName())) {
-      sb.append("  ,validationCallback:").append(getJsValidationCallbackMethodName());
-    }
-    if (tabComments || comments) {
-      sb.append("  ,comment:{");
-      sb.append("saveNote : true,");
-      sb.append("contributionLocalId : '").append(contributionId.getLocalId()).append("',");
-      sb.append("contributionType : '").append(contributionId.getType()).append("',");
-      sb.append("contributionIndexable : ").append(contributionIndexable);
-      sb.append("}");
-    }
-    sb.append("});");
-    return sb.toString();
+  @Override
+  List<Item> getItems() {
+    final Item item = new Item();
+    item.contributionId = getContributionId();
+    item.contributionIndexable = getContributionIndexable();
+    item.location = getLocation();
+    item.subscriptionResourceId = getSubscriptionResourceId();
+    item.subscriptionResourceType = getSubscriptionResourceType();
+    return Collections.singletonList(item);
   }
 }

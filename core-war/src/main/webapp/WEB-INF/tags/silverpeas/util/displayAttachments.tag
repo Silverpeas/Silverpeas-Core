@@ -80,6 +80,7 @@
 <c:set var="isHandledContributionModificationContext" value="${false}"/>
 <c:set var="_paramHandledSubscriptionType" value=""/>
 <c:set var="_paramHandledSubscriptionResourceId" value=""/>
+<c:set var="_paramHandledSubscriptionLocationId" value=""/>
 <c:if test="${not empty contributionManagementContext}">
   <c:if test="${contributionManagementContext.entityStatusBeforePersistAction.validated
               and contributionManagementContext.entityStatusAfterPersistAction.validated
@@ -87,6 +88,9 @@
     <c:set var="isHandledContributionModificationContext" value="${true}"/>
     <c:set var="_paramHandledSubscriptionType" value="${contributionManagementContext.linkedSubscriptionResource.type.name}"/>
     <c:set var="_paramHandledSubscriptionResourceId" value="${contributionManagementContext.linkedSubscriptionResource.id}"/>
+    <c:if test="${contributionManagementContext.location != null}">
+      <c:set var="_paramHandledSubscriptionLocationId" value="${contributionManagementContext.location.id}"/>
+    </c:if>
   </c:if>
 </c:if>
 <c:set var="isHandledSubscriptionConfirmation"
@@ -129,4 +133,5 @@
   <c:param name="HandledContributionModificationContext" value="${isHandledContributionModificationContext}"/>
   <c:param name="HandledSubscriptionType" value="${_paramHandledSubscriptionType}"/>
   <c:param name="HandledSubscriptionResourceId" value="${_paramHandledSubscriptionResourceId}"/>
+  <c:param name="HandledSubscriptionLocationId" value="${_paramHandledSubscriptionLocationId}"/>
 </c:import>

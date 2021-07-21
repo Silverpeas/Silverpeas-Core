@@ -884,6 +884,13 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
+      <description>The optional location</description>
+      <name>location</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.contribution.publication.model.Location</type>
+    </attribute>
+    <attribute>
       <description>Specify the name of the method to call in order to validate the data filled by
         a user. The method must return true if data filled are ok, false otherwise.</description>
       <name>jsValidationCallbackMethodName</name>
@@ -899,6 +906,33 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>This TAG must be called into body of Button TAG.
+      It permits to handle a user contribution batch context.
+    </description>
+    <name>handleContributionBatchManagementContext</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ContributionBatchManagementContextTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The instance of the batch context
+      </description>
+      <name>context</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.contribution.util.ContributionBatchManagementContext</type>
+    </attribute>
+    <attribute>
+      <description>Specify the name of the method to call in order to validate the data filled by
+        a user. The method must return true if data filled are ok, false otherwise.</description>
+      <name>jsValidationCallbackMethodName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
     </attribute>
   </tag>
   <tag>

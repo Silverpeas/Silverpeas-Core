@@ -27,6 +27,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.ContributionWithVisibility;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -338,6 +339,22 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public String getStatus() {
     return status;
+  }
+
+  public ContributionStatus getContributionStatus() {
+    final ContributionStatus contributionStatus;
+    if (DRAFT_STATUS.equalsIgnoreCase(status)) {
+      contributionStatus = ContributionStatus.DRAFT;
+    } else if (VALID_STATUS.equalsIgnoreCase(status)) {
+      contributionStatus = ContributionStatus.VALIDATED;
+    } else if (TO_VALIDATE_STATUS.equalsIgnoreCase(status)) {
+      contributionStatus = ContributionStatus.PENDING_VALIDATION;
+    } else if (REFUSED_STATUS.equalsIgnoreCase(status)) {
+      contributionStatus = ContributionStatus.REFUSED;
+    } else {
+      contributionStatus = ContributionStatus.UNKNOWN;
+    }
+    return contributionStatus;
   }
 
   public String getImage() {

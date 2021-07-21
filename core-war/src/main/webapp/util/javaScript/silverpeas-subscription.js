@@ -22,6 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//# sourceURL=/util/javaScript/silverpeas-subscription.js
+
 /**
  * Silverpeas plugin build upon JQuery to manage parts of subscription services.
  */
@@ -71,19 +73,27 @@
      *      resource. For example, if a contribution is modifier on application that handles only
      *      COMPONENT subscription, just componentInstanceId must be filled).
      */
+    context : webContext,
+    serviceContext : webContext + '/services',
+    contribution : {
+      contributionId : {
+        componentInstanceId : undefined,
+        localId : undefined,
+        type : undefined
+      },
+      status : undefined,
+      locationId : undefined,
+      indexable : undefined
+    },
     subscription : {
-      context : webContext,
-      serviceContext : webContext + '/services',
       componentInstanceId : '',
       type : $.subscription.subscriptionType.COMPONENT,
       resourceId : ''
     },
     comment : {
-      saveNote : false,
-      contributionLocalId : '',
-      contributionType : '',
-      contributionIndexable : true
-    }
+      saveNote : false
+    },
+    items : []
   };
 
   /**
@@ -110,8 +120,7 @@
       }
       return this.each(function() {
         const $this = $(this);
-        __init($this, options);
-        __configureConfirmSubscriptionNotificationSending($this.data('settings'));
+        __configureConfirmSubscriptionNotificationSending(__initFinalSettings($this, options));
       });
     }
   };
@@ -136,28 +145,57 @@
    * @param options
    * @private
    */
-  function __init($this, options) {
+  function __initFinalSettings($this, options) {
     const settings = $.extend(true, {}, pluginSettings);
     if (options) {
       $.extend(true, settings, options);
     }
-    $this.data('settings', settings);
-    let error;
-    if (typeof settings.subscription.componentInstanceId !== 'string' ||
-        $.trim(settings.subscription.componentInstanceId) === 0) {
-      error =
-          "Silverpeas Subscription JQuery Plugin - ERROR - subscription.componentInstanceId parameter must be set";
-      window.console && window.console.log(error);
-      throw error;
+    if (settings.items.length === 0 && settings.subscription && settings.subscription.componentInstanceId) {
+      settings.items.push({
+        contribution : settings.contribution,
+        subscription : settings.subscription,
+        comment : settings.comment
+      });
     }
-    if (settings.subscription.type !== $.subscription.subscriptionType.COMPONENT &&
-        (typeof settings.subscription.resourceId !== 'string' ||
-        $.trim(settings.subscription.resourceId) === 0)) {
-      error =
-          "Silverpeas Subscription JQuery Plugin - ERROR - subscription.resourceId parameter must be set";
-      window.console && window.console.log(error);
-      throw error;
+    settings.items.verifyAtLeastOne = function(verifier) {
+      let result = settings.items.length === 0;
+      if (!result) {
+        for(let i = 0 ; !result && i < settings.items.length ; i++) {
+          result = verifier(settings.items[i]);
+        }
+      }
+      return result;
+    };
+    if (settings.items.length) {
+      let error;
+      const __componentInstanceIdIsMissing = function(item) {
+        const componentInstanceId = item.subscription.componentInstanceId;
+        return typeof componentInstanceId !== 'string' || $.trim(componentInstanceId) === 0
+      };
+      if (settings.items.verifyAtLeastOne(__componentInstanceIdIsMissing)) {
+        error = "Silverpeas Subscription JQuery Plugin - ERROR - subscription.componentInstanceId parameter must be set";
+        window.console && window.console.log(error);
+        throw error;
+      }
+      const __resourceIdIsMissing = function(item) {
+        const resourceId = item.subscription.resourceId;
+        return item.subscription.type !== $.subscription.subscriptionType.COMPONENT &&
+            (typeof resourceId !== 'string' || $.trim(resourceId) === 0)
+      };
+      if (settings.items.verifyAtLeastOne(__resourceIdIsMissing)) {
+        error = "Silverpeas Subscription JQuery Plugin - ERROR - subscription.resourceId parameter must be set";
+        window.console && window.console.log(error);
+        throw error;
+      }
+
+      const __handleLegacy = function(item) {
+        if (typeof item.contribution.contributionId.componentInstanceId !== 'string') {
+          item.contribution.contributionId.componentInstanceId = item.subscription.componentInstanceId;
+        }
+      };
+      settings.items.forEach(__handleLegacy);
     }
+    return settings;
   }
 
   /**
@@ -169,17 +207,42 @@
    * @private
    */
   function __existSubscribersOnAimedResourceSubscription($settings) {
-    const $deferred = $.Deferred();
-    let url = $settings.subscription.serviceContext + '/subscriptions/';
-    url += $settings.subscription.componentInstanceId;
-    url += '/' + $settings.subscription.type.toLowerCase() + '/subscribers';
-    url += '/inheritance/' + $settings.subscription.resourceId;
-    url += '?existenceIndicatorOnly=true';
-    $.get(url, function(existSubscribers) {
-      $deferred.resolve(existSubscribers);
+    return new Promise(function(resolve) {
+      const __consume = function(i) {
+        if ($settings.items.length <= i) {
+          resolve(false);
+          return;
+        }
+        const item = $settings.items[i];
+        if (StringUtil.isDefined(item.contribution.contributionId.componentInstanceId) &&
+            !__isRightContributionStatus(item.contribution)) {
+          __consume(i + 1);
+          return;
+        }
+        let baseUrl = $settings.serviceContext + '/subscriptions/';
+        baseUrl += item.subscription.componentInstanceId;
+        baseUrl += '/' + item.subscription.type.toLowerCase() + '/subscribers';
+        baseUrl += '/inheritance/' + item.subscription.resourceId;
+        const url = sp.url.format(baseUrl , {
+          'existenceIndicatorOnly' : true,
+          'locationId' : item.contribution.locationId
+        });
+        sp.ajaxRequest(url).send().then(function(request){
+          if (request.responseText === 'true') {
+            resolve(true);
+          } else {
+            __consume(i + 1);
+          }
+        });
+      }
+      __consume(0);
     });
-    return $deferred.promise();
   }
+
+  const __isRightContributionStatus = function(contribution) {
+    return typeof contribution === 'object' &&
+        (!contribution.status || contribution.status === 'VALIDATED');
+  };
 
   /**
    * Configures the confirmation of subscription notification sending on contribution update.
@@ -188,7 +251,7 @@
    */
   function __configureConfirmSubscriptionNotificationSending($settings) {
 
-    if (!$.subscription.parameters.confirmNotificationSendingOnUpdateEnabled) {
+    if (!$settings.items.length || !$.subscription.parameters.confirmNotificationSendingOnUpdateEnabled) {
       // In this case, the feature is deactivated from general settings.
       $settings.callback.call(this);
       return;
@@ -233,10 +296,14 @@
 
     const confirmSubscriptionNotificationSending = function() {
       const userConfirmation = initUserResponse();
-      const commentActivated = $settings.comment.saveNote &&
-          StringUtil.isDefined($settings.comment.contributionLocalId) &&
-          StringUtil.isDefined($settings.comment.contributionType);
-      const urlOfDialogMessage = $settings.subscription.context +
+      const __commentParametersSet = function(item) {
+        return item.comment && item.comment.saveNote &&
+            __isRightContributionStatus(item.contribution) &&
+            StringUtil.isDefined(item.contribution.contributionId.localId) &&
+            StringUtil.isDefined(item.contribution.contributionId.type)
+      };
+      const commentActivated = $settings.items.verifyAtLeastOne(__commentParametersSet);
+      const urlOfDialogMessage = $settings.context +
           '/subscription/jsp/messages/confirmSubscriptionNotificationSending.jsp';
       const url = sp.url.format(urlOfDialogMessage, {'saveNoteIntoComment' : commentActivated});
       jQuery.popup.load(url).show('confirmation', {
@@ -245,26 +312,30 @@
           const userNoteValue = $('textarea', this).val();
           userConfirmation.note = userNoteValue;
           setSubscriptionNotificationSendingParameter.call(this, userConfirmation);
-          if (saveNoteIntoComment && StringUtil.isDefined(userNoteValue)) {
-            const commentServiceUrl = webContext + '/services/comments/' +
-                $settings.subscription.componentInstanceId + '/' +
-                $settings.comment.contributionType + '/' + $settings.comment.contributionLocalId;
-            return sp.ajaxRequest(commentServiceUrl)
-              .byPostMethod()
-              .send({
-                author : {
-                  id : currentUserId
-                },
-                componentId : $settings.subscription.componentInstanceId,
-                resourceType : $settings.comment.contributionType,
-                resourceId : $settings.comment.contributionLocalId,
-                text : userNoteValue,
-                textForHtml : userNoteValue,
-                indexed : $settings.comment.contributionIndexable
-              })
-              .then(function() {
-                $settings.callback.call(this, userConfirmation);
-              }.bind(this));
+          const itemsToSaveNote = (saveNoteIntoComment && StringUtil.isDefined(userNoteValue)) ?
+              $settings.items.filter(__commentParametersSet) : [];
+          if (itemsToSaveNote.length > 0) {
+            const __promises = itemsToSaveNote.map(function(item) {
+              const commentServiceUrl = webContext + '/services/comments/' +
+                  item.contribution.contributionId.componentInstanceId + '/' +
+                  item.contribution.contributionId.type + '/' + item.contribution.contributionId.localId;
+              return sp.ajaxRequest(commentServiceUrl)
+                  .byPostMethod()
+                  .send({
+                    author : {
+                      id : currentUserId
+                    },
+                    componentId : item.contribution.contributionId.componentInstanceId,
+                    resourceType : item.contribution.contributionId.type,
+                    resourceId : item.contribution.contributionId.localId,
+                    text : userNoteValue,
+                    textForHtml : userNoteValue,
+                    indexed : item.contribution.indexable
+                  });
+            });
+            return sp.promise.whenAllResolved(__promises).then(function() {
+              $settings.callback.call(this, userConfirmation);
+            }.bind(this));
           } else {
             $settings.callback.call(this, userConfirmation);
             return true;

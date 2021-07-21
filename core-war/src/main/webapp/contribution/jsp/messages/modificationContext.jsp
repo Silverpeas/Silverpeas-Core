@@ -31,8 +31,11 @@
 <view:setBundle basename="org.silverpeas.contribution.multilang.contribution"/>
 
 <c:set var="isMinorModificationBahavior" value="${silfn:booleanValue(param.minorBehavior)}"/>
+<c:set var="isSeveralContributions" value="${silfn:booleanValue(param.several)}"/>
 <fmt:message var="minorQuestionLabel" key="contribution.modification.minor.question"/>
-<fmt:message var="minorHelpMessage" key="contribution.modification.minor.help"/>
+<fmt:message var="minorHelpMessage" key="contribution.modification.minor.help">
+  <fmt:param value="${isSeveralContributions ? 2 : 1}"/>
+</fmt:message>
 <fmt:message var="minorImportantsLabel" key="contribution.modification.minor.importants"/>
 
 <div class="contribution-modification-context">

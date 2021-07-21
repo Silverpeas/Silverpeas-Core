@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -40,6 +41,7 @@ import java.util.HashSet;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -86,6 +88,23 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       // nothing is done here about other types, explicit component implementation MUST exist.
     }
     return new SubscriptionSubscriberList(subscribers);
+  }
+
+  @Override
+  public SubscriptionSubscriberList getSubscribersOfSubscriptionResourceOnLocation(
+      final SubscriptionResource subscriptionResource, final String locationId) {
+    return getSubscribersOfComponentAndTypedResourceOnLocation(subscriptionResource.getInstanceId(),
+        subscriptionResource.getType(), subscriptionResource.getId(), locationId);
+  }
+
+  @Override
+  public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResourceOnLocation(
+      final String componentInstanceId, final SubscriptionResourceType resourceType,
+      final String resourceId, final String locationId) {
+    if (isDefined(locationId)) {
+      throw new NotSupportedException("location is not supported");
+    }
+    return getSubscribersOfComponentAndTypedResource(componentInstanceId, resourceType, resourceId);
   }
 
   private void addAllSubscribersAboutComponentInstance(final String componentInstanceId,
