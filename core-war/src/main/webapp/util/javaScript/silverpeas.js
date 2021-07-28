@@ -2005,6 +2005,7 @@ if (typeof window.sp === 'undefined') {
     selection : {
       newCheckboxMonitor : function(cssSelector) {
         return new function() {
+          applyEventDispatchingBehaviorOn(this);
           var __shift = false;
           var __selectedAtStart = [];
           var __selected = [];
@@ -2065,7 +2066,8 @@ if (typeof window.sp === 'undefined') {
                 __selected.removeElement(ckbox.value);
               }
             });
-          };
+            this.dispatchEvent('change');
+          }.bind(this);
           this.pageChanged = function() {
             __init();
           };

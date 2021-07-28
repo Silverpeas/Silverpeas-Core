@@ -63,4 +63,11 @@ public class PublicationI18N extends BeanTranslation implements Serializable {
     this.keywords = keywords;
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  protected PublicationI18N copy() {
+    final PublicationI18N copy = super.copy();
+    copy.keywords = keywords;
+    return copy;
+  }
 }
