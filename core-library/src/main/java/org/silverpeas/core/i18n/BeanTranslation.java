@@ -51,6 +51,7 @@ public class BeanTranslation implements ResourceTranslation, Serializable {
    * @param translation the bean translation to copy.
    */
   protected BeanTranslation(final BeanTranslation translation) {
+    id = translation.id;
     objectId = translation.objectId;
     language = translation.language;
     name = translation.name;
