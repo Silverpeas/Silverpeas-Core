@@ -105,18 +105,24 @@ public class SilverListener
     }
 
     // Setting the context according to the Silverpeas session state
-    SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
+    final SessionCacheService sessionCacheService =
+        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+    final SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
+    final Runnable setupSessionCache;
     if (sessionInfo.isDefined()) {
       if (sessionInfo instanceof HTTPSessionInfo && !sessionInfo.isAnonymous()) {
         // a non anonymous HTTP session
         ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
       }
+      setupSessionCache = () -> sessionCacheService.setCurrentSessionCache(sessionInfo.getCache());
     } else {
       // Anonymous management
       MainSessionController mainSessionController = MainSessionController.getInstance(httpSession);
       if (mainSessionController != null && mainSessionController.getCurrentUserDetail() != null &&
           mainSessionController.getCurrentUserDetail().isAnonymous()) {
-        sessionInfo = SessionInfo.AnonymousSession;
+        // In that case of anonymous access, session cache is handled as a request one in order
+        // to avoid concurrency access.
+        setupSessionCache = () -> sessionCacheService.newSessionCache(mainSessionController.getCurrentUserDetail());
       } else {
         // shouldn't be executed
         SilverLogger.getLogger(this)
@@ -126,9 +132,7 @@ public class SilverListener
       }
     }
     try {
-      SessionCacheService sessionCacheService =
-          (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-      sessionCacheService.setCurrentSessionCache(sessionInfo.getCache());
+      setupSessionCache.run();
     } catch (IllegalStateException e) {
       SilverLogger.getLogger(this)
           .warn("request ''{0}'' accessing attributes on closed session ({1})",
