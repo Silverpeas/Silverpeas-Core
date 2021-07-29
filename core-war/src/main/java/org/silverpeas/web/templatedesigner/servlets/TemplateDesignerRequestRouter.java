@@ -32,6 +32,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -298,6 +299,9 @@ public class TemplateDesignerRequestRouter extends
     if (displayer.equals("email")) {
       return "fieldEmail.jsp";
     }
+    if (displayer.equals(PublicationsPickerField.TYPE)) {
+      return "fieldPublicationsPicker.jsp";
+    }
     return "fieldText.jsp";
   }
 
@@ -409,6 +413,8 @@ public class TemplateDesignerRequestRouter extends
       fieldType = "sequence";
     } else if (displayer.equals("explorer")) {
       fieldType = "explorer";
+    } else if (displayer.equals("publicationsPicker")) {
+      fieldType = PublicationsPickerField.TYPE;
     }
 
     GenericFieldTemplate field = new GenericFieldTemplate();
