@@ -103,29 +103,40 @@ public class SilverListener
     if (httpSession == null) {
       return;
     }
+
     // Setting the context according to the Silverpeas session state
-    SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
+    final SessionCacheService sessionCacheService =
+        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+    final SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
+    final Runnable setupSessionCache;
     if (sessionInfo.isDefined()) {
-      if (sessionInfo instanceof HTTPSessionInfo && sessionInfo != SessionInfo.AnonymousSession) {
+      if (sessionInfo instanceof HTTPSessionInfo && !sessionInfo.isAnonymous()) {
+        // a non anonymous HTTP session
         ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
       }
-      ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
-          .setCurrentSessionCache(sessionInfo.getCache());
+      setupSessionCache = () -> sessionCacheService.setCurrentSessionCache(sessionInfo.getCache());
     } else {
-      try {
-        // Anonymous management
-        MainSessionController mainSessionController = (MainSessionController) httpSession
-            .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-        if (mainSessionController != null && mainSessionController.getCurrentUserDetail() != null &&
-            mainSessionController.getCurrentUserDetail().isAnonymous()) {
-          ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
-              .newSessionCache(mainSessionController.getCurrentUserDetail());
-        }
-      } catch (IllegalStateException e) {
+      // Anonymous management
+      MainSessionController mainSessionController = MainSessionController.getInstance(httpSession);
+      if (mainSessionController != null && mainSessionController.getCurrentUserDetail() != null &&
+          mainSessionController.getCurrentUserDetail().isAnonymous()) {
+        // In that case of anonymous access, session cache is handled as a request one in order
+        // to avoid concurrency access.
+        setupSessionCache = () -> sessionCacheService.newSessionCache(mainSessionController.getCurrentUserDetail());
+      } else {
+        // shouldn't be executed
         SilverLogger.getLogger(this)
-            .warn("request ''{0}'' accessing attributes on closed session ({1})",
-                httpRequest.getRequestURI(), e.getMessage(), e);
+            .warn("No identified user session attached to request ''{0}'' ",
+                httpRequest.getRequestURI());
+        return;
       }
+    }
+    try {
+      setupSessionCache.run();
+    } catch (IllegalStateException e) {
+      SilverLogger.getLogger(this)
+          .warn("request ''{0}'' accessing attributes on closed session ({1})",
+              httpRequest.getRequestURI(), e.getMessage(), e);
     }
   }
 
