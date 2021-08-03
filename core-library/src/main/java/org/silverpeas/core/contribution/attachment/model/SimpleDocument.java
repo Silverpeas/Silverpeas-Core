@@ -175,7 +175,7 @@ public class SimpleDocument implements Serializable, Securable {
     this.nodeName = simpleDocument.getNodeName();
     this.comment = simpleDocument.getComment();
     this.documentType = simpleDocument.getDocumentType();
-    this.forbiddenDownloadForRoles = this.forbiddenDownloadForRoles != null ?
+    this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles != null ?
         EnumSet.copyOf(simpleDocument.forbiddenDownloadForRoles) :
         null;
     this.attachment = new SimpleAttachment(simpleDocument.getAttachment());
