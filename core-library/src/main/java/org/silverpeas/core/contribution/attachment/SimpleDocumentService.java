@@ -83,8 +83,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.contribution.attachment.SimpleDocumentServiceContext.canUnlockNotifyUpdateFromRequestContext;
+import static org.silverpeas.core.contribution.attachment.SimpleDocumentServiceContext.unlockMustNotNotifyUpdateIntoRequestContext;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.normalize;
 
 /**
@@ -415,6 +418,7 @@ public class SimpleDocumentService
       String userId = document.getUpdatedBy();
       if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
         notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, oldAttachment, document);
+        unlockMustNotNotifyUpdateIntoRequestContext(document);
       }
       if (indexIt) {
         createIndex(document);
@@ -457,6 +461,7 @@ public class SimpleDocumentService
       if (StringUtil.isDefined(userId) && reallyNotifying(finalDocument, notify) &&
           finalDocument.isPublic()) {
         notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, docBeforeUpdate, document);
+        unlockMustNotNotifyUpdateIntoRequestContext(document);
       }
       if (indexIt) {
         createIndex(finalDocument);
@@ -482,6 +487,7 @@ public class SimpleDocumentService
       if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
         if (existsOtherContents) {
           notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document, document);
+          unlockMustNotNotifyUpdateIntoRequestContext(document);
         } else {
           notificationService.notifyEventOn(ResourceEvent.Type.DELETION, document);
         }
@@ -803,11 +809,10 @@ public class SimpleDocumentService
   private boolean prepareDocumentForUnlocking(final UnlockContext context,
       final SimpleDocument document, final boolean updateOfficeContentFromWebDav) {
     boolean notify = false;
-    if (context.isWebdav() && StringUtil.isDefined(document.getEditedBy())) {
-      String workerId = document.getEditedBy();
+    if (context.isWebdav() || context.isUpload()) {
       document.setLastUpdateDate(new Date());
-      document.setUpdatedBy(workerId);
-      notify = true;
+      document.setUpdatedBy(defaultStringIfNotDefined(document.getEditedBy(), context.getUserId()));
+      notify = canUnlockNotifyUpdateFromRequestContext(document);
     }
     document.setPublicDocument(context.isPublicVersion());
     document.setComment(context.getComment());
