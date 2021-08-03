@@ -30,7 +30,13 @@
 
   $.contributionModificationContext = {
     statuses : {
-      CREATION : 'creation'
+      CREATION : 'creation',
+      // cf. org.silverpeas.core.contribution.ContributionStatus
+      UNKNOWN : 'UNKNOWN',
+      DRAFT : 'DRAFT',
+      PENDING_VALIDATION : 'PENDING_VALIDATION',
+      REFUSED : 'REFUSED',
+      VALIDATED : 'VALIDATED'
     },
     parameters : {
       componentNamesWithMinorModificationBehaviorEnabled : []
@@ -78,9 +84,10 @@
         contributionId : {
           componentInstanceId : undefined,
           localId : undefined,
-          type : undefined,
-          status : undefined
+          type : undefined
         },
+        status : undefined,
+        items : [],
         callback : undefined,
         callbackOnClose : undefined,
         validationCallback : undefined
@@ -95,10 +102,41 @@
           sp.log.error("The validation callback is not well specified!");
         }
       }
+      if (options.items.length === 0 && options.contributionId && options.contributionId.componentInstanceId) {
+        options.items.push({contributionId : options.contributionId, status : options.status});
+      }
+      const __executeWithFirstIfAnyOrDefault = function(callback, defaultValue) {
+        let result = defaultValue ? defaultValue : undefined;
+        if (options.items.length > 0) {
+          var first = options.items[0];
+          if (first.contributionId && first.contributionId.componentInstanceId.isDefined()) {
+            result = callback(first);
+          }
+        }
+        return result;
+      };
+      options.items.getComponentName = function() {
+        return __executeWithFirstIfAnyOrDefault(function(first) {
+          return first.contributionId.componentInstanceId.replace(/[0-9]/g, '');
+        });
+      };
+      options.items.getContributionType = function() {
+        return __executeWithFirstIfAnyOrDefault(function(first) {
+          return first.contributionId.type;
+        });
+      };
+      options.items.verifyAtLeastOne = function(verifier) {
+        let result = options.items.length === 0;
+        if (!result) {
+          for(let i = 0 ; !result && i < options.items.length ; i++) {
+            result = verifier(options.items[i]);
+          }
+        }
+        return result;
+      };
       return this.each(function() {
         const $this = $(this);
-        __init($this, options);
-        __configureDialog($this.data('settings'));
+        __configureDialog(__initFinalSettings($this, options));
       });
     }
   };
@@ -123,13 +161,13 @@
    * @param options
    * @private
    */
-  function __init($this, options) {
+  function __initFinalSettings($this, options) {
     const settings = $.extend(true, {}, pluginSettings);
     if (options) {
       $.extend(true, settings, options);
     }
     settings.$this = $this;
-    $this.data('settings', settings);
+    return settings;
   }
 
   /**
@@ -139,7 +177,9 @@
    */
   function __configureDialog($settings) {
     const handlers = [];
-    __registerMinorModificationHandler($settings, handlers)
+    if ($settings.items.length > 0) {
+      __registerMinorModificationHandler($settings, handlers);
+    }
     if (handlers.length === 0) {
       // In this case, the feature is deactivated from general settings.
       $settings.callback.call(this);
@@ -166,12 +206,13 @@
     const promises = [];
 
     const __getI18nDialogContributionTitle = function() {
-      const componentName = $settings.contributionId.componentInstanceId.replace(/[0-9]/g, '');
-      let bundleKey = "contribution." + componentName + $settings.contributionId.type + ".modification.context.dialog.title";
+      const componentName = $settings.items.getComponentName();
+      var suffixKey = ($settings.items.length > 1 ? ".several" :"") + ".modification.context.dialog.title";
+      let bundleKey = "contribution." + componentName + $settings.items.getContributionType() + suffixKey;
       let defaultLabel = sp.i18n.get(bundleKey);
       let label = defaultLabel;
       if (label.indexOf(bundleKey) >= 0) {
-        bundleKey = "contribution." + $settings.contributionId.type + ".modification.context.dialog.title";
+        bundleKey = "contribution." + $settings.items.getContributionType() + suffixKey;
         label = sp.i18n.get(bundleKey);
         if (label.indexOf(bundleKey) >= 0) {
           label = defaultLabel;
@@ -228,14 +269,17 @@
     const __isComponentNameEnabled = function() {
       return $.contributionModificationContext.parameters.componentNamesWithMinorModificationBehaviorEnabled.filter(
           function(componentName) {
-            return $settings.contributionId.componentInstanceId.replace(/[0-9]/g, '') === componentName;
+            return $settings.items.getComponentName() === componentName;
           }).length > 0;
     };
-    if ($settings.status !== $.contributionModificationContext.statuses.CREATION &&
-        __isComponentNameEnabled()) {
+    const __isRightStatus = function(item) {
+      return !item.status || item.status === $.contributionModificationContext.statuses.VALIDATED;
+    };
+    if (__isComponentNameEnabled() && $settings.items.verifyAtLeastOne(__isRightStatus)) {
       handlers.push(new function() {
         this.configureUrlParameters = function(params) {
           params.minorBehavior = true;
+          params.several = $settings.items.length > 1;
         };
         this.perform = function(userValidation) {
           return new Promise(function(resolve, reject) {

@@ -76,6 +76,23 @@ public interface ResourceSubscriptionService {
       SubscriptionResourceType resourceType, String resourceId);
 
   /**
+   * Gets all subscribers concerned by a specified resource represented by the
+   * given resource type and identifier.<br>
+   * The inheritance of subscription is handled by this method. So if the aimed subscription
+   * resource has a parent subscription resource, subscribers of both of them are returned.
+   * @param componentInstanceId the identifier of the component instance from which subscription
+   * are requested.
+   * @param resourceType the type of the aimed resource.
+   * @param resourceId the identifier of the aimed resource.
+   * @param locationId the optional identifier of the location of the aimed resource.
+   * @return an instance of {@link SubscriptionSubscriberList} that
+   * represents a collection of {@link SubscriptionSubscriber} decorated with useful tool methods.
+   */
+  SubscriptionSubscriberList getSubscribersOfComponentAndTypedResourceOnLocation(
+      String componentInstanceId, SubscriptionResourceType resourceType, String resourceId,
+      String locationId);
+
+  /**
    * Gets all subscribers concerned by a specified subscription resource.<br>
    * The inheritance of subscription is handled by this method. So if the aimed subscription
    * resource has a parent subscription resource, subscribers of both of them are returned.
@@ -85,4 +102,16 @@ public interface ResourceSubscriptionService {
    */
   SubscriptionSubscriberList getSubscribersOfSubscriptionResource(
       SubscriptionResource subscriptionResource);
+
+  /**
+   * Gets all subscribers concerned by a specified subscription resource.<br>
+   * The inheritance of subscription is handled by this method. So if the aimed subscription
+   * resource has a parent subscription resource, subscribers of both of them are returned.
+   * @param subscriptionResource the instance of subscription resource.
+   * @param locationId the optional identifier of the location of the aimed subscription resource.
+   * @return an instance of {@link SubscriptionSubscriberList} that
+   * represents a collection of {@link SubscriptionSubscriber} decorated with useful tool methods.
+   */
+  SubscriptionSubscriberList getSubscribersOfSubscriptionResourceOnLocation(
+      SubscriptionResource subscriptionResource, String locationId);
 }

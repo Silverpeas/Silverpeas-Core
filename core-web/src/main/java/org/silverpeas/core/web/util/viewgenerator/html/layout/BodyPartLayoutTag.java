@@ -41,6 +41,10 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
   private String cssClass;
   private String ngController;
 
+  public BodyPartLayoutTag() {
+    super();
+  }
+
   public void setOnLoad(final String onLoad) {
     this.onLoad = onLoad;
   }
@@ -51,6 +55,13 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
 
   public void setNgController(final String ngController) {
     this.ngController = ngController;
+  }
+
+  @Override
+  void init() {
+    onLoad = null;
+    cssClass = null;
+    ngController = null;
   }
 
   @Override

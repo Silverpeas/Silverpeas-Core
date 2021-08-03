@@ -44,8 +44,12 @@ import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_
  * Centralizing common data providing.
  * @author silveryocha
  */
-class SilverpeasLayout extends BodyTagSupport {
+abstract class SilverpeasLayout extends BodyTagSupport {
   private static final long serialVersionUID = -8485442477706985045L;
+
+  public SilverpeasLayout() {
+    this.init();
+  }
 
   private Optional<MainSessionController> getMainSessionController() {
     final HttpSession session = ((HttpServletRequest) pageContext.getRequest()).getSession(false);
@@ -80,4 +84,12 @@ class SilverpeasLayout extends BodyTagSupport {
         ? resources.getMultilangBundle()
         : getGeneralLocalizationBundle(getUserLanguage());
   }
+
+  @Override
+  public void release() {
+    super.release();
+    this.init();
+  }
+
+  abstract void init();
 }

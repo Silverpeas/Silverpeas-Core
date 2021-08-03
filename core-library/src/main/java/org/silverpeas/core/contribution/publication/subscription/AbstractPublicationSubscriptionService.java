@@ -44,6 +44,7 @@ import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSu
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 import static org.silverpeas.core.util.Mutable.of;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * As the class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
@@ -68,6 +69,14 @@ public abstract class AbstractPublicationSubscriptionService extends AbstractRes
   public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
       final String componentInstanceId, final SubscriptionResourceType resourceType,
       final String resourceId) {
+    return getSubscribersOfComponentAndTypedResourceOnLocation(componentInstanceId,
+        resourceType, resourceId, null);
+  }
+
+  @Override
+  public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResourceOnLocation(
+      final String componentInstanceId, final SubscriptionResourceType resourceType,
+      final String resourceId, final String locationId) {
     final Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
     final Mutable<Pair<SubscriptionResourceType, String>> reference = of(Pair.of(resourceType, resourceId));
     if (reference.get().getFirst() == PUBLICATION_ALIAS) {
@@ -76,6 +85,9 @@ public abstract class AbstractPublicationSubscriptionService extends AbstractRes
       final PublicationPK publicationPK = new PublicationPK(resourceId, componentInstanceId);
       subscribers.addAll(getSubscribeService().getSubscribers(
           PublicationAliasSubscriptionResource.from(publicationPK)));
+      if (isDefined(locationId)) {
+        reference.set(Pair.of(NODE, locationId));
+      }
     }
     if (reference.get().getFirst() == PUBLICATION) {
       // In that case, subscribers of publication must be verified.

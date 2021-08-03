@@ -251,6 +251,7 @@
 <c:set var="isHtmlLoadingContext" value="${actionWysiwyg eq 'Load' or actionWysiwyg eq 'Refresh'}"/>
 <c:set var="handledSubscriptionType" value="${param.handledSubscriptionType}"/>
 <c:set var="handledSubscriptionResourceId" value="${param.handledSubscriptionResourceId}"/>
+<c:set var="handledSubscriptionLocationId" value=""/>
 <c:set var="contributionManagementContext" value="${requestScope.contributionManagementContext}"/>
 <c:set var="wysiwygTextValue" value="<%=wysiwygTextValue%>"/>
 <c:set var="isModificationContextEnabled" value="${false}"/>
@@ -262,6 +263,9 @@
     <c:set var="isModificationContextEnabled" value="${true}"/>
     <c:set var="handledSubscriptionType" value="${contributionManagementContext.linkedSubscriptionResource.type.name}"/>
     <c:set var="handledSubscriptionResourceId" value="${contributionManagementContext.linkedSubscriptionResource.id}"/>
+    <c:if test="${contributionManagementContext.location != null}">
+      <c:set var="handledSubscriptionLocationId" value="${contributionManagementContext.location.id}"/>
+    </c:if>
   </c:if>
 </c:if>
 <c:set var="isHandledSubscriptionConfirmation"
@@ -423,11 +427,13 @@
             <c:choose>
             <c:when test="${silfn:isDefined(wysiwygTextValue) and isHandledSubscriptionConfirmation}">
             jQuery.subscription.confirmNotificationSendingOnUpdate({
+              contribution : {
+                contributionId : contributionId,
+                indexable : <%=indexIt%>,
+                locationId : '${handledSubscriptionLocationId}'
+              },
               comment : {
-                saveNote : ${silfn:booleanValue(commentActivated)},
-                contributionLocalId : contributionId.localId,
-                contributionType : contributionId.type,
-                contributionIndexable : <%=indexIt%>
+                saveNote : ${silfn:booleanValue(commentActivated)}
               },
               subscription : {
                 componentInstanceId : '<%=componentId%>',

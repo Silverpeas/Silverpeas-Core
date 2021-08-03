@@ -27,6 +27,7 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.subscription.SubscriptionResource;
 
 /**
@@ -38,6 +39,7 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 public class ContributionManagementContext {
   private final ContributionIdentifier contributionId;
   private SubscriptionResource linkedSubscriptionResource;
+  private Location location;
   private ActionType entityPersistenceAction = ActionType.READ;
   private ContributionStatus entityStatusBeforePersistAction = ContributionStatus.UNKNOWN;
   private ContributionStatus entityStatusAfterPersistAction = ContributionStatus.UNKNOWN;
@@ -77,6 +79,16 @@ public class ContributionManagementContext {
   public ContributionManagementContext aboutSubscriptionResource(
       final SubscriptionResource linkedSubscriptionResource) {
     this.linkedSubscriptionResource = linkedSubscriptionResource;
+    return this;
+  }
+
+  /**
+   * Setup the location at which the subscription resource is aimed.
+   * @param location a {@link Location} instance from which MUST contribution is handled.
+   * @return itself.
+   */
+  public ContributionManagementContext atLocation(final Location location) {
+    this.location = location;
     return this;
   }
 
@@ -137,5 +149,13 @@ public class ContributionManagementContext {
    */
   public ContributionStatus getEntityStatusAfterPersistAction() {
     return entityStatusAfterPersistAction;
+  }
+
+  /**
+   * Gets the optional location of the contribution from which it is managed.
+   * @return a {@link Location} if any, null otherwise.
+   */
+  public Location getLocation() {
+    return location;
   }
 }

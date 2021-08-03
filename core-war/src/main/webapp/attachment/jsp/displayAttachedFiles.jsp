@@ -90,6 +90,7 @@
 
   <c:set var="handledSubscriptionType" value="${param.HandledSubscriptionType}"/>
   <c:set var="handledSubscriptionResourceId" value="${param.HandledSubscriptionResourceId}"/>
+  <c:set var="handledSubscriptionLocationId" value="${param.HandledSubscriptionLocationId}"/>
   <c:set var="isHandledSubscriptionConfirmation"
          value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
   <c:set var="isHandledModificationContext"
@@ -764,11 +765,17 @@
       var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
       if (verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav) {
         $.subscription.confirmNotificationSendingOnUpdate({
+          contribution : {
+            contributionId : {
+              componentInstanceId : '${componentId}',
+              localId : '${param.Id}',
+              type : '${param.Type}'
+            },
+            locationId : '${handledSubscriptionLocationId}',
+            indexable : ${indexIt}
+          },
           comment : {
-            saveNote : ${silfn:booleanValue(commentActivated)},
-            contributionLocalId : '${param.Id}',
-            contributionType : '${param.Type}',
-            contributionIndexable : ${indexIt}
+            saveNote : ${silfn:booleanValue(commentActivated)}
           },
           subscription : {
             componentInstanceId : '${componentId}',
@@ -1508,5 +1515,6 @@
                                   documentType="${param.Context}"
                                   isHandledModificationContext="${isHandledModificationContext}"
                                   handledSubscriptionType="${handledSubscriptionType}"
-                                  handledSubscriptionResourceId="${handledSubscriptionResourceId}"/>
+                                  handledSubscriptionResourceId="${handledSubscriptionResourceId}"
+                                  handledSubscriptionLocationId="${handledSubscriptionLocationId}"/>
 </c:if>

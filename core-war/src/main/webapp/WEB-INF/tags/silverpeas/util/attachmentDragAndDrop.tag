@@ -75,7 +75,10 @@
               description="The the subscription notification type to manage, if any." %>
 <%@ attribute name="handledSubscriptionResourceId" required="false"
               type="java.lang.String"
-              description="The the resource id of subscription notification to manage, if any." %>
+              description="The resource id of subscription notification to manage, if any." %>
+<%@ attribute name="handledSubscriptionLocationId" required="false"
+              type="java.lang.String"
+              description="The location id of location the subscription notification is managed, if any." %>
 <c:if test="${isHandledModificationContext == null}">
   <c:set var="isHandledModificationContext" value="${false}"/>
 </c:if>
@@ -197,11 +200,17 @@
         <c:when test="${isHandledSubscriptionConfirmation}">
         let rejectOnClose = true;
         $.subscription.confirmNotificationSendingOnUpdate({
+          contribution : {
+            contributionId : {
+              componentInstanceId : '${componentInstanceId}',
+              localId : '${resourceId}',
+              type : '${resourceType}'
+            },
+            locationId : '${handledSubscriptionLocationId}',
+            indexable : ${hasToBeIndexed}
+          },
           comment : {
-            saveNote : ${silfn:booleanValue(commentActivated)},
-            contributionLocalId : '${resourceId}',
-            contributionType : '${resourceType}',
-            contributionIndexable : ${hasToBeIndexed}
+            saveNote : ${silfn:booleanValue(commentActivated)}
           },
           subscription : {
             componentInstanceId : '${componentInstanceId}',

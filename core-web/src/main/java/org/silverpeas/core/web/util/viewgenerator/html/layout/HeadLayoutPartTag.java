@@ -55,6 +55,10 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
 
+  public HeadLayoutPartTag() {
+    super();
+  }
+
   public void setAtTop(final String atTop) {
     this.atTop = atTop;
   }
@@ -77,6 +81,16 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
 
   public void setWithFieldsetStyle(final boolean withFieldsetStyle) {
     this.withFieldsetStyle = withFieldsetStyle;
+  }
+
+  @Override
+  void init() {
+    atTop = null;
+    minimalSilverpeasScriptEnv = false;
+    noLookAndFeel = false;
+    lookContextManagerCallbackOnly = false;
+    withFieldsetStyle = false;
+    withCheckFormScript = false;
   }
 
   @Override

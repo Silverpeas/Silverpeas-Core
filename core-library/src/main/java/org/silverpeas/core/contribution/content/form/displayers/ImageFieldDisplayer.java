@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -30,24 +34,21 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.GalleryHelper;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -129,12 +130,12 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
         if (imageURL != null) {
           thumbnailURL = FileServerUtils.getImageURL(imageURL, size);
         } else {
-          thumbnailURL = "#";
+          thumbnailURL = "/util/viewgenerator/icons/px.gif";
         }
 
         out.println("<div id=\"" + fieldName + "ThumbnailArea\" class=\"thumbnailArea\" style=\"" +
             displayCSS + "\">");
-        out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL +
+        out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + defaultStringIfNotDefined(imageURL, "javascript:void(0)") +
             "\" target=\"_blank\">");
         out.println("<img alt=\"\" align=\"top\" src=\"" + thumbnailURL + "\" id=\"" + fieldName +
             "Thumbnail\"/>&nbsp;");

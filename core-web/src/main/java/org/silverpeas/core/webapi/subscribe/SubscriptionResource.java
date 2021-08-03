@@ -185,7 +185,7 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
   public Response getComponentSubscribersWithInheritance(
       @PathParam("subscriptionType") String subscriptionType,
       @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
-    return getSubscribersWithInheritance(subscriptionType, null, existenceIndicatorOnly);
+    return getSubscribersWithInheritance(subscriptionType, null, null, existenceIndicatorOnly);
   }
 
   /**
@@ -197,6 +197,7 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @param subscriptionType the type of subscription.
    * @param resourceId identifier of the aimed resource (NODE for now). When a new type of resource
    * will be managed, the resource type will have to be passed into URI
+   * @param locationId optional identifier of the current location of the requested resource.
    * @param existenceIndicatorOnly indicates if the return must only be true (if it exists at
    * least one subscriber) or false (no subscribers).
    * @return the response to the HTTP GET request with the JSON representation of the asked
@@ -206,6 +207,7 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
   @Path("{subscriptionType}/" + SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART + "/inheritance/{id}")
   public Response getSubscribersWithInheritance(
       @PathParam("subscriptionType") String subscriptionType, @PathParam("id") String resourceId,
+      @QueryParam("locationId") String locationId,
       @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
     try {
       final SubscriptionResourceType parsedSubscriptionResourceType = decodeSubscriptionResourceType(subscriptionType);
@@ -217,8 +219,8 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
       SubscriptionSubscriberList subscribers = ResourceSubscriptionProvider
-          .getSubscribersOfComponentAndTypedResource(getComponentId(),
-              parsedSubscriptionResourceType, resourceId);
+          .getSubscribersOfComponentAndTypedResourceOnLocation(getComponentId(),
+              parsedSubscriptionResourceType, resourceId, locationId);
       if (existenceIndicatorOnly) {
         return Response
             .ok(String.valueOf(!subscribers.getAllUserIds().isEmpty()), MediaType.APPLICATION_JSON)
