@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.attachment.process.SimpleDocumentDummyHandledFileConverter;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
@@ -71,6 +72,7 @@ public abstract class JcrIntegrationIT {
 
   @Before
   public void setup() throws Exception {
+    CacheServiceProvider.clearAllThreadCaches();
     ServiceProvider.getService(SimpleDocumentDummyHandledFileConverter.class).init();
     attachmentSettings = new SettingBundleStub(AttachmentSettings.class, "settings");
     attachmentSettings.beforeEach(null);
