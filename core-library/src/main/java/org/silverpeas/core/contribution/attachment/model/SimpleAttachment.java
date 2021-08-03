@@ -63,6 +63,20 @@ public class SimpleAttachment implements Serializable {
   public SimpleAttachment() {
   }
 
+  public SimpleAttachment(final SimpleAttachment attachment) {
+    this.filename = attachment.filename;
+    this.language = attachment.language;
+    this.title = attachment.title;
+    this.description = attachment.description;
+    this.size = attachment.size;
+    this.contentType = attachment.contentType;
+    this.createdBy = attachment.createdBy;
+    this.created = attachment.created;
+    this.updatedBy = attachment.updatedBy;
+    this.updated = attachment.updated;
+    this.xmlFormId = attachment.xmlFormId;
+  }
+
   public String getNodeName() {
     return SimpleDocument.FILE_PREFIX + getLanguage();
   }
