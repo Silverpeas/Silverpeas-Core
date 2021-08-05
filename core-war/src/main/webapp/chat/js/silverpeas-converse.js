@@ -406,6 +406,7 @@
           'allow_registration' : false,
           'show_controlbox_by_default' : false,
           'discover_connection_methods' : false,
+          'jitsimeet_start_option' : "into_new_tab",
           'whitelisted_plugins' : __settings.whitelisted_plugins
         });
       });
