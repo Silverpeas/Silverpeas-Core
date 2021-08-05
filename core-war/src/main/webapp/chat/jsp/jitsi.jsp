@@ -37,7 +37,7 @@
 <c:set var="userAvatarUrl" value="${requestScope.userAvatarUrl}"/>
 <view:sp-page>
   <view:sp-head-part noLookAndFeel="true">
-    <script src="https://${domain}/external_api.js"></script>
+    <script type="text/javascript" src="https://${domain}/external_api.js"></script>
     <style>
       html,
       body {
