@@ -7426,11 +7426,3 @@ input.dateToPick,
 .variable_admin .edit-value {
   margin-right: 10px;
 }
-
-.new-contribution {
-  font-style: italic;
-}
-
-.new-contribution .publication-name {
-  font-weight: bold;
-}
