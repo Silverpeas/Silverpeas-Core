@@ -22,143 +22,84 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Web Context
+/**
+ * Plugins that permits to manage myLinks data.
+ */
+(function() {
+  
+  sp.i18n.load({
+    bundle: 'org.silverpeas.mylinks.multilang.myLinksBundle',
+    language: currentUser.language,
+  });
 
-
-(function($) {
-
-  if (!webContext) {
-    var webContext = '/silverpeas';
-  }
-
-  $.mylinks = {
-    initialized: false,
-    postNewLink: function (name, url, description) {
-      var ajaxUrl = webContext + '/services/mylinks/';
-      var cleanUrl = url.replace(webContext, '');
-      var newLink = {
-          "description": description,
-          "linkId": -1,
-          "name": name,
-          "url": cleanUrl,
-          "popup": false,
-          "uri": '',
-          "visible": true
+  const myLinksManager = new function() {
+    this.postNewLink = function(name, url, description) {
+      const ajaxUrl = webContext + '/services/mylinks/';
+      const cleanUrl = url.replace(webContext, '');
+      const newLink = {
+        "description" : description,
+        "linkId" : -1,
+        "name" : name,
+        "url" : cleanUrl,
+        "popup" : false,
+        "uri" : '',
+        "visible" : true
       };
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'POST',
-        data: $.toJSON(newLink),
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          notySuccess(__getFromBundleKey('myLinks.messageConfirm'));
-        }
+      return sp.ajaxRequest(ajaxUrl).byPostMethod().send(newLink).then(function() {
+        notySuccess(sp.i18n.get('myLinks.messageConfirm'));
       });
-    },
-    addFavoriteSpace: function (spaceId) {
-      var ajaxUrl = webContext + '/services/mylinks/space/' + spaceId;
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'POST',
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          notySuccess(__getFromBundleKey('myLinks.add.space.messageConfirm'));
-        }
+    };
+    
+    this.addFavoriteSpace = function(spaceId) {
+      const ajaxUrl = webContext + '/services/mylinks/space/' + spaceId;
+      return sp.ajaxRequest(ajaxUrl).byPostMethod().send().then(function() {
+        notySuccess(sp.i18n.get('myLinks.add.space.messageConfirm'));
       });
-    },
-    addFavoriteApp: function (applicationId) {
-      var ajaxUrl = webContext + '/services/mylinks/app/' + applicationId;
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'POST',
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          notySuccess(__getFromBundleKey('myLinks.add.application.messageConfirm'));
-        }
+    };
+    
+    this.addFavoriteApp = function(applicationId) {
+      const ajaxUrl = webContext + '/services/mylinks/app/' + applicationId;
+      return sp.ajaxRequest(ajaxUrl).byPostMethod().send().then(function() {
+        notySuccess(sp.i18n.get('myLinks.add.application.messageConfirm'));
       });
-    },
-    getMyLink: function (linkId) {
-      var ajaxUrl = webContext + '/services/mylinks/' + linkId;
-
-      // Ajax request
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'GET',
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          // TODO create an update form of a user link
-          return result;
-        }
-      });
+    };
+    
+    this.getMyLink = function(linkId) {
+      const ajaxUrl = webContext + '/services/mylinks/' + linkId;
+      return sp.ajaxRequest(ajaxUrl).sendAndPromiseJsonResponse();
     }
   };
 
-  // Localization init indicator.
-  var __i18nInitialized = false;
-
   /**
-   * Private method that handles i18n.
-   * @param key
-   * @return message
-   * @private
+   * This method post a new favorite link with the given parameter
+   * @param name
+   * @param url
+   * @param description
    */
-  function __getFromBundleKey(key) {
-    if (webContext) {
-      if (!__i18nInitialized) {
-        sp.i18n.load({
-          bundle: 'org.silverpeas.mylinks.multilang.myLinksBundle',
-          language: getUserLanguage(),
-        });
-        __i18nInitialized = true;
-      }
-      return getString(key);
-    }
-    return key;
+  window.postNewLink = function(name, url, description) {
+    return myLinksManager.postNewLink(name, url, description);
   }
 
-})(jQuery);
+  /**
+   * this method post given space as a new user favorite link
+   * @param spaceId the space identifier
+   */
+  window.addFavoriteSpace = function(spaceId) {
+    return myLinksManager.addFavoriteSpace(spaceId);
+  }
+  /**
+   * this method post given application as a new user favorite link
+   * @param applicationId
+   */
+  window.addFavoriteApp = function(applicationId) {
+    return myLinksManager.addFavoriteApp(applicationId);
+  }
 
-/**
- * This method post a new favorite link with the given parameter
- * @param name
- * @param url
- * @param description
- */
-function postNewLink(name, url, description) {
-  $.mylinks.postNewLink(name, url, description);
-}
-
-/**
- * this method post given space as a new user favorite link
- * @param spaceId the space identifier
- */
-function addFavoriteSpace(spaceId) {
-  $.mylinks.addFavoriteSpace(spaceId);
-}
-/**
- * this method post given application as a new user favorite link
- * @param applicationId
- */
-function addFavoriteApp(applicationId) {
-  $.mylinks.addFavoriteApp(applicationId);
-}
-
-/**
- * retrieve MyLink identified from link identifier parameter
- * @param linkId
- */
-function getMyLink(linkId) {
-  $.mylinks.getMyLink(linkId);
-}
+  /**
+   * retrieve MyLink identified from link identifier parameter
+   * @param linkId
+   */
+  window.getMyLink = function(linkId) {
+    return myLinksManager.getMyLink(linkId);
+  }
+})();

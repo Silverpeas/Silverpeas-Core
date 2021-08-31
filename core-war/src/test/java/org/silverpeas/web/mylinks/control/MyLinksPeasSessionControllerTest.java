@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv
-public class MyLinksPeasSessionControllerTest {
+class MyLinksPeasSessionControllerTest {
 
   private static final String CURRENT_USER_ID = "26";
 
@@ -71,7 +71,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void addLink() {
+  void addLink() {
     MyLinkEntity linkEntityToAdd = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
 
     ctrl.createLink(linkEntityToAdd);
@@ -85,7 +85,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void updateLink() throws Exception {
+  void updateLink() throws Exception {
     LinkDetail linkDetailForVerification = getDummyUserLink();
     when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
     MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
@@ -105,7 +105,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void updateLinkWhichTheCurrentUserIsNotTheOwner() {
+  void updateLinkWhichTheCurrentUserIsNotTheOwner() {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
       linkDetailForVerification.setUserId("otherUserId");
@@ -119,7 +119,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void updateLinkButUrlIsMissing() {
+  void updateLinkButUrlIsMissing() {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
       when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
@@ -132,7 +132,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void updateLinkButNameIsMissing() {
+  void updateLinkButNameIsMissing() {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
       when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
@@ -145,7 +145,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void deleteLink() throws Exception {
+  void deleteLink() throws Exception {
     LinkDetail linkDetailForVerification = getDummyUserLink();
     when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
 
@@ -160,7 +160,7 @@ public class MyLinksPeasSessionControllerTest {
   }
 
   @Test
-  public void deleteLinkWhichTheCurrentUserIsNotTheOwner() {
+  void deleteLinkWhichTheCurrentUserIsNotTheOwner() {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
       linkDetailForVerification.setUserId("otherUserId");

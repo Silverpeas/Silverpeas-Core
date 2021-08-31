@@ -40,6 +40,8 @@ import java.util.Collection;
 import static org.silverpeas.core.webapi.mylinks.MyLinksResource.checkMandatoryLinkData;
 
 public class MyLinksPeasSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -2563855203064989502L;
+
   public static final int SCOPE_USER = 0;
   public static final int SCOPE_COMPONENT = 1;
   public static final int SCOPE_OBJECT = 2;
@@ -104,7 +106,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
 
   /**
    * This method verify that the owner of the link represented by the given id is the current user.
-   * @param linkId
+   * @param linkId identifier of a link.
    */
   public void verifyCurrentUserIsOwner(int linkId) {
     verifyCurrentUserIsOwner(String.valueOf(linkId));
@@ -112,7 +114,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
 
   /**
    * This method verify that the owner of the link represented by the given id is the current user.
-   * @param linkId
+   * @param linkId identifier of a link.
    */
   public void verifyCurrentUserIsOwner(String linkId) {
     LinkDetail userLink = getLink(linkId);

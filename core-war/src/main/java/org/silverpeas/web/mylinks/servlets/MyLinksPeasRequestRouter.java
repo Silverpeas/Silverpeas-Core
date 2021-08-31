@@ -23,39 +23,37 @@
  */
 package org.silverpeas.web.mylinks.servlets;
 
-import java.util.Collection;
-
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
-import org.silverpeas.core.web.http.HttpRequest;
-
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.web.mylinks.control.MyLinksPeasSessionController;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.http.RequestParameterDecoder;
-import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
+import org.silverpeas.web.mylinks.control.MyLinksPeasSessionController;
+
+import java.util.Collection;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeasSessionController> {
 
   private static final long serialVersionUID = 8154867777629797580L;
+  private static final String VIEW_LINKS_VIEW = "ViewLinks";
+  private static final String INSTANCE_ID_PARAM = "InstanceId";
+  private static final String URL_RETURN_PARAM = "UrlReturn";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "MyLinks";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
+  @Override
   public MyLinksPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MyLinksPeasSessionController(mainSessionCtrl, componentContext);
@@ -71,46 +69,41 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, MyLinksPeasSessionController myLinksSC,
       HttpRequest request) {
-
-
     String destination;
     String rootDest = "/myLinksPeas/jsp/";
-
     try {
       if (function.startsWith("Main")) {
         myLinksSC.setScope(MyLinksPeasSessionController.SCOPE_USER);
         myLinksSC.setUrl(null);
-
         MessageNotifier.addInfo(myLinksSC.getString("myLinks.draganddrop.info"));
-        destination = getDestination("ViewLinks", myLinksSC, request);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
       } else if (function.equals("ComponentLinks")) {
         // Retrieve instance identifier
-        String instanceId = request.getParameter("InstanceId");
-        String url = request.getParameter("UrlReturn");
+        String instanceId = request.getParameter(INSTANCE_ID_PARAM);
+        String url = request.getParameter(URL_RETURN_PARAM);
         if (!StringUtil.isDefined(url)) {
           url = URLUtil.getApplicationURL() + URLUtil.getURL(null, instanceId) + "Main";
         }
         myLinksSC.setInstanceId(instanceId);
         myLinksSC.setUrl(url);
-        request.setAttribute("UrlReturn", url);
-        request.setAttribute("InstanceId", instanceId);
-
-        destination = getDestination("ViewLinks", myLinksSC, request);
+        request.setAttribute(URL_RETURN_PARAM, url);
+        request.setAttribute(INSTANCE_ID_PARAM, instanceId);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
       } else if (function.equals("ObjectLinks")) {
         // retrieve object id and instance id
         String objectId = request.getParameter("ObjectId");
-        String instanceId = request.getParameter("InstanceId");
-        String url = request.getParameter("UrlReturn");
+        String instanceId = request.getParameter(INSTANCE_ID_PARAM);
+        String url = request.getParameter(URL_RETURN_PARAM);
         myLinksSC.setUrl(url);
         myLinksSC.setInstanceId(instanceId);
         myLinksSC.setObjectId(objectId);
-        request.setAttribute("UrlReturn", url);
-
-        destination = getDestination("ViewLinks", myLinksSC, request);
-      } else if (function.equals("ViewLinks")) {
-        Collection<LinkDetail> links;
+        request.setAttribute(URL_RETURN_PARAM, url);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
+      } else if (function.equals(VIEW_LINKS_VIEW)) {
+        final Collection<LinkDetail> links;
         int scope = myLinksSC.getScope();
         switch (scope) {
           case MyLinksPeasSessionController.SCOPE_COMPONENT:
@@ -123,34 +116,31 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
             links = myLinksSC.getAllLinksByUser();
         }
         request.setAttribute("Links", links);
-        request.setAttribute("UrlReturn", myLinksSC.getUrl());
-        request.setAttribute("InstanceId", myLinksSC.getInstanceId());
+        request.setAttribute(URL_RETURN_PARAM, myLinksSC.getUrl());
+        request.setAttribute(INSTANCE_ID_PARAM, myLinksSC.getInstanceId());
         destination = rootDest + "viewLinks.jsp";
       } else if (function.equals("CreateLink")) {
         MyLinkEntity myLinkEntity = RequestParameterDecoder.decode(request, MyLinkEntity.class);
         myLinksSC.createLink(myLinkEntity);
-        destination = getDestination("ViewLinks", myLinksSC, request);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
       } else if (function.equals("UpdateLink")) {
         MyLinkEntity myLinkEntity = RequestParameterDecoder.decode(request, MyLinkEntity.class);
         myLinksSC.updateLink(myLinkEntity);
-        destination = getDestination("ViewLinks", myLinksSC, request);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
       } else if (function.equals("DeleteLinks")) {
         Object o = request.getParameterValues("linkCheck");
         if (o != null) {
           String[] links = (String[]) o;
           myLinksSC.deleteLinks(links);
         }
-        destination = getDestination("ViewLinks", myLinksSC, request);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
       } else {
-        destination = getDestination("ViewLinks", myLinksSC, request);
+        destination = getDestination(VIEW_LINKS_VIEW, myLinksSC, request);
       }
-
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-
-
     return destination;
   }
 }

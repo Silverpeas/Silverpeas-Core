@@ -23,294 +23,185 @@
  */
 package org.silverpeas.core.mylinks.dao;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.StringUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.parseInt;
+
+@Repository
 public class LinkDAO {
 
-  private static LinkDAO linkDAO = new LinkDAO();
-
-  /**
-   * Gets the DAO instance associated to the link persistence management.
-   * @return the link DAO instance.
-   */
-  public static LinkDAO getLinkDao() {
-    return linkDAO;
-  }
+  private static final String LINK_TABLE = "SB_MyLinks_Link";
+  private static final String LINK_ID = "linkId";
+  private static final String LINK_ID_CLAUSE = "linkId = ?";
+  private static final String USER_ID_CLAUSE = "userId = ?";
+  private static final String INSTANCE_ID_CLAUSE = "instanceId = ?";
+  private static final String OBJECT_ID_CLAUSE = "objectId = ?";
 
   /**
    * Hide constructor of utility class
    */
-  private LinkDAO() {
+  protected LinkDAO() {
   }
 
   /**
-   * Deletes all links linked to the component instance represented by the given identifier.
+   * Deletes all links about the component instance represented by the given identifier.
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
-   * @throws SQLException
+   * @throws SQLException on SQL problem
    */
-  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor("SB_MyLinks_Link").where("instanceId = ?", componentInstanceId)
-        .or("url like ?", "%" + componentInstanceId).execute();
+  public void deleteComponentInstanceData(String componentInstanceId)
+      throws SQLException {
+    JdbcSqlQuery.createDeleteFor(LINK_TABLE)
+        .where(INSTANCE_ID_CLAUSE, componentInstanceId)
+        .or("url like ?", "%" + componentInstanceId)
+        .execute();
   }
 
   /**
    * Retrieve user links
-   * @param con the database connection
    * @param userId the user identifier
    * @return list of user links
-   * @throws SQLException
+   * @throws SQLException on SQL problem
    */
-  public List<LinkDetail> getAllLinksByUser(Connection con, String userId)
+  public List<LinkDetail> getAllLinksByUser(String userId)
       throws SQLException {
-    List<LinkDetail> listLink = new ArrayList<>();
-
-    String query =
-        "SELECT * FROM SB_MyLinks_Link WHERE userId = ? AND (instanceId IS NULL OR instanceId = " +
-            "'') AND (objectId IS NULL OR objectId = '')";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, userId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        LinkDetail link = recupLink(rs);
-        listLink.add(link);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return listLink;
+    return JdbcSqlQuery.createSelect("*")
+        .from(LINK_TABLE)
+        .where(USER_ID_CLAUSE, userId)
+        .and("(instanceId IS NULL").or("instanceId = '')")
+        .and("(objectId IS NULL").or("objectId = '')")
+        .execute(LinkDAO::fetchLink);
   }
 
   /**
-   * Retrieve all user link on component instance id
-   * @param con the database connection
+   * Retrieve all links about a component instance id.
    * @param instanceId the component instance identifier
    * @return list of LinkDetail
-   * @throws SQLException
+   * @throws SQLException on SQL problem
    */
-  public List<LinkDetail> getAllLinksByInstance(Connection con, String instanceId)
+  public List<LinkDetail> getAllLinksByInstance(String instanceId)
       throws SQLException {
-    List<LinkDetail> listLink = new ArrayList<>();
-
-    String query = "select * from SB_MyLinks_Link where instanceId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        LinkDetail link = recupLink(rs);
-        listLink.add(link);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return listLink;
+    return JdbcSqlQuery.createSelect("*")
+        .from(LINK_TABLE)
+        .where(INSTANCE_ID_CLAUSE, instanceId)
+        .execute(LinkDAO::fetchLink);
   }
 
-  public List<LinkDetail> getAllLinksByObject(Connection con, String instanceId,
-      String objectId) throws SQLException {
-    // Retrieve all link from object
-    List<LinkDetail> listLink = new ArrayList<>();
-
-    String query = "select * from SB_MyLinks_Link where instanceId = ? and objectId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, objectId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        LinkDetail link = recupLink(rs);
-        listLink.add(link);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return listLink;
+  /**
+   * Retrieve all links about an object id on a component instance id
+   * @param instanceId the component instance identifier which hosts the object
+   * @param objectId the identifier of the object
+   * @return list of LinkDetail
+   * @throws SQLException on SQL problem
+   */
+  public List<LinkDetail> getAllLinksByObject(String instanceId, String objectId)
+      throws SQLException {
+    return JdbcSqlQuery.createSelect("*")
+        .from(LINK_TABLE)
+        .where(INSTANCE_ID_CLAUSE, instanceId)
+        .and(OBJECT_ID_CLAUSE, objectId)
+        .execute(LinkDAO::fetchLink);
   }
 
   /**
    * Retrieve link from identifier
-   * @param con the connection
    * @param linkId the link identifier
    * @return the link detail
-   * @throws SQLException
+   * @throws SQLException on SQL problem
    */
-  public LinkDetail getLink(Connection con, String linkId) throws SQLException {
-    LinkDetail link = new LinkDetail();
-    String query = "select * from SB_MyLinks_Link where linkId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.valueOf(linkId));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        // convert resultset to link
-        link = recupLink(rs);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return link;
+  public LinkDetail getLink(String linkId) throws SQLException {
+    return JdbcSqlQuery.createSelect("*")
+        .from(LINK_TABLE)
+        .where(LINK_ID_CLAUSE, parseInt(linkId))
+        .executeUnique(LinkDAO::fetchLink);
   }
 
   /**
    * Create new link
-   * @param con the connection
-   * @param linkToPersist link detail to create
-   * @return link identifier
-   * @throws SQLException
+   * @param link link detail to create
+   * @return new link instance
+   * @throws SQLException on SQL problem
    */
-  public int createLink(Connection con, LinkDetail linkToPersist) throws SQLException {
+  public LinkDetail createLink(LinkDetail link) throws SQLException {
+    final LinkDetail linkToPersist = new LinkDetail(link);
+    linkToPersist.setLinkId(DBUtil.getNextId(LINK_TABLE, LINK_ID));
     linkToPersist.setHasPosition(false);
-    int newId = 0;
-    PreparedStatement prepStmt = null;
-    try {
-      newId = DBUtil.getNextId("SB_MyLinks_Link", "linkId");
-      // Initialize query
-      String query =
-          "INSERT INTO SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, " +
-              "instanceId, objectId) " +
-              "VALUES (?,?,?,?,?,?,?,?,?)";
-      // Initialize parameters
-      prepStmt = con.prepareStatement(query);
-      initParam(prepStmt, newId, linkToPersist);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-    return newId;
+    final JdbcSqlQuery insertQuery = JdbcSqlQuery.createInsertFor(LINK_TABLE);
+    setupSaveQuery(insertQuery, linkToPersist, true).execute();
+    return linkToPersist;
   }
 
   /**
    * Update a link
-   * @param con the connection
-   * @param linkToUpdate link detail to update
-   * @throws SQLException
+   * @param link link detail to update
+   * @return updated link instance
+   * @throws SQLException on SQL problem
    */
-  public void updateLink(Connection con, LinkDetail linkToUpdate) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      StringBuilder queryBuffer = new StringBuilder();
-      queryBuffer
-          .append("update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , ");
-      queryBuffer
-          .append("userId = ? , instanceId = ? , objectId = ? ");
-      if (linkToUpdate.hasPosition()) {
-        queryBuffer.append(" , position = ? ");
-      }
-      queryBuffer.append("where linkId = ? ");
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(queryBuffer.toString());
-      int linkId = linkToUpdate.getLinkId();
-      int paramIndex = initParam(prepStmt, linkId, linkToUpdate);
-      // Initialize last parameter
-      prepStmt.setInt(paramIndex, linkId);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+  public LinkDetail updateLink(LinkDetail link) throws SQLException {
+    final LinkDetail linkToUpdate = new LinkDetail(link);
+    final JdbcSqlQuery updateQuery = JdbcSqlQuery.createUpdateFor(LINK_TABLE);
+    setupSaveQuery(updateQuery, linkToUpdate, false).execute();
+    return linkToUpdate;
   }
 
   /**
    * Remove a link
-   * @param con the connection
    * @param linkId the link identifier to remove
-   * @throws SQLException
+   * @throws SQLException on SQL problem
    */
-  public void deleteLink(Connection con, String linkId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      String query = "delete from SB_MyLinks_Link where linkId = ? ";
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.valueOf(linkId));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+  public void deleteLink(String linkId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(LINK_TABLE)
+        .where(LINK_ID_CLAUSE, parseInt(linkId))
+        .execute();
   }
 
-  private static LinkDetail recupLink(ResultSet rs) throws SQLException {
-    LinkDetail link = new LinkDetail();
-    // recuperation des colonnes du resulSet et construction de l'objet LinkDetail
-    int linkId = rs.getInt("linkId");
-    int position = rs.getInt("position");
-    boolean hasPosition = !rs.wasNull();
-    String name = rs.getString("name");
-    String description = rs.getString("description");
-    String url = rs.getString("url");
-    boolean visible = false;
-    if (rs.getInt("visible") == 1) {
-      visible = true;
-    }
-    boolean popup = false;
-    if (rs.getInt("popup") == 1) {
-      popup = true;
-    }
-    String userId = rs.getString("userId");
-    String instanceId = rs.getString("instanceId");
-    String objectId = rs.getString("objectId");
-
-    link.setLinkId(linkId);
-    link.setPosition(position);
-
-    link.setHasPosition(hasPosition);
-    link.setName(name);
-    link.setDescription(description);
-    link.setUrl(url);
-    link.setVisible(visible);
-    link.setPopup(popup);
-    link.setUserId(userId);
-    link.setInstanceId(instanceId);
-    link.setObjectId(objectId);
-
+  private static LinkDetail fetchLink(final ResultSet rs) throws SQLException {
+    final LinkDetail link = new LinkDetail();
+    link.setLinkId(rs.getInt(LINK_ID));
+    link.setPosition(rs.getInt("position"));
+    link.setHasPosition(!rs.wasNull());
+    link.setName(rs.getString("name"));
+    link.setDescription(rs.getString("description"));
+    link.setUrl(rs.getString("url"));
+    link.setVisible(rs.getInt("visible") == 1);
+    link.setPopup(rs.getInt("popup") == 1);
+    link.setUserId(rs.getString("userId"));
+    link.setInstanceId(rs.getString("instanceId"));
+    link.setObjectId(rs.getString("objectId"));
     return link;
   }
 
-  private static int initParam(PreparedStatement prepStmt, int linkId,
-      LinkDetail link) throws SQLException {
-    int i = 1;
-    prepStmt.setInt(i++, linkId);
-    prepStmt.setString(i++, link.getName());
-    String description = StringUtil.truncate(link.getDescription(), 255);
-    prepStmt.setString(i++, description);
-    prepStmt.setString(i++, link.getUrl());
-    if (link.isVisible()) {
-      prepStmt.setInt(i++, 1);
-    } else {
-      prepStmt.setInt(i++, 0);
+  private static JdbcSqlQuery setupSaveQuery(final JdbcSqlQuery saveQuery, final LinkDetail link,
+      final boolean isInsert) {
+    if (isInsert) {
+      saveQuery.addSaveParam(LINK_ID, link.getLinkId(), true);
     }
-    if (link.isPopup()) {
-      prepStmt.setInt(i++, 1);
-    } else {
-      prepStmt.setInt(i++, 0);
-    }
-    prepStmt.setString(i++, link.getUserId());
-    prepStmt.setString(i++, link.getInstanceId());
-    prepStmt.setString(i++, link.getObjectId());
+    final String name = StringUtil.truncate(link.getName(), 255);
+    final String description = StringUtil.truncate(link.getDescription(), 255);
+    final String url = StringUtil.truncate(link.getUrl(), 255);
+    saveQuery
+        .addSaveParam("name", name, isInsert)
+        .addSaveParam("description", description, isInsert)
+        .addSaveParam("url", url, isInsert)
+        .addSaveParam("visible", link.isVisible() ? 1 : 0, isInsert)
+        .addSaveParam("popup", link.isPopup() ? 1 : 0, isInsert)
+        .addSaveParam("userId", link.getUserId(), isInsert)
+        .addSaveParam("instanceId", link.getInstanceId(), isInsert)
+        .addSaveParam("objectId", link.getObjectId(), isInsert);
     if (link.hasPosition()) {
-      prepStmt.setInt(i++, link.getPosition());
+      saveQuery.addSaveParam("position", link.getPosition(), isInsert);
     }
-
-    return i;
-
+    if (!isInsert) {
+      saveQuery.where(LINK_ID_CLAUSE, link.getLinkId());
+    }
+    return saveQuery;
   }
-
 }

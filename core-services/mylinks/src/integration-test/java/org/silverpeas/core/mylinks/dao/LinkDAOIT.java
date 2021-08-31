@@ -23,21 +23,21 @@
  */
 package org.silverpeas.core.mylinks.dao;
 
-import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.test.WarBuilder4MyLinks;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
-import java.sql.Connection;
-import java.util.ArrayList;
+import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.silverpeas.core.mylinks.dao.LinkDAO.getLinkDao;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -51,6 +51,9 @@ public class LinkDAOIT {
 
   private static final String TABLE_CREATION_SCRIPT = "/create-database.sql";
   private static final String DATASET_XML_SCRIPT = "test-mylinks-dataset.xml";
+  
+  @Inject
+  private LinkDAO linkDao;
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
@@ -63,134 +66,112 @@ public class LinkDAOIT {
 
   @Test
   public void getAllUserLinks() throws Exception {
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      List<LinkDetail> result = getLinkDao().getAllLinksByUser(con, USER_ID_WITH_POSITIONS);
-      assertThat(extractLinkIds(result), containsInAnyOrder(1, 2, 3, 4, 5));
-
-      result = getLinkDao().getAllLinksByUser(con, USER_ID_WITHOUT_POSITION);
-      assertThat(extractLinkIds(result), containsInAnyOrder(11, 12, 13, 14, 15));
-    }
+    List<LinkDetail> result = linkDao.getAllLinksByUser(USER_ID_WITH_POSITIONS);
+    assertThat(extractLinkIds(result), containsInAnyOrder(1, 2, 3, 4, 5));
+    result = linkDao.getAllLinksByUser(USER_ID_WITHOUT_POSITION);
+    assertThat(extractLinkIds(result), containsInAnyOrder(11, 12, 13, 14, 15));
   }
 
   @Test
-  public void insertUserLinkIntoLinksWithoutPositionSet() throws Exception {
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
+  public void insertUserLinkIntoLinksWithoutPositionSet() {
+    Transaction.performInNew(() -> {
       LinkDetail link = new LinkDetail("new name", "new description", "new url", true, true);
       link.setUserId(USER_ID_WITHOUT_POSITION);
       link.setPosition(56);
       link.setHasPosition(true);
-
-      getLinkDao().createLink(con, link);
-    }
-
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      List<LinkDetail> result = getLinkDao().getAllLinksByUser(con, USER_ID_WITHOUT_POSITION);
+      return linkDao.createLink(link);
+    });
+    LinkDetail createdLink = Transaction.performInNew(() -> {
+      List<LinkDetail> result = linkDao.getAllLinksByUser(USER_ID_WITHOUT_POSITION);
       assertThat(extractLinkIds(result), containsInAnyOrder(11, 12, 13, 14, 15, (UNIQUE_ID + 1)));
-
-      LinkDetail createdLink = getLinkDao().getLink(con, String.valueOf(UNIQUE_ID + 1));
-      assertThat(createdLink.getLinkId(), is((UNIQUE_ID + 1)));
-      assertThat(createdLink.getUserId(), is(USER_ID_WITHOUT_POSITION));
-      assertThat(createdLink.getName(), is("new name"));
-      assertThat(createdLink.getDescription(), is("new description"));
-      assertThat(createdLink.getUrl(), is("new url"));
-      assertThat(createdLink.isVisible(), is(true));
-      assertThat(createdLink.isPopup(), is(true));
-      assertThat(createdLink.hasPosition(), is(false));
-      assertThat(createdLink.getPosition(), is(0));
-    }
+      return linkDao.getLink(String.valueOf(UNIQUE_ID + 1));
+    });
+    assertThat(createdLink.getLinkId(), is((UNIQUE_ID + 1)));
+    assertThat(createdLink.getUserId(), is(USER_ID_WITHOUT_POSITION));
+    assertThat(createdLink.getName(), is("new name"));
+    assertThat(createdLink.getDescription(), is("new description"));
+    assertThat(createdLink.getUrl(), is("new url"));
+    assertThat(createdLink.isVisible(), is(true));
+    assertThat(createdLink.isPopup(), is(true));
+    assertThat(createdLink.hasPosition(), is(false));
+    assertThat(createdLink.getPosition(), is(0));
   }
 
   @Test
-  public void insertUserLinkIntoLinksWithPositionSet() throws Exception {
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
+  public void insertUserLinkIntoLinksWithPositionSet() {
+    Transaction.performInNew(() -> {
       LinkDetail link = new LinkDetail("new name", "new description", "new url", true, true);
       link.setUserId(USER_ID_WITH_POSITIONS);
       link.setPosition(56);
       link.setHasPosition(true);
-
-      getLinkDao().createLink(con, link);
-    }
-
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      List<LinkDetail> result = getLinkDao().getAllLinksByUser(con, USER_ID_WITH_POSITIONS);
+      return linkDao.createLink(link);
+    });
+    LinkDetail createdLink = Transaction.performInNew(() -> {
+      List<LinkDetail> result = linkDao.getAllLinksByUser(USER_ID_WITH_POSITIONS);
       assertThat(extractLinkIds(result), containsInAnyOrder(1, 2, 3, 4, 5, (UNIQUE_ID + 1)));
-
-      LinkDetail createdLink = getLinkDao().getLink(con, String.valueOf(UNIQUE_ID + 1));
-      assertThat(createdLink.getLinkId(), is((UNIQUE_ID + 1)));
-      assertThat(createdLink.getName(), is("new name"));
-      assertThat(createdLink.getDescription(), is("new description"));
-      assertThat(createdLink.getUrl(), is("new url"));
-      assertThat(createdLink.isVisible(), is(true));
-      assertThat(createdLink.isPopup(), is(true));
-      assertThat(createdLink.getUserId(), is(USER_ID_WITH_POSITIONS));
-      assertThat(createdLink.hasPosition(), is(false));
-      assertThat(createdLink.getPosition(), is(0));
-    }
+      return linkDao.getLink(String.valueOf(UNIQUE_ID + 1));
+    });
+    assertThat(createdLink.getLinkId(), is((UNIQUE_ID + 1)));
+    assertThat(createdLink.getName(), is("new name"));
+    assertThat(createdLink.getDescription(), is("new description"));
+    assertThat(createdLink.getUrl(), is("new url"));
+    assertThat(createdLink.isVisible(), is(true));
+    assertThat(createdLink.isPopup(), is(true));
+    assertThat(createdLink.getUserId(), is(USER_ID_WITH_POSITIONS));
+    assertThat(createdLink.hasPosition(), is(false));
+    assertThat(createdLink.getPosition(), is(0));
   }
 
   @Test
-  public void updateUserLinkThatHadAlreadyPosition() throws Exception {
-    final LinkDetail linkToUpdate;
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      linkToUpdate = getLinkDao().getLink(con, "4");
-      assertThat(linkToUpdate.getLinkId(), is(4));
-      assertThat(linkToUpdate.getUserId(), is(USER_ID_WITH_POSITIONS));
-      assertThat(linkToUpdate.hasPosition(), is(true));
-      assertThat(linkToUpdate.getPosition(), is(2));
-
-      linkToUpdate.setPosition(26);
-      getLinkDao().updateLink(con, linkToUpdate);
-    }
-
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-
-      LinkDetail updatedLink = getLinkDao().getLink(con, "4");
-      assertThat(updatedLink.getLinkId(), is(linkToUpdate.getLinkId()));
-      assertThat(updatedLink.getUserId(), is(linkToUpdate.getUserId()));
-      assertThat(updatedLink.hasPosition(), is(linkToUpdate.hasPosition()));
-      assertThat(updatedLink.getPosition(), is(26));
-    }
+  public void updateUserLinkThatHadAlreadyPosition() {
+    final LinkDetail linkToUpdate = Transaction.performInNew(() -> {
+      LinkDetail link = linkDao.getLink("4");
+      assertThat(link.getLinkId(), is(4));
+      assertThat(link.getUserId(), is(USER_ID_WITH_POSITIONS));
+      assertThat(link.hasPosition(), is(true));
+      assertThat(link.getPosition(), is(2));
+      link.setPosition(26);
+      linkDao.updateLink(link);
+      return link;
+    });
+    final LinkDetail updatedLink = Transaction.performInNew(() -> linkDao.getLink("4"));
+    assertThat(updatedLink.getLinkId(), is(linkToUpdate.getLinkId()));
+    assertThat(updatedLink.getUserId(), is(linkToUpdate.getUserId()));
+    assertThat(updatedLink.hasPosition(), is(linkToUpdate.hasPosition()));
+    assertThat(updatedLink.getPosition(), is(26));
   }
 
   @Test
-  public void updateUserLinkThatHadNoPosition() throws Exception {
-    final LinkDetail linkToUpdate;
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      linkToUpdate = getLinkDao().getLink(con, "14");
-      assertThat(linkToUpdate.getLinkId(), is(14));
-      assertThat(linkToUpdate.getUserId(), is(USER_ID_WITHOUT_POSITION));
-      assertThat(linkToUpdate.hasPosition(), is(false));
-      assertThat(linkToUpdate.getPosition(), is(0));
-
-      linkToUpdate.setHasPosition(true);
-      linkToUpdate.setPosition(26);
-      getLinkDao().updateLink(con, linkToUpdate);
-    }
-
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      LinkDetail updatedLink = getLinkDao().getLink(con, "14");
-      assertThat(updatedLink.getLinkId(), is(linkToUpdate.getLinkId()));
-      assertThat(updatedLink.getUserId(), is(linkToUpdate.getUserId()));
-      assertThat(updatedLink.hasPosition(), is(true));
-      assertThat(updatedLink.getPosition(), is(26));
-    }
+  public void updateUserLinkThatHadNoPosition() {
+    final LinkDetail linkToUpdate = Transaction.performInNew(() -> {
+      LinkDetail link = linkDao.getLink("14");
+      assertThat(link.getLinkId(), is(14));
+      assertThat(link.getUserId(), is(USER_ID_WITHOUT_POSITION));
+      assertThat(link.hasPosition(), is(false));
+      assertThat(link.getPosition(), is(0));
+      link.setHasPosition(true);
+      link.setPosition(26);
+      linkDao.updateLink(link);
+      return link;
+    });
+    LinkDetail updatedLink = Transaction.performInNew(() -> linkDao.getLink("14"));
+    assertThat(updatedLink.getLinkId(), is(linkToUpdate.getLinkId()));
+    assertThat(updatedLink.getUserId(), is(linkToUpdate.getUserId()));
+    assertThat(updatedLink.hasPosition(), is(true));
+    assertThat(updatedLink.getPosition(), is(26));
   }
 
   @Test
   public void deleteUserLink() throws Exception {
     getAllUserLinks();
-
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      getLinkDao().deleteLink(con, "4");
-    }
-
-    try (Connection con = DbUnitLoadingRule.getSafeConnection()) {
-      List<LinkDetail> result = getLinkDao().getAllLinksByUser(con, USER_ID_WITH_POSITIONS);
-      assertThat(extractLinkIds(result), containsInAnyOrder(1, 2, 3, 5));
-
-      result = getLinkDao().getAllLinksByUser(con, USER_ID_WITHOUT_POSITION);
-      assertThat(extractLinkIds(result), containsInAnyOrder(11, 12, 13, 14, 15));
-    }
+    Transaction.performInNew(() -> {
+      linkDao.deleteLink("4");
+      return null;
+    });
+    List<LinkDetail> result = linkDao.getAllLinksByUser(USER_ID_WITH_POSITIONS);
+    assertThat(extractLinkIds(result), containsInAnyOrder(1, 2, 3, 5));
+    result = Transaction.performInNew(() -> linkDao.getAllLinksByUser(USER_ID_WITHOUT_POSITION));
+    assertThat(extractLinkIds(result), containsInAnyOrder(11, 12, 13, 14, 15));
   }
 
   /*
@@ -198,10 +179,6 @@ public class LinkDAOIT {
    */
 
   private List<Integer> extractLinkIds(List<LinkDetail> links) {
-    List<Integer> linkIds = new ArrayList<>();
-    for (LinkDetail link : links) {
-      linkIds.add(link.getLinkId());
-    }
-    return linkIds;
+    return links.stream().map(LinkDetail::getLinkId).collect(Collectors.toList());
   }
 }

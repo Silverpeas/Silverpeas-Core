@@ -51,7 +51,7 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
       try {
         MyLinksService myLinksService = getMyLinksBm();
         if (myLinksService != null) {
-          links = myLinksService.getAllLinks(currentUser.getId());
+          links = myLinksService.getAllLinksByUser(currentUser.getId());
         }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);

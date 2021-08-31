@@ -25,7 +25,6 @@ package org.silverpeas.core.webapi.mylinks;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
@@ -49,6 +48,10 @@ import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.String.valueOf;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * A REST Web resource representing user favorite links. It is a web service that provides an access
@@ -79,7 +82,7 @@ public class MyLinksResource extends RESTWebService {
     List<MyLinkEntity> myLinkEntities = new ArrayList<>();
     for (LinkDetail linkDetail : links) {
       if (linkDetail.isVisible()) {
-        myLinkEntities.add(MyLinkEntity.fromLinkDetail(linkDetail, getLinkUri(linkDetail)));
+        myLinkEntities.add(toWebEntity(linkDetail));
       }
     }
     return myLinkEntities;
@@ -87,28 +90,43 @@ public class MyLinksResource extends RESTWebService {
 
   /**
    * Gets all the links of the current user.
-   * @return
+   * @return a list of {@link LinkDetail} instances.
    */
   protected List<LinkDetail> getAllUserLinks() {
-    User curUser = getUser();
-    return getMyLinksService().getAllLinks(curUser.getId());
+    return getMyLinksService().getAllLinksByUser(getUser().getId());
   }
 
   /**
-   * Gets all the links of the current user.
+   * Gets all the links of the instance represented by given parameter.
+   * @return a list of {@link LinkDetail} instances.
+   */
+  protected List<LinkDetail> getAllInstanceLinks(String instanceId) {
+    return getMyLinksService().getAllLinksByInstance(instanceId);
+  }
+
+  /**
+   * Gets all the links of the instance represented by given parameter.
+   * @return a list of {@link LinkDetail} instances.
+   */
+  protected List<LinkDetail> getAllInstanceObjectLinks(String instanceId, String objectId) {
+    return getMyLinksService().getAllLinksByObject(instanceId, objectId);
+  }
+
+  /**
+   * Gets the link corresponding to given identifier.
    * @return the {@link LinkDetail} associated to the given id.
    * @throws javax.ws.rs.WebApplicationException {@link Status#NOT_FOUND} if no link exists with the
    * given identifier, {@link Status#FORBIDDEN} if the owner of the existing link is not the current
    * user.
    */
-  protected LinkDetail getUserLink(String linkId) {
-    LinkDetail userLink = getMyLinksService().getLink(linkId);
-    if (userLink == null) {
+  protected LinkDetail loadLink(String linkId) {
+    LinkDetail link = getMyLinksService().getLink(linkId);
+    if (link == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
-    } else if (! userLink.canBeModifiedBy(getUser())) {
+    } else if (!link.canBeModifiedBy(getUser())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
-    return userLink;
+    return link;
   }
 
   /**
@@ -118,63 +136,56 @@ public class MyLinksResource extends RESTWebService {
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public MyLinkEntity getMyLink(@PathParam("id") String linkId) {
-    LinkDetail linkDetail = getUserLink(linkId);
-    return MyLinkEntity.fromLinkDetail(linkDetail, getLinkUri(linkDetail));
+  public MyLinkEntity getLink(@PathParam("id") String linkId) {
+    LinkDetail linkDetail = loadLink(linkId);
+    return toWebEntity(linkDetail);
   }
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addLink(final MyLinkEntity newLink) {
+    checkMandatoryLinkData(newLink);
     LinkDetail linkDetail = newLink.toLinkDetail();
     linkDetail.setUserId(getUser().getId());
-    getMyLinksService().createLink(linkDetail);
-    return getMyLink(String.valueOf(linkDetail.getLinkId()));
+    return toWebEntity(getMyLinksService().createLink(linkDetail));
   }
 
   @PUT
   @Path("{linkId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public MyLinkEntity updateLink(final MyLinkEntity updatedLink) {
-    verifyCurrentUserIsOwner(updatedLink);
+  public MyLinkEntity updateLink(final @PathParam("linkId") String linkId,
+      final MyLinkEntity updatedLink) {
+    verifyConsistency(linkId, updatedLink);
+    verifyLinkCanBeModifiedByCurrentUser(updatedLink);
     checkMandatoryLinkData(updatedLink);
     LinkDetail linkDetail = updatedLink.toLinkDetail();
     linkDetail.setUserId(getUser().getId());
-    getMyLinksService().updateLink(linkDetail);
-    return getMyLink(String.valueOf(linkDetail.getLinkId()));
+    return toWebEntity(getMyLinksService().updateLink(linkDetail));
   }
 
   @DELETE
   @Path("{linkId}")
-  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response deleteLink(final @PathParam("linkId") String linkId) {
-    verifyCurrentUserIsOwner(linkId);
+    verifyLinkCanBeModifiedByCurrentUser(linkId);
     getMyLinksService().deleteLinks(new String[]{linkId});
     return Response.ok().build();
   }
 
   @POST
   @Path("space/{id}")
-  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addSpaceLink(@PathParam("id") String spaceId) {
     if (StringUtil.isDefined(spaceId) &&
         getOrganisationController().isSpaceAvailable(spaceId, getUser().getId())) {
       SpaceInstLight newFavoriteSpace = getOrganisationController().getSpaceInstLightById(spaceId);
       String userLanguage = getUserPreferences().getLanguage();
-      LinkDetail linkDetail = new LinkDetail();
-      linkDetail.setUrl("/Space/" + spaceId);
       StringBuilder spaceNameBuilder = buildSpacePathName(spaceId, userLanguage);
-      linkDetail.setName(spaceNameBuilder.toString());
-      linkDetail.setDescription(newFavoriteSpace.getDescription(userLanguage));
-      linkDetail.setVisible(true);
-      linkDetail.setPopup(false);
-      linkDetail.setUserId(getUser().getId());
-      getMyLinksService().createLink(linkDetail);
-      return getMyLink(String.valueOf(linkDetail.getLinkId()));
+      LinkDetail linkDetail = createLinkInstance("/Space/", spaceId, spaceNameBuilder.toString(),
+          newFavoriteSpace.getDescription(userLanguage));
+      return toWebEntity(getMyLinksService().createLink(linkDetail));
     }
     throw new WebApplicationException(Status.BAD_REQUEST);
   }
@@ -186,14 +197,20 @@ public class MyLinksResource extends RESTWebService {
     if (linkPosition == null) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
-    verifyCurrentUserIsOwner(linkPosition.getLinkId());
-
+    final LinkDetail linkOfPosition = verifyLinkCanBeModifiedByCurrentUser(linkPosition.getLinkId());
+    final List<LinkDetail> linksToManage;
+    if (isDefined(linkOfPosition.getObjectId())) {
+      linksToManage = getAllInstanceObjectLinks(linkOfPosition.getInstanceId(), linkOfPosition.getObjectId());
+    } else if (isDefined(linkOfPosition.getInstanceId())) {
+      linksToManage = getAllInstanceLinks(linkOfPosition.getInstanceId());
+    } else {
+      linksToManage = getAllUserLinks();
+    }
     int position = -1;
-    for (LinkDetail userLink : getAllUserLinks()) {
-
+    for (LinkDetail link : linksToManage) {
       // Final position
       final int finalPosition;
-      if (userLink.getLinkId() == linkPosition.getLinkId()) {
+      if (link.getLinkId() == linkPosition.getLinkId()) {
         finalPosition = linkPosition.getPosition();
       } else {
         position++;
@@ -203,15 +220,13 @@ public class MyLinksResource extends RESTWebService {
         }
         finalPosition = position;
       }
-
-      if (!userLink.hasPosition() || userLink.getPosition() != finalPosition) {
-        userLink.setHasPosition(true);
-        userLink.setPosition(finalPosition);
-        getMyLinksService().updateLink(userLink);
+      if (!link.hasPosition() || link.getPosition() != finalPosition) {
+        link.setHasPosition(true);
+        link.setPosition(finalPosition);
+        getMyLinksService().updateLink(link);
       }
     }
-
-    return Response.ok(getMyLink(String.valueOf(linkPosition.getLinkId()))).build();
+    return Response.ok(getLink(valueOf(linkPosition.getLinkId()))).build();
   }
 
   private StringBuilder buildSpacePathName(String spaceId, String userLanguage) {
@@ -228,7 +243,6 @@ public class MyLinksResource extends RESTWebService {
 
   @POST
   @Path("app/{id}")
-  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addAppLink(@PathParam("id") String applicationId) {
     if (StringUtil.isDefined(applicationId) &&
@@ -236,39 +250,51 @@ public class MyLinksResource extends RESTWebService {
       ComponentInstLight newFavoriteApp =
           getOrganisationController().getComponentInstLight(applicationId);
       String userLanguage = getUserPreferences().getLanguage();
-      LinkDetail linkDetail = new LinkDetail();
-      linkDetail.setUrl("/Component/" + applicationId);
       StringBuilder appNameBuilder = buildAppPathName(applicationId, userLanguage);
       appNameBuilder.append(PATH_SEPARATOR).append(newFavoriteApp.getName(userLanguage));
-      linkDetail.setName(appNameBuilder.toString());
-      linkDetail.setDescription(newFavoriteApp.getDescription(userLanguage));
-      linkDetail.setVisible(true);
-      linkDetail.setPopup(false);
-      linkDetail.setUserId(getUser().getId());
-      getMyLinksService().createLink(linkDetail);
-      return getMyLink(String.valueOf(linkDetail.getLinkId()));
+      LinkDetail linkDetail = createLinkInstance("/Component/", applicationId,
+          appNameBuilder.toString(), newFavoriteApp.getDescription(userLanguage));
+      return toWebEntity(getMyLinksService().createLink(linkDetail));
     }
     throw new WebApplicationException(Status.BAD_REQUEST);
   }
 
-  private void verifyCurrentUserIsOwner(MyLinkEntity linkEntity) {
-    verifyCurrentUserIsOwner(String.valueOf(linkEntity.getLinkId()));
+  private LinkDetail createLinkInstance(final String urlPrefix, final String resourceId,
+      final String name, final String description) {
+    final LinkDetail linkDetail = new LinkDetail();
+    linkDetail.setUrl(urlPrefix + resourceId);
+    linkDetail.setName(name);
+    linkDetail.setDescription(description);
+    linkDetail.setVisible(true);
+    linkDetail.setPopup(false);
+    linkDetail.setUserId(getUser().getId());
+    return linkDetail;
+  }
+
+  private LinkDetail verifyLinkCanBeModifiedByCurrentUser(MyLinkEntity linkEntity) {
+    return verifyLinkCanBeModifiedByCurrentUser(valueOf(linkEntity.getLinkId()));
+  }
+
+  private void verifyConsistency(final String linkId, final MyLinkEntity updatedLink) {
+    if (isNotDefined(linkId) || !linkId.equals(valueOf(updatedLink.getLinkId()))) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
   }
 
   /**
    * This method verify that the owner of the link represented by the given id is the current user.
-   * @param linkId
+   * @param linkId an identifier of link.
    */
-  private void verifyCurrentUserIsOwner(int linkId) {
-    verifyCurrentUserIsOwner(String.valueOf(linkId));
+  private LinkDetail verifyLinkCanBeModifiedByCurrentUser(int linkId) {
+    return verifyLinkCanBeModifiedByCurrentUser(valueOf(linkId));
   }
 
   /**
    * This method verify that the owner of the link represented by the given id is the current user.
-   * @param linkId
+   * @param linkId an identifier of link.
    */
-  private void verifyCurrentUserIsOwner(String linkId) {
-    getUserLink(linkId);
+  private LinkDetail verifyLinkCanBeModifiedByCurrentUser(String linkId) {
+    return loadLink(linkId);
   }
 
   private StringBuilder buildAppPathName(String applicationId, String userLanguage) {
@@ -295,8 +321,12 @@ public class MyLinksResource extends RESTWebService {
     return null;
   }
 
+  private MyLinkEntity toWebEntity(final LinkDetail linkDetail) {
+    return MyLinkEntity.fromLinkDetail(linkDetail, getLinkUri(linkDetail));
+  }
+
   private URI getLinkUri(LinkDetail link) {
-    return getUri().getWebResourcePathBuilder().path(String.valueOf(link.getLinkId())).build();
+    return getUri().getWebResourcePathBuilder().path(valueOf(link.getLinkId())).build();
   }
 
   protected MyLinksService getMyLinksService() {

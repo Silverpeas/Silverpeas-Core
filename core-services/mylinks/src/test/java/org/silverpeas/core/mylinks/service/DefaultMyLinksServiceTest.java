@@ -26,7 +26,6 @@ package org.silverpeas.core.mylinks.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -34,9 +33,9 @@ import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestedBean;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -50,13 +49,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv
-public class DefaultMyLinksServiceTest {
+class DefaultMyLinksServiceTest {
 
-  @RegisterExtension
-  FieldMocker mocker = new FieldMocker();
-
-  private DefaultMyLinksService service;
+  @TestManagedMock
   private LinkDAO dao;
+
+  @TestedBean
+  private DefaultMyLinksService service;
 
   @RequesterProvider
   public User getCurrentRequester() {
@@ -67,15 +66,12 @@ public class DefaultMyLinksServiceTest {
 
   @BeforeEach
   public void setup(@TestManagedMock ConnectionPool pool) throws Exception {
-    service = spy(new DefaultMyLinksService());
     when(pool.getDataSourceConnection()).thenReturn(mock(Connection.class));
-    dao = mocker.mockField(LinkDAO.class, LinkDAO.class, "linkDAO");
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void createLinkAndVerifyIdIsSet() throws Exception {
-    when(dao.createLink(any(Connection.class), any(LinkDetail.class)))
+  void createLinkAndVerifyIdIsSet() throws Exception {
+    when(dao.createLink(any(LinkDetail.class)))
         .thenAnswer((Answer<Integer>) invocation -> 38);
 
     LinkDetail linkToAdd = new LinkDetail();
@@ -86,10 +82,9 @@ public class DefaultMyLinksServiceTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void getAllLinksByUserWithoutPositions() throws Exception {
+  void getAllLinksByUserWithoutPositions() throws Exception {
     List<LinkDetail> links = initLinkPositions(null, null, null, null, null);
-    when(dao.getAllLinksByUser(any(Connection.class), anyString())).thenReturn(links);
+    when(dao.getAllLinksByUser(anyString())).thenReturn(links);
 
     assertThat(extractLinkIdPositions(links),
         contains(of(10, 0), of(11, 0), of(12, 0), of(13, 0), of(14, 0)));
@@ -101,10 +96,9 @@ public class DefaultMyLinksServiceTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void getAllLinksByUserWithPositions() throws Exception {
+  void getAllLinksByUserWithPositions() throws Exception {
     List<LinkDetail> links = initLinkPositions(5, 0, 2, 1, 3);
-    doReturn(links).when(dao).getAllLinksByUser(any(Connection.class), anyString());
+    doReturn(links).when(dao).getAllLinksByUser(anyString());
 
     assertThat(extractLinkIdPositions(links),
         contains(of(10, 5), of(11, 0), of(12, 2), of(13, 1), of(14, 3)));
@@ -116,10 +110,9 @@ public class DefaultMyLinksServiceTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void getAllLinksByUserWithAndWithoutPositions() throws Exception {
+  void getAllLinksByUserWithAndWithoutPositions() throws Exception {
     List<LinkDetail> links = initLinkPositions(null, 0, null, 1, 3);
-    doReturn(links).when(dao).getAllLinksByUser(any(Connection.class), anyString());
+    doReturn(links).when(dao).getAllLinksByUser(anyString());
 
     assertThat(extractLinkIdPositions(links),
         contains(of(10, 0), of(11, 0), of(12, 0), of(13, 1), of(14, 3)));
@@ -135,7 +128,7 @@ public class DefaultMyLinksServiceTest {
    */
 
   private List<LinkDetail> initLinkPositions(Integer... positions) {
-    List<LinkDetail> links = new ArrayList<LinkDetail>();
+    List<LinkDetail> links = new ArrayList<>();
     for (Integer position : positions) {
       LinkDetail link = new LinkDetail();
       link.setLinkId(links.size() + 10);
@@ -149,7 +142,7 @@ public class DefaultMyLinksServiceTest {
   }
 
   private List<Pair<Integer, Integer>> extractLinkIdPositions(List<LinkDetail> links) {
-    List<Pair<Integer, Integer>> linkIdPositions = new ArrayList<Pair<Integer, Integer>>();
+    List<Pair<Integer, Integer>> linkIdPositions = new ArrayList<>();
     for (LinkDetail link : links) {
       linkIdPositions.add(of(link.getLinkId(), link.getPosition()));
     }

@@ -50,7 +50,6 @@ public class LinkDetail implements Serializable, Securable {
   private String objectId;
 
   public LinkDetail() {
-
   }
 
   public LinkDetail(String name, String description, String url, boolean visible, boolean popup) {
@@ -59,7 +58,24 @@ public class LinkDetail implements Serializable, Securable {
     this.url = url;
     this.visible = visible;
     this.popup = popup;
+  }
 
+  /**
+   * Copy constructor.
+   * @param other the instance to copy.
+   */
+  public LinkDetail(final LinkDetail other) {
+    this.linkId = other.linkId;
+    this.position = other.position;
+    this.hasPosition = other.hasPosition;
+    this.name = other.name;
+    this.description = other.description;
+    this.url = other.url;
+    this.visible = other.visible;
+    this.popup = other.popup;
+    this.userId = other.userId;
+    this.instanceId = other.instanceId;
+    this.objectId = other.objectId;
   }
 
   public String getUserId() {
@@ -178,10 +194,5 @@ public class LinkDetail implements Serializable, Securable {
       canBeModified = user.getId().equals(userId);
     }
     return canBeModified;
-  }
-
-  @Override
-  public boolean canBeDeletedBy(final User user) {
-    return canBeModifiedBy(user);
   }
 }

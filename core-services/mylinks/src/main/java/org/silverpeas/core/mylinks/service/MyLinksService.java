@@ -25,14 +25,21 @@ package org.silverpeas.core.mylinks.service;
 
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
 public interface MyLinksService {
 
+  static MyLinksService get() {
+    return ServiceProvider.getService(MyLinksService.class);
+  }
+
   /**
    * @see #getAllLinksByUser(String)
+   * @deprecated used {@link #getAllLinksByUser(String)} instead.
    */
+  @Deprecated(forRemoval = true)
   List<LinkDetail> getAllLinks(String userId);
 
   /**
@@ -47,11 +54,16 @@ public interface MyLinksService {
 
   List<LinkDetail> getAllLinksByObject(String instanceId, String objectId);
 
-  void createLink(LinkDetail link);
+  /**
+   * Creates a new link from the date given by the {@link LinkDetail} parameter.
+   * @param link the data to register.
+   * @return a new instance representing the data saved into database.
+   */
+  LinkDetail createLink(LinkDetail link);
 
   LinkDetail getLink(String linkId);
 
   void deleteLinks(String[] links);
 
-  void updateLink(LinkDetail link);
+  LinkDetail updateLink(LinkDetail link);
 }
