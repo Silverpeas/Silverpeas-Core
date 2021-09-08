@@ -642,7 +642,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailableToUser(componentId, userId)) {
-          return URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main";
+          return URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main?FromSpaceHomepage=true";
         } else {
           // component does not exist anymore or component is not available to current user
           // so default page is used
