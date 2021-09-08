@@ -288,7 +288,8 @@ public class LinkDAO {
       LinkDetail link) throws SQLException {
     int i = 1;
     prepStmt.setInt(i++, linkId);
-    prepStmt.setString(i++, link.getName());
+    String name = StringUtil.truncate(link.getName(), 255);
+    prepStmt.setString(i++, name);
     String description = StringUtil.truncate(link.getDescription(), 255);
     prepStmt.setString(i++, description);
     prepStmt.setString(i++, link.getUrl());
