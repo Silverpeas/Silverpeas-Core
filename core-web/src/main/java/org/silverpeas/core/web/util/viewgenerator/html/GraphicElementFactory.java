@@ -100,6 +100,8 @@ public class GraphicElementFactory {
       GraphicElementFactory.class + "_REQUEST_IS_COMPONENT_MAIN_PAGE";
   private static final String REQUEST_EXTERNAL_STYLESHEET =
       GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
+  private static final String REQUEST_IS_SPACE_HOME_PAGE =
+      GraphicElementFactory.class + "REQUEST_IS_SPACE_HOME_PAGE";
   private static final String ICONS_PATH =
       (URLUtil.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
   private LocalizationBundle multilang = null;
@@ -690,6 +692,20 @@ public class GraphicElementFactory {
    */
   public void setSpaceIdForCurrentRequest(String spaceId) {
     CacheServiceProvider.getRequestCacheService().getCache().put(REQUEST_SPACE_ID, spaceId);
+  }
+
+  public boolean isCurrentRequestFromSpaceHomepage() {
+    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+        .getCache().get(REQUEST_IS_SPACE_HOME_PAGE, Boolean.class));
+  }
+
+  /**
+   * @param fromSpaceHomepage true if request comes from space homepage
+   */
+  public void setCurrentRequestFromSpaceHomepage(boolean fromSpaceHomepage) {
+    CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .put(REQUEST_IS_SPACE_HOME_PAGE, fromSpaceHomepage);
   }
 
   /**

@@ -433,6 +433,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           helperSpaceId = helper.getSpaceId();
         }
         gef.setSpaceIdForCurrentRequest(helperSpaceId);
+        if (StringUtil.getBooleanValue(req.getParameter("FromSpaceHomepage"))) {
+          gef.setCurrentRequestFromSpaceHomepage(true);
+        }
       }
     } else if (isDefined(spaceId) && gef != null && helper != null) {
       helper.setSpaceId(spaceId);

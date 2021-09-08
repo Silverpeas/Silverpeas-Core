@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -307,42 +308,52 @@ public abstract class AbstractWindow implements Window {
    * </ul>
    */
   protected void addSpaceOrComponentOperations() {
-    boolean isComponentInstanceIdDefinedShareable =
-        StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest());
+    String currentSpaceId = getGEF().getSpaceIdOfCurrentRequest();
+    String currentComponentId = getGEF().getComponentIdOfCurrentRequest();
+    boolean isComponentInstanceIdDefinedShareable = StringUtil.isDefined(currentComponentId);
     if (isComponentInstanceIdDefinedShareable) {
       isComponentInstanceIdDefinedShareable =
-          !PersonalComponentInstance.from(getGEF().getComponentIdOfCurrentRequest()).isPresent();
+          !PersonalComponentInstance.from(currentComponentId).isPresent();
     }
     if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
-        StringUtil.isDefined(getGEF().getSpaceIdOfCurrentRequest())) ||
-        isComponentInstanceIdDefinedShareable) {
+        StringUtil.isDefined(currentSpaceId)) || isComponentInstanceIdDefinedShareable) {
       if (getOperationPane().nbOperations() > 0) {
         getOperationPane().addLine();
       }
+
+      // verify if current component is used as space homepage
+      if (getGEF().isCurrentRequestFromSpaceHomepage() && StringUtil.isDefined(currentSpaceId) &&
+          StringUtil.isDefined(currentComponentId)) {
+        SpaceInst space = OrganizationController.get().getSpaceInstById(currentSpaceId);
+        if (space.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST &&
+            currentComponentId.equals(space.getFirstPageExtraParam())) {
+          getOperationPane().setType(OperationPaneType.space);
+        }
+      }
+
       final String viewMgrLabel;
       final String addFavLabel;
       final String viewMgrAction;
       final String addFavAction;
       boolean addFavOperation = true;
+      String currentUserId = getGEF().getMainSessionController().getUserId();
       LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage());
       if (OperationPaneType.space.equals(getOperationPane().getType())) {
         viewMgrLabel = bundle.getString("GML.space.responsibles").replaceAll("''", "'");
         viewMgrAction =
-            "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
-                "','" + getGEF().getSpaceIdOfCurrentRequest() + "')";
+            "displaySpaceResponsibles('" + currentUserId + "','" + currentSpaceId + "')";
         addFavLabel = bundle.getString("GML.favorite.space.add");
-        addFavAction = "addFavoriteSpace('" + getGEF().getSpaceIdOfCurrentRequest() + "')";
+        addFavAction = "addFavoriteSpace('" + currentSpaceId + "')";
 
         addOperationToSetupSpace();
 
       } else {
         viewMgrLabel = bundle.getString("GML.component.responsibles").replaceAll("''", "'");
         viewMgrAction =
-            "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
-                "','" + getGEF().getComponentIdOfCurrentRequest() + "')";
+            "displayComponentResponsibles('" + currentUserId + "','" + currentComponentId + "')";
         addFavLabel = bundle.getString("GML.favorite.application.add");
-        addFavAction = "addFavoriteApp('" + getGEF().getComponentIdOfCurrentRequest() + "')";
+        addFavAction = "addFavoriteApp('" + currentComponentId + "')";
         addFavOperation = getGEF().isComponentMainPage();
       }
       if (addFavOperation) {
