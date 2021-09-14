@@ -24,8 +24,6 @@
 package org.silverpeas.core.web.treemenu.taglib;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -76,50 +74,24 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
       // displays the css file used by menu tree
       if (displayCssFile) {
         // stylesheets for YUI treeView menu
-
-        builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-            contextName).append(
-            "/util/styleSheets/treeMenu/fonts-min.css\">");
-        builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-            contextName).append(
-            "/util/styleSheets/treeMenu/treeview.css\">");
-        builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-            contextName).append(
-            "/util/styleSheets/treeMenu/tree.css\">");
-
+        final String stylePrefix = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + contextName;
+        builder.append(stylePrefix).append("/util/styleSheets/treeMenu/fonts-min.css\">");
+        builder.append(stylePrefix).append("/util/styleSheets/treeMenu/treeview.css\">");
+        builder.append(stylePrefix).append("/util/styleSheets/treeMenu/tree.css\">");
       }
-      // // displays the Javascript file used by menu tree
+      // displays the Javascript file used by menu tree
       if (displayJavascriptFile) {
-        builder.append("<script type=\"text/javascript\" src=\"").append(
-            contextName).append(
-            "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
-
-        builder.append("<script type=\"text/javascript\" src=\"").append(
-            contextName).append(
-            "/util/yui/json/json-min.js\"></script>");
-
-        builder.append("<script type=\"text/javascript\" src=\"").append(
-            contextName).append(
-            "/util/yui/connection/connection-min.js\"></script>");
-
-        builder.append("<script type=\"text/javascript\" src=\"").append(
-            contextName).append(
-            "/util/yui/treeview/treeview-min.js\"></script>");
-
-        builder.append("<script type=\"text/javascript\" src=\"").append(
-            contextName).append(
-            "/util/javaScript/treeMenu/menu.js\"></script>");
-
-        builder.append("<script type=\"text/javascript\" src=\"").append(
-            contextName).append(
-            "/util/javaScript/jquery/jquery-2.2.4.min.js\"></script>");
+        final String jsPrefix = "<script type=\"text/javascript\" src=\"" + contextName;
+        builder.append(jsPrefix).append("/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
+        builder.append(jsPrefix).append("/util/yui/json/json-min.js\"></script>");
+        builder.append(jsPrefix).append("/util/yui/connection/connection-min.js\"></script>");
+        builder.append(jsPrefix).append("/util/yui/treeview/treeview-min.js\"></script>");
+        builder.append(jsPrefix).append("/util/javaScript/treeMenu/menu.js\"></script>");
       }
       // displays the styles used to represent the icon component
       if (displayIconsStyles) {
         if (iconStyle == null) {
           StringBuilder iconStyleBuilder = new StringBuilder();
-          OrganizationController controller =
-              OrganizationControllerProvider.getOrganisationController();
           Collection<WAComponent> components = WAComponent.getAll();
           if (!components.isEmpty()) {
             iconStyleBuilder.append("<style type=\"text/css\">");
