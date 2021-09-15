@@ -144,6 +144,14 @@ public interface SilverpeasComponentInstance extends Identifiable, Nameable, Ser
   }
 
   /**
+   * Indicates if the component instance is into a REMOVED state.
+   * @return true if into removed state, false otherwise.
+   */
+  default boolean isRemoved() {
+    return false;
+  }
+
+  /**
    * Gets the position index of the component against the others into a space.
    * @return a position as int.
    */

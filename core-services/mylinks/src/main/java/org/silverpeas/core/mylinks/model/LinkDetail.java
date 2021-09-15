@@ -48,6 +48,7 @@ public class LinkDetail implements Serializable, Securable {
   private String userId;
   private String instanceId;
   private String objectId;
+  private CategoryDetail category;
 
   public LinkDetail() {
   }
@@ -76,6 +77,7 @@ public class LinkDetail implements Serializable, Securable {
     this.userId = other.userId;
     this.instanceId = other.instanceId;
     this.objectId = other.objectId;
+    this.category = other.category != null ? new CategoryDetail(other.category) : null;
   }
 
   public String getUserId() {
@@ -164,6 +166,14 @@ public class LinkDetail implements Serializable, Securable {
 
   public void setHasPosition(boolean hasPosition) {
     this.hasPosition = hasPosition;
+  }
+
+  public CategoryDetail getCategory() {
+    return category;
+  }
+
+  public void setCategory(final CategoryDetail category) {
+    this.category = category;
   }
 
   @Override

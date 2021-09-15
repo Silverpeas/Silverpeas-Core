@@ -238,6 +238,30 @@ if (!String.prototype.normalizeByRemovingAccent) {
   };
 }
 
+if (!String.prototype.truncateLeft) {
+  String.prototype.truncateLeft = function(maxLength) {
+    if (this.length <= maxLength) {
+      return this;
+    } else if (maxLength <= 3) {
+      return '...';
+    } else {
+      return '...' + this.substring(3 + (this.length - maxLength));
+    }
+  };
+}
+
+if (!String.prototype.truncateRight) {
+  String.prototype.truncateRight = function(maxLength) {
+    if (this.length <= maxLength) {
+      return this;
+    } else if (maxLength <= 3) {
+      return '...';
+    } else {
+      return this.substring(0, maxLength - 3) + '...';
+    }
+  };
+}
+
 if (!Number.prototype.roundDown) {
   Number.prototype.roundDown = function(digit) {
     if (digit || digit === 0) {
@@ -308,6 +332,18 @@ if (!window.StringUtil) {
     this.normalize = function(aString) {
       if(_self.isDefined(aString)) {
         return aString.normalize('NFC');
+      }
+      return aString;
+    };
+    this.truncateLeft = function(aString, maxLength) {
+      if(_self.isDefined(aString)) {
+        return aString.truncateLeft(maxLength);
+      }
+      return aString;
+    };
+    this.truncateRight = function(aString, maxLength) {
+      if(_self.isDefined(aString)) {
+        return aString.truncateRight(maxLength);
       }
       return aString;
     };
@@ -1764,6 +1800,29 @@ if (typeof window.sp === 'undefined') {
         return new DOMParser().parseFromString(htmlAsString, 'text/html');
       }
     },
+    form : {
+      /**
+       * Encodes a set of form elements as a string for submission.
+       */
+      serialize : function(elementOrCssSelector) {
+        const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
+        return jQuery(element).find(':input').serialize();
+      },
+      /**
+       * Encodes a set of form elements as an array of names and values.
+       */
+      serializeArray : function(elementOrCssSelector) {
+        const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
+        return jQuery(element).find(':input').serializeArray();
+      },
+      /**
+       * Encodes a set of form elements as JSON of names and values.
+       */
+      serializeJson : function(elementOrCssSelector) {
+        const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
+        return jQuery(element).find(':input').serializeFormJSON();
+      }
+    },
     element : {
       cloneAndReplace: function(elementOrCssSelector, beforeReplaceCallback) {
         const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
@@ -2004,17 +2063,37 @@ if (typeof window.sp === 'undefined') {
     },
     selection : {
       newCheckboxMonitor : function(cssSelector) {
+        if (!window.__newCheckboxMonitors) {
+          window.__newCheckboxMonitors = {
+            instances : []
+          };
+          Mousetrap.bindGlobal('shift', function(e) {
+            window.__newCheckboxMonitors.instances.forEach(function(instance) {
+              if (!instance.__shift) {
+                instance.__shift = true;
+              }
+            });
+          });
+          Mousetrap.bindGlobal('shift', function(e) {
+            window.__newCheckboxMonitors.instances.forEach(function(instance) {
+              if (instance.__shift) {
+                instance.__shift = false;
+              }
+            });
+          }, 'keyup');
+        }
         return new function() {
           applyEventDispatchingBehaviorOn(this);
-          var __shift = false;
-          var __selectedAtStart = [];
-          var __selected = [];
-          var __unselected = [];
-          var __init = function() {
+          window.__newCheckboxMonitors.instances.push(this);
+          this.__shift = false;
+          let __selectedAtStart = [];
+          let __selected = [];
+          let __unselected = [];
+          const __init = function() {
             __selectedAtStart = [];
             __selected = [];
             __unselected = [];
-            var checkboxes = document.querySelectorAll(cssSelector);
+            const checkboxes = document.querySelectorAll(cssSelector);
             [].slice.call(checkboxes, 0).forEach(function(checkbox) {
               if (checkbox.checked) {
                 __selectedAtStart.addElement(checkbox.value);
@@ -2022,25 +2101,13 @@ if (typeof window.sp === 'undefined') {
               checkbox.addEventListener('change', __handler);
             });
           };
-
-          Mousetrap.bindGlobal('shift', function(e) {
-            if (!__shift) {
-              __shift = true;
-            }
-          });
-          Mousetrap.bindGlobal('shift', function(e) {
-            if (__shift) {
-              __shift = false;
-            }
-          }, 'keyup');
-
-          var __handler = function(e) {
-            var checkboxReference = e.target;
-            var checkboxesToHandle = [];
-            if (__shift) {
-              var checkboxes = [].slice.call(document.querySelectorAll(cssSelector), 0);
-              for (var i = 0; i < checkboxes.length; i++) {
-                var checkbox = checkboxes[i];
+          const __handler = function(e) {
+            const checkboxReference = e.target;
+            let checkboxesToHandle = [];
+            if (this.__shift) {
+              const checkboxes = [].slice.call(document.querySelectorAll(cssSelector), 0);
+              for (let i = 0; i < checkboxes.length; i++){
+                const checkbox = checkboxes[i];
                 if (checkbox === checkboxReference) {
                   break;
                 }
@@ -2071,11 +2138,16 @@ if (typeof window.sp === 'undefined') {
           this.pageChanged = function() {
             __init();
           };
+          this.getSelectedValues = function() {
+            return __selected.map(function(value) {
+              return value;
+            });
+          };
           this.prepareFormRequest = function(formRequest, options) {
             this.prepareAjaxRequest(formRequest, options);
           };
           this.prepareAjaxRequest = function(ajaxRequest, options) {
-            var params = extendsObject({
+            const params = extendsObject({
               clear : true,
               paramSelectedIds : 'selectedIds',
               paramUnselectedIds : 'unselectedIds'

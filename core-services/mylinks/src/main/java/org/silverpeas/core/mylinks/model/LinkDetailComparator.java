@@ -45,14 +45,22 @@ public class LinkDetailComparator extends AbstractComplexComparator<LinkDetail> 
 
   @Override
   protected ValueBuffer getValuesToCompare(final LinkDetail link) {
-    ValueBuffer valueBuffer = new ValueBuffer();
-
+    final ValueBuffer valueBuffer = new ValueBuffer();
+    // Category
+    final CategoryDetail category = link.getCategory();
+    if (category != null) {
+      // Position first
+      valueBuffer.append(category.hasPosition() ? category.getPosition() : Integer.MIN_VALUE);
+      // Then the creation order
+      valueBuffer.append(category.getId(), false);
+    } else {
+      valueBuffer.append(Integer.MIN_VALUE);
+      valueBuffer.append(Integer.MAX_VALUE, false);
+    }
     // Position first
     valueBuffer.append(link.hasPosition() ? link.getPosition() : Integer.MIN_VALUE);
-
     // Then the creation order
     valueBuffer.append(link.getLinkId(), false);
-
     return valueBuffer;
   }
 }

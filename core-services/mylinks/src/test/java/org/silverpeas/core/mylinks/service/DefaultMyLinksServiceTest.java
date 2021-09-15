@@ -72,13 +72,15 @@ class DefaultMyLinksServiceTest {
   @Test
   void createLinkAndVerifyIdIsSet() throws Exception {
     when(dao.createLink(any(LinkDetail.class)))
-        .thenAnswer((Answer<Integer>) invocation -> 38);
+        .thenAnswer((Answer<LinkDetail>) invocation ->  {
+          final LinkDetail result = new LinkDetail(invocation.getArgument(0));
+          result.setLinkId(38);
+          return result;
+        });
 
     LinkDetail linkToAdd = new LinkDetail();
 
-    service.createLink(linkToAdd);
-
-    assertThat(linkToAdd.getLinkId(), is(38));
+    assertThat(service.createLink(linkToAdd).getLinkId(), is(38));
   }
 
   @Test

@@ -24,16 +24,21 @@
 package org.silverpeas.core.mylinks.dao;
 
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Collections.emptyMap;
 
 @Repository
 public class LinkDAO {
@@ -44,6 +49,13 @@ public class LinkDAO {
   private static final String USER_ID_CLAUSE = "userId = ?";
   private static final String INSTANCE_ID_CLAUSE = "instanceId = ?";
   private static final String OBJECT_ID_CLAUSE = "objectId = ?";
+
+  @Inject
+  private LinkCategoryDAO linkCategoryDAO;
+
+  protected static LinkDAO get() {
+    return ServiceProvider.getService(LinkDAO.class);
+  }
 
   /**
    * Hide constructor of utility class
@@ -59,9 +71,44 @@ public class LinkDAO {
    */
   public void deleteComponentInstanceData(String componentInstanceId)
       throws SQLException {
+    linkCategoryDAO.deleteComponentInstanceData(componentInstanceId);
     JdbcSqlQuery.createDeleteFor(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, componentInstanceId)
         .or("url like ?", "%" + componentInstanceId)
+        .execute();
+  }
+
+  /**
+   * Gets all the link identifier which references the identifier of a component instance (url,
+   * instanceId, etc.).
+   * <p>
+   *   It is not the same behavior as {@link #getAllLinksByInstance(String)} method which is
+   *   searching for data only against instanceId field.
+   * </p>
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException on SQL problem
+   */
+  protected List<Integer> getLinkIdsByComponentInstance(String componentInstanceId)
+      throws SQLException {
+    return JdbcSqlQuery.createSelect(LINK_ID)
+        .from(LINK_TABLE)
+        .where(INSTANCE_ID_CLAUSE, componentInstanceId)
+        .or("url like ?", "%" + componentInstanceId)
+        .execute(r -> r.getInt(1));
+  }
+
+  /**
+   * Delete all
+   * @param userId the identifier of the user for which the resources must be deleted
+   * @throws SQLException on SQL problem
+   */
+  public void deleteUserData(String userId) throws SQLException {
+    linkCategoryDAO.deleteUserData(userId);
+    JdbcSqlQuery.createDeleteFor(LINK_TABLE)
+        .where(USER_ID_CLAUSE, userId)
+        .and("(instanceId IS NULL").or("instanceId = '')")
+        .and("(objectId IS NULL").or("objectId = '')")
         .execute();
   }
 
@@ -73,12 +120,14 @@ public class LinkDAO {
    */
   public List<LinkDetail> getAllLinksByUser(String userId)
       throws SQLException {
+    final Map<Integer, CategoryDetail> categoriesByLinkId =
+        linkCategoryDAO.getAllCategoriesByLinkOfUser(userId);
     return JdbcSqlQuery.createSelect("*")
         .from(LINK_TABLE)
         .where(USER_ID_CLAUSE, userId)
         .and("(instanceId IS NULL").or("instanceId = '')")
         .and("(objectId IS NULL").or("objectId = '')")
-        .execute(LinkDAO::fetchLink);
+        .execute(rs -> fetchLink(rs, categoriesByLinkId));
   }
 
   /**
@@ -92,7 +141,7 @@ public class LinkDAO {
     return JdbcSqlQuery.createSelect("*")
         .from(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, instanceId)
-        .execute(LinkDAO::fetchLink);
+        .execute(rs -> fetchLink(rs, emptyMap()));
   }
 
   /**
@@ -108,7 +157,7 @@ public class LinkDAO {
         .from(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, instanceId)
         .and(OBJECT_ID_CLAUSE, objectId)
-        .execute(LinkDAO::fetchLink);
+        .execute(rs -> fetchLink(rs, emptyMap()));
   }
 
   /**
@@ -117,11 +166,13 @@ public class LinkDAO {
    * @return the link detail
    * @throws SQLException on SQL problem
    */
-  public LinkDetail getLink(String linkId) throws SQLException {
+  public LinkDetail getLink(int linkId) throws SQLException {
+    final Map<Integer, CategoryDetail> categoriesByLinkId =
+        linkCategoryDAO.getAllCategoriesByLink(linkId);
     return JdbcSqlQuery.createSelect("*")
         .from(LINK_TABLE)
-        .where(LINK_ID_CLAUSE, parseInt(linkId))
-        .executeUnique(LinkDAO::fetchLink);
+        .where(LINK_ID_CLAUSE, linkId)
+        .executeUnique(rs -> fetchLink(rs, categoriesByLinkId));
   }
 
   /**
@@ -136,6 +187,7 @@ public class LinkDAO {
     linkToPersist.setHasPosition(false);
     final JdbcSqlQuery insertQuery = JdbcSqlQuery.createInsertFor(LINK_TABLE);
     setupSaveQuery(insertQuery, linkToPersist, true).execute();
+    linkCategoryDAO.saveByLink(linkToPersist);
     return linkToPersist;
   }
 
@@ -149,6 +201,7 @@ public class LinkDAO {
     final LinkDetail linkToUpdate = new LinkDetail(link);
     final JdbcSqlQuery updateQuery = JdbcSqlQuery.createUpdateFor(LINK_TABLE);
     setupSaveQuery(updateQuery, linkToUpdate, false).execute();
+    linkCategoryDAO.saveByLink(linkToUpdate);
     return linkToUpdate;
   }
 
@@ -158,14 +211,17 @@ public class LinkDAO {
    * @throws SQLException on SQL problem
    */
   public void deleteLink(String linkId) throws SQLException {
+    linkCategoryDAO.deleteByLink(parseInt(linkId));
     JdbcSqlQuery.createDeleteFor(LINK_TABLE)
         .where(LINK_ID_CLAUSE, parseInt(linkId))
         .execute();
   }
 
-  private static LinkDetail fetchLink(final ResultSet rs) throws SQLException {
+  private LinkDetail fetchLink(final ResultSet rs,
+      final Map<Integer, CategoryDetail> categoriesByLinkId) throws SQLException {
     final LinkDetail link = new LinkDetail();
-    link.setLinkId(rs.getInt(LINK_ID));
+    final int linkId = rs.getInt(LINK_ID);
+    link.setLinkId(linkId);
     link.setPosition(rs.getInt("position"));
     link.setHasPosition(!rs.wasNull());
     link.setName(rs.getString("name"));
@@ -176,6 +232,7 @@ public class LinkDAO {
     link.setUserId(rs.getString("userId"));
     link.setInstanceId(rs.getString("instanceId"));
     link.setObjectId(rs.getString("objectId"));
+    link.setCategory(categoriesByLinkId.getOrDefault(linkId, null));
     return link;
   }
 

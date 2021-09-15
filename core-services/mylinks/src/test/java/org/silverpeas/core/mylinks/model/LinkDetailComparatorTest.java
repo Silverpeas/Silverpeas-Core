@@ -35,11 +35,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
 @UnitTest
-public class LinkDetailComparatorTest {
+class LinkDetailComparatorTest {
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void sortLinksWithoutPositions() {
+  void sortLinksWithoutPositions() {
     List<LinkDetail> links = initLinkPositions(null, null, null, null, null);
 
     assertThat(extractLinkIdPositions(links),
@@ -52,8 +51,7 @@ public class LinkDetailComparatorTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void sortLinksWithPositions() {
+  void sortLinksWithPositions() {
     List<LinkDetail> links = initLinkPositions(5, 0, 2, 1, 3);
 
     assertThat(extractLinkIdPositions(links),
@@ -66,8 +64,7 @@ public class LinkDetailComparatorTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void sortLinksWithAndWithoutPositions() {
+  void sortLinksWithAndWithoutPositions() {
     List<LinkDetail> links = initLinkPositions(null, 0, null, 1, 3);
 
     assertThat(extractLinkIdPositions(links),
@@ -84,7 +81,7 @@ public class LinkDetailComparatorTest {
    */
 
   private List<LinkDetail> initLinkPositions(Integer... positions) {
-    List<LinkDetail> links = new ArrayList<LinkDetail>();
+    List<LinkDetail> links = new ArrayList<>();
     for (Integer position : positions) {
       LinkDetail link = new LinkDetail();
       link.setLinkId(links.size() + 10);
@@ -98,7 +95,7 @@ public class LinkDetailComparatorTest {
   }
 
   private List<Pair<Integer, Integer>> extractLinkIdPositions(List<LinkDetail> links) {
-    List<Pair<Integer, Integer>> linkIdPositions = new ArrayList<Pair<Integer, Integer>>();
+    List<Pair<Integer, Integer>> linkIdPositions = new ArrayList<>();
     for (LinkDetail link : links) {
       linkIdPositions.add(of(link.getLinkId(), link.getPosition()));
     }

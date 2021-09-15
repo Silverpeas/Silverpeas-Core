@@ -53,6 +53,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(MINIMALSILVERPEAS, (x, l) -> includeMinimalSilverpeas(x));
     add(POLYFILLS, (x, l) -> includePolyfills(x));
     add(EMBEDPLAYER, (x, l) -> includeEmbedPlayer(x));
+    add(ADMINSERVICES, (x, l) -> includeAdminServices(x));
     add(MEDIAPLAYER, (x, l) -> includeMediaPlayer(x));
     add(QTIP, JavascriptPluginInclusion::includeQTip);
     add(DATEPICKER, JavascriptPluginInclusion::includeDatePicker);

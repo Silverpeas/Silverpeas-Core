@@ -436,12 +436,16 @@ public class AbstractArrayPane implements ArrayPane {
   protected String printSortJavascriptFunction() {
     StringBuilder sb = new StringBuilder();
     sb.append("<script type=\"text/javascript\">");
-
     sb.append("var fixArrayPaneWidthHelper = function(e, ui) {");
+    sb.append("var clone = ui.clone(true);");
+    sb.append("var cloneWidths = [];");
     sb.append("ui.children().each(function() {");
-    sb.append("$(this).width($(this).width());");
+    sb.append("cloneWidths.push($(this).width());");
     sb.append("});");
-    sb.append("return ui;");
+    sb.append("clone.children().each(function(index) {");
+    sb.append("$(this).width(cloneWidths[index]);");
+    sb.append("});");
+    sb.append("return clone;");
     sb.append("};");
 
     sb.append("$(\"#").append(getName()).append(" tbody\").sortable({");

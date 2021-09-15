@@ -472,4 +472,9 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     silverpeasRoles.remove(MANAGER);
     return silverpeasRoles;
   }
+
+  @Override
+  public boolean isRemoved() {
+    return STATUS_REMOVED.equals(getStatus());
+  }
 }

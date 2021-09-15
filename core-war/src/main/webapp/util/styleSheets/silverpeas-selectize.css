@@ -162,6 +162,10 @@
   width: 100%;
 }
 
+.ui-dialog .selectize-control {
+  width: calc(90% + 4px);
+}
+
 .champ-ui-dialog .select-user-group-container,
 .champ-ui-dialog .select-user-group-container .search-input-container {
   width: 100%;

@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
+import static java.lang.String.valueOf;
+
 /**
  * The mylink entity is a mylink object that is exposed in the web as an entity (web entity). As
  * such, it publishes only some of its attributes. It represents a user favorite link in Silverpeas
@@ -66,9 +68,9 @@ public class MyLinkEntity implements WebEntity {
   @Size(min = 1)
   private String url;
 
-  @XmlElement(defaultValue = "true")
+  @XmlElement(defaultValue = "false")
   @NotNull
-  private boolean visible = true;
+  private boolean visible = false;
 
   @XmlElement(defaultValue = "false")
   @NotNull
@@ -82,6 +84,9 @@ public class MyLinkEntity implements WebEntity {
 
   @XmlElement
   private String objectId;
+
+  @XmlElement
+  private Integer categoryId;
 
   public static MyLinkEntity fromLinkDetail(final LinkDetail link, URI uri) {
     return new MyLinkEntity(link, uri);
@@ -112,8 +117,9 @@ public class MyLinkEntity implements WebEntity {
     this.visible = link.isVisible();
     this.popup = link.isPopup();
     this.userId = link.getUserId();
-    this.instanceId = link.getObjectId();
+    this.instanceId = link.getInstanceId();
     this.objectId = link.getObjectId();
+    this.categoryId = link.getCategory() != null ? link.getCategory().getId() : null;
   }
 
   @Override
@@ -133,6 +139,9 @@ public class MyLinkEntity implements WebEntity {
       linkDetail.setPosition(this.position);
     } else {
       linkDetail.setHasPosition(false);
+    }
+    if (categoryId != null) {
+      linkDetail.setCategory(MyLinksWebManager.get().getAuthorizedCategory(valueOf(categoryId)));
     }
     return linkDetail;
   }
@@ -207,4 +216,10 @@ public class MyLinkEntity implements WebEntity {
     return position;
   }
 
+  /**
+   * @return the optional category identifier the link is associated to.
+   */
+  public Integer getCategoryId() {
+    return categoryId;
+  }
 }

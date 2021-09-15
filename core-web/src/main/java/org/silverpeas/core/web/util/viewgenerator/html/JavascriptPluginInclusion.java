@@ -83,6 +83,7 @@ public class JavascriptPluginInclusion {
   private static final int NB_MONTHS = 12;
   private static final int NB_WEEK_DAYS = 7;
   private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
+  private static final String ADMIN_PATH = getApplicationURL() + "/admin/jsp/javaScript/";
   private static final String JAVASCRIPT_PATH = getApplicationURL() + "/util/javaScript/";
   private static final String FLASH_PATH = getApplicationURL() + "/util/flash/";
   private static final String STYLESHEET_PATH = getApplicationURL() + "/util/styleSheets/";
@@ -196,7 +197,6 @@ public class JavascriptPluginInclusion {
   private static final String OK_BUNDLE_KEY = "GML.ok";
   private static final String YES_BUNDLE_KEY = "GML.yes";
   private static final String NO_BUNDLE_KEY = "GML.no";
-
   /**
    * Hidden constructor.
    */
@@ -843,7 +843,14 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includeMylinks(final ElementContainer xhtml) {
+    includeAdminServices(xhtml);
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_MYLINKS));
+    return xhtml;
+  }
+
+  static ElementContainer includeAdminServices(final ElementContainer xhtml) {
+    xhtml.addElement(script(ADMIN_PATH + "silverpeas-admin-space-services.js"));
+    xhtml.addElement(script(ADMIN_PATH + "silverpeas-admin-instance-services.js"));
     return xhtml;
   }
 
