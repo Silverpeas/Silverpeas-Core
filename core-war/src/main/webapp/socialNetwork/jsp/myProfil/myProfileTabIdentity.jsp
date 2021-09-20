@@ -36,7 +36,7 @@
 
 <%
   MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
-  SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.personalization.settings.personalizationPeasSettings");
+  SettingBundle javax.ws.rs = ResourceLocator.getSettingBundle("org.silverpeas.personalization.settings.personalizationPeasSettings");
   LocalizationBundle authRs = ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication", resource.getLanguage());
   SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
@@ -48,10 +48,10 @@
     fieldAttribute = "";
   }
 
-  boolean updateFirstNameIsAllowed = rs.getBoolean("updateFirstName", false);
-  boolean updateLastNameIsAllowed = rs.getBoolean("updateLastName", false);
-  boolean updateEmailIsAllowed = rs.getBoolean("updateEmail", false);
-  boolean displayInfosLDAP = rs.getBoolean("displayInfosLDAP", false);
+  boolean updateFirstNameIsAllowed = javax.ws.rs.getBoolean("updateFirstName", false);
+  boolean updateLastNameIsAllowed = javax.ws.rs.getBoolean("updateLastName", false);
+  boolean updateEmailIsAllowed = javax.ws.rs.getBoolean("updateEmail", false);
+  boolean displayInfosLDAP = javax.ws.rs.getBoolean("displayInfosLDAP", false);
 %>
 
 <c:set var="messageOK" value="${requestScope.MessageOK}"/>

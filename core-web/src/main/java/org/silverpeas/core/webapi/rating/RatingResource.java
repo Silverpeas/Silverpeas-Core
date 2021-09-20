@@ -32,8 +32,8 @@ import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

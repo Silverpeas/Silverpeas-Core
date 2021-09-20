@@ -31,7 +31,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;

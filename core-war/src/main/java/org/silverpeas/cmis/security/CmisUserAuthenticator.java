@@ -32,9 +32,9 @@ import org.apache.chemistry.opencmis.server.support.wrapper.AbstractCmisServiceW
 import org.silverpeas.cmis.CmisRequestContext;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.WebAuthenticationValidation;
-import org.silverpeas.core.webapi.base.WebAuthorizationValidation;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.WebAuthenticationValidation;
+import org.silverpeas.core.web.rs.WebAuthorizationValidation;
 
 import javax.ws.rs.WebApplicationException;
 

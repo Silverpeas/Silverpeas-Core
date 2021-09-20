@@ -109,11 +109,11 @@ public class QuestionContainerDAOIT extends DataSetTest {
   @Test
   @Ignore
   public void testGetQuestionContainerHeaderFromResultSet() throws Exception {
-//    ResultSet rs = null;
+//    ResultSet javax.ws.rs = null;
 //    QuestionContainerPK questionContainerPK = null;
 //    QuestionContainerHeader expResult = null;
     //    QuestionContainerHeader result =
-    //        QuestionContainerDAO.getQuestionContainerHeaderFromResultSet(rs, questionContainerPK);
+    //        QuestionContainerDAO.getQuestionContainerHeaderFromResultSet(javax.ws.rs, questionContainerPK);
     //assertEquals(expResult, result);
     // TODO review the generated test code and remove the default call to fail.
     // fail("The test case is a prototype.");

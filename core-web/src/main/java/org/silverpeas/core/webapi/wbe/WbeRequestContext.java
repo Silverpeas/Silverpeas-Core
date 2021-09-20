@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.wbe;
 
-import org.silverpeas.core.webapi.base.SilverpeasRequestContext;
+import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
 import javax.enterprise.context.RequestScoped;
 

@@ -31,7 +31,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.util.security.SecuritySettings;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;

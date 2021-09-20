@@ -34,7 +34,7 @@ import edu.psu.swe.scim.spec.protocol.data.SearchRequest;
 import edu.psu.swe.scim.spec.protocol.search.SortOrder;
 import edu.psu.swe.scim.spec.resources.ScimGroup;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;

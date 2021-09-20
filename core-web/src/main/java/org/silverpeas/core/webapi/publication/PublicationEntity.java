@@ -39,7 +39,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
 import javax.validation.constraints.NotNull;

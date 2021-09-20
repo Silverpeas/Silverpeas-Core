@@ -32,9 +32,9 @@ import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.viewer.service.ViewerException;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

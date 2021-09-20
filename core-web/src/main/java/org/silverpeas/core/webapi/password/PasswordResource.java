@@ -27,8 +27,8 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

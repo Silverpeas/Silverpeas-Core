@@ -25,7 +25,7 @@
 package org.silverpeas.core.webapi.calendar;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.inject.Inject;
 import javax.ws.rs.PathParam;

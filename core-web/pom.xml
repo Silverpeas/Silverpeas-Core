@@ -108,6 +108,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-rs</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-silverstatistics</artifactId>
       <version>${project.version}</version>

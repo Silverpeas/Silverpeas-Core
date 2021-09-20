@@ -86,7 +86,7 @@ public class QuestionDAO {
     int displayOrder = rs.getInt(12);
     int nbPointsMin = rs.getInt(13);
     int nbPointsMax = rs.getInt(14);
-    // String instanceId = rs.getString(15); // not used but inside result set
+    // String instanceId = javax.ws.rs.getString(15); // not used but inside result set
     String style = rs.getString(16);
 
     return new Question(new QuestionPK(id, questionPK), fatherId, label, description, clue, image,

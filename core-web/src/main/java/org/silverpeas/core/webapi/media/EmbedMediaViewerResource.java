@@ -37,8 +37,8 @@ import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.http.FileResponse;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

@@ -27,8 +27,8 @@ package org.silverpeas.web.usercalendar.services;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
 
 import javax.ws.rs.Path;

@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;

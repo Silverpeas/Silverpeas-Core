@@ -27,7 +27,7 @@ package org.silverpeas.cmis;
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.silverpeas.cmis.security.CmisRequest;
-import org.silverpeas.core.webapi.base.SilverpeasRequestContext;
+import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

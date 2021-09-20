@@ -28,7 +28,7 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.TicketFactory;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;

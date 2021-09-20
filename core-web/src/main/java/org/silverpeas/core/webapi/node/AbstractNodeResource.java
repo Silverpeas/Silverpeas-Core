@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;

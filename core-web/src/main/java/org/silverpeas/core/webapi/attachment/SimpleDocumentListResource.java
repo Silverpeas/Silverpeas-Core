@@ -33,8 +33,8 @@ import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

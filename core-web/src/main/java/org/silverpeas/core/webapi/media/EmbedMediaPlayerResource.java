@@ -27,7 +27,7 @@ import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

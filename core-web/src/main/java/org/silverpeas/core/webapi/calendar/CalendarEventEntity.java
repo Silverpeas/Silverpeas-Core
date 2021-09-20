@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.webapi.reminder.ReminderEntity;
 

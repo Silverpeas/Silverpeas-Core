@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -231,7 +231,7 @@ public class CalendarEntity implements WebEntity {
    * System data are not merged (id, creation date, update date, ...)
    * @param calendar the calendar which will get the new data.
    * @return the given calendar instance with merged data.
-   * @throw javax.ws.rs.WebApplicationException if given calendar does not exist.
+   * @throw javax.ws.javax.ws.rs.WebApplicationException if given calendar does not exist.
    */
   public Calendar merge(Calendar calendar) {
     calendar.setTitle(getTitle());

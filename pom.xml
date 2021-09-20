@@ -291,6 +291,7 @@
     <module>core-test</module>
     <module>core-library</module>
     <module>core-services</module>
+    <module>core-rs</module>
     <module>core-web-test</module>
     <module>core-web</module>
     <module>core-war</module>

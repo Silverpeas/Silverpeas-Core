@@ -30,8 +30,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

@@ -35,7 +35,7 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;

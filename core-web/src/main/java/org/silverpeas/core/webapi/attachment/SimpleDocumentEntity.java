@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.attachment;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;

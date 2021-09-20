@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.contribution.rating.model.RaterRating;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.web.SilverpeasWebResource;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
