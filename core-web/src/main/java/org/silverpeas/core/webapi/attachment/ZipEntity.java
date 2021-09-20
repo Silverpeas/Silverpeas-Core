@@ -27,7 +27,7 @@ import java.net.URI;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 public class ZipEntity implements WebEntity {
 

@@ -30,7 +30,7 @@ import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.owasp.encoder.Encode;

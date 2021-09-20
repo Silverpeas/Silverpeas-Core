@@ -26,9 +26,9 @@ package org.silverpeas.core.webapi.profile;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.webapi.base.HTTPAuthentication;
-import org.silverpeas.core.webapi.base.HTTPAuthentication.AuthenticationContext;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.HTTPAuthentication;
+import org.silverpeas.core.web.rs.HTTPAuthentication.AuthenticationContext;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;

@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.util.logging;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;

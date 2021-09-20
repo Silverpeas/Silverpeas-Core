@@ -27,7 +27,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.HttpMethod;
 import org.silverpeas.core.util.security.SecuritySettings;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

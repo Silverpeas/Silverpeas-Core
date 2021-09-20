@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.sharing;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

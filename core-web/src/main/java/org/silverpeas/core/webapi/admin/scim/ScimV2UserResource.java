@@ -38,7 +38,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.webapi.admin.scim.adaptation.SilverpeasPatchRequest;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;

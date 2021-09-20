@@ -53,7 +53,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.webapi.base.HTTPAuthentication;
+import org.silverpeas.core.web.rs.HTTPAuthentication;
 
 import javax.servlet.http.HttpSession;
 

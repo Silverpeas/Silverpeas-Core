@@ -33,8 +33,8 @@ import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.util.WysiwygEditorConfigRegistry;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;

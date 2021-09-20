@@ -221,7 +221,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 [0m[0m16:57:57,180 INFO  [org.hibernate.engine.jdbc.internal.LobCreatorBuilder] (ServerService Thread Pool -- 65) HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
 [0m[0m16:57:57,538 INFO  [org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory] (ServerService Thread Pool -- 65) HHH000397: Using ASTQueryTranslatorFactory
 [0m[0m16:58:07,079 INFO  [javax.enterprise.resource.webcontainer.jsf.config] (ServerService Thread Pool -- 90) Initialisation de Mojarra 2.2.12-jbossorg-2 20150729-1131 pour le contexte «/silverpeas»
-[0m[0m16:58:10,665 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 90) Deploying javax.ws.rs.core.Application: class com.silverpeas.web.WebResourceProvider$Proxy$_$$_WeldClientProxy
+[0m[0m16:58:10,665 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 90) Deploying javax.ws.javax.ws.rs.core.Application: class com.silverpeas.web.WebResourceProvider$Proxy$_$$_WeldClientProxy
 [0m[0m16:58:11,045 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) authenticate-header = Basic realm="Jackrabbit Webdav Server"
 [0m[0m16:58:11,046 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) csrf-protection = null
 [0m[0m16:58:11,046 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) createAbsoluteURI = true
@@ -350,7 +350,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 [0m[0m17:05:28,309 INFO  [org.hibernate.engine.jdbc.internal.LobCreatorBuilder] (ServerService Thread Pool -- 102) HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
 [0m[0m17:05:28,404 INFO  [org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory] (ServerService Thread Pool -- 102) HHH000397: Using ASTQueryTranslatorFactory
 [0m[0m17:05:33,766 INFO  [javax.enterprise.resource.webcontainer.jsf.config] (ServerService Thread Pool -- 103) Initialisation de Mojarra 2.2.12-jbossorg-2 20150729-1131 pour le contexte «/silverpeas»
-[0m[0m17:05:35,536 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 103) Deploying javax.ws.rs.core.Application: class com.silverpeas.web.WebResourceProvider$Proxy$_$$_WeldClientProxy
+[0m[0m17:05:35,536 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 103) Deploying javax.ws.javax.ws.rs.core.Application: class com.silverpeas.web.WebResourceProvider$Proxy$_$$_WeldClientProxy
 [0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) authenticate-header = Basic realm="Jackrabbit Webdav Server"
 [0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) csrf-protection = null
 [0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) createAbsoluteURI = true

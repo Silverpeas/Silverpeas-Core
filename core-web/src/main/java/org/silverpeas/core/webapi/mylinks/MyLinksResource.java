@@ -27,8 +27,8 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

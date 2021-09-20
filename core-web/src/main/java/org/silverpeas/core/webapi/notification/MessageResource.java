@@ -25,8 +25,8 @@ package org.silverpeas.core.webapi.notification;
 
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

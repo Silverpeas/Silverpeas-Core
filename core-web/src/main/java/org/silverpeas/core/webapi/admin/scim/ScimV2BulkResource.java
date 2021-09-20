@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.admin.scim;
 
 import edu.psu.swe.scim.spec.protocol.BulkResource;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;

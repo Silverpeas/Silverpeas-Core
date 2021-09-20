@@ -27,7 +27,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
