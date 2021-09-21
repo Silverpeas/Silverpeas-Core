@@ -178,7 +178,7 @@ public class WebResourceUri {
   public UriBuilder getRequestUriBuilder() {
     UriBuilder uri = SilverpeasWebResource.getBaseUriBuilder(request).path(uriInfo.getPath());
     uriInfo.getQueryParameters()
-        .forEach((q, v) -> uri.queryParam(q, (Object[]) v.toArray(new Object[v.size()])));
+        .forEach((q, v) -> uri.queryParam(q, v.toArray(new Object[0])));
     return uri;
   }
 

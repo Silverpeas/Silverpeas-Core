@@ -575,7 +575,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param <E> the type of the expected enum instance.
    * @return the expected enum instance or null if enum has not been well decoded
    */
-  public <E extends Enum> E getParameterAsEnum(String enumValue, Class<E> enumClass) {
+  public <E extends Enum<E>> E getParameterAsEnum(String enumValue, Class<E> enumClass) {
     return RequestParameterDecoder.asEnum(getParameter(enumValue), enumClass);
   }
 
@@ -586,7 +586,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param enumClass the class of the expected enum instance.
    * @return the value of the parameter as a list of enum.
    */
-  public <E extends Enum> List<E> getParameterAsEnumList(String parameterName, Class<E> enumClass) {
+  public <E extends Enum<E>> List<E> getParameterAsEnumList(String parameterName, Class<E> enumClass) {
     return getParameterAsList(parameterName).stream().map(p -> RequestParameterDecoder.asEnum(p, enumClass))
         .collect(Collectors.toList());
   }

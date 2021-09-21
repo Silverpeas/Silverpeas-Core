@@ -28,6 +28,8 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.runner.Description;
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -40,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class DbUnitLoadingRule extends DbSetupRule {
 
-  private String xmlDataSet;
+  private final String xmlDataSet;
 
   /**
    * Mandatory constructor.
@@ -65,17 +67,19 @@ public class DbUnitLoadingRule extends DbSetupRule {
       DatabaseOperation.CLEAN_INSERT.execute(new DatabaseConnection(con), getDataSet(description));
     } catch (Exception e) {
       Logger.getAnonymousLogger().severe("DATABASE LOADING IN ERROR");
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
-  private ReplacementDataSet getDataSet(Description description) throws Exception {
+  private ReplacementDataSet getDataSet(Description description) throws SilverpeasException {
     try (InputStream dataSetInputStream = description.getTestClass()
         .getResourceAsStream(xmlDataSet)) {
       ReplacementDataSet dataSet = new ReplacementDataSet(
           new FlatXmlDataSetBuilder().setColumnSensing(true).build(dataSetInputStream));
       dataSet.addReplacementObject("[NULL]", null);
       return dataSet;
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
     }
   }
 }
