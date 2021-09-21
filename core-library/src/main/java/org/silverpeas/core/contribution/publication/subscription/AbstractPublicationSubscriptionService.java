@@ -25,8 +25,10 @@ package org.silverpeas.core.contribution.publication.subscription;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -37,14 +39,18 @@ import org.silverpeas.core.util.Pair;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.function.Predicate;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+import static org.silverpeas.core.contribution.publication.subscription.OnLocationDirective.onLocationId;
 import static org.silverpeas.core.contribution.publication.subscription.PublicationSubscriptionConstants.PUBLICATION;
 import static org.silverpeas.core.contribution.publication.subscription.PublicationSubscriptionConstants.PUBLICATION_ALIAS;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 import static org.silverpeas.core.util.Mutable.of;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * As the class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
@@ -68,26 +74,20 @@ public abstract class AbstractPublicationSubscriptionService extends AbstractRes
   @Override
   public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
       final String componentInstanceId, final SubscriptionResourceType resourceType,
-      final String resourceId) {
-    return getSubscribersOfComponentAndTypedResourceOnLocation(componentInstanceId,
-        resourceType, resourceId, null);
-  }
-
-  @Override
-  public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResourceOnLocation(
-      final String componentInstanceId, final SubscriptionResourceType resourceType,
-      final String resourceId, final String locationId) {
+      final String resourceId, final SubscriberDirective... directives) {
     final Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
     final Mutable<Pair<SubscriptionResourceType, String>> reference = of(Pair.of(resourceType, resourceId));
     if (reference.get().getFirst() == PUBLICATION_ALIAS) {
-      // In that case, ONLY subscribers of publication alias must be verified.
-      // Next parent type / reference to verify are retrieved manually by the caller.
+      // In that case, subscribers of publication alias must be verified.
       final PublicationPK publicationPK = new PublicationPK(resourceId, componentInstanceId);
       subscribers.addAll(getSubscribeService().getSubscribers(
           PublicationAliasSubscriptionResource.from(publicationPK)));
-      if (isDefined(locationId)) {
-        reference.set(Pair.of(NODE, locationId));
-      }
+      // If a location is given, then verifying also the node corresponding to it
+      stream(directives)
+          .filter(OnLocationDirective.class::isInstance)
+          .map(OnLocationDirective.class::cast)
+          .findFirst()
+          .ifPresent(d -> reference.set(Pair.of(NODE, d.getLocationId())));
     }
     if (reference.get().getFirst() == PUBLICATION) {
       // In that case, subscribers of publication must be verified.
@@ -95,15 +95,31 @@ public abstract class AbstractPublicationSubscriptionService extends AbstractRes
       subscribers.addAll(getSubscribeService().getSubscribers(
           PublicationSubscriptionResource.from(publicationPK)));
       // Next parent type / reference to verify
+      final List<Predicate<Location>> locationFilters = stream(directives)
+          .filter(LocationFilterDirective.class::isInstance)
+          .map(LocationFilterDirective.class::cast)
+          .map(LocationFilterDirective::getFilter)
+          .collect(toList());
       OrganizationController.get()
           .getComponentInstance(componentInstanceId)
           .filter(SilverpeasComponentInstance::isTopicTracker)
           .map(i -> PublicationService.get().getDetail(new PublicationPK(resourceId)))
           .ifPresentOrElse(p ->
-                  // In that case, subscribers of main location MUST be verified.
-                  PublicationService.get().getMainLocation(p.getPK())
-                      .filter(l -> l.getComponentInstanceId().equals(componentInstanceId))
-                      .ifPresent(l -> reference.set(Pair.of(NODE, l.getId()))),
+                  // In that case, subscribers of all publication locations MUST be verified.
+                  PublicationService.get()
+                      .getAllLocations(p.getPK())
+                      .stream()
+                      .filter(locationFilters.stream().reduce(Predicate::and).orElse(x -> true))
+                      .forEach(l -> {
+                        if (l.isAlias()) {
+                          subscribers.addAll(
+                              getSubscribersOfComponentAndTypedResource(l.getComponentInstanceId(),
+                                  PUBLICATION_ALIAS, resourceId, onLocationId(l.getLocalId())));
+                        } else {
+                          subscribers.addAll(getSubscribersOfComponentAndTypedResource(
+                              l.getComponentInstanceId(), NODE, l.getLocalId()));
+                        }
+                      }),
               () ->
                   // In that case, subscribers of COMPONENT must be verified.
                   reference.set(Pair.of(COMPONENT, componentInstanceId)));
