@@ -1747,7 +1747,6 @@ public class ProcessInstanceImpl
    * Get all the steps where given user (with given role) can go back from the given state
    * @param user user that can do the back actions
    * @param roleName role name of this user
-   * @param roleName role name of this user
    * @param stateName name of state where user want to go back from
    * @return an array of HistoryStep objects
    */

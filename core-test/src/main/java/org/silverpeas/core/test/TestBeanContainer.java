@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  */
 public class TestBeanContainer implements BeanContainer {
 
-  private static BeanContainer mock = mock(BeanContainer.class);
+  private static final BeanContainer mock = mock(BeanContainer.class);
 
   public static BeanContainer getMockedBeanContainer() {
     return mock;

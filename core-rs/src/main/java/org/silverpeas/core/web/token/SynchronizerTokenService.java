@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.web.token;
 
+import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
-import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -43,6 +44,7 @@ import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -237,18 +239,15 @@ public class SynchronizerTokenService {
   }
 
   private void throwTokenInvalidException() throws TokenValidationException {
-    DateTime now = DateTime.now();
-    throw new TokenValidationException("Attempt of a CSRF attack detected at " + now.toISO8601());
+    String now = TemporalFormatter.toBaseIso8601(OffsetDateTime.now(), true);
+    throw new TokenValidationException("Attempt of a CSRF attack detected at " + now);
   }
 
   private Token getTokenInSession(String tokenId, HttpServletRequest request, boolean pop) {
     Token token = null;
     HttpSession session = request.getSession(false);
     if (session != null) {
-      token = (Token) session.getAttribute(tokenId);
-      if (token != null && pop) {
-        session.removeAttribute(tokenId);
-      }
+      token = getToken(tokenId, session, pop);
     }
     if (token == null) {
       String sessionId = request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY);
@@ -265,6 +264,15 @@ public class SynchronizerTokenService {
     }
 
     return (token == null ? SynchronizerToken.NoneToken : token);
+  }
+
+  @Nullable
+  private Token getToken(final String tokenId, final HttpSession session, final boolean pop) {
+    Token token = (Token) session.getAttribute(tokenId);
+    if (token != null && pop) {
+      session.removeAttribute(tokenId);
+    }
+    return token;
   }
 
   private String getTokenInRequest(String tokenId, HttpServletRequest request) {

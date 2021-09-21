@@ -35949,7 +35949,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
       'ar': ' com edu gob gov int mil net org tur ',
       'at': ' ac co gv or ',
       'au': ' asn com csiro edu gov id net org ',
-      'ba': ' co com edu gov mil net org javax.ws.rs unbi unmo unsa untz unze ',
+      'ba': ' co com edu gov mil net org rs unbi unmo unsa untz unze ',
       'bb': ' biz co com edu gov info net org store tv ',
       'bh': ' biz cc com edu gov info net org ',
       'bn': ' com edu gov net org ',

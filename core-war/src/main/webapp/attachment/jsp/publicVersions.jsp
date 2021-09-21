@@ -54,7 +54,7 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="javax.ws.javax.ws.rs.core.UriBuilder" %>
+<%@ page import="javax.ws.rs.core.UriBuilder" %>
 
 <%
   GraphicElementFactory gef =

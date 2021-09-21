@@ -49,10 +49,10 @@ import static java.text.MessageFormat.format;
  */
 public class MockByReflectionRule implements TestRule {
 
-  private Map<Object, Map<FieldInjectionDirective, Object>> entitiesOldValues =
+  private final Map<Object, Map<FieldInjectionDirective, Object>> entitiesOldValues =
       new HashMap<>();
 
-  private Logger logger = Logger.getLogger(MockByReflectionRule.class.getSimpleName());
+  private final Logger logger = Logger.getLogger(MockByReflectionRule.class.getSimpleName());
 
   @Override
   public Statement apply(final Statement base, final Description description) {

@@ -58,6 +58,7 @@ public class ComponentExistenceAspect {
       try {
         instanceId = resource.getComponentId();
       } catch (Exception ignore) {
+        // ignore the exception
       }
       if (isDefined(instanceId)) {
         OrganizationController controller =

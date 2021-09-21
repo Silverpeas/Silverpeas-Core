@@ -49,8 +49,6 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
-
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
  * authentication and of the authorization for a caller to request the decorated web service.

@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -173,11 +174,11 @@ public class RequestParameterDecoder {
   }
 
   @SuppressWarnings({"unchecked", "ConstantConditions"})
-  public static <E extends Enum> E asEnum(String enumValue, Class<E> enumClass) {
+  public static <E extends Enum<E>> E asEnum(String enumValue, Class<E> enumClass) {
     Method fromMethod = null;
 
     for (Method method : enumClass.getMethods()) {
-      Class[] methodParameterTypes = method.getParameterTypes();
+      Class<?>[] methodParameterTypes = method.getParameterTypes();
       if (method.getAnnotation(JsonCreator.class) != null && methodParameterTypes.length == 1 &&
           methodParameterTypes[0].isAssignableFrom(String.class)) {
         fromMethod = method;
@@ -210,48 +211,17 @@ public class RequestParameterDecoder {
 
       // New instance
       Constructor<O> constructor = objectClass.getDeclaredConstructor();
-      constructor.setAccessible(true);
+      constructor.trySetAccessible();
       O newInstance = constructor.newInstance();
 
       // Reading all class fields.
       for (Field field : objectClass.getDeclaredFields()) {
         final String paramName;
-        // Is existing the FormParam annotation ?
-        FormParam formParam = field.getAnnotation(FormParam.class);
-        if (formParam != null) {
-          paramName = StringUtil.isDefined(formParam.value()) ? formParam.value() : field.getName();
-        } else {
-          // Is existing the XmlElement annotation ?
-          XmlElement xmlParam = field.getAnnotation(XmlElement.class);
-          if (xmlParam != null) {
-            paramName = !XML_ELEMENT_DEFAULT_NAME_VALUE.equals(xmlParam.name()) ? xmlParam.name() :
-                field.getName();
-          } else {
-            // No class attribute for parameter
-            paramName = null;
-          }
-        }
+        paramName = findParameterName(field);
         if (paramName != null) {
-          field.setAccessible(true);
-          final boolean unescapeHtml = field.getAnnotation(UnescapeHtml.class) != null;
-          Class<?> parameterClass = field.getType();
-          final Object value;
-          if (Collection.class.isAssignableFrom(parameterClass)) {
-            final Collection values;
-            if (parameterClass.isAssignableFrom(Set.class)) {
-              values = new HashSet<>();
-            } else {
-              values = new ArrayList<>();
-            }
-            Class<?> collectionHandledType =
-                (Class<?>) ((ParameterizedType) field.getAnnotatedType().getType())
-                    .getActualTypeArguments()[0];
-            value = getParameterValues(values, request.getParameterValues(paramName),
-                collectionHandledType, unescapeHtml);
-          } else {
-            value = getParameterValue(request, paramName, parameterClass, unescapeHtml);
-          }
+          final Object value = findParameterValue(field, paramName, request);
           if (!field.getType().isPrimitive() || value != null) {
+            field.trySetAccessible();
             field.set(newInstance, value);
           }
         }
@@ -263,6 +233,52 @@ public class RequestParameterDecoder {
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
     }
+  }
+
+  @Nullable
+  private Object findParameterValue(final Field field, final String paramName,
+      final HttpRequest request)
+      throws ParseException {
+    final boolean unescapeHtml = field.getAnnotation(UnescapeHtml.class) != null;
+    Class<?> parameterClass = field.getType();
+    final Object value;
+    if (Collection.class.isAssignableFrom(parameterClass)) {
+      final Collection<?> values;
+      if (parameterClass.isAssignableFrom(Set.class)) {
+        values = new HashSet<>();
+      } else {
+        values = new ArrayList<>();
+      }
+      Class<?> collectionHandledType =
+          (Class<?>) ((ParameterizedType) field.getAnnotatedType().getType())
+              .getActualTypeArguments()[0];
+      value = getParameterValues(values, request.getParameterValues(paramName),
+          collectionHandledType, unescapeHtml);
+    } else {
+      value = getParameterValue(request, paramName, parameterClass, unescapeHtml);
+    }
+    return value;
+  }
+
+  @Nullable
+  private String findParameterName(final Field field) {
+    final String paramName;
+    // Is existing the FormParam annotation ?
+    FormParam formParam = field.getAnnotation(FormParam.class);
+    if (formParam != null) {
+      paramName = StringUtil.isDefined(formParam.value()) ? formParam.value() : field.getName();
+    } else {
+      // Is existing the XmlElement annotation ?
+      XmlElement xmlParam = field.getAnnotation(XmlElement.class);
+      if (xmlParam != null) {
+        paramName = !XML_ELEMENT_DEFAULT_NAME_VALUE.equals(xmlParam.name()) ? xmlParam.name() :
+            field.getName();
+      } else {
+        // No class attribute for parameter
+        paramName = null;
+      }
+    }
+    return paramName;
   }
 
   /**
@@ -309,37 +325,50 @@ public class RequestParameterDecoder {
   private <T> T getValueAs(String parameterValue, Class<?> parameterClass, boolean unescapeHtml) {
     final Object value;
     if (parameterClass.isAssignableFrom(String.class)) {
-      if (unescapeHtml) {
-        value = WebEncodeHelper.htmlStringToJavaString(parameterValue);
-      } else {
-        value = parameterValue;
-      }
+      value = asString(parameterValue, unescapeHtml);
     } else if (parameterClass.isAssignableFrom(OffsetDateTime.class)) {
       value = asOffsetDateTime(parameterValue);
     } else if (parameterClass.isAssignableFrom(Long.class)) {
       value = asLong(parameterValue);
-    } else if ("long".equals(parameterClass.getName())) {
+    } else if (parameterClass.isAssignableFrom(Long.TYPE)) {
       value = asLong(parameterValue);
     } else if (parameterClass.isAssignableFrom(Integer.class)) {
       value = asInteger(parameterValue);
-    } else if ("int".equals(parameterClass.getName())) {
+    } else if (parameterClass.isAssignableFrom(Integer.TYPE)) {
       value = asInteger(parameterValue);
     } else if (parameterClass.isAssignableFrom(Boolean.class)) {
       value = parameterValue != null ? asBoolean(parameterValue) : null;
-    } else if ("boolean".equals(parameterClass.getName())) {
+    } else if (parameterClass.isAssignableFrom(Boolean.TYPE)) {
       value = asBoolean(parameterValue);
     } else if (parameterClass.isEnum()) {
       value = asEnum(parameterValue, (Class) parameterClass);
     } else if (parameterClass.isAssignableFrom(URI.class)) {
-      if (StringUtil.isDefined(parameterValue)) {
-        value = URI.create(parameterValue);
-      } else {
-        value = null;
-      }
+      value = asURI(parameterValue);
     } else {
       throw new UnsupportedOperationException(
           "The type " + parameterClass.getName() + " is not handled...");
     }
     return (T) value;
+  }
+
+  @Nullable
+  private Object asURI(final String parameterValue) {
+    final Object value;
+    if (StringUtil.isDefined(parameterValue)) {
+      value = URI.create(parameterValue);
+    } else {
+      value = null;
+    }
+    return value;
+  }
+
+  private Object asString(final String parameterValue, final boolean unescapeHtml) {
+    final Object value;
+    if (unescapeHtml) {
+      value = WebEncodeHelper.htmlStringToJavaString(parameterValue);
+    } else {
+      value = parameterValue;
+    }
+    return value;
   }
 }
