@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar.subscription;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -57,7 +58,7 @@ public abstract class AbstractCalendarSubscriptionService extends AbstractResour
   @Override
   public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
       final String componentInstanceId, final SubscriptionResourceType resourceType,
-      final String resourceId) {
+      final String resourceId, final SubscriberDirective... directives) {
     final Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
     SubscriptionResourceType nextTypeToHandle = resourceType;
     if (nextTypeToHandle == CALENDAR) {

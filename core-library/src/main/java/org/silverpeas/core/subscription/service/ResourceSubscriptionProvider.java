@@ -26,6 +26,7 @@ package org.silverpeas.core.subscription.service;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
+import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -87,35 +88,16 @@ public class ResourceSubscriptionProvider {
    * are requested.
    * @param resourceType the type of the aimed resource.
    * @param resourceId the identifier of the aime resource.
+   * @param directives some directive to apply when it is necessary.
    * @return an instance of {@link SubscriptionSubscriberList} that
    * represents a collection of {@link SubscriptionSubscriber} decorated
    * with useful tool methods.
    */
   public static SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
-      String componentInstanceId, SubscriptionResourceType resourceType, String resourceId) {
-    return getService(componentInstanceId)
-        .getSubscribersOfComponentAndTypedResource(componentInstanceId, resourceType, resourceId);
-  }
-
-  /**
-   * Gets all subscribers concerned by a specified resource represented by the
-   * given resource type and identifier.<br>
-   * The inheritance of subscription is handled by this method. So if the aimed subscription
-   * resource has a parent subscription resource, subscribers of both of them are returned.
-   * @param componentInstanceId the identifier of the component instance from which subscription
-   * are requested.
-   * @param resourceType the type of the aimed resource.
-   * @param resourceId the identifier of the aime resource.
-   * @param locationId the identifier of the location the resource is currently checked.
-   * @return an instance of {@link SubscriptionSubscriberList} that
-   * represents a collection of {@link SubscriptionSubscriber} decorated
-   * with useful tool methods.
-   */
-  public static SubscriptionSubscriberList getSubscribersOfComponentAndTypedResourceOnLocation(
       String componentInstanceId, SubscriptionResourceType resourceType, String resourceId,
-      final String locationId) {
-    return getService(componentInstanceId).getSubscribersOfComponentAndTypedResourceOnLocation(
-        componentInstanceId, resourceType, resourceId, locationId);
+      SubscriberDirective... directives) {
+    return getService(componentInstanceId).getSubscribersOfComponentAndTypedResource(
+        componentInstanceId, resourceType, resourceId, directives);
   }
 
   /**
@@ -123,31 +105,15 @@ public class ResourceSubscriptionProvider {
    * The inheritance of subscription is handled by this method. So if the aimed subscription
    * resource has a parent subscription resource, subscribers of both of them are returned.
    * @param subscriptionResource the instance of subscription resource.
+   * @param directives some directive to apply when it is necessary.
    * @return an instance of {@link SubscriptionSubscriberList} that
    * represents a collection of {@link SubscriptionSubscriber} decorated
    * with useful tool methods.
    */
   public static SubscriptionSubscriberList getSubscribersOfSubscriptionResource(
-      SubscriptionResource subscriptionResource) {
+      SubscriptionResource subscriptionResource, SubscriberDirective... directives) {
     return getService(subscriptionResource.getInstanceId())
-        .getSubscribersOfSubscriptionResource(subscriptionResource);
-  }
-
-  /**
-   * Gets all subscribers concerned by a specified subscription resource.<br>
-   * The inheritance of subscription is handled by this method. So if the aimed subscription
-   * resource has a parent subscription resource, subscribers of both of them are returned.
-   * @param subscriptionResource the instance of subscription resource.
-   * @param locationId the identifier of the location the resource is currently checked.
-   * @return an instance of {@link SubscriptionSubscriberList} that
-   * represents a collection of {@link SubscriptionSubscriber} decorated
-   * with useful tool methods.
-   */
-  public static SubscriptionSubscriberList getSubscribersOfSubscriptionResourceOnLocation(
-      SubscriptionResource subscriptionResource, String locationId) {
-    return getService(
-        subscriptionResource.getInstanceId()).getSubscribersOfSubscriptionResourceOnLocation(
-        subscriptionResource, locationId);
+        .getSubscribersOfSubscriptionResource(subscriptionResource, directives);
   }
 
   /**

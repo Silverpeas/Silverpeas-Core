@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
+import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -50,6 +51,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.silverpeas.core.contribution.publication.subscription.OnLocationDirective.onLocationId;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.UNKNOWN;
@@ -218,9 +220,12 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
           StringUtil.isNotDefined(resourceId)) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
-      SubscriptionSubscriberList subscribers = ResourceSubscriptionProvider
-          .getSubscribersOfComponentAndTypedResourceOnLocation(getComponentId(),
-              parsedSubscriptionResourceType, resourceId, locationId);
+      final SubscriberDirective[] directives = isDefined(locationId) ?
+          new SubscriberDirective[]{onLocationId(locationId)} :
+          new SubscriberDirective[0];
+      SubscriptionSubscriberList subscribers =
+          ResourceSubscriptionProvider.getSubscribersOfComponentAndTypedResource(
+          getComponentId(), parsedSubscriptionResourceType, resourceId, directives);
       if (existenceIndicatorOnly) {
         return Response
             .ok(String.valueOf(!subscribers.getAllUserIds().isEmpty()), MediaType.APPLICATION_JSON)

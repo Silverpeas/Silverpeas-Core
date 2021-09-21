@@ -87,7 +87,7 @@ public class ResourceSubscriptionProviderIT extends AbstractCommonSubscriptionIn
     @Override
     public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
         final String componentInstanceId, final SubscriptionResourceType resourceType,
-        final String resourceId) {
+        final String resourceId, final SubscriberDirective... directives) {
       SubscriptionSubscriberList result = new SubscriptionSubscriberList();
       result
           .add(UserSubscriptionSubscriber.from("userIdFromTestKmeliaResourceSubscriptionService"));
