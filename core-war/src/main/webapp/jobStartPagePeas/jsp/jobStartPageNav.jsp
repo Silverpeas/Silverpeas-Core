@@ -32,16 +32,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<c:set var="spaces" value="${requestScope.Spaces}"/>
-<jsp:useBean id="spaces" type="org.silverpeas.web.jobstartpage.DisplaySorted[]"/>
-<c:set var="subSpaces" value="${requestScope.SubSpaces}"/>
-<jsp:useBean id="subSpaces" type="org.silverpeas.web.jobstartpage.DisplaySorted[]"/>
-<c:set var="components" value="${requestScope.SpaceComponents}"/>
-<jsp:useBean id="components" type="org.silverpeas.web.jobstartpage.DisplaySorted[]"/>
-<c:set var="subComponents" value="${requestScope.SubSpaceComponents}"/>
-<jsp:useBean id="subComponents" type="org.silverpeas.web.jobstartpage.DisplaySorted[]"/>
-<c:set var="currentSpaceId" value="${requestScope.CurrentSpaceId}"/>
-<c:set var="currentSubSpaceId" value="${requestScope.CurrentSubSpaceId}"/>
+<c:set var="startSpaceId" value="${requestScope.CurrentSpaceId}"/>
+<c:set var="startSubSpaceId" value="${requestScope.CurrentSubSpaceId}"/>
 
 <fmt:message var="domainsLabel" key="GML.domains"/>
 <fmt:message var="chooseLabel" key="JSPP.Choose"/>
@@ -53,19 +45,9 @@
 
 <%@ include file="check.jsp" %>
 
-<script type="text/javascript">
-  function jumpToSpace(spaceId) {
-    spAdminWindow.loadSpace(spaceId);
-  }
-  function jumpToSubSpace(spaceId) {
-    spAdminWindow.loadSubSpace(spaceId);
-  }
-  function jumpToComponent(componentId) {
-    spAdminWindow.loadComponent(componentId);
-  }
-</script>
+<view:script src="/jobStartPagePeas/jsp/javascript/vuejs/admin-navigation.js"/>
 
-<style type="text/css">
+<style>
   .component-icon {
     margin: 1px;
     vertical-align: middle;
@@ -75,50 +57,52 @@
     vertical-align: middle;
   }
 </style>
-<form name="privateDomainsForm" action="javascript:void(0)">
-  <div class="intfdcolor">
-    <span class="treeview-label">${domainsLabel} : </span>
-  </div>
-  <div class="intfdcolor51">
-    <div class="treeview_selectSpace">
-      <input name="privateSubDomain" type="hidden"/>
-      <img src="${pxUrl}" height="20" width="0" align="middle"/>
-      <span class="selectNS">
-        <select name="privateDomain" size=1 onchange="jumpToSpace(document.privateDomainsForm.privateDomain.value)">
-          <option value="">${chooseLabel}</option>
-          <option value="">--------------------</option>
-          <c:forEach var="space" items="${spaces}">
-            ${space.htmlLine}
-          </c:forEach>
-        </select>
-      </span>
-      <a href="javascript:onclick=jumpToSpace(${currentSpaceId})"><img id="space-icon" src="${homeSpaceIconUrl}" align="middle" alt="${backToMainSpaceLabel}" title="${backToMainSpaceLabel}"/></a>
-    </div>
-  </div>
-  <c:if test="${silfn:isDefined(currentSpaceId)}">
-    <div class="intfdcolor51">
-      <div class="treeview_contentSpace">
-        <c:forEach var="subSpace" items="${subSpaces}">
-          ${subSpace.htmlLine}
-        <c:if test="${silfn:isDefined(currentSubSpaceId) and currentSubSpaceId eq subSpace.id}">
-        <c:forEach var="subComponent" items="${subComponents}">
-          ${subComponent.htmlLine}
-        </c:forEach>
-        </c:if>
-        </c:forEach>
-        <c:forEach var="component" items="${components}">
-          ${component.htmlLine}
-        </c:forEach>
-    </div>
-  </c:if>
-</form>
-
+<div class="intfdcolor">
+  <span class="treeview-label">${domainsLabel} : </span>
+</div>
+<div id="admin-navigation">
+  <admin-navigation v-on:api="apiAvailable"></admin-navigation>
+</div>
 <script type="text/javascript">
-  <c:if test="${silfn:isDefined(currentSubSpaceId)}">
-  var $subSpaceElement = document.getElementById(
-      'navSpace${currentSubSpaceId}').nextSibling.nextSibling.nextSibling;
-  var $view = spAdminLayout.getBody().getNavigation().getContainer();
-  sp.element.scrollToIfNotFullyInView($subSpaceElement, $view);
-  </c:if>
+  function jumpToSpace(spaceId) {
+    spAdminWindow.loadSpace(spaceId);
+  }
+
+  function jumpToSubSpace(spaceId) {
+    spAdminWindow.loadSubSpace(spaceId);
+  }
+
+  function jumpToComponent(componentId) {
+    spAdminWindow.loadComponent(componentId);
+  }
+
+  window.adminVm = new Vue({
+    el : '#admin-navigation',
+    data : function() {
+      return {
+        api : undefined
+      }
+    },
+    methods: {
+      apiAvailable: function (api) {
+        this.api = api;
+        const startSpaceId = '${startSpaceId}';
+        const startSubSpaceId = '${startSubSpaceId}';
+        setTimeout(function (){
+          if (startSubSpaceId) {
+            jumpToSubSpace(startSubSpaceId);
+          } else if (startSpaceId) {
+            jumpToSpace(startSpaceId);
+          } else {
+            jumpToSpace();
+          }
+        }, 0);
+      }
+    }
+  });
+  spAdminLayout.getBody().getNavigation().addEventListener('json-load', function(e) {
+    adminVm.api.injectData(e.detail.data);
+    spProgressMessage.hide();
+  }, 'jobStartPageNav');
   spAdminLayout.getBody().getNavigation().dispatchEvent('load');
 </script>

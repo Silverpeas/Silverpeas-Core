@@ -49,6 +49,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
+import org.silverpeas.web.jobstartpage.NavBarJsonEncoder;
 import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -212,6 +213,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       destination = emptyJsonResponse();
     } else if ("jobStartPageNav".equals(function)) {
       destination = "/jobStartPagePeas/jsp/jobStartPageNav.jsp";
+    } else if ("jobStartPageNavAsJson".equals(function)) {
+      destination = "/jobStartPagePeas/jsp/jobStartPageNav.json";
     } else if (WELCOME_FCT.equals(function)) {
       // Get Silverpeas template from JobStartSessionSettings
       SilverpeasTemplate template = jobStartPageSC.getSilverpeasTemplate();
@@ -752,6 +755,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         request.setAttribute("SubSpaceComponents", jobStartPageSC.getSubSpaceComponents());
         request.setAttribute(CURRENT_SPACE_ID_ATTR, jobStartPageSC.getSpaceId());
         request.setAttribute("CurrentSubSpaceId", jobStartPageSC.getSubSpaceId());
+      } else if ("/jobStartPagePeas/jsp/jobStartPageNav.json".equals(destination)) {
+        destination = sendJson(NavBarJsonEncoder.with(jobStartPageSC).encode());
       } else if ("/jobStartPagePeas/jsp/welcome.jsp".equals(destination)) {
         request.setAttribute(IS_USER_ADMIN_ATTR, jobStartPageSC.isUserAdmin());
         request.setAttribute("globalMode", jobStartPageSC.isAppInMaintenance());

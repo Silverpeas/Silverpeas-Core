@@ -88,9 +88,10 @@
       switch (eventName) {
         case 'start-load':
         case 'load':
+        case 'json-load':
         case 'show':
         case 'hide':
-          var normalizedEventName = this.normalizeEventName(eventName);
+          const normalizedEventName = this.normalizeEventName(eventName);
           __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
@@ -102,7 +103,7 @@
       if (eventName === 'start-load') {
         this.lastStartLoadTime = new Date().getTime();
       }
-      var normalizedEventName = this.normalizeEventName(eventName);
+      const normalizedEventName = this.normalizeEventName(eventName);
       __eventManager.dispatchEvent(normalizedEventName, data);
     },
     getLastStartLoadTime : function() {
@@ -292,7 +293,7 @@
           __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
-          this._super(eventName, listener);
+          this._super(eventName, listener, listenerId);
       }
     }
   });

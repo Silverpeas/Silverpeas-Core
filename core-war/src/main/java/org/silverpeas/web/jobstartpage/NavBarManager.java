@@ -23,58 +23,53 @@
  */
 package org.silverpeas.web.jobstartpage;
 
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.stream;
+import static java.util.Collections.*;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Stream.of;
 
 public class NavBarManager {
   // Constants used by urlFactory
 
-  final static int SPACE = 0;
-  final static int COMPONENT = 1;
-  final static int COMPONENTPOPUP = 7;
-  final static int SPACE_COLLAPSE = 2;
-  final static int SPACE_EXPANDED = 3;
-  final static int SPACE_COMPONENT = 4;
-  final static int SUBSPACE_COMPONENT = 5;
-  final static int SUBSPACE_LAST_COMPONENT = 6;
-  UserDetail m_user = null;
-  AdminController m_administrationCtrl = null;
-  AbstractComponentSessionController m_SessionCtrl = null;
-  String m_sContext;
-  HashSet<String> m_ManageableSpaces = new HashSet<>();
-  DisplaySorted[] m_Spaces = null;
-  String m_CurrentSpaceId = null;
-  DisplaySorted[] m_SpaceComponents = null;
-  String m_CurrentSubSpaceId = null;
-  DisplaySorted[] m_SubSpaces = null;
-  DisplaySorted[] m_SubSpaceComponents = null;
-  long m_elmtCounter = 0;
+  UserDetail user = null;
+  AdminController adminCtrl = null;
+  AbstractComponentSessionController sessionCtrl = null;
+  String spContext;
+  HashSet<String> manageableSpaces = new HashSet<>();
+  String currentSpaceId = null;
+  String currentSubSpaceId = null;
+  DisplaySortedCache spaces = new DisplaySortedCache();
+  DisplaySortedCache spaceComponents = new DisplaySortedCache();
+  DisplaySortedCache subSpaces = new DisplaySortedCache();
+  DisplaySortedCache subSpaceComponents = new DisplaySortedCache();
+  long elCounter = 0;
 
   public void resetSpaceCache(String theSpaceId) {
-
     String spaceId = getShortSpaceId(theSpaceId);
     DisplaySorted elmt = getSpaceCache(spaceId);
     if (elmt != null) {
       elmt.copy(buildSpaceObject(spaceId));
-      if (spaceId.equals(m_CurrentSpaceId)) {
-        setCurrentSpace(m_CurrentSpaceId);
-      } else if (spaceId.equals(m_CurrentSubSpaceId)) {
-        setCurrentSubSpace(null);
+      if (spaceId.equals(currentSpaceId)) {
+        setCurrentSpace(currentSpaceId);
+      } else if (spaceId.equals(currentSubSpaceId)) {
         setCurrentSubSpace(spaceId);
       }
     }
@@ -82,107 +77,91 @@ public class NavBarManager {
 
   public void addSpaceInCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
-    m_ManageableSpaces.add(spaceId);
+    manageableSpaces.add(spaceId);
     DisplaySorted newElmt = buildSpaceObject(spaceId);
-
     if (newElmt != null) {
-      if (newElmt.type == DisplaySorted.TYPE_SPACE) {
-        DisplaySorted[] oldSpaces = m_Spaces;
-        m_Spaces = new DisplaySorted[oldSpaces.length + 1];
-        System.arraycopy(oldSpaces, 0, m_Spaces, 0, oldSpaces.length);
-        m_Spaces[oldSpaces.length] = newElmt;
-        Arrays.sort(m_Spaces);
-      } else { // Sub Space case :
-        setCurrentSpace(m_CurrentSpaceId);
+      if (newElmt.getType() == DisplaySorted.TYPE_SPACE) {
+        spaces.put(spaceId, newElmt);
+      } else {
+        // Sub Space case
+        setCurrentSpace(currentSpaceId);
       }
     }
   }
 
   public void removeSpaceInCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
-    DisplaySorted elmt = getSpaceCache(spaceId);
-
-    if (elmt != null) {
-      if (elmt.type == DisplaySorted.TYPE_SPACE) {
-        DisplaySorted[] oldSpaces = m_Spaces;
-        int j = 0;
-
-        m_Spaces = new DisplaySorted[oldSpaces.length - 1];
-        for (DisplaySorted oldSpace : oldSpaces) {
-          if (!oldSpace.id.equals(spaceId) && (j < m_Spaces.length)) {
-            m_Spaces[j++] = oldSpace;
-          }
-        }
-        if (m_CurrentSpaceId != null && m_CurrentSpaceId.equals(spaceId)) {
-          setCurrentSpace(null);
-        }
+    Optional<DisplaySorted> elmt = ofNullable(getSpaceCache(spaceId));
+    elmt.ifPresent(e -> {
+      if (e.getType() == DisplaySorted.TYPE_SPACE) {
+        removeRootSpaceInCache(spaceId);
       } else {
-        DisplaySorted[] oldSpaces = m_SubSpaces;
-        int j = 0;
-
-        m_SubSpaces = new DisplaySorted[oldSpaces.length - 1];
-        for (DisplaySorted oldSpace : oldSpaces) {
-          if (!oldSpace.id.equals(spaceId) && (j < m_SubSpaces.length)) {
-            m_SubSpaces[j++] = oldSpace;
-          }
-        }
-        if (m_CurrentSubSpaceId != null && m_CurrentSubSpaceId.equals(spaceId)) {
-          setCurrentSubSpace(null);
-        }
+        removeSubSpaceInCache(spaceId);
       }
+    });
+  }
+
+  private void removeRootSpaceInCache(final String spaceId) {
+    spaces.remove(spaceId);
+    if (currentSpaceId != null && currentSpaceId.equals(spaceId)) {
+      setCurrentSpace(null);
+    }
+  }
+
+  private void removeSubSpaceInCache(final String spaceId) {
+    subSpaces.remove(spaceId);
+    if (currentSubSpaceId != null && currentSubSpaceId.equals(spaceId)) {
+      setCurrentSubSpace(null);
     }
   }
 
   public void resetAllCache() {
-    String currentSpaceId = m_CurrentSpaceId;
-    String currentSubSpaceId = m_CurrentSubSpaceId;
-
-
-    initWithUser(m_SessionCtrl, m_user);
-    if (currentSpaceId != null) {
-      setCurrentSpace(currentSpaceId);
+    final String cSpaceId = this.currentSpaceId;
+    final String cSubSpaceId = this.currentSubSpaceId;
+    initWithUser(sessionCtrl, user);
+    if (cSpaceId != null) {
+      setCurrentSpace(cSpaceId);
     }
-    if (currentSubSpaceId != null) {
-      setCurrentSubSpace(currentSubSpaceId);
+    if (cSubSpaceId != null) {
+      setCurrentSubSpace(cSubSpaceId);
     }
   }
 
   public void initWithUser(AbstractComponentSessionController msc, UserDetail user) {
     String sUserId = user.getId();
 
+    spContext = URLUtil.getApplicationURL();
+    adminCtrl = ServiceProvider.getService(AdminController.class);
+    sessionCtrl = msc;
+    this.user = user;
+    elCounter = 0;
+    currentSpaceId = null;
+    currentSubSpaceId = null;
+    subSpaces.clear();
+    spaceComponents.clear();
+    subSpaceComponents.clear();
 
-    m_sContext = URLUtil.getApplicationURL();
-    m_administrationCtrl = ServiceProvider.getService(AdminController.class);
-    m_SessionCtrl = msc;
-    m_user = user;
-    m_elmtCounter = 0;
-    m_CurrentSpaceId = null;
-    m_CurrentSubSpaceId = null;
-    m_SubSpaces = new DisplaySorted[0];
-    m_SpaceComponents = new DisplaySorted[0];
-    m_SubSpaceComponents = new DisplaySorted[0];
-
-    if (!m_user.isAccessAdmin()) {
-      String[] allManageableSpaceIds = m_administrationCtrl.getUserManageableSpaceIds(sUserId);
+    if (!this.user.isAccessAdmin()) {
+      String[] allManageableSpaceIds = adminCtrl.getUserManageableSpaceIds(sUserId);
       // First of all, add the manageable spaces into the set
-      m_ManageableSpaces.clear();
+      manageableSpaces.clear();
       for (String manageableSpaceId : allManageableSpaceIds) {
-        m_ManageableSpaces.add(getShortSpaceId(manageableSpaceId));
+        manageableSpaces.add(getShortSpaceId(manageableSpaceId));
       }
     }
 
-    String[] spaceIds = m_administrationCtrl.getAllRootSpaceIds();
-    m_Spaces = createSpaceObjects(spaceIds, false);
+    String[] spaceIds = adminCtrl.getAllRootSpaceIds();
+    spaces.set(createSpaceObjects(stream(spaceIds), false));
   }
 
   // Spaces functions
   // ----------------
-  public DisplaySorted[] getAvailableSpaces() {
-    return m_Spaces;
+  public Collection<DisplaySorted> getAvailableSpaces() {
+    return spaces.getSorted();
   }
 
   public String getCurrentSpaceId() {
-    return m_CurrentSpaceId;
+    return currentSpaceId;
   }
 
   public DisplaySorted getSpace(String theSpaceId) {
@@ -191,164 +170,123 @@ public class NavBarManager {
 
   public boolean setCurrentSpace(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
-
-    m_CurrentSpaceId = spaceId;
+    currentSpaceId = spaceId;
     // Reset the selected sub space
-    m_CurrentSubSpaceId = null;
-    m_SubSpaceComponents = new DisplaySorted[0];
-    if (StringUtil.isDefined(m_CurrentSpaceId) && getSpaceCache(m_CurrentSpaceId) == null) {
-      m_CurrentSpaceId = null;
+    currentSubSpaceId = null;
+    subSpaceComponents.clear();
+    if (StringUtil.isDefined(currentSpaceId) && getSpaceCache(currentSpaceId) == null) {
+      currentSpaceId = null;
     }
-
-    if (!StringUtil.isDefined(spaceId) || (m_CurrentSpaceId == null)) {
-      m_SpaceComponents = new DisplaySorted[0];
-      m_SubSpaces = new DisplaySorted[0];
+    if (!StringUtil.isDefined(spaceId) || (currentSpaceId == null)) {
+      spaceComponents.clear();
+      subSpaces.clear();
     } else {
-      SpaceInst spaceInst = m_administrationCtrl.getSpaceInstById("WA" + spaceId);
+      SpaceInst spaceInst = adminCtrl.getSpaceInstById(spaceId);
       // Get the space's components and sub-spaces
       if (spaceInst == null) {
-        m_SpaceComponents = new DisplaySorted[0];
-        m_SubSpaces = new DisplaySorted[0];
-        m_CurrentSpaceId = null;
+        spaceComponents.clear();
+        subSpaces.clear();
+        currentSpaceId = null;
       } else {
-        m_SpaceComponents = createComponentObjects(spaceInst, false);
-        List<SpaceInst> subspaces = spaceInst.getSubSpaces();
-        String[] spaceIds = new String[subspaces.size()];
-        for (int i = 0; i < subspaces.size(); i++) {
-          spaceIds[i] = subspaces.get(i).getId();
-        }
-        m_SubSpaces = createSpaceObjects(spaceIds, true);
+        spaceComponents.set(createComponentObjects(spaceInst));
+        subSpaces.set(createSpaceObjects(spaceInst.getSubSpaces().stream().map(SpaceInst::getId), true));
       }
     }
-    for (DisplaySorted ds : m_Spaces) {
-      buildSpaceHTMLLine(ds);
-    }
-
-    return StringUtil.isDefined(m_CurrentSpaceId);
+    return StringUtil.isDefined(currentSpaceId);
   }
 
-  public DisplaySorted[] getAvailableSpaceComponents() {
-    if (m_CurrentSpaceId == null) {
-      return new DisplaySorted[0];
+  public Collection<DisplaySorted> getAvailableSpaceComponents() {
+    if (currentSpaceId == null) {
+      return emptyList();
     }
-    return m_SpaceComponents;
+    return spaceComponents.getSorted();
   }
 
   // Sub-Spaces functions
   // --------------------
-  public DisplaySorted[] getAvailableSubSpaces() {
-    if (m_CurrentSpaceId == null) {
-      return new DisplaySorted[0];
+  public Collection<DisplaySorted> getAvailableSubSpaces() {
+    if (currentSpaceId == null) {
+      return emptyList();
     }
-    return m_SubSpaces;
+    return subSpaces.getSorted();
   }
 
   public String getCurrentSubSpaceId() {
-    return m_CurrentSubSpaceId;
+    return currentSubSpaceId;
   }
 
   public boolean setCurrentSubSpace(String theSpaceId) {
     String subSpaceId = getShortSpaceId(theSpaceId);
     SpaceInst sp = null;
-
-    m_CurrentSubSpaceId = subSpaceId;
-    if (StringUtil.isDefined(m_CurrentSubSpaceId) && (getSpaceCache(m_CurrentSubSpaceId) == null)) {
-      m_CurrentSubSpaceId = null;
+    currentSubSpaceId = subSpaceId;
+    if (StringUtil.isDefined(currentSubSpaceId) && (getSpaceCache(currentSubSpaceId) == null)) {
+      currentSubSpaceId = null;
     }
-    if (StringUtil.isDefined(m_CurrentSubSpaceId)) {
-      sp = m_administrationCtrl.getSpaceInstById("WA" + m_CurrentSubSpaceId);
+    if (StringUtil.isDefined(currentSubSpaceId)) {
+      sp = adminCtrl.getSpaceInstById(currentSubSpaceId);
       if (sp == null) {
-        m_CurrentSubSpaceId = null;
+        currentSubSpaceId = null;
       }
     }
-    for (DisplaySorted m_SubSpace : m_SubSpaces) {
-      buildSpaceHTMLLine(m_SubSpace);
-    }
-    if (StringUtil.isDefined(m_CurrentSubSpaceId)) {
-      m_SubSpaceComponents = createComponentObjects(sp, true);
+    if (sp != null && StringUtil.isDefined(currentSubSpaceId)) {
+      subSpaceComponents.set(createComponentObjects(sp));
     } else {
-      m_SubSpaceComponents = new DisplaySorted[0];
+      subSpaceComponents.clear();
     }
-    return StringUtil.isDefined(m_CurrentSubSpaceId);
+    return StringUtil.isDefined(currentSubSpaceId);
   }
 
-  public DisplaySorted[] getAvailableSubSpaceComponents() {
-    if (m_CurrentSubSpaceId == null) {
-      return new DisplaySorted[0];
+  public Collection<DisplaySorted> getAvailableSubSpaceComponents() {
+    if (currentSubSpaceId == null) {
+      return emptyList();
     }
-    return m_SubSpaceComponents;
+    return subSpaceComponents.getSorted();
   }
 
   protected DisplaySorted getSpaceCache(String spaceId) {
     if (spaceId == null) {
       return null;
     }
-
-    for (DisplaySorted space : m_Spaces) {
-      if (spaceId.equals(space.id)) {
-        return space;
-      }
-    }
-
-    for (DisplaySorted subspace : m_SubSpaces) {
-      if (spaceId.equals(subspace.id)) {
-        return subspace;
-      }
-    }
-
-    return null;
+    return ofNullable(spaces.get(spaceId)).orElseGet(() -> subSpaces.get(spaceId));
   }
 
-  protected DisplaySorted[] createSpaceObjects(String[] spaceIds, boolean goRecurs) {
-    if (spaceIds == null) {
-      return new DisplaySorted[0];
-    }
-    DisplaySorted[] valret = new DisplaySorted[spaceIds.length];
-    for (int j = 0; j < valret.length; j++) {
-      valret[j] = buildSpaceObject(spaceIds[j]);
-    }
-    Arrays.sort(valret);
+  protected Stream<DisplaySorted> createSpaceObjects(Stream<String> spaceIds, boolean goRecurs) {
+    Stream<DisplaySorted> valRet = spaceIds.map(this::buildSpaceObject);
     if (goRecurs) {
-      DisplaySorted[] parents = valret;
-      List<DisplaySorted> alValret = new ArrayList<>();
-      for (DisplaySorted parent : parents) {
-        alValret.add(parent);
-        String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parent.id);
-        DisplaySorted[] children = createSpaceObjects(subSpaceIds, true);
-        Collections.addAll(alValret, children);
-      }
-      valret = alValret.toArray(new DisplaySorted[alValret.size()]);
+      valRet = valRet.flatMap(s -> {
+        Stream<String> subSpaceIds = stream(adminCtrl.getAllSubSpaceIds(s.getId()));
+        return Stream.concat(of(s), createSpaceObjects(subSpaceIds, true));
+      });
     }
-    return valret;
+    return valRet;
   }
 
   protected DisplaySorted buildSpaceObject(String spaceId) {
-    DisplaySorted valret = new DisplaySorted();
-
-    valret.id = getShortSpaceId(spaceId);
-    valret.isVisible = true;
-    SpaceInstLight spaceInst = m_administrationCtrl.getSpaceInstLight(spaceId);
+    DisplaySorted valRet = new DisplaySorted();
+    valRet.setId(getShortSpaceId(spaceId));
+    valRet.setVisible(true);
+    SpaceInstLight spaceInst = adminCtrl.getSpaceInstLight(spaceId);
     if (spaceInst.isRoot()) {
-      valret.type = DisplaySorted.TYPE_SPACE;
-      valret.isAdmin = m_user.isAccessAdmin() || m_ManageableSpaces.contains(valret.id);
+      valRet.setType(DisplaySorted.TYPE_SPACE);
+      valRet.setAdmin(user.isAccessAdmin() || manageableSpaces.contains(valRet.getId()));
     } else {
-      valret.type = DisplaySorted.TYPE_SUBSPACE;
-      valret.isAdmin = m_user.isAccessAdmin() || isAdminOfSpace(spaceInst);
+      valRet.setParentId(getShortSpaceId(spaceInst.getFatherId()));
+      valRet.setType(DisplaySorted.TYPE_SUBSPACE);
+      valRet.setAdmin(user.isAccessAdmin() || isAdminOfSpace(spaceInst));
     }
-    if (!valret.isAdmin) { // Rattrapage....
-      valret.isVisible = isAtLeastOneSubSpaceManageable(valret.id);
+    if (!valRet.isAdmin()) { // Rattrapage....
+      valRet.setVisible(isAtLeastOneSubSpaceManageable(valRet.getId()));
     }
-    valret.name = spaceInst.getName(m_SessionCtrl.getLanguage());
-    valret.orderNum = spaceInst.getOrderNum();
-    valret.deep = spaceInst.getLevel();
-    buildSpaceHTMLLine(valret);
-    return valret;
+    valRet.setName(spaceInst.getName(sessionCtrl.getLanguage()));
+    valRet.setOrderNum(spaceInst.getOrderNum());
+    valRet.setDeep(spaceInst.getLevel());
+    return valRet;
   }
 
   private boolean isAtLeastOneSubSpaceManageable(String spaceId) {
-    String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(spaceId);
+    String[] subSpaceIds = adminCtrl.getAllSubSpaceIds(spaceId);
     for (String subSpaceId : subSpaceIds) {
-      if (m_ManageableSpaces.contains(getShortSpaceId(subSpaceId))) {
+      if (manageableSpaces.contains(getShortSpaceId(subSpaceId))) {
         return true;
       }
     }
@@ -368,174 +306,105 @@ public class NavBarManager {
     }
   }
 
-  protected void buildSpaceHTMLLine(DisplaySorted space) {
-    if (space.isVisible) {
-      if (space.type == DisplaySorted.TYPE_SUBSPACE) {
-        String link;
-        int objType;
-        String spaceName;
-        StringBuilder spacesSpaces = new StringBuilder();
-
-        objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED : SPACE_COLLAPSE;
-        link = "javascript:onclick=jumpToSubSpace('" + space.id + "');";
-        if (m_SessionCtrl.isSpaceInMaintenance(space.id)) {
-          spaceName = space.name + " (M)";
-        } else {
-          spaceName = space.name;
-        }
-        for (int i = 0; i < space.deep - 1; i++) {
-          spacesSpaces.append("&nbsp;&nbsp;");
-        }
-        space.htmlLine =
-            spacesSpaces.toString() + "<a id=\"navSpace" + space.id + "\" name=\"" + space.id + "\"/>" +
-                urlFactory(link, "space" + space.id, "", spaceName, SPACE, objType, m_sContext, "");
-      } else {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<option ");
-        if (space.id.equals(m_CurrentSpaceId)) {
-          sb.append("selected ");
-        }
-        sb.append("value=").append(space.id).append(">").append(space.name);
-        if (m_SessionCtrl.isSpaceInMaintenance(space.id)) {
-          sb.append(" (M)");
-        }
-        sb.append("</option>");
-        space.htmlLine = sb.toString();
-      }
-    } else {
-      space.htmlLine = "";
-    }
-  }
-
   protected boolean isAdminOfSpace(SpaceInstLight spaceInst) {
-    boolean valret = m_ManageableSpaces.contains(String.valueOf(spaceInst.getLocalId())) ||
-        m_ManageableSpaces.contains(getShortSpaceId(spaceInst.getFatherId()));
+    boolean valret = manageableSpaces.contains(String.valueOf(spaceInst.getLocalId())) ||
+        manageableSpaces.contains(getShortSpaceId(spaceInst.getFatherId()));
     SpaceInstLight parcSpaceInst = spaceInst;
-
     while (!valret && !parcSpaceInst.isRoot()) {
-      parcSpaceInst = m_administrationCtrl.getSpaceInstLight(parcSpaceInst.getFatherId());
-      valret = m_ManageableSpaces.contains(String.valueOf(parcSpaceInst.getLocalId()));
+      parcSpaceInst = adminCtrl.getSpaceInstLight(parcSpaceInst.getFatherId());
+      valret = manageableSpaces.contains(String.valueOf(parcSpaceInst.getLocalId()));
     }
-
     return valret;
   }
 
-  protected DisplaySorted[] createComponentObjects(SpaceInst spaceInst, boolean subSpaces) {
+  protected Stream<DisplaySorted> createComponentObjects(SpaceInst spaceInst) {
     // Get the space's components
-    List<ComponentInst> components = spaceInst.getAllComponentsInst();
-    boolean isTheSpaceAdmin =
-        m_user.isAccessAdmin() || isAdminOfSpace(new SpaceInstLight(spaceInst));
-    List<DisplaySorted> result = new ArrayList<>();
-    Iterator<ComponentInst> componentInstIterator = components.iterator();
-    while (componentInstIterator.hasNext()) {
-      ComponentInst ci = componentInstIterator.next();
-      DisplaySorted ds = new DisplaySorted();
-      ds.name = ci.getLabel(m_SessionCtrl.getLanguage());
-      if (ds.name == null) {
-        ds.name = ci.getName();
-      }
-      ds.orderNum = ci.getOrderNum();
-      ds.id = ci.getId();
-      ds.type = DisplaySorted.TYPE_COMPONENT;
-      ds.isAdmin = isTheSpaceAdmin;
-      ds.deep = spaceInst.getLevel();
-      ds.isVisible = isTheSpaceAdmin;
-      if (ds.isVisible) {
-        // Build HTML Line
-        String label = ds.name;
-        String link = "javascript:onclick=jumpToComponent('" + ci.getId() + "');";
-        final int objType;
-        if (subSpaces) {
-          if (componentInstIterator.hasNext()) {
-            objType = SUBSPACE_LAST_COMPONENT;
-          } else {
-            objType = SUBSPACE_COMPONENT;
+    final boolean isTheSpaceAdmin = user.isAccessAdmin() || isAdminOfSpace(new SpaceInstLight(spaceInst));
+    return spaceInst.getAllComponentsInst().stream()
+        .map(ci -> {
+          final DisplaySorted ds = new DisplaySorted();
+          ds.setName(ci.getLabel(sessionCtrl.getLanguage()));
+          if (ds.getName() == null) {
+            ds.setName(ci.getName());
           }
-        } else {
-          objType = SPACE_COMPONENT;
-        }
-        StringBuilder componentsSpaces = new StringBuilder();
-        for (int j = 0; j < ds.deep - 1; j++) {
-          componentsSpaces.append("&nbsp;&nbsp;");
-        }
-        String componentIcon = ci.getName();
-        if (ci.isWorkflow()) {
-          componentIcon = "processManager";
-        }
-        ds.htmlLine = componentsSpaces.toString() +
-            urlFactory(link, "element" + m_elmtCounter++, componentIcon, label, COMPONENT,
-                objType, m_sContext, "");
-      } else {
-        ds.htmlLine = "";
-      }
-      result.add(ds);
-    }
-    Collections.sort(result);
-    return result.toArray(new DisplaySorted[result.size()]);
+          ds.setOrderNum(ci.getOrderNum());
+          ds.setId(ci.getId());
+          ds.setParentId(getShortSpaceId(ci.getSpaceId()));
+          ds.setType(DisplaySorted.TYPE_COMPONENT);
+          ds.setTypeName(ci.isWorkflow() ? "processManager" : ci.getName());
+          ds.setAdmin(isTheSpaceAdmin);
+          ds.setDeep(spaceInst.getLevel());
+          ds.setVisible(isTheSpaceAdmin);
+          return ds;
+        });
   }
 
-  protected String urlFactory(String link, String elementLabel, String imageLinked,
-      String labelLinked, int elementType, int imageType, String m_sContext, String target) {
-    StringBuilder result = new StringBuilder();
-    String boldStart = "";
-    String boldEnd = "";
+  private static class DisplaySortedCache {
 
-    switch (elementType) {
-      case SPACE:
-        target = "";
-        boldStart = "";
-        boldEnd = "";
-        break;
-      case COMPONENT:
-        if ((target != null) && (target.length() > 0)) {
-          target = "target=\"" + target + "\"";
-        }
-        boldStart = "";
-        boldEnd = "";
-        break;
-      case COMPONENTPOPUP:
-        target = "target=\"_blank\"";
-        boldStart = "";
-        boldEnd = "";
-        break;
+    private final SortedSet<DisplaySorted> sortedData = synchronizedSortedSet(new TreeSet<>());
+    private final Map<String, DisplaySorted> cache = synchronizedMap(new HashMap<>());
+
+    DisplaySortedCache() {
+      super();
     }
-    String safeElementLabel = Encode.forHtml(elementLabel);
-    imageLinked =
-        "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext + "/util/icons/component/" +
-            imageLinked + "Small.gif\" class=\"component-icon\"/>";
-    switch (imageType) {
-      case SPACE_COLLAPSE:
-        result.append("<a href=\"").append(link).append("\"").append(target).append("><img src=\"")
-            .append(m_sContext)
-            .append("/util/icons/treeview/plus.gif\" border=\"0\" align=\"absmiddle\"></a>");
-        imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext +
-            "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" " +
-            "align=\"absmiddle\">";
-        break;
-      case SPACE_EXPANDED:
-        result.append("<a href=\"").append(link).append("\"").append(target).append("><img src=\"")
-            .append(m_sContext)
-            .append("/util/icons/treeview/moins.gif\" border=\"0\" align=\"absmiddle\"></a>");
-        imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext +
-            "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" " +
-            "align=\"absmiddle\">";
-        break;
-      case SPACE_COMPONENT:
-        break;
-      case SUBSPACE_COMPONENT:
-        result.append("<img src=\"").append(m_sContext)
-            .append("/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
-        break;
-      case SUBSPACE_LAST_COMPONENT:
-        result.append("<img src=\"").append(m_sContext)
-            .append("/util/icons/minusTreeT.gif\" border=\"0\" align=\"absmiddle\">");
-        break;
+
+    /**
+     * Indexes a new {@link DisplaySorted} instance by its identifier.
+     * @param id the identifier.
+     * @param data the {@link DisplaySorted} representing a generic data.
+     * @return the indexed instance.
+     */
+    public DisplaySorted put(final String id, final DisplaySorted data) {
+      sortedData.add(data);
+      return cache.put(id, data);
     }
-    String safeLabelLinked = Encode.forHtml(labelLinked);
-    result.append("<a href=\"").append(link).append("\" ").append(target).append(">")
-        .append(imageLinked).append("&nbsp;</a>");
-    result.append("<a href=\"").append(link).append("\" ").append(target).append(">")
-        .append(boldStart).append(safeLabelLinked).append(boldEnd).append("</a><br>");
-    return result.toString();
+
+    /**
+     * Removes a {@link DisplaySorted} by its identifier.
+     * @param id an identifier.
+     * @return the removed instance if any, null otherwise.
+     */
+    public DisplaySorted remove(final String id) {
+      final DisplaySorted removed = cache.remove(id);
+      if (removed != null) {
+        sortedData.removeIf(removed::equals);
+      }
+      return removed;
+    }
+
+    /**
+     * Gets the {@link DisplaySorted} instances registered into the cache and sorted by their
+     * natural ordering.
+     * @return sorted instances.
+     */
+    public SortedSet<DisplaySorted> getSorted() {
+      return sortedData;
+    }
+
+    /**
+     * Gets a registered {@link DisplaySorted} instance.
+     * @param id an identifier.
+     * @return a {@link DisplaySorted} if any, null otherwise.
+     */
+    public DisplaySorted get(final String id) {
+      return cache.get(id);
+    }
+
+    /**
+     * Clears the cache.
+     */
+    public void clear() {
+      sortedData.clear();
+      cache.clear();
+    }
+
+    /**
+     * Clears the cache and registers the given data.
+     * @param data the data to set into cache.
+     */
+    public void set(final Stream<DisplaySorted> data) {
+      clear();
+      data.forEach(d -> put(d.getId(), d));
+    }
   }
 }
