@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 
+import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
@@ -70,17 +71,19 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
       final List<SrcTranslator> translators = SrcTranslator.getAll();
       for (Element currentImg : imgElements) {
         final String imgTagContent = currentImg.toString();
-        final String src = currentImg.getAttributes().get("src").getValueSegment().toString();
-        if (!replacements.containsKey(imgTagContent)) {
-          final String width = getWidth(currentImg);
-          final String height = getHeight(currentImg);
-          translators
-              .stream()
-              .filter(s -> s.isCompliantUrl(src))
-              .findFirst()
-              .map(s -> s.translateUrl(src, width, height))
-              .filter(t -> !src.equals(t))
-              .ifPresent(t -> replacements.put(imgTagContent, imgTagContent.replace(src, t)));
+        final Attribute srcAtt = currentImg.getAttributes().get("src");
+        if (srcAtt != null && srcAtt.getValueSegment() != null) {
+          final String src = srcAtt.getValueSegment().toString();
+          if (!replacements.containsKey(imgTagContent)) {
+            final String width = getWidth(currentImg);
+            final String height = getHeight(currentImg);
+            translators.stream()
+                .filter(s -> s.isCompliantUrl(src))
+                .findFirst()
+                .map(s -> s.translateUrl(src, width, height))
+                .filter(t -> !src.equals(t))
+                .ifPresent(t -> replacements.put(imgTagContent, imgTagContent.replace(src, t)));
+          }
         }
       }
     }
