@@ -160,7 +160,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public DisplaySorted getManagedSpace() {
-    return m_NavBarMgr.getSpace(getManagedSpaceId());
+    return getManagedSpace(getManagedSpaceId());
+  }
+
+  public DisplaySorted getManagedSpace(String spaceId) {
+    return m_NavBarMgr.getSpace(spaceId);
   }
 
   public boolean isManagedSpaceRoot() {
@@ -169,9 +173,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public DisplaySorted[] getManagedSpaceComponents() {
     if (isManagedSpaceRoot()) {
-      return getSpaceComponents();
+      return getSpaceComponents().toArray(new DisplaySorted[0]);
     }
-    return getSubSpaceComponents();
+    return getSubSpaceComponents().toArray(new DisplaySorted[0]);
   }
 
   // methods set
@@ -217,11 +221,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return m_NavBarMgr.getCurrentSpaceId();
   }
 
-  public DisplaySorted[] getSpaces() {
+  public Collection<DisplaySorted> getSpaces() {
     return m_NavBarMgr.getAvailableSpaces();
   }
 
-  public DisplaySorted[] getSpaceComponents() {
+  public Collection<DisplaySorted> getSpaceComponents() {
     return m_NavBarMgr.getAvailableSpaceComponents();
   }
 
@@ -229,11 +233,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return m_NavBarMgr.getCurrentSubSpaceId();
   }
 
-  public DisplaySorted[] getSubSpaces() {
+  public Collection<DisplaySorted> getSubSpaces() {
     return m_NavBarMgr.getAvailableSubSpaces();
   }
 
-  public DisplaySorted[] getSubSpaceComponents() {
+  public Collection<DisplaySorted> getSubSpaceComponents() {
     return m_NavBarMgr.getAvailableSubSpaceComponents();
   }
 

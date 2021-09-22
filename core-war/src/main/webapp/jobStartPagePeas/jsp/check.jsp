@@ -79,7 +79,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-JobStartPagePeasSessionController jobStartPageSC = (JobStartPagePeasSessionController) request.getAttribute("jobStartPageSC");
+JobStartPagePeasSessionController jobStartPageSC = (JobStartPagePeasSessionController) request.getAttribute("jobStartPagePeas");
 
 String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String m_context = iconsPath;
@@ -95,10 +95,24 @@ OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 Board board = gef.getBoard();
 %>
-<%  if (haveToRefreshNavBar != null && haveToRefreshNavBar.booleanValue()) { %>
+<% if (haveToRefreshNavBar != null && haveToRefreshNavBar) {
+  boolean isRoot = true;
+  String currentSpaceId = "undefined";
+  SpaceInst currentSpace = jobStartPageSC.getSpaceInstById();
+  if (currentSpace != null) {
+    isRoot = currentSpace.isRoot();
+    currentSpaceId = "'" + currentSpace.getId() + "'";
+  }
+%>
 <script type="text/javascript">
-  if (top.window.spAdminLayout) {
-    top.window.spAdminLayout.getBody().getNavigation().load('<%=m_context%>/RjobStartPagePeas/jsp/jobStartPageNav');
+  if (top.window.spAdminWindow) {
+    const isRoot = <%=isRoot%>;
+    const currentSpaceId = <%=currentSpaceId%>;
+    if (isRoot) {
+      top.window.spAdminWindow.loadSpace(currentSpaceId);
+    } else {
+      top.window.spAdminWindow.loadSubSpace(currentSpaceId);
+    }
   }
 </script>
 <% } %>

@@ -96,7 +96,7 @@
 	browseBar.setExtraInformation(resource.getString("GML.description"));
 	browseBar.setI18N(space, resource.getLanguage());
 
-  if (m_SpaceExtraInfos.isAdmin) {
+  if (m_SpaceExtraInfos.isAdmin()) {
 	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onclick=updateSpace()");
 	operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('ModifyJobStartPage', 740, 600)");
     if (isUserAdmin || m_SubSpace != null) {
@@ -188,7 +188,7 @@ function openPopup(action, larg, haut) {
 	actionWindow = SP_openWindow(action, windowName, larg, haut, windowParams, false);
 }
 
-<% if (m_SpaceExtraInfos.isAdmin) {
+<% if (m_SpaceExtraInfos.isAdmin()) {
     if (isUserAdmin || (m_SubSpace != null)) { %>
   function deleteSpace() {
     jQuery.popup.confirm(

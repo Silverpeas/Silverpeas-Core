@@ -183,17 +183,22 @@
     }
   };
 
-  var __loadBody = function(params) {
-    var _params = extendsObject({
+  const __loadBody = function(params) {
+    const _params = extendsObject({
       navigationParams : undefined,
       contentParams : undefined
     }, params);
-    var __load = function() {
-      var promises = [];
-      var navigationPromise = spAdminLayout.getBody().getNavigation().load(_params.navigationParams);
+    const __load = function() {
+      const promises = [];
+      const navigationPromise = typeof _params.navigationParams === 'string' && _params.navigationParams.endsWith("AsJson")
+          ? sp.ajaxRequest(_params.navigationParams).sendAndPromiseJsonResponse().then(
+              function(data) {
+                spAdminLayout.getBody().getNavigation().dispatchEvent('json-load', data);
+              })
+          : spAdminLayout.getBody().getNavigation().load(_params.navigationParams);
       promises.push(navigationPromise);
-      var _contentParams = sp.param.singleToObject('url', _params.contentParams);
-      var _contentUrl = _contentParams.url;
+      const _contentParams = sp.param.singleToObject('url', _params.contentParams);
+      let _contentUrl = _contentParams.url;
       delete _contentParams.url;
       _contentUrl = sp.url.format(_contentUrl, _contentParams);
       if (params.navigationThenContent) {
@@ -277,16 +282,22 @@
 
     this.loadSpace = function(id) {
       __logDebug("Loading space " + JSON.stringify(id));
-      return __loadSpaceAndComponentBody(
-          sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToSpace').withParam('Espace',
-              id).send());
+      return __loadSpaceAndComponentBody({
+        jsonPromise : sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToSpace')
+            .withParam('Espace', id)
+            .send(),
+        navigationParams : webContext + '/RjobStartPagePeas/jsp/jobStartPageNavAsJson'
+      });
     };
 
     this.loadSubSpace = function(id) {
       __logDebug("Loading space " + JSON.stringify(id));
-      return __loadSpaceAndComponentBody(
-          sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToSubSpace').withParam('SubSpace',
-              id).send());
+      return __loadSpaceAndComponentBody({
+        jsonPromise : sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToSubSpace')
+            .withParam('SubSpace', id)
+            .send(),
+        navigationParams : webContext + '/RjobStartPagePeas/jsp/jobStartPageNavAsJson'
+      });
     };
 
     this.loadComponent = function(id) {
