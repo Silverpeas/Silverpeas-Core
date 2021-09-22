@@ -603,10 +603,64 @@ Definition des class de style Silverpeas
 .treeview_selectSpace select{
   width: 90% !important;
 }
-.treeview_contentSpace{
-  padding: 0.25em 0.25em 1em;
-  white-space: nowrap;
+
+.treeview_contentSpace {
+  margin: 0 0.75em 1em 0.75em;
+  padding: 0 0 1em;
 }
+
+.treeview_path {
+  background-color: #fbfbfb;
+  border-bottom: 1px solid #cccccc;
+  border-top: 1px solid #cccccc;
+  padding: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.treeview_path div a,
+.treeview_contentSpace div a {
+  display: block;
+}
+
+.treeview_contentSpace div a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.treeview_path div a img {
+  margin-right: 0.5em;
+}
+
+.treeview_path span.space {
+  width: 11px;
+  display: inline-block;
+  margin-right: 0.25em;
+}
+
+.treeview_path a span {
+  color: #1c94d4;
+  text-decoration: underline;
+}
+
+.admin-navigation div a {
+  line-height: 100%;
+  padding: 0.25em 0;
+}
+
+.treeview_path div:last-child a span {
+  color: #000;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+#domId img {
+  margin-right: 0.5em;
+}
+
+.treeview_contentSpace .component-icon {
+  margin-right: 0.5em;
+  vertical-align: text-bottom !important;
+}
+
 .domain-group-list{
   padding: 0.25em 0.25em 1em;
 }

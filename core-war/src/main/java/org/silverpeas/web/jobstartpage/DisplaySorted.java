@@ -23,25 +23,31 @@
  */
 package org.silverpeas.web.jobstartpage;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import javax.annotation.Nonnull;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class DisplaySorted implements Comparable<DisplaySorted> {
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_COMPONENT = 1;
   public static final int TYPE_SPACE = 2;
   public static final int TYPE_SUBSPACE = 3;
+  private static final Comparator<DisplaySorted> COMPARATOR = Comparator.comparing(
+      DisplaySorted::getOrderNum).thenComparing(DisplaySorted::getId);
 
-  public String name = "";
-  public int orderNum = 0;
-  public String id = "";
-  public String htmlLine = "";
-  public int type = TYPE_UNKNOWN;
-  public int deep = 0;
-  public boolean isAdmin = true;
-  public boolean isVisible = true;
+  private String name = "";
+  private int orderNum = 0;
+  private String id = "";
+  private String parentId = "";
+  private String typeName = "";
+  private int type = TYPE_UNKNOWN;
+  private int deep = 0;
+  private boolean admin = true;
+  private boolean visible = true;
 
-  public int compareTo(DisplaySorted o) {
-    return orderNum - o.orderNum;
+  @Override
+  public int compareTo(@Nonnull DisplaySorted other) {
+    return COMPARATOR.compare(this, other);
   }
 
   @Override
@@ -49,59 +55,99 @@ public class DisplaySorted implements Comparable<DisplaySorted> {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof DisplaySorted)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-
     final DisplaySorted that = (DisplaySorted) o;
-    return compareTo(that) == 0;
+    return orderNum == that.orderNum && Objects.equals(id, that.id);
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(orderNum).toHashCode();
+    return Objects.hash(orderNum, id);
   }
 
   public void copy(DisplaySorted src) {
     name = src.name;
     orderNum = src.orderNum;
     id = src.id;
-    htmlLine = src.htmlLine;
+    parentId = src.parentId;
+    typeName = src.typeName;
     type = src.type;
     deep = src.deep;
-    isAdmin = src.isAdmin;
-    isVisible = src.isVisible;
-  }
-
-  public boolean isAdmin() {
-    return isAdmin;
+    admin = src.admin;
+    visible = src.visible;
   }
 
   public String getName() {
     return name;
   }
 
+  public void setName(final String name) {
+    this.name = name;
+  }
+
   public int getOrderNum() {
     return orderNum;
+  }
+
+  public void setOrderNum(final int orderNum) {
+    this.orderNum = orderNum;
   }
 
   public String getId() {
     return id;
   }
 
-  public String getHtmlLine() {
-    return htmlLine;
+  public void setId(final String id) {
+    this.id = id;
+  }
+
+  public String getParentId() {
+    return parentId;
+  }
+
+  public void setParentId(final String parentId) {
+    this.parentId = parentId;
+  }
+
+  public String getTypeName() {
+    return typeName;
+  }
+
+  public void setTypeName(final String typeName) {
+    this.typeName = typeName;
   }
 
   public int getType() {
     return type;
   }
 
+  public void setType(final int type) {
+    this.type = type;
+  }
+
   public int getDeep() {
     return deep;
   }
 
+  public void setDeep(final int deep) {
+    this.deep = deep;
+  }
+
+  public boolean isAdmin() {
+    return admin;
+  }
+
+  public void setAdmin(final boolean admin) {
+    this.admin = admin;
+  }
+
   public boolean isVisible() {
-    return isVisible;
+    return visible;
+  }
+
+  public void setVisible(final boolean visible) {
+    this.visible = visible;
   }
 }
