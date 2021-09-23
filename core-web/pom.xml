@@ -88,6 +88,10 @@
       <artifactId>scim-server-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>edu.psu.swe.commons</groupId>
+      <artifactId>commons-jaxrs</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
     </dependency>
