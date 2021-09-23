@@ -275,6 +275,12 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   @Override
   @Transactional
   public void moveNode(NodePK nodePK, NodePK toNode) {
+    moveNode(nodePK, toNode, false);
+  }
+
+  @Override
+  @Transactional
+  public void moveNode(NodePK nodePK, NodePK toNode, boolean preserveRights) {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + '/';
     String oldRootPath = null;
@@ -297,7 +303,13 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         node.setPath(newPath);
         node.setLevel(StringUtil.countMatches(newPath, "/"));
         node.getNodePK().setComponentName(toNode.getInstanceId());
-        node.setRightsDependsOn(root.getRightsDependsOn());
+        if (preserveRights) {
+          if (t == 0 && !node.haveLocalRights()) {
+            node.setRightsDependsOn(root.getRightsDependsOn());
+          }
+        } else {
+          node.setRightsDependsOn(-1);
+        }
         node.setUseId(true);
         NodePK newNodePK = save(node);
         NodeDetail newNode = getDetail(newNodePK);
