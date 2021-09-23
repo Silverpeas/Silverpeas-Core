@@ -1,0 +1,150 @@
+/*
+ * Copyright (C) 2000 - 2021 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.category.initializing {
+  display: none;
+}
+
+.category.category-hide {
+  display: none;
+}
+
+.category.category-only-one-hide .categoryTitle {
+  display: none;
+}
+
+.category.category-links-hide .categoryLinks {
+  display: none;
+}
+
+ul#categories,
+li.category,
+#mylinkspeas-widget .with-category .accordion {
+  list-style-image: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#mylinkspeas-widget .with-category .accordion > li {
+  padding-bottom: 0;
+}
+
+
+ul#categories .category .categoryTitle,
+#mylinkspeas-widget .with-category .accordion .title {
+  background-color: #f3f3f3;
+}
+
+ul#categories .category,
+#mylinkspeas-widget .with-category .accordion > li {
+  border: 1px solid #ddd;
+}
+
+ul#categories .category:first-child,
+#mylinkspeas-widget .with-category .accordion > li:first-child {
+  border-radius: 4px 4px 0 0;
+  border-bottom: 0;
+}
+
+#mylinkspeas-widget .with-category .accordion > li:first-child .links {
+  max-height: 10em;
+  overflow: auto;
+}
+
+
+#mylinkspeas-widget .with-category .accordion > li:first-child .links .other-bookmark {
+  display: revert;
+}
+
+ul li.category:last-child,
+#mylinkspeas-widget .with-category .accordion > li:last-child {
+  border-bottom: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+#mylinkspeas-widget .with-category .accordion > li:last-child .links {
+  border-radius: 0 0 4px 4px;
+  border-bottom: 1px solid #ddd;
+}
+
+ul#categories .category:first-child .categoryTitle,
+#mylinkspeas-widget .with-category .accordion > li:first-child .title {
+
+  border-top: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+ul li.category:last-child .categoryTitle,
+#mylinkspeas-widget .with-category .accordion > li:last-child .title {
+  border-bottom: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+
+ul#categories .category.category-only-one-hide,
+ul#categories .category.category-only-one-hide .categoryLinks {
+  border: 0;
+  padding: 0;
+}
+
+ul#categories .category .categoryTitle h3 {
+  margin: 0;
+  padding: 0 0.5em 0 0;
+}
+
+ul#categories .categoryLinks,
+#mylinkspeas-widget .category-links .links {
+  padding: 1em;
+  border-top: 1px solid #ddd;
+  background-color: #FFF;
+}
+
+#mylinkspeas-widget .category-links .links {
+  padding: 0em 0.5em;
+}
+
+ul#categories .category:nth-child(2n) .categoryTitle,
+#mylinkspeas-widget .with-category .accordion > li:nth-child(2n) .title {
+  background-color: #EEE;
+}
+
+ul#categories .category:nth-child(2n+1) .categoryTitle,
+#mylinkspeas-widget .with-category .accordion > li:nth-child(2n+1) .title {
+  background-color: #F3F3F3;
+}
+
+ul#categories .category .categoryTitle h3 a,
+#mylinkspeas-widget .category-links .title a {
+  background: transparent url("../../../util/icons/toggle/close.png") 5px center no-repeat;
+  padding-left: 36px;
+  line-height: 36px;
+  display: block;
+  cursor: pointer;
+}
+
+ul#categories .category.category-links-hide .categoryTitle h3 a,
+#mylinkspeas-widget .category-links.undeployed .title a {
+  background: transparent url("../../../util/icons/toggle/open.png") 5px center no-repeat;
+}

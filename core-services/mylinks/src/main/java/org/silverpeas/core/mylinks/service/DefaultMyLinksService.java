@@ -25,29 +25,100 @@ package org.silverpeas.core.mylinks.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.mylinks.MyLinksRuntimeException;
+import org.silverpeas.core.mylinks.dao.CategoryDAO;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
+import org.silverpeas.core.mylinks.model.CategoryDetail;
+import org.silverpeas.core.mylinks.model.CategoryDetailComparator;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.silverpeas.core.mylinks.dao.LinkDAO.getLinkDao;
-import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
+import static java.lang.Integer.parseInt;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultMyLinksService implements MyLinksService, ComponentInstanceDeletion {
 
+  @Inject
+  private LinkDAO linkDao;
+
+  @Inject
+  private CategoryDAO categoryDAO;
+
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
     try {
-      LinkDAO.deleteComponentInstanceData(componentInstanceId);
+      linkDao.deleteComponentInstanceData(componentInstanceId);
     } catch (SQLException e) {
+      throw new MyLinksRuntimeException(e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void deleteUserData(final String userId) {
+    try {
+      linkDao.deleteUserData(userId);
+      categoryDAO.deleteUserData(userId);
+    } catch (Exception e) {
+      throw new MyLinksRuntimeException(e);
+    }
+  }
+
+  @Override
+  public List<CategoryDetail> getAllCategoriesByUser(final String userId) {
+    try {
+      final List<CategoryDetail> categories = categoryDAO.getAllCategoriesByUser(userId);
+      return CategoryDetailComparator.sort(categories);
+    } catch (Exception e) {
+      throw new MyLinksRuntimeException(e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public CategoryDetail createCategory(final CategoryDetail category) {
+    try {
+      return categoryDAO.create(category);
+    } catch (Exception e) {
+      throw new MyLinksRuntimeException(e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public CategoryDetail getCategory(final String categoryId) {
+    try {
+      return categoryDAO.getCategory(parseInt(categoryId));
+    } catch (Exception e) {
+      throw new MyLinksRuntimeException(e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void deleteCategories(final String[] categoryIds) {
+    try {
+      for (String categoryId : categoryIds) {
+        categoryDAO.deleteCategory(parseInt(categoryId));
+      }
+    } catch (Exception e) {
+      throw new MyLinksRuntimeException(e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public CategoryDetail updateCategory(final CategoryDetail category) {
+    try {
+      return categoryDAO.update(category);
+    } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
     }
   }
@@ -59,8 +130,8 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
 
   @Override
   public List<LinkDetail> getAllLinksByUser(String userId) {
-    try (Connection con = openConnection()) {
-      List<LinkDetail> links = getLinkDao().getAllLinksByUser(con, userId);
+    try {
+      final List<LinkDetail> links = linkDao.getAllLinksByUser(userId);
       return LinkDetailComparator.sort(links);
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
@@ -69,8 +140,9 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
 
   @Override
   public List<LinkDetail> getAllLinksByInstance(String instanceId) {
-    try (Connection con = openConnection()) {
-      return getLinkDao().getAllLinksByInstance(con, instanceId);
+    try {
+      final List<LinkDetail> links = linkDao.getAllLinksByInstance(instanceId);
+      return LinkDetailComparator.sort(links);
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
     }
@@ -78,28 +150,30 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
 
   @Override
   public List<LinkDetail> getAllLinksByObject(String instanceId, String objectId) {
-    try (Connection con = openConnection()) {
-      return getLinkDao().getAllLinksByObject(con, instanceId, objectId);
+    try {
+      final List<LinkDetail> links = linkDao.getAllLinksByObject(instanceId, objectId);
+      return LinkDetailComparator.sort(links);
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
     }
   }
 
   @Override
-  public void createLink(LinkDetail link) {
-    try (Connection con = openConnection()) {
-      int id = getLinkDao().createLink(con, link);
-      link.setLinkId(id);
+  @Transactional
+  public LinkDetail createLink(LinkDetail link) {
+    try {
+      return linkDao.createLink(link);
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
     }
   }
 
   @Override
+  @Transactional
   public void deleteLinks(String[] links) {
-    try (Connection con = openConnection()) {
+    try {
       for (String linkId : links) {
-        getLinkDao().deleteLink(con, linkId);
+        linkDao.deleteLink(linkId);
       }
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
@@ -107,9 +181,10 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
   }
 
   @Override
-  public void updateLink(LinkDetail link) {
-    try (Connection con = openConnection()) {
-      getLinkDao().updateLink(con, link);
+  @Transactional
+  public LinkDetail updateLink(LinkDetail link) {
+    try {
+      return linkDao.updateLink(link);
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
     }
@@ -117,8 +192,8 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
 
   @Override
   public LinkDetail getLink(String linkId) {
-    try (Connection con = openConnection()) {
-      return getLinkDao().getLink(con, linkId);
+    try {
+      return linkDao.getLink(parseInt(linkId));
     } catch (Exception e) {
       throw new MyLinksRuntimeException(e);
     }

@@ -33,6 +33,7 @@ import java.io.Serializable;
  * @author mmoquillon
  */
 public class UserEvent extends AbstractResourceEvent<UserDetail> {
+  private static final long serialVersionUID = -2730725819347841293L;
 
   protected UserEvent() {
 

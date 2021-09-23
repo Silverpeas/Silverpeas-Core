@@ -480,6 +480,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return resources.getInteger(key, defaultValue);
   }
 
+  public LocalizationBundle getLocalizedBundle() {
+    return messages != null ? messages : defaultMessages;
+  }
+
   /*
    * (non-Javadoc)
    * @see org.silverpeas.core.web.look.LookHelper#getString(java.lang.String)

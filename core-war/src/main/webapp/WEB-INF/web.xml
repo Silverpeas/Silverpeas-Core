@@ -482,8 +482,13 @@
     <servlet-class>org.silverpeas.web.todo.servlets.TodoRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <display-name>MyLinksPeasRequestRouter</display-name>
     <servlet-name>MyLinksPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.mylinks.servlets.MyLinksPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.web.mylinks.MyLinksPeasWebController</param-value>
+    </init-param>
   </servlet>
   <servlet>
     <servlet-name>InterestCenterPeasRequestRouter</servlet-name>

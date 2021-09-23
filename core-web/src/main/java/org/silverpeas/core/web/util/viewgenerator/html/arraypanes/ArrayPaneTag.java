@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import java.io.IOException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
 
 /**
  * Create a new ArrayPane.
@@ -38,26 +37,40 @@ import javax.servlet.jsp.tagext.TagSupport;
  */
 public class ArrayPaneTag extends TagSupport {
 
+  public static final String ARRAY_PANE_PAGE_ATT = "pageContextArrayPane";
   private static final long serialVersionUID = 1370094709020971218L;
   private String var;
   private String title;
   private String summary;
   private String isXHTML;
-  private String routingAddress = null;
-  public static final String ARRAY_PANE_PAGE_ATT = "pageContextArrayPane";
+  private String routingAddress;
+  private boolean export;
+  private String exportDataURL;
+  private boolean sortableLines;
+  private int numberLinesPerPage;
+  private String moveLineJsCallback;
 
-  private boolean export = false;
-  private String exportDataURL = null;
-
-  private boolean sortableLines = false;
-  private int numberLinesPerPage = 10;
-
-  public String getRoutingAddress() {
-    return routingAddress;
+  public ArrayPaneTag() {
+    this.init();
   }
 
-  public void setRoutingAddress(String routingAddress) {
-    this.routingAddress = routingAddress;
+  void init() {
+    var = null;
+    title = null;
+    summary = null;
+    isXHTML = null;
+    routingAddress = null;
+    export = false;
+    exportDataURL = null;
+    sortableLines = false;
+    numberLinesPerPage = 10;
+    moveLineJsCallback = null;
+  }
+
+  @Override
+  public void release() {
+    super.release();
+    this.init();
   }
 
   @Override
@@ -82,6 +95,7 @@ public class ArrayPaneTag extends TagSupport {
     }
     arrayPane.setSortableLines(sortableLines);
     arrayPane.setVisibleLineNumber(numberLinesPerPage);
+    arrayPane.setUpdateSortJavascriptCallback(moveLineJsCallback);
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
   }
@@ -101,6 +115,14 @@ public class ArrayPaneTag extends TagSupport {
 
   public ArrayPane getArrayPane() {
     return (ArrayPane) pageContext.getAttribute(ARRAY_PANE_PAGE_ATT);
+  }
+
+  public String getRoutingAddress() {
+    return routingAddress;
+  }
+
+  public void setRoutingAddress(String routingAddress) {
+    this.routingAddress = routingAddress;
   }
 
   /**
@@ -133,5 +155,9 @@ public class ArrayPaneTag extends TagSupport {
 
   public void setNumberLinesPerPage(int numberLinesPerPage) {
     this.numberLinesPerPage = numberLinesPerPage;
+  }
+
+  public void setMoveLineJsCallback(final String moveLineJsCallback) {
+    this.moveLineJsCallback = moveLineJsCallback;
   }
 }

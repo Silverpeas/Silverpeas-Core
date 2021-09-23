@@ -48,9 +48,9 @@ public class LinkDetail implements Serializable, Securable {
   private String userId;
   private String instanceId;
   private String objectId;
+  private CategoryDetail category;
 
   public LinkDetail() {
-
   }
 
   public LinkDetail(String name, String description, String url, boolean visible, boolean popup) {
@@ -59,7 +59,25 @@ public class LinkDetail implements Serializable, Securable {
     this.url = url;
     this.visible = visible;
     this.popup = popup;
+  }
 
+  /**
+   * Copy constructor.
+   * @param other the instance to copy.
+   */
+  public LinkDetail(final LinkDetail other) {
+    this.linkId = other.linkId;
+    this.position = other.position;
+    this.hasPosition = other.hasPosition;
+    this.name = other.name;
+    this.description = other.description;
+    this.url = other.url;
+    this.visible = other.visible;
+    this.popup = other.popup;
+    this.userId = other.userId;
+    this.instanceId = other.instanceId;
+    this.objectId = other.objectId;
+    this.category = other.category != null ? new CategoryDetail(other.category) : null;
   }
 
   public String getUserId() {
@@ -150,6 +168,14 @@ public class LinkDetail implements Serializable, Securable {
     this.hasPosition = hasPosition;
   }
 
+  public CategoryDetail getCategory() {
+    return category;
+  }
+
+  public void setCategory(final CategoryDetail category) {
+    this.category = category;
+  }
+
   @Override
   public boolean canBeAccessedBy(final User user) {
     boolean canBeAccessed;
@@ -178,10 +204,5 @@ public class LinkDetail implements Serializable, Securable {
       canBeModified = user.getId().equals(userId);
     }
     return canBeModified;
-  }
-
-  @Override
-  public boolean canBeDeletedBy(final User user) {
-    return canBeModifiedBy(user);
   }
 }

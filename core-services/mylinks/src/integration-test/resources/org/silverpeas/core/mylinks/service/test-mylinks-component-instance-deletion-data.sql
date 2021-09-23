@@ -27,3 +27,15 @@ INSERT INTO SB_MyLinks_Link (linkid, name, url, visible, popup, userid, instance
 VALUES (78, 'Name - 78', '/Topic/10784?ComponentId=kmelia4', 1, 0, '2', NULL);
 INSERT INTO SB_MyLinks_Link (linkid, name, url, visible, popup, userid, instanceid)
 VALUES (79, 'Name - 79', '/Publication/26', 1, 0, '2', 'kmelia4');
+
+INSERT INTO SB_MyLinks_Cat (catId, name, description, userId, position)
+VALUES (1, 'catName_1', 'catDesc_1', '2', NULL),
+       (2, 'catName_2', 'catDesc_2', '2', NULL),
+       (3, 'catName_3', 'catDesc_3', '0', NULL),
+       (4, 'catName_4', 'catDesc_4', '91', NULL),
+       (5, 'catName_5', 'catDesc_5', '26', NULL);
+
+INSERT INTO SB_MyLinks_LinkCat (catId, linkid)
+VALUES (2, 78),
+       (4, 24),
+       (4, 21)

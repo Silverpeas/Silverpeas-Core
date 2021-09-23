@@ -26,6 +26,7 @@ package org.silverpeas.web;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -44,11 +45,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.*;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
 import static org.silverpeas.core.util.StringUtil.*;
@@ -95,10 +104,17 @@ public class AutoRedirectServlet extends HttpServlet {
   private void redirect(final HttpRequest httpRequest, final Context context,
       final MainSessionController mainController, final GraphicElementFactory gef)
       throws IOException {
-    if (isAccessComponentForbidden(context.getComponentId(), mainController) ||
-        isAccessSpaceForbidden(context.getSpaceId(), mainController)) {
+    final List<Status> errorStatuses = List.of(
+            getComponentAccessStatus(context.getComponentId(), mainController),
+            getSpaceAccessStatus(context.getSpaceId(), mainController))
+        .stream()
+        .filter(s -> s.getStatusCode() >= 400)
+        .collect(Collectors.toList());
+    if (!errorStatuses.isEmpty()) {
       if (httpRequest.isWithinAnonymousUserSession()) {
         loginPageRedirection(context);
+      } else if (errorStatuses.stream().anyMatch(NOT_FOUND::equals)) {
+        notFoundRedirection(context);
       } else {
         forbiddenPageRedirection(context);
       }
@@ -131,6 +147,15 @@ public class AutoRedirectServlet extends HttpServlet {
           getGeneralLocalizationBundle(context.getLanguage()).getString("GML.ForbiddenAccessContent"))));
     } else {
       context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+    }
+  }
+
+  private void notFoundRedirection(final Context context) throws IOException {
+    if (context.isFromResponsiveWindow()) {
+      sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
+          getGeneralLocalizationBundle(context.getLanguage()).getString("GML.DocumentNotFound"))));
+    } else {
+      context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 
@@ -188,15 +213,45 @@ public class AutoRedirectServlet extends HttpServlet {
     response.setStatus(SC_CREATED);
   }
 
-  private boolean isAccessSpaceForbidden(String spaceId, MainSessionController mainController) {
-    return isDefined(spaceId) &&
-        !OrganizationController.get().isSpaceAvailable(spaceId, mainController.getUserId());
+  private Status getSpaceAccessStatus(String spaceId, MainSessionController mainController) {
+    return isDefined(spaceId) ?
+        of(spaceId)
+            .map(i -> OrganizationController.get().getSpaceInstLightById(i))
+            .filter(s -> isAtLeastOneRemovedSpaceFrom(s.getId()))
+            .map(s -> {
+              if (s.canBeAccessedBy(mainController.getCurrentUserDetail())) {
+                return OK;
+              }
+              return FORBIDDEN;
+            })
+            .orElse(NOT_FOUND) :
+        SEE_OTHER;
   }
 
-  private boolean isAccessComponentForbidden(String componentId,
+  private Status getComponentAccessStatus(String componentId,
       MainSessionController mainController) {
-    return isDefined(componentId) && !StringUtils.isAlpha(componentId) &&
-        !ComponentAccessControl.get().isUserAuthorized(mainController.getUserId(), componentId);
+    return isDefined(componentId) ?
+        of(componentId)
+            .filter(not(StringUtils::isAlpha))
+            .flatMap(i -> OrganizationController.get().getComponentInstance(i))
+            .filter(not(SilverpeasComponentInstance::isRemoved))
+            .filter(i -> isAtLeastOneRemovedSpaceFrom(i.getSpaceId()))
+            .map(i -> {
+              if (ComponentAccessControl.get().isUserAuthorized(mainController.getUserId(), i.getId())) {
+                return OK;
+              }
+              return FORBIDDEN;
+            })
+            .orElse(NOT_FOUND) :
+        SEE_OTHER;
+  }
+
+  private boolean isAtLeastOneRemovedSpaceFrom(final String spaceId) {
+    return ofNullable(spaceId)
+        .map(s -> OrganizationController.get().getPathToSpace(s))
+        .stream()
+        .flatMap(Collection::stream)
+        .noneMatch(SpaceInstLight::isRemoved);
   }
 
   /**

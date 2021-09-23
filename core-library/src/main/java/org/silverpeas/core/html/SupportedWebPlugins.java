@@ -43,6 +43,10 @@ public enum SupportedWebPlugins {
    */
   JQUERY,
   /**
+   * Silverpeas admin services (AdminSpaceService and AdminComponentInstanceService).
+   */
+  ADMINSERVICES,
+  /**
    * Silverpeas plugin to play videos and sounds.
    */
   MEDIAPLAYER,

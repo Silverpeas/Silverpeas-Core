@@ -25,22 +25,38 @@
 
 -->
 <dataset>
-  <SB_MyLinks_Link linkid="1" name="name1" url="name1Url" userid="user_1" visible="0" popup="0" position="0" />
-  <SB_MyLinks_Link linkid="2" name="name2" url="name2Url" userid="user_1" visible="0" popup="0" position="3" />
+
+  <SB_MyLinks_Cat catid="1" name="catName1" description="[NULL]" userid="user_1" position="[NULL]" />
+  <SB_MyLinks_Cat catid="3" name="catName3" description="[NULL]" userid="user_2" position="5"/>
+  <SB_MyLinks_Cat catid="4" name="catName4" description="catDesc4" userid="user_2" position="2"/>
+  <SB_MyLinks_Cat catid="10" name="catName5" description="catDesc10" userid="user_3" position="1"/>
+  <SB_MyLinks_Cat catid="13" name="catName5" description="catDesc13" userid="user_3" position="[NULL]"/>
+  <SB_MyLinks_Cat catid="25" name="catName5" description="catDesc25" userid="user_3" position="2"/>
+
+  <SB_MyLinks_Link linkid="1" name="name1" url="name1Url" userid="user_1" visible="0" popup="0" position="0"/>
+  <SB_MyLinks_Link linkid="2" name="name2" url="name2Url" userid="user_1" visible="0" popup="0" position="3"/>
   <SB_MyLinks_Link linkid="3" name="name3" url="name3Url" userid="user_1" visible="0" popup="0" position="4"/>
   <SB_MyLinks_Link linkid="4" name="name4" url="name4Url" userid="user_1" visible="0" popup="0" position="2"/>
   <SB_MyLinks_Link linkid="5" name="name5" url="name1Url" userid="user_1" visible="0" popup="0" position="1"/>
+  <SB_MyLinks_LinkCat linkid="2" catid="1"/>
+  <SB_MyLinks_LinkCat linkid="4" catid="1"/>
 
+  <SB_MyLinks_Link linkid="11" name="name1" url="name1Url" userid="user_2" visible="0" popup="0"/>
+  <SB_MyLinks_Link linkid="12" name="name2" url="name2Url" userid="user_2" visible="0" popup="0"/>
+  <SB_MyLinks_Link linkid="13" name="name3" url="name3Url" userid="user_2" visible="0" popup="0"/>
+  <SB_MyLinks_Link linkid="14" name="name4" url="name4Url" userid="user_2" visible="0" popup="0"/>
+  <SB_MyLinks_Link linkid="15" name="name5" url="name1Url" userid="user_2" visible="0" popup="0"/>
+  <SB_MyLinks_LinkCat linkid="12" catid="3"/>
+  <SB_MyLinks_LinkCat linkid="15" catid="3"/>
+  <SB_MyLinks_LinkCat linkid="14" catid="4"/>
 
-  <SB_MyLinks_Link linkid="11" name="name1" url="name1Url" userid="user_2" visible="0" popup="0" />
-  <SB_MyLinks_Link linkid="12" name="name2" url="name2Url" userid="user_2" visible="0" popup="0" />
-  <SB_MyLinks_Link linkid="13" name="name3" url="name3Url" userid="user_2" visible="0" popup="0" />
-  <SB_MyLinks_Link linkid="14" name="name4" url="name4Url" userid="user_2" visible="0" popup="0" />
-  <SB_MyLinks_Link linkid="15" name="name5" url="name1Url" userid="user_2" visible="0" popup="0" />
-
-  <SB_MyLinks_Link linkid="21" name="name1" url="name1Url" userid="user_3" visible="0" popup="0" position="10" />
-  <SB_MyLinks_Link linkid="22" name="name2" url="name2Url" userid="user_3" visible="0" popup="0" position="13" />
+  <SB_MyLinks_Link linkid="21" name="name1" url="name1Url" userid="user_3" visible="0" popup="0" position="10"/>
+  <SB_MyLinks_Link linkid="22" name="name2" url="name2Url" userid="user_3" visible="0" popup="0" position="13"/>
   <SB_MyLinks_Link linkid="23" name="name3" url="name3Url" userid="user_3" visible="0" popup="0" position="14"/>
   <SB_MyLinks_Link linkid="24" name="name4" url="name4Url" userid="user_3" visible="0" popup="0" position="12"/>
   <SB_MyLinks_Link linkid="25" name="name5" url="name1Url" userid="user_3" visible="0" popup="0" position="11"/>
+  <SB_MyLinks_LinkCat linkid="21" catid="10"/>
+  <SB_MyLinks_LinkCat linkid="22" catid="13"/>
+  <SB_MyLinks_LinkCat linkid="23" catid="25"/>
+  <SB_MyLinks_LinkCat linkid="24" catid="25"/>
 </dataset>

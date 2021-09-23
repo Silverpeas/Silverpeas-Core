@@ -198,6 +198,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     super.setName(label);
   }
 
+  @Override
   public Date getCreationDate() {
     return createDate;
   }
@@ -214,6 +215,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     this.status = status;
   }
 
+  @Override
   public Date getLastUpdateDate() {
     return updateDate;
   }
@@ -287,6 +289,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   /**
    * I18N
    */
+  @Override
   public String getLabel(String language) {
     return super.getName(language);
   }
@@ -374,6 +377,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     return getCachedComponentInst().getParameterValue(parameterName);
   }
 
+  @Override
   public boolean isRemoved() {
     return ComponentInst.STATUS_REMOVED.equals(getStatus());
   }

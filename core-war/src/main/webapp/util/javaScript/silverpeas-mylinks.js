@@ -22,143 +22,322 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Web Context
+/**
+ * Plugins that permits to manage myLinks data.
+ */
+(function() {
+  
+  sp.i18n.load({
+    bundle: 'org.silverpeas.mylinks.multilang.myLinksBundle',
+    language: currentUser.language,
+  });
 
-
-(function($) {
-
-  if (!webContext) {
-    var webContext = '/silverpeas';
+  function __showProgressMessage() {
+    if (top.spProgressMessage) {
+      top.spProgressMessage.show();
+    }
   }
 
-  $.mylinks = {
-    initialized: false,
-    postNewLink: function (name, url, description) {
-      var ajaxUrl = webContext + '/services/mylinks/';
-      var cleanUrl = url.replace(webContext, '');
-      var newLink = {
-          "description": description,
-          "linkId": -1,
-          "name": name,
-          "url": cleanUrl,
-          "popup": false,
-          "uri": '',
-          "visible": true
-      };
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'POST',
-        data: $.toJSON(newLink),
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          notySuccess(__getFromBundleKey('myLinks.messageConfirm'));
-        }
-      });
-    },
-    addFavoriteSpace: function (spaceId) {
-      var ajaxUrl = webContext + '/services/mylinks/space/' + spaceId;
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'POST',
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          notySuccess(__getFromBundleKey('myLinks.add.space.messageConfirm'));
-        }
-      });
-    },
-    addFavoriteApp: function (applicationId) {
-      var ajaxUrl = webContext + '/services/mylinks/app/' + applicationId;
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'POST',
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          notySuccess(__getFromBundleKey('myLinks.add.application.messageConfirm'));
-        }
-      });
-    },
-    getMyLink: function (linkId) {
-      var ajaxUrl = webContext + '/services/mylinks/' + linkId;
+  function __hideProgressMessage() {
+    if (top.spProgressMessage) {
+      top.spProgressMessage.hide();
+    }
+  }
 
-      // Ajax request
-      jQuery.ajax({
-        url: ajaxUrl,
-        type: 'GET',
-        contentType: "application/json",
-        cache: false,
-        dataType: "json",
-        async: true,
-        success: function(result) {
-          // TODO create an update form of a user link
-          return result;
-        }
-      });
+  window.MyLinksService = new function() {
+    this.getAllCategoriesOfCurrentUser = function() {
+      return sp.ajaxRequest(webContext + '/services/mylinks/categories').sendAndPromiseJsonResponse();
+    };
+    this.saveCategory = function(category) {
+      const baseUrl = webContext + '/services/mylinks/categories/';
+      const ajaxRequest = category.catId
+          ? sp.ajaxRequest(baseUrl + category.catId).byPutMethod()
+          : sp.ajaxRequest(baseUrl).byPostMethod();
+      return ajaxRequest.sendAndPromiseJsonResponse(category);
+    };
+    this.deleteCategories = function(categoryIds) {
+      return sp.ajaxRequest('RemoveCategories').withParam('categoryIds', categoryIds).send();
+    };
+    this.saveLink = function(link) {
+      const baseUrl = webContext + '/services/mylinks/';
+      link.url = link.url.replace(new RegExp("^" + webContext), '');
+      const ajaxRequest = link.linkId
+          ? sp.ajaxRequest(baseUrl + link.linkId).byPutMethod()
+          : sp.ajaxRequest(baseUrl).byPostMethod();
+      return ajaxRequest.sendAndPromiseJsonResponse(link);
+    };
+    this.deleteLinks = function(linkIds) {
+      return sp.ajaxRequest('RemoveLinks').withParam('linkIds', linkIds).send();
+    };
+    this.getMyLink = function(linkId) {
+      const ajaxUrl = webContext + '/services/mylinks/' + linkId;
+      return sp.ajaxRequest(ajaxUrl).sendAndPromiseJsonResponse();
     }
   };
 
-  // Localization init indicator.
-  var __i18nInitialized = false;
+  window.MyLinksCtrl = new function() {
+    /*
+    CATEGORIES
+     */
+    const loadCategoryPopup = function(catId) {
+      return new Promise(function(resolve, reject) {
+        jQuery.popup.load('categories/' + catId + '/form').show('validation', {
+          title : catId !== 'new' ? sp.i18n.get('myLinks.updateCategory') : sp.i18n.get('myLinks.addCategory'),
+          width : "700px",
+          isMaxWidth : false,
+          callback : function() {
+            return sendCategoryForm().then(resolve, reject);
+          }
+        });
+      });
+    };
+    const sendCategoryForm = function() {
+      return checkCategoryForm().then(function() {
+        __showProgressMessage();
+        const category = sp.form.serializeJson('#mylink-category-form');
+        return MyLinksService.saveCategory(category);
+      });
+    };
+    /**
+     * Performs the add category action by using the current scope registered into user session.
+     * @returns {Promise<unknown>}
+     */
+    this.addCategoryIntoContext = function() {
+      return loadCategoryPopup('new').then(function() {
+        notySuccess(sp.i18n.get('myLinks.createCategory.messageConfirm'));
+      });
+    };
+    /**
+     * Performs the update category action by using the current scope registered into user session.
+     * @param id the identifier of the category to update.
+     * @returns {Promise<unknown>}
+     */
+    this.editCategoryIntoContext = function(id) {
+      return loadCategoryPopup(id).then(function() {
+        notySuccess(sp.i18n.get('myLinks.updateCategory.messageConfirm'));
+      });
+    };
+    /**
+     * Performs the delete category action by using the current scope registered into user session.
+     * @param categoryIds an array of identifier of categories to delete.
+     * @returns {Promise<unknown>}
+     */
+    this.deleteCategories = function(categoryIds) {
+      return new Promise(function(resolve, reject) {
+        if (categoryIds.length === 0) {
+          reject();
+        } else {
+          jQuery.popup.confirm(sp.i18n.get('myLinks.deleteSelection'), function() {
+            __showProgressMessage();
+            MyLinksService.deleteCategories(categoryIds).then(resolve, reject);
+          });
+        }
+      });
+    };
+    /*
+    LINKS
+     */
+    const SCOPE_USER = '0';
+    const linkFormCssSelector = '#mylink-link-form';
+    const loadLinkPopup = function(defaultLinkData, scope) {
+      let callback = sendLinkForm;
+      let linkId = defaultLinkData;
+      let hideUrl = false;
+      let title = sp.i18n.get('myLinks.addLink');
+      if (typeof defaultLinkData === 'object') {
+        linkId = defaultLinkData.linkId;
+        hideUrl = !!defaultLinkData.url;
+        if (typeof defaultLinkData.getFunctionName === 'function') {
+          linkId = defaultLinkData.getFunctionName();
+          callback = defaultLinkData.execute;
+          if (defaultLinkData.getFunctionName() === 'updateCategoryOnly') {
+            title = sp.i18n.get('myLinks.updateCategoryOfLinks');
+          }
+        }
+      }
+      if (!isNaN(linkId)) {
+        title = sp.i18n.get('myLinks.updateLink');
+      }
+      return new Promise(function(resolve, reject) {
+        const urlParams = {
+          hideUrl : hideUrl
+        };
+        if (scope) {
+          urlParams['scope'] = scope;
+        }
+        const url = sp.url.format(webContext + '/RmyLinksPeas/jsp/links/' + linkId + '/form', urlParams);
+        jQuery.popup.load(url).show('validation', {
+          title : title,
+          width : "700px",
+          isMaxWidth : false,
+          callback : function() {
+            return callback().then(resolve, reject);
+          }
+        }).then(function() {
+          if (typeof defaultLinkData === 'object') {
+            defaultLinkData.url = StringUtil.truncateLeft(defaultLinkData.url, 255);
+            defaultLinkData.name = StringUtil.truncateLeft(defaultLinkData.name, 255);
+            defaultLinkData.description = StringUtil.truncateRight(defaultLinkData.description, 255);
+            for(let key in defaultLinkData) {
+              const value = defaultLinkData[key];
+              if (value) {
+                const $input = document.querySelector(linkFormCssSelector).querySelector("input[name='" + key + "']");
+                if ($input) {
+                  if (typeof value === 'boolean') {
+                    $input.checked = value;
+                  } else {
+                    $input.value = value;
+                  }
+                }
+              }
+            }
+          }
+        });
+      });
+    };
+    const sendLinkForm = function() {
+      return checkLinkForm().then(function() {
+        __showProgressMessage();
+        const link = sp.form.serializeJson(linkFormCssSelector);
+        return MyLinksService.saveLink(link);
+      });
+    };
+    const updateCategoryOfUserLinks = function(linkIds) {
+      this.getFunctionName = function() {
+        return 'updateCategoryOnly';
+      };
+      this.execute = function() {
+        __showProgressMessage();
+        const data = sp.form.serializeJson(linkFormCssSelector);
+        const promises = linkIds.map(function(linkId) {
+          return MyLinksService.getMyLink(linkId).then(function(link) {
+            link.categoryId = data.categoryId;
+            return MyLinksService.saveLink(link);
+          });
+        });
+        return sp.promise.whenAllResolved(promises).then(__hideProgressMessage, __hideProgressMessage);
+      }
+    };
+    /**
+     * Performs the add link action by forcing the user scope.
+     * @param defaultLinkData the default link data to fill automatically.
+     * @returns {Promise<unknown>}
+     */
+    this.addUserLink = function(defaultLinkData) {
+      if (typeof defaultLinkData === 'object') {
+        defaultLinkData.linkId = 'new';
+      } else {
+        defaultLinkData = 'new;'
+      }
+      return loadLinkPopup(defaultLinkData, SCOPE_USER);
+    };
+    /**
+     * Performs the update of the category of given links by forcing the user scope.
+     * @param linkIds the identifier list of link.
+     * @returns {Promise<unknown>}
+     */
+    this.modifyCategoryOfUserLinks = function(linkIds) {
+      if (!Array.isArray(linkIds) || !linkIds.length) {
+        return sp.promise.rejectDirectlyWith();
+      }
+      return loadLinkPopup(new updateCategoryOfUserLinks(linkIds), SCOPE_USER).then(function() {
+        notySuccess(sp.i18n.get('myLinks.updateCategoryOfLinks.messageConfirm'));
+      });
+    };
+    /**
+     * Performs the add link action by using the current scope registered into user session.
+     * @returns {Promise<unknown>}
+     */
+    this.addLinkIntoContext = function() {
+      return loadLinkPopup('new').then(function() {
+        notySuccess(sp.i18n.get('myLinks.messageConfirm'));
+      });
+    };
+    /**
+     * Performs the update link action by using the current scope registered into user session.
+     * @param id the identifier of the link to modify.
+     * @returns {Promise<unknown>}
+     */
+    this.editLinkIntoContext = function(id) {
+      return loadLinkPopup(id).then(function() {
+        notySuccess(sp.i18n.get('myLinks.updateLink.messageConfirm'));
+      });
+    };
+    /**
+     * Performs the delete links action by using the current scope registered into user session.
+     * @param linkIds an array of identifier of links to delete.
+     * @returns {Promise<unknown>}
+     */
+    this.deleteLinks = function(linkIds) {
+      return new Promise(function(resolve, reject) {
+        if (linkIds.length === 0) {
+          reject();
+        } else {
+          jQuery.popup.confirm(sp.i18n.get('myLinks.deleteSelection'), function() {
+            __showProgressMessage();
+            MyLinksService.deleteLinks(linkIds).then(resolve, reject);
+          });
+        }
+      });
+    };
+  };
 
   /**
-   * Private method that handles i18n.
-   * @param key
-   * @return message
-   * @private
+   * This handled the creation of anew favorite link with validation process.
+   * @param name the name of the link to create.
+   * @param url the url of the link to create.
+   * @param description the description of the link to create.
    */
-  function __getFromBundleKey(key) {
-    if (webContext) {
-      if (!__i18nInitialized) {
-        sp.i18n.load({
-          bundle: 'org.silverpeas.mylinks.multilang.myLinksBundle',
-          language: getUserLanguage(),
-        });
-        __i18nInitialized = true;
-      }
-      return getString(key);
-    }
-    return key;
+  window.postNewLink = function(name, url, description) {
+    const cleanUrl = url.replace(webContext, '');
+    const newLink = {
+      "name" : name,
+      "description" : description,
+      "url" : cleanUrl,
+      "visible" : true
+    };
+    return MyLinksCtrl.addUserLink(newLink).then(function() {
+      __hideProgressMessage();
+      notySuccess(sp.i18n.get('myLinks.messageConfirm'));
+    });
   }
 
-})(jQuery);
-
-/**
- * This method post a new favorite link with the given parameter
- * @param name
- * @param url
- * @param description
- */
-function postNewLink(name, url, description) {
-  $.mylinks.postNewLink(name, url, description);
-}
-
-/**
- * this method post given space as a new user favorite link
- * @param spaceId the space identifier
- */
-function addFavoriteSpace(spaceId) {
-  $.mylinks.addFavoriteSpace(spaceId);
-}
-/**
- * this method post given application as a new user favorite link
- * @param applicationId
- */
-function addFavoriteApp(applicationId) {
-  $.mylinks.addFavoriteApp(applicationId);
-}
-
-/**
- * retrieve MyLink identified from link identifier parameter
- * @param linkId
- */
-function getMyLink(linkId) {
-  $.mylinks.getMyLink(linkId);
-}
+  /**
+   * this method post given space as a new user favorite link
+   * @param spaceId the space identifier
+   */
+  window.addFavoriteSpace = function(spaceId) {
+    return AdminSpaceService.getFullPath(spaceId).then(function(path) {
+      const space = path.last;
+      const newLink = {
+        "name" : path.format(),
+        "description" : space.description,
+        "url" : '/Space/' + spaceId,
+        "visible" : true
+      };
+      return MyLinksCtrl.addUserLink(newLink).then(function() {
+        __hideProgressMessage();
+        notySuccess(sp.i18n.get('myLinks.add.space.messageConfirm'));
+      });
+    });
+  }
+  /**
+   * this method post given application as a new user favorite link
+   * @param applicationId the identifier of a component instance.
+   */
+  window.addFavoriteApp = function(applicationId) {
+    return AdminComponentInstanceService.getFullPath(applicationId).then(function(path) {
+      const instance = path.last;
+      const newLink = {
+        "name" : path.format(),
+        "description" : instance.description,
+        "url" : '/Component/' + applicationId,
+        "visible" : true
+      };
+      return MyLinksCtrl.addUserLink(newLink).then(function() {
+        __hideProgressMessage();
+        notySuccess(sp.i18n.get('myLinks.add.application.messageConfirm'));
+      });
+    });
+  }
+})();

@@ -23,13 +23,10 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.portlets.FormNames;
+import org.silverpeas.core.webapi.mylinks.MyLinksWebManager;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -37,7 +34,6 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
@@ -45,20 +41,8 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    List<LinkDetail> links = new ArrayList<>();
-    UserDetail currentUser = UserDetail.getCurrentRequester();
-    if (currentUser != null) {
-      try {
-        MyLinksService myLinksService = getMyLinksBm();
-        if (myLinksService != null) {
-          links = myLinksService.getAllLinks(currentUser.getId());
-        }
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
-      }
-    }
-    request.setAttribute("Links", links.iterator());
-
+    final List<LinkDetail> links = MyLinksWebManager.get().getAllLinksOfCurrentUser();
+    request.setAttribute("Links", links);
     include(request, response, "portlet.jsp");
   }
 
@@ -75,10 +59,6 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
   public void doHelp(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "help.jsp");
-  }
-
-  private MyLinksService getMyLinksBm() throws Exception {
-    return ServiceProvider.getService(MyLinksService.class);
   }
 
   /**
