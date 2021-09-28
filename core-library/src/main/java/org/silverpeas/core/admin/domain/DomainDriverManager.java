@@ -42,8 +42,11 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -52,14 +55,23 @@ import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Collections.*;
+import static java.util.stream.Collectors.*;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 /**
  * A manager of domain drivers. It exposes domain related operations and delegates the domain
@@ -73,6 +85,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   public static final String DOMAIN = "domain";
   public static final String GROUP = "group";
+  private static final String USERS = "users";
   @Inject
   private UserDAO userDAO;
   @Inject
@@ -165,6 +178,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return null;
   }
 
+  @Override
+  public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
+    return emptyList();
+  }
+
   /**
 * @param user
 * @throws AdminException
@@ -193,77 +211,143 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
   }
 
-  private <T extends UserDetail> T loadUserEntity(String userId, Class<T> userModelClass)
-      throws AdminException {
+  @SuppressWarnings("unchecked")
+  private <T extends UserDetail> List<T> loadUserEntities(Collection<String> userIds,
+      Class<T> userModelClass) throws AdminException {
+    long startTime = currentTimeMillis();
+    long fetchingSpUsersTime = 0;
+    long nbSpUsersFetched = 0;
+    long fetchingDomainTime = 0;
+    long nbDomainsFetched = 0;
+    long fetchingDomainUsersTime = 0;
+    long nbDomainUsersFetched = 0;
+    long applyingSpDataToDomainUsersTime = 0;
     boolean isUserFull = userModelClass == UserFull.class;
-    UserDetail user;
     try(Connection connection = DBUtil.openConnection()) {
-      // Get the user information
-      final UserDetail silverpeasUser = userDAO.getUserById(connection, userId);
-      if (silverpeasUser == null) {
-        throw new AdminException(failureOnGetting("user", userId));
+      // Get the silverpeas's user information
+      long tmpStart = currentTimeMillis();
+      final List<UserDetail> silverpeasUsers = userDAO.getUserByIds(connection, userIds);
+      if (silverpeasUsers.size() != userIds.size()) {
+        throw new AdminException(failureOnGetting(USERS, userIds));
       }
-
+      fetchingSpUsersTime = currentTimeMillis() - tmpStart;
+      nbSpUsersFetched = silverpeasUsers.size();
       // Get a DomainDriver instance
-      DomainDriver domainDriver = this.getDomainDriver(silverpeasUser.getDomainId());
-
-      // Get User detail from specific domain
-      user = getUserDetail(userId, isUserFull, silverpeasUser, domainDriver);
-
-      // Fill silverpeas info of user details
-      user.setLogin(silverpeasUser.getLogin());
-      user.setId(userId);
-      user.setSpecificId(silverpeasUser.getSpecificId());
-      user.setDomainId(silverpeasUser.getDomainId());
-      user.setAccessLevel(silverpeasUser.getAccessLevel());
-      user.setCreationDate(silverpeasUser.getCreationDate());
-      user.setSaveDate(silverpeasUser.getSaveDate());
-      user.setVersion(silverpeasUser.getVersion());
-      user.setTosAcceptanceDate(silverpeasUser.getTosAcceptanceDate());
-      user.setLastLoginDate(silverpeasUser.getLastLoginDate());
-      user.setNbSuccessfulLoginAttempts(silverpeasUser.getNbSuccessfulLoginAttempts());
-      user.setLastLoginCredentialUpdateDate(silverpeasUser.getLastLoginCredentialUpdateDate());
-      user.setExpirationDate(silverpeasUser.getExpirationDate());
-      user.setState(silverpeasUser.getState());
-      user.setStateSaveDate(silverpeasUser.getStateSaveDate());
-      user.setNotifManualReceiverLimit(silverpeasUser.getNotifManualReceiverLimit());
-
-      if (isUserFull) {
-        user.setLoginQuestion(silverpeasUser.getLoginQuestion());
-        user.setLoginAnswer(silverpeasUser.getLoginAnswer());
+      tmpStart = currentTimeMillis();
+      final Map<String, Pair<String, DomainDriver>> domainsById = new HashMap<>();
+      for(final UserDetail spUser : silverpeasUsers) {
+        final String domainId = spUser.getDomainId();
+        if (!domainsById.containsKey(domainId)) {
+          domainsById.put(domainId, Pair.of(domainId, this.getDomainDriver(domainId)));
+        }
       }
-
+      fetchingDomainTime = currentTimeMillis() - tmpStart;
+      nbDomainsFetched = domainsById.size();
+      tmpStart = currentTimeMillis();
+      final Map<String, T> domainUsersBySpecificId = silverpeasUsers
+          .stream()
+          .collect(groupingBy(u -> domainsById.get(u.getDomainId()), mapping(u -> u, toList())))
+          .entrySet()
+          .stream()
+          // Get User details from specific domain
+          .flatMap(e -> toUsersFromDomain(e.getValue(), isUserFull, e.getKey().getSecond()).stream()
+              .map(u -> {
+                u.setDomainId(e.getKey().getFirst());
+                return u;
+              }))
+          .collect(toMap(u -> format("%s@%s", u.getSpecificId(), u.getDomainId()), u -> (T) u));
+      fetchingDomainUsersTime = currentTimeMillis() - tmpStart;
+      nbDomainUsersFetched = domainUsersBySpecificId.size();
+      tmpStart = currentTimeMillis();
+      final List<T> users = silverpeasUsers.stream().map(u -> {
+        final T user = domainUsersBySpecificId.get(format("%s@%s", u.getSpecificId(), u.getDomainId()));
+        // Fill silverpeas info of user details
+        user.setLogin(u.getLogin());
+        user.setId(u.getId());
+        user.setSpecificId(u.getSpecificId());
+        user.setDomainId(u.getDomainId());
+        user.setAccessLevel(u.getAccessLevel());
+        user.setCreationDate(u.getCreationDate());
+        user.setSaveDate(u.getSaveDate());
+        user.setVersion(u.getVersion());
+        user.setTosAcceptanceDate(u.getTosAcceptanceDate());
+        user.setLastLoginDate(u.getLastLoginDate());
+        user.setNbSuccessfulLoginAttempts(u.getNbSuccessfulLoginAttempts());
+        user.setLastLoginCredentialUpdateDate(u.getLastLoginCredentialUpdateDate());
+        user.setExpirationDate(u.getExpirationDate());
+        user.setState(u.getState());
+        user.setStateSaveDate(u.getStateSaveDate());
+        user.setNotifManualReceiverLimit(u.getNotifManualReceiverLimit());
+        if (isUserFull) {
+          user.setLoginQuestion(u.getLoginQuestion());
+          user.setLoginAnswer(u.getLoginAnswer());
+        }
+        return user;
+      }).collect(toList());
+      applyingSpDataToDomainUsersTime = currentTimeMillis() - tmpStart;
+      return users;
     } catch (SQLException e) {
-      throw new AdminException(failureOnGetting("user", userId), e);
+      throw new AdminException(failureOnGetting(USERS, userIds), e);
+    } finally {
+      final SilverLogger logger = SilverLogger.getLogger(this);
+      if (logger.isLoggable(Level.DEBUG)) {
+        logger.debug(String.format(
+            "Fetching %s %s instances in %s:" +
+                "%n\t- fetching %s Silverpeas's users in %s" +
+                "%n\t- fetching %s domains in %s" +
+                "%n\t- fetching %s domain users in %s" +
+                "%n\t- applying Silverpeas's user date to domain users in %s",
+            userIds.size(), userModelClass.getSimpleName(), formatDurationHMS(currentTimeMillis() - startTime),
+            nbSpUsersFetched, formatDurationHMS(fetchingSpUsersTime),
+            nbDomainsFetched, formatDurationHMS(fetchingDomainTime),
+            nbDomainUsersFetched, formatDurationHMS(fetchingDomainUsersTime),
+            formatDurationHMS(applyingSpDataToDomainUsersTime)
+        ));
+      }
     }
-    return (T) user;
   }
 
-  private UserDetail getUserDetail(final String userId, final boolean isUserFull,
-      final UserDetail silverpeasUser, final DomainDriver domainDriver) {
-    UserDetail user = null;
+  @SuppressWarnings("unchecked")
+  private <T extends UserDetail> List<T> toUsersFromDomain(final List<UserDetail> silverpeasUsers,
+      final boolean isUserFull, final DomainDriver domainDriver) {
+    final Set<String> specificIds = silverpeasUsers.stream()
+        .map(UserDetail::getSpecificId)
+        .collect(toSet());
+    final Mutable<Map<String, T>> domainUsersBySpecificId = Mutable.empty();
     try {
-      user = isUserFull ? domainDriver.getUserFull(silverpeasUser.getSpecificId()) :
-          domainDriver.getUser(silverpeasUser.getSpecificId());
-    } catch (AdminException e) {
+      domainUsersBySpecificId.set((isUserFull ?
+          (List<T>) domainDriver.listUserFulls(specificIds) :
+          (List<T>) domainDriver.listUsers(specificIds))
+          .stream()
+          .collect(toMap(T::getSpecificId, u -> u)));
+    } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
+      domainUsersBySpecificId.set(emptyMap());
     }
-
-    if (user == null) {
-      SilverLogger.getLogger(this)
-          .error("Cannot find user " + userId + " in domain " + silverpeasUser.getDomainId());
-      user = isUserFull ? new UserFull(domainDriver) : new UserDetail();
-      user.setFirstName(silverpeasUser.getFirstName());
-      user.setLastName(silverpeasUser.getLastName());
-      user.seteMail(silverpeasUser.geteMail());
-    }
-
-    return user;
+    return silverpeasUsers.stream()
+        .map(u -> {
+          T user = domainUsersBySpecificId.get().get(u.getSpecificId());
+          if (user == null) {
+            SilverLogger.getLogger(this)
+                .error("Cannot find user " + u.getSpecificId() + " in domain " + u.getDomainId());
+            user = (T) (isUserFull ? new UserFull(domainDriver) : new UserDetail());
+            user.setFirstName(u.getFirstName());
+            user.setLastName(u.getLastName());
+            user.seteMail(u.geteMail());
+          }
+          return user;
+        })
+        .collect(Collectors.toList());
   }
 
   @Override
   public UserFull getUserFull(String specificId) throws AdminException {
-    return loadUserEntity(specificId, UserFull.class);
+    return unique(listUserFulls(singleton(specificId)));
+  }
+
+  @Override
+  public List<UserFull> listUserFulls(final Collection<String> specificIds) throws AdminException {
+    return loadUserEntities(specificIds, UserFull.class);
   }
 
   @Override
@@ -805,13 +889,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
           new UserDetailsSearchCriteria().onDomainIds(domainId).onUserIds(ids));
       return users.stream().map(UserDetail::getSpecificId).toArray(String[]::new);
     } catch (SQLException e) {
-      throw new AdminException(failureOnGetting("users", String.join(",", ids)), e);
+      throw new AdminException(failureOnGetting(USERS, String.join(",", ids)), e);
     }
   }
 
   @Override
   public List<String> getUserAttributes() throws AdminException {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   private OrganizationSchema getOrganizationSchema() {

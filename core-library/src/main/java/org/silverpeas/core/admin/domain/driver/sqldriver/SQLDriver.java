@@ -45,10 +45,14 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.singleton;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 public class SQLDriver extends AbstractDomainDriver {
 
@@ -217,23 +221,35 @@ public class SQLDriver extends AbstractDomainDriver {
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail getUser(String specificId) throws AdminException {
+    return unique(listUsers(singleton(specificId)));
+  }
+
+  @Override
+  public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
-      return localUserMgr.getUser(connection, idAsInt(specificId));
+      return localUserMgr.getUsers(connection,
+          specificIds.stream().map(SQLDriver::idAsInt).collect(Collectors.toList()));
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("user", specificId), e);
+      throw new AdminException(failureOnGetting("user", specificIds), e);
     }
   }
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public UserFull getUserFull(String id) throws AdminException {
-    try(Connection connection = dataSource.getConnection()) {
-      int userId = idAsInt(id);
-      UserFull uf = null;
-      UserDetail ud = localUserMgr.getUser(connection, userId);
-      if (ud != null) {
-        uf = new UserFull(this, ud);
+    return unique(listUserFulls(singleton(id)));
+  }
 
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
+  public List<UserFull> listUserFulls(Collection<String> ids) throws AdminException {
+    try (Connection connection = dataSource.getConnection()) {
+      final List<UserDetail> users = localUserMgr.getUsers(connection,
+          ids.stream().map(SQLDriver::idAsInt).collect(Collectors.toList()));
+      final List<UserFull> result = new ArrayList<>(users.size());
+      for (final UserDetail ud : users) {
+        int userId = idAsInt(ud.getSpecificId());
+        UserFull uf = new UserFull(this, ud);
         if (drvSettings.isUserPasswordAvailable()) {
           uf.setPasswordAvailable(true);
           uf.setPassword(localUserMgr.getUserPassword(connection, userId));
@@ -242,16 +258,16 @@ public class SQLDriver extends AbstractDomainDriver {
         String[] specificProps = getPropertiesNames();
         DomainProperty theProp;
         String value;
-
         for (String specificProp : specificProps) {
           theProp = getProperty(specificProp);
           value = localUserMgr.getUserSpecificProperty(connection, userId, theProp);
           uf.setValue(theProp.getName(), value);
         }
+        result.add(uf);
       }
-      return uf;
+      return result;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("user", id), e);
+      throw new AdminException(failureOnGetting("users", ids), e);
     }
   }
 

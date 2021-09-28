@@ -180,6 +180,11 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public List<UserFull> getUserFulls(final Collection<String> userIds) {
+    return null;
+  }
+
+  @Override
   public UserDetail getUserDetail(final String sUserId) {
     UserDetail user = new UserDetail();
     String userId = sUserId;

@@ -2494,6 +2494,11 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
+  public List<UserFull> getUserFulls(final Collection<String> userIds) throws AdminException {
+    return userManager.listUserFulls(userIds);
+  }
+
+  @Override
   public UserFull getUserFull(String domainId, String specificId) throws AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getUserFull(specificId);

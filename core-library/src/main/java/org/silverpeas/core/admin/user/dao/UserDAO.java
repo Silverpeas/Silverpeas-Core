@@ -26,8 +26,8 @@ package org.silverpeas.core.admin.user.dao;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -163,6 +164,24 @@ public class UserDAO {
         .executeUniqueWith(connection, UserDAO::fetchUser);
   }
 
+  /**
+   * Gets the users corresponding to specified unique identifiers.
+   * @param connection the connection to the data source to use
+   * @param ids the unique identifiers of the users to get.
+   * @return a list of user.
+   * @throws SQLException if an error occurs while getting the user detail from the data source.
+   */
+  public List<UserDetail> getUserByIds(final Connection connection, final Collection<String> ids)
+      throws SQLException {
+    return JdbcSqlQuery.streamBySplittingOn(
+        ids.stream().map(Integer::parseInt).collect(Collectors.toList()), idBatch ->
+                JdbcSqlQuery.createSelect(USER_COLUMNS)
+                    .from(USER_TABLE)
+                    .where("id").in(idBatch)
+                    .executeWith(connection, UserDAO::fetchUser))
+        .collect(Collectors.toList());
+  }
+
   public boolean isUserByIdExists(final Connection connection, final String id)
       throws SQLException {
     return JdbcSqlQuery.createSelect("COUNT(id)")
@@ -182,12 +201,14 @@ public class UserDAO {
   }
 
   public List<UserDetail> getUsersBySpecificIds(final Connection connection, final String domainId,
-      final List<String> specificIds) throws SQLException {
-    return JdbcSqlQuery.createSelect(USER_COLUMNS)
-        .from(USER_TABLE)
-        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
-        .and(SPECIFIC_ID).in(specificIds)
-        .executeWith(connection, UserDAO::fetchUser);
+      final Collection<String> specificIds) throws SQLException {
+    return JdbcSqlQuery.streamBySplittingOn(specificIds, idBatch ->
+        JdbcSqlQuery.createSelect(USER_COLUMNS)
+            .from(USER_TABLE)
+            .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+            .and(SPECIFIC_ID).in(idBatch)
+            .executeWith(connection, UserDAO::fetchUser))
+        .collect(Collectors.toList());
   }
 
   /**
