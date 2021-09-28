@@ -29,7 +29,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,12 +48,20 @@ public class UserFull extends UserDetail {
 
   /**
    * Gets the full profile of the user with the specified identifier.
-   *
    * @param userId the unique identifier of the user in Silverpeas.
    * @return the full profile of the user.
    */
   public static UserFull getById(String userId) {
     return getOrganisationController().getUserFull(userId);
+  }
+
+  /**
+   * Gets full profiles of user corresponding to the specified identifiers.
+   * @param userIds the unique identifiers of users in Silverpeas.
+   * @return list of full profile of user.
+   */
+  public static List<UserFull> getByIds(Collection<String> userIds) {
+    return getOrganisationController().getUserFulls(userIds);
   }
 
   /**

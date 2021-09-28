@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -226,14 +227,34 @@ public interface DomainDriver {
 
   void updateUserDetail(UserDetail user) throws AdminException;
 
+  /**
+   * Retrieves common user information from database.
+   * @param specificId The user id as stored in the database.
+   * @return The full User object that contain ALL user information.
+   */
   UserDetail getUser(String specificId) throws AdminException;
 
   /**
-   * Retrieve user information from database
-   * @param specificId The user id as stored in the database
-   * @return The full User object that contain ALL user informations
+   * Retrieves the common user information from database against the given identifiers.
+   * @param specificIds The user ids as stored in the database.
+   * @return a list of common User object.
+   */
+  List<UserDetail> listUsers(Collection<String> specificIds) throws AdminException;
+
+  /**
+   * Retrieves common user information from database with the additional data.
+   * @param specificId The user id as stored in the database.
+   * @return The full User object that contain ALL user information.
    */
   UserFull getUserFull(String specificId) throws AdminException;
+
+  /**
+   * Retrieves common user information with the additional data from database against the given
+   * identifiers.
+   * @param specificIds The user ids as stored in the database.
+   * @return a list of full User object.
+   */
+  List<UserFull> listUserFulls(Collection<String> specificIds) throws AdminException;
 
   String[] getUserMemberGroupIds(String specificId) throws AdminException;
 

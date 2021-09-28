@@ -40,10 +40,13 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singleton;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
@@ -327,9 +330,14 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   @Override
   public UserFull getUserFull(String specificId) throws AdminException {
-    String ld = LDAPUtility.openConnection(driverSettings);
+    return unique(listUserFulls(singleton(specificId)));
+  }
+
+  @Override
+  public List<UserFull> listUserFulls(final Collection<String> specificIds) throws AdminException {
+    final String ld = LDAPUtility.openConnection(driverSettings);
     try {
-      return userTranslator.getUserFull(ld, specificId, this.domainId);
+      return userTranslator.listUserFulls(ld, specificIds, this.domainId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
@@ -343,10 +351,14 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   @Override
   public UserDetail getUser(String specificId) throws AdminException {
-    String ld = LDAPUtility.openConnection(driverSettings);
+    return unique(listUsers(singleton(specificId)));
+  }
 
+  @Override
+  public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
+    final String ld = LDAPUtility.openConnection(driverSettings);
     try {
-      return userTranslator.getUser(ld, specificId);
+      return userTranslator.listUsers(ld, specificIds);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
