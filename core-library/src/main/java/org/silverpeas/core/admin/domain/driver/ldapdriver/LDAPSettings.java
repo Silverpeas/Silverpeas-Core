@@ -33,6 +33,10 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
+import java.util.Collection;
+
+import static java.util.stream.Collectors.joining;
+
 /**
  * This class read the property file and keep it's values accessible via the get functions
  * @author tleroi
@@ -344,6 +348,13 @@ public class LDAPSettings implements DriverSettings {
       return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
           LDAPUtility.normalizeFilterValue(value) + "))";
     }
+  }
+
+  public String getUsersIdFilter(Collection<String> values) {
+    if (values.size() == 1) {
+      return getUsersIdFilter(values.iterator().next());
+    }
+    return values.stream().map(this::getUsersIdFilter).collect(joining(StringUtil.EMPTY, "(|", ")"));
   }
 
   public String getUsersLoginFilter(String value) {

@@ -572,6 +572,11 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public List<UserFull> getUserFulls(final Collection<String> userIds) throws AdminException {
+    return null;
+  }
+
+  @Override
   public String addUser(final UserDetail userDetail) {
     return null;
   }

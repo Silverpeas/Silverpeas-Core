@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,22 +25,19 @@ package org.silverpeas.core.persistence.jdbc.sql;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
- * Split Processor on discriminant data.
+ * Split Processor on discriminant data used for list queries.
  * @param <D> the type of list of discriminant data.
  * @param <T> the type of the entity into result.
  */
 @FunctionalInterface
-public interface SplitExecuteProcess<D, T> {
+public interface SplitListProcess<D, T> {
 
   /**
    * Processes on a slice of entire list of discriminant data.
    * @param idBatch a slice of discriminant data.
-   * @param result the result which has to be filled.
    * @throws SQLException on SQL errors.
    */
-  void execute(final Collection<D> idBatch, final Map<D, List<T>> result) throws SQLException;
+  T execute(final Collection<D> idBatch) throws SQLException;
 }

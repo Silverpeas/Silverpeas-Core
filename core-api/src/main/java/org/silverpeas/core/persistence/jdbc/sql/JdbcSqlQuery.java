@@ -38,9 +38,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
 
 /**
@@ -700,6 +704,39 @@ public class JdbcSqlQuery {
       process.execute(d, result);
     }
     return result;
+  }
+
+  /**
+   * Split executor.
+   * @param <I> the type of list of discriminant data.
+   * @param <T> the type of the entity into result.
+   * @param discriminantData a discriminant list of data.
+   * @return a stream between given discriminant identifiers and the corresponding data.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  public static <I, T> Stream<T> streamBySplittingOn(final Collection<I> discriminantData,
+      final SplitListProcess<I, List<T>> process) throws SQLException {
+    Stream<T> result = Stream.empty();
+    for (Collection<I> d : CollectionUtil.split(discriminantData, SPLIT_BATCH)) {
+      result = Stream.concat(result, process.execute(d).stream());
+    }
+    return result;
+  }
+
+  /**
+   * Split executor giving a result sorted exactly like the discriminantData parameter is sorted.
+   * @param <I> the type of list of discriminant data.
+   * @param <T> the type of the entity into result.
+   * @param discriminantData a discriminant list of data.
+   * @param idGetter permits to get the id from T entity in order to sort the result.
+   * @return a stream between given discriminant identifiers and the corresponding data.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  public static <I, T> Stream<T> streamBySplittingOn(final Collection<I> discriminantData,
+      final SplitListProcess<I, List<T>> process, Function<T, I> idGetter) throws SQLException {
+    final Map<I, T> indexedResult = streamBySplittingOn(discriminantData, process)
+        .collect(toMap(idGetter, r -> r));
+    return discriminantData.stream().map(indexedResult::get).filter(Objects::nonNull);
   }
 
   /**

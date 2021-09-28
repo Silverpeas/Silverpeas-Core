@@ -44,7 +44,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringTokenizer;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.SPLIT_BATCH;
 
 /**
  * This class contains some useful static functions to access to LDAP elements
@@ -198,43 +202,68 @@ public class LDAPUtility {
    */
   public static LDAPEntry getFirstEntryFromSearch(String lds, String baseDN,
       int scope, String filter, String[] attrs) throws AdminException {
-    LDAPConnection connection = getConnection(lds);
-    String sureFilter;
+    return getEntriesFromSearch(lds, baseDN, scope, filter, attrs, true).stream()
+        .findFirst()
+        .orElse(null);
+  }
 
-    if (!StringUtil.isDefined(filter)) {
-      sureFilter = "(objectClass=*)";
-    } else {
-      sureFilter = filter;
-    }
+  /**
+   * Search and returns entries that match the parameters baseDN, scope and filter
+   * @param lds the LDAP connection name
+   * @param baseDN the base DN for the search
+   * @param scope the scope (LDAPConnection.SCOPE_BASE, LDAPConnection.SCOPE_ONE or
+   * LDAPConnection.SCOPE_SUB)
+   * @param filter the filter for the search (if null, use '(objectClass=*)' )
+   * @param attrs hidden attributes
+   * @return list of entry matching the criteria
+   * @throws AdminException if a problem occur
+   */
+  public static List<LDAPEntry> getEntriesFromSearch(String lds, String baseDN,
+      int scope, String filter, String[] attrs) throws AdminException {
+    return getEntriesFromSearch(lds, baseDN, scope, filter, attrs, false);
+  }
+
+  private static List<LDAPEntry> getEntriesFromSearch(String lds, String baseDN,
+      int scope, String filter, String[] attrs, boolean firstOnly) throws AdminException {
+    final LDAPConnection connection = getConnection(lds);
+    final String sureFilter = ofNullable(filter)
+        .filter(StringUtil::isDefined)
+        .orElse("(objectClass=*)");
     // Return only one entry
-
-    LDAPSearchConstraints sc = connection.getSearchConstraints();
-    sc.setBatchSize(1);
-    sc.setMaxResults(1);
+    final LDAPSearchConstraints sc = connection.getSearchConstraints();
+    Optional.of(firstOnly).filter(Boolean.TRUE::equals).ifPresentOrElse(b -> {
+      sc.setBatchSize(1);
+      sc.setMaxResults(1);
+    }, () -> {
+      sc.setBatchSize(SPLIT_BATCH);
+      sc.setMaxResults(SPLIT_BATCH);
+    });
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
     // and stop when first entry is found
     String[] baseDNs = extractBaseDNs(baseDN);
-    LDAPEntry theEntry = null;
+    List<LDAPEntry> entries = new ArrayList<>();
     for (String baseDN1 : baseDNs) {
       try {
         LDAPSearchResults res = connection.search(baseDN1, scope, sureFilter, attrs, false, sc);
-        if (res.hasMore()) {
-          theEntry = res.next();
-          break;
+        while (res.hasMore()) {
+          entries.add(res.next());
+          if (firstOnly) {
+            return entries;
+          }
         }
       } catch (LDAPReferralException re) {
         throw new AdminException(LDAP_ERROR.format(
             new Object[]{Integer.toString(re.getResultCode()), re.getLDAPErrorMessage()}), re);
       } catch (LDAPException e) {
         if (LDAPUtility.recoverConnection(lds, e)) {
-          return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
+          return getEntriesFromSearch(lds, baseDN, scope, filter, attrs, firstOnly);
         } else {
           SilverLogger.getLogger(LDAPUtility.class)
               .error("Error LDAP #" + e.getResultCode() + " " + e.getLDAPErrorMessage(), e);
         }
       }
     }
-    return theEntry;
+    return entries;
   }
 
   static boolean isAGuid(String attName) {

@@ -62,6 +62,7 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -380,7 +381,7 @@ public class UserManager {
       AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<String> adminIds = userDAO.getAllAdminIds(connection, fromUser);
-      return adminIds.toArray(new String[adminIds.size()]);
+      return adminIds.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("admin users", ""), e);
     }
@@ -398,6 +399,21 @@ public class UserManager {
       return domainDriverManager.getUserFull(sUserId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user", sUserId), e);
+    }
+  }
+
+  /**
+   * Gets full information about users corresponding to given unique identifiers (only info in
+   * cache table) from its domain.
+   * @param userIds the unique identifiers of user to get.
+   * @return list of {@link UserFull} instance.
+   * @throws AdminException if an error occurs while getting the user.
+   */
+  public List<UserFull> listUserFulls(Collection<String> userIds) throws AdminException {
+    try {
+      return domainDriverManager.listUserFulls(userIds);
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting("users", userIds), e);
     }
   }
 
@@ -443,7 +459,7 @@ public class UserManager {
    * @param domainId the unique identifier of the domain.
    * @return a list of users matching the identifiers specific to the given domain.
    */
-  public List<UserDetail> getUsersBySpecificIdsAndDomainId(final List<String> specificIds,
+  public List<UserDetail> getUsersBySpecificIdsAndDomainId(final Collection<String> specificIds,
       final String domainId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUsersBySpecificIds(connection, domainId, specificIds);

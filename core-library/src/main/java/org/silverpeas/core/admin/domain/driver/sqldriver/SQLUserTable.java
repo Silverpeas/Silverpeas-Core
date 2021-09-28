@@ -28,13 +28,19 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.singleton;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 /**
  * a DAO to manage the DomainSQL_User table.
@@ -240,18 +246,21 @@ public class SQLUserTable {
    * Returns the User whith the given id.
    */
   public UserDetail getUser(Connection c, int userId) throws AdminException {
-    final String theQuery = SELECT + getColumns() + FROM + drvSettings.getUserTableName() +
-        WHERE_ID_EQUAL_TO_GIVEN_VALUE;
+    return unique(getUsers(c, singleton(userId)));
+  }
 
-    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
-      statement.setInt(1, userId);
-      try (final ResultSet rs = statement.executeQuery()) {
-        if (rs.next()) {
-          return fetchUser(rs);
-        } else {
-          return null;
-        }
-      }
+  /**
+   * Returns users corresponding to given user ids.
+   */
+  public List<UserDetail> getUsers(Connection c, Collection<Integer> userIds)
+      throws AdminException {
+    try {
+      return JdbcSqlQuery.streamBySplittingOn(userIds, idBatch ->
+              JdbcSqlQuery.createSelect(getColumns())
+                  .from(drvSettings.getUserTableName())
+                  .where("id").in(idBatch)
+                  .executeWith(c, this::fetchUser))
+          .collect(Collectors.toList());
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     }
@@ -336,7 +345,6 @@ public class SQLUserTable {
    */
   private UserDetail fetchUser(ResultSet rs) throws SQLException {
     UserDetail u = new UserDetail();
-
     u.setSpecificId(Integer.toString(rs.getInt(1)));
     u.setFirstName(rs.getString(2));
     u.setLastName(rs.getString(3));

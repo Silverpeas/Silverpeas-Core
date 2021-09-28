@@ -37,13 +37,16 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static java.util.Collections.singletonList;
+import static java.util.Collections.singleton;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_RO_LISTENER;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_UPDATE_USER;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 public class SCIMDriver extends AbstractDomainDriver {
 
@@ -160,21 +163,33 @@ public class SCIMDriver extends AbstractDomainDriver {
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail getUser(String specificId) throws AdminException {
-    // In this driver, returning Silverpeas user by specific id.
+    return unique(listUsers(singleton(specificId)));
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
+  public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
     final List<UserDetail> users = userManager
-        .getUsersBySpecificIdsAndDomainId(singletonList(specificId), String.valueOf(domainId));
-    if (users.size() > 1) {
-      throw new AdminException("too many users referenced to same identifier");
+        .getUsersBySpecificIdsAndDomainId(specificIds, String.valueOf(domainId));
+    if (users.size() != specificIds.size()) {
+      throw new AdminException("not enough or too many users referenced to same identifier");
     }
-    return users.stream().findFirst().orElse(null);
+    return users;
   }
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public UserFull getUserFull(String id) throws AdminException {
-    // In this driver, for now, nothing is specially saved into domain persistence
-    final UserDetail userDetail = getUser(id);
-    return userDetail != null ? new UserFull(null, userDetail) : null;
+    return unique(listUserFulls(singleton(id)));
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
+  public List<UserFull> listUserFulls(final Collection<String> specificIds) throws AdminException {
+    return listUsers(specificIds).stream()
+        // In this driver, for now, nothing is specially saved into domain persistence
+        .map(u -> new UserFull(null, u))
+        .collect(Collectors.toList());
   }
 
   @Override
