@@ -74,6 +74,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.MANAGER;
 
@@ -287,6 +288,16 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
+    }
+  }
+
+  @Override
+  public List<UserFull> getUserFulls(final Collection<String> userIds) {
+    try {
+      return getAdminService().getUserFulls(userIds);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return emptyList();
     }
   }
 

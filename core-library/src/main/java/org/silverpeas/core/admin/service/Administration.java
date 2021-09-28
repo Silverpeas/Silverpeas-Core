@@ -637,12 +637,22 @@ public interface Administration {
   String getUserIdByAuthenticationKey(String authenticationKey) throws AdminException;
 
   /**
-   * Get the user corresponding to the given user Id (only infos in cache table)
-   * @param sUserId
-   * @return
-   * @throws AdminException
+   * Get full information about the user with the given unique identifier (only info in cache table)
+   * from its domain.
+   * @param sUserId the unique identifier of the user to get.
+   * @return a {@link UserFull} instance.
+   * @throws AdminException if an error occurs while getting the user.
    */
   UserFull getUserFull(String sUserId) throws AdminException;
+
+  /**
+   * Gets full information about users corresponding to given unique identifiers (only info in
+   * cache table) from its domain.
+   * @param userIds the unique identifiers of user to get.
+   * @return list of {@link UserFull} instance.
+   * @throws AdminException if an error occurs while getting the user.
+   */
+  List<UserFull> getUserFulls(Collection<String> userIds) throws AdminException;
 
   UserFull getUserFull(String domainId, String specificId) throws AdminException;
 

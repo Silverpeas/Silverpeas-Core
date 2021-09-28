@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -40,15 +41,21 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.unique;
 
 @Singleton
 @Service
@@ -179,37 +186,60 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     if (!StringUtil.isInteger(specificId)) {
       return null;
     }
-    SPUser spUser = spUserRepository.getById(specificId);
-    return convertToUser(spUser, new UserDetail());
+    return unique(listUsers(singleton(specificId)));
+  }
+
+  @Override
+  public List<UserDetail> listUsers(final Collection<String> specificIds) {
+    return spUserRepository.getById(specificIds)
+        .stream()
+        .map(u -> convertToUser(u, new UserDetail()))
+        .collect(Collectors.toList());
   }
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public UserFull getUserFull(String specificId) {
+  public UserFull getUserFull(String specificId) throws AdminException {
     if (!StringUtil.isInteger(specificId)) {
       return null;
     }
-    SPUser user = spUserRepository.getById(specificId);
-    UserFull userFull = new UserFull(this);
-    if (user != null) {
-      userFull.setFirstName(user.getFirstname());
-      userFull.setLastName(user.getLastname());
-      userFull.setValue(TITLE, user.getTitle());
-      userFull.setValue(COMPANY, user.getCompany());
-      userFull.setValue(POSITION, user.getPosition());
-      userFull.setValue(BOSS, user.getBoss());
-      userFull.setValue(PHONE, user.getPhone());
-      userFull.setValue(HOME_PHONE, user.getHomephone());
-      userFull.setValue(FAX, user.getFax());
-      userFull.setValue(CELLULAR_PHONE, user.getCellphone());
-      userFull.setValue(ADDRESS, user.getAddress());
-      userFull.setLogin(user.getLogin());
-      userFull.seteMail(user.getEmail());
-      userFull.setPassword(user.getPassword());
-      userFull.setPasswordValid(user.isPasswordValid());
-      userFull.setPasswordAvailable(true);
+    return listUserFulls(singleton(specificId)).stream()
+        .findFirst()
+        .orElseGet(() -> new UserFull(this));
+  }
+
+  @Override
+  public List<UserFull> listUserFulls(final Collection<String> specificIds) throws AdminException {
+    final Map<String, SPUser> domainUsersBySpecificId;
+    try {
+      domainUsersBySpecificId = JdbcSqlQuery.streamBySplittingOn(specificIds,
+          idBatch -> spUserRepository.getById(idBatch)).collect(toMap(SPUser::getId, u -> u));
+    } catch (SQLException e) {
+      throw new AdminException(e);
     }
-    return userFull;
+    return specificIds.stream().map(domainUsersBySpecificId::get).map(u -> {
+      final UserFull userFull = new UserFull(this);
+      if (u != null) {
+        userFull.setSpecificId(u.getId());
+        userFull.setFirstName(u.getFirstname());
+        userFull.setLastName(u.getLastname());
+        userFull.setValue(TITLE, u.getTitle());
+        userFull.setValue(COMPANY, u.getCompany());
+        userFull.setValue(POSITION, u.getPosition());
+        userFull.setValue(BOSS, u.getBoss());
+        userFull.setValue(PHONE, u.getPhone());
+        userFull.setValue(HOME_PHONE, u.getHomephone());
+        userFull.setValue(FAX, u.getFax());
+        userFull.setValue(CELLULAR_PHONE, u.getCellphone());
+        userFull.setValue(ADDRESS, u.getAddress());
+        userFull.setLogin(u.getLogin());
+        userFull.seteMail(u.getEmail());
+        userFull.setPassword(u.getPassword());
+        userFull.setPasswordValid(u.isPasswordValid());
+        userFull.setPasswordAvailable(true);
+      }
+      return userFull;
+    }).collect(Collectors.toList());
   }
 
   @Override

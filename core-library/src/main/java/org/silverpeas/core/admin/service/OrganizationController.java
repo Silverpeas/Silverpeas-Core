@@ -179,6 +179,11 @@ public interface OrganizationController extends java.io.Serializable {
   UserFull getUserFull(String sUserId);
 
   /**
+   * Return a list of full detail of users corresponding to
+   */
+  List<UserFull> getUserFulls(Collection<String> userIds);
+
+  /**
    * Return the detail of the user with the given ldap Id
    */
   <T extends User> T getUserDetail(String sUserId);

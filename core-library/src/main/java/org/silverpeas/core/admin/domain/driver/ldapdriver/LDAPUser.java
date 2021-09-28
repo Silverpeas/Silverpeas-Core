@@ -33,11 +33,13 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
@@ -120,15 +122,16 @@ public class LDAPUser {
   }
 
   /**
-   * Return a UserDetail object filled with the infos of the user having ID = id NOTE : the
-   * DomainID
-   * and the ID are not set.
+   * Return a list of {@link UserFull} instance each one filled with the infos of the user having
+   * ID = id
+   * <p> NOTE : the DomainID and the ID are not set.</p>
    * @param lds the LDAP connection
-   * @param id the user id
-   * @return the user object
+   * @param ids list of user id
+   * @return the list of {@link UserFull} instance.
    * @throws AdminException if an error occur during LDAP operations or if the user is not found
    */
-  public UserFull getUserFull(String lds, String id, int domainId) throws AdminException {
+  public List<UserFull> listUserFulls(String lds, Collection<String> ids, int domainId)
+      throws AdminException {
     List<String> lAttrs = new ArrayList<>();
     String[] userAttributes = driverSettings.getUserAttributes();
     if (userAttributes != null && userAttributes.length > 0) {
@@ -137,27 +140,38 @@ public class LDAPUser {
         lAttrs.addAll(Arrays.asList(driverParent.getMapParameters()));
       }
     }
-    LDAPEntry theEntry = LDAPUtility
-        .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
-            driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[0]));
-    return translateUserFull(lds, theEntry, domainId);
+    final List<UserFull> users = new ArrayList<>(ids.size());
+    for (final Collection<String> idBatch : CollectionUtil.split(ids)) {
+      final List<LDAPEntry> entries = LDAPUtility.getEntriesFromSearch(lds,
+          driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
+          driverSettings.getUsersIdFilter(idBatch), lAttrs.toArray(new String[0]));
+      for (final LDAPEntry entry : entries) {
+        users.add(translateUserFull(lds, entry, domainId));
+      }
+    }
+    return users;
   }
 
   /**
-   * Return a UserDetail object filled with the infos of the user having ID = id NOTE : the
-   * DomainID
-   * and the ID are not set.
+   * Return a list of {@link UserDetail} instance each one filled with the infos of the user having
+   * ID = id
+   * <p> NOTE : the DomainID and the ID are not set.</p>
    * @param lds the LDAP connection
-   * @param id the user id
-   * @return the user object
+   * @param ids list of user id
+   * @return the list of {@link UserDetail} instance.
    * @throws AdminException if an error occur during LDAP operations or if the user is not found
    */
-  public UserDetail getUser(String lds, String id) throws AdminException {
-    LDAPEntry theEntry;
-    theEntry = LDAPUtility
-        .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
-            driverSettings.getUsersIdFilter(id), driverSettings.getUserAttributes());
-    return translateUser(theEntry);
+  public List<UserDetail> listUsers(String lds, Collection<String> ids) throws AdminException {
+    final List<UserDetail> users = new ArrayList<>(ids.size());
+    for (final Collection<String> idBatch : CollectionUtil.split(ids)) {
+      final List<LDAPEntry> entries = LDAPUtility.getEntriesFromSearch(lds,
+          driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
+          driverSettings.getUsersIdFilter(idBatch), driverSettings.getUserAttributes());
+      for (final LDAPEntry entry : entries) {
+        users.add(translateUser(entry));
+      }
+    }
+    return users;
   }
 
   UserDetail getUserByLogin(String lds, String loginUser) throws AdminException {

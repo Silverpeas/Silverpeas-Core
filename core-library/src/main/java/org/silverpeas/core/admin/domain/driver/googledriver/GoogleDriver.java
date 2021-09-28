@@ -33,12 +33,17 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_RO_PULL_USER;
 import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.decodePath;
 import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.resolve;
@@ -141,16 +146,27 @@ public class GoogleDriver extends AbstractDomainDriver {
    */
   @Override
   public UserFull getUserFull(String specificId) throws AdminException {
-    UserFull uf = null;
-    final User user = request().user(specificId);
-    if (user != null) {
-      try {
-        uf = userFullMapper.apply(user);
-      } catch (ClassCastException e) {
-        throw new AdminException(ATTRIBUTE_PATH_MSG_ERROR, e);
-      }
+    try {
+      return ofNullable(request().user(specificId)).map(userFullMapper).orElse(null);
+    } catch (ClassCastException e) {
+      throw new AdminException(ATTRIBUTE_PATH_MSG_ERROR, e);
     }
-    return uf;
+  }
+
+  @Override
+  public List<UserFull> listUserFulls(final Collection<String> specificIds) throws AdminException {
+    try {
+      if (specificIds.size() == 1) {
+        return singletonList(getUserFull(specificIds.iterator().next()));
+      }
+      return request().users()
+          .stream()
+          .map(userFullMapper)
+          .filter(u -> specificIds.contains(u.getSpecificId()))
+          .collect(Collectors.toList());
+    } catch (ClassCastException e) {
+      throw new AdminException(ATTRIBUTE_PATH_MSG_ERROR, e);
+    }
   }
 
   /**
@@ -162,6 +178,16 @@ public class GoogleDriver extends AbstractDomainDriver {
   @Override
   public UserDetail getUser(String specificId) throws AdminException {
     return userDetailMapper.apply(request().user(specificId));
+  }
+
+  @Override
+  public List<UserDetail> listUsers(final Collection<String> specificIds) throws AdminException {
+    if (specificIds.size() == 1) {
+      return singletonList(getUser(specificIds.iterator().next()));
+    }
+    return Arrays.stream(getAllUsers())
+        .filter(u -> specificIds.contains(u.getSpecificId()))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -366,7 +392,7 @@ public class GoogleDriver extends AbstractDomainDriver {
         .map(m -> m.get("address")).findFirst().orElseGet(u::getPrimaryEmail);
     user.seteMail(email);
     user.setAccessLevel(USER);
-    if (u.getSuspended()) {
+    if (Boolean.TRUE.equals(u.getSuspended())) {
       user.setState(DEACTIVATED);
     } else {
       user.setState(VALID);
