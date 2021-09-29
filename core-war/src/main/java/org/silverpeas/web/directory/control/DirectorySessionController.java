@@ -534,10 +534,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastAllListUsersCalled;
   }
 
-  private UserFull getUserFul(String userId) {
-    return getOrganisationController().getUserFull(userId);
-  }
-
   /**
    * @param compoId
    * @param txtTitle
@@ -601,6 +597,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public SilverpeasList<UserFragmentVO> getFragments(SilverpeasList<DirectoryItem> items) {
+    final DirectoryUserFullRequestCache userFullCache = DirectoryUserFullRequestCache.get();
+    items.stream()
+        .filter(UserItem.class::isInstance)
+        .map(UserItem.class::cast)
+        .forEach(userFullCache::addUserItem);
     return items.stream().map(asFragment).filter(Objects::nonNull)
         .collect(SilverpeasList.collector(items));
   }
@@ -632,7 +633,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("invitationReceived", null);
     }
 
-    UserFull userFull = getUserFul(user.getOriginalId());
+    UserFull userFull = user.getUserFull();
     Map<String, String> extra = new HashMap<>();
     if (userFull != null) {
       extra = userFull.getAllDefinedValues(getLanguage());

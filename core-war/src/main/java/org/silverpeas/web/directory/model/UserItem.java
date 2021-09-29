@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.web.directory.control.DirectoryUserFullRequestCache;
 
 import java.util.Date;
 import java.util.Optional;
@@ -127,11 +128,11 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
 
   /**
    * Gets full data of the user associated to the item.
-   * @return
+   * @return a {@link UserFull} instance.
    */
   public UserFull getUserFull(){
     if (userFull == null) {
-      userFull = UserFull.getById(getOriginalId());
+      userFull = DirectoryUserFullRequestCache.get().getUserFull(this);
     }
     return userFull;
   }
