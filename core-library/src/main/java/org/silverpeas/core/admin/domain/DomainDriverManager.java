@@ -250,11 +250,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
           .entrySet()
           .stream()
           // Get User details from specific domain
-          .flatMap(e -> toUsersFromDomain(e.getValue(), isUserFull, e.getKey().getSecond()).stream()
-              .map(u -> {
-                u.setDomainId(e.getKey().getFirst());
-                return u;
-              }))
+          .flatMap(e -> toUsersFromDomain(e.getValue(), isUserFull, e.getKey()).stream())
           .collect(toMap(u -> format("%s@%s", u.getSpecificId(), u.getDomainId()), u -> (T) u));
       fetchingDomainUsersTime = currentTimeMillis() - tmpStart;
       nbDomainUsersFetched = domainUsersBySpecificId.size();
@@ -309,16 +305,21 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @SuppressWarnings("unchecked")
   private <T extends UserDetail> List<T> toUsersFromDomain(final List<UserDetail> silverpeasUsers,
-      final boolean isUserFull, final DomainDriver domainDriver) {
+      final boolean isUserFull, final Pair<String, DomainDriver> domainDriver) {
     final Set<String> specificIds = silverpeasUsers.stream()
         .map(UserDetail::getSpecificId)
         .collect(toSet());
+    final String identifier = domainDriver.getFirst();
+    final DomainDriver driver = domainDriver.getSecond();
     final Mutable<Map<String, T>> domainUsersBySpecificId = Mutable.empty();
     try {
       domainUsersBySpecificId.set((isUserFull ?
-          (List<T>) domainDriver.listUserFulls(specificIds) :
-          (List<T>) domainDriver.listUsers(specificIds))
-          .stream()
+          (List<T>) driver.listUserFulls(specificIds) :
+          (List<T>) driver.listUsers(specificIds)).stream()
+          .map(u -> {
+            u.setDomainId(identifier);
+            return u;
+          })
           .collect(toMap(T::getSpecificId, u -> u)));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -330,7 +331,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
           if (user == null) {
             SilverLogger.getLogger(this)
                 .error("Cannot find user " + u.getSpecificId() + " in domain " + u.getDomainId());
-            user = (T) (isUserFull ? new UserFull(domainDriver) : new UserDetail());
+            user = (T) (isUserFull ? new UserFull(driver) : new UserDetail());
             user.setFirstName(u.getFirstName());
             user.setLastName(u.getLastName());
             user.seteMail(u.geteMail());
