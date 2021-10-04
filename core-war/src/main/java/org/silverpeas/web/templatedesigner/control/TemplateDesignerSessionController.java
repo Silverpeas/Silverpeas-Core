@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -418,11 +419,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       for (FieldTemplate field : fields) {
         // process search.xml
-        if (field.isSearchable()) {
-          getRecordTemplate(SCOPE_SEARCH).getFieldList().add(field);
-        } else {
-          getRecordTemplate(SCOPE_SEARCH).getFieldList().remove(field);
-        }
+        processSearchFieldOnSaving(field);
 
         // process view.xml (set field to simpletext)
         GenericFieldTemplate cloneField = ((GenericFieldTemplate) field).clone();
@@ -450,6 +447,24 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       updateInProgress = false;
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException("Fail to save template", e);
+    }
+  }
+
+  private void processSearchFieldOnSaving(FieldTemplate field) {
+    if (field.isSearchable()) {
+      GenericFieldTemplate searchField = ((GenericFieldTemplate) field).clone();
+      String searchFieldDisplayerName = searchField.getDisplayerName();
+      if (isATextFieldForSearch(searchFieldDisplayerName)) {
+        searchField.setDisplayerName("text");
+        try {
+          searchField.setTypeName(TextField.TYPE);
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error(e);
+        }
+      }
+      getRecordTemplate(SCOPE_SEARCH).getFieldList().add(searchField);
+    } else {
+      getRecordTemplate(SCOPE_SEARCH).getFieldList().remove(field);
     }
   }
 
@@ -659,5 +674,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           .addSevere(getString("templateDesigner.form.delete.error"));
       SilverLogger.getLogger(this).error(e);
     }
+  }
+
+  private boolean isATextFieldForSearch(final String displayerName) {
+    return Arrays.asList("wysiwyg", "textarea", "image", "file", "video").contains(displayerName);
   }
 }
