@@ -64,9 +64,11 @@
 <td class="txtlibform"><%=resource.getString("templateDesigner.field.multivalued")%> :</td><td><input type="checkbox" id="multivaluableChk" <%=multivaluableChecked%>/> <span id="multivaluableNb"><input type="text" name="NbMaxValues" value="<%=nbMaxValues%>" size="3"/> <%=resource.getString("templateDesigner.field.multivalued.max")%></span></td>
 </tr>
 <% } %>
+<% if (showSearchParam) { %>
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>
+<% } %>
 <% if (showFacetParam) { %>
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.facet")%> :</td><td><input type="checkbox" id="UsedAsFacet" name="UsedAsFacet" value="true" <%=usedAsFacet%>/></td>
