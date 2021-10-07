@@ -182,7 +182,7 @@
       dependencies: ["silverpeas-rooms", "converse-chatboxes"],
       initialize : function() {
         const _converse = this._converse;
-        if (!!_converse.settings['notify_all_room_messages']) {
+        if (!!_converse.api.settings.get('notify_all_room_messages')) {
           _converse.api.listen.on('chatBoxesInitialized', function() {
             _converse.chatboxes.on('change:num_unread_general', function(chatbox) {
               // num_unread_general means both the direct messages and the messages sent to other
@@ -257,16 +257,7 @@
         __converse = _converse;
         const urlAsDataPromise = sp.base64.urlAsData(chatOptions.userAvatarUrl);
         const refreshUserAvatar = function() {
-          const promises = [];
-          for (let key in _converse.promises) {
-            if (key.endsWith('Initialized')) {
-              let promise = _converse.promises[key];
-              if (sp.promise.isOne(promise)) {
-                promises.push(promise);
-              }
-            }
-          }
-          return sp.promise.whenAllResolved(promises).then(function() {
+          return _converse.api.waitUntil('rosterContactsFetched').then(function() {
             return _converse.api.vcard.get(chatOptions.jid, true).then(function(vCard) {
               urlAsDataPromise.then(function(data) {
                 const avatarData = data['justData'];
@@ -289,57 +280,25 @@
             });
           });
         };
-        _converse.api.listen.on('connected', function() {
-          _converse.promises.roomsPanelRendered.then(function() {
-            if (!chatOptions.acl.groupchat.creation) {
-              sp.element.querySelectorAll('#conversejs .controlbox-padded a').forEach(function($el, index) {
-                if (index !== 0) {
-                  $el.remove();
-                }
-              });
-            }
-            refreshUserAvatar().then(function() {
-              return _converse.api.controlbox.open();
+        const __aclUiHandler = function() {
+          if (!chatOptions.acl.groupchat.creation) {
+            sp.element.querySelectorAll('#conversejs .show-add-muc-modal').forEach(function($el) {
+              $el.remove();
             });
-          });
-        });
-      }
-    });
-  }
-
-  /**
-   * Setups the chat cache storage management.
-   * @private
-   */
-  function __setupCacheStorageManagement(chatOptions) {
-    chatOptions.whitelisted_plugins.push('silverpeas-cache-storage-management');
-    converse.plugins.add('silverpeas-cache-storage-management', {
-      dependencies : [],
-      initialize : function() {
-        const _converse = this._converse;
-        const clean = function(room, onClose) {
-          if (room.messages.size() > chatOptions.nbMsgMaxCachedPerRoom) {
-            sp.log.debug('message clear performed on', room.get('jid'), 'more than', chatOptions.nbMsgMaxCachedPerRoom, 'messages');
-            room.clearMessages().then(function() {
-              if (!onClose) {
-                return room.fetchMessages();
-              }
-            });
-          } else if (!onClose && room.messages.size() === 0) {
-            sp.log.debug('fetching archived message on', room.get('jid'));
-            return room.fetchArchivedMessages({'before': ''});
           }
         };
-        _converse.api.listen.on('afterMessagesFetched', function(room) {
-          return clean(room, false);
-        });
-        _converse.api.listen.on('chatBoxClosed', function (room) {
-          if (room && room.model) {
-            const roomType = room.model.get('type');
-            if (roomType === _converse.CHATROOMS_TYPE || roomType === _converse.PRIVATE_CHAT_TYPE) {
-              clean(room.model, true);
-            }
-          }
+        _converse.api.listen.on('rosterInitialized', __aclUiHandler);
+        _converse.api.listen.on('rosterReadyAfterReconnection', __aclUiHandler);
+        _converse.api.listen.on('controlBoxOpened', __aclUiHandler);
+        const promises = [];
+        promises.push(new Promise(function(resolve) {
+          _converse.api.listen.once('connected', resolve);
+        }));
+        promises.push(new Promise(function(resolve) {
+          _converse.api.listen.once('bookmarksInitialized', resolve);
+        }));
+        sp.promise.whenAllResolved(promises).then(refreshUserAvatar).then(function() {
+          return _converse.api.controlbox.open();
         });
       }
     });
@@ -366,7 +325,6 @@
       __setupSilverpeas(__settings);
       __setupChatboxesAddons(__settings);
       __setupNotificationAddons(__settings);
-      __setupCacheStorageManagement(__settings);
       return this;
     };
     this.start = function() {
@@ -375,6 +333,7 @@
         async : true
       }).then(function() {
         converse.initialize({
+          'prune_messages_above' : __settings.nbMsgMaxCachedPerRoom,
           'view_mode' : __settings.viewMode,
           'loglevel' : __settings.debug ? 'debug' : 'error',
           'i18n' : __settings.language,
