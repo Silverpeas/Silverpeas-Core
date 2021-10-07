@@ -85,6 +85,7 @@ import java.util.List;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.attachment.model.DocumentType.attachment;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -291,7 +292,7 @@ public class RepositoriesTypeManager {
 
     final String mimeType = FileUtil.getMimeType(fileName);
     final SimpleDocumentPK documentPK = new SimpleDocumentPK(null, descriptor.getComponentId());
-    if (StringUtil.isDefined(descriptor.getOldSilverpeasId())) {
+    if (isDefined(descriptor.getOldSilverpeasId())) {
       if (StringUtil.isInteger(descriptor.getOldSilverpeasId())) {
         documentPK.setOldSilverpeasId(Long.parseLong(descriptor.getOldSilverpeasId()));
       } else {
@@ -397,7 +398,7 @@ public class RepositoriesTypeManager {
 
       InternetAddress address = mail.getFrom();
       String from = "";
-      if (StringUtil.isDefined(address.getPersonal())) {
+      if (isDefined(address.getPersonal())) {
         from += address.getPersonal() + " - ";
       }
       from += "<a href=\"mailto:" + address.getAddress() + "\">" + address.getAddress() + "</a>";
@@ -408,7 +409,7 @@ public class RepositoriesTypeManager {
       StringBuilder to = new StringBuilder();
       for (Address recipient : recipients) {
         InternetAddress ia = (InternetAddress) recipient;
-        if (StringUtil.isDefined(ia.getPersonal())) {
+        if (isDefined(ia.getPersonal())) {
           to.append(ia.getPersonal()).append(" - ");
         }
         to.append("<a href=\"mailto:")
@@ -590,7 +591,7 @@ public class RepositoriesTypeManager {
     }
 
     public AttachmentDescriptor setComponentId(final String componentId) {
-      this.componentId = componentId;
+      this.componentId = verifyTaintedData(componentId);
       return this;
     }
 
@@ -599,7 +600,7 @@ public class RepositoriesTypeManager {
     }
 
     public AttachmentDescriptor setResourceId(final String resourceId) {
-      this.resourceId = resourceId;
+      this.resourceId = verifyTaintedData(resourceId);
       return this;
     }
 
@@ -608,7 +609,7 @@ public class RepositoriesTypeManager {
     }
 
     public AttachmentDescriptor setOldSilverpeasId(final String oldSilverpeasId) {
-      this.oldSilverpeasId = oldSilverpeasId;
+      this.oldSilverpeasId = verifyTaintedData(oldSilverpeasId);
       return this;
     }
 
@@ -635,7 +636,7 @@ public class RepositoriesTypeManager {
     }
 
     public AttachmentDescriptor setContentLanguage(final String contentLanguage) {
-      this.contentLanguage = contentLanguage;
+      this.contentLanguage = verifyTaintedData(contentLanguage);
       return this;
     }
 
@@ -678,6 +679,13 @@ public class RepositoriesTypeManager {
 
     public ResourceReference getResourceReference() {
       return new ResourceReference(resourceId, componentId);
+    }
+
+    private String verifyTaintedData(String value) {
+      if (isDefined(value) && value.contains("..")) {
+        throw new IllegalArgumentException(String.format("Value '%s' is forbidden", value));
+      }
+      return value;
     }
   }
 }
