@@ -26,6 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -71,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
@@ -99,10 +101,12 @@ public class GraphicElementFactory implements Serializable {
       GraphicElementFactory.class + "_REQUEST_COMPONENT_ID";
   private static final String REQUEST_IS_COMPONENT_MAIN_PAGE =
       GraphicElementFactory.class + "_REQUEST_IS_COMPONENT_MAIN_PAGE";
+  private static final String REQUEST_IS_PORTLET_MAIN_PAGE =
+      GraphicElementFactory.class + "_REQUEST_IS_PORTLET_MAIN_PAGE";
   private static final String REQUEST_EXTERNAL_STYLESHEET =
       GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
   private static final String REQUEST_IS_SPACE_HOME_PAGE =
-      GraphicElementFactory.class + "REQUEST_IS_SPACE_HOME_PAGE";
+      GraphicElementFactory.class + "_REQUEST_IS_SPACE_HOME_PAGE";
   private static final String ICONS_PATH =
       (URLUtil.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
   private transient LocalizationBundle multilang = null;
@@ -663,23 +667,35 @@ public class GraphicElementFactory implements Serializable {
   }
 
   public void setHttpRequest(HttpRequest request) {
-    mainSessionController = null;
-    HttpSession session = request.getSession(false);
-    if (session != null) {
-      mainSessionController =
-          (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    }
-    boolean isComponentMainPage =
-        request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
-            endsWith("/jsp/Main");
-    CacheServiceProvider.getRequestCacheService().getCache()
-        .put(REQUEST_IS_COMPONENT_MAIN_PAGE, isComponentMainPage);
+    mainSessionController = Optional.ofNullable(request.getSession(false))
+        .map(s -> (MainSessionController) s.getAttribute(MAIN_SESSION_CONTROLLER_ATT))
+        .orElse(null);
+    final String requestURI = request.getRequestURI();
+    final boolean isFromSpaceHomePage = request.getParameterAsBoolean("FromSpaceHomepage");
+    final boolean isComponentMainPage = requestURI.endsWith("/Main") && !requestURI.endsWith("/jsp/Main");
+    final boolean isPortletMainPage = requestURI.toLowerCase().contains("/portlet");
+    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    cache.put(REQUEST_IS_SPACE_HOME_PAGE, isFromSpaceHomePage);
+    cache.put(REQUEST_IS_COMPONENT_MAIN_PAGE, isComponentMainPage);
+    cache.put(REQUEST_IS_PORTLET_MAIN_PAGE, isPortletMainPage);
+  }
+
+  public boolean isCurrentRequestFromSpaceHomepage() {
+    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(REQUEST_IS_SPACE_HOME_PAGE, Boolean.class));
   }
 
   public boolean isComponentMainPage() {
-    Boolean isComponentMainPage = CacheServiceProvider.getRequestCacheService().getCache()
-        .get(REQUEST_IS_COMPONENT_MAIN_PAGE, Boolean.class);
-    return isComponentMainPage != null && isComponentMainPage;
+    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(REQUEST_IS_COMPONENT_MAIN_PAGE, Boolean.class));
+  }
+
+  public boolean isPortletMainPage() {
+    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(REQUEST_IS_PORTLET_MAIN_PAGE, Boolean.class));
   }
 
   /**
@@ -696,20 +712,6 @@ public class GraphicElementFactory implements Serializable {
    */
   public void setSpaceIdForCurrentRequest(String spaceId) {
     CacheServiceProvider.getRequestCacheService().getCache().put(REQUEST_SPACE_ID, spaceId);
-  }
-
-  public boolean isCurrentRequestFromSpaceHomepage() {
-    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
-        .getCache().get(REQUEST_IS_SPACE_HOME_PAGE, Boolean.class));
-  }
-
-  /**
-   * @param fromSpaceHomepage true if request comes from space homepage
-   */
-  public void setCurrentRequestFromSpaceHomepage(boolean fromSpaceHomepage) {
-    CacheServiceProvider.getRequestCacheService()
-        .getCache()
-        .put(REQUEST_IS_SPACE_HOME_PAGE, fromSpaceHomepage);
   }
 
   /**

@@ -70,7 +70,6 @@ public class GoToSpace extends GoTo {
         // This is the case where a space has been found directly or by the fallback processing.
 
         if (gef != null && helper != null) {
-          gef.setSpaceIdForCurrentRequest(space.getId());
           helper.setSpaceIdAndSubSpaceId(space.getId());
         }
         return "SpaceId=" + space.getId();
