@@ -36,6 +36,10 @@ function _spWindow_getSilverpeasMainWindow() {
   const __notificationReady = sp.promise.deferred();
 
   whenSilverpeasReady(function() {
+    if (!document.body) {
+      __logDebug("Link Hook process stopped because of not exiting document.body...");
+      return;
+    }
     const __hookPermalinks = function(target) {
       const permalinks = sp.element.querySelectorAll("a.sp-permalink,.sp-permalink a", target);
       const links = sp.element.querySelectorAll("a.sp-link,.sp-link a", target);

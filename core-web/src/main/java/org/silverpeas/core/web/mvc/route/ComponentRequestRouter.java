@@ -64,6 +64,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -181,8 +182,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     String componentId = context[1];
     String function = context[2];
 
-    // Set gef space space identifier for dynamic look purpose
-    setGefSpaceId(request, componentId, spaceId);
     boolean isSpaceInMaintenance = mainSessionCtrl.isSpaceInMaintenance(spaceId);
     // Space in Maintenance ?
     if (isSpaceInMaintenance && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
@@ -206,7 +205,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     setNavigationContext(request, ctrl);
 
     HttpRequest httpRequest = HttpRequest.decorate(request);
-    initGraphicElementFactory(httpRequest, session, function, ctrl);
+    initLookContext(httpRequest, session, spaceId, componentId, function, ctrl);
     updateSilverStatistics(componentId, function, ctrl);
 
     if (selectionProcessor.isComeFromSelectionPanel(request)) {
@@ -276,8 +275,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
   }
 
-  private void initGraphicElementFactory(final HttpRequest httpRequest, final HttpSession session,
-      final String function, final T component) {
+  private void initLookContext(final HttpRequest httpRequest, final HttpSession session,
+      final String spaceId, final String componentId, final String function, final T component) {
     if (!"Idle.jsp".equals(function) && !"ChangeSearchTypeToExpert".equals(function) &&
         !"markAsRead".equals(function)) {
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -285,6 +284,13 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       gef.setComponentIdForCurrentRequest(component.getComponentId());
       gef.setHttpRequest(httpRequest);
     }
+    Optional.ofNullable(session).map(LookHelper::getLookHelper).ifPresent(h -> {
+      if (isDefined(componentId)) {
+        h.setComponentIdAndSpaceIds(null, null, componentId);
+      } else if (isDefined(spaceId)) {
+        h.setSpaceIdAndSubSpaceId(spaceId);
+      }
+    });
   }
 
   private void setNavigationContext(final HttpServletRequest request, final T component) {
@@ -412,37 +418,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           component);
     }
     return component;
-  }
-
-  /**
-   * Set GEF and look helper space identifier
-   * @param req current HttpServletRequest
-   * @param componentId the component identifier
-   */
-  @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-  private void setGefSpaceId(HttpServletRequest req, String componentId, String spaceId) {
-    HttpSession session = req.getSession(true);
-    GraphicElementFactory gef =
-        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    final LookHelper helper = LookHelper.getLookHelper(session);
-    if (isDefined(componentId)) {
-      if (gef != null && helper != null) {
-        synchronized (helper) {
-          helper.setComponentIdAndSpaceIds(null, null, componentId);
-          String helperSpaceId = helper.getSubSpaceId();
-          if (!isDefined(helperSpaceId)) {
-            helperSpaceId = helper.getSpaceId();
-          }
-          gef.setSpaceIdForCurrentRequest(helperSpaceId);
-          if (StringUtil.getBooleanValue(req.getParameter("FromSpaceHomepage"))) {
-            gef.setCurrentRequestFromSpaceHomepage(true);
-          }
-        }
-      }
-    } else if (isDefined(spaceId) && gef != null && helper != null) {
-      helper.setSpaceId(spaceId);
-      gef.setSpaceIdForCurrentRequest(spaceId);
-    }
   }
 
   private String getComponentInstanceIntroDestination(ComponentSessionController sc) {
