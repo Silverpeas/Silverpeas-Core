@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.silverpeas.core.util.URLUtil.getSilverpeasVersionFingerprint;
+import static org.silverpeas.core.util.URLUtil.getSilverpeasFingerprint;
 
 /**
  * A filter that handle resource caches.
@@ -64,11 +64,11 @@ public class ResourceCacheFilter implements Filter {
   private boolean performFingerprintVersion(final HttpServletRequest httpRequest,
       final HttpServletResponse httpResponse) throws ServletException, IOException {
     final String requestURI = httpRequest.getRequestURI();
-    final int fingerprintIndex = requestURI.indexOf(getSilverpeasVersionFingerprint());
+    final int fingerprintIndex = requestURI.indexOf(getSilverpeasFingerprint());
     if (fingerprintIndex > 0) {
       final String contextPath = httpRequest.getContextPath();
       final String leftPart = requestURI.substring(contextPath.length(), fingerprintIndex);
-      final String rightPart = requestURI.substring(fingerprintIndex + getSilverpeasVersionFingerprint().length());
+      final String rightPart = requestURI.substring(fingerprintIndex + getSilverpeasFingerprint().length());
       final String newUri = leftPart + rightPart;
       httpResponse.setHeader("Cache-Control", "max-age=31536000, s-maxage=31536000, immutable");
       final RequestDispatcher rd = httpRequest.getRequestDispatcher(newUri);
