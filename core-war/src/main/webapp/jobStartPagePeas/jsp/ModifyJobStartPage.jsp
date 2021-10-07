@@ -155,11 +155,11 @@ out.println(board.printBefore());
 			<%
 					String checked = "";
 					for(int i = 0; i < m_Components.length; i++) {
-						if (m_firstPageParam.equals(m_Components[i].id)) {
+						if (m_firstPageParam.equals(m_Components[i].getId())) {
 							checked = "selected=\"selected\"";
 							m_firstPageParam = "";
 						}
-						out.println("<option value=\""+m_Components[i].id+"\" "+checked+">"+m_Components[i].name+"</option>");
+						out.println("<option value=\""+m_Components[i].getId()+"\" "+checked+">"+m_Components[i].getName()+"</option>");
 						checked = "";
 				    }
 			%>
