@@ -35,15 +35,21 @@ import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.Temporal;
+import java.util.Date;
 import java.util.regex.Pattern;
 
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoField.*;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * Class declaration
@@ -101,8 +107,7 @@ public class URLUtil {
   static String httpMode = null;
   static boolean universalLinksUsed = false;
   private static String silverpeasVersion = null; // ie 5.14.1-SNAPSHOT
-  private static String silverpeasVersionMin = null;  // ie 5141SNAPSHOT
-  private static String silverpeasFingerprintVersion = null;  // ie .5141snapshot
+  private static CacheBustingManager cacheBustingManager = null;
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
@@ -379,50 +384,15 @@ public class URLUtil {
 
   public static void setSilverpeasVersion(String version) {
     silverpeasVersion = version;
-    silverpeasVersionMin = StringUtils.remove(StringUtils.remove(version, '.'), '-');
-    silverpeasFingerprintVersion = "." + silverpeasVersionMin.toLowerCase();
+    cacheBustingManager = new CacheBustingManager(version);
   }
 
-  public static String getSilverpeasVersionFingerprint() {
-    return silverpeasFingerprintVersion;
+  public static String getSilverpeasFingerprint(){
+    return cacheBustingManager.getFingerprintInName();
   }
 
   public static String addFingerprintVersionOn(String url) {
-    final String fingerprintedUrl;
-    if (url.startsWith(getApplicationURL())) {
-      // Fingerprint method
-      int lastIndex = -1;
-      for (int i = 0; i < url.length(); i++) {
-        final char c = url.charAt(i);
-        if (c == '.') {
-          lastIndex = i;
-        } else if (c == '?') {
-          break;
-        }
-      }
-      if (lastIndex == -1) {
-        // Query string method
-        fingerprintedUrl = addVersionByQueryStringMethod(url);
-      } else {
-        fingerprintedUrl =
-            url.substring(0, lastIndex) + silverpeasFingerprintVersion + url.substring(lastIndex);
-      }
-    } else {
-      // Query string method
-      fingerprintedUrl = addVersionByQueryStringMethod(url);
-    }
-    return fingerprintedUrl;
-  }
-
-  private static String addVersionByQueryStringMethod(final String url) {
-    final String fingerprintedUrl;
-    final String param = "v=" + silverpeasVersionMin;
-    if (url.indexOf('?') == -1) {
-      fingerprintedUrl = url + "?" + param;
-    } else {
-      fingerprintedUrl = url + "&" + param;
-    }
-    return fingerprintedUrl;
+    return cacheBustingManager.applyFingerprintOn(url);
   }
 
   /**
@@ -489,5 +459,100 @@ public class URLUtil {
     settings = ResourceLocator.getSettingBundle("org.silverpeas.util.url");
     httpMode = settings.getString("httpMode");
     universalLinksUsed = settings.getBoolean("displayUniversalLinks", false);
+  }
+
+  /**
+   * This manager permits to handle the fingerprint to apply on resource URLs.
+   */
+  private static class CacheBustingManager {
+    private final String fingerprintQueryStringMethod;
+    private final String fingerprintInName;
+
+    /**
+     * @param spVersion the Silverpeas's current version as string.
+     */
+    private CacheBustingManager(final String spVersion) {
+      String tmp = EMPTY;
+      final String method = settings.getString("cache.busting.method", EMPTY);
+      if ("LAST_FILE_MODIFICATION".equals(method)) {
+        final File path = new File(settings.getString("cache.busting.lastFileModification.path", EMPTY));
+        if (path.isFile()) {
+          tmp = formatTemporalFingerprint(new Date(path.lastModified()).toInstant().atZone(systemDefault()));
+        }
+      } else if ("SERVER_START".equals(method)) {
+        tmp = formatTemporalFingerprint(LocalDateTime.now());
+      }
+      fingerprintQueryStringMethod = defaultStringIfNotDefined(tmp,
+          StringUtils.remove(StringUtils.remove(spVersion, '.'), '-').toLowerCase());
+      fingerprintInName = "." + fingerprintQueryStringMethod;
+    }
+
+    private String formatTemporalFingerprint(final Temporal temporal) {
+      return new DateTimeFormatterBuilder()
+          .appendValue(MONTH_OF_YEAR, 2)
+          .appendValue(DAY_OF_MONTH, 2)
+          .appendValue(HOUR_OF_DAY, 2)
+          .appendValue(MINUTE_OF_HOUR, 2)
+          .toFormatter()
+          .format(temporal);
+    }
+
+    /**
+     * Gets the fingerprint computed at server starting.
+     * @return the current fingerprint as string.
+     */
+    private String getFingerprintInName() {
+      return fingerprintInName;
+    }
+
+    /**
+     * Applies the fingerprint on the given URL.
+     * <p>
+     *   If the given URL is about a Silverpeas resource, then the fingerprint is inserted into
+     *   the name of the resource.
+     * </p>
+     * <p>
+     *   Otherwise, the fingerprint is added to the URL as a parameter.
+     * </p>
+     * @param url an url as string.
+     * @return the given URL with fingerprint.
+     */
+    private String applyFingerprintOn(String url) {
+      final String fingerprintedUrl;
+      if (url.startsWith(getApplicationURL())) {
+        // Fingerprint method
+        int lastIndex = -1;
+        for (int i = 0; i < url.length(); i++) {
+          final char c = url.charAt(i);
+          if (c == '.') {
+            lastIndex = i;
+          } else if (c == '?') {
+            break;
+          }
+        }
+        if (lastIndex == -1) {
+          // Query string method
+          fingerprintedUrl = addFingerprintByQueryStringMethod(url);
+        } else {
+          fingerprintedUrl =
+              url.substring(0, lastIndex) +  getFingerprintInName() + url.substring(lastIndex);
+        }
+      } else {
+        // Query string method
+        fingerprintedUrl = addFingerprintByQueryStringMethod(url);
+      }
+      return fingerprintedUrl;
+    }
+
+    private String addFingerprintByQueryStringMethod(final String url) {
+      final String fingerprintedUrl;
+      final String param = "v=" + fingerprintQueryStringMethod;
+      if (url.indexOf('?') == -1) {
+        fingerprintedUrl = url + "?" + param;
+      } else {
+        fingerprintedUrl = url + "&" + param;
+      }
+      return fingerprintedUrl;
+    }
   }
 }
