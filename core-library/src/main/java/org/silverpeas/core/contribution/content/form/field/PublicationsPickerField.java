@@ -82,16 +82,18 @@ public class PublicationsPickerField extends AbstractField {
     StringBuilder verifiedResources = new StringBuilder();
 
     // check references to detect deleted publications
-    String[] array = rawResouceReferences.split(",");
-    for (String rawResourceReference : array) {
-      ContributionIdentifier id = ContributionIdentifier.decode(rawResourceReference);
-      PublicationDetail publi = PublicationService.get()
-          .getDetail(new PublicationPK(id.getLocalId(), id.getComponentInstanceId()));
-      if (publi != null) {
-        if (verifiedResources.length() > 0) {
-          verifiedResources.append(",");
+    if (StringUtil.isDefined(rawResouceReferences)) {
+      String[] array = rawResouceReferences.split(",");
+      for (String rawResourceReference : array) {
+        ContributionIdentifier id = ContributionIdentifier.decode(rawResourceReference);
+        PublicationDetail publi = PublicationService.get()
+            .getDetail(new PublicationPK(id.getLocalId(), id.getComponentInstanceId()));
+        if (publi != null) {
+          if (verifiedResources.length() > 0) {
+            verifiedResources.append(",");
+          }
+          verifiedResources.append(rawResourceReference);
         }
-        verifiedResources.append(rawResourceReference);
       }
     }
 
