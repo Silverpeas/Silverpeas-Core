@@ -58,12 +58,11 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
   private List<String> getMemberGroupIds(String lds, String memberId, boolean isGroup)
       throws AdminException {
-    List<String> groupsVector = new ArrayList<>();
-
+    final List<String> groupIds = new ArrayList<>();
     if (StringUtil.isDefined(memberId)) {
-      LDAPEntry memberEntry = getMemberEntry(lds, memberId, isGroup);
-      String groupsMemberField = driverSettings.getGroupsMemberField();
-      LDAPEntry[] theEntries;
+      final LDAPEntry memberEntry = getMemberEntry(lds, memberId, isGroup);
+      final String groupsMemberField = driverSettings.getGroupsMemberField();
+      final LDAPEntry[] theEntries;
       if ("memberUid".equalsIgnoreCase(groupsMemberField)) {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "("
@@ -73,15 +72,14 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "("
             + driverSettings.getGroupsMemberField() + "="
-            + memberEntry.getDN() + "))",
+            + LDAPUtility.normalizeFilterValue(memberEntry.getDN()) + "))",
             driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
       }
-      for (LDAPEntry currentEntry : theEntries) {
-
-        groupsVector.add(getGroupId(currentEntry));
+      for (final LDAPEntry currentEntry : theEntries) {
+        groupIds.add(getGroupId(currentEntry));
       }
     }
-    return groupsVector;
+    return groupIds;
   }
 
   @Override
