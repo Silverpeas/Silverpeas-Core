@@ -45,8 +45,8 @@
 <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
 <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
-<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
+<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <c:set var="id" value="${param.Id}" />
 <c:set var="type" value="${param.Type}" />
 <c:set var="Silverpeas_Attachment_ObjectId" scope="session" value="${id}" />
