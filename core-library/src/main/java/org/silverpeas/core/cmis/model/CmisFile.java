@@ -36,8 +36,6 @@ import java.util.Set;
  */
 public abstract class CmisFile extends CmisObject implements Fileable {
 
-  public static final String PATH_SEPARATOR = "/";
-
   private String parentId;
 
   /**
@@ -56,22 +54,10 @@ public abstract class CmisFile extends CmisObject implements Fileable {
     return parentId;
   }
 
-  /**
-   * Gets the segment of the path of this folder in the CMIS objects tree relative to its parent.
-   * The path of an object in the tree identifies it uniquely in the tree. Each segment of a path is
-   * the name of the objects that made up the path down to this object. The value depends on the
-   * context within which the folder is built:
-   * <ul>
-   *   <li>in the case the folder is get as child: the segment is its name.</li>
-   *   <li>in the case the folder is get as parent of a given object: the segment is the name
-   *   of the given object; it is the segment of the path of the object relative to it.</li>
-   * </ul>
-   * @return the name of this object as referred in its path.
-   */
-  public final String getPathSegment() {
-    final String path = getPath();
-    int idx = path.lastIndexOf('/');
-    return path.substring(idx + 1);
+  @Override
+  public String getPath() {
+    CmisFilePath myPath = CmisFilePathProvider.get().getPath(this);
+    return myPath.toString();
   }
 
   /**

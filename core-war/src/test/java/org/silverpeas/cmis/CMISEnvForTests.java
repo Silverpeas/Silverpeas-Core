@@ -54,7 +54,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.SilverpeasCmisSettings;
-import org.silverpeas.core.cmis.model.CmisFolder;
+import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisFilePath;
+import org.silverpeas.core.cmis.model.CmisFilePathProvider;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
@@ -97,7 +99,6 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -184,6 +185,9 @@ public abstract class CMISEnvForTests {
   @TestManagedMock
   protected SimpleDocumentAccessControl documentAccessControl;
 
+  @TestManagedMock
+  protected CmisFilePathProvider cmisFilePathProvider;
+
   // provider of contributions for a given component
   @TestManagedMock
   @Named("kmelia" + CmisContributionsProvider.Constants.NAME_SUFFIX)
@@ -200,7 +204,7 @@ public abstract class CMISEnvForTests {
   /**
    * Gets the path of the specified node in the organizational schema of Silverpeas used in the
    * unit tests. The path is made up of the names of the identifiable objects wrapped by each node,
-   * each of them separated by the {@link CmisFolder#PATH_SEPARATOR}
+   * each of them separated by the {@link CmisFilePath#PATH_SEPARATOR}
    * separator. This path is to be passed to the CMIS objects tree walker that is expected the
    * tokens in a path to be the name of a CMIS object. The root node is here missed as it represents
    * the application itself (virtual root node).
@@ -209,11 +213,11 @@ public abstract class CMISEnvForTests {
    * @return the path of the node in the organizational schema of Silverpeas.
    */
   protected String pathToNode(final TreeNode node, final String language) {
-    return CmisFolder.PATH_SEPARATOR + node.getPath().stream()
-        .map(TreeNode::getObject)
-        .filter(o -> !(o instanceof NodeDetail) || !((NodeDetail) o).isRoot())
-        .map(o -> getObjectName(o, language))
-        .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR));
+    return CmisFilePath.PATH_SEPARATOR + node.getPath().stream()
+        .filter(n -> !(n.getObject() instanceof NodeDetail) ||
+            !((NodeDetail) n.getObject()).isRoot())
+        .map(n -> n.getLabel(language))
+        .collect(Collectors.joining(CmisFilePath.PATH_SEPARATOR));
   }
 
   @RequesterProvider
@@ -233,23 +237,8 @@ public abstract class CMISEnvForTests {
 
   @BeforeEach
   public void prepareMock(MavenTestEnv mavenTestEnv) {
-    when(userProvider.getUser(anyString())).then((Answer<User>) invocation -> {
-      String userId = invocation.getArgument(0);
-      User theUser;
-      if (userId.equals("42")) {
-        theUser = getCurrentUser();
-      } else {
-        UserDetail user = new UserDetail();
-        user.setId(userId);
-        user.setFirstName(userId.equals("0") ? null : "Toto");
-        user.setLastName(userId.equals("0") ? "Administrateur" : "Tartempion" + userId);
-        user.setDomainId("0");
-        user.setCreationDate(creationDate);
-        user.setSaveDate(creationDate);
-        theUser = user;
-      }
-      return theUser;
-    });
+    mockUserProviders();
+    mockUserAuthorization();
 
     when(componentDataProvider.isWorkflow(anyString())).thenReturn(false);
 
@@ -257,28 +246,6 @@ public abstract class CMISEnvForTests {
       String appId = invocation.getArgument(0);
       return ComponentInst.getComponentName(appId);
     });
-
-    when(userProvider.getMainAdministrator()).then((Answer<User>) invocation -> userProvider.getUser("0"));
-
-    when(spaceAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
-        true);
-    when(spaceAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
-    when(componentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
-    when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
-    when(componentAccessControl.filterAuthorizedByUser(anyCollection(), anyString())).then((Answer<Stream<String>>) invocation -> {
-      Collection<String> compInstIds = invocation.getArgument(0);
-      return compInstIds.stream();
-    });
-    when(nodeAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
-        true);
-    when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
-    when(publicationAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
-    when(publicationAccessControl.isUserAuthorized(anyString(), any(PublicationDetail.class))).thenReturn(true);
-    when(documentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
-    when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class))).thenReturn(
-        true);
-    when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class), any(
-        AccessControlContext.class))).thenReturn(true);
 
     when(waComponentRegistry.getWAComponent(startsWith("kmelia"))).then(m -> {
       final String instanceId = m.getArgument(0, String.class);
@@ -404,6 +371,16 @@ public abstract class CMISEnvForTests {
           .collect(Collectors.toList()));
     });
 
+    when(cmisFilePathProvider.getPath(any(CmisFile.class))).then((Answer<CmisFilePath>) invocation -> {
+      CmisFile file = invocation.getArgument(0);
+      User requester = User.getCurrentRequester();
+      String language = requester.getUserPreferences().getLanguage();
+      String pathStr = getInTreeAndApply(file.getId(), n -> pathToNode(n, language));
+      CmisFilePath path = mock(CmisFilePath.class);
+      when(path.toString()).thenReturn(pathStr);
+      return path;
+    });
+
     when(contributionsProvider.createContribution(any(PublicationDetail.class),
         any(BasicIdentifier.class), anyString())).then((Answer<I18nContribution>) invocation -> {
           PublicationDetail pub = invocation.getArgument(0);
@@ -512,6 +489,50 @@ public abstract class CMISEnvForTests {
       });
     }).when(attachmentService).getBinaryContent(any(OutputStream.class), any(SimpleDocumentPK.class),
         any(String.class), anyLong(), anyLong());
+  }
+
+  private void mockUserProviders() {
+    when(userProvider.getUser(anyString())).then((Answer<User>) invocation -> {
+      String userId = invocation.getArgument(0);
+      User theUser;
+      if (userId.equals("42")) {
+        theUser = getCurrentUser();
+      } else {
+        UserDetail user = new UserDetail();
+        user.setId(userId);
+        user.setFirstName(userId.equals("0") ? null : "Toto");
+        user.setLastName(userId.equals("0") ? "Administrateur" : "Tartempion" + userId);
+        user.setDomainId("0");
+        user.setCreationDate(creationDate);
+        user.setSaveDate(creationDate);
+        theUser = user;
+      }
+      return theUser;
+    });
+
+    when(userProvider.getMainAdministrator()).then((Answer<User>) invocation -> userProvider.getUser("0"));
+  }
+
+  private void mockUserAuthorization() {
+    when(spaceAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
+        true);
+    when(spaceAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
+    when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.filterAuthorizedByUser(anyCollection(), anyString())).then((Answer<Stream<String>>) invocation -> {
+      Collection<String> compInstIds = invocation.getArgument(0);
+      return compInstIds.stream();
+    });
+    when(nodeAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
+        true);
+    when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(), any(PublicationDetail.class))).thenReturn(true);
+    when(documentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
+    when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class))).thenReturn(
+        true);
+    when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class), any(
+        AccessControlContext.class))).thenReturn(true);
   }
 
   @BeforeAll

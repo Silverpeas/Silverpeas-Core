@@ -34,6 +34,7 @@ import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisFilePath;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.ServiceProvider;
@@ -41,7 +42,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import java.util.List;
 
 /**
- * A walker of a CMIS objects tree whose each node and leaf are mapped to a given Silverpeas
+ * A walker of a CMIS objects tree in which each node and leaf are mapped to a given Silverpeas
  * organizational resource or to a given user contribution. The root of the tree is a virtual
  * container of all the Silverpeas root spaces. The walker provides a functional view to access the
  * CMIS objects but behind de scene it walks across the organizational schema of Silverpeas by using
@@ -131,7 +132,7 @@ public interface CmisObjectsTreeWalker {
   /**
    * Gets the CMIS data of the Silverpeas object that is located at the specified path in the CMIS
    * objects tree. Only the data satisfying the given filtering rules are returned. The root of
-   * the CMIS objects tree is the {@link org.silverpeas.core.cmis.model.CmisFolder#PATH_SEPARATOR}.
+   * the CMIS objects tree is the {@link CmisFilePath#PATH_SEPARATOR}.
    * @param path the path of the object in Silverpeas to get.
    * @param filtering the filtering rules to apply on the data.
    * @return an {@link ObjectData} instance that provides the CMIS data of the specified Silverpeas

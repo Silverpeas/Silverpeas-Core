@@ -48,6 +48,7 @@ import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.core.cmis.model.DocumentFile;
+import org.silverpeas.core.cmis.model.CmisFilePath;
 import org.silverpeas.core.cmis.model.Folding;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
@@ -66,15 +67,13 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.cmis.model.CmisFile.PATH_SEPARATOR;
-
 /**
  * Abstract class providing default behaviour of the different methods defined in the {@link
  * CmisObjectsTreeWalker} interface. The more concrete walkers, each of them working on a specific
  * type of a Silverpeas object (and hence on the CMIS object), have to extend this class and
  * implement the methods required by the default behaviour in this class.
  */
-public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWalker {
+public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWalker, CmisFilePath {
 
   @Inject
   private CmisObjectFactory objectFactory;
@@ -381,7 +380,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     ObjectInFolderDataImpl objectInFolderData = new ObjectInFolderDataImpl();
     objectInFolderData.setObject(file);
     if (filtering.isPathSegmentToBeIncluded()) {
-      objectInFolderData.setPathSegment(file.getPathSegment());
+      objectInFolderData.setPathSegment(file.getLabel());
     }
     return objectInFolderData;
   }
@@ -403,26 +402,31 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     setObjectDataFields(parent, filtering);
     ObjectParentDataImpl parentData = new ObjectParentDataImpl(parent);
     if (filtering.isPathSegmentToBeIncluded()) {
-      parentData.setRelativePathSegment(folder.getName());
+      parentData.setRelativePathSegment(folder.getLabel());
     }
     return parentData;
   }
 
   private CmisFile walkDownPathForChildData(final ResourceIdentifier parentId, final int idx, final String[] pathSegments, final Filtering filtering) {
     final User user = filtering.getCurrentUser();
-    final String language = user.getUserPreferences()
-        .getLanguage();
+    final String language = user.getUserPreferences().getLanguage();
+    final String pathSegment = pathSegments[idx];
     final LocalizedResource object = getAllowedChildrenOfSilverpeasObject(parentId, user).filter(
-            s -> getObjectName(s, language).equals(pathSegments[idx]))
+            s -> pathSegment.endsWith(getObjectName(s, language)))
         .findFirst()
         .orElseThrow(() -> new CmisObjectNotFoundException(
-            "No such object with name '" + pathSegments[idx] + "' in the path " + PATH_SEPARATOR +
+            "No such object with name '" + pathSegment + "' in the path " + PATH_SEPARATOR +
                 String.join(PATH_SEPARATOR, pathSegments)));
     ResourceIdentifier objectId = object.getIdentifier();
     final AbstractCmisObjectsTreeWalker walker =
         getTreeWalkerSelector().selectByObjectIdOrFail(objectId.asString());
     if (idx >= pathSegments.length - 1) {
       CmisFile cmisFile = walker.encodeToCmisObject(object, filtering.getLanguage());
+      if (!cmisFile.getLabel().equals(pathSegment)) {
+        throw new CmisObjectNotFoundException(
+            "No such object with label '" + cmisFile.getLabel() + "' in the path " +
+                PATH_SEPARATOR + String.join(PATH_SEPARATOR, pathSegments));
+      }
       setObjectDataFields(cmisFile, filtering);
       return cmisFile;
     } else {
@@ -443,7 +447,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     properties.setObjectId(object.getId())
         .setObjectTypeId(object.getTypeId())
         .setDefaultProperties()
-        .setName(object.getName())
+        .setName(object.getLabel())
         .setDescription(object.getDescription())
         .setCreationData(object.getCreator(), object.getCreationDate())
         .setLastModificationData(object.getLastModifier(), object.getLastModificationDate());
@@ -457,7 +461,8 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
             .stream()
             .map(TypeId::value)
             .collect(Collectors.toList());
-        properties.setAllowedChildObjectTypeIds(types).setParentObjectId(folder.getParentId())
+        properties.setAllowedChildObjectTypeIds(types)
+            .setParentObjectId(folder.getParentId())
             .setPath(folder.getPath());
       } else {
         // document properties

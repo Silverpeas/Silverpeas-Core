@@ -26,7 +26,6 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.admin.component.model.ComponentInstPath;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,12 +66,6 @@ public class Application extends CmisFolder {
   @Override
   public String getSymbol() {
     return SYMBOL;
-  }
-
-  @Override
-  public String getPath() {
-    return PATH_SEPARATOR +
-        ComponentInstPath.getPath(getId()).format(getLanguage(), true, PATH_SEPARATOR);
   }
 
   @Override

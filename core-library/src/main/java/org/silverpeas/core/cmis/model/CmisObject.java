@@ -34,6 +34,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsIm
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -126,6 +127,16 @@ public abstract class CmisObject extends ObjectDataImpl {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Gets the label, localized for the user behind the request, to display to the user as name of
+   * this CMIS object.
+   * @return the concatenation of the symbol and the name of this object. If no symbol is defined
+   * for this CMIS object, then the name is returned.
+   */
+  public String getLabel() {
+    return StringUtil.isDefined(getSymbol()) ? getSymbol() + " " + getName() : getName();
   }
 
   /**
