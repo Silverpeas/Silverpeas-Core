@@ -748,3 +748,32 @@ Converse.js
 #conversejs .chatbox .controlbox-heading__btn.show-client-info {
   display: none;
 }
+
+#conversejs converse-emoji-dropdown .dropdown-menu {
+  min-width: 260px;
+}
+
+.conversejs .message.chat-msg .chat-msg__text span {
+  font-size: 18px;
+}
+
+.conversejs .message.chat-msg .chat-msg__text--larger span {
+  font-size: 28px;
+  line-height: 28px;
+}
+
+.conversejs converse-chats.converse-overlayed #minimized-chats .minimized-chats-flyout {
+  bottom: 37px;
+}
+
+.conversejs svg {
+  border-radius: 0;
+}
+
+.conversejs .chatbox .chat-head .chatbox-title__text {
+  line-height: 25px;
+}
+
+.conversejs .toggle-compose-spoiler {
+  display: none;
+}
