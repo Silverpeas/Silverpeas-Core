@@ -27,10 +27,6 @@ package org.silverpeas.core.cmis.model;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPath;
-import org.silverpeas.core.node.model.NodePath;
-import org.silverpeas.core.util.ContributionPath;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Set;
@@ -103,23 +99,6 @@ public class DocumentFile extends CmisFile implements Fileable {
   @Override
   public TypeId getTypeId() {
     return CMIS_TYPE;
-  }
-
-  @Override
-  public String getPath() {
-    if (isOrphaned()) {
-      return "";
-    }
-    // the parent of a document is expected to be either a folder or a publication.
-    ContributionPath<?> path;
-    ContributionIdentifier parentId = ContributionIdentifier.decode(getParentId());
-    if (parentId.getType().equals(PublicationDetail.TYPE)) {
-      path = PublicationPath.getPath(parentId);
-    } else {
-      path = NodePath.getPath(parentId);
-    }
-    return PATH_SEPARATOR + path.format(getLanguage(), true, PATH_SEPARATOR) + PATH_SEPARATOR +
-        getName();
   }
 
   /**

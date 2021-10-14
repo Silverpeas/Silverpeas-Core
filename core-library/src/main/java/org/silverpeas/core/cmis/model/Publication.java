@@ -26,9 +26,7 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Collections;
 import java.util.List;
@@ -87,24 +85,6 @@ public class Publication extends CmisFolder {
   @Override
   public String getSymbol() {
     return SYMBOL;
-  }
-
-  @Override
-  public String getPath() {
-    ContributionIdentifier parentId;
-    if (ContributionIdentifier.isValid(getParentId())) {
-      // the parent is a contribution folder
-      parentId = ContributionIdentifier.decode(getParentId());
-    } else if (getApplicationId().equals(getParentId())) {
-      // the parent is the application itself
-      parentId = ContributionFolder.getRootFolderId(getParentId());
-    } else {
-      throw new CmisConstraintException(String.format(
-          "The parent %s of the publication isn't a contribution folder neither an application",
-          getParentId()));
-    }
-    return PATH_SEPARATOR + NodePath.getPath(parentId).format(getLanguage(), true, PATH_SEPARATOR) +
-        PATH_SEPARATOR + getName();
   }
 
   @Override

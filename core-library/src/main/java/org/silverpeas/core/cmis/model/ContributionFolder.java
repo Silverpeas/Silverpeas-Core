@@ -29,7 +29,6 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Arrays;
 import java.util.List;
@@ -87,11 +86,6 @@ public class ContributionFolder extends CmisFolder {
 
   public String getApplicationId() {
     return id.getComponentInstanceId();
-  }
-
-  @Override
-  public String getPath() {
-    return PATH_SEPARATOR + NodePath.getPath(id).format(getLanguage(), true, PATH_SEPARATOR);
   }
 
   @Override

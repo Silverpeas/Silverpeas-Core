@@ -25,10 +25,19 @@
 package org.silverpeas.cmis;
 
 import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.cmis.model.Application;
+import org.silverpeas.core.cmis.model.ContributionFolder;
+import org.silverpeas.core.cmis.model.Publication;
+import org.silverpeas.core.cmis.model.Space;
+import org.silverpeas.core.contribution.attachment.model.Document;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.model.Attachment;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -93,6 +102,27 @@ public class TreeNode {
    */
   public LocalizedResource getObject() {
     return object;
+  }
+
+  /**
+   * Gets the displayable name of this tree node according to the expected displayed name of the
+   * underlying Silverpeas object in the CMIS tree.
+   * @return the name of the underlying Silverpeas object for the CMIS tree.
+   */
+  public String getLabel(String language) {
+    String label;
+    if (object instanceof SpaceInstLight) {
+      label = Space.SYMBOL + " " + object.getTranslation(language).getName();
+    } else if (object instanceof ComponentInstLight) {
+      label = Application.SYMBOL + " " + object.getTranslation(language).getName();
+    } else if (object instanceof PublicationDetail) {
+      label = Publication.SYMBOL + " " + object.getTranslation(language).getName();
+    } else if (object instanceof Attachment) {
+      label = ((Attachment)object).getFilename();
+    } else {
+      label = object.getTranslation(language).getName();
+    }
+    return label;
   }
 
   /**

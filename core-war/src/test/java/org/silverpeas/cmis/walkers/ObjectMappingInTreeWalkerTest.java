@@ -46,15 +46,16 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cmis.model.Application;
+import org.silverpeas.core.cmis.model.CmisFilePath;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
-import org.silverpeas.core.cmis.model.ContributionFolder;
 import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.model.Attachment;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -144,7 +145,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     User admin = User.getById("0");
     Map<String, PropertyData<?>> props = data.getProperties().getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(Space.ROOT_ID.asString()));
-    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(root.getName()));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(root.getLabel()));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(), is(root.getDescription()));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(), is(admin.getDisplayedName()));
     assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
@@ -241,7 +242,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
     String path = pathToNode(organization.findTreeNodeById("WA2"), filtering.getLanguage()) +
-        CmisFolder.PATH_SEPARATOR + "TOTO";
+        CmisFilePath.PATH_SEPARATOR + "TOTO";
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
     assertThrows(CmisObjectNotFoundException.class, () ->
         walker.getObjectDataByPath(path, filtering));
@@ -253,7 +254,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
   void getObjectDataByANonExistingPath() {
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
-    String path = CmisFolder.PATH_SEPARATOR + "TOTO" + CmisFolder.PATH_SEPARATOR +
+    String path = CmisFilePath.PATH_SEPARATOR + "TOTO" + CmisFilePath.PATH_SEPARATOR +
         pathToNode(organization.findTreeNodeById("kmelia3"), filtering.getLanguage());
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
     assertThrows(CmisObjectNotFoundException.class,
@@ -386,7 +387,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
               .findFirst();
       assertThat(child.isPresent(), is(true));
       child.ifPresent(c -> {
-        assertThat(((AbstractI18NBean<?>) c).getName(language), is(data.getPathSegment()));
+        assertThat(getLabel(c, language), is(data.getPathSegment()));
         assertCMISObjectMatchesSilverpeasObject(data.getObject(), c);
       });
     });
@@ -422,7 +423,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
             .findFirst();
     assertThat(child.isPresent(), is(true));
     child.ifPresent(c -> {
-      assertThat(((AbstractI18NBean<?>) c).getName(language), is(dataList.get(0).getPathSegment()));
+      assertThat(getLabel(c, language), is(dataList.get(0).getPathSegment()));
       assertCMISObjectMatchesSilverpeasObject(data, c);
     });
   }
@@ -621,7 +622,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
           nodes.stream().filter(n -> n.getId().equals(data.getId())).findFirst();
       assertThat(optNode.isPresent(), is(true));
       optNode.ifPresent(n -> {
-        assertThat(getObjectName(n.getObject(), language), is(pathSegment));
+        assertThat(getLabel(n.getObject(), language), is(pathSegment));
         assertCMISObjectMatchesSilverpeasObject(data, n.getObject());
         if (depth > 1 || depth == -1) {
           int newDepth = depth == -1 ? -1 : depth - 1;
@@ -787,7 +788,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
 
     Map<String, PropertyData<?>> props = properties.getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(space.getId()));
-    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(space.getName(language)));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(getLabel(space, language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(space.getDescription(language)));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(), is(creator.getDisplayedName()));
@@ -826,7 +827,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
 
     Map<String, PropertyData<?>> props = properties.getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(application.getId()));
-    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(application.getName(language)));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(getLabel(application, language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(application.getDescription(language)));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(), is(creator.getDisplayedName()));
@@ -865,7 +866,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     Map<String, PropertyData<?>> props = properties.getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
         is(node.getIdentifier().asString()));
-    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(node.getName(language)));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(getLabel(node, language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(node.getDescription(language)));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
@@ -906,7 +907,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     Map<String, PropertyData<?>> props = properties.getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
         is(pub.getIdentifier().asString()));
-    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(pub.getName(language)));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(getLabel(pub, language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(pub.getDescription(language)));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
@@ -984,5 +985,45 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.CONTENT_STREAM_ID).getFirstValue(),
         is(doc.getIdentifier().asString() + ":content"));
   }
+
+  private String getLabel(final LocalizedResource resource, String language) {
+    if (resource instanceof SpaceInstLight) {
+      return getLabel((SpaceInstLight) resource, language);
+    }
+    if (resource instanceof ComponentInstLight) {
+      return getLabel((ComponentInstLight) resource, language);
+    }
+    if (resource instanceof NodeDetail) {
+      return getLabel((NodeDetail) resource, language);
+    }
+    if (resource instanceof PublicationDetail) {
+      return getLabel((PublicationDetail) resource, language);
+    }
+    if (resource instanceof Attachment) {
+      return getLabel((Attachment) resource, language);
+    }
+    return resource.getTranslation(language).getName();
+  }
+
+  private String getLabel(final SpaceInstLight space, String language) {
+    return Space.SYMBOL + " " + space.getName(language);
+  }
+
+  private String getLabel(final ComponentInstLight app, String language) {
+    return Application.SYMBOL + " " + app.getName(language);
+  }
+
+  private String getLabel(final NodeDetail node, String language) {
+    return node.getName(language);
+  }
+
+  private String getLabel(final PublicationDetail publicationDetail, String language) {
+    return Publication.SYMBOL + " " + publicationDetail.getName(language);
+  }
+
+  private String getLabel(final Attachment attachment, String language) {
+    return attachment.getFilename();
+  }
+
 }
   

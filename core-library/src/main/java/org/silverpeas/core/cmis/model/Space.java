@@ -27,11 +27,12 @@ package org.silverpeas.core.cmis.model;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.admin.space.model.SpacePath;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.silverpeas.core.cmis.model.CmisFilePath.PATH_SEPARATOR;
 
 /**
  * A collaborative space in Silverpeas. A collaborative space provides a way to organize the
@@ -89,8 +90,8 @@ public class Space  extends CmisFolder {
     if (ROOT_ID.asString().equals(getId())) {
       path = PATH_SEPARATOR;
     } else {
-      path =
-          PATH_SEPARATOR + SpacePath.getPath(getId()).format(getLanguage(), true, PATH_SEPARATOR);
+      CmisFilePath myPath = CmisFilePathProvider.get().getPath(this);
+      path = myPath.toString();
     }
     return path;
   }

@@ -39,6 +39,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisFilePath;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
@@ -126,7 +127,7 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
 
   @Override
   public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
-    if (CmisFile.PATH_SEPARATOR.equals(path)) {
+    if (CmisFilePath.PATH_SEPARATOR.equals(path)) {
       final CmisFile rootSpace = getObjectFactory().createRootSpace(filtering.getLanguage());
       setObjectDataFields(rootSpace, filtering);
       return rootSpace;
