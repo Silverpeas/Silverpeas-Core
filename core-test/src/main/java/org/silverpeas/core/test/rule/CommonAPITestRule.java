@@ -132,7 +132,7 @@ public class CommonAPITestRule implements TestRule {
   private void setLoggerHandler(final Handler handler) {
     Logger.getLogger(ROOT_NAMESPACE).setUseParentHandlers(false);
     if (Arrays.stream(Logger.getLogger(ROOT_NAMESPACE).getHandlers())
-        .filter(h -> handler.getClass().isInstance(h)).count() == 0) {
+        .noneMatch(h -> handler.getClass().isInstance(h))) {
       Logger.getLogger(ROOT_NAMESPACE).addHandler(handler);
     }
   }
@@ -151,16 +151,16 @@ public class CommonAPITestRule implements TestRule {
     }
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz, qualifiers)).thenReturn(bean);
     if (!clazz.isInterface()) {
-      Class[] interfaces = clazz.getInterfaces();
+      Class<T>[] interfaces = (Class<T>[]) clazz.getInterfaces();
       if (interfaces != null) {
-        for(Class anInterface : interfaces) {
+        for(Class<T> anInterface : interfaces) {
           when(TestBeanContainer.getMockedBeanContainer().getBeanByType(anInterface, qualifiers))
               .thenReturn(bean);
         }
       }
       if (clazz.getSimpleName().endsWith("4Test") && clazz.getGenericSuperclass() instanceof Class) {
         when(TestBeanContainer.getMockedBeanContainer()
-            .getBeanByType((Class) clazz.getGenericSuperclass(), qualifiers)).thenReturn(bean);
+            .getBeanByType((Class<T>) clazz.getGenericSuperclass(), qualifiers)).thenReturn(bean);
       }
     }
     return bean;
@@ -202,7 +202,7 @@ public class CommonAPITestRule implements TestRule {
     try {
       Constructor<ManagedThreadPool> managedThreadPoolConstructor =
           ManagedThreadPool.class.getDeclaredConstructor();
-      managedThreadPoolConstructor.setAccessible(true);
+      managedThreadPoolConstructor.trySetAccessible();
       ManagedThreadPool managedThreadPool = managedThreadPoolConstructor.newInstance();
       ManagedThreadFactory managedThreadFactory = Thread::new;
       FieldUtils.writeField(managedThreadPool, "managedThreadFactory",

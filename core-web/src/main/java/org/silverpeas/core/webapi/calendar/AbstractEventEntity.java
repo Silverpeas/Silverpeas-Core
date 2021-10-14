@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.calendar;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

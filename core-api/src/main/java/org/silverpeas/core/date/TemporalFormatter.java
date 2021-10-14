@@ -37,8 +37,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Objects;
 
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.*;
 import static org.silverpeas.core.date.TemporalConverter.asZonedDateTime;
 import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
 
@@ -104,8 +103,10 @@ public class TemporalFormatter {
 
   /**
    * <p>
-   * Formats the specified temporal into an ISO-8601 string representation. The rules of formatting
-   * are based upon the {@link DateTimeFormatter} that fully follows the ISO-8601 specification.
+   * Formats the specified temporal into the extended ISO-8601 String representation. The rules of
+   * formatting are based upon the {@link DateTimeFormatter} that fully follows the extended format
+   * of the ISO-8601 specification. The extended format is about the representation of the offset of
+   * the time.
    * </p>
    * <p>
    * If the temporal is a date, then the ISO-8601 representation will be of an ISO local date.
@@ -136,34 +137,56 @@ public class TemporalFormatter {
    * </p>
    * @param temporal a {@link Temporal} object to convert.
    * @param withSeconds if in the ISO-8601 string the seconds have to be represented (seconds
-   * following by nanoseconds can be optional an part according to the ISO 8601 specification).
+   * following by nanoseconds can be optional a part according to the ISO 8601 specification).
    * For displaying, usually the seconds aren't meaningful whereas for the datetime transport from
    * one source to a target point this can be important.
-   * @return an ISO-8601 string representation of the temporal.
+   * @return a String representation of the temporal in the extended format of the ISO-8601
+   * specification.
    */
   public static String toIso8601(final Temporal temporal, final boolean withSeconds) {
-    Objects.requireNonNull(temporal);
+    return toIso8601(temporal, withSeconds, true);
+  }
 
-    if (!temporal.isSupported(ChronoUnit.HOURS)) {
-      return DateTimeFormatter.ISO_LOCAL_DATE.format(temporal);
-    }
-
-    if (withSeconds) {
-      if (temporal.isSupported(ChronoField.OFFSET_SECONDS)) {
-        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(temporal);
-      }
-      return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(temporal);
-    }
-    final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive()
-        .append(DateTimeFormatter.ISO_LOCAL_DATE)
-        .appendLiteral('T')
-        .appendValue(HOUR_OF_DAY, 2)
-        .appendLiteral(':')
-        .appendValue(MINUTE_OF_HOUR, 2);
-    if (temporal.isSupported(ChronoField.OFFSET_SECONDS)) {
-      builder.appendOffsetId();
-    }
-    return builder.toFormatter().format(temporal);
+  /**
+   * <p>
+   * Formats the specified temporal into the base ISO-8601 String representation.
+   * </p>
+   * <p>
+   * If the temporal is a date, then the ISO-8601 representation will be of an ISO local date.
+   * If the temporal is a local datetime, it will be converted without any Zone Offset indication,
+   * otherwise the offset will be printed out.
+   * </p>
+   * <p>
+   * Examples:
+   * <pre>
+   *   {@code TemporalConverter.toIso8601(OffsetDateTime.now(), false)}
+   *   {@code Result: 2018-03-13T15:11+0100}
+   *
+   *   {@code TemporalConverter.toIso8601(OffsetDateTime.now(), true)}
+   *   {@code Result: 2018-03-13T15:11:14.971+0100}
+   *
+   *   {@code TemporalConverter.toIso8601(LocalDateTime.now(), false)}
+   *   {@code Result: 2018-03-13T15:11}
+   *
+   *   {@code TemporalConverter.toIso8601(LocalDateTime.now(), true)}
+   *   {@code Result: 2018-03-13T15:11:14.971}
+   *
+   *   {@code TemporalConverter.toIso8601(LocalDate, false)}
+   *   {@code Result: 2018-03-13}
+   *
+   *   {@code TemporalConverter.toIso8601(LocalDate, true)}
+   *   {@code Result: 2018-03-13}
+   * </pre>
+   * </p>
+   * @param withSeconds if in the ISO-8601 string the seconds have to be represented (seconds
+   * following by nanoseconds can be optional a part according to the ISO 8601 specification).
+   * For displaying, usually the seconds aren't meaningful whereas for the datetime
+   * transport from one source to a target point this can be important.
+   * @return a String representation of the temporal in the base format of the ISO-8601
+   * specification.
+   */
+  public static String toBaseIso8601(final Temporal temporal, boolean withSeconds) {
+    return toIso8601(temporal, withSeconds, false);
   }
 
   /**
@@ -353,6 +376,42 @@ public class TemporalFormatter {
     } else {
       return toLocalizedTime(temporal, language);
     }
+  }
+
+  private static String toIso8601(final Temporal temporal, final boolean withSeconds,
+      final boolean extended) {
+    Objects.requireNonNull(temporal);
+
+    if (!temporal.isSupported(ChronoUnit.HOURS)) {
+      return DateTimeFormatter.ISO_LOCAL_DATE.format(temporal);
+    }
+
+    // add hour and minute field
+    final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive()
+        .append(DateTimeFormatter.ISO_LOCAL_DATE)
+        .appendLiteral('T')
+        .appendValue(HOUR_OF_DAY, 2)
+        .appendLiteral(':')
+        .appendValue(MINUTE_OF_HOUR, 2);
+    if (withSeconds) {
+      // add seconds and nano of second fields
+      builder.optionalStart()
+          .appendLiteral(':')
+          .appendValue(SECOND_OF_MINUTE, 2)
+          .optionalStart()
+          .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true);
+    }
+    if (temporal.isSupported(ChronoField.OFFSET_SECONDS)) {
+      // offset is supported, then add the field according to the kind of format (extended or base)
+      builder.parseLenient();
+      if (extended) {
+        builder.appendOffsetId();
+      } else {
+        builder.appendOffset("+HHMM", "Z");
+      }
+      builder.parseStrict();
+    }
+    return builder.toFormatter().format(temporal);
   }
 
   private static String toZonedFormat(final String pattern, final Temporal temporal,

@@ -28,7 +28,7 @@ import java.net.URI;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class SharingEntity implements WebEntity {

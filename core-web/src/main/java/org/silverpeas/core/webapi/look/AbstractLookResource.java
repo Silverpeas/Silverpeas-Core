@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.look;
 
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import javax.ws.rs.WebApplicationException;

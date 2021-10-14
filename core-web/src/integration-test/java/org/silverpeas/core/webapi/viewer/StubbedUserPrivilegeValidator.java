@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.viewer;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
+import org.silverpeas.core.web.rs.UserPrivilegeValidator;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

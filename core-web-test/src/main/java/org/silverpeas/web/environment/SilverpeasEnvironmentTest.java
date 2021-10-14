@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;
@@ -46,6 +47,7 @@ import javax.inject.Singleton;
  * <li>etc.</li>
  * </ul>
  */
+@Bean
 @Singleton
 public class SilverpeasEnvironmentTest {
 

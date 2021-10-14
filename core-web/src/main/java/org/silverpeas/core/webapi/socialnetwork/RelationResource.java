@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.socialnetwork;
 
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

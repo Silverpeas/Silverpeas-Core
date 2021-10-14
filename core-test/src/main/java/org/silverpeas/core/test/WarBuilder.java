@@ -47,8 +47,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -103,68 +104,100 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   }
 
   /**
-   * Creates a maven dependencies (when not declared in pom.xml of current project).
+   * Creates a maven dependencies (when not declared in the pom.xml of the current project). Each of
+   * the specified dependencies must be expressed in the canonical form
+   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
+   * If the version isn't specified, then it is figured out from the <code>maven.properties</code>
+   * file. A property <code>&lt;artifactId&gt;.version</code> is first looked for and if not found,
+   * the silverpeas version is then used.
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
-  @SuppressWarnings("unchecked")
   public WarBuilder<T> createMavenDependencies(String... mavenDependencies) {
     for (String mavenDependency : mavenDependencies) {
-      addMavenDependencies(
-          mavenDependency + ":" + testCoreClassMavenTargetDirectoryRule.getSilverpeasVersion());
+      String[] dep = mavenDependency.split(":");
+      String version = getVersion(dep);
+      addMavenDependencies(mavenDependency + ":" + version);
     }
     return this;
   }
 
   /**
-   * Creates a maven dependencies (when not declared in pom.xml of current project).
+   * Creates a maven dependencies (when not declared in the pom.xml of the current project). Each of
+   * the specified dependencies must be expressed in the canonical form
+   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
+   * If the version isn't specified, then it is figured out from the <code>maven.properties</code>
+   * file. A property <code>&lt;artifactId&gt;.version</code> is first looked for and if not found,
+   * the silverpeas version is then used. The artifacts are then referenced in the persistence
+   * descriptor so that the entities and repositories are taken in charge by the persistence layer.
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
+   * @throws IllegalArgumentException if no version if found for one of the specified Maven
+   * dependencies.
    */
-  @SuppressWarnings("unchecked")
   public WarBuilder<T> createMavenDependenciesWithPersistence(String... mavenDependencies) {
     for (String mavenDependency : mavenDependencies) {
-      addMavenDependenciesWithPersistence(
-          mavenDependency + ":" + testCoreClassMavenTargetDirectoryRule.getSilverpeasVersion());
+      String[] dep = mavenDependency.split(":");
+      String version = getVersion(dep);
+      addMavenDependenciesWithPersistence(mavenDependency + ":" + version);
     }
     return this;
   }
 
   /**
-   * Adds maven dependencies.
+   * Adds the specified maven dependencies that are defined in the pom.xml of the project. Each of
+   * the specified dependencies must be expressed in the canonical form
+   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
-  @SuppressWarnings("unchecked")
   public WarBuilder<T> addMavenDependencies(String... mavenDependencies) {
     Collections.addAll(this.mavenDependencies, mavenDependencies);
     return this;
   }
 
   /**
-   * Adds maven dependencies.
+   * Adds the specified maven dependencies that are defined in the pom.xml of the project. Each of
+   * the specified dependencies must be expressed in the canonical form
+   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>. The artifacts are
+   * then referenced in the persistence descriptor so that the entities and repositories are taken
+   * in charge by the persistence layer. For doing, in the case the version isn't
+   * specified in the canonical form of the dependency, it is figured out from the
+   * <code>maven.properties</code> file. A property <code>&lt;artifactId&gt;.version</code> is first
+   * looked for and if not found, the silverpeas version is then used.
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
-  @SuppressWarnings("unchecked")
   public WarBuilder<T> addMavenDependenciesWithPersistence(String... mavenDependencies) {
     addMavenDependencies(mavenDependencies);
     for (String mavenDependency : mavenDependencies) {
-      String jarLib = "lib/" + mavenDependency.split(":")[1] + "-" +
-          testCoreClassMavenTargetDirectoryRule.getSilverpeasVersion() +
-          ".jar";
+      String[] dep = mavenDependency.split(":");
+      String version = getVersion(dep);
+      String jarLib = "lib/" + dep[1] + "-" + version + ".jar";
       logInfo("Adding persistence reference for: " + jarLib);
       jarLibForPersistence.add("<jar-file>" + jarLib + "</jar-file>");
     }
     return this;
   }
 
+  private String getVersion(final String[] mavenDependency) {
+    String version;
+    if (mavenDependency.length == 3) {
+      version = mavenDependency[2];
+    } else {
+      Optional<String> possibleVersion =
+          testCoreClassMavenTargetDirectoryRule.getOptionalValue(mavenDependency[1] + ".version");
+      version =
+          possibleVersion.orElseGet(testCoreClassMavenTargetDirectoryRule::getSilverpeasVersion);
+    }
+    return version;
+  }
+
   /**
-   * Adds web listener.
+   * Adds the specified web servlet listener.
    * @param webListenerClass the class of the web listener to add.
    * @return the instance of the configurator.
    */
-  @SuppressWarnings("unchecked")
   public WarBuilder<T> addWebListener(Class<? extends EventListener> webListenerClass) {
     war.addClass(webListenerClass);
     webParts.add(
@@ -201,7 +234,6 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     return this;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public WarBuilder<T> addAsResource(final String resourceName) throws IllegalArgumentException {
     war.addAsResource(resourceName);
@@ -229,17 +261,21 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     return this;
   }
 
+  /**
+   * The test implied code that uses the JCR. So initialize the JCR schema of Silverpeas.
+   * @return itself.
+   */
   public WarBuilder<T> initJcrSchema() {
     addWebListener(SilverpeasJcrInitializationListener.class);
     return this;
   }
 
   /**
-   * Builds the final WAR archive. The following stuffs are automatically added :
+   * Builds the final WAR archive. The following stuffs are automatically added:
    * <ul>
-   * <li>The <b>beans.xml</b> in order to activate CDI,</li>
-   * <li>The <b>META-INF/services/org.silverpeas.core.util.BeanContainer</b> to load the CDI-based bean
-   * container,</li>
+   * <li>The <b>beans.xml</b> descriptor in order to activate CDI,</li>
+   * <li>The <b>META-INF/services/org.silverpeas.core.util.BeanContainer</b> service file to load
+   * the CDI-based bean container,</li>
    * </ul>
    * @return the built WAR archive.
    */
@@ -250,6 +286,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
         String persistenceXmlContent;
         try (InputStream is = WarBuilder.class.getResourceAsStream(
             "/META-INF/core-test-persistence.xml")) {
+          Objects.requireNonNull(is);
           persistenceXmlContent = IOUtils.toString(is, Charsets.UTF_8);
         }
         File persistenceXml = FileUtils.getFile(
@@ -269,6 +306,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       if (!webParts.isEmpty()) {
         String webXmlContent;
         try (InputStream is = WarBuilder.class.getResourceAsStream("/META-INF/core-web-test.xml")) {
+          Objects.requireNonNull(is);
           webXmlContent = IOUtils.toString(is, Charsets.UTF_8);
         }
         File webXml = FileUtils
@@ -292,7 +330,6 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       return war;
     } catch (Exception e) {
       final String message = "WAR BUILD PROBLEM...";
-      Logger.getAnonymousLogger().log(Level.SEVERE, message, e);
       throw new SilverpeasRuntimeException(message, e);
     }
   }
@@ -317,8 +354,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * @param testFocus the instance of an anonymous implementation of {@link TestFocus} interface.
    * @return the instance of the war builder.
    */
-  @SuppressWarnings("unchecked")
-  public final WarBuilder<T> testFocusedOn(TestFocus testFocus) {
+  public final WarBuilder<T> testFocusedOn(TestFocus<T> testFocus) {
     testFocus.focus(this);
     return this;
   }
@@ -326,9 +362,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   /**
    * Applies a configuration by using directly the {@link WebArchive} instance provided by the
    * ShrinkWrap API.
-   * @param onShrinkWrapWar the instance of an anonymous implementation of {@link org.silverpeas
-   * .test.WarBuilder.OnShrinkWrapWar}
-   * interface.
+   * @param onShrinkWrapWar the instance of an anonymous implementation of {@link
+   * org.silverpeas.core.test.WarBuilder.OnShrinkWrapWar} interface.
    * @return the instance of the war builder.
    */
   @Override

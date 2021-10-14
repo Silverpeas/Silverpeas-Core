@@ -26,8 +26,8 @@ package org.silverpeas.core.webapi.preferences;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;

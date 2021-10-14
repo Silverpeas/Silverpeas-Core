@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.admin.scim;
 
-import org.silverpeas.core.webapi.base.SilverpeasRequestContext;
+import org.silverpeas.core.web.rs.SilverpeasRequestContext;
 
 import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;

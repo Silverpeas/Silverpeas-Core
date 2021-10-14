@@ -31,9 +31,9 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 import org.silverpeas.core.web.sharing.notification.FileSharingUserNotification;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

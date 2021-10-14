@@ -33,7 +33,7 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.NodeAccessController;
 import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;

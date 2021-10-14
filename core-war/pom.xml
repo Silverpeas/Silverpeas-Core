@@ -51,7 +51,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-rs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-web</artifactId>
       <version>${project.version}</version>
     </dependency>

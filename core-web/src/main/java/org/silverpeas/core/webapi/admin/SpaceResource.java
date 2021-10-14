@@ -38,7 +38,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 
 import javax.ws.rs.Consumes;

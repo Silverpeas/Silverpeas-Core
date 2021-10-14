@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.mylinks;
 
 import org.silverpeas.core.mylinks.model.CategoryDetail;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;

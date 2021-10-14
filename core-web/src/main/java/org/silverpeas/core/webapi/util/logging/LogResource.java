@@ -29,7 +29,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.password;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;

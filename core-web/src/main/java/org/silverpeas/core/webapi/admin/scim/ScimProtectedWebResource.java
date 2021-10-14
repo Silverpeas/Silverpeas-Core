@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.WebResourceUri;
-import org.silverpeas.core.webapi.base.ProtectedWebResource;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.ProtectedWebResource;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;

@@ -45,9 +45,9 @@ import org.silverpeas.core.web.attachment.WebDavTokenProducer;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.rs.UserPrivilegeValidator;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
 
 import javax.servlet.http.HttpServletRequest;

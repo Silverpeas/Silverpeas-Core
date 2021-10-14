@@ -30,6 +30,7 @@ import org.silverpeas.core.test.util.SilverProperties;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +51,7 @@ public class MavenTargetDirectoryRule implements TestRule {
 
   private SilverProperties mavenProperties;
 
-  private Class testInstanceClass;
+  private final Class<?> testInstanceClass;
 
   /**
    * Gets the silverpeas version.
@@ -82,6 +83,27 @@ public class MavenTargetDirectoryRule implements TestRule {
    */
   public File getResourceTestDirFile() {
     return getResourceTestDirFile(getMavenProperties());
+  }
+
+  /**
+   * Gets the value of a custom property defined in the maven.properties file and used in the test.
+   * @param property the name of the property in the maven.properties file.
+   * @return the value of the property.
+   */
+  public String getValue(final String property) {
+    return getMavenProperty(getMavenProperties(), property);
+  }
+
+  /**
+   * Gets the value of a custom property possibly defined in the maven.properties file and used
+   * in the test. Be cautious that empty value for a property is considered by this method as no
+   * property.
+   * @param property the name of the property in the maven.properties file.
+   * @return the value of the property or nothing if such property doesn't exist.
+   */
+  public Optional<String> getOptionalValue(final String property) {
+    String value = getMavenProperties().getProperty(property, "").trim();
+    return value.isEmpty() ? Optional.empty() : Optional.of(value);
   }
 
   /**
@@ -125,7 +147,7 @@ public class MavenTargetDirectoryRule implements TestRule {
    * Gets a property from the maven.properties file.
    * @return the value related to the given key.
    */
-  private Properties getMavenProperties() {
+  protected Properties getMavenProperties() {
     if (mavenProperties == null) {
       mavenProperties = loadPropertiesForTestClass(testInstanceClass);
     }
@@ -137,7 +159,7 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @param key the key of the property.
    * @return the value related to the given key.
    */
-  private static String getMavenProperty(Properties mavenProperties, String key) {
+  protected static String getMavenProperty(Properties mavenProperties, String key) {
     String mavenPropertyValue = mavenProperties.getProperty(key, null);
     assertThat("The maven.properties file from resource tests is not complete...",
         mavenPropertyValue, notNullValue());
@@ -150,14 +172,16 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @param testClass the test class for which the maven properties are requested.
    * @return an instance of {@link Properties} that containes requested maven properties.
    */
-  public static SilverProperties loadPropertiesForTestClass(Class testClass) {
+  public static SilverProperties loadPropertiesForTestClass(Class<?> testClass) {
     SilverProperties mavenProperties = SilverProperties.load(testClass);
     try (InputStream is = testClass.getClassLoader().getResourceAsStream("maven.properties")) {
-      Logger.getLogger(testClass.getName()).info("Reading maven properties from " + testClass);
+      Logger.getLogger(testClass.getName()).log(Level.INFO, "Reading maven properties from {0}",
+          testClass);
       mavenProperties.load(is);
-      Logger.getLogger(testClass.getName()).info("Content is:\n" + mavenProperties.toString());
+      Logger.getLogger(testClass.getName()).log(Level.INFO, "Content is:\n{0}",
+          mavenProperties);
     } catch (Exception ex) {
-      Logger.getLogger(testClass.getName()).log(Level.SEVERE, "Class " + testClass, ex);
+      Logger.getLogger(testClass.getName()).log(Level.SEVERE, testClass.getName(), ex);
     }
     return mavenProperties;
   }

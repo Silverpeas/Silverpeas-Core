@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.variables;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.core.variables.Variable;
 import org.silverpeas.core.variables.VariableScheduledValue;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

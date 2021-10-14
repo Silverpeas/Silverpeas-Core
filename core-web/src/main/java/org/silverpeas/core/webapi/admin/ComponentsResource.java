@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.admin;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.WebResourceUri;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.web.rs.annotation.Authenticated;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
