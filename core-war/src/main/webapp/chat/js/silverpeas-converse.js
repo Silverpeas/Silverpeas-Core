@@ -245,6 +245,46 @@
   }
 
   /**
+   * Setups minimize all addons.
+   * Minimize all views when double clicking on the control box background.
+   * @private
+   */
+  function __setupMinimizeAll(chatOptions) {
+    if (!window.spLayout) {
+      return;
+    }
+    chatOptions.whitelisted_plugins.push('silverpeas-minimize-all');
+    converse.plugins.add('silverpeas-minimize-all', {
+      dependencies: ["converse-minimize"],
+      initialize : function() {
+        const _converse = this._converse;
+        const __minimizeAll = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const __click = function($el) {
+            if($el) {
+              $el.click();
+            }
+          };
+          _converse.chatboxviews.getAll().forEach(function(view) {
+            __click(view.querySelector('.toggle-chatbox-button') ||
+                view.querySelector('.close-chatbox-button'));
+          });
+          setTimeout(function() {
+            const minimizedChats = document.querySelector("converse-minimized-chats");
+            if (minimizedChats && !minimizedChats.querySelector(".hidden")) {
+              __click(minimizedChats.querySelector('#toggle-minimized-chats'));
+            }
+          }, 0);
+        };
+        _converse.api.listen.on('controlBoxInitialized', function() {
+          _converse.chatboxviews.get('controlbox').addEventListener('dblclick', __minimizeAll);
+        });
+      }
+    });
+  }
+
+  /**
    * Setups the common stuffs in order to get the chat working into Silverpeas.
    * @private
    */
@@ -325,6 +365,7 @@
       __setupSilverpeas(__settings);
       __setupChatboxesAddons(__settings);
       __setupNotificationAddons(__settings);
+      __setupMinimizeAll(__settings);
       return this;
     };
     this.start = function() {
