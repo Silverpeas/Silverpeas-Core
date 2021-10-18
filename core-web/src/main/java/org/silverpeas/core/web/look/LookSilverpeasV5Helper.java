@@ -63,11 +63,16 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import static org.silverpeas.core.admin.space.SpaceInst.PERSONAL_SPACE_ID;
+import static org.silverpeas.core.util.StringUtil.*;
+
 public class LookSilverpeasV5Helper extends LookHelper {
 
+  private static final Object MUTEX = new Object();
   private static final String TO_BE_DEFINED = "toBeDefined";
   private OrganizationController organizationController;
   private SettingBundle resources = null;
@@ -111,9 +116,6 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
-    if (StringUtil.isDefined(spaceId)) {
-      reloadProperties(spaceId);
-    }
   }
 
   /*
@@ -132,9 +134,6 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public void setSubSpaceId(String subSpaceId) {
     this.subSpaceId = subSpaceId;
-    if (StringUtil.isDefined(subSpaceId)) {
-      reloadProperties(subSpaceId);
-    }
   }
 
   /*
@@ -161,15 +160,17 @@ public class LookSilverpeasV5Helper extends LookHelper {
    */
   @Override
   public void setSpaceIdAndSubSpaceId(String spaceId) {
-    if (StringUtil.isDefined(spaceId)) {
-      List<SpaceInstLight> spacePath = organizationController.getPathToSpace(spaceId);
-      if (!spacePath.isEmpty()) {
-        SpaceInstLight space = spacePath.get(0);
-        SpaceInstLight subSpace = spacePath.get(spacePath.size() - 1);
-        setSpaceId(space.getId());
-        setSubSpaceId(subSpace.getId());
+    synchronized (MUTEX) {
+      if (StringUtil.isDefined(spaceId)) {
+        List<SpaceInstLight> spacePath = organizationController.getPathToSpace(spaceId);
+        if (!spacePath.isEmpty()) {
+          SpaceInstLight space = spacePath.get(spacePath.size() - 1);
+          setSpaceAndSubSpaceContext(space.getId(), space.isPersonalSpace(), space.getId());
+        }
+        setComponentId(null);
+      } else {
+        setSpaceAndSubSpaceContext(null, false, null);
       }
-      setComponentId(null);
     }
   }
 
@@ -179,19 +180,46 @@ public class LookSilverpeasV5Helper extends LookHelper {
    * java.lang.String, java.lang.String)
    */
   @Override
-  public void setComponentIdAndSpaceIds(String spaceId, String subSpaceId, String componentId) {
-    setComponentId(componentId);
-
-    if (!StringUtil.isDefined(spaceId) &&
-        !PersonalComponentInstance.from(componentId).isPresent()) {
-      List<SpaceInstLight> spacePath = organizationController.getPathToComponent(componentId);
-      if (!spacePath.isEmpty()) {
-        SpaceInstLight space = spacePath.get(0);
-        SpaceInstLight subSpace = spacePath.get(spacePath.size() - 1);
-        setSpaceId(space.getId());
-        setSubSpaceId(subSpace.getId());
+  public void setComponentIdAndSpaceIds(final String spaceId, final String subSpaceId,
+      final String componentId) {
+    synchronized (MUTEX) {
+      boolean isPersonalSpace = false;
+      String finalSpaceId = EMPTY;
+      String finalSubSpaceId = EMPTY;
+      if (!StringUtil.isDefined(spaceId) && PersonalComponentInstance.from(componentId).isEmpty()) {
+        List<SpaceInstLight> spacePath = organizationController.getPathToComponent(componentId);
+        if (!spacePath.isEmpty()) {
+          SpaceInstLight space = spacePath.get(spacePath.size() - 1);
+          isPersonalSpace = space.isPersonalSpace();
+          finalSpaceId = space.getId();
+          finalSubSpaceId = space.getId();
+        }
+      } else {
+        finalSpaceId = spaceId;
+        finalSubSpaceId = subSpaceId;
       }
+      setSpaceAndSubSpaceContext(finalSpaceId, isPersonalSpace, finalSubSpaceId);
+      setComponentId(componentId);
+      if (StringUtil.isDefined(componentId)) {
+        getGraphicElementFactory().ifPresent(f -> f.setComponentIdForCurrentRequest(componentId));
+      }
+    }
+  }
+
+  private void setSpaceAndSubSpaceContext(final String spaceId, final boolean isPersonalSpace,
+      final String subSpaceId) {
+    final boolean isPortletHomePage = getGraphicElementFactory().map(f -> {
+      Optional.ofNullable(defaultStringIfNotDefined(subSpaceId, spaceId))
+          .filter(StringUtil::isDefined)
+          .ifPresent(f::setSpaceIdForCurrentRequest);
+      return f.isPortletMainPage();
+    }).orElse(false);
+    if (isPersonalSpace || PERSONAL_SPACE_ID.equalsIgnoreCase(spaceId) || isPortletHomePage) {
+      reloadProperties(null, true);
+      setSpaceId(null);
+      setSubSpaceId(null);
     } else {
+      reloadProperties(spaceId, false);
       setSpaceId(spaceId);
       setSubSpaceId(subSpaceId);
     }
@@ -203,10 +231,9 @@ public class LookSilverpeasV5Helper extends LookHelper {
    */
   protected LookSilverpeasV5Helper(HttpSession session) {
     this.session = session;
-    GraphicElementFactory gef = getGraphicElementFactory();
-    if (gef != null) {
-      init(gef.getFavoriteLookSettings());
-    }
+    getGraphicElementFactory()
+        .map(GraphicElementFactory::getFavoriteLookSettings)
+        .ifPresent(this::init);
   }
 
   /*
@@ -256,16 +283,24 @@ public class LookSilverpeasV5Helper extends LookHelper {
     }
   }
 
-  private void reloadProperties(String spaceId) {
-    String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
-    if (!StringUtil.isDefined(spaceLook)) {
-      // no look defined for this space (or its parent),
-      // use user's favorite look or look by default
-      spaceLook = getMainSessionController().getFavoriteLook();
-    }
-    if (spaceLook != null && !spaceLook.equals(currentLookName)) {
-      currentLookName = getGraphicElementFactory().setLook(spaceLook);
-      init(getGraphicElementFactory().getFavoriteLookSettings());
+  private void reloadProperties(String spaceId, final boolean force) {
+    if (isDefined(spaceId) || force) {
+      final String spaceLook = Optional.ofNullable(spaceId)
+          .filter(StringUtil::isDefined)
+          .map(SilverpeasLook.getSilverpeasLook()::getSpaceLook)
+          .filter(StringUtil::isDefined)
+          // no look defined for this space (or its parent),
+          // use user's favorite look or look by default
+          .orElseGet(() -> Optional.ofNullable(getMainSessionController())
+              .map(MainSessionController::getFavoriteLook)
+              .orElse(null));
+      if (spaceLook != null && !spaceLook.equals(currentLookName)) {
+        currentLookName = getGraphicElementFactory().map(f -> {
+          final String look = f.setLook(spaceLook);
+          init(f.getFavoriteLookSettings());
+          return look;
+        }).orElse(null);
+      }
     }
   }
 
@@ -298,12 +333,12 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return organizationController;
   }
 
-  protected GraphicElementFactory getGraphicElementFactory() {
+  protected Optional<GraphicElementFactory> getGraphicElementFactory() {
     if (session != null) {
-      return (GraphicElementFactory) session
-          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      return Optional.ofNullable((GraphicElementFactory) session.getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT));
     }
-    return null;
+    return Optional.empty();
   }
 
   /*

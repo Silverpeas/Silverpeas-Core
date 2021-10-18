@@ -35,7 +35,6 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -46,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
 
@@ -171,18 +171,8 @@ public abstract class GoTo extends HttpServlet {
   protected void setGefSpaceId(HttpServletRequest req, String componentId) {
     if (StringUtil.isDefined(componentId)) {
       HttpSession session = req.getSession(true);
-      GraphicElementFactory gef = (GraphicElementFactory) session
-          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      LookHelper helper = LookHelper.getLookHelper(session);
-      if (gef != null && helper != null) {
-        helper.setComponentIdAndSpaceIds(null, null, componentId);
-        String helperSpaceId = helper.getSubSpaceId();
-        if (!StringUtil.isDefined(helperSpaceId)) {
-          helperSpaceId = helper.getSpaceId();
-        }
-        gef.setSpaceIdForCurrentRequest(helperSpaceId);
-        gef.setComponentIdForCurrentRequest(componentId);
-      }
+      Optional.ofNullable(LookHelper.getLookHelper(session))
+          .ifPresent(h -> h.setComponentIdAndSpaceIds(null, null, componentId));
     }
   }
 

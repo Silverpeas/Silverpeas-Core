@@ -120,14 +120,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     // Set current space and component identifier (helper and gef)
     if (StringUtil.isDefined(componentId)) {
       helper.setComponentIdAndSpaceIds(null, null, componentId);
-      String helperSpaceId = helper.getSubSpaceId();
-      if (!StringUtil.isDefined(helperSpaceId)) {
-        helperSpaceId = helper.getSpaceId();
-      }
-      gef.setSpaceIdForCurrentRequest(helperSpaceId);
     } else if (StringUtil.isDefined(spaceId) && !isPersonalSpace(spaceId)) {
       helper.setSpaceIdAndSubSpaceId(spaceId);
-      gef.setSpaceIdForCurrentRequest(spaceId);
     }
 
     // New request parameter to manage Bookmarks view or classical view
