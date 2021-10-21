@@ -208,7 +208,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
           throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
               .entity(errorMessage).build());
         }
-        isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
+        isWebdav = document.isOpenOfficeCompatible() && document.isEdited();
         updateWithAlreadyUploadedFile(document, isWebdav);
       }
       UnlockContext unlockContext =

@@ -404,7 +404,7 @@ public class SimpleDocumentService
       repository.fillNodeName(session, document);
       repository.updateDocument(session, document, true);
       if (!oldAttachment.isVersioned() && document.isOpenOfficeCompatible() &&
-          document.isReadOnly()) {
+          document.isEdited()) {
         // le fichier est renommé
         if (!oldAttachment.getFilename().equals(document.getFilename())) {
           webdavRepository.deleteAttachmentNode(session, oldAttachment);
@@ -450,7 +450,7 @@ public class SimpleDocumentService
         finalDocument = repository.unlock(session, document, false);
       }
       repository.storeContent(finalDocument, in, true);
-      if (document.isOpenOfficeCompatible() && finalDocument.isReadOnly()) {
+      if (document.isOpenOfficeCompatible() && finalDocument.isEdited()) {
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
       repository.duplicateContent(document, finalDocument);
@@ -476,7 +476,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
-      if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
+      if (document.isOpenOfficeCompatible() && document.isEdited()) {
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
       deleteIndex(document, document.getLanguage());
@@ -828,7 +828,7 @@ public class SimpleDocumentService
         webdavRepository.isNodeLocked(session, document)) {
       return false;
     }
-    return context.isForce() || !document.isReadOnly() || document.getEditedBy().equals(context.
+    return context.isForce() || !document.isEdited() || document.getEditedBy().equals(context.
         getUserId());
   }
 
@@ -845,7 +845,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId);
       SimpleDocument document = repository.findDocumentById(session, pk, language);
-      if (document.isReadOnly()) {
+      if (document.isEdited()) {
         return document.getEditedBy().equals(userId);
       }
       repository.lock(session, document, document.getEditedBy());
@@ -857,7 +857,7 @@ public class SimpleDocumentService
       SimpleDocument oldAttachment =
           repository.findDocumentById(session, document.getPk(), document.getLanguage());
       repository.updateDocument(session, document, false);
-      if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
+      if (document.isOpenOfficeCompatible() && document.isEdited()) {
         if (!oldAttachment.getFilename().equals(document.getFilename())) {
           webdavRepository.deleteAttachmentNode(session, oldAttachment);
           webdavRepository.createAttachmentNode(session, document);

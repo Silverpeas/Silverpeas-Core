@@ -28,7 +28,6 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.util.WebEncodeHelper;
 
 import javax.persistence.Column;
@@ -56,7 +55,7 @@ import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
 @Table(name = "sb_variables_value")
 @DateRange(start = "startDate", end = "endDate")
 public class VariableScheduledValue
-    extends SilverpeasJpaEntity<VariableScheduledValue, UuidIdentifier> implements Securable {
+    extends SilverpeasJpaEntity<VariableScheduledValue, UuidIdentifier> {
 
   @Column(nullable = false)
   private String value;

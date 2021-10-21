@@ -27,13 +27,16 @@ package org.silverpeas.cmis;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Filtering parameters to apply on the characteristics of the objects to return.
+ * Filtering parameters to apply on the characteristics of the objects to return. By default, the
+ * current user and the language in which the textual properties of the object have to be expressed
+ * are set. For latter, it is the language of the user, but it can be updated.
  * @author mmoquillon
  */
 public class Filtering {
@@ -45,7 +48,7 @@ public class Filtering {
   private IncludeCmisObjectTypes includeCmisObjectTypes = IncludeCmisObjectTypes.ALL;
   private IncludeRelationships includeRelationships = IncludeRelationships.NONE;
   private final User user = User.getCurrentRequester();
-  private final String language = user.getUserPreferences().getLanguage();
+  private String language = user.getUserPreferences().getLanguage();
 
   public User getCurrentUser() {
     return user;
@@ -53,6 +56,19 @@ public class Filtering {
 
   public String getLanguage() {
     return language;
+  }
+
+  /**
+   * Replaces the languages to use with the specified one. By default, the language is the one of
+   * the current user.
+   * @param language the language to use in the localization of the CMIS object.
+   * @return itself.
+   */
+  public Filtering setLanguage(final String language) {
+    if (StringUtil.isDefined(language)) {
+      this.language = language;
+    }
+    return this;
   }
 
   /**

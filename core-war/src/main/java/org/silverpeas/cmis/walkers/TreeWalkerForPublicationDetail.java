@@ -28,9 +28,6 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisServiceUnavailableException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
@@ -47,7 +44,6 @@ import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.Document;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.contribution.model.I18nContribution;
@@ -85,40 +81,9 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   private AttachmentService attachmentService;
 
   @Override
-  public ContentStream getContentStream(final String objectId, final String language,
-      final long offset, final long length) {
-    throw new CmisNotSupportedException("The content stream isn't supported by publications");
-  }
-
-  @Override
-  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    throw new CmisNotSupportedException("The update isn't supported by publications");
-  }
-
-  /**
-   * The walker takes in charge the creation of document files from the specified CMIS properties,
-   * but it delegates this task to the walker dedicated to handle Silverpeas documents by invoking
-   * its {@link AbstractCmisObjectsTreeWalker#createObjectData(CmisProperties, ContentStream,
-   * String)} method.
-   * @param folderId the unique identifier of a publication in the CMIS objects tree.
-   * @param properties the CMIS properties of the {@link SimpleDocument} to create.
-   * @param contentStream a stream on the document's content. Must not be null.
-   * @param language the ISO 639-1 code of the language in which the textual folder properties are
-   * expressed.
-   * @return the {@link org.silverpeas.core.cmis.model.DocumentFile} instance that has been created
-   * and attached to the {@link Publication} object identified by the folderId parameter.
-   */
-  @Override
-  public CmisObject createChildData(final String folderId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    PublicationDetail publication = getSilverpeasObjectById(folderId);
-    properties.setParentObjectId(publication.getIdentifier()
-        .asString());
-    properties.setIndexed(publication.isIndexable());
-    AbstractCmisObjectsTreeWalker walker =
-        getTreeWalkerSelector().selectByObjectTypeId(properties.getObjectTypeId());
-    return walker.createObjectData(properties, contentStream, language);
+  protected void prepareChildDataCreation(final LocalizedResource publication,
+      final CmisProperties properties, final ContentStream contentStream, final String language) {
+    properties.setIndexed(((PublicationDetail)publication).isIndexable());
   }
 
   @Override
@@ -168,27 +133,31 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   @Override
   @SuppressWarnings("unchecked")
   protected PublicationDetail getSilverpeasObjectById(final String objectId) {
-    try {
-      PublicationDetail publication = publicationService.getDetail(asPublicationPK(objectId));
-      if (publication == null) {
-        throw new CmisObjectNotFoundException(String.format("Publication %s not found", objectId));
-      }
-      return publication;
-    } catch (Exception e) {
-      throw new CmisServiceUnavailableException(e.getMessage());
-    }
+    ContributionIdentifier id = ContributionIdentifier.decode(objectId);
+    User user = User.getCurrentRequester();
+    return (PublicationDetail) CmisContributionsProvider.getByAppId(id.getComponentInstanceId())
+        .getContribution(id, user);
   }
 
   @Override
   protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
       final ResourceIdentifier parentId, final User user) {
-    ContributionIdentifier folderId = (ContributionIdentifier) parentId;
+    PublicationDetail publi = getSilverpeasObjectById(parentId.asString());
+    ContributionIdentifier folderId = publi.getIdentifier();
     String language = user.getUserPreferences().getLanguage();
     ResourceReference ref = ResourceReference.to(folderId);
     return attachmentService.listDocumentsByForeignKey(ref, language)
         .stream()
-        .filter(a -> a.isPublic() || (a.canBeAccessedBy(user) && (a.isDownloadAllowedForReaders() ||
-            a.isDownloadAllowedForRolesFrom(user))))
+        .filter(a -> a.isPublic() || (a.canBeAccessedBy(user) &&
+            (a.isDownloadAllowedForReaders() || a.isDownloadAllowedForRolesFrom(user))))
+        .map(a -> {
+          if (!a.isEdited() && publi.haveGotClone() && !publi.isClone()) {
+            // the document comes from the public version of a publication in draft mode: it must
+            // be read-only
+            a.edit("0");
+          }
+          return a;
+        })
         .map(Document::new);
   }
 
@@ -256,11 +225,6 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
     CmisObject cmisObject = encodeToCmisObject(pub, language);
     ObjectParentData parentData = buildObjectParentData(cmisParent, cmisObject, filtering);
     return Collections.singletonList(parentData);
-  }
-
-  private PublicationPK asPublicationPK(final String pubId) {
-    ContributionIdentifier identifier = ContributionIdentifier.decode(pubId);
-    return new PublicationPK(identifier.getLocalId(), identifier.getComponentInstanceId());
   }
 
   private ContributionIdentifier getFolder(final PublicationDetail publication) {

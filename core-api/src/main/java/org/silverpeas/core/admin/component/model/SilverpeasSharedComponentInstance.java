@@ -68,4 +68,9 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
   default boolean canBeModifiedBy(User user) {
     return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }
+
+  @Override
+  default boolean canBeFiledInBy(User user) {
+    return canBeModifiedBy(user);
+  }
 }

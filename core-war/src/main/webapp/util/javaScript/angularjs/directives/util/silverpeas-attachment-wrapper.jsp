@@ -27,6 +27,6 @@
 
 <c:set var="componentId" value="${param.componentId}"/>
 <c:set var="resourceId"  value="${param.resourceId}"/>
-<c:set var="readOnly"    value="${param.readOnly}"/>
+<c:set var="readOnly"    value="${param.edited}"/>
 
 <view:attachmentPane componentId="${componentId}" resourceId="${resourceId}" readOnly="${readOnly}"/>

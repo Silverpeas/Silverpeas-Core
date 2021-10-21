@@ -980,7 +980,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   /**
-   * Is the specified user can access this publication on persist context?
+   * Is the specified user can modify this publication?
    * <p>
    * A user can access a publication on persist context if he has enough rights to access both the
    * application instance in which is managed this publication and one of the nodes to which this
@@ -993,6 +993,17 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return PublicationAccessControl.get()
         .isUserAuthorized(user.getId(), this,
             AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
+  }
+
+  /**
+   * Is the specified user can file in this publication attachments?
+   * @param user a user in Silverpeas.
+   * @return true if the user has modification rights on this publication. In this case, he can
+   * attach documents to this publication. False otherwise.
+   */
+  @Override
+  public boolean canBeFiledInBy(final User user) {
+    return canBeModifiedBy(user);
   }
 
   /**

@@ -26,7 +26,7 @@
 package org.silverpeas.cmis.walkers;
 
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.cmis.CMISEnvForTests;
@@ -57,7 +57,7 @@ class ObjectContentInTreeWalkerTest extends CMISEnvForTests {
   void getContentStreamOfSpace() {
     final String spaceId = "WA1";
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
-    assertThrows(CmisNotSupportedException.class,
+    assertThrows(CmisStreamNotSupportedException.class,
         () -> walker.getContentStream(spaceId, "fr", 0, -1));
   }
 
@@ -66,7 +66,7 @@ class ObjectContentInTreeWalkerTest extends CMISEnvForTests {
   void getContentStreamOfApplication() {
     final String appId = "kmelia1";
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
-    assertThrows(CmisNotSupportedException.class,
+    assertThrows(CmisStreamNotSupportedException.class,
         () -> walker.getContentStream(appId, "fr", 0, -1));
   }
 
@@ -80,7 +80,7 @@ class ObjectContentInTreeWalkerTest extends CMISEnvForTests {
     String folderId = node.getIdentifier()
         .asString();
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
-    assertThrows(CmisNotSupportedException.class,
+    assertThrows(CmisStreamNotSupportedException.class,
         () -> walker.getContentStream(folderId, "fr", 0, -1));
   }
 
@@ -94,7 +94,7 @@ class ObjectContentInTreeWalkerTest extends CMISEnvForTests {
     String publiId = publi.getIdentifier()
         .asString();
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
-    assertThrows(CmisNotSupportedException.class,
+    assertThrows(CmisStreamNotSupportedException.class,
         () -> walker.getContentStream(publiId, "fr", 0, -1));
   }
 

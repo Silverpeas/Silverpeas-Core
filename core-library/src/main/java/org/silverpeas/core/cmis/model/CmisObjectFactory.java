@@ -217,12 +217,13 @@ public class CmisObjectFactory {
       updateDate = document.getLastUpdateDate();
       updater = document.getLastUpdater();
     }
+    boolean readOnly = document.isReadOnly() || (document.isVersioned() && !document.isEdited());
     return new DocumentFile(document.getIdentifier(), document.getFilename(), document.getLanguage())
         .setTitle(document.getTitle())
         .setLastComment(document.getComment())
         .setMimeType(document.getContentType())
         .setSize(document.getSize())
-        .setReadOnly(document.isReadOnly())
+        .setReadOnly(readOnly)
         .setParentId(parentId.asString())
         .setDescription(document.getDescription())
         .setCreator(document.getCreator().getDisplayedName())

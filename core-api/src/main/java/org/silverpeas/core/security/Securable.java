@@ -26,23 +26,22 @@ package org.silverpeas.core.security;
 import org.silverpeas.core.admin.user.model.User;
 
 /**
- * A securable object is an object that provides the necessary to verify the user accessibility on
- * it.
+ * A securable object is an object for which some operations on it requires for the user to be
+ * authorized. For doing, it defines for each basic kind of operations in Silverpeas (access,
+ * modification, ...) a method to control the rights of the user to perform such an operation.
  * @author Yohann Chastagnier
  */
 public interface Securable {
 
   /**
-   * Indicates if the given user can access this resource.
+   * Checks the given user can access this resource.
    * @param user a user in Silverpeas.
    * @return true if the user can access the data managed by this instance, false otherwise.
    */
-  default boolean canBeAccessedBy(User user) {
-    return false;
-  }
+  boolean canBeAccessedBy(User user);
 
   /**
-   * Indicates if the given user can modify this resource. By default, if the user can access this
+   * Checks the given user can modify this resource. By default, if the user can access this
    * securable resource, then it can also modify it.
    * @param user a user in Silverpeas.
    * @return true if the user can modify the data managed by this instance, false otherwise.
@@ -52,12 +51,23 @@ public interface Securable {
   }
 
   /**
-   * Indicates if the given user can delete this resource. By default, if the user can modify this
+   * Checks the given user can delete this resource. By default, if the user can modify this
    * securable resource, then it can also delete it.
    * @param user a user in Silverpeas.
    * @return true if the user can delete the data managed by this instance, false otherwise.
    */
   default boolean canBeDeletedBy(User user) {
     return canBeModifiedBy(user);
+  }
+
+  /**
+   * Checks the given user can file in this resource another resource. This behaviour control is
+   * only pertinent for resources acting as a container of other resources. By default, it returns
+   * false so that it requires to be implemented by any securable resource type supporting filing.
+   * @param user a user in Silverpeas.
+   * @return true if the user can file in this resource another resource.
+   */
+  default boolean canBeFiledInBy(User user) {
+    return false;
   }
 }

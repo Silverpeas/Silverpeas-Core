@@ -252,9 +252,9 @@
                              fromAlias="${fromAlias}"
                              userRole="${highestUserRole}"/>
         <span class="lineMain ${forbiddenDownloadClass}">
-            <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
+            <img alt="" id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
             <c:if test="${showIcon}">
-              <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
+              <img alt="" id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
             </c:if>
             <c:if test="${_isI18nHandled}">
               <span class="">[${currentAttachment.language}]</span>
@@ -328,7 +328,7 @@
           </c:if>
           <c:if test="${contextualMenuEnabled}">
             <c:choose>
-              <c:when test="${currentAttachment.readOnly}">
+              <c:when test="${currentAttachment.edited}">
                 <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:visible"><fmt:message key="readOnly" /> <view:username zoom="false" userId="${currentAttachment.editedBy}" /> <fmt:message key="at" /> <view:formatDateTime value="${currentAttachment.reservation}" /></div>
               </c:when>
               <c:otherwise>
@@ -338,7 +338,7 @@
           </c:if>
                 <c:if test="${spinfireViewerEnable && spinfire eq silfn:mimeType(currentAttachment.filename)}">
                   <div id="switchView" name="switchView" style="display: none">
-            <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
+            <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img alt="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
             </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
               <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
                 <param name="ModelName" value="<c:out value="${url}" escapeXml="false"/>">

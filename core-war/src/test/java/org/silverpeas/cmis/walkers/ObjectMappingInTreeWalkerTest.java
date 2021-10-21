@@ -221,7 +221,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
   }
 
   @Test
-  @DisplayName("The CMIS data of an attachemnt of a publication in an application of Silverpeas " +
+  @DisplayName("The CMIS data of an attachment of a publication in an application of Silverpeas " +
       "should match the properties of that publication")
   void getObjectDataOfAnAttachment() {
     final SimpleDocumentPK pk = new SimpleDocumentPK("1", "kmelia1");

@@ -336,6 +336,11 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
   }
 
   @Override
+  public boolean canBeFiledInBy(final User user) {
+    return canBeModifiedBy(user);
+  }
+
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;

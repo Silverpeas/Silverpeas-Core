@@ -24,6 +24,7 @@
 package org.silverpeas.core.node.model;
 
 import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.Folder;
@@ -44,6 +45,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * This object contains the description of a node (own attributes and children attributes)
@@ -555,12 +557,30 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
 
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return NodeAccessControl.get().isUserAuthorized(user.getId(), this,
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION));
+    return NodeAccessControl.get()
+        .isUserAuthorized(user.getId(), this, AccessControlContext.init()
+            .onOperationsOf(AccessControlOperation.MODIFICATION));
+  }
+
+  /**
+   * Is the specified user can file into this node a contribution (either another node or a
+   * different kind of contributions supported by the underlying application)?
+   * @param user a user in Silverpeas.
+   * @return true if the user has at least the role of writer for this node.
+   */
+  @Override
+  public boolean canBeFiledInBy(final User user) {
+    Set<SilverpeasRole> role = NodeAccessControl.get()
+        .getUserRoles(user.getId(), getNodePK(), AccessControlContext.init()
+            .onOperationsOf(AccessControlOperation.MODIFICATION));
+    return role.stream()
+        .anyMatch(r -> r.isGreaterThanOrEquals(SilverpeasRole.WRITER));
   }
 
   public boolean canBeSharedBy(final User user) {
-    final AccessControlContext context = AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING);
-    return NodeAccessControl.get().isUserAuthorized(user.getId(), this, context);
+    final AccessControlContext context = AccessControlContext.init()
+        .onOperationsOf(AccessControlOperation.SHARING);
+    return NodeAccessControl.get()
+        .isUserAuthorized(user.getId(), this, context);
   }
 }

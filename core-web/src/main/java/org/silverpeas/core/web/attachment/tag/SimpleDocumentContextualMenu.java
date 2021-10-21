@@ -202,7 +202,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     String menuItems = builder.toString();
 
     builder = new StringBuilder();
-    if (attachment.isReadOnly()) {
+    if (attachment.isEdited()) {
       configureCheckout(builder, attachmentId, true);
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureCheckoutAndEdit(attachmentId,
@@ -234,7 +234,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append(configureFileSharing(attachmentId, !attachment.isSharingAllowedForRolesFrom(user)));
     builder.append(configureSwitchState(attachmentId, (!attachment.isVersioned() &&
         isComponentPublicationAlwaysVisible(attachment.getInstanceId())) ||
-        attachment.isReadOnly()));
+        attachment.isEdited()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
 
     String itemsConfig = builder.toString();

@@ -69,7 +69,8 @@ public class DefaultInstancePublicationAccessControlExtension
   }
 
   private boolean isCoWritingEnabled(final String instanceId, final AccessControlContext context) {
-    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
     return componentDataManager.isCoWritingEnabled(instanceId);
   }
 

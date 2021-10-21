@@ -24,15 +24,12 @@
 
 package org.silverpeas.cmis.walkers;
 
-import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.jetbrains.annotations.NotNull;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
-import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -77,12 +74,6 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   @SuppressWarnings("unchecked")
   protected SpaceInstLight getSilverpeasObjectById(final String objectId) {
     return getController().getSpaceInstLightById(objectId);
-  }
-
-  @Override
-  protected CmisObject createObjectData(final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    throw new CmisNotSupportedException("Creation of collaborative spaces aren't supported");
   }
 
   @Override
@@ -169,38 +160,6 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
       tree = super.getSubTreeData(folderId, filtering, depth);
     }
     return tree;
-  }
-
-  @Override
-  public ContentStream getContentStream(final String objectId, final String language,
-      final long offset, final long length) {
-    throw new CmisNotSupportedException(
-        "The content stream isn't supported by collaborative spaces");
-  }
-
-  @Override
-  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    throw new CmisNotSupportedException("The update isn't supported by spacess");
-  }
-
-  /**
-   * The creation of children of collaborative spaces (both inner spaces and application instances)
-   * isn't supported by our CMIS implementation.
-   * @param folderId the unique identifier of a collaborative space in the CMIS objects tree.
-   * @param properties the CMIS properties of the child to create (either another collaborative
-   * space or an application instances)
-   * @param contentStream a stream on a content. Should be null.
-   * @param language the ISO 639-1 code of the language in which the textual folder properties are
-   * expressed.
-   * @return nothing. A {@link CmisNotSupportedException} exception is thrown.
-   */
-  @Override
-  public CmisObject createChildData(final String folderId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    TypeId typeId = properties.getObjectTypeId();
-    throw new CmisNotSupportedException("Creation of " + typeId.toString() +
-        " not supported in collaborative spaces");
   }
 
   @Override
