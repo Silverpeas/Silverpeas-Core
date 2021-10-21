@@ -28,8 +28,6 @@ import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -54,9 +52,6 @@ import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWe
 public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 3738081252893759397L;
 
-  private static final SettingBundle resources =
-      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
-
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request servlet request
@@ -70,8 +65,8 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
     SimpleDocument document =
         AttachmentService.get().searchDocumentById(new SimpleDocumentPK(id), language);
 
-      if (!document.isReadOnly() || !document.canBeModifiedBy(user) ||
-          (!document.getEditedBy().equals(user.getId()) &&
+      if (!document.isEdited() || !document.canBeModifiedBy(user) ||
+          (!document.isEditedBy(user) &&
               (!wbe || !document.editableSimultaneously().orElse(false)))) {
         throwHttpForbiddenError();
       }

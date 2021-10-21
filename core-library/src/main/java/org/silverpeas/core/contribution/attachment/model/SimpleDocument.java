@@ -28,11 +28,11 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedAttachment;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.i18n.ResourceTranslation;
-import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.Securable;
@@ -167,6 +167,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getPk(), getDocumentType().getName());
   }
@@ -389,11 +390,11 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     if (webdavContentEditionLanguage == null) {
       // To be handled into webdav repository, the document must be an open office compatible,
       // and it must also be read only (reservation)
-      if (isOpenOfficeCompatible() && isReadOnly()) {
+      if (isOpenOfficeCompatible() && isEdited()) {
         // The method has not been called yet.
         // Firstly searching through Webdav services the information.
-        webdavContentEditionLanguage =
-            WebdavServiceProvider.getWebdavService().getContentEditionLanguage(getVersionMaster());
+        webdavContentEditionLanguage = WebdavServiceProvider.getWebdavService()
+            .getContentEditionLanguage(getVersionMaster());
       }
       // If null, it indicates that the document does not exists into webdav repository.
       // The class attribute is initialized to empty value.
@@ -413,11 +414,11 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     if (webdavContentEditionSize < 0) {
       // To be handled into webdav repository, the document must be an open office compatible,
       // and it must also be read only (reservation)
-      if (isOpenOfficeCompatible() && isReadOnly()) {
+      if (isOpenOfficeCompatible() && isEdited()) {
         // The method has not been called yet.
         // Firstly searching through Webdav services the information.
-        webdavContentEditionSize =
-            WebdavServiceProvider.getWebdavService().getContentEditionSize(getVersionMaster());
+        webdavContentEditionSize = WebdavServiceProvider.getWebdavService()
+            .getContentEditionSize(getVersionMaster());
       }
       // If negative value, it indicates that the document does not exists into webdav repository.
       // The class attribute is initialized to zero.
@@ -595,20 +596,53 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
 
   /**
    * Check if the document is compatible with OpenOffice using the mime type .
-   *
    * @return true if the document is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible() {
     return FileUtil.isOpenOfficeCompatible(getFilename());
   }
 
+  /**
+   * Is this document in read-only? A document is read-only if either it is currently being
+   * editing by another user than the current one, or it isn't edited and it cannot
+   * be modified by the current user, or it is currently being editing by another user than the
+   * current one. If there is no user behind the scene, then the method behave like the
+   * {@link #isEdited()} method.
+   * @return true if this document cannot be modified, false otherwise.
+   */
   public boolean isReadOnly() {
+    boolean readOnly;
+    User requester = User.getCurrentRequester();
+    if (requester != null) {
+      readOnly =
+          (isEdited() && !isEditedBy(requester)) || (!isEdited() && !canBeModifiedBy(requester));
+    } else {
+      readOnly = isEdited();
+    }
+    return readOnly;
+  }
+
+  /**
+   * Is this document currently being edited?
+   * @return true if this document is being edited by a user in Silverpeas. False otherwise.
+   */
+  public boolean isEdited() {
     return StringUtil.isDefined(getEditedBy());
   }
 
   /**
+   * Is this document currently being edited by the specified user? If the document isn't being
+   * currently edited by any user, false is returned.
+   * @param user a user in Silverpeas
+   * @return true if the specified user is editing this document. False either no users are editing
+   * it or another user is editing it.
+   */
+  public boolean isEditedBy(final User user) {
+    return user.getId().equals(getEditedBy());
+  }
+
+  /**
    * Path to the file stored on the filesystem.
-   *
    * @return the path to the file stored on the filesystem.
    */
   @Override

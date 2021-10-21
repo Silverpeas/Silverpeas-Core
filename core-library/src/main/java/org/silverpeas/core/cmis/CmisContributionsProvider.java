@@ -94,9 +94,23 @@ public interface CmisContributionsProvider {
       final User user);
 
   /**
+   * Gets the specified contribution accessible to the given user. If the contribution doesn't exist
+   * then a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException}
+   * must be thrown. If the contribution cannot be accessed by the given user then a
+   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException} must be
+   * thrown.
+   * @param contributionId the unique identifier of the contribution to get.
+   * @return the asked contribution.
+   */
+  I18nContribution getContribution(final ContributionIdentifier contributionId,
+      final User user);
+
+  /**
    * Creates the specified contribution into the specified application.
    * If the application doesn't yet support the creation by CMIS of the specified contribution, then
    * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception
+   * has to be thrown. If the specified application doesn't exist then a
+   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException} exception
    * has to be thrown.
    * @param contribution the localized contribution to create.
    * @param app the unique identifier of the Silverpeas application in which the contribution has
@@ -112,6 +126,8 @@ public interface CmisContributionsProvider {
    * Creates the specified contribution into the specified folder.
    * If the application doesn't yet support the creation by CMIS of the specified contribution, then
    * a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException} exception
+   * has to be thrown. If the specified folder or the application with the given folder doesn't
+   * exist, a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException}
    * has to be thrown.
    * @param contribution the localized contribution to create.
    * @param folder the unique identifier of the folder in which the contribution has to be added

@@ -28,8 +28,9 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
@@ -40,6 +41,7 @@ import org.silverpeas.cmis.util.CmisProperties;
 import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.CmisFolder;
@@ -49,12 +51,12 @@ import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.Document;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -65,9 +67,13 @@ import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
@@ -90,11 +96,11 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
   @Inject
   private AttachmentService attachmentService;
 
-  @Override
-  public CmisObject createChildData(final String folderId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    throw new CmisNotSupportedException("Creation of document files aren't supported");
-  }
+  @Inject
+  private WebdavService webdavService;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   protected CmisObject createObjectData(final CmisProperties properties,
@@ -104,8 +110,12 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
       File contentFile = loader.loadFile(contentStream);
       SimpleDocument document = createSimpleDocumentFrom(properties, language);
       SimpleDocument created =
-          attachmentService.createAttachment(document, contentFile,
-              properties.isIndexed(), false);
+          attachmentService.createAttachment(document, contentFile, properties.isIndexed(), false);
+      if (isVersioningEnabled(created.getInstanceId())) {
+        // in the case the application has versioning enabled, then by default checkout the newly
+        // created document to pursue its edition.
+        attachmentService.lock(created.getId(), created.getCreatedBy(), language);
+      }
       return encodeToCmisObject(new Document(created), language);
     } finally {
       loader.deleteFile();
@@ -113,16 +123,19 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
-  public ContentStream getContentStream(final String objectId, final String language,
+  protected ContentStream getContentStream(final LocalizedResource object, final String language,
       final long offset, final long length) {
-    try {
-      Document document =
-          getSilverpeasObjectById(objectId);
+    User currentUser = User.getCurrentRequester();
+    try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+      Document document = (Document) object;
       SimpleDocument translation = document.getTranslation(language);
 
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      attachmentService.getBinaryContent(buffer, translation.getPk(), translation.getLanguage(),
-          offset, length <= 0 ? -1 : length);
+      if (translation.isEditedBy(currentUser)) {
+        webdavService.loadContentInto(translation, buffer);
+      } else {
+        attachmentService.getBinaryContent(buffer, translation.getPk(), translation.getLanguage(),
+            offset, length <= 0 ? -1 : length);
+      }
       ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer.toByteArray());
 
       ContentStreamImpl contentStream;
@@ -138,21 +151,24 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
       contentStream.setStream(inputStream);
 
       return contentStream;
+    } catch (IOException e) {
+      throw new CmisStorageException(e.getMessage());
     } catch (NotFoundException e) {
       throw new CmisObjectNotFoundException(e.getMessage());
     }
   }
 
   @Override
-  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    User user = User.getCurrentRequester();
+  protected CmisObject updateObjectData(final LocalizedResource object,
+      final CmisProperties properties, final ContentStream contentStream, final String language) {
     ContentStreamLoader loader = new ContentStreamLoader(properties);
     try {
-      Document document = getSilverpeasObjectById(objectId);
+      User user = User.getCurrentRequester();
+      Document document = (Document) object;
       SimpleDocument translation = document.getTranslation(language);
-      if (translation.isReadOnly() || !translation.canBeModifiedBy(user)) {
-        throw new CmisStreamNotSupportedException("The document is read only!");
+      if (translation.isReadOnly() ||
+          (translation.isVersioned() && !translation.isEditedBy(user))) {
+        throw new CmisPermissionDeniedException("The document is read only!");
       }
       File content = loader.loadFile(contentStream);
       SimpleAttachment attachment = translation.getAttachment();
@@ -182,17 +198,26 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
 
         attachment.setSize(content.length());
 
-        attachmentService.updateAttachment(translation, content, true, false);
-
-        UnlockContext unlockContext =
-            new UnlockContext(translation.getId(), user.getId(), language, "");
-        unlockContext.addOption(UnlockOption.UPLOAD);
-        attachmentService.unlock(unlockContext);
+        updateDocumentContent(document, translation, content);
       }
 
-      return encodeToCmisObject(getSilverpeasObjectById(objectId), language);
+      return encodeToCmisObject(getSilverpeasObjectById(document.getIdentifier()
+          .asString()), language);
     } finally {
       loader.deleteFile();
+    }
+  }
+
+  private void updateDocumentContent(final Document document, final SimpleDocument translation,
+      final File content) {
+    if (document.isVersioned() || document.isEdited()) {
+      try (InputStream in = new BufferedInputStream(new FileInputStream(content))) {
+        webdavService.updateContentFrom(translation, in);
+      } catch (IOException e) {
+        throw new CmisStorageException(e.getMessage());
+      }
+    } else {
+      attachmentService.updateAttachment(translation, content, true, false);
     }
   }
 
@@ -227,20 +252,27 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
         .setDescription(properties.getDescription())
         .setSize(content.length())
         .build();
-    SimpleDocument document = new SimpleDocument();
+    SimpleDocument document;
+    if (isVersioningEnabled(parentId.getComponentInstanceId())) {
+      document = new HistorisedDocument();
+      document.setPublicDocument(false);
+    } else {
+      document = new SimpleDocument();
+    }
+
     document.setPK(
         new SimpleDocumentPK(ResourceReference.UNKNOWN_ID, parentId.getComponentInstanceId()));
     document.setForeignId(parentId.getLocalId());
     document.setDocumentType(DocumentType.attachment);
     document.setOrder(0);
+
     document.setAttachment(attachment);
     return document;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  protected Document getSilverpeasObjectById(
-      final String objectId) {
+  protected Document getSilverpeasObjectById(final String objectId) {
     try {
       ContributionIdentifier id = ContributionIdentifier.decode(objectId);
       return new Document(id);
@@ -316,6 +348,12 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
         .asString();
     return getTreeWalkerSelector().selectByObjectIdOrFail(parentId)
         .getSilverpeasObjectById(parentId);
+  }
+
+  private boolean isVersioningEnabled(final String instanceId) {
+    return StringUtil.getBooleanValue(organizationController.getComponentParameterValue(instanceId,
+        AttachmentService.VERSION_MODE)) && !StringUtil.getBooleanValue(
+        organizationController.getComponentParameterValue(instanceId, "publicationAlwaysVisible"));
   }
 }
   

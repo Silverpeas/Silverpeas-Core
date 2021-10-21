@@ -40,6 +40,8 @@ import org.silverpeas.cmis.walkers.TreeWalkerSelector;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -49,6 +51,8 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -64,6 +68,7 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
 import org.silverpeas.core.contribution.model.Attachment;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.I18nContribution;
@@ -80,6 +85,7 @@ import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -161,6 +167,9 @@ public abstract class CMISEnvForTests {
   protected PublicationService publicationService;
 
   @TestManagedMock
+  protected WebdavService webdavService;
+
+  @TestManagedMock
   protected AttachmentService attachmentService;
 
   // used to get the current user behind the request
@@ -229,6 +238,7 @@ public abstract class CMISEnvForTests {
     currentUser.setDomainId("0");
     currentUser.setCreationDate(creationDate);
     currentUser.setSaveDate(creationDate);
+    currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     when(personalizationService.getUserSettings("42")).thenReturn(
         new UserPreferences("42", "en", ZoneId.of("Europe/London"), "Aurora", "WA1", false, true,
             true, UserMenuDisplay.DEFAULT));
@@ -371,6 +381,18 @@ public abstract class CMISEnvForTests {
           .collect(Collectors.toList()));
     });
 
+    when(contributionsProvider.getContribution(any(ContributionIdentifier.class),
+        any(User.class))).then((Answer<I18nContribution>) invocation -> {
+      ContributionIdentifier id = invocation.getArgument(0);
+      if (id.getType().equals(NodeDetail.TYPE)) {
+        return nodeService.getDetail(new NodePK(id.getLocalId(), id.getComponentInstanceId()));
+      } else if (id.getType().equals(PublicationDetail.TYPE)) {
+        return publicationService.getDetail(
+            new PublicationPK(id.getLocalId(), id.getComponentInstanceId()));
+      }
+      return null;
+    });
+
     when(cmisFilePathProvider.getPath(any(CmisFile.class))).then((Answer<CmisFilePath>) invocation -> {
       CmisFile file = invocation.getArgument(0);
       User requester = User.getCurrentRequester();
@@ -489,6 +511,19 @@ public abstract class CMISEnvForTests {
       });
     }).when(attachmentService).getBinaryContent(any(OutputStream.class), any(SimpleDocumentPK.class),
         any(String.class), anyLong(), anyLong());
+
+    try {
+      doAnswer(i -> {
+        SimpleDocument document = i.getArgument(0);
+        OutputStream output = i.getArgument(1);
+        attachmentService.getBinaryContent(output, document.getPk(), document.getLanguage(), 0,
+            document.getSize());
+        return null;
+      }).when(webdavService)
+          .loadContentInto(any(SimpleDocument.class), any(OutputStream.class));
+    } catch (IOException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   private void mockUserProviders() {
@@ -526,8 +561,12 @@ public abstract class CMISEnvForTests {
     when(nodeAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
         true);
     when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
+    when(nodeAccessControl.getUserRoles(anyString(), any(NodePK.class),
+        any(AccessControlContext.class))).thenReturn(Set.of(SilverpeasRole.WRITER, SilverpeasRole.READER));
     when(publicationAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
     when(publicationAccessControl.isUserAuthorized(anyString(), any(PublicationDetail.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(), any(PublicationDetail.class),  any(
+        AccessControlContext.class))).thenReturn(true);
     when(documentAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(true);
     when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class))).thenReturn(
         true);

@@ -138,16 +138,16 @@ public class WebdavWbeFile extends WbeFile {
   @Override
   public boolean canBeAccessedBy(final User user) {
     final SimpleDocument doc = getDocument();
-    return doc.isReadOnly() &&
-        (doc.getEditedBy().equals(user.getId()) || doc.editableSimultaneously().orElse(false)) &&
+    return doc.isEdited() &&
+        (doc.isEditedBy(user) || doc.editableSimultaneously().orElse(false)) &&
         doc.canBeAccessedBy(user);
   }
 
   @Override
   public boolean canBeModifiedBy(final User user) {
     final SimpleDocument doc = getDocument();
-    return doc.isReadOnly() &&
-        (doc.getEditedBy().equals(user.getId()) || doc.editableSimultaneously().orElse(false)) &&
+    return doc.isEdited() &&
+        (doc.isEditedBy(user) || doc.editableSimultaneously().orElse(false)) &&
         doc.canBeModifiedBy(user);
   }
 
@@ -170,7 +170,7 @@ public class WebdavWbeFile extends WbeFile {
   }
 
   private Optional<WebdavContentDescriptor> getWebdavContentDescriptor() {
-    if (getDocument().isOpenOfficeCompatible() && getDocument().isReadOnly()) {
+    if (getDocument().isOpenOfficeCompatible() && getDocument().isEdited()) {
       return getWebdavService().getDescriptor(getDocument().getVersionMaster());
     }
     return empty();

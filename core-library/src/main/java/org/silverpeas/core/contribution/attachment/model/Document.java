@@ -25,6 +25,7 @@
 package org.silverpeas.core.contribution.attachment.model;
 
 import org.silverpeas.core.NotFoundException;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -38,6 +39,7 @@ import org.silverpeas.core.util.StringUtil;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -203,6 +205,44 @@ public class Document implements I18nContribution, LocalizedAttachment {
               "No such document " + id.asString() + " in whatever language"));
     }
     return document;
+  }
+
+  public boolean isReadOnly() {
+    return getMasterDocument().isReadOnly();
+  }
+
+  public boolean isEdited() {
+    return getMasterDocument().isEdited();
+  }
+
+  public boolean isEditedBy(final User user) {
+    return getMasterDocument().isEditedBy(user);
+  }
+
+  public boolean isSharingAllowedForRolesFrom(final User user) {
+    return getMasterDocument().isSharingAllowedForRolesFrom(user);
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return getMasterDocument().canBeAccessedBy(user);
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    return getMasterDocument().canBeModifiedBy(user);
+  }
+
+  public boolean isDownloadAllowedForRolesFrom(final User user) {
+    return getMasterDocument().isDownloadAllowedForRolesFrom(user);
+  }
+
+  public boolean isDownloadAllowedForRoles(final Set<SilverpeasRole> roles) {
+    return getMasterDocument().isDownloadAllowedForRoles(roles);
+  }
+
+  public boolean isDownloadAllowedForReaders() {
+    return getMasterDocument().isDownloadAllowedForReaders();
   }
 }
   

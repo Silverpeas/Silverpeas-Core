@@ -28,7 +28,6 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.util.CmisProperties;
@@ -40,7 +39,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.Application;
 import org.silverpeas.core.cmis.model.CmisFolder;
-import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.LocalizedResource;
@@ -66,59 +64,13 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
-  public ContentStream getContentStream(final String objectId, final String language,
-      final long offset, final long length) {
-    throw new CmisNotSupportedException("The content stream isn't supported by applications");
-  }
-
-  @Override
-  public CmisObject updateObjectData(final String objectId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    throw new CmisNotSupportedException("The update isn't supported by applications");
-  }
-
-  /**
-   * The walker takes in charge the creation of the contributions the underlying Silverpeas
-   * application manages directly into the scope of it. Because the creation of nodes
-   * aren't allowed by Silverpeas through CMIS, only publications can be done as children of an
-   * application. The walker delegates the creation of the children to the virtual root node of
-   * the application.
-   * <p>
-   * Some CMIS clients aren't smart enough to distinct the creation of a publication from a node as
-   * they are both extended from the
-   * {@link org.apache.chemistry.opencmis.commons.enums.BaseTypeId#CMIS_FOLDER}
-   * type. So, this will create automatically a publication even a node is asked for creation.
-   * </p>
-   * @param folderId the unique identifier of a Silverpeas application instance.
-   * @param properties the CMIS properties of the child to create. For instance a Silverpeas mapped
-   * to either a {@link org.silverpeas.core.cmis.model.ContributionFolder} or a {@link
-   * org.silverpeas.core.cmis.model.Publication}.
-   * @param contentStream a stream on a content. Should be null.
-   * @param language the ISO 639-1 code of the language in which the textual folder properties are
-   * expressed.
-   * @return either a {@link org.silverpeas.core.cmis.model.ContributionFolder} instance or a {@link
-   * org.silverpeas.core.cmis.model.Publication} instance.
-   */
-  @Override
-  public CmisObject createChildData(final String folderId, final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    ComponentInstLight app = getSilverpeasObjectById(folderId);
-    TypeId typeId = properties.getObjectTypeId();
-    if (typeId == TypeId.SILVERPEAS_FOLDER) {
-      typeId = TypeId.SILVERPEAS_PUBLICATION;
-      properties.setObjectTypeId(typeId);
-    }
-    String parentId = ContributionIdentifier.from(app.getId(), NodePK.ROOT_NODE_ID, NodeDetail.TYPE)
-        .asString();
-    properties.setParentObjectId(parentId);
-    return getTreeWalkerSelector().selectByObjectIdOrFail(parentId)
-        .createChildData(parentId, properties, contentStream, language);
-  }
-
-  @Override
-  protected CmisObject createObjectData(final CmisProperties properties,
-      final ContentStream contentStream, final String language) {
-    throw new CmisNotSupportedException("Creation of applications aren't supported");
+  protected void prepareChildDataCreation(final LocalizedResource app,
+      final CmisProperties properties, final ContentStream contentStream, final String language) {
+    String parentId = ContributionIdentifier.from(app.getIdentifier().asString(),
+        NodePK.ROOT_NODE_ID, NodeDetail.TYPE).asString();
+    AbstractCmisObjectsTreeWalker walker = getTreeWalkerSelector().selectByObjectIdOrFail(parentId);
+    walker.prepareChildDataCreation(walker.getSilverpeasObjectById(parentId), properties,
+        contentStream, language);
   }
 
   @Override

@@ -840,4 +840,9 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
         && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }
+
+  @Override
+  public boolean canBeFiledInBy(final User user) {
+    return canBeModifiedBy(user);
+  }
 }

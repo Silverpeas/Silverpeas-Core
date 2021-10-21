@@ -127,7 +127,7 @@ public class DocumentFile extends CmisFile implements Fileable {
 
   /**
    * Is this document read-only? If read-only, its content cannot be modified. This case occurs for
-   * example when the document is locked by a user in Silverpeas.
+   * example when the document is locked by a user in Silverpeas other that the current requester.
    * @return true if the content of this document cannot be modified. False otherwise.
    */
   public boolean isReadOnly() {

@@ -27,6 +27,7 @@ package org.silverpeas.cmis.walkers;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +46,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.MimeTypes;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.time.temporal.ChronoUnit;
@@ -209,7 +211,6 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
   @DisplayName("Document's content cannot be updated from a content of another MIME type")
   void updateDocumentWithInvalidMIMETypeContent() {
     CmisObject document = createDocument();
-    long previousSize = ((DocumentFile) document).getSize();
 
     InputStream content =
         getClass().getResourceAsStream("/computer_programming_using_gnu_smalltalk.odt");
@@ -229,10 +230,9 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
   }
 
   @Test
-  @DisplayName("Read-only document's content cannot be updated")
-  void updateReadOnlyDocumentContent() {
+  @DisplayName("Currently edited document's content cannot be updated")
+  void updateEditedDocumentContent() {
     CmisObject document = createDocument();
-    long previousSize = ((DocumentFile) document).getSize();
 
     ContributionIdentifier docId = ContributionIdentifier.decode(document.getId());
     SimpleDocument translation = attachmentService.searchDocumentById(
@@ -251,8 +251,119 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
 
     CmisProperties properties = new CmisProperties();
     String cmisDocId = document.getId();
-    assertThrows(CmisStreamNotSupportedException.class,
+    assertThrows(CmisPermissionDeniedException.class,
         () -> walker.updateObjectData(cmisDocId, properties, contentStream, "en"));
+  }
+
+  @Test
+  @DisplayName("Non edited versioned document's content cannot be updated")
+  void updateNonEditedVersionedDocumentContent() {
+    CmisObject document = createDocument();
+
+    ContributionIdentifier docId = ContributionIdentifier.decode(document.getId());
+    SimpleDocument translation = attachmentService.searchDocumentById(
+        new SimpleDocumentPK(docId.getLocalId(), docId.getComponentInstanceId()),
+        document.getLanguage());
+    translation.edit("0");
+
+    InputStream content = getClass().getResourceAsStream("/Seaside.pdf");
+    ContentStreamImpl contentStream = new ContentStreamImpl();
+    contentStream.setStream(content);
+    contentStream.setMimeType(MimeTypes.PDF_MIME_TYPE);
+    contentStream.setFileName("HistoryOfSmalltalk.pdf");
+    contentStream.setLength(BigInteger.valueOf(1390098L));
+
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+
+    CmisProperties properties = new CmisProperties();
+    String cmisDocId = document.getId();
+    assertThrows(CmisPermissionDeniedException.class,
+        () -> walker.updateObjectData(cmisDocId, properties, contentStream, "en"));
+  }
+
+  @Test
+  @DisplayName("Document that is currently being edited by the current user can be updated in the" +
+      " webDAV storage")
+  void updateDocumentContentBeingEditedByCurrentUser() throws IOException {
+    CmisObject document = createDocument();
+    long previousSize = ((DocumentFile) document).getSize();
+
+    ContributionIdentifier docId = ContributionIdentifier.decode(document.getId());
+    SimpleDocument translation = attachmentService.searchDocumentById(
+        new SimpleDocumentPK(docId.getLocalId(), docId.getComponentInstanceId()),
+        document.getLanguage());
+    translation.edit(User.getCurrentRequester()
+        .getId());
+
+    InputStream content = getClass().getResourceAsStream("/Seaside.pdf");
+    ContentStreamImpl contentStream = new ContentStreamImpl();
+    contentStream.setStream(content);
+    contentStream.setMimeType(MimeTypes.PDF_MIME_TYPE);
+    contentStream.setFileName("HistoryOfSmalltalk.pdf");
+    contentStream.setLength(BigInteger.valueOf(1390098L));
+
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+    CmisObject object =
+        walker.updateObjectData(document.getId(), new CmisProperties(), contentStream, "en");
+
+    assertThat(object, notNullValue());
+    assertThat(object instanceof DocumentFile, is(true));
+
+    verify(webdavService).updateContentFrom(any(SimpleDocument.class), any(InputStream.class));
+
+    DocumentFile updatedDocument = (DocumentFile) object;
+    assertThat(updatedDocument.getBaseTypeId(), is(BaseTypeId.CMIS_DOCUMENT));
+    assertThat(updatedDocument.getTypeId(), is(TypeId.SILVERPEAS_DOCUMENT));
+    assertThat(updatedDocument.getTitle(), is("History Of Smalltalk"));
+    assertThat(updatedDocument.getName(), is("HistoryOfSmalltalk.pdf"));
+    assertThat(updatedDocument.getDescription(), is("How smalltak has been created"));
+    assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
+        .getDisplayedName()));
+    assertThat(updatedDocument.getSize(), not(is(previousSize)));
+    assertThat(updatedDocument.getSize(), is(1390098L));
+  }
+
+  @Test
+  @DisplayName("Versioned document can be updated only if it is edited by the current user")
+  void updateVersionedDocumentContent() throws IOException {
+    CmisObject document = createDocument();
+    long previousSize = ((DocumentFile) document).getSize();
+
+    ContributionIdentifier docId = ContributionIdentifier.decode(document.getId());
+    SimpleDocument translation = attachmentService.searchDocumentById(
+        new SimpleDocumentPK(docId.getLocalId(), docId.getComponentInstanceId()),
+        document.getLanguage());
+    translation.setMajorVersion(1);
+    translation.setMinorVersion(0);
+    translation.edit(User.getCurrentRequester()
+        .getId());
+
+    InputStream content = getClass().getResourceAsStream("/Seaside.pdf");
+    ContentStreamImpl contentStream = new ContentStreamImpl();
+    contentStream.setStream(content);
+    contentStream.setMimeType(MimeTypes.PDF_MIME_TYPE);
+    contentStream.setFileName("HistoryOfSmalltalk.pdf");
+    contentStream.setLength(BigInteger.valueOf(1390098L));
+
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+    CmisObject object =
+        walker.updateObjectData(document.getId(), new CmisProperties(), contentStream, "en");
+
+    assertThat(object, notNullValue());
+    assertThat(object instanceof DocumentFile, is(true));
+
+    verify(webdavService).updateContentFrom(any(SimpleDocument.class), any(InputStream.class));
+
+    DocumentFile updatedDocument = (DocumentFile) object;
+    assertThat(updatedDocument.getBaseTypeId(), is(BaseTypeId.CMIS_DOCUMENT));
+    assertThat(updatedDocument.getTypeId(), is(TypeId.SILVERPEAS_DOCUMENT));
+    assertThat(updatedDocument.getTitle(), is("History Of Smalltalk"));
+    assertThat(updatedDocument.getName(), is("HistoryOfSmalltalk.pdf"));
+    assertThat(updatedDocument.getDescription(), is("How smalltak has been created"));
+    assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
+        .getDisplayedName()));
+    assertThat(updatedDocument.getSize(), not(is(previousSize)));
+    assertThat(updatedDocument.getSize(), is(1390098L));
   }
 
   private CmisObject createDocument() {
