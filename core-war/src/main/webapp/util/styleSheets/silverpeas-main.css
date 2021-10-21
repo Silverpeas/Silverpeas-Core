@@ -154,7 +154,7 @@ Definition des class de style Silverpeas
 .userzoom-tooltip-interaction-accessNotification ,
 .userzoom-tooltip-interaction-action-invitation,
 .userzoom-tooltip-interaction-accessChat.disabled:hover{
-  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
 }
 
 .bgDegradeGris{
@@ -171,7 +171,7 @@ Definition des class de style Silverpeas
   border-left:0;
   margin:0;
   padding:5px;
-  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   min-height:14px;
 }
 
@@ -191,7 +191,7 @@ Definition des class de style Silverpeas
 
 .bgDegradeGris p b, .bgDegradeGris .paragraphe b {
   color:#333;
-  font-weight:100;
+  font-weight:normal;
 }
 
 .principalContent{
@@ -517,7 +517,7 @@ Definition des class de style Silverpeas
 }
 
 #sp-admin-layout-header-part {
-  background-repeat: none;
+  background-repeat:no-repeat;
   background-position: top right;
 }
 
@@ -649,7 +649,7 @@ Definition des class de style Silverpeas
 .treeview_path div:last-child a span {
   color: #000;
   text-decoration: none;
-  font-weight: 600;
+  font-weight:normal;
 }
 
 #domId img {
@@ -1493,7 +1493,7 @@ span.export {
   display: inline-block;
   cursor: pointer;
   margin:0 10px;
-  font-weight:100;
+  font-weight:normal;
 }
 span.csv {
   background:transparent url(../icons/fileType/icon_csv.gif) 0px 0px no-repeat;
@@ -2403,7 +2403,7 @@ caption {
 }
 
 .user-type-list {
-  font-weight: lighter;
+  font-weight: normal;
   font-size: 0.8em;
 }
 
@@ -3666,7 +3666,7 @@ table.pdcPositionsField {
   color: #4C4C4C;
   font-size: 100%;
   padding: 7px 10px;
-  background-image: url("../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   display:inline-block;
 }
 
@@ -3914,7 +3914,7 @@ ul.applicationsTypeList {
   height:100%;
   border-left: 1px solid #333;
   background-color:#333;
-  background-image: url(../icons/gradientSVG.jsp?from=CCCCCC&to=333333&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #CCCCCC 0%, #333333 100%);
 }
 
 li.applicationsType{
@@ -3971,7 +3971,7 @@ li.application {
   border:1px solid #dfdfdf;
   border-radius:20px;
   background-color:#eaeaea;
-  background-image: url(../icons/gradientSVG.jsp?from=ffffff&to=eaeaea&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #ffffff 0%, #eaeaea 100%);
 }
 
 li.application {
@@ -4009,7 +4009,7 @@ li.application  .applicationDescription {
 
 li.application  .applicationName {
   font-size:1.2em;
-  font-weight:100;
+  font-weight:normal;
   color:#444;
   padding-left:12px
 }
@@ -4030,7 +4030,7 @@ li.application  .applicationName {
 
 .type_01 li.application  .applicationName {
   font-size:1.2em;
-  font-weight:100;
+  font-weight:normal;
   color:#444;
   padding-left:12px
 }
@@ -4204,7 +4204,7 @@ li.application  .applicationName {
 .descriptionType {
   border-left: 6px solid #E4E4E4;
   color: #666;
-  font-weight: 100;
+  font-weight:normal;
   padding: 8px;
 }
 
@@ -4261,7 +4261,7 @@ li.application  .applicationName {
   height:100%;
   float:left;
   background-color:#333;
-  background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=333333&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #6f6f6f 0%, #333333 100%);
   color:#FFF;
 }
 .userPanel .users_results_userPanel,
@@ -4326,7 +4326,7 @@ li.application  .applicationName {
   overflow:auto;
   border-top:1px solid #868686;
   background-color:#444;
-  background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=444444&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #6f6f6f 0%, #444444 100%);
 }
 
 #filter_userPanel .filter.select a,
@@ -5271,7 +5271,7 @@ div.fileUpload {
   top:0;
   right:-110px;
   width:90px;
-  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   padding:2px 5px;
   margin:4px 0;
   cursor:pointer;
@@ -5819,7 +5819,7 @@ span.sp-variable.cke_widget_element {
 
 .forms .ignoreForm {
   background-color: #f4f4f4;
-  background-image: url(/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #4c4c4c;
@@ -6197,7 +6197,7 @@ div.user-card .field{
   padding-top: 3px;
   position: absolute;
   color: #333;
-  font-weight: 100;
+  font-weight:normal;
   background-color: transparent;
   overflow: hidden;
   white-space: nowrap;
@@ -6610,7 +6610,7 @@ iframe.embed {
 }
 a.navigation-button {
   background-color: #f4f4f4;
-  background-image: url("../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   border: 1px solid #CCC;
   border-radius: 5px;
   color: #4c4c4c;
@@ -6711,7 +6711,7 @@ a.navigation-button {
 
 .fields .explorePanel, .fields .emptyList {
   background-color: #f4f4f4;
-  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #4c4c4c;
@@ -6734,7 +6734,7 @@ a.navigation-button {
 }
 
 /*responsive design */
-@media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
+@media only screen and (max-width: 800px){
   .rightContent {
     width: 230px;
   }
@@ -6763,7 +6763,7 @@ a.navigation-button {
   }
 }
 
-@media only screen and (max-width: 600px), only screen and (max-device-width: 600px) {
+@media only screen and (max-width: 600px){
   .rightContent {
     clear: inherit;
     float: none;
@@ -6852,7 +6852,7 @@ ul.sm-map {
 
 .sm-map li.app {
   display: inline-block;
-  font-weight: 100;
+  font-weight:normal;
   margin-right: 2em;
 }
 
@@ -7382,7 +7382,7 @@ silverpeas-contribution-reminder div.actions {
 silverpeas-contribution-reminder a.add-action {
   color: #1c94d4;
   text-decoration: underline;
-  font-weight: 700;
+  font-weight: normal;
 }
 .maintenanceOn {
   text-align:center;

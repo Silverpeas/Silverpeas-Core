@@ -38,10 +38,7 @@ fieldset.skinFieldset {
 	min-height:80px;
 	display:block;
 	background-color:#F4F4F4;
-	background: -webkit-linear-gradient(left, #fff 0%, #e5e5e5 100%);
-	background: -moz-linear-gradient(left, #fff 0%, #e5e5e5 100%);
-	background: -ms-linear-gradient(left, #fff 0%, #e5e5e5 100%);
-	background: linear-gradient(left, #fff 0%, #e5e5e5 100%);
+	background: linear-gradient(to right, #fff 0%, #e5e5e5 100%);
  }
 
 .table {
@@ -294,7 +291,7 @@ fieldset.parameters {
 }
 
 
-@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+@media only screen and (max-width: 600px){
 	.cell  {
 		width:100%;
 		display:block;
