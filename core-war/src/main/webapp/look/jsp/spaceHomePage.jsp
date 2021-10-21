@@ -86,7 +86,7 @@
     }
 
     .spaceHome .spaceNavigation .browseSpace {
-      font-weight: 100;
+      font-weight:normal;
     }
 
     .spaceHome #publicationList {
@@ -126,7 +126,7 @@
     }
 
     .spaceHome .spaceNavigation li:hover {
-      background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=e5e5e5&to=fff&vertical=0&horizontal=100");
+	  background: linear-gradient(to bottom, #e5e5e5 0%, #fff 100%);
       cursor: pointer;
     }
 
