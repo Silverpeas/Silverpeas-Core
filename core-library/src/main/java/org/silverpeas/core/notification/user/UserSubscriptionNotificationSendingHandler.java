@@ -87,6 +87,20 @@ public class UserSubscriptionNotificationSendingHandler implements
   }
 
   /**
+   * Forces the context by indicating to skip the sending of subscription notifications.
+   * <p>
+   * This method permits to indicate a such context by bypassing an HTTP request decoding.
+   * </p>
+   * <p>
+   * The context is also registered into a thread cache, like it is done with the HTTP request
+   * decoding.
+   * </p>
+   */
+  public void skipNotificationSend() {
+    getOrCreateConfirmation().skip = true;
+  }
+
+  /**
    * Indicates if the user subscription notification sending is enabled for the current request.
    * @return true if enabled, false otherwise.
    */
@@ -138,6 +152,11 @@ public class UserSubscriptionNotificationSendingHandler implements
           .get(SENDING_NOT_ENABLED_JMS_WAY_KEY, Confirmation.class);
     }
     return confirmation == null ? new Confirmation() : confirmation;
+  }
+
+  private Confirmation getOrCreateConfirmation() {
+    return getRequestCacheService().getCache()
+        .computeIfAbsent(SENDING_NOT_ENABLED_KEY, Confirmation.class, Confirmation::new);
   }
 
   @XmlRootElement

@@ -1,5 +1,6 @@
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
@@ -238,6 +239,7 @@ class WorkflowTools {
     if (consequence != null) {
       Iterator<Trigger> triggers = consequence.getTriggers().iterateTrigger();
       while (triggers.hasNext()) {
+        CacheServiceProvider.clearAllThreadCaches();
         Trigger trigger = triggers.next();
         if (trigger != null) {
           try {

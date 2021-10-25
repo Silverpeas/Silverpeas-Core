@@ -70,6 +70,14 @@ class ContributionModificationContextHandlerTest {
   }
 
   @Test
+  @DisplayName("If no context exists into HTTP parameters but still forced manually, minor " +
+      "modification method indicates that the modification is a minor one")
+  void minorModificationWhenHttpParameterIsNullButForcedManually() {
+    handler.setMinorModification();
+    assertMinorModificationDetected();
+  }
+
+  @Test
   @DisplayName("If context exists into HTTP parameters, but with unknown value for isMinor, minor" +
       " modification method indicates that the modification is not minor")
   void noMinorModificationWhenHttpParameterIsNotEqualToTrueOrFalse() {
