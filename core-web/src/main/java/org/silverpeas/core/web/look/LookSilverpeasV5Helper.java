@@ -474,6 +474,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return nbConnectedUsers;
   }
 
+  public LocalizationBundle getLocalizedBundle() {
+    return messages != null ? messages : defaultMessages;
+  }
+
   /*
    * (non-Javadoc)
    * @see org.silverpeas.core.web.look.LookHelper#isAnonymousAccess()
