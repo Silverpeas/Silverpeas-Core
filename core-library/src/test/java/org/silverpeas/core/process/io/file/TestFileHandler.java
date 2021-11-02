@@ -27,10 +27,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.Closeable;
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.write;
 import static org.apache.commons.io.IOUtils.*;
@@ -62,7 +65,8 @@ import static org.silverpeas.core.process.io.file.DelayedExecutor.in;
  * @author Yohann Chastagnier
  */
 @UnitTest
-public class TestFileHandler extends AbstractHandledFileTest {
+@EnableSilverTestEnv
+class TestFileHandler extends AbstractHandledFileTest {
 
   private static final Duration ONE_SECOND = Duration.of(1, ChronoUnit.SECONDS);
   private static final Duration TWO_SECONDS = Duration.of(2, ChronoUnit.SECONDS);
@@ -71,32 +75,38 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * getAttachment
    */
 
-  @Test(expected = NullPointerException.class)
-  public void testGetHandledFileWhenTechnicalNullIsPassedAsFileParameter() {
-    fileHandler.getHandledFile(BASE_PATH_TEST, (File) null);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testGetHandledFileWhenNotHandledFileIsPassedAsFileParameter() {
-    fileHandler.getHandledFile(BASE_PATH_TEST, otherFile);
+  @Test
+  void testGetHandledFileWhenTechnicalNullIsPassedAsFileParameter() {
+    assertThrows(NullPointerException.class,
+        () -> fileHandler.getHandledFile(BASE_PATH_TEST, (File) null));
   }
 
   @Test
-  public void testGetHandledFileFromSessionComponentPathWhenExistingInSession() throws Exception {
+  void testGetHandledFileWhenNotHandledFileIsPassedAsFileParameter() {
+    assertThrows(FileHandlerException.class,
+        () -> fileHandler.getHandledFile(BASE_PATH_TEST, otherFile));
+  }
+
+  private <T extends Throwable> void assertThrows(final Class<T> exceptionClass, final Executable executable) {
+    org.junit.jupiter.api.Assertions.assertThrows(exceptionClass, executable);
+  }
+
+  @Test
+  void testGetHandledFileFromSessionComponentPathWhenExistingInSession() {
     final HandledFile test = fileHandler.getHandledFile(BASE_PATH_TEST, sessionComponentPath);
     final File expected = sessionComponentPath;
     assertFileNames(test.getFile(), expected);
   }
 
   @Test
-  public void testGetHandledFileFromRealFileWhenExistingInSessionPath() throws Exception {
+  void testGetHandledFileFromRealFileWhenExistingInSessionPath() {
     final HandledFile test = fileHandler.getHandledFile(BASE_PATH_TEST, realComponentPath, "file");
     final File expected = getFile(sessionComponentPath, "file");
     assertFileNames(test.getFile(), expected);
   }
 
   @Test
-  public void testGetHandledFileFromRealFileWhenExistingInRealPathOnly() throws Exception {
+  void testGetHandledFileFromRealFileWhenExistingInRealPathOnly() throws Exception {
     touch(getFile(realComponentPath, "file"));
     final HandledFile test = fileHandler.getHandledFile(BASE_PATH_TEST, realComponentPath, "file");
     final File expected = getFile(realComponentPath, "file");
@@ -105,21 +115,21 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testGetFileFromNotHandledFile() throws Exception {
+  void testGetFileFromNotHandledFile() {
     final File otherTest = fileHandler.getFile(otherFile);
     final File expected = otherFile;
     assertFileNames(otherTest, expected);
   }
 
   @Test
-  public void testGetFileFromNotHandledSubdirectoryAndFile() throws Exception {
+  void testGetFileFromNotHandledSubdirectoryAndFile() {
     final File otherTest = fileHandler.getFile(otherFile, "file");
     final File expected = getFile(otherFile, "file");
     assertFileNames(otherTest, expected);
   }
 
   @Test
-  public void testGetHandledTemporaryFile() throws Exception {
+  void testGetHandledTemporaryFile() {
     final File test = fileHandler.getSessionTemporaryFile("tmpFile");
     final File expected = FileUtils.getFile(sessionRootPath, currentSession.getId(), "@#@work@#@", "tmpFile");
     assertFileNames(test, expected);
@@ -130,23 +140,27 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * openOutputStream
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testOpenOutputStreamWhenNotHandledFileIsPassedAsFileParameter() throws Exception {
-    touch(otherFile);
-    closeQuietly(fileHandler.openOutputStream(BASE_PATH_TEST, otherFile));
-  }
-
-  @Test(expected = FileNotFoundException.class)
-  public void testOpenOutputStreamWhenFileDoesntExistInSessionOrRealPath() throws Exception {
-    final File file = getFile(realComponentPath, "file");
-    try (final OutputStream test = fileHandler.openOutputStream(BASE_PATH_TEST, file)) {
-      write("toto", test, Charsets.UTF_8);
-    }
-    assertThat(readFileToString(file, Charsets.UTF_8), is("toto"));
+  @Test
+  void testOpenOutputStreamWhenNotHandledFileIsPassedAsFileParameter() {
+    assertThrows(FileHandlerException.class, () -> {
+      touch(otherFile);
+      closeQuietly(fileHandler.openOutputStream(BASE_PATH_TEST, otherFile));
+    });
   }
 
   @Test
-  public void testOpenOutputStream() throws Exception {
+  void testOpenOutputStreamWhenFileDoesntExistInSessionOrRealPath() {
+    assertThrows(FileNotFoundException.class, () -> {
+      final File file = getFile(realComponentPath, "file");
+      try (final OutputStream test = fileHandler.openOutputStream(BASE_PATH_TEST, file)) {
+        write("toto", test, Charsets.UTF_8);
+      }
+      assertThat(readFileToString(file, Charsets.UTF_8), is("toto"));
+    });
+  }
+
+  @Test
+  void testOpenOutputStream() throws Exception {
     File file = getFile(realComponentPath, "file");
     try (OutputStream test = fileHandler.openOutputStream(BASE_PATH_TEST, file)) {
       write("toto", test, Charsets.UTF_8);
@@ -181,31 +195,34 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * openInputStream
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testOpenInputStreamWhenNotExistingNotHandledFileIsPassedAsFileParameter()
-      throws Exception {
-    closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, otherFile));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testOpenInputStreamWhenExistingNotHandledFileIsPassedAsFileParameter()
-      throws Exception {
-    touch(otherFile);
-    closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, otherFile));
-  }
-
-  @Test(expected = FileNotFoundException.class)
-  public void testOpenInputStreamWhenFileDoesntExistInSessionPath() throws Exception {
-    closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, getFile(sessionComponentPath, "file")));
-  }
-
-  @Test(expected = FileNotFoundException.class)
-  public void testOpenInputStreamWhenFileDoesntExistInRealPath() throws Exception {
-    closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, getFile(realComponentPath, "file")));
+  @Test
+  void testOpenInputStreamWhenNotExistingNotHandledFileIsPassedAsFileParameter() {
+    assertThrows(FileHandlerException.class, () ->
+        closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, otherFile)));
   }
 
   @Test
-  public void testOpenInputStreamWhenFileExistsInRealPathOnly() throws Exception {
+  void testOpenInputStreamWhenExistingNotHandledFileIsPassedAsFileParameter() {
+    assertThrows(FileHandlerException.class, () -> {
+      touch(otherFile);
+      closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, otherFile));
+    });
+  }
+
+  @Test
+  void testOpenInputStreamWhenFileDoesntExistInSessionPath() {
+    assertThrows(FileNotFoundException.class, () ->
+        closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, getFile(sessionComponentPath, "file"))));
+  }
+
+  @Test
+  void testOpenInputStreamWhenFileDoesntExistInRealPath() {
+    assertThrows(FileNotFoundException.class, () ->
+        closeQuietly(fileHandler.openInputStream(BASE_PATH_TEST, getFile(realComponentPath, "file"))));
+  }
+
+  @Test
+  void testOpenInputStreamWhenFileExistsInRealPathOnly() throws Exception {
     final File file = getFile(realComponentPath, "file");
     touch(file);
     try (final InputStream test = fileHandler.openInputStream(BASE_PATH_TEST, file)) {
@@ -216,7 +233,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testOpenInputStreamWhenFileExistsInSessionPathOnly() throws Exception {
+  void testOpenInputStreamWhenFileExistsInSessionPathOnly() throws Exception {
     final File file = getFile(sessionComponentPath, "file");
     touch(file);
     try (final InputStream test = fileHandler.openInputStream(BASE_PATH_TEST, file)) {
@@ -227,7 +244,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testOpenInputStreamWhenFileExistsInSessionAndRealPath() throws Exception {
+  void testOpenInputStreamWhenFileExistsInSessionAndRealPath() throws Exception {
     final File file = getFile(sessionComponentPath, "file");
     final File file2 = getFile(realComponentPath, "file");
     touch(file);
@@ -244,18 +261,20 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * touch
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testTouchWhenExistingNotHandledFileIsPassedAsFileParameter() throws Exception {
-    fileHandler.touch(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testTouchWhenNoBasePathIsPassed() throws Exception {
-    fileHandler.touch(null, otherFile);
+  @Test
+  void testTouchWhenExistingNotHandledFileIsPassedAsFileParameter() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.touch(BASE_PATH_TEST, otherFile));
   }
 
   @Test
-  public void testTouchWhenFileDoesntExistAtAll() throws Exception {
+  void testTouchWhenNoBasePathIsPassed() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.touch(null, otherFile));
+  }
+
+  @Test
+  void testTouchWhenFileDoesntExistAtAll() throws Exception {
     final File sessionFile = getFile(sessionComponentPath, "file");
     final File realFile = getFile(realComponentPath, "file");
     assertThat(sessionFile.exists(), is(false));
@@ -266,7 +285,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testTouchWhenFileExistsInRealPath() throws Exception {
+  void testTouchWhenFileExistsInRealPath() throws Exception {
     final File sessionFile = getFile(sessionComponentPath, "file");
     final File realFile = getFile(realComponentPath, "file");
     writeStringToFile(realFile, "content", Charsets.UTF_8);
@@ -282,20 +301,22 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * listFiles
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testListFilesWhenExistingNotHandledFileIsPassedAsFileParameter() throws Exception {
+  @Test
+  void testListFilesWhenExistingNotHandledFileIsPassedAsFileParameter() throws Exception {
     buildCommonPathStructure();
-    fileHandler.listFiles(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testListFilesWithNotDirectoryParameter() throws Exception {
-    buildCommonPathStructure();
-    fileHandler.listFiles(BASE_PATH_TEST, getFile(realComponentPath, "a/b/file_ab_1"));
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.listFiles(BASE_PATH_TEST, otherFile));
   }
 
   @Test
-  public void testListFilesFromSessionAndRealPath() throws Exception {
+  void testListFilesWithNotDirectoryParameter() throws Exception {
+    buildCommonPathStructure();
+    assertThrows(IllegalArgumentException.class, () ->
+        fileHandler.listFiles(BASE_PATH_TEST, getFile(realComponentPath, "a/b/file_ab_1")));
+  }
+
+  @Test
+  void testListFilesFromSessionAndRealPath() throws Exception {
     buildCommonPathStructure();
     Collection<File> files = fileHandler.listFiles(BASE_PATH_TEST, realRootPath);
     assertThat(files.size(), is(13));
@@ -335,7 +356,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testListFilesFromSessionAndRealPathWithFilters() throws Exception {
+  void testListFilesFromSessionAndRealPathWithFilters() throws Exception {
     buildCommonPathStructure();
     Collection<File> files =
         fileHandler.listFiles(BASE_PATH_TEST, realRootPath, TrueFileFilter.INSTANCE,
@@ -358,14 +379,14 @@ public class TestFileHandler extends AbstractHandledFileTest {
 
     // Extension
     files =
-        fileHandler.listFiles(BASE_PATH_TEST, realRootPath, new SuffixFileFilter(new String[] {
-            ".test", ".xml", ".txt" }), TrueFileFilter.INSTANCE);
+        fileHandler.listFiles(BASE_PATH_TEST, realRootPath, new SuffixFileFilter(".test", ".xml",
+            ".txt"), TrueFileFilter.INSTANCE);
     assertThat(files.size(), is(3));
     assertThat(
-        listFiles(sessionHandledPath, new SuffixFileFilter(new String[] { "test", ".xml", "txt" }),
+        listFiles(sessionHandledPath, new SuffixFileFilter("test", ".xml", "txt"),
             TrueFileFilter.INSTANCE).size(), is(1));
     assertThat(
-        listFiles(realRootPath, new SuffixFileFilter(new String[] { "test", "xml", "txt" }),
+        listFiles(realRootPath, new SuffixFileFilter("test", "xml", "txt"),
             TrueFileFilter.INSTANCE).size(), is(3));
   }
 
@@ -373,27 +394,30 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * listFiles
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testContentEqualsWhenFirstFileToCompareIsNotHandled() throws Exception {
+  @Test
+  void testContentEqualsWhenFirstFileToCompareIsNotHandled() throws Exception {
     buildCommonPathStructure();
-    fileHandler.contentEquals(BASE_PATH_TEST, otherFile, getFile(realRootPath, "root_file_2"));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testContentEqualsWhenSecondFileToCompareIsNotHandled() throws Exception {
-    buildCommonPathStructure();
-    fileHandler.contentEquals(BASE_PATH_TEST, getFile(realRootPath, "root_file_2"), otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testContentEqualsWhenSecondFileToCompareIsNotHandledEvenIfHandledBasePathIsSpecified()
-      throws Exception {
-    buildCommonPathStructure();
-    fileHandler.contentEquals(getFile(realRootPath, "root_file_2"), BASE_PATH_TEST, otherFile);
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.contentEquals(BASE_PATH_TEST, otherFile, getFile(realRootPath, "root_file_2")));
   }
 
   @Test
-  public void testContentEqualsFromUniqueHandledPath() throws Exception {
+  void testContentEqualsWhenSecondFileToCompareIsNotHandled() throws Exception {
+    buildCommonPathStructure();
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.contentEquals(BASE_PATH_TEST, getFile(realRootPath, "root_file_2"), otherFile));
+  }
+
+  @Test
+  void testContentEqualsWhenSecondFileToCompareIsNotHandledEvenIfHandledBasePathIsSpecified()
+      throws Exception {
+    buildCommonPathStructure();
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.contentEquals(getFile(realRootPath, "root_file_2"), BASE_PATH_TEST, otherFile));
+  }
+
+  @Test
+  void testContentEqualsFromUniqueHandledPath() throws Exception {
     buildCommonPathStructure();
     assertThat(
         fileHandler.contentEquals(BASE_PATH_TEST, getFile(realRootPath, "root_file_2"),
@@ -409,7 +433,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testContentEqualsBetweenHandledFilesButOnlyTheSecondFileKnownAsHandled()
+  void testContentEqualsBetweenHandledFilesButOnlyTheSecondFileKnownAsHandled()
       throws Exception {
     buildCommonPathStructure();
     assertThat(
@@ -422,7 +446,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testContentEqualsBetweenNotHandledFileAndHandledFile() throws Exception {
+  void testContentEqualsBetweenNotHandledFileAndHandledFile() throws Exception {
     buildCommonPathStructure();
     assertThat(
         fileHandler.contentEquals(otherFile, BASE_PATH_TEST, getFile(realRootPath, "root_file_3")),
@@ -437,39 +461,45 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * copyFile
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testCopyFileWithNotHandledFilesWhereasTheyHaveToBe() throws Exception {
-    fileHandler.copyFile(BASE_PATH_TEST, getFile(sessionHandledPath, "file"), otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testCopyFileFromNotHandledFileWhereasItHasToBe() throws Exception {
-    fileHandler.copyFile(BASE_PATH_TEST, otherFile, getFile(sessionHandledPath, "file"));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testCopyFileToNotHandledFile() throws Exception {
-    fileHandler.copyFile(BASE_PATH_TEST, sessionComponentPath, otherFile);
-  }
-
-  @Test(expected = IOException.class)
-  public void testCopyFileWhereasTheFileToCopyIsDirectory() throws Exception {
-    fileHandler.copyFile(BASE_PATH_TEST, sessionHandledPath, getFile(sessionHandledPath, "file"));
-  }
-
-  @Test(expected = IOException.class)
-  public void testCopyFileWhereasTheDestinationFileIsDirectory() throws Exception {
-    fileHandler.copyFile(otherFile, fileHandler.getHandledFile(BASE_PATH_TEST, sessionHandledPath));
-  }
-
-  @Test(expected = IOException.class)
-  public void testCopyFileFromNotHandledFileWhereasTheDestinationFileIsDirectory() throws Exception {
-    fileHandler.copyFile(otherFile.getParentFile(),
-        fileHandler.getHandledFile(BASE_PATH_TEST, sessionHandledPath));
+  @Test
+  void testCopyFileWithNotHandledFilesWhereasTheyHaveToBe() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.copyFile(BASE_PATH_TEST, getFile(sessionHandledPath, "file"), otherFile));
   }
 
   @Test
-  public void testCopyFile() throws Exception {
+  void testCopyFileFromNotHandledFileWhereasItHasToBe() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.copyFile(BASE_PATH_TEST, otherFile, getFile(sessionHandledPath, "file")));
+  }
+
+  @Test
+  void testCopyFileToNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.copyFile(BASE_PATH_TEST, sessionComponentPath, otherFile));
+  }
+
+  @Test
+  void testCopyFileWhereasTheFileToCopyIsDirectory() {
+    assertThrows(IOException.class, () ->
+        fileHandler.copyFile(BASE_PATH_TEST, sessionHandledPath, getFile(sessionHandledPath, "file")));
+  }
+
+  @Test
+  void testCopyFileWhereasTheDestinationFileIsDirectory() {
+    assertThrows(IOException.class, () ->
+        fileHandler.copyFile(otherFile, fileHandler.getHandledFile(BASE_PATH_TEST, sessionHandledPath)));
+  }
+
+  @Test
+  void testCopyFileFromNotHandledFileWhereasTheDestinationFileIsDirectory() {
+    assertThrows(IOException.class, () ->
+        fileHandler.copyFile(otherFile.getParentFile(),
+            fileHandler.getHandledFile(BASE_PATH_TEST, sessionHandledPath)));
+  }
+
+  @Test
+  void testCopyFile() throws Exception {
 
     // Copy from existing handled file to handled file and verify existence in session
     File test = getFile(realComponentPath, otherFile.getName());
@@ -506,7 +536,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     expected = getFile(sessionComponentPath, "c", otherFile.getName());
     assertThat(expected.exists(), is(false));
     fileHandler.copyURLToFile(
-        toURLs(new File[] { getFile(sessionComponentPath, otherFile.getName()) })[0],
+        toURLs(getFile(sessionComponentPath, otherFile.getName()))[0],
         BASE_PATH_TEST, test);
     assertThat(expected.exists(), is(true));
     assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
@@ -516,23 +546,26 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * delete
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testDeleteOnNotHandledFile() throws Exception {
-    fileHandler.delete(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testCleanDirectoryOnNotHandledPath() throws Exception {
-    fileHandler.cleanDirectory(BASE_PATH_TEST, otherFile.getParentFile());
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testCleanDirectoryOnNotHandledFile() throws Exception {
-    fileHandler.cleanDirectory(BASE_PATH_TEST, otherFile);
+  @Test
+  void testDeleteOnNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.delete(BASE_PATH_TEST, otherFile));
   }
 
   @Test
-  public void testDeleteFromRealPathOnly() throws Exception {
+  void testCleanDirectoryOnNotHandledPath() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.cleanDirectory(BASE_PATH_TEST, otherFile.getParentFile()));
+  }
+
+  @Test
+  void testCleanDirectoryOnNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.cleanDirectory(BASE_PATH_TEST, otherFile));
+  }
+
+  @Test
+  void testDeleteFromRealPathOnly() throws Exception {
 
     // Deleting not existing file
     assertThat(fileHandler.delete(BASE_PATH_TEST, getFile(realComponentPath, "file")), is(false));
@@ -560,7 +593,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testDeleteFromSessionPathOnly() throws Exception {
+  void testDeleteFromSessionPathOnly() throws Exception {
 
     // Creating for test "file" in session path and verify existence
     touch(getFile(sessionComponentPath, "file"));
@@ -583,7 +616,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testDeleteFileExistingInSessionAndRealPaths() throws Exception {
+  void testDeleteFileExistingInSessionAndRealPaths() throws Exception {
 
     // Creating for test "file" in session and real paths and verify existence
     touch(getFile(realComponentPath, "file"));
@@ -608,7 +641,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testDeleteFileFromCommonTestStructure() throws Exception {
+  void testDeleteFileFromCommonTestStructure() throws Exception {
     buildCommonPathStructure();
 
     final File session = getFile(sessionComponentPath);
@@ -635,7 +668,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testCleanDirectoryFromCommonTestStructure() throws Exception {
+  void testCleanDirectoryFromCommonTestStructure() throws Exception {
     buildCommonPathStructure();
 
     final File session = getFile(sessionComponentPath);
@@ -666,13 +699,14 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * waitFor
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testWaitForOnNotHandledFile() {
-    fileHandler.waitFor(BASE_PATH_TEST, otherFile, 10);
+  @Test
+  void testWaitForOnNotHandledFile() {
+    assertThrows(FileHandlerException.class,
+        () -> fileHandler.waitFor(BASE_PATH_TEST, otherFile, 10));
   }
 
   @Test
-  public void testWaitForWithSuccessFileCreationInTime() {
+  void testWaitForWithSuccessFileCreationInTime() {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
     final Thread create = new Thread(() -> {
@@ -682,7 +716,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
         // ignore
       }
     });
-    final RunnableTest<Boolean> waitForRun = new RunnableTest<Boolean>() {
+    final RunnableTest<Boolean> waitForRun = new RunnableTest<>() {
       @Override
       public void run() {
         result = false;
@@ -715,7 +749,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testWaitForForWithFailFileCreationInTime() {
+  void testWaitForForWithFailFileCreationInTime() {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
     final Thread create = new Thread(() -> {
@@ -726,7 +760,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
         // ignore
       }
     });
-    final RunnableTest<Boolean> waitForRun = new RunnableTest<Boolean>() {
+    final RunnableTest<Boolean> waitForRun = new RunnableTest<>() {
       @Override
       public void run() {
         result = false;
@@ -764,35 +798,40 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * moveFile
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testMoveFileFromNotHandledFile() throws Exception {
-    fileHandler.moveFile(BASE_PATH_TEST, otherFile, getFile(sessionComponentPath, "file"));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testMoveFileToNotHandledFile() throws Exception {
-    fileHandler.moveFile(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testMoveFileFromNotHandledFileInMultiHandledBasePathMethod() throws Exception {
-    fileHandler.moveFile(BASE_PATH_TEST, otherFile, BASE_PATH_TEST,
-        getFile(sessionComponentPath, "file"));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testMoveFileToNotHandledFileInMultiHandledBasePathMethod() throws Exception {
-    fileHandler.moveFile(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), BASE_PATH_TEST,
-        otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testMoveFileWithNullFileParameter() throws Exception {
-    fileHandler.moveFile(null, fileHandler.getHandledFile(BASE_PATH_TEST, otherFile));
+  @Test
+  void testMoveFileFromNotHandledFile() {
+    assertThrows(FileHandlerException.class, () -> 
+        fileHandler.moveFile(BASE_PATH_TEST, otherFile, getFile(sessionComponentPath, "file")));
   }
 
   @Test
-  public void testMoveFile() throws Exception {
+  void testMoveFileToNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+        fileHandler.moveFile(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), otherFile));
+  }
+
+  @Test
+  void testMoveFileFromNotHandledFileInMultiHandledBasePathMethod() {
+    assertThrows(FileHandlerException.class, () -> 
+      fileHandler.moveFile(BASE_PATH_TEST, otherFile, BASE_PATH_TEST,
+          getFile(sessionComponentPath, "file")));
+  }
+
+  @Test
+  void testMoveFileToNotHandledFileInMultiHandledBasePathMethod() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.moveFile(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), BASE_PATH_TEST,
+          otherFile));
+  }
+
+  @Test
+  void testMoveFileWithNullFileParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.moveFile(null, fileHandler.getHandledFile(BASE_PATH_TEST, otherFile)));
+  }
+
+  @Test
+  void testMoveFile() throws Exception {
     buildCommonPathStructure();
     final File real = getFile(realRootPath, "root_file_1");
     final File session = getFile(sessionHandledPath, "root_file_1");
@@ -830,45 +869,53 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * read
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testReadFileToStringWithNotHandledFile() throws Exception {
-    fileHandler.readFileToString(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testReadFileToStringWithNotHandlefFileAndSpecificFileEncoding() throws Exception {
-    fileHandler.readFileToString(BASE_PATH_TEST, otherFile, "UTF16");
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testReadFileToByteArrayWithNotHandledFile() throws Exception {
-    fileHandler.readFileToByteArray(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testReadLinesWithNotHandledFile() throws Exception {
-    fileHandler.readLines(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testReadLinesWithNotHandlefFileAndSpecificFileEncoding() throws Exception {
-    fileHandler.readLines(BASE_PATH_TEST, otherFile, "UTF16");
-  }
-
-  @Test(expected = FileNotFoundException.class)
-  public void testReadFileToStringWithNotExistingFile() throws Exception {
-    fileHandler.readFileToString(BASE_PATH_TEST, getFile(sessionComponentPath, "readFile"));
-  }
-
-  @Test(expected = FileNotFoundException.class)
-  public void testReadFileWhithExistingFileMarkedAsDeleted() throws Exception {
-    final File real = getFile(realComponentPath, "readFile");
-    fileHandler.getMarkedToDelete(BASE_PATH_TEST).add(real);
-    fileHandler.readFileToString(BASE_PATH_TEST, real);
+  @Test
+  void testReadFileToStringWithNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.readFileToString(BASE_PATH_TEST, otherFile));
   }
 
   @Test
-  public void testReadFileToStringFromFileExistingInSessionAndRealPath() throws Exception {
+  void testReadFileToStringWithNotHandlefFileAndSpecificFileEncoding() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.readFileToString(BASE_PATH_TEST, otherFile, "UTF16"));
+  }
+
+  @Test
+  void testReadFileToByteArrayWithNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.readFileToByteArray(BASE_PATH_TEST, otherFile));
+  }
+
+  @Test
+  void testReadLinesWithNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.readLines(BASE_PATH_TEST, otherFile));
+  }
+
+  @Test
+  void testReadLinesWithNotHandlefFileAndSpecificFileEncoding() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.readLines(BASE_PATH_TEST, otherFile, "UTF16"));
+  }
+
+  @Test
+  void testReadFileToStringWithNotExistingFile() {
+    assertThrows(FileNotFoundException.class, () ->
+      fileHandler.readFileToString(BASE_PATH_TEST, getFile(sessionComponentPath, "readFile")));
+  }
+
+  @Test
+  void testReadFileWhithExistingFileMarkedAsDeleted() {
+    assertThrows(FileNotFoundException.class, () -> {
+      final File real = getFile(realComponentPath, "readFile");
+      fileHandler.getMarkedToDelete(BASE_PATH_TEST).add(real);
+      fileHandler.readFileToString(BASE_PATH_TEST, real);
+    });
+  }
+
+  @Test
+  void testReadFileToStringFromFileExistingInSessionAndRealPath() throws Exception {
 
     // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
@@ -887,7 +934,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testReadFileToStringFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
+  void testReadFileToStringFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
       throws Exception {
 
     // Creating file with different content depending of session or real paths
@@ -907,7 +954,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testReadLinesFromFileExistingInSessionAndRealPath() throws Exception {
+  void testReadLinesFromFileExistingInSessionAndRealPath() throws Exception {
 
     // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
@@ -930,7 +977,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testReadLinesFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
+  void testReadLinesFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
       throws Exception {
 
     // Creating file with different content depending of session or real paths
@@ -957,29 +1004,32 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * writeStringToFile
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testWriteStringToFileThatIsNotHandled() throws Exception {
-    fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteStringToFileThatIsNotHandledWithExplicitAppendParameter() throws Exception {
-    fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null, true);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteStringToFileThatIsNotHandledWithSpecificFileEncoding() throws Exception {
-    fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null, "UTF16");
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteStringToFileThatIsNotHandledWithSpecificFileEncodingAndExplicitAppendParameter()
-      throws Exception {
-    fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null, "UTF16", false);
+  @Test
+  void testWriteStringToFileThatIsNotHandled() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null));
   }
 
   @Test
-  public void testWriteStringToFile() throws Exception {
+  void testWriteStringToFileThatIsNotHandledWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null, true));
+  }
+
+  @Test
+  void testWriteStringToFileThatIsNotHandledWithSpecificFileEncoding() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null, "UTF16"));
+  }
+
+  @Test
+  void testWriteStringToFileThatIsNotHandledWithSpecificFileEncodingAndExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeStringToFile(BASE_PATH_TEST, otherFile, null, "UTF16", false));
+  }
+
+  @Test
+  void testWriteStringToFile() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -1006,10 +1056,10 @@ public class TestFileHandler extends AbstractHandledFileTest {
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and a specific file encoding
-    fileHandler.writeStringToFile(BASE_PATH_TEST, real, new String("newContent".getBytes("UTF16")),
+    fileHandler.writeStringToFile(BASE_PATH_TEST, real, new String("newContent".getBytes(UTF_16)),
         "UTF16");
     // Session file contains this new content and real file is not modified
-    assertThat(readFileToString(session, "UTF16"), is(new String("newContent".getBytes("UTF16"))));
+    assertThat(readFileToString(session, "UTF16"), is(new String("newContent".getBytes(UTF_16))));
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
@@ -1017,29 +1067,32 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * write
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testWriteFileThatIsNotHandled() throws Exception {
-    fileHandler.write(BASE_PATH_TEST, otherFile, null);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteFileThatIsNotHandledWithExplicitAppendParameter() throws Exception {
-    fileHandler.write(BASE_PATH_TEST, otherFile, null, true);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteFileThatIsNotHandledWithSpecificFileEncoding() throws Exception {
-    fileHandler.write(BASE_PATH_TEST, otherFile, null, "UTF16");
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteFileThatIsNotHandledWithSpecificFileEncodingAndExplicitAppendParameter()
-      throws Exception {
-    fileHandler.write(BASE_PATH_TEST, otherFile, null, "UTF16", false);
+  @Test
+  void testWriteFileThatIsNotHandled() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.write(BASE_PATH_TEST, otherFile, null));
   }
 
   @Test
-  public void testWrite() throws Exception {
+  void testWriteFileThatIsNotHandledWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.write(BASE_PATH_TEST, otherFile, null, true));
+  }
+
+  @Test
+  void testWriteFileThatIsNotHandledWithSpecificFileEncoding() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.write(BASE_PATH_TEST, otherFile, null, "UTF16"));
+  }
+
+  @Test
+  void testWriteFileThatIsNotHandledWithSpecificFileEncodingAndExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.write(BASE_PATH_TEST, otherFile, null, "UTF16", false));
+  }
+
+  @Test
+  void testWrite() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -1050,7 +1103,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     // Writing empty content by specifying real file
     fileHandler.write(BASE_PATH_TEST, real, null);
     // Session file is now empty and real file is not modified
-    String fileContent = readFileToString(session);
+    String fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is(""));
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
@@ -1069,10 +1122,10 @@ public class TestFileHandler extends AbstractHandledFileTest {
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and a specific file encoding
-    fileHandler.write(BASE_PATH_TEST, real, new String("newContent".getBytes("UTF16")), "UTF16");
+    fileHandler.write(BASE_PATH_TEST, real, new String("newContent".getBytes(UTF_16)), "UTF16");
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
-    assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
+    assertThat(fileContent, is(new String("newContent".getBytes(UTF_16))));
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
@@ -1080,29 +1133,32 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * writeByteArrayToFile
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testWriteByteArrayToFileThatIsNotHandled() throws Exception {
-    fileHandler.writeByteArrayToFile(BASE_PATH_TEST, otherFile, null);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteByteArrayToFileThatIsNotHandledWithExplicitAppendParameter()
-      throws Exception {
-    fileHandler.writeByteArrayToFile(BASE_PATH_TEST, otherFile, null, true);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void testWriteByteArrayToFileWithNullData() throws Exception {
-    final File session = getFile(sessionComponentPath, "writeFile");
-    final File real = getFile(realComponentPath, "writeFile");
-    writeStringToFile(session, "notModified", Charsets.UTF_8);
-    writeStringToFile(real, "notModified", Charsets.UTF_8);
-
-    fileHandler.writeByteArrayToFile(BASE_PATH_TEST, real, null);
+  @Test
+  void testWriteByteArrayToFileThatIsNotHandled() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeByteArrayToFile(BASE_PATH_TEST, otherFile, null));
   }
 
   @Test
-  public void testWriteByteArrayToFile() throws Exception {
+  void testWriteByteArrayToFileThatIsNotHandledWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeByteArrayToFile(BASE_PATH_TEST, otherFile, null, true));
+  }
+
+  @Test
+  void testWriteByteArrayToFileWithNullData() {
+    assertThrows(NullPointerException.class, () -> {
+      final File session = getFile(sessionComponentPath, "writeFile");
+      final File real = getFile(realComponentPath, "writeFile");
+      writeStringToFile(session, "notModified", Charsets.UTF_8);
+      writeStringToFile(real, "notModified", Charsets.UTF_8);
+
+      fileHandler.writeByteArrayToFile(BASE_PATH_TEST, real, null);
+    });
+  }
+
+  @Test
+  void testWriteByteArrayToFile() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -1129,53 +1185,56 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * writeLines
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandled() throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithExplicitAppendParameter() throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST, true);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithSpecifiedLineEnding() throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST, "lineEnding");
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithSpecifiedLineEndingAndWithExplicitAppendParameter()
-      throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST, "lineEnding", false);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAnd()
-      throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAndWithExplicitAppendParameter()
-      throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST, true);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAndWithSpecifiedLineEnding()
-      throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST, "UTF16");
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAndWithSpecifiedLineEndingAndWithExplicitAppendParameter()
-      throws Exception {
-    fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST, "UTF16", false);
+  @Test
+  void testWriteLinesToFileThatIsNotHandled() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST));
   }
 
   @Test
-  public void testWriteLines() throws Exception {
+  void testWriteLinesToFileThatIsNotHandledWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST, true));
+  }
+
+  @Test
+  void testWriteLinesToFileThatIsNotHandledWithSpecifiedLineEnding() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST, "lineEnding"));
+  }
+
+  @Test
+  void testWriteLinesToFileThatIsNotHandledWithSpecifiedLineEndingAndWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, Collections.EMPTY_LIST, "lineEnding", false));
+  }
+
+  @Test
+  void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAnd() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST));
+  }
+
+  @Test
+  void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAndWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST, true));
+  }
+
+  @Test
+  void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAndWithSpecifiedLineEnding() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST, "UTF16"));
+  }
+
+  @Test
+  void testWriteLinesToFileThatIsNotHandledWithSpecificEncodingParameterAndWithSpecifiedLineEndingAndWithExplicitAppendParameter() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.writeLines(BASE_PATH_TEST, otherFile, null, Collections.EMPTY_LIST, "UTF16", false));
+  }
+
+  @Test
+  void testWriteLines() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -1263,24 +1322,27 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * sizeOf
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testSizeOfNotHandledFile() {
-    fileHandler.sizeOf(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testSizeOfDirectoryOnNotHandledFile() {
-    fileHandler.sizeOfDirectory(BASE_PATH_TEST, otherFile);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testSizeOfDirectoryOnFile() throws Exception {
-    buildCommonPathStructure();
-    fileHandler.sizeOfDirectory(BASE_PATH_TEST, getFile(realRootPath, "root_file_2"));
+  @Test
+  void testSizeOfNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.sizeOf(BASE_PATH_TEST, otherFile));
   }
 
   @Test
-  public void testSizeOf() throws Exception {
+  void testSizeOfDirectoryOnNotHandledFile() {
+    assertThrows(IllegalArgumentException.class, () ->
+      fileHandler.sizeOfDirectory(BASE_PATH_TEST, otherFile));
+  }
+
+  @Test
+  void testSizeOfDirectoryOnFile() throws Exception {
+    buildCommonPathStructure();
+    assertThrows(IllegalArgumentException.class, () ->
+      fileHandler.sizeOfDirectory(BASE_PATH_TEST, getFile(realRootPath, "root_file_2")));
+  }
+
+  @Test
+  void testSizeOf() throws Exception {
     buildCommonPathStructure();
 
     long size = fileHandler.sizeOf(BASE_PATH_TEST, getFile(realRootPath, "root_file_2"));
@@ -1293,7 +1355,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testSizeOfDirectory() throws Exception {
+  void testSizeOfDirectory() throws Exception {
     buildCommonPathStructure();
 
     final long size = fileHandler.sizeOf(BASE_PATH_TEST, getFile(realRootPath));
@@ -1305,28 +1367,32 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * isFileNewer
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileNewerBetweenNotHandledFileAndHandledFile() {
-    fileHandler.isFileNewer(BASE_PATH_TEST, otherFile, getFile(sessionComponentPath, "file"));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileNewerBetweenHandledFileAndNotHandledFile() {
-    fileHandler.isFileNewer(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileNewerWithNotHandledFileFromDate() {
-    fileHandler.isFileNewer(BASE_PATH_TEST, otherFile, new Date());
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileNewerWithNotHandledFileFromDateInMilliseconds() {
-    fileHandler.isFileNewer(BASE_PATH_TEST, otherFile, 123);
+  @Test
+  void testIsFileNewerBetweenNotHandledFileAndHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileNewer(BASE_PATH_TEST, otherFile, getFile(sessionComponentPath, "file")));
   }
 
   @Test
-  public void testIsFileNewer() throws Exception {
+  void testIsFileNewerBetweenHandledFileAndNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileNewer(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), otherFile));
+  }
+
+  @Test
+  void testIsFileNewerWithNotHandledFileFromDate() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileNewer(BASE_PATH_TEST, otherFile, new Date()));
+  }
+
+  @Test
+  void testIsFileNewerWithNotHandledFileFromDateInMilliseconds() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileNewer(BASE_PATH_TEST, otherFile, 123));
+  }
+
+  @Test
+  void testIsFileNewer() throws Exception {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -1356,28 +1422,32 @@ public class TestFileHandler extends AbstractHandledFileTest {
    * isFileOlder
    */
 
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileOlderBetweenNotHandledFileAndHandledFile() {
-    fileHandler.isFileOlder(BASE_PATH_TEST, otherFile, getFile(sessionComponentPath, "file"));
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileOlderBetweenHandledFileAndNotHandledFile() {
-    fileHandler.isFileOlder(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), otherFile);
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileOlderWithNotHandledFileFromDate() {
-    fileHandler.isFileOlder(BASE_PATH_TEST, otherFile, new Date());
-  }
-
-  @Test(expected = FileHandlerException.class)
-  public void testIsFileOlderWithNotHandledFileFromDateInMilliseconds() {
-    fileHandler.isFileOlder(BASE_PATH_TEST, otherFile, 123);
+  @Test
+  void testIsFileOlderBetweenNotHandledFileAndHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileOlder(BASE_PATH_TEST, otherFile, getFile(sessionComponentPath, "file")));
   }
 
   @Test
-  public void testIsFileOlder() throws Exception {
+  void testIsFileOlderBetweenHandledFileAndNotHandledFile() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileOlder(BASE_PATH_TEST, getFile(sessionComponentPath, "file"), otherFile));
+  }
+
+  @Test
+  void testIsFileOlderWithNotHandledFileFromDate() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileOlder(BASE_PATH_TEST, otherFile, new Date()));
+  }
+
+  @Test
+  void testIsFileOlderWithNotHandledFileFromDateInMilliseconds() {
+    assertThrows(FileHandlerException.class, () ->
+      fileHandler.isFileOlder(BASE_PATH_TEST, otherFile, 123));
+  }
+
+  @Test
+  void testIsFileOlder() throws Exception {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -1403,7 +1473,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testGetSessionHandledRootPathNames() throws Exception {
+  void testGetSessionHandledRootPathNames() throws Exception {
     buildCommonPathStructure();
     final Collection<String> test = new TreeSet<>(fileHandler.getSessionHandledRootPathNames());
     assertThat(test.size(), is(1));
@@ -1411,14 +1481,14 @@ public class TestFileHandler extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testListAllSessionHandledRootPathFiles() throws Exception {
+  void testListAllSessionHandledRootPathFiles() throws Exception {
     buildCommonPathStructure();
     final Collection<File> test = new TreeSet<>(fileHandler.listAllSessionHandledRootPathFiles());
     assertThat(test.size(), is(1));
     assertThat(test.iterator().next().getName(), is("componentInstanceId"));
   }
 
-  private abstract class RunnableTest<R> implements Runnable {
+  private abstract static class RunnableTest<R> implements Runnable {
 
     protected R result;
 

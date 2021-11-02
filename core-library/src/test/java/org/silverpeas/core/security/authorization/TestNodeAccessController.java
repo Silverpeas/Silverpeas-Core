@@ -24,9 +24,8 @@
 package org.silverpeas.core.security.authorization;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
@@ -41,7 +40,8 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.HashSet;
@@ -62,36 +62,31 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author ehugonnet
  */
 @UnitTest
-public class TestNodeAccessController {
+@EnableSilverTestEnv
+class TestNodeAccessController {
 
   private final static String A_NODE_ID = "26";
   private final static String userId = "5";
   private final static String componentId = "kmelia18";
 
+  @TestManagedMock
   private OrganizationController organizationController;
+  @TestManagedMock
   private ComponentAccessControl componentAccessController;
+  @TestManagedMock
   private NodeService nodeService;
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
-
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     User user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
-    organizationController = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
-    componentAccessController = mock(ComponentAccessControl.class);
-    commonAPIRule.injectIntoMockedBeanContainer(componentAccessController);
-    nodeService = mock(NodeService.class);
-    commonAPIRule.injectIntoMockedBeanContainer(nodeService);
   }
 
   /**
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNode() {
+  void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNode() {
     withUserHavingComponentRole(USER)
         .assertAccessIsAuthorized(true);
   }
@@ -100,7 +95,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNodeByGivingDirectlyNodeDetail() {
+  void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNodeByGivingDirectlyNodeDetail() {
     withUserHavingComponentRole(USER)
         .assertAccessIsAuthorizedByGivingNodeInstanceDirectly(true);
   }
@@ -109,7 +104,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
+  void userIsAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
     withUserHavingComponentRole(USER)
         .locatedOnNode(NodePK.ROOT_NODE_ID)
         .assertAccessIsAuthorized(true);
@@ -119,7 +114,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNodeByGivingDirectlyNodeDetail() {
+  void userIsAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNodeByGivingDirectlyNodeDetail() {
     withUserHavingComponentRole(USER)
         .locatedOnNode(NodePK.ROOT_NODE_ID)
         .assertAccessIsAuthorizedByGivingNodeInstanceDirectly(true);
@@ -129,7 +124,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnRootNodeWithWriterRoleWhenNodeHaveNoSpecificRightsOnNode() {
+  void userIsAuthorizedOnRootNodeWithWriterRoleWhenNodeHaveNoSpecificRightsOnNode() {
     withUserHavingComponentRole(WRITER)
         .locatedOnNode(NodePK.ROOT_NODE_ID)
         .assertAccessIsAuthorized(true);
@@ -139,7 +134,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedOnTrashWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
+  void userIsNotAuthorizedOnTrashWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
     withUserHavingComponentRole(USER)
         .locatedOnNode(NodePK.BIN_NODE_ID)
         .assertAccessIsAuthorized(false);
@@ -149,7 +144,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnTrashWithWriterRoleWhenNodeHaveNoSpecificRightsOnNode() {
+  void userIsAuthorizedOnTrashWithWriterRoleWhenNodeHaveNoSpecificRightsOnNode() {
     withUserHavingComponentRole(WRITER)
         .locatedOnNode(NodePK.BIN_NODE_ID)
         .assertAccessIsAuthorized(true);
@@ -159,7 +154,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedOnSharingContextIfNotEnabled() {
+  void userIsNotAuthorizedOnSharingContextIfNotEnabled() {
     withUserHavingComponentRole(USER)
         .aboutOperation(SHARING)
         .assertAccessIsAuthorized(false);
@@ -169,7 +164,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedOnSharingContextIfEnabledForAdmin() {
+  void userIsNotAuthorizedOnSharingContextIfEnabledForAdmin() {
     withUserHavingComponentRole(USER)
         .aboutOperation(SHARING)
         .enableNodeSharingRole(ADMIN)
@@ -180,7 +175,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedOnSharingContextIfEnabledForContributors() {
+  void userIsNotAuthorizedOnSharingContextIfEnabledForContributors() {
     withUserHavingComponentRole(USER)
         .aboutOperation(SHARING)
         .enableNodeSharingRole(WRITER)
@@ -191,7 +186,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnSharingContextIfEnabledForAll() {
+  void userIsAuthorizedOnSharingContextIfEnabledForAll() {
     withUserHavingComponentRole(USER)
         .aboutOperation(SHARING)
         .enableNodeSharingRole(USER)
@@ -202,7 +197,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnComponent() {
+  void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnComponent() {
     withUserHavingComponentRole(null)
         .assertAccessIsAuthorized(false);
   }
@@ -211,7 +206,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWithRightOnTopicEnableButNoRightsDependOn() {
+  void userIsAuthorizedWithRightOnTopicEnableButNoRightsDependOn() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .assertAccessIsAuthorized(true);
@@ -221,7 +216,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWithRightOnTopicEnableButNoRightsDependOnByGivingDirectlyNodeDetail() {
+  void userIsAuthorizedWithRightOnTopicEnableButNoRightsDependOnByGivingDirectlyNodeDetail() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .assertAccessIsAuthorizedByGivingNodeInstanceDirectly(true);
@@ -231,7 +226,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWithRightsDependOn() {
+  void userIsAuthorizedWithRightsDependOn() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, USER)
@@ -242,7 +237,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedWithRightsDependOnByGivingDirectlyNodeDetail() {
+  void userIsAuthorizedWithRightsDependOnByGivingDirectlyNodeDetail() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, USER)
@@ -253,7 +248,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedWithRightsDependOn() {
+  void userIsNotAuthorizedWithRightsDependOn() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, null)
@@ -264,7 +259,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNode() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNode() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, ADMIN)
@@ -276,7 +271,7 @@ public class TestNodeAccessController {
    */
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, ADMIN)
@@ -285,7 +280,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, USER)
@@ -294,7 +289,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, WRITER)
@@ -303,7 +298,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, PUBLISHER)
@@ -312,7 +307,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, ADMIN)
@@ -321,7 +316,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, USER)
@@ -330,7 +325,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, WRITER)
@@ -339,7 +334,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, PUBLISHER)
@@ -348,7 +343,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, ADMIN)
@@ -357,7 +352,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, USER)
@@ -366,7 +361,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, WRITER)
@@ -375,7 +370,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, PUBLISHER)
@@ -384,7 +379,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndAdminOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, ADMIN)
@@ -393,7 +388,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndUserOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, USER)
@@ -402,7 +397,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndWriterOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, WRITER)
@@ -411,7 +406,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndPublisherOnNodeAboutModification() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, PUBLISHER)
@@ -424,7 +419,7 @@ public class TestNodeAccessController {
    */
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, ADMIN)
@@ -447,7 +442,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, USER)
@@ -470,7 +465,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, WRITER)
@@ -493,7 +488,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, PUBLISHER)
@@ -516,7 +511,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, ADMIN)
@@ -533,7 +528,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, USER)
@@ -550,7 +545,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, WRITER)
@@ -567,7 +562,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, PUBLISHER)
@@ -584,7 +579,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, ADMIN)
@@ -607,7 +602,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, USER)
@@ -630,7 +625,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, WRITER)
@@ -653,7 +648,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, PUBLISHER)
@@ -676,7 +671,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndAdminOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, ADMIN)
@@ -693,7 +688,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndUserOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, USER)
@@ -716,7 +711,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndWriterOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, WRITER)
@@ -739,7 +734,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndPublisherOnNodeAboutSharing() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, PUBLISHER)
@@ -766,7 +761,7 @@ public class TestNodeAccessController {
    */
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, ADMIN)
@@ -775,7 +770,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, USER)
@@ -784,7 +779,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, WRITER)
@@ -793,7 +788,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
+  void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.ROOT_NODE_ID, PUBLISHER)
@@ -802,7 +797,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, ADMIN)
@@ -811,7 +806,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, USER)
@@ -820,7 +815,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, WRITER)
@@ -829,7 +824,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
+  void userIsAuthorizedOnTrashNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, PUBLISHER)
@@ -838,7 +833,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, ADMIN)
@@ -847,7 +842,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, USER)
@@ -856,7 +851,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, WRITER)
@@ -865,7 +860,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
+  void userIsAuthorizedOnUnclassedNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.UNCLASSED_NODE_ID, PUBLISHER)
@@ -874,7 +869,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndAdminOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, ADMIN)
@@ -883,7 +878,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndUserOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, USER)
@@ -892,7 +887,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndWriterOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, WRITER)
@@ -901,7 +896,7 @@ public class TestNodeAccessController {
   }
 
   @Test
-  public void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
+  void userIsAuthorizedOnANodeNodeWithUserRoleOnComponentAndPublisherOnNodeAboutDownload() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(A_NODE_ID, PUBLISHER)
@@ -913,7 +908,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedOnTrashWithUserRoleOnComponentAndAdminOnNode() {
+  void userIsNotAuthorizedOnTrashWithUserRoleOnComponentAndAdminOnNode() {
     withUserHavingComponentRole(USER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, ADMIN)
@@ -924,7 +919,7 @@ public class TestNodeAccessController {
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsAuthorizedOnTrashWithWriterRoleOnComponentAndAdminOnNode() {
+  void userIsAuthorizedOnTrashWithWriterRoleOnComponentAndAdminOnNode() {
     withUserHavingComponentRole(WRITER)
         .andSpecificRightsEnabledOnTopic()
         .locatedOnNodeWithSpecificRole(NodePK.BIN_NODE_ID, ADMIN)

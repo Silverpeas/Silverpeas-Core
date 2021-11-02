@@ -24,12 +24,10 @@
 package org.silverpeas.core.process.io.file;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
@@ -56,10 +54,7 @@ public abstract class AbstractHandledFileTest {
 
   protected FileHandler fileHandler;
 
-  @Rule
-  public CommonAPITestRule commonAPIRule = new CommonAPITestRule();
-
-  @Before
+  @BeforeEach
   public void beforeTest() throws Exception {
     BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
     currentSession = createSessionTest();
@@ -79,7 +74,7 @@ public abstract class AbstractHandledFileTest {
     touch(otherFile);
   }
 
-  @After
+  @AfterEach
   public void afterTest() throws Exception {
     cleanTest();
   }

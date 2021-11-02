@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.NotSupportedException;
@@ -42,7 +41,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import java.util.Optional;
 import java.util.Set;
@@ -61,7 +61,8 @@ import static org.mockito.Mockito.when;
  * @author ehugonnet
  */
 @UnitTest
-public class TestComponentAccessController {
+@EnableSilverTestEnv
+class TestComponentAccessController {
   private static final String toolId = "toolId";
   private static final String componentAdminId = "ADMIN";
   private static final String componentId = "kmelia18";
@@ -79,19 +80,17 @@ public class TestComponentAccessController {
   private static final AccessControlOperation NONE = null;
   private static final AccessControlOperation A_PERSIST_ACTION = AccessControlOperation.PERSIST_ACTIONS.iterator().next();
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
-
+  @TestManagedMock
   private OrganizationController controller;
+  @TestManagedMock
+  private PersonalComponentRegistry personalComponentRegistry;
 
   private ComponentAccessControl instance;
 
   private String currentUserId;
 
-  @Before
-  public void setup() {
-    controller = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(controller);
+  @BeforeEach
+  void setup() {
     final UserDetail user = new UserDetail();
     user.setId(USER_ID);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -100,8 +99,6 @@ public class TestComponentAccessController {
     anonymous.setId(ANONYMOUS_ID);
     when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(anonymous);
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(anonymous);
-    final PersonalComponentRegistry personalComponentRegistry = commonAPIRule
-        .injectIntoMockedBeanContainer(mock(PersonalComponentRegistry.class));
     final PersonalComponent personalComponent = mock(PersonalComponent.class);
     when(personalComponentRegistry.getPersonalComponent("personalComponent"))
         .then(new Returns(Optional.of(personalComponent)));
@@ -163,7 +160,7 @@ public class TestComponentAccessController {
    * Test of isRightOnTopicsEnabled method, of class ComponentAccessController.
    */
   @Test
-  public void testIsRightOnTopicsEnabled() {
+  void testIsRightOnTopicsEnabled() {
     initTest();
     boolean result = instance.isRightOnTopicsEnabled(componentId);
     assertFalse(result);
@@ -181,7 +178,7 @@ public class TestComponentAccessController {
    * Test of isUserAuthorized method, of class ComponentAccessController.
    */
   @Test
-  public void testIsUserAuthorized() {
+  void testIsUserAuthorized() {
     final UserDetail user = controller.getUserDetail(USER_ID);
     final UserDetail anonymous = controller.getUserDetail(ANONYMOUS_ID);
 
@@ -243,7 +240,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForSpecificRole(NONE);
   }
 
@@ -251,7 +248,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForSpecificRole(A_PERSIST_ACTION);
   }
 
@@ -259,7 +256,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForSpecificRole(AccessControlOperation.DOWNLOAD);
   }
 
@@ -267,7 +264,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForSpecificRole(AccessControlOperation.SHARING);
   }
 
@@ -302,7 +299,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForAdmin(NONE);
   }
 
@@ -310,7 +307,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForAdmin(A_PERSIST_ACTION);
   }
 
@@ -318,7 +315,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForAdmin(AccessControlOperation.DOWNLOAD);
   }
 
@@ -326,7 +323,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForAdmin(AccessControlOperation.SHARING);
   }
 
@@ -357,7 +354,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForWriter(NONE);
   }
 
@@ -365,7 +362,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForWriter(A_PERSIST_ACTION);
   }
 
@@ -373,7 +370,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForWriter(AccessControlOperation.DOWNLOAD);
   }
 
@@ -381,7 +378,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForWriter(AccessControlOperation.SHARING);
   }
 
@@ -413,7 +410,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForReader(NONE);
   }
 
@@ -421,7 +418,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForReader(A_PERSIST_ACTION);
   }
 
@@ -429,7 +426,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForReader(AccessControlOperation.DOWNLOAD);
   }
 
@@ -437,7 +434,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForReader(AccessControlOperation.SHARING);
   }
 
@@ -472,7 +469,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForBlockedReader(NONE);
   }
 
@@ -480,7 +477,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForBlockedReader(A_PERSIST_ACTION);
   }
 
@@ -488,7 +485,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForBlockedReader(AccessControlOperation.DOWNLOAD);
   }
 
@@ -496,7 +493,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForBlockedReader(AccessControlOperation.SHARING);
   }
 
@@ -531,7 +528,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForExpiredReader(NONE);
   }
 
@@ -539,7 +536,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForExpiredReader(A_PERSIST_ACTION);
   }
 
@@ -547,7 +544,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForExpiredReader(AccessControlOperation.DOWNLOAD);
   }
 
@@ -555,7 +552,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForExpiredReader(AccessControlOperation.SHARING);
   }
 
@@ -590,7 +587,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndAnonymousUserButExpiredAndUnknownContext() {
+  void testGetUserRolesAndAnonymousUserButExpiredAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForAnonymous(NONE);
   }
 
@@ -598,7 +595,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndAnonymousUserButExpiredAndPersistContext() {
+  void testGetUserRolesAndAnonymousUserButExpiredAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForAnonymous(A_PERSIST_ACTION);
   }
 
@@ -606,7 +603,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndAnonymousUserButExpiredAndDownloadContext() {
+  void testGetUserRolesAndAnonymousUserButExpiredAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForAnonymous(AccessControlOperation.DOWNLOAD);
   }
 
@@ -614,7 +611,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndAnonymousUserButExpiredAndSharingContext() {
+  void testGetUserRolesAndAnonymousUserButExpiredAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForAnonymous(AccessControlOperation.SHARING);
   }
 
@@ -646,7 +643,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeletedReader(NONE);
   }
 
@@ -654,7 +651,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeletedReader(A_PERSIST_ACTION);
   }
 
@@ -662,7 +659,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeletedReader(AccessControlOperation.DOWNLOAD);
   }
 
@@ -670,7 +667,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeletedReader(AccessControlOperation.SHARING);
   }
 
@@ -695,7 +692,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndUnknownContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(NONE);
   }
 
@@ -703,7 +700,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndPersistContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(A_PERSIST_ACTION);
   }
 
@@ -711,7 +708,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndDownloadContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(AccessControlOperation.DOWNLOAD);
   }
 
@@ -719,7 +716,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndSharingContext() {
+  void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeactivatedReader(AccessControlOperation.SHARING);
   }
 
@@ -744,7 +741,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesWithoutUserAndUnknownContext() {
+  void testGetUserRolesWithoutUserAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedWithoutUser(NONE);
   }
 
@@ -752,7 +749,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesWithoutUserAndPersistContext() {
+  void testGetUserRolesWithoutUserAndPersistContext() {
     assertGetUserRolesAndIsUserAuthorizedWithoutUser(A_PERSIST_ACTION);
   }
 
@@ -760,7 +757,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesWithoutUserAndDownloadContext() {
+  void testGetUserRolesWithoutUserAndDownloadContext() {
     assertGetUserRolesAndIsUserAuthorizedWithoutUser(AccessControlOperation.DOWNLOAD);
   }
 
@@ -768,7 +765,7 @@ public class TestComponentAccessController {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
-  public void testGetUserRolesWithoutUserAndSharingContext() {
+  void testGetUserRolesWithoutUserAndSharingContext() {
     assertGetUserRolesAndIsUserAuthorizedWithoutUser(AccessControlOperation.SHARING);
   }
 

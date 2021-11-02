@@ -26,8 +26,9 @@ package org.silverpeas.core.process.io.file;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
@@ -43,6 +44,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.write;
 import static org.apache.commons.io.IOUtils.*;
@@ -55,14 +57,15 @@ import static org.hamcrest.Matchers.notNullValue;
  * @author Yohann Chastagnier
  */
 @UnitTest
-public class TestHandledFile extends AbstractHandledFileTest {
+@EnableSilverTestEnv
+class TestHandledFile extends AbstractHandledFileTest {
 
   /*
    * getHandledFile & getParentHandledFile
    */
 
   @Test
-  public void testGetHandledFileAndGetParentHandledFile() throws Exception {
+  void testGetHandledFileAndGetParentHandledFile() throws Exception {
     buildCommonPathStructure();
     final File expected = getFile(sessionComponentPath, "file_1");
     final HandledFile test = getHandledFile(realComponentPath, "file_1");
@@ -77,7 +80,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testOpenOutputStream() throws Exception {
+  void testOpenOutputStream() throws Exception {
     HandledFile file = getHandledFile(realComponentPath, "file");
     try(OutputStream test = file.openOutputStream()) {
       write("toto", test, Charsets.UTF_8);
@@ -109,7 +112,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testOpenInputStream() throws Exception {
+  void testOpenInputStream() throws Exception {
     // File exists in real path only
     HandledFile file = getHandledFile(realComponentPath, "file");
     touch(getFile(realComponentPath, "file"));
@@ -145,7 +148,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testTouch() throws Exception {
+  void testTouch() throws Exception {
     final File sessionFile = getFile(sessionComponentPath, "file");
     final File realFile = getFile(realComponentPath, "file");
     final HandledFile test = getHandledFile(realFile);
@@ -169,7 +172,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testListFiles() throws Exception {
+  void testListFiles() throws Exception {
     buildCommonPathStructure();
     HandledFile test = getHandledFile(realRootPath);
     Collection<HandledFile> files = test.listFiles();
@@ -216,7 +219,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testListFilesWithFilters() throws Exception {
+  void testListFilesWithFilters() throws Exception {
     buildCommonPathStructure();
     final HandledFile test = getHandledFile(realRootPath);
     Collection<HandledFile> files =
@@ -237,14 +240,14 @@ public class TestHandledFile extends AbstractHandledFileTest {
 
     // Extension
     files =
-        test.listFiles(new SuffixFileFilter(new String[] { ".test", ".xml", ".txt" }),
+        test.listFiles(new SuffixFileFilter(".test", ".xml", ".txt"),
             TrueFileFilter.INSTANCE);
     assertThat(files.size(), is(3));
     assertThat(
-        listFiles(sessionHandledPath, new SuffixFileFilter(new String[] { "test", ".xml", "txt" }),
+        listFiles(sessionHandledPath, new SuffixFileFilter("test", ".xml", "txt"),
             TrueFileFilter.INSTANCE).size(), is(1));
     assertThat(
-        listFiles(realRootPath, new SuffixFileFilter(new String[] { "test", "xml", "txt" }),
+        listFiles(realRootPath, new SuffixFileFilter("test", "xml", "txt"),
             TrueFileFilter.INSTANCE).size(), is(3));
   }
 
@@ -253,7 +256,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testContentEquals() throws Exception {
+  void testContentEquals() throws Exception {
     buildCommonPathStructure();
     assertThat(
         getHandledFile(realRootPath, "root_file_2").contentEquals(
@@ -273,7 +276,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testCopyFile() throws Exception {
+  void testCopyFile() throws Exception {
     File test = getFile(realComponentPath, "a", otherFile.getName());
     File expected = getFile(sessionComponentPath, "a", otherFile.getName());
     writeStringToFile(getFile(realComponentPath, otherFile.getName()), "other", Charsets.UTF_8);
@@ -293,7 +296,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     expected = getFile(sessionComponentPath, "c", otherFile.getName());
     assertThat(expected.exists(), is(false));
     getHandledFile(test).copyURLToFile(
-        toURLs(new File[] { getFile(realComponentPath, otherFile.getName()) })[0]);
+        toURLs(getFile(realComponentPath, otherFile.getName()))[0]);
     assertThat(expected.exists(), is(true));
   }
 
@@ -302,7 +305,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testDeleteFromRealPathOnly() throws Exception {
+  void testDeleteFromRealPathOnly() throws Exception {
 
     // Deleting not existing file
     assertThat(getHandledFile(realComponentPath, "file").delete(), is(false));
@@ -330,7 +333,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testDeleteFromSessionPathOnly() throws Exception {
+  void testDeleteFromSessionPathOnly() throws Exception {
 
     // Creating for test "file" in session path and verify existence
     touch(getFile(sessionComponentPath, "file"));
@@ -353,7 +356,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testDeleteFileExistingInSessionAndRealPaths() throws Exception {
+  void testDeleteFileExistingInSessionAndRealPaths() throws Exception {
 
     // Creating for test "file" in session and real paths and verify existence
     touch(getFile(realComponentPath, "file"));
@@ -378,7 +381,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testDeleteFileFromCommonTestStructure() throws Exception {
+  void testDeleteFileFromCommonTestStructure() throws Exception {
     buildCommonPathStructure();
 
     final File session = getFile(sessionComponentPath);
@@ -405,7 +408,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testCleanDirectoryFromCommonTestStructure() throws Exception {
+  void testCleanDirectoryFromCommonTestStructure() throws Exception {
     buildCommonPathStructure();
 
     final File session = getFile(sessionComponentPath);
@@ -437,7 +440,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testWaitForWithSuccessFileCreationInTime() {
+  void testWaitForWithSuccessFileCreationInTime() {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
     given().pollThread(Thread::new).with().pollDelay(400, TimeUnit.MILLISECONDS).await().until(() -> {
@@ -451,7 +454,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testWaitForForWithFailFileCreationInTime() throws InterruptedException {
+  void testWaitForForWithFailFileCreationInTime() throws InterruptedException {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
     final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -474,7 +477,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testMoveFile() throws Exception {
+  void testMoveFile() throws Exception {
     buildCommonPathStructure();
     final File real = getFile(realRootPath, "root_file_1");
     final File session = getFile(sessionHandledPath, "root_file_1");
@@ -504,7 +507,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testReadFileToStringFromFileExistingInSessionAndRealPath() throws Exception {
+  void testReadFileToStringFromFileExistingInSessionAndRealPath() throws Exception {
 
     // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
@@ -523,7 +526,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testReadFileToStringFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
+  void testReadFileToStringFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
       throws Exception {
 
     // Creating file with different content depending of session or real paths
@@ -543,7 +546,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testReadLinesFromFileExistingInSessionAndRealPath() throws Exception {
+  void testReadLinesFromFileExistingInSessionAndRealPath() throws Exception {
 
     // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
@@ -566,7 +569,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void testReadLinesFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
+  void testReadLinesFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
       throws Exception {
 
     // Creating file with different content depending of session or real paths
@@ -594,7 +597,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testWriteStringToFile() throws Exception {
+  void testWriteStringToFile() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -624,10 +627,10 @@ public class TestHandledFile extends AbstractHandledFileTest {
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and a specific file encoding
-    getHandledFile(real).writeStringToFile(new String("newContent".getBytes("UTF16")), "UTF16");
+    getHandledFile(real).writeStringToFile(new String("newContent".getBytes(UTF_16)), "UTF16");
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
-    assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
+    assertThat(fileContent, is(new String("newContent".getBytes(UTF_16))));
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
@@ -636,7 +639,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testWrite() throws Exception {
+  void testWrite() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -666,10 +669,10 @@ public class TestHandledFile extends AbstractHandledFileTest {
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and a specific file encoding
-    getHandledFile(real).write(new String("newContent".getBytes("UTF16")), "UTF16");
+    getHandledFile(real).write(new String("newContent".getBytes(UTF_16)), "UTF16");
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
-    assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
+    assertThat(fileContent, is(new String("newContent".getBytes(UTF_16))));
     assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
@@ -678,7 +681,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testWriteByteArrayToFile() throws Exception {
+  void testWriteByteArrayToFile() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -706,7 +709,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testWriteLines() throws Exception {
+  void testWriteLines() throws Exception {
 
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
@@ -793,7 +796,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testSizeOf() throws Exception {
+  void testSizeOf() throws Exception {
     buildCommonPathStructure();
 
     long size = getHandledFile(realRootPath, "root_file_2").size();
@@ -810,7 +813,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void aHandledFileCreatedRecentlyIsYoungerThanAnotherFile() throws IOException {
+  void aHandledFileCreatedRecentlyIsYoungerThanAnotherFile() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -824,8 +827,8 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void aHandledFileModifiedRecentlyIsYoungerThanAnotherFile()
-      throws IOException, InterruptedException {
+  void aHandledFileModifiedRecentlyIsYoungerThanAnotherFile()
+      throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -842,7 +845,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void AHandledFileModifiedRecentlyCannotBeYoungerThanNow() throws IOException {
+  void AHandledFileModifiedRecentlyCannotBeYoungerThanNow() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
@@ -853,7 +856,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void AHandledFileModifiedRecentlyCannotBeYoungerThanCurrentTimestamp() throws IOException {
+  void AHandledFileModifiedRecentlyCannotBeYoungerThanCurrentTimestamp() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
@@ -864,7 +867,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void AHandledFileRecentlyModifiedIsYounger() {
+  void AHandledFileRecentlyModifiedIsYounger() {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
 
@@ -881,7 +884,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
    * isFileOlder
    */
   @Test
-  public void anyExistingFileIsOlderThanAHandledFileCreatedRecently() throws IOException {
+  void anyExistingFileIsOlderThanAHandledFileCreatedRecently() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -899,7 +902,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void anyExistingHandledFileIsOlderThanAFileModifiedRecently() throws IOException {
+  void anyExistingHandledFileIsOlderThanAFileModifiedRecently() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -913,7 +916,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void AHandledFileModifiedInThePastIsOlderThanNow() throws IOException {
+  void AHandledFileModifiedInThePastIsOlderThanNow() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
@@ -924,7 +927,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void AHandledFileModifiedInThePastIsOlderThanCurrentTimestamp() throws IOException {
+  void AHandledFileModifiedInThePastIsOlderThanCurrentTimestamp() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
@@ -935,7 +938,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void AHandledFileRecentlyModifiedCannotBeOlder() {
+  void AHandledFileRecentlyModifiedCannotBeOlder() {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
 

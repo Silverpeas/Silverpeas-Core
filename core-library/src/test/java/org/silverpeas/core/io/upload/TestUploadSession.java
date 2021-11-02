@@ -43,7 +43,6 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
@@ -52,7 +51,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class TestUploadSession {
+class TestUploadSession {
 
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();
   private static final String UPLOAD_SESSION_CACHE_KEY_PREFIX = "@@@_instance_for_";
@@ -66,7 +65,7 @@ public class TestUploadSession {
 
   @BeforeEach
   @AfterEach
-  public void cleanTest() {
+  void cleanTest() {
 
     // Test
     FileUtils.deleteQuietly(new File(getTemporaryPath()));
@@ -77,7 +76,7 @@ public class TestUploadSession {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     UserDetail user = new UserDetail();
     user.setId("32");
     si = new SessionInfo(null, user);
@@ -85,7 +84,7 @@ public class TestUploadSession {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void verifySessionCache() throws Exception {
+  void verifySessionCache() {
     assertThat(getSessionCacheService().getCache().get(SESSION_CACHE_KEY), nullValue());
 
     UploadSession uploadSession1 = UploadSession.from("   ");
@@ -128,7 +127,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void fromBehaviorAccordingToSessionCache() {
+  void fromBehaviorAccordingToSessionCache() {
     UploadSession uploadSession = UploadSession.from("anId");
     UploadSession sameUploadSession = UploadSession.from("anId");
     UploadSession otherUploadSession = UploadSession.from("anOtherId");
@@ -137,7 +136,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void registerWithNewUploadSession() throws Exception {
+  void registerWithNewUploadSession() {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile();
     UploadSessionFile otherUploadSessionFile =
         uploadSessionFile.getUploadSession().getUploadSessionFile("newPath/newFile");
@@ -146,7 +145,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void registerWithExistingUploadSession() throws Exception {
+  void registerWithExistingUploadSession() {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile("existingId");
     UploadSessionFile otherUploadSessionFile =
         uploadSessionFile.getUploadSession().getUploadSessionFile("   /newFile");
@@ -155,7 +154,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void write() throws Exception {
+  void write() throws Exception {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile();
     assertThat(uploadSessionFile.getServerFile().exists(), is(false));
     final StringBuilder sb = new StringBuilder();
@@ -174,7 +173,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void registerSameFileButWritingIsInProgress() throws Exception {
+  void registerSameFileButWritingIsInProgress() throws Exception {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile();
     UploadSessionFile sameUploadSessionFile =
         uploadSessionFile.getUploadSession().getUploadSessionFile("path/test/name");
@@ -197,7 +196,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void registerSameFileAndNoWritingIsInProgress() throws Exception {
+  void registerSameFileAndNoWritingIsInProgress() throws Exception {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile();
     UploadSessionFile sameUploadSessionFile =
         uploadSessionFile.getUploadSession().getUploadSessionFile("path/test/name");
@@ -217,7 +216,7 @@ public class TestUploadSession {
   }
 
   @Test
-  public void remove() throws Exception {
+  void remove() throws Exception {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile();
     assertThat(uploadSessionFile.getServerFile().exists(), is(false));
     boolean removed = uploadSessionFile.getUploadSession().remove("path/test/name");
@@ -244,46 +243,41 @@ public class TestUploadSession {
   }
 
   @Test
-  public void isUserAuthorizedWithoutComponentIdAndUserAccess() throws Exception {
+  void isUserAuthorizedWithoutComponentIdAndUserAccess() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     assertThat(uploadSession.isUserAuthorized("instanceId"), is(false));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void isUserAuthorizedWithoutUserAccessButWithComponentId() throws Exception {
+  void isUserAuthorizedWithoutUserAccessButWithComponentId() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     assertThat(uploadSession.isUserAuthorized("instanceId"), is(false));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void isUserAuthorizedWithUserAccessAndComponentId() throws Exception {
+  void isUserAuthorizedWithUserAccessAndComponentId() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(accessControllerMock.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     assertThat(uploadSession.isUserAuthorized("instanceId"), is(true));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void isUserAuthorizedWithUserAccessButWithoutComponentId() throws Exception {
+  void isUserAuthorizedWithUserAccessButWithoutComponentId() {
     UploadSession uploadSession =
         initializeUploadSessionAndRegisterFile().getUploadSession().forComponentInstanceId("");
     when(accessControllerMock.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     assertThat(uploadSession.isUserAuthorized("instanceId"), is(false));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void isUserAuthorizedWithUserAccessButWrongComponentId() throws Exception {
+  void isUserAuthorizedWithUserAccessButWrongComponentId() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(accessControllerMock.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     assertThat(uploadSession.isUserAuthorized("wrongInstanceId"), is(false));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void getComponentInstanceParameterValue() throws Exception {
+  void getComponentInstanceParameterValue() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(organisationControllerMock.getComponentParameterValue(anyString(), anyString()))
         .thenReturn("toto");
@@ -292,9 +286,8 @@ public class TestUploadSession {
         .getComponentParameterValue(anyString(), anyString());
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void getComponentInstanceParameterValueButNoComponentId() throws Exception {
+  void getComponentInstanceParameterValueButNoComponentId() {
     UploadSession uploadSession =
         initializeUploadSessionAndRegisterFile().getUploadSession().forComponentInstanceId("");
     when(organisationControllerMock.getComponentParameterValue(anyString(), anyString()))
@@ -304,9 +297,8 @@ public class TestUploadSession {
         .getComponentParameterValue(anyString(), anyString());
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void getComponentInstanceParameterValueWithTwoDifferentParameters() throws Exception {
+  void getComponentInstanceParameterValueWithTwoDifferentParameters() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(organisationControllerMock.getComponentParameterValue(anyString(), anyString()))
         .then(invocation -> "aParameter".equals(invocation.getArguments()[1]) ? "toto" : "titi");
@@ -316,10 +308,8 @@ public class TestUploadSession {
         .getComponentParameterValue(anyString(), anyString());
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void getComponentInstanceParameterValueWithTwoDifferentParametersCalledSeveralTimes()
-      throws Exception {
+  void getComponentInstanceParameterValueWithTwoDifferentParametersCalledSeveralTimes() {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(organisationControllerMock.getComponentParameterValue(anyString(), anyString()))
         .then(invocation -> "aParameter".equals(invocation.getArguments()[1]) ? "toto" : "titi");
@@ -343,18 +333,15 @@ public class TestUploadSession {
 
   /**
    * Creates an upload session and register a file.
-   * @throws Exception
    */
-  private UploadSessionFile initializeUploadSessionAndRegisterFile() throws Exception {
+  private UploadSessionFile initializeUploadSessionAndRegisterFile() {
     return initializeUploadSessionAndRegisterFile(null);
   }
 
   /**
    * Creates an upload session from the given identifier and register a file.
-   * @throws Exception
    */
-  private UploadSessionFile initializeUploadSessionAndRegisterFile(String uploadSessionId)
-      throws Exception {
+  private UploadSessionFile initializeUploadSessionAndRegisterFile(String uploadSessionId) {
     UploadSession uploadSession =
         UploadSession.from(uploadSessionId).forComponentInstanceId("instanceId");
     assertThat(new File(getTemporaryPath()).listFiles(), nullValue());

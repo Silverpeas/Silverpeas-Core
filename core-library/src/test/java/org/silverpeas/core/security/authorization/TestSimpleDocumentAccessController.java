@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -43,7 +42,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
@@ -61,39 +61,35 @@ import static org.mockito.Mockito.*;
  * @author ehugonnet
  */
 @UnitTest
-public class TestSimpleDocumentAccessController {
+@EnableSilverTestEnv
+class TestSimpleDocumentAccessController {
 
   private static final String USER_ID = "bart";
   private static final String GED_INSTANCE_ID = "kmelia26";
 
+  @TestManagedMock
   private PublicationService publicationService;
+  @TestManagedMock
   private OrganizationController organizationController;
+  @TestManagedMock
   private ComponentAccessControl componentAccessController;
+  @TestManagedMock
   private NodeAccessControl nodeAccessController;
   private SimpleDocumentAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
-
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
-    organizationController = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
-    publicationService = mock(PublicationService.class);
-    commonAPIRule.injectIntoMockedBeanContainer(publicationService);
-    nodeAccessController = mock(NodeAccessControl.class);
-    componentAccessController = mock(ComponentAccessControl.class);
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     testContext = new TestContext();
     testContext.clear();
   }
 
   @Test
-  public void testIsUserAuthorizedOnSomethingOtherThanGED() {
+  void testIsUserAuthorizedOnSomethingOtherThanGED() {
     // User has no right on component
     testContext.clear();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles();
@@ -216,7 +212,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDButForeignIdIsNotPublicationOrDirectory() {
+  void testIsUserAuthorizedOnGEDButForeignIdIsNotPublicationOrDirectory() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent();
@@ -383,7 +379,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndForeignIdIsDirectory() {
+  void testIsUserAuthorizedOnGEDAndForeignIdIsDirectory() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToDirectory();
@@ -545,7 +541,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndNoRightOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndNoRightOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToPublication();
@@ -755,7 +751,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndUserIsThePublicationAuthorAndNoRightOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndUserIsThePublicationAuthorAndNoRightOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToPublication().userIsThePublicationAuthor();
@@ -952,7 +948,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationOnRootDirectoryAndUserIsThePublicationAuthorAndRightsOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationOnRootDirectoryAndUserIsThePublicationAuthorAndRightsOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent()
@@ -1247,7 +1243,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndUserHasRightsOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndUserHasRightsOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToPublication().withRightsActivatedOnDirectory();
@@ -1555,7 +1551,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndUserIsThePublicationAuthorAndUserHasRightsOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndForeignIdIsPublicationAndUserIsThePublicationAuthorAndUserHasRightsOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent()

@@ -24,9 +24,8 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -47,7 +46,8 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Pair;
 
@@ -76,7 +76,8 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author silveryocha
  */
 @UnitTest
-public class TestPublicationAccessControllerFilter {
+@EnableSilverTestEnv
+class TestPublicationAccessControllerFilter {
 
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC
@@ -131,36 +132,28 @@ public class TestPublicationAccessControllerFilter {
       PUB_3_NODE_83_260,
       PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE);
 
+  @TestManagedMock
   private PublicationService publicationService;
+  @TestManagedMock
   private NodeService nodeService;
+  @TestManagedMock
   private OrganizationController organizationController;
   private PublicationAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
-
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     user = mock(User.class);
     when(user.getDisplayedName()).thenReturn(USER_ID);
-    final UserProvider userProvider = mock(UserProvider.class);
-    when(userProvider.getUser(anyString())).thenReturn(user);
-    commonAPIRule.injectIntoMockedBeanContainer(userProvider);
-    publicationService = mock(PublicationService.class);
-    commonAPIRule.injectIntoMockedBeanContainer(publicationService);
-    nodeService = mock(NodeService.class);
-    commonAPIRule.injectIntoMockedBeanContainer(nodeService);
-    organizationController = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
+    when(UserProvider.get().getUser(anyString())).thenReturn(user);
     testContext = new TestContext();
     PUB_1_NODE_38_26_SAME_GED_ALIAS.clearAliases().addAliasLocation(NODE_38_62);
     PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE.clearAliases().addAliasLocation(NODE_ALIAS_OTHER_SPE);
   }
 
   @Test
-  public void isUserAuthorizedWithPubPkShouldNotUseCaches() {
+  void isUserAuthorizedWithPubPkShouldNotUseCaches() {
     testContext.setup();
     testInstance.isUserAuthorized(USER_ID, ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.iterator().next().getPK(),
         testContext.accessControlContext);
@@ -182,7 +175,7 @@ public class TestPublicationAccessControllerFilter {
   }
 
   @Test
-  public void isUserAuthorizedWithPublicationShouldUseOnlyPublicationCache() {
+  void isUserAuthorizedWithPublicationShouldUseOnlyPublicationCache() {
     testContext.setup();
     final PublicationDetail4Test publication = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.iterator().next();
     testInstance.isUserAuthorized(USER_ID, publication, testContext.accessControlContext);
@@ -202,7 +195,7 @@ public class TestPublicationAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserShouldLoadCaches() {
+  void filterAuthorizedByUserShouldLoadCaches() {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE);
     assertFilterAuthorizedByUserShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE));
@@ -211,7 +204,6 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserShouldLoadCaches(true);
   }
 
-  @SuppressWarnings("unchecked")
   private void assertFilterAuthorizedByUserShouldLoadCaches(final boolean fromPks) {
     final PublicationPK[] pksOfTest = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE
         .stream()
@@ -231,7 +223,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
     assertThat(publicationDataManager.publicationCache.size(), is(publicationForTestPlusOneClone));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "27"));
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "26"));
     // Publication level
     if (fromPks) {
       // One to load the publications, and an other one to load the master of clones
@@ -252,7 +244,7 @@ public class TestPublicationAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
+  void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE);
     assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE));
@@ -279,7 +271,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE.size() + 1;
     assertThat(publicationDataManager.publicationCache.size(), is(publicationForTestPlusOneClone));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "27"));
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "26"));
     // Publication level
     if (fromPks) {
       // One to load the publications, and an other one to load the master of clones
@@ -296,7 +288,7 @@ public class TestPublicationAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
+  void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS);
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS));
@@ -305,7 +297,6 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches(true);
   }
 
-  @SuppressWarnings("unchecked")
   private void assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches(final boolean fromPks) {
     final PublicationPK[] pksOfTest = ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS
         .stream()
@@ -346,7 +337,7 @@ public class TestPublicationAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
+  void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), SEARCH);
@@ -356,7 +347,6 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
 
-  @SuppressWarnings("unchecked")
   private void assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches() {
     final PublicationPK[] pksOfTest = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE
         .stream()
@@ -390,7 +380,7 @@ public class TestPublicationAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
+  void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE),
@@ -401,7 +391,6 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(true);
   }
 
-  @SuppressWarnings("unchecked")
   private void assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(final boolean fromPks) {
     final PublicationPK[] pksOfTest = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE
         .stream()
@@ -421,7 +410,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
     assertThat(publicationDataManager.publicationCache.size(), is(publicationForTestPlusOneClone));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "27"));
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "26"));
     // Publication level
     if (fromPks) {
       // One to load the publications, and an other one to load the master of clones
@@ -462,7 +451,7 @@ public class TestPublicationAccessControllerFilter {
       final AccessControlOperation... operations) {
     testContext.setup();
     Stream.of(operations).forEach(o -> testContext.accessControlContext.onOperationsOf(o));
-    testInstance.filterAuthorizedByUser(USER_ID, (List) listToFilter, testContext.accessControlContext);
+    testInstance.filterAuthorizedByUser(USER_ID, (Collection<PublicationDetail>) listToFilter, testContext.accessControlContext);
   }
 
   /**

@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -56,6 +57,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.*;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.apache.commons.collections.MapUtils.isNotEmpty;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.*;
 
@@ -353,12 +357,19 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
       lotOfDataMode = true;
       loadPublicationCacheByPks(pks);
-      final Set<String> instanceIds = givenPublicationPks.stream()
+      final Collection<PublicationPK> pubRefs = isNotEmpty(publicationCache) ?
+          publicationCache.entrySet().stream()
+              .map(Map.Entry::getValue)
+              .filter(not(DataManager::isItAClone))
+              .map(PublicationDetail::getPK)
+              .collect(Collectors.toList()) :
+          this.givenPublicationPks;
+      final Set<String> instanceIds = pubRefs.stream()
           .map(PublicationPK::getInstanceId)
           .collect(Collectors.toSet());
       final NodeAccessController.DataManager nodeDataManager = NodeAccessController.getDataManager(context);
       nodeDataManager.loadCaches(userId, instanceIds);
-      final Set<String> pubIdsForLocations = givenPublicationPks.stream()
+      final Set<String> pubIdsForLocations = pubRefs.stream()
           .map(PublicationPK::getId)
           .collect(Collectors.toSet());
       locationsByPublicationCache = publicationService.getAllLocationsByPublicationIds(pubIdsForLocations);
@@ -451,13 +462,28 @@ public class PublicationAccessController extends AbstractAccessController<Public
           .collect(Collectors.toList());
     }
 
+    /**
+     * Return the location of given publication reference. In case of a publication clone we need
+     * the location of the cloned one (meaning the original one).
+     * <p>
+     * Caching is handled.
+     * </p>
+     * @param pk the primary key of a publication.
+     * @return a {@link Supplier} of {@link List} of {@link Location} instances.
+     */
     private Supplier<List<Location>> getAllLocations(final PublicationPK pk) {
       if (allLocations == null) {
         allLocations = new MemoizedSupplier<>(() -> {
+          final PublicationPK masterPk = ofNullable(getCurrentPublication())
+              .filter(not(DataManager::isItAClone)
+                  .and(PublicationDetail::haveGotClone)
+                  .and(p -> Objects.equals(p.getClonePK(), pk)))
+              .map(PublicationDetail::getPK)
+              .orElse(pk);
           if (locationsByPublicationCache != null) {
-            return locationsByPublicationCache.getOrDefault(pk.getId(), emptyList());
+            return locationsByPublicationCache.getOrDefault(masterPk.getId(), emptyList());
           }
-          return publicationService.getAllLocations(pk);
+          return publicationService.getAllLocations(masterPk);
         });
       }
       return allLocations;
@@ -472,7 +498,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
     }
 
     /**
-     * Return the publication. In case of a clone publication we need the cloned one (that is the
+     * Return the publication. In case of a publication clone we need the cloned one (that is the
      * original publication).
      * <p>
      * Caching is handled.

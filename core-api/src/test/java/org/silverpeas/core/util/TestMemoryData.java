@@ -24,9 +24,10 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
@@ -41,24 +42,25 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 14/11/13
  */
-public class TestMemoryData extends AbstractUnitTest {
+@EnableSilverTestEnv
+class TestMemoryData extends AbstractUnitTest {
 
-  @Before
-  public void setUpMessageManager() {
+  @BeforeEach
+  void setUpMessageManager() {
     MessageManager.initialize();
     MessageManager.setLanguage("fr");
   }
 
   @Test
-  public void getSize() {
+  void getSize() {
     MemoryData memoryData = createDefaultMemoryData();
     assertThat(memoryData.getSize(), is(getDefaultMemorySize()));
   }
 
   @Test
-  public void getRoundedSizeConverted() {
+  void getRoundedSizeConverted() {
     MemoryData memoryData = createDefaultMemoryData();
-    Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
+    Map<MemoryUnit, String> expected = new LinkedHashMap<>();
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString());
     expected.put(MemoryUnit.KB, "2073775844301");
     expected.put(MemoryUnit.MB, "2025171722.95");
@@ -71,9 +73,9 @@ public class TestMemoryData extends AbstractUnitTest {
   }
 
   @Test
-  public void getSizeConverted() {
+  void getSizeConverted() {
     MemoryData memoryData = createDefaultMemoryData();
-    Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
+    Map<MemoryUnit, String> expected = new LinkedHashMap<>();
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString());
     expected.put(MemoryUnit.KB, "2073775844301.7451171875");
     expected.put(MemoryUnit.MB, "2025171722.9509229660034");
@@ -87,8 +89,8 @@ public class TestMemoryData extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestUnit() {
-    Map<Long, MemoryUnit> expected = new LinkedHashMap<Long, MemoryUnit>();
+  void getBestUnit() {
+    Map<Long, MemoryUnit> expected = new LinkedHashMap<>();
     expected.put(1L, MemoryUnit.B);
     expected.put(1023L, MemoryUnit.B);
     expected.put(1024L, MemoryUnit.KB);
@@ -108,8 +110,8 @@ public class TestMemoryData extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestValue() {
-    Map<Long, String> expected = new LinkedHashMap<Long, String>();
+  void getBestValue() {
+    Map<Long, String> expected = new LinkedHashMap<>();
     expected.put(1L, "1");
     expected.put(1023L, "1023");
     expected.put(1024L, "1");
@@ -129,8 +131,8 @@ public class TestMemoryData extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestDisplayValueOnly() {
-    Map<Long, String> expected = new LinkedHashMap<Long, String>();
+  void getBestDisplayValueOnly() {
+    Map<Long, String> expected = new LinkedHashMap<>();
     expected.put(1L, "1");
     expected.put(1023L, "1023");
     expected.put(1024L, "1");
@@ -149,8 +151,8 @@ public class TestMemoryData extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestDisplayValue() {
-    Map<Long, String> expected = new LinkedHashMap<Long, String>();
+  void getBestDisplayValue() {
+    Map<Long, String> expected = new LinkedHashMap<>();
     expected.put(1L, "1 Octets");
     expected.put(1023L, "1023 Octets");
     expected.put(1024L, "1 Ko");
@@ -170,9 +172,9 @@ public class TestMemoryData extends AbstractUnitTest {
 
 
   @Test
-  public void getFormattedValueOnly() {
+  void getFormattedValueOnly() {
     MemoryData memoryData = createDefaultMemoryData();
-    Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
+    Map<MemoryUnit, String> expected = new LinkedHashMap<>();
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString());
     expected.put(MemoryUnit.KB, "2073775844301");
     expected.put(MemoryUnit.MB, "2025171722.95");
@@ -184,10 +186,10 @@ public class TestMemoryData extends AbstractUnitTest {
   }
 
   @Test
-  public void getFormattedValue() {
+  void getFormattedValue() {
     MemoryData memoryData = createDefaultMemoryData();
-    Map<MemoryUnit, String> expected = new LinkedHashMap<MemoryUnit, String>();
-    expected.put(MemoryUnit.B, getDefaultMemorySize().toString() + " Octets");
+    Map<MemoryUnit, String> expected = new LinkedHashMap<>();
+    expected.put(MemoryUnit.B, getDefaultMemorySize() + " Octets");
     expected.put(MemoryUnit.KB, "2073775844301 Ko");
     expected.put(MemoryUnit.MB, "2025171722.95 Mo");
     expected.put(MemoryUnit.GB, "1977706.76 Go");

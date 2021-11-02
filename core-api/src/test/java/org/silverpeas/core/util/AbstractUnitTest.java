@@ -23,20 +23,19 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.silverpeas.core.test.rule.CommonAPIRule;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.test.extension.FieldMocker;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,11 +44,8 @@ import static org.mockito.Mockito.when;
  */
 public abstract class AbstractUnitTest {
 
-  @Rule
-  public CommonAPIRule commonAPIRule = new CommonAPIRule();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
   private Locale currentLocale;
   private Map<String, SilverpeasBundle> bundleCache;
@@ -86,8 +82,7 @@ public abstract class AbstractUnitTest {
   public void setup() throws Exception {
     currentLocale = Locale.getDefault();
     Locale.setDefault(Locale.FRANCE);
-    reflectionRule
-        .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+    mocker.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
     bundleCache = (Map) FieldUtils.readStaticField(ResourceLocator.class, "bundles", true);
     LocalizationBundle unitsBundle = mock(LocalizationBundle.class);
     when(unitsBundle.handleGetObject(anyString())).thenAnswer(invocation -> {

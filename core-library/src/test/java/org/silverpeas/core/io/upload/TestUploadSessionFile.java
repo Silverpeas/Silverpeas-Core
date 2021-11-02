@@ -41,17 +41,17 @@ import static org.hamcrest.Matchers.is;
  */
 @EnableSilverTestEnv
 @TestManagedMocks(OrganizationController.class)
-public class TestUploadSessionFile {
+class TestUploadSessionFile {
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     UserDetail user = new UserDetail();
     user.setId("32");
     new SessionInfo(null, user);
   }
 
   @Test
-  public void createInstance() {
+  void createInstance() {
     UploadSession uploadSession = UploadSession.from("toto");
     File serverFile = new File("");
     UploadSessionFile uploadSessionFile =

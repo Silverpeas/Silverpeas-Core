@@ -24,8 +24,9 @@
 package org.silverpeas.core.util.time;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.AbstractUnitTest;
 
 import java.math.BigDecimal;
@@ -39,22 +40,23 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 14/11/13
  */
-public class TestDuration extends AbstractUnitTest {
+@EnableSilverTestEnv
+class TestDuration extends AbstractUnitTest {
 
   @Test
-  public void getTime() {
+  void getTime() {
     Duration duration = createDefaultTimeData();
     assertThat(duration.getTime(), is(getDefaultTime()));
   }
 
   @Test
-  public void getTimeAsLong() {
+  void getTimeAsLong() {
     Duration duration = createDefaultTimeData();
     assertThat(duration.getTimeAsLong(), is(getDefaultTime().longValue()));
   }
 
   @Test
-  public void getFormattedDurationHMSM() {
+  void getFormattedDurationHMSM() {
     Duration duration = createDefaultTimeData();
     assertThat(duration.getFormattedDurationAsHMSM(), is("589874017:56:04.987"));
     duration = new Duration(0);
@@ -68,7 +70,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getFormattedDurationHMS() {
+  void getFormattedDurationHMS() {
     Duration duration = createDefaultTimeData();
     assertThat(duration.getFormattedDurationAsHMS(), is("589874017:56:05"));
     duration = new Duration(0);
@@ -82,7 +84,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getFormattedDuration() {
+  void getFormattedDuration() {
     String format = "H:mm:ss.S|";
     Duration duration = createDefaultTimeData();
     assertThat(duration.getFormattedDuration(format), is("589874017:56:04.987|"));
@@ -97,7 +99,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getRoundedTimeConverted() {
+  void getRoundedTimeConverted() {
     Duration duration = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<>();
     expected.put(TimeUnit.MILLISECOND, getDefaultTime().toString() + ".000");
@@ -115,7 +117,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getTimeConverted() {
+  void getTimeConverted() {
     Duration duration = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<>();
     expected.put(TimeUnit.MILLISECOND, getDefaultTime().toString());
@@ -134,7 +136,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestUnit() {
+  void getBestUnit() {
     Map<Long, TimeUnit> expected = new LinkedHashMap<>();
     expected.put(1L, TimeUnit.MILLISECOND);
     expected.put(999L, TimeUnit.MILLISECOND);
@@ -159,7 +161,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestValue() {
+  void getBestValue() {
     Map<Long, String> expected = new LinkedHashMap<>();
     expected.put(1L, "1.000");
     expected.put(999L, "999.000");
@@ -185,7 +187,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestDisplayValueOnly() {
+  void getBestDisplayValueOnly() {
     Map<Long, String> expected = new LinkedHashMap<>();
     expected.put(1L, "1");
     expected.put(999L, "999");
@@ -210,7 +212,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getBestDisplayValue() {
+  void getBestDisplayValue() {
     Map<Long, String> expected = new LinkedHashMap<>();
     expected.put(1L, "1 ms");
     expected.put(999L, "999 ms");
@@ -236,7 +238,7 @@ public class TestDuration extends AbstractUnitTest {
 
 
   @Test
-  public void getFormattedValueOnly() {
+  void getFormattedValueOnly() {
     Duration duration = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<>();
     expected.put(TimeUnit.MILLISECOND, getDefaultTime().toString());
@@ -252,7 +254,7 @@ public class TestDuration extends AbstractUnitTest {
   }
 
   @Test
-  public void getFormattedValue() {
+  void getFormattedValue() {
     Duration duration = createDefaultTimeData();
     Map<TimeUnit, String> expected = new LinkedHashMap<>();
     expected.put(TimeUnit.MILLISECOND, getDefaultTime().toString() + " ms");

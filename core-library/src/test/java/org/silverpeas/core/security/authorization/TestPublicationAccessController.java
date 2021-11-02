@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
@@ -43,8 +43,9 @@ import org.silverpeas.core.contribution.publication.model.Visibility;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
@@ -64,41 +65,37 @@ import static org.silverpeas.core.util.CollectionUtil.asList;
  * @author Yohann Chastagnier
  */
 @UnitTest
-public class TestPublicationAccessController {
+@EnableSilverTestEnv
+class TestPublicationAccessController {
 
   private static final String USER_ID = "bart";
   private static final String GED_INSTANCE_ID = "kmelia26";
 
+  @TestManagedMock
   private PublicationService publicationService;
+  @TestManagedMock
   private OrganizationController organizationController;
+  @TestManagedMock
   private ComponentAccessControl componentAccessController;
+  @TestManagedMock
   private NodeAccessControl nodeAccessController;
   private PublicationAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
-    publicationService = mock(PublicationService.class);
-    commonAPIRule.injectIntoMockedBeanContainer(publicationService);
-    organizationController = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
-    componentAccessController = mock(ComponentAccessControl.class);
-    nodeAccessController = mock(NodeAccessControl.class);
     testContext = new TestContext();
     testContext.clear();
   }
 
   @Test
-  public void testIsUserAuthorizedOnSomethingOtherThanGED() {
+  void testIsUserAuthorizedOnSomethingOtherThanGED() {
     // User has no right on component
     testContext.clear();
     testContext.results()
@@ -578,7 +575,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDButPublicationIdIsNull() {
+  void testIsUserAuthorizedOnGEDButPublicationIdIsNull() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().publicationIdIsNull();
@@ -749,7 +746,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDButPublicationIdHasWrongFormat() {
+  void testIsUserAuthorizedOnGEDButPublicationIdHasWrongFormat() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().publicationIdHasWrongFormat();
@@ -928,7 +925,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDButPublicationIsNotExisting() {
+  void testIsUserAuthorizedOnGEDButPublicationIsNotExisting() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().publicationIsNotExisting();
@@ -1072,7 +1069,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndNoRightOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndNoRightOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent();
@@ -1504,7 +1501,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndUserIsThePublicationAuthorAndNoRightOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndUserIsThePublicationAuthorAndNoRightOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().userIsThePublicationAuthor();
@@ -1909,7 +1906,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void
+  void
   testIsUserAuthorizedOnGEDAndPublicationOnRootDirectoryAndUserIsThePublicationAuthorAndRightsOnDirectories() {
     // User has no right on component
     testContext.clear();
@@ -2256,7 +2253,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndUserHasRightsOnDirectories() {
+  void testIsUserAuthorizedOnGEDAndUserHasRightsOnDirectories() {
     // User has no right on component
     testContext.clear();
     testContext.onGEDComponent().withRightsActivatedOnDirectory();
@@ -2978,7 +2975,7 @@ public class TestPublicationAccessController {
   }
 
   @Test
-  public void testIsUserAuthorizedOnGEDAndUserIsThePublicationAuthorAndUserHasRightsOnDirectories
+  void testIsUserAuthorizedOnGEDAndUserIsThePublicationAuthorAndUserHasRightsOnDirectories
       () {
     // User has no right on component
     testContext.clear();
@@ -3829,7 +3826,7 @@ public class TestPublicationAccessController {
       if (!testContext.isPubVisible) {
         final Visibility visibility = mock(Visibility.class);
         when(visibility.isVisible()).thenReturn(false);
-        reflectionRule.setField(publi, visibility, "visibility");
+        mocker.setField(publi, visibility, "visibility");
       }
       return publi;
     }

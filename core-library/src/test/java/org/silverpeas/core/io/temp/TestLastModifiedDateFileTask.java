@@ -51,16 +51,16 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class TestLastModifiedDateFileTask {
+class TestLastModifiedDateFileTask {
   private Path tempPath;
 
   @AfterEach
-  public void cleanTest() {
+  void cleanTest() {
     FileUtils.deleteQuietly(tempPath.toFile());
   }
 
   @BeforeEach
-  public void setup() throws IOException {
+  void setup() throws IOException {
     tempPath = Paths.get(getTemporaryPath());
     cleanTest();
     Files.createDirectories(tempPath);
@@ -68,7 +68,7 @@ public class TestLastModifiedDateFileTask {
   }
 
   @Test
-  public void verifyLastModifiedDate() throws Exception {
+  void verifyLastModifiedDate() throws Exception {
     List<File> files = createFilesForTest();
     long currentTime = System.currentTimeMillis();
 
@@ -95,7 +95,7 @@ public class TestLastModifiedDateFileTask {
       l++;
     }
     assertThat("This assertion shows that the thread stops after all the files are performed", l,
-        greaterThan(0l));
+        greaterThan(0L));
 
     Logger.getAnonymousLogger()
         .info(MessageFormat.format("Calling LastModifiedDateFileThread.isRunning() {0} times",

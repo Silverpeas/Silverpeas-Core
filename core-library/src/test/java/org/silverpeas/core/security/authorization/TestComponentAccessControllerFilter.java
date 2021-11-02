@@ -24,9 +24,8 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -38,7 +37,8 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.Arrays;
@@ -63,7 +63,8 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author silveryocha
  */
 @UnitTest
-public class TestComponentAccessControllerFilter {
+@EnableSilverTestEnv
+class TestComponentAccessControllerFilter {
 
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC
@@ -80,25 +81,21 @@ public class TestComponentAccessControllerFilter {
   private static final List<String> COMPONENTS_WITH_SPECIFIC_RIGHTS = Collections
       .singletonList(KMELIA_83);
 
+  @TestManagedMock
   private OrganizationController organizationController;
   private ComponentAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
-
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
-    organizationController = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     testContext = new TestContext();
   }
 
   @Test
-  public void filterAuthorizedByUserShouldLoadCaches() {
+  void filterAuthorizedByUserShouldLoadCaches() {
     executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS);
     assertFilterAuthorizedByUserShouldLoadCaches();
   }
@@ -112,7 +109,7 @@ public class TestComponentAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
+  void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
     executeFilterAuthorizedByUserWithComponentIds(COMPONENTS_WITH_INHERITED_RIGHTS);
     assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches();
   }
@@ -126,7 +123,7 @@ public class TestComponentAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
+  void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
     executeFilterAuthorizedByUserWithComponentIds(COMPONENTS_WITH_SPECIFIC_RIGHTS);
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches();
   }
@@ -140,7 +137,7 @@ public class TestComponentAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
+  void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
     executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS, SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
@@ -150,7 +147,7 @@ public class TestComponentAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
+  void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
     executeFilterAuthorizedByUserWithComponentIds(ALL_COMPONENTS, MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches();
   }

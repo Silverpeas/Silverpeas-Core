@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
@@ -34,16 +35,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.silverpeas.core.util.UnitUtil.*;
 
-public class TestUnitUtil extends AbstractUnitTest {
+@EnableSilverTestEnv
+class TestUnitUtil extends AbstractUnitTest {
 
-  @Before
-  public void setUpMessageManager() {
+  @BeforeEach
+  void setUpMessageManager() {
     MessageManager.initialize();
     MessageManager.setLanguage("fr");
   }
 
   @Test
-  public void testConvertToFromBigDecimal() {
+  void testConvertToFromBigDecimal() {
 
     assertThat(convertTo(new BigDecimal("1"), MemoryUnit.B, MemoryUnit.B), is(
         new BigDecimal("1")));
@@ -75,7 +77,7 @@ public class TestUnitUtil extends AbstractUnitTest {
   }
 
   @Test
-  public void testConvertToFromLong() {
+  void testConvertToFromLong() {
     assertThat(convertTo(1L, MemoryUnit.KB, MemoryUnit.B), is(1024L));
     assertThat(convertTo(1L, MemoryUnit.B, MemoryUnit.KB), is(0L));
     assertThat(convertTo(512L, MemoryUnit.B, MemoryUnit.KB), is(0L));
@@ -85,7 +87,7 @@ public class TestUnitUtil extends AbstractUnitTest {
   }
 
   @Test
-  public void testFormatValueFromBigDecimal() {
+  void testFormatValueFromBigDecimal() {
     assertFormatValue(formatValue(new BigDecimal("1"), MemoryUnit.B, MemoryUnit.B),
         "1 Octets");
     assertFormatValue(formatValue(new BigDecimal("1"), MemoryUnit.KB, MemoryUnit.B),
@@ -109,7 +111,7 @@ public class TestUnitUtil extends AbstractUnitTest {
   }
 
   @Test
-  public void testFormatValueFromLong() {
+  void testFormatValueFromLong() {
     assertFormatValue(formatValue(1L, MemoryUnit.KB, MemoryUnit.B), "1024 Octets");
     assertFormatValue(formatValue(1L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
     assertFormatValue(formatValue(512L, MemoryUnit.B, MemoryUnit.KB), "0 Ko");
@@ -119,21 +121,21 @@ public class TestUnitUtil extends AbstractUnitTest {
   }
 
   @Test
-  public void testFormatValueFromBigDecimalAroundLimits() {
+  void testFormatValueFromBigDecimalAroundLimits() {
     assertFormatValue(formatValue(new BigDecimal("1024"), MemoryUnit.KB), "1 Ko");
     assertFormatValue(formatValue(new BigDecimal("1048576"), MemoryUnit.MB), "1 Mo");
     assertFormatValue(formatValue(new BigDecimal("1073741824"), MemoryUnit.GB), "1 Go");
   }
 
   @Test
-  public void testFormatValueFromLongAroundLimits() {
+  void testFormatValueFromLongAroundLimits() {
     assertFormatValue(formatValue(513L, MemoryUnit.KB), "0 Ko");
     assertFormatValue(formatValue(1023L, MemoryUnit.KB), "0 Ko");
     assertFormatValue(formatValue(1024L, MemoryUnit.KB), "1 Ko");
   }
 
   @Test
-  public void testFormatMemSize() {
+  void testFormatMemSize() {
     assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.B), "1 Octets");
     assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.KB), "1 Ko");
     assertFormatValue(formatMemSize(new BigDecimal("2"), MemoryUnit.KB), "2 Ko");

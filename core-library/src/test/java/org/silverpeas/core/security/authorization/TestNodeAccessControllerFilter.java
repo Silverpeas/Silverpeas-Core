@@ -24,9 +24,8 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -44,7 +43,8 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Pair;
 
@@ -70,7 +70,8 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author silveryocha
  */
 @UnitTest
-public class TestNodeAccessControllerFilter {
+@EnableSilverTestEnv
+class TestNodeAccessControllerFilter {
 
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC
@@ -93,33 +94,27 @@ public class TestNodeAccessControllerFilter {
   private static final List<TestNodeDetail> NODES_WITH_SPECIFIC_RIGHTS = Arrays
       .asList(NODE_83_260, NODE_83_620);
 
+  @TestManagedMock
   private NodeService nodeService;
+  @TestManagedMock
   private OrganizationController organizationController;
   private NodeAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
-  @Rule
-  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
-
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
-    nodeService = mock(NodeService.class);
-    commonAPIRule.injectIntoMockedBeanContainer(nodeService);
-    organizationController = mock(OrganizationController.class);
-    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     testContext = new TestContext();
   }
 
   @Test
-  public void filterAuthorizedByUserShouldLoadCaches() {
+  void filterAuthorizedByUserShouldLoadCaches() {
     executeFilterAuthorizedByUserWithNodePks(toNodePks(ALL_NODES));
     assertFilterAuthorizedByUserShouldLoadCaches();
   }
 
-  @SuppressWarnings("unchecked")
   private void assertFilterAuthorizedByUserShouldLoadCaches() {
     final TestVerifyResults results = testContext.results();
     final ComponentAccessController.DataManager componentDataManager = results.getComponentDataManager();
@@ -141,7 +136,7 @@ public class TestNodeAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
+  void filterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches() {
     executeFilterAuthorizedByUserWithNodePks(toNodePks(NODES_WITH_INHERITED_RIGHTS));
     assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches();
   }
@@ -162,12 +157,11 @@ public class TestNodeAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
+  void filterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
     executeFilterAuthorizedByUserWithNodePks(toNodePks(NODES_WITH_SPECIFIC_RIGHTS));
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches();
   }
 
-  @SuppressWarnings("unchecked")
   private void assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches() {
     final TestVerifyResults results = testContext.results();
     final ComponentAccessController.DataManager componentDataManager = results.getComponentDataManager();
@@ -188,7 +182,7 @@ public class TestNodeAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
+  void filterAuthorizedByUserWithSearchContextShouldLoadCaches() {
     executeFilterAuthorizedByUserWithNodePks(toNodePks(ALL_NODES), SEARCH);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
@@ -198,7 +192,7 @@ public class TestNodeAccessControllerFilter {
   }
 
   @Test
-  public void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
+  void filterAuthorizedByUserWithModifyContextShouldLoadCaches() {
     executeFilterAuthorizedByUserWithNodePks(toNodePks(ALL_NODES), MODIFICATION);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches();
   }
