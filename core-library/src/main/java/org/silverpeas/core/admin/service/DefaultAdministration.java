@@ -109,6 +109,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
 import static org.silverpeas.core.util.ArrayUtil.contains;
 import static org.silverpeas.core.util.CollectionUtil.intersection;
+import static org.silverpeas.core.util.ResourceLocator.getOptionalSettingBundle;
 import static org.silverpeas.core.util.StringUtil.isLong;
 
 /**
@@ -168,7 +169,7 @@ class DefaultAdministration implements Administration {
   private String senderName = null;
   private SynchroGroupScheduler groupSynchroScheduler = null;
   private SynchroDomainScheduler domainSynchroScheduler = null;
-  private SettingBundle roleMapping = null;
+  private AppRoleMappingManager roleMapping = null;
   private boolean useProfileInheritance = false;
 
   @Inject
@@ -207,7 +208,7 @@ class DefaultAdministration implements Administration {
   private void setup() {
     // Load silverpeas admin resources
     SettingBundle resources = ResourceLocator.getSettingBundle("org.silverpeas.admin.admin");
-    roleMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
+    roleMapping = new AppRoleMappingManager();
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
     senderEmail = resources.getString("SenderEmail");
     senderName = resources.getString("SenderName");
@@ -2012,7 +2013,7 @@ class DefaultAdministration implements Administration {
   }
 
   private String spaceRole2ComponentRole(String spaceRole, String componentName) {
-    return roleMapping.getString(componentName + "_" + spaceRole, null);
+    return roleMapping.spaceRoleToComponentOne(spaceRole, componentName);
   }
 
   private List<String> componentRole2SpaceRoles(String componentRole, String componentName) {
@@ -6022,4 +6023,28 @@ class DefaultAdministration implements Administration {
     }
   }
 
+  /**
+   * This manager is in charge of providing the role mapping between a space and a component.
+   * For example, a 'manager' at space level can be mapped to 'user' at component child.
+   */
+  private static class AppRoleMappingManager {
+    private final SettingBundle commonMapping;
+
+    private AppRoleMappingManager() {
+      commonMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
+    }
+
+    /**
+     * Gets the mapped component role from space role.
+     * @param spaceRole the role at space level.
+     * @param componentName the name of the aimed component.
+     * @return a string representing a role.
+     */
+    private String spaceRoleToComponentOne(final String spaceRole, final String componentName) {
+      final String roleKey = componentName + "_" + spaceRole;
+      return getOptionalSettingBundle("org.silverpeas." + componentName + ".roleMapping")
+          .map(s -> s.getString(roleKey, null))
+          .orElseGet(() -> commonMapping.getString(roleKey, null));
+    }
+  }
 }
