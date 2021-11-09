@@ -452,7 +452,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   private void processSearchFieldOnSaving(FieldTemplate field) {
     if (field.isSearchable()) {
-      GenericFieldTemplate searchField = ((GenericFieldTemplate) field).clone();
+      GenericFieldTemplate searchField = ((GenericFieldTemplate) field).copy();
       String searchFieldDisplayerName = searchField.getDisplayerName();
       if (isATextFieldForSearch(searchFieldDisplayerName)) {
         searchField.setDisplayerName("text");
@@ -568,10 +568,11 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
     }
     if (!result.isEmpty()) {
-      Collections.sort(result, (o1, o2) -> {
+      result.sort((o1, o2) -> {
         String valcomp1 = o1.getSuite() + o1.getLabel();
         String valcomp2 = o2.getSuite() + o2.getLabel();
-        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
+        return valcomp1.toUpperCase()
+            .compareTo(valcomp2.toUpperCase());
       });
     }
     return result;

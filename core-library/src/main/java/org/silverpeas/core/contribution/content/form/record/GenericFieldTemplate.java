@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -51,6 +52,7 @@ public class GenericFieldTemplate implements FieldTemplate {
 
   private static final long serialVersionUID = 1L;
   private static final String TYPE_MANAGER = "TypeManager";
+  private static final String TOKEN_DELIMITER = "##";
   @XmlElement(required = true)
   private String fieldName;
   private Class<? extends Field> fieldImpl;
@@ -213,11 +215,7 @@ public class GenericFieldTemplate implements FieldTemplate {
       parameter = getParameters(language).get(name);
     }
 
-    if (parameter == null) {
-      return "";
-    } else {
-      return parameter;
-    }
+    return Objects.requireNonNullElse(parameter, "");
   }
 
   /**
@@ -337,21 +335,21 @@ public class GenericFieldTemplate implements FieldTemplate {
     String keys = theParameters.get("keys");
     String values = theParameters.get("values");
     if (keys != null && values != null) {
-      StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-      StringTokenizer vTokenizer = new StringTokenizer(values, "##");
+      StringTokenizer kTokenizer = new StringTokenizer(keys, TOKEN_DELIMITER);
+      StringTokenizer vTokenizer = new StringTokenizer(values, TOKEN_DELIMITER);
       while (kTokenizer.hasMoreTokens()) {
         String key = kTokenizer.nextToken();
         String value = vTokenizer.nextToken();
         keyValuePairs.put(key, value);
       }
     } else if (keys != null) {
-      StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
+      StringTokenizer kTokenizer = new StringTokenizer(keys, TOKEN_DELIMITER);
       while (kTokenizer.hasMoreTokens()) {
         String key = kTokenizer.nextToken();
         keyValuePairs.put(key, key);
       }
     } else if (values != null) {
-      StringTokenizer vTokenizer = new StringTokenizer(values, "##");
+      StringTokenizer vTokenizer = new StringTokenizer(values, TOKEN_DELIMITER);
       while (vTokenizer.hasMoreTokens()) {
         String value = vTokenizer.nextToken();
         keyValuePairs.put(value, value);
@@ -378,7 +376,6 @@ public class GenericFieldTemplate implements FieldTemplate {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Field getEmptyField(int occurrence) throws FormException {
     try {
       Constructor<? extends Field> constructor = fieldImpl.getConstructor();
@@ -515,11 +512,7 @@ public class GenericFieldTemplate implements FieldTemplate {
   public void setMaximumNumberOfOccurrences(int nb) {
     // If the occurrence number is stricly lower than 1, the value is forced to 1.
     // This avoids potential technical errors in different uses of the formular.
-    if (nb > 1) {
-      maximumNumberOfOccurrences = nb;
-    } else {
-      maximumNumberOfOccurrences = 1;
-    }
+    maximumNumberOfOccurrences = Math.max(nb, 1);
   }
 
   @Override

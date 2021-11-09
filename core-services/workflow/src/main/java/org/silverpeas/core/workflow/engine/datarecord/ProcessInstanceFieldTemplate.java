@@ -131,7 +131,6 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
 
   /**
    * Throws an illegal call exception, since an empty field can't be built from this template.
-   * @see getField
    */
   public Field getEmptyField() throws FormException {
     throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
