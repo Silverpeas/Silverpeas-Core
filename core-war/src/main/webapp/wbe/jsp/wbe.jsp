@@ -40,7 +40,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <c:set var="isEnabled" value="${requestScope['isEnabled']}"/>
-<c:set var="clientAdministrationUrl" value="${requestScope['clientAdministrationUrl']}"/>
+<c:set var="clientAdministrationAccesses" value="${requestScope['clientAdministrationAccesses']}"/>
+<jsp:useBean id="clientAdministrationAccesses" type="java.util.List<org.silverpeas.core.util.Pair<java.lang.String, java.lang.String>>"/>
 <c:set var="allUsers" value="${requestScope['AllUsers']}"/>
 <jsp:useBean id="allUsers" type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.wbe.WbeUser>"/>
 <c:set var="allFiles" value="${requestScope['AllFiles']}"/>
@@ -237,11 +238,14 @@
       <view:frame>
         <c:choose>
           <c:when test="${isEnabled}">
-            <c:if test="${not empty clientAdministrationUrl}">
+            <c:forEach var="clientAdministrationAccess" items="${clientAdministrationAccesses}">
               <p>
-                <a href="${clientAdministrationUrl}" target="_blank" rel="noopener"><fmt:message key="wbe.client.admin.url"/></a>
+                <fmt:message key="wbe.client.admin.url" var="tmpLabel">
+                  <fmt:param value="${clientAdministrationAccess.first}"/>
+                </fmt:message>
+                <a href="${clientAdministrationAccess.second}" target="_blank" rel="noopener">${tmpLabel}</a>
               </p>
-            </c:if>
+            </c:forEach>
             <div id="dynamic-containers">
               <div id="dynamic-user-container">
                 <view:arrayPane var="arrayOfWbeUsers" routingAddress="Main" numberLinesPerPage="25">

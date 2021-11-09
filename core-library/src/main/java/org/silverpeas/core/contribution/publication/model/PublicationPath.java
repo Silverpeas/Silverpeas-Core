@@ -123,6 +123,18 @@ public class PublicationPath extends NodePath {
    */
   public static PublicationPath getPath(final ContributionIdentifier pubId) {
     final PublicationDetail pub = getPublication(pubId);
+    return getPath(pub);
+  }
+
+  /**
+   * Gets a publication path without taking care about right accesses.
+   * <p>
+   * The main location of the publication is taken into account.
+   * </p>
+   * @param pub a publication contribution instance.
+   * @return an initialized {@link PublicationPath}.
+   */
+  public static PublicationPath getPath(final PublicationDetail pub) {
     final PublicationPK pk = pub.getPK();
     final Location folder = OrganizationController.get().getComponentInstance(pub.getInstanceId())
         .filter(SilverpeasComponentInstance::isTopicTracker)

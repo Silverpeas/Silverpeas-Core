@@ -827,7 +827,9 @@ var dragAndDropUploadEnabled = window.File;
    * @private
    */
   function __renderContainer(uploadInstance) {
-    var pluginContainer = document.querySelector(uploadInstance.context.domSelector);
+    var pluginContainer = typeof uploadInstance.context.domSelector === 'object' ?
+        uploadInstance.context.domSelector :
+        document.querySelector(uploadInstance.context.domSelector);
     pluginContainer.classList.add('droparea-cover');
 
     var pluginHelp = document.createElement('div');

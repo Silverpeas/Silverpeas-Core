@@ -161,10 +161,24 @@ window.USERSESSION_PROMISE.then(function() {
             <span> | </span>
           </span>
         </silverpeas-user-notifications>
+        <silverpeas-basket-selection v-on:api="setApi">
+          <span>
+            <a href="javascript:void(0)"></a>
+            <span> | </span>
+          </span>
+        </silverpeas-basket-selection>
         <script type="text/javascript">
           whenSilverpeasReady(function() {
             new Vue({
               el : 'silverpeas-user-notifications'
+            });
+            new Vue({
+              el : 'silverpeas-basket-selection',
+              methods : {
+                setApi : function(api) {
+                  window.spBasketSelectionApi = api;
+                }
+              }
             });
           });
         </script>

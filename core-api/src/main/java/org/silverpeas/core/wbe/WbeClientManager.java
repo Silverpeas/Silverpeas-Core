@@ -75,4 +75,11 @@ public interface WbeClientManager {
    * @return an optional URL as string.
    */
   Optional<String> getAdministrationUrl();
+
+  /**
+   * Provides the name of the client.
+   * @param language the user language.
+   * @return a string.
+   */
+  String getName(final String language);
 }

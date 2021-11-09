@@ -131,7 +131,7 @@ public class WbeWebController extends
   private void setCommons(final WbeWebRequestContext context) {
     final HttpRequest request = context.getRequest();
     request.setAttribute("isEnabled", getHostManager().isEnabled());
-    getHostManager().getClientAdministrationUrl().ifPresent(u -> request.setAttribute("clientAdministrationUrl", u));
+    request.setAttribute("clientAdministrationAccesses", getHostManager().getClientAdministrationAccesses(getLanguage()));
     request.setAttribute("AllUsers", SilverpeasList.wrap(getAllUsers()));
     request.setAttribute("AllFiles", SilverpeasList.wrap(getAllFiles()));
     request.setAttribute("SelectedUserIds", selectedUserIds);

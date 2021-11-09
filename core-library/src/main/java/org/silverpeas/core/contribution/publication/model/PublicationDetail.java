@@ -101,6 +101,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.date.TemporalConverter.asDate;
@@ -398,6 +399,12 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       thumbnail = ThumbnailController.getCompleteThumbnail(thumbnailReference);
     }
     return thumbnail;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Optional<PublicationPath> getResourcePath() {
+    return Optional.of(this).map(PublicationPath::getPath);
   }
 
   public void setThumbnail(final ThumbnailDetail thumbnail) {

@@ -449,3 +449,31 @@ Vue.component('silverpeas-fade-transition', {
     }
   }
 });
+
+/**
+ * Silverpeas's fade transition group.
+ */
+Vue.component('silverpeas-fade-transition-group', {
+  template : '<transition-group v-bind:name="name" v-bind:tag="tag" appear ' +
+      'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
+      'v-on:enter="$emit(\'enter\',$event)" ' +
+      'v-on:after-enter="$emit(\'after-enter\',$event)" ' +
+      'v-on:before-leave="$emit(\'before-leave\',$event)" ' +
+      'v-on:leave="$emit(\'leave\',$event)" ' +
+      'v-on:after-leave="$emit(\'after-leave\',$event)"><slot></slot></transition-group>',
+  props : {
+    tag : {
+      'type' : String,
+      'default' : 'ul'
+    },
+    durationType : {
+      'type' : String,
+      'default' : 'normal'
+    }
+  },
+  computed : {
+    name : function() {
+      return this.durationType + '-fade';
+    }
+  }
+});

@@ -1,0 +1,160 @@
+/*
+ * Copyright (C) 2000 - 2021 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.image-selector-container .thumbnail {
+  width: 60px;
+}
+
+.image-selector-container .thumbnail {
+  width: 60px;
+}
+
+.image-url {
+  display: flex;
+  gap: 10px;
+}
+
+.image-url div {
+  min-width: 60px;
+}
+
+.image-url input {
+  border: 1px solid #CACACA;
+  color: #333;
+  width: 90%;
+}
+
+.image-attachments .add-zone {
+  width: 100%;
+  display: inline-flex;
+  margin-top: 10px;
+}
+
+.image-attachments .add-zone .dragAndDrop {
+  position: absolute;
+  top: -10000px;
+  right: 0;
+}
+
+.image-attachments .add-zone .droparea-cover-help {
+  display: none !important;
+}
+
+.image-attachments .droparea {
+  height: 30px;
+  width: calc(100% - 90px);
+}
+
+.image-attachments .upload-manually {
+  top: 2px !important;
+  position: relative !important;
+  right: unset !important;
+}
+
+.image-attachments .list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.image-attachment {
+  cursor: pointer;
+}
+
+.media-bank li {
+  cursor: pointer;
+}
+
+.image-selector-container .back-to-previous-image {
+  background: #FFF url(../../../../../util/icons/arrow/refresh.png) 10px center no-repeat;
+  border: 1px solid #999;
+  border-radius: 5px;
+  padding: 5px 10px;
+  display: inline-block;
+  margin-top: 10px;
+  padding-left: 30px;
+}
+
+.image-selector-container .selected-image {
+  border-bottom: 1px dashed #999;
+  padding-bottom: 10px;
+}
+
+.image-selector-container .section-title {
+  text-transform: uppercase;
+  font-size: 1em;
+  font-weight: 700;
+}
+
+.image-selector-container h3.section-title {
+  text-transform: initial;
+  font-weight: 500;
+}
+
+.image-selector-container .fileUpload-container {
+  margin: 0;
+}
+
+.image-selector-container .media-bank-container,
+.image-selector-container .media-bank {
+  margin: 10px 0 0;
+}
+
+.image-selector-container .fileUpload-container .list,
+.image-selector-container .media-bank ul {
+  display: flex;
+  list-style-type: none;
+  gap: 10px;
+  padding: 0 0 10px 0;
+  margin: 0;
+}
+
+.image-selector-container .fileUpload-container .list .image-attachment,
+.image-selector-container .media-bank ul li {
+  border: 1px solid #d5d5d5;
+  padding: 5px 5px 25px 5px;
+  background-color: #FFF;
+  position: relative;
+}
+
+.image-selector-container .media-bank ul li {
+  padding: 5px 25px 5px 5px;
+}
+
+.image-selector-container .fileUpload-container .list .image-attachment a {
+  text-align: right;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+.image-selector-container .media-bank ul li::after {
+  content: ' ';
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: #FFF url(../../../../../util/icons/images.png) 0 0 no-repeat;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}

@@ -1142,7 +1142,7 @@ Style Utilise par le ViewGenerator
 .sp_buttonPane {
   text-align:center;
 }
-.sp_button , button.button{
+.sp_button , button.button , .gjs-pn-btn.sp_button {
   background-color:#7eb73b;
   color:#FFF;
   display:inline-block;

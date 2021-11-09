@@ -25,6 +25,7 @@
 package org.silverpeas.core.wbe;
 
 import org.silverpeas.core.security.session.SilverpeasUserSession;
+import org.silverpeas.core.util.Pair;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import static java.util.Collections.emptyList;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
@@ -52,8 +54,8 @@ public class StubbedWbeHostManager implements WbeHostManager {
   }
 
   @Override
-  public Optional<String> getClientAdministrationUrl() {
-    return Optional.empty();
+  public List<Pair<String, String>> getClientAdministrationAccesses(final String language) {
+    return emptyList();
   }
 
   @Override

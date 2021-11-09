@@ -50,6 +50,6 @@ public class UserCalendarService extends AbstractCalendarService {
 
   @Override
   public boolean isRelatedTo(final String instanceId) {
-    return instanceId.equals(UserCalendarSettings.COMPONENT_NAME);
+    return instanceId.startsWith(UserCalendarSettings.COMPONENT_NAME);
   }
 }

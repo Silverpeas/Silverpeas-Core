@@ -24,6 +24,11 @@
 
 package org.silverpeas.core.wbe;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Represents the preparation of a Web Browser Edition.
  * <p>
@@ -37,8 +42,9 @@ package org.silverpeas.core.wbe;
  */
 public abstract class WbeEdition {
 
-  private WbeFile file;
-  private WbeUser user;
+  private final Configuration configuration = new Configuration();
+  private final WbeFile file;
+  private final WbeUser user;
 
   protected WbeEdition(final WbeFile file, final WbeUser user) {
     this.file = file;
@@ -59,5 +65,50 @@ public abstract class WbeEdition {
    */
   public WbeUser getUser() {
     return user;
+  }
+
+  /**
+   * Gets the configuration of the edition in order to specify some additional details about the
+   * edition.
+   * @return the {@link Configuration} associated to the edition.
+   */
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+
+  /**
+   * This class permits to handle additional configuration that can set by Silverpeas and be used
+   * by WBE clients.
+   */
+  public static class Configuration {
+
+    private final Map<String, Object> config = Collections.synchronizedMap(new HashMap<>());
+
+    private Configuration() {
+      // Hidden constructor
+    }
+
+    /**
+     * Puts an additional configuration.
+     * @param key a key that permits the client to retrieve the additional configuration.
+     * @param value the value indexed by the key.
+     * @param <T> the type of the value.
+     * @return itself.
+     */
+    public <T> Configuration put(final String key, final T value) {
+      config.put(key, value);
+      return this;
+    }
+
+    /**
+     * Gets an optional configuration detail by its key.
+     * @param key the key of the configuration detail.
+     * @param <T> the type of the value indexed by the key.
+     * @return the optional configuration detail.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> get(final String key) {
+      return Optional.ofNullable((T) config.get(key));
+    }
   }
 }

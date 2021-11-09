@@ -47,6 +47,7 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
+import org.silverpeas.core.util.ResourcePath;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -778,6 +779,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   public Temporal getEndDate() {
     return getPeriod().getEndDate();
+  }
+
+  @Override
+  public <T extends Contribution> Optional<ResourcePath<T>> getResourcePath() {
+    return CalendarResourcePathProvider.get().getResourcePathOf(this);
   }
 
   /**

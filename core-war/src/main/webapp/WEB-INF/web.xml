@@ -695,6 +695,15 @@
     </init-param>
   </servlet>
   <servlet>
+    <display-name>DdweRequestRouter</display-name>
+    <servlet-name>DdweRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.web.ddwe.DragAndDropWebEditorController</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
     <servlet-name>Proxy</servlet-name>
     <servlet-class>org.silverpeas.core.web.proxy.ProxyServlet</servlet-class>
   </servlet>
@@ -1146,6 +1155,10 @@
   <servlet-mapping>
     <servlet-name>WbeRequestRouter</servlet-name>
     <url-pattern>/Rwbe/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DdweRequestRouter</servlet-name>
+    <url-pattern>/Rddwe/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>Proxy</servlet-name>

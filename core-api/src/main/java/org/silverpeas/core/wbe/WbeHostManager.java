@@ -25,6 +25,7 @@
 package org.silverpeas.core.wbe;
 
 import org.silverpeas.core.security.session.SilverpeasUserSession;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
@@ -55,10 +56,11 @@ public interface WbeHostManager {
   void clear();
 
   /**
-   * Provides the URL that permits to access the administration of Web Browser Edition client.
+   * Provides the data that permits to access administrations of Web Browser Edition clients.
+   * @param language the user language.
    * @return an optional URL as string.
    */
-  Optional<String> getClientAdministrationUrl();
+  List<Pair<String, String>> getClientAdministrationAccesses(final String language);
 
   /**
    * Notifies the manager of the number of users which are editing the given file at an instant.

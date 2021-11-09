@@ -1748,6 +1748,17 @@ if (typeof window.sp === 'undefined') {
         return url + (paramPart.length === 1 ? '' : paramPart);
       }
     },
+    loadScript : function(src) {
+      return new Promise(function (resolve, reject) {
+        const $script = document.createElement('script');
+        $script.src = src;
+        $script.onload = resolve;
+        $script.onerror = function () {
+          reject(new Error("Cannot load script at: ".concat($script.src)));
+        };
+        (document.head || document.documentElement).appendChild($script);
+      });
+    },
     /**
      * @deprecated use instead sp.ajaxRequest(...).loadTarget(...)
      */
@@ -1822,6 +1833,17 @@ if (typeof window.sp === 'undefined') {
         const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
         return jQuery(element).find(':input').serializeFormJSON();
       }
+    },
+    debounce : function (fn, delay) {
+      let timeoutId = null;
+      return function () {
+        clearTimeout(timeoutId);
+        const args = arguments;
+        const that = this;
+        timeoutId = setTimeout(function () {
+          fn.apply(that, args);
+        }, delay)
+      };
     },
     element : {
       cloneAndReplace: function(elementOrCssSelector, beforeReplaceCallback) {

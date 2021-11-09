@@ -1,0 +1,206 @@
+/*
+ * Copyright (C) 2000 - 2021 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.silverpeas-basket-selection {
+  display: inline-block;
+}
+
+.silverpeas-basket-selection .silverpeas-attached-popin {
+  z-index: 1000;
+  white-space: normal;
+  text-align: left;
+}
+
+.silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-attached-popin-content {
+  position: relative !important;
+  padding: 0;
+  min-height: 200px;
+  max-height: 600px;
+  width: 425px;
+}
+
+.silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-attached-popin-content .silverpeas-list,
+#infoConnection .silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-attached-popin-content .silverpeas-list {
+  position: relative;
+  border: none;
+  background-color: inherit;
+  left: auto;
+  top: auto;
+  white-space: inherit;
+}
+
+.silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-attached-popin-header {
+  background-color: #2a2a2a;
+  position: relative;
+  height: 3em;
+}
+
+#infoConnection .silverpeas-basket-selection ul li a:hover {
+  background-color: inherit;
+}
+
+.silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-attached-popin-header a.close {
+  position: absolute;
+  width: 16px;
+  padding: 0;
+  display: inline-block;
+  text-indent: -99999px;
+  height: 16px;
+  top: 50%;
+  right: 0.5em;
+  margin-top: -8px;
+  margin-left: -8px;
+  background: #FFF url("../../../../../util/styleSheets/jquery/ui-lightness/images/ui-icons_ef8c08_256x240.png") -96px -128px;
+
+}
+
+.silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-list-item,
+#infoConnection .silverpeas-basket-selection .silverpeas-attached-popin .silverpeas-list-item {
+  padding: 0.75em;
+  position: relative;
+  border-bottom: solid 1px #CCC;
+}
+
+.silverpeas-basket-selection .silverpeas-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  color: #000;
+}
+
+.silverpeas-basket-selection .silverpeas-list li:nth-child(odd) {
+  background-color: #FFF
+}
+
+.silverpeas-basket-selection .silverpeas-list li:nth-child(even) {
+  background-color: #F0F0F0;
+}
+
+.silverpeas-attached-popin-content .basket-element-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.silverpeas-attached-popin-content .basket-element {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.silverpeas-attached-popin-content .basket-element-list img {
+  max-width: 140px;
+  max-height: 140px;
+  margin: auto;
+}
+
+.silverpeas-attached-popin-content .basket-element-list .image {
+  width: 160px;
+  text-align: center;
+
+}
+
+.silverpeas-attached-popin-content .basket-element-list .title {
+  font-weight: bold;
+}
+
+.silverpeas-attached-popin-content .basket-element-list .description {
+  color: #666;
+}
+
+.silverpeas-attached-popin-content .basket-element-list .editorial {
+  padding: 5px 10px;
+}
+
+.silverpeas-attached-popin-content .basket-element-list .link {
+  display: none;
+}
+
+.silverpeas-attached-popin-content .basket-element-list .basket-element {
+  cursor: pointer;
+}
+
+.silverpeas-list-item {
+  position: relative;
+}
+
+.silverpeas-list-item .silverpeas-list-item-body .silverpeas-list-item-content .basket-element a.delete-button {
+  display: block;
+  text-indent: -3000em;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  width: 16px;
+  height: 20px;
+  padding: 0;
+}
+
+.silverpeas-list-item:hover .delete-button {
+  background: transparent url(../../../../../util/icons/delete.gif) 0 0 no-repeat;
+}
+
+.publication-basket-selector-container .basket-element-list {
+  list-style-type: none;
+  padding: 0 0 10px 0;
+  margin: 0;
+}
+
+.publication-basket-selector-container .basket-element {
+  display: flex;
+  border: 1px solid #d5d5d5;
+  background-color: #FFF;
+  margin-bottom: 10px;
+}
+
+.publication-basket-selector-container .basket-element.selected {
+  border: 2px dotted #1c94d4;
+  background-color: #fdfcea;
+}
+
+.publication-basket-selector-container .basket-element-list img {
+  max-width: 140px;
+  max-height: 140px;
+  margin: auto;
+}
+
+.publication-basket-selector-container .basket-element-list .image {
+  width: 160px;
+  text-align: center;
+  background-color: #efefef;
+}
+
+.publication-basket-selector-container .basket-element-list .title {
+  font-weight: bold;
+}
+
+.publication-basket-selector-container .basket-element-list .description {
+  color: #999;
+}
+
+.publication-basket-selector-container .basket-element-list .editorial {
+  padding: 5px 10px;
+}
+
+.publication-basket-selector-container .basket-element-list .basket-element {
+  cursor: pointer;
+}

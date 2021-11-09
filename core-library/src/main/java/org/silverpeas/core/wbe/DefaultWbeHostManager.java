@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.Optional.empty;
@@ -68,8 +70,10 @@ public class DefaultWbeHostManager implements WbeHostManager {
   }
 
   @Override
-  public Optional<String> getClientAdministrationUrl() {
-    return getClient().flatMap(WbeClientManager::getAdministrationUrl);
+  public List<Pair<String, String>> getClientAdministrationAccesses(final String language) {
+    return getClients()
+        .flatMap(m -> m.getAdministrationUrl().stream().map(u -> Pair.of(m.getName(language), u)))
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -100,13 +104,13 @@ public class DefaultWbeHostManager implements WbeHostManager {
 
   @Override
   public boolean isEnabled() {
-    return enabled && getClient().isPresent();
+    return enabled && getClients().findAny().isPresent();
   }
 
   @Override
   public boolean isHandled(final WbeFile file) {
     try {
-      return getClient().filter(c -> c.isHandled(file)).isPresent();
+      return getClientFor(file).isPresent();
     } catch (WebApplicationException e) {
       return false;
     }
@@ -121,7 +125,7 @@ public class DefaultWbeHostManager implements WbeHostManager {
       final WbeFile file = cache.computeFileIfAbsent(anyFile);
       user.setLastEditionDateAtNow();
       file.setLastEditionDateAtNow();
-      return getClient().flatMap(c -> c.prepareEditionWith(user, file));
+      return getClientFor(file).flatMap(c -> c.prepareEditionWith(user, file));
     } else {
       logger().debug(() -> format(
           "from {0} preparing WBE edition for {1} and for user {2} but WBE is not enabled!!!",
@@ -175,8 +179,12 @@ public class DefaultWbeHostManager implements WbeHostManager {
     clients.forEach(WbeClientManager::clear);
   }
 
-  private Optional<WbeClientManager> getClient() {
-    return clients.stream().filter(WbeClientManager::isEnabled).findFirst();
+  private Stream<WbeClientManager> getClients() {
+    return clients.stream().filter(WbeClientManager::isEnabled);
+  }
+
+  private Optional<WbeClientManager> getClientFor(final WbeFile file) {
+    return getClients().filter(c -> c.isHandled(file)).findFirst();
   }
 
   public static class WbeCacheCleanerJob extends Job implements Initialization {

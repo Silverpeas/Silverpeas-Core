@@ -51,6 +51,7 @@ import static java.time.ZoneId.systemDefault;
  */
 public class SimpleWbeFile extends WbeFile {
 
+  protected static final Object MUTEX = new Object();
   private final File file;
 
   public SimpleWbeFile(final File file) {
@@ -94,15 +95,19 @@ public class SimpleWbeFile extends WbeFile {
 
   @Override
   public void updateFrom(final InputStream input) throws IOException {
-    try (final OutputStream stream = new BufferedOutputStream(new FileOutputStream(file))) {
-      IOUtils.copy(input, stream);
+    synchronized (MUTEX) {
+      try (final OutputStream stream = new BufferedOutputStream(new FileOutputStream(file))) {
+        IOUtils.copy(input, stream);
+      }
     }
   }
 
   @Override
   public void loadInto(final OutputStream output) throws IOException {
-    try (final InputStream stream = new BufferedInputStream(new FileInputStream(file))) {
-      IOUtils.copy(stream, output);
+    synchronized (MUTEX) {
+      try (final InputStream stream = new BufferedInputStream(new FileInputStream(file))) {
+        IOUtils.copy(stream, output);
+      }
     }
   }
 

@@ -87,6 +87,8 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(SUBSCRIPTION, JavascriptPluginInclusion::includeDynamicallySubscription);
     add(CONTRIBUTIONMODICTX, (x, l) -> JavascriptPluginInclusion.includeContributionModificationContext(x));
     add(DRAGANDDROPUPLOAD, JavascriptPluginInclusion::includeDragAndDropUpload);
+    add(IMAGESELECTOR, JavascriptPluginInclusion::includeImageSelector);
+    add(BASKETSELECTION, JavascriptPluginInclusion::includeBasketSelection);
     add(CHART, JavascriptPluginInclusion::includeChart);
     add(CHAT, (x, l) -> includeChat(x));
     add(SELECTIZE, (x, l) -> includeSelectize(x));

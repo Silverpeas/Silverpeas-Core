@@ -1000,6 +1000,31 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Includes the Silverpeas image selector VueJS Plugin.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeImageSelector(final ElementContainer xhtml,
+      final String language) {
+    includeDragAndDropUpload(xhtml, language);
+    xhtml.addElement(script(VUEJS_PATH + "services/content/silverpeas-image-service.js"));
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-image-selector.css"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-image-selector.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas basket selection VueJS Plugins.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeBasketSelection(final ElementContainer xhtml,
+      final String language) {
+    xhtml.addElement(script(VUEJS_PATH + "services/contribution/silverpeas-basket-service.js"));
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "contribution/silverpeas-basket-selection.css"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "contribution/silverpeas-basket-selection.js"));
+    return xhtml;
+  }
+
+  /**
    * Includes the Silverpeas Layout HTML5 Plugin.
    * This plugin depends on the associated settings javascript file.
    * @return the completed parent container.

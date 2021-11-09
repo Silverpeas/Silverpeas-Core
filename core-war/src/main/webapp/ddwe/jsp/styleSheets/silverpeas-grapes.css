@@ -1,0 +1,184 @@
+/*
+ * Copyright (C) 2000 - 2021 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body div.chatThread,
+body div#topPage,
+body div.cellBodyWindows,
+body div.tableFrame,
+body div.hautFrame {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.nl-link {
+  color: inherit;
+}
+
+.gjs-clm-tag {
+  color: gray;
+}
+
+.gjs-four-color {
+  color: #8ed735;
+}
+
+.gjs-clm-tags #gjs-clm-new {
+  color: #000;
+}
+
+.gjs-clm-tags .gjs-clm-tag {
+  background-color: #1c94d4;
+  color: #FFF;
+}
+/*##### CSS OVERRIDE #####*/
+
+.gjs-pn-btn:hover {
+  color: lightgray;
+}
+
+.gjs-btnt.gjs-pn-active,
+.gjs-color-active,
+.gjs-pn-btn.gjs-pn-active,
+.gjs-pn-btn:active,
+.gjs-block:hover {
+  color: #7eb73b;
+}
+
+.gjs-one-bg {
+  background-color: whitesmoke;
+}
+
+#gjs-rte-toolbar,
+.gjs-bg-main,
+.gjs-clm-select option,
+.gjs-clm-tags .gjs-sm-colorp-c,
+.gjs-editor,
+.gjs-mdl-dialog,
+.gjs-nv-item .gjs-nv-title-c,
+.gjs-off-prv,
+.gjs-pn-panel,
+.gjs-block,
+.gjs-select option,
+.gjs-sm-sector .gjs-sm-colorp-c,
+.gjs-sm-select option,
+.gjs-sm-unit option,
+.sp-container {
+  background-color: whitesmoke;
+}
+
+#gjs-rte-toolbar .gjs-rte-btn,
+.gjs-btn-prim,
+.gjs-btnt,
+.gjs-clm-tags .gjs-sm-composite.gjs-clm-field,
+.gjs-clm-tags .gjs-sm-field.gjs-sm-composite,
+.gjs-clm-tags .gjs-sm-stack #gjs-sm-add,
+.gjs-color-main,
+.gjs-mdl-dialog,
+.gjs-off-prv,
+.gjs-pn-btn,
+.gjs-pn-panel,
+.gjs-sm-sector .gjs-sm-composite.gjs-clm-field,
+.gjs-sm-sector .gjs-sm-field.gjs-sm-composite,
+.gjs-sm-sector .gjs-sm-stack #gjs-sm-add,
+.gjs-two-color {
+  color: #262626;
+}
+
+.gjs-pn-nav-connectors {
+  right: calc(50% + 150px);
+}
+
+.gjs-rte-toolbar {
+  min-width: 632px;
+}
+
+.gjs-mdl-dialog {
+  position: absolute;
+  left: calc(15%);
+  top: calc(20%);
+}
+
+/*masquage des elmts de présentation des container*/
+#gjs-sm-extra,
+#gjs-sm-position {
+  display: none;
+}
+
+.gjs-block-categories .gjs-block {
+  background-color: #FFF;
+}
+
+.fa-sp-publication::before {
+  content: '\f1ea'
+}
+
+.fa-sp-image-link::before {
+  content: '\f1c5'
+}
+
+.gjs-block-label {
+  font-size: 0.9rem;
+}
+
+.gjs-blocks-no-cat .gjs-f-image {
+  order: -4;
+}
+
+.gjs-blocks-no-cat .gjs-f-text {
+  order: -3;
+}
+
+.gjs-blocks-no-cat .gjs-blocks-c div:nth-child(11) {
+  order: -2;
+}
+
+.gjs-blocks-no-cat .gjs-f-button {
+  order: -1;
+}
+
+.gjs-blocks-no-cat .fa-quote-right {
+  display: none;
+}
+
+.fa-sp-basket-selector::before {
+  content: '\f040';
+}
+
+#gjs-sm-border-top-left-radius, #gjs-sm-border-top-right-radius, #gjs-sm-border-bottom-left-radius, #gjs-sm-border-bottom-right-radius, #gjs-sm-margin-top, #gjs-sm-margin-bottom, #gjs-sm-margin-right, #gjs-sm-margin-left, #gjs-sm-padding-top, #gjs-sm-padding-bottom, #gjs-sm-padding-right, #gjs-sm-padding-left {
+  flex: inherit;
+}
+.gjs-pn-btn.sp_button {
+  height: 16px;
+  line-height: 16px;
+  text-transform: uppercase;
+  font: inherit;
+}

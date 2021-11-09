@@ -24,16 +24,19 @@
 
 package org.silverpeas.core.webapi.wbe;
 
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeHostManager;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
@@ -51,6 +54,8 @@ import static org.silverpeas.core.security.session.SessionManagementProvider.get
 public class WbeFileEdition {
 
   public static final String ACCESS_TOKEN_PARAM = "access_token";
+  private static final Consumer<WbeEdition.Configuration> NO_ADDITIONAL_CONFIGURATION = c -> {
+  };
 
   public static WbeFileEdition get() {
     return ServiceProvider.getService(WbeFileEdition.class);
@@ -65,15 +70,33 @@ public class WbeFileEdition {
    * @param file a Silverpeas's WBE file.
    * @return an optional URL of the Silverpeas's editor page.
    */
-  @SuppressWarnings("unchecked")
   public Optional<String> initializeWith(final HttpServletRequest request, final WbeFile file) {
-    final String userSessionId = request.getSession(false).getId();
-    final SessionInfo sessionInfo = getSessionManagement().getSessionInfo(userSessionId);
-    return WbeHostManager.get().prepareEditionWith(sessionInfo, file).flatMap(e ->
-        ServiceProvider.getAllServices(ClientRequestDispatcher.class).stream()
-            .filter(d -> d.canHandle(e))
-            .findFirst()
-            .flatMap(d -> d.dispatch(request, e)));
+    return initializeWith(request, file, NO_ADDITIONAL_CONFIGURATION);
+  }
+
+  /**
+   * Initializing a WBE edition from given data.
+   * @param request the current request from which the edition is started.
+   * @param file a Silverpeas's WBE file.
+   * @param configSetter permits to configure some details of the edition.
+   * @return an optional URL of the Silverpeas's editor page.
+   */
+  public Optional<String> initializeWith(final HttpServletRequest request, final WbeFile file,
+      final Consumer<WbeEdition.Configuration> configSetter) {
+    return WbeHostManager.get()
+        .prepareEditionWith(ofNullable(request.getSession(false))
+            .map(HttpSession::getId)
+            .map(getSessionManagement()::getSessionInfo)
+            .orElseThrow(() -> new NotFoundException("User Session does not exist")), file)
+        .flatMap(e ->
+            ServiceProvider.getAllServices(ClientRequestDispatcher.class).stream()
+                .filter(d -> d.canHandle(e))
+                .findFirst()
+                .flatMap(d -> {
+                  configSetter.accept(e.getConfiguration());
+                  return d.dispatch(request, e);
+                })
+        );
   }
 
   public interface ClientRequestDispatcher {

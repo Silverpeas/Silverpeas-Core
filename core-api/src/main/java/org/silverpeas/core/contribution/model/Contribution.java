@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.Instance;
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.util.ResourcePath;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * A contribution in Silverpeas. A contribution is an identifiable resource that is pushed by a
@@ -123,5 +125,19 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
    */
   default ContributionModel getModel() {
     return new DefaultContributionModel<>(this);
+  }
+
+  /**
+   * Gets the {@link ResourcePath <T>} of the contribution represented by the given identifier.
+   * <p>
+   *   Returns empty by default if not implemented.
+   * </p>
+   * @param <T> the type the contribution.
+   * @return the optional {@link ResourcePath<T>} instance.
+   * @throws IllegalStateException when the type of the contribution is not handled by the
+   * implementation.
+   */
+  default <T extends Contribution> Optional<ResourcePath<T>> getResourcePath() {
+    return Optional.empty();
   }
 }

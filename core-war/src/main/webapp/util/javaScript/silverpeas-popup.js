@@ -103,6 +103,21 @@
       $confirm.popup('confirmation', options);
     },
     /**
+     * Shows a validate popup with the specified message and the popup parameters.
+     * @param message the message to display in the popup.
+     * @param params the parameters to parametrize the popup window.
+     */
+    validate: function(message, params) {
+      let options = params;
+      const $confirm = $('<div>').append($('<p>').append(message));
+      if (typeof params === 'function') {
+        options = {
+          callback: params
+        }
+      }
+      $confirm.popup('validation', options);
+    },
+    /**
      * Shows an info popup with the specified message and the popup parameters.
      * @param message the info message to display in the popup.
      * @param params the parameters to parametrize the popup window.
@@ -600,7 +615,7 @@
         title: options.title,
         autoOpen: false,
         modal: true,
-        resizable: false,
+        resizable: !!options.resizable,
         height: options.height,
         dialogClass: options.dialogClass
       });

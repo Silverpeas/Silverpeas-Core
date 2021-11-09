@@ -205,6 +205,14 @@ public enum SupportedWebPlugins {
    */
   DRAGANDDROPUPLOAD,
   /**
+   * Silverpeas plugin to handle selection of images into Silverpeas's repositories.
+   */
+  IMAGESELECTOR,
+  /**
+   * Silverpeas plugin to handle basket of resources into Silverpeas's.
+   */
+  BASKETSELECTION,
+  /**
    * External plugin to display various charts on client-side
    */
   CHART,

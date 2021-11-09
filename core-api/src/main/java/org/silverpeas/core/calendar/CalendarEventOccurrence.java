@@ -37,8 +37,17 @@ import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStrin
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.ResourcePath;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -311,6 +320,11 @@ public class CalendarEventOccurrence
   @Override
   public Temporal getEndDate() {
     return this.component.getPeriod().getEndDate();
+  }
+
+  @Override
+  public <T extends Contribution> Optional<ResourcePath<T>> getResourcePath() {
+    return CalendarResourcePathProvider.get().getResourcePathOf(this);
   }
 
   /**
