@@ -24,6 +24,21 @@
 
 (function() {
 
+  /**
+   * The instance of the plugin must be attached to the top window.
+   * If the plugin is called from an iframe, then the iframe plugin instance is the reference of
+   * the one of the top window. By this way, all different javascript window instances use the same
+   * plugin instance.
+   * If the plugin, on top window, is already defined, nothing is done.
+   */
+
+  if (top.window !== window) {
+    if (!window.SilverChat) {
+      window.SilverChat = top.window.SilverChat;
+    }
+    return;
+  }
+
   let __converse;
 
   /**
@@ -414,6 +429,18 @@
     this.stop = function() {
       __converse.off();
       return __converse.api.user.logout();
+    };
+    this.gui = new function() {
+      this.openChatWindow = function(jid, userFullName) {
+        if (StringUtil.isDefined(jid)) {
+          __converse.api.chats.open(jid, {}, true);
+        } else {
+          const contact = __converse.roster && __converse.roster.findWhere({'nickname' : userFullName});
+          if (contact && contact.attributes) {
+            __converse.api.chats.open(contact.attributes.jid, {}, true);
+          }
+        }
+      };
     };
   }
 })();
