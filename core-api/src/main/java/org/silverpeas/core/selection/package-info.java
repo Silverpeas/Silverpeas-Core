@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2022 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,24 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.model;
-
-import org.silverpeas.core.i18n.LocalizedResource;
 
 /**
- * An internationalized contribution. It supports different languages and regional specificity
- * (i18n). Any contribution supporting the translation of some of its properties in different
- * language should implement this interface.
- *
+ * Provides an API to select resources managed in Silverpeas in order to be used later in some
+ * operations on them.
  * @author mmoquillon
  */
-public interface I18nContribution extends Contribution, LocalizedResource {
-
-  /**
-   * Gets the unique identifier of this contribution.
-   * @return the unique identifier of the contribution.
-   */
-  @SuppressWarnings("unchecked")
-  ContributionIdentifier getIdentifier();
-
-}
+package org.silverpeas.core.selection;
