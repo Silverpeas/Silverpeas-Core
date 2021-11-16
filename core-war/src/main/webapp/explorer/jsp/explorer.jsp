@@ -163,7 +163,11 @@ ul#publicationsList li.publication .description {
   padding:0;
   display:block;
   position: fixed;
+  <% if (availableComponents.size() > 1) { %>
+  top:7em;
+  <% } else { %>
   top:4em;
+  <% } %>
   bottom: 0;
   overflow:auto;
   right:0;
