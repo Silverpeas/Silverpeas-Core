@@ -101,7 +101,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
-    if (!field.isNull()) {
+    if (field != null && !field.isNull()) {
       value = field.getValue(language);
     }
 
