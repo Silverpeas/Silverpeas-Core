@@ -99,6 +99,8 @@ public class SimpleDocumentService
 
   private static final String ATTACHMENT_TYPE = "Attachment";
   private static final String COMMENT_TYPE = "Comment";
+  private static final String NODE_TYPE = "Node";
+
   @Inject
   private WebdavRepository webdavRepository;
   @Inject
@@ -960,7 +962,8 @@ public class SimpleDocumentService
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (!indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE) &&
-        !indexEntry.getObjectType().startsWith(COMMENT_TYPE)) {
+        !indexEntry.getObjectType().startsWith(COMMENT_TYPE) &&
+        !indexEntry.getObjectType().startsWith(NODE_TYPE)) {
       final ResourceReference pk =
           new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
       final String lang = indexEntry.getLang();
