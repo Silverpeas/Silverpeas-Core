@@ -89,6 +89,20 @@ public class ContributionModificationContextHandler
   }
 
   /**
+   * Forces the context by indicating a minor modification.
+   * <p>
+   * This method permits to indicate a such context by bypassing an HTTP request decoding.
+   * </p>
+   * <p>
+   * The context is also registered into a thread cache, like it is done with the HTTP request
+   * decoding.
+   * </p>
+   */
+  public void setMinorModification() {
+    getOrCreateContext().isMinor = true;
+  }
+
+  /**
    * Indicates from current request if the current user made a minor modification.
    * @return true if minor, false otherwise.
    */
@@ -125,6 +139,11 @@ public class ContributionModificationContextHandler
 
   private Optional<Context> getContext() {
     return Optional.ofNullable(getRequestCacheService().getCache().get(CACHE_KEY, Context.class));
+  }
+
+  private Context getOrCreateContext() {
+    return getRequestCacheService().getCache()
+        .computeIfAbsent(CACHE_KEY, Context.class, Context::new);
   }
 
   @XmlRootElement

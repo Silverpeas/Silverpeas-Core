@@ -65,6 +65,12 @@ class UserSubscriptionNotificationSendingHandlerTest {
   }
 
   @Test
+  void notEnabledIfSkipHttpParameterIsNullButDisabledManually() {
+    handler.skipNotificationSend();
+    assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
+  }
+
+  @Test
   void enabledIfSkipHttpParameterIsNotEqualToTrueOrFalse() {
     when(request.getParameter(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
         .thenReturn("{}");
