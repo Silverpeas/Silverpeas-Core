@@ -44,7 +44,7 @@ public class SessionInfo implements SilverpeasUserSession {
   private final Object mutex;
 
   private final String sessionId;
-  private final UserDetail userDetail;
+  private final User userDetail;
   private final long openingTimestamp;
   private final Map<String, Object> attributes = new ConcurrentHashMap<>();
   private String ipAddress;
@@ -58,7 +58,7 @@ public class SessionInfo implements SilverpeasUserSession {
    * @param sessionId the identifier of the opened session.
    * @param user the user for which a session was opened.
    */
-  public SessionInfo(final String sessionId, final UserDetail user) {
+  public SessionInfo(final String sessionId, final User user) {
     this.mutex = this;
     this.sessionId = sessionId;
     this.userDetail = user;
@@ -165,7 +165,7 @@ public class SessionInfo implements SilverpeasUserSession {
    *
    * @return a UserDetail instance with the profile information on the user.
    */
-  public UserDetail getUserDetail() {
+  public User getUserDetail() {
     return userDetail;
   }
 
@@ -199,6 +199,7 @@ public class SessionInfo implements SilverpeasUserSession {
    * @param name the name of the attribute to get.
    * @return the value of the attribute or null if no such attribute exists.
    */
+  @SuppressWarnings("unchecked")
   public <T> T getAttribute(String name) {
     return (T) attributes.get(name);
   }
@@ -246,7 +247,7 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Provides a cache associated to the current session.
-   * @return
+   * @return the user session cache.
    */
   public SimpleCache getCache() {
     return cache;

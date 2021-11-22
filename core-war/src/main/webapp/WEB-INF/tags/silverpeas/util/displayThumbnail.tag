@@ -181,7 +181,7 @@ function updateThumbnail() {
 				</c:if>
 			</div>
 			<div id="thumbnailActions">
-				<c:if test="${thumbnail != null && thumbnail.cropable}">
+				<c:if test="${thumbnail != null && thumbnail.croppable}">
 					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop" bundle="${generalBundle}"/></a>
 				</c:if>
 				<c:if test="${thumbnail != null && !mandatory}">

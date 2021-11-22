@@ -449,8 +449,8 @@ class TestAbstractFileHandler {
   /**
    * Centralizes asserts
    *
-   * @param test
-   * @param expected
+   * @param test the tested file
+   * @param expected the expected file
    */
   private void assertFileNames(final File test, final File expected) {
     assertThat(test, is(expected));
@@ -466,9 +466,6 @@ class TestAbstractFileHandler {
       super(session);
     }
 
-    /**
-     * @return
-     */
     public File getRootPathForTest() {
       return getFile(fileHandler.getSessionPath(BASE_PATH_TEST), componentInstanceId);
     }
@@ -512,6 +509,16 @@ class TestAbstractFileHandler {
     @Override
     public boolean isDeleted() {
       return deleted;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode();
     }
   }
 }

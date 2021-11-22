@@ -32,7 +32,7 @@ import org.silverpeas.core.util.SettingBundle;
 public class TestApplicationServiceImpl1 implements ApplicationService<TestResource1> {
 
   @Override
-  public TestResource1 getContentById(final String contentId) {
+  public TestResource1 getContributionById(final String contributionId) {
     return null;
   }
 

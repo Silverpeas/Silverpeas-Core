@@ -33,4 +33,10 @@ package org.silverpeas.core.contribution.model;
  * @author mmoquillon
  */
 public interface WithThumbnail {
+
+  /**
+   * The thumbnail of the underlying resource or contribution in Silverpeas.
+   * @return a {@link Thumbnail} object.
+   */
+  Thumbnail getThumbnail();
 }

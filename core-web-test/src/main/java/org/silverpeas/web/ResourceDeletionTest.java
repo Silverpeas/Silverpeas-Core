@@ -25,13 +25,14 @@ package org.silverpeas.web;
 
 import org.junit.Test;
 
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unit tests on the deletion of a resource in Silverpeas through a REST web service.
@@ -42,27 +43,42 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
     implements WebResourceTesting {
 
   /**
-   * Requests a delete of the web resource identified at the specified URI.
+   * Requests a deleting of the web resource identified at the specified URI.
    * If an error occurs, then an UniformInterfaceException exception is thrown.
    * @param uri the uri of the resource to delete.
    * @return the {@link Response} of the deletion.
    */
   public Response deleteAt(String uri) {
-    return resource().path(uri).request(MediaType.APPLICATION_JSON).
-        header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(getAPITokenValue())).
-        delete();
+    AuthId authId = AuthId.apiToken(getAPITokenValue());
+    Invocation.Builder resourceDeleter = resource().path(uri).request(MediaType.APPLICATION_JSON);
+    resourceDeleter = setUserIdent(authId, resourceDeleter);
+    return resourceDeleter.delete();
   }
 
   /**
-   * Requests a delete of the web resource identified at the specified URI.
+   * Requests a deletion of the web resource identified at the specified URI.
+   * If an error occurs, then an UniformInterfaceException exception is thrown.
+   * @param uri the uri of the resource to delete.
+   * @return the {@link Response} of the deletion.
+   */
+  public Response deleteAt(String uri, final AuthId authId) {
+    Invocation.Builder resourceDeleter = resource().path(uri).request(MediaType.APPLICATION_JSON);
+    resourceDeleter = setUserIdent(authId, resourceDeleter);
+    return resourceDeleter.delete();
+  }
+
+  /**
+   * Requests a deletion of the web resource identified at the specified URI.
    * If an error occurs, then an UniformInterfaceException exception is thrown.
    * @param c the class of which the returned resource should be an instance.
    * @param uri the uri of the resource to delete.
    * @return the web entity.
    */
   public <C> C deleteAt(String uri, Class<C> c) {
-    return resource().path(uri).request(MediaType.APPLICATION_JSON)
-        .header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(getAPITokenValue())).delete(c);
+    AuthId authId = AuthId.apiToken(getAPITokenValue());
+    Invocation.Builder resourceDeleter =  resource().path(uri).request(MediaType.APPLICATION_JSON);
+    resourceDeleter = setUserIdent(authId, resourceDeleter);
+    return resourceDeleter.delete(c);
   }
 
   @Test
@@ -75,17 +91,18 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
   }
 
   @Test
-  public void deletionOfAResourceWithADeprecatedSession() throws Exception {
+  public void deletionOfAResourceWithADeprecatedSession() {
     final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    Response response = resource().path(aResourceURI()).
-        request(MediaType.APPLICATION_JSON).
-        header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(UUID.randomUUID().toString())).
-        delete();
+    AuthId authId = AuthId.apiToken(UUID.randomUUID().toString());
+    Invocation.Builder resourceDeleter = resource().path(aResourceURI()).
+        request(MediaType.APPLICATION_JSON);
+    resourceDeleter = setUserIdent(authId, resourceDeleter);
+    Response response = resourceDeleter.delete();
     assertThat(response.getStatus(), is(Unauthorized));
   }
 
   @Test
-  public void deletionOfAResourceByANonAuthorizedUser() throws Exception {
+  public void deletionOfAResourceByANonAuthorizedUser() {
     denyAuthorizationToUsers();
     final int Forbidden = Status.FORBIDDEN.getStatusCode();
     Response response = deleteAt(aResourceURI());
@@ -93,7 +110,7 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
   }
 
   @Test
-  public void deletionOfAnUnexistingResource() throws Exception {
+  public void deletionOfAnUnexistingResource() {
     final int NotFound = Status.NOT_FOUND.getStatusCode();
     Response response = deleteAt(anUnexistingResourceURI());
     assertThat(response.getStatus(), is(NotFound));

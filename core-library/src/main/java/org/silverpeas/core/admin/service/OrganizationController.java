@@ -60,33 +60,33 @@ public interface OrganizationController extends java.io.Serializable {
   }
 
   /**
-   * Return all the spaces Id available in silverpeas
+   * Return all the spaces available in silverpeas
    *
-   * @return
+   * @return an array with the identifiers of the spaces
    */
   String[] getAllSpaceIds();
 
   /**
-   * Return all the subSpaces Id available in silverpeas given a space id (driver format)
+   * Return all the subSpaces available in silverpeas given a space id (driver format)
    *
-   * @param sSpaceId
-   * @return
+   * @param sSpaceId the identifier of the parent space
+   * @return an array with the identifiers of the subspaces.
    */
   String[] getAllSubSpaceIds(String sSpaceId);
 
   /**
-   * Return the the spaces name corresponding to the given space ids.
+   * Return the spaces name corresponding to the given space ids.
    *
-   * @param asSpaceIds
-   * @return
+   * @param asSpaceIds one or more space identifiers.
+   * @return the names of the specified spaces
    */
   String[] getSpaceNames(String[] asSpaceIds);
 
   /**
    * Return the space light corresponding to the given space id
    *
-   * @param spaceId
-   * @return
+   * @param spaceId the unique identifier of a space.
+   * @return the space
    */
   SpaceInstLight getSpaceInstLightById(String spaceId);
 
@@ -106,21 +106,22 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getAvailCompoIds(String sUserId);
 
   /**
-   * Return the component ids available for the cuurent user Id in the given space id
+   * Return the component ids available for the current user id in the given space id
    */
   String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId);
 
   /**
    * Return the tuples (space id, compo id) allowed for the given user and given component name
    *
-   * @param sUserId
-   * @param sCompoName
-   * @return
+   * @param sUserId the identifier of a user
+   * @param sCompoName the name of a component
+   * @return an array of tuples (space id, component instance id) of resources available by the
+   * user
    */
   CompoSpace[] getCompoForUser(String sUserId, String sCompoName);
 
   /**
-   * gets the available component for a given user
+   * Gets the available component for a given user
    *
    * @param userId user identifier used to get component
    * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
@@ -133,8 +134,8 @@ public interface OrganizationController extends java.io.Serializable {
   /**
    * Return the compo id for the given component name
    *
-   * @param sCompoName
-   * @return
+   * @param sCompoName the name of a component
+   * @return an array of identifiers of instances of the given component
    */
   String[] getCompoId(String sCompoName);
 
@@ -212,7 +213,6 @@ public interface OrganizationController extends java.io.Serializable {
    * @param criteria the criteria in searching of user details.
    * @return a slice of the list of user details matching the criteria or an empty list of no ones
    * are found.
-   * @throws AdminException if an error occurs while getting the
    * user details.
    */
   <T extends User> SilverpeasList<T> searchUsers(UserDetailsSearchCriteria criteria);
@@ -236,7 +236,6 @@ public interface OrganizationController extends java.io.Serializable {
    * @param criteria the criteria in searching of user groups.
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones
    * are found.
-   * @throws AdminException if an error occurs while getting the
    * user groups.
    */
   <T extends Group> SilverpeasList<T> searchGroups(GroupsSearchCriteria criteria);
@@ -462,19 +461,8 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames);
 
-  /**
-   * Get a domain with given id
-   *
-   * @param domainId
-   * @return
-   */
   Domain getDomain(String domainId);
 
-  /**
-   * Get all domains
-   *
-   * @return
-   */
   Domain[] getAllDomains();
 
   List<GroupDetail> getDirectGroupsOfUser(String userId);
@@ -526,7 +514,6 @@ public interface OrganizationController extends java.io.Serializable {
    * @param spaceId the identifier of aimed space.
    * @param role the aimed technical role name.
    * @return the {@link SpaceProfile} instance.
-   * @throws AdminException on a technical error.
    */
   SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role);
 

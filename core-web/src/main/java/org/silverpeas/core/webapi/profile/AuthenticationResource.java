@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.web.rs.HTTPAuthentication;
@@ -76,7 +76,7 @@ public class AuthenticationResource extends RESTWebService {
             getHttpServletResponse());
     SessionInfo session = authentication.authenticate(context);
     // Returning the user profile
-    UserDetail user = session.getUserDetail();
+    User user = session.getUserDetail();
     return UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId()));
   }

@@ -52,7 +52,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.silverpeas.core.node.model.NodePK.ROOT_NODE_ID;
 import static org.silverpeas.core.process.annotation.SimulationActionProcessProcessor.SIMULATION_PROCESS_PERFORMED;
-import static org.silverpeas.core.process.annotation.SimulationActionProcessProcessor.SIMULATION_PROCESS_PROCESSING;
 
 /**
  * @author silveryocha
@@ -124,7 +123,7 @@ class SimulationActionProcessProcessorTest {
     assertThat(test.getSources(), empty());
     final Captures captures = getSimulationProcessCaptures(1);
     assertThat(captures.elementCaptor.getValue().actionType, is(ActionType.COPY));
-    assertThat(captures.elementCaptor.getValue().targetPK, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getValue().target, is(TARGET.getNodePK()));
     assertThat(captures.contextCaptor.getValue().getComponentInstanceId(), is(TARGET_INSTANCE_ID));
   }
 
@@ -148,7 +147,7 @@ class SimulationActionProcessProcessorTest {
     assertThat(test.getSources(), hasSize(1));
     final Captures captures = getSimulationProcessCaptures(1);
     assertThat(captures.elementCaptor.getValue().actionType, is(ActionType.MOVE));
-    assertThat(captures.elementCaptor.getValue().targetPK, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getValue().target, is(TARGET.getNodePK()));
     assertThat(captures.contextCaptor.getValue().getComponentInstanceId(), is(TARGET_INSTANCE_ID));
   }
 
@@ -178,7 +177,7 @@ class SimulationActionProcessProcessorTest {
     assertThat(test.getSources(), hasSize(2));
     final Captures captures = getSimulationProcessCaptures(1);
     assertThat(captures.elementCaptor.getValue().actionType, is(ActionType.MOVE));
-    assertThat(captures.elementCaptor.getValue().targetPK, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getValue().target, is(TARGET.getNodePK()));
     assertThat(captures.contextCaptor.getValue().getComponentInstanceId(), is(TARGET_INSTANCE_ID));
   }
 
@@ -206,9 +205,9 @@ class SimulationActionProcessProcessorTest {
     final Captures captures = getSimulationProcessCaptures(2);
     assertThat(captures.elementCaptor.getAllValues(), hasSize(2));
     assertThat(captures.elementCaptor.getAllValues().get(0).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(0).targetPK, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(0).target, is(TARGET.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(1).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(1).targetPK, is(OTHER_TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(1).target, is(OTHER_TARGET.getNodePK()));
     assertThat(captures.contextCaptor.getAllValues(), hasSize(2));
     assertThat(captures.contextCaptor.getAllValues().get(0).getComponentInstanceId(), is(TARGET_INSTANCE_ID));
     assertThat(captures.contextCaptor.getAllValues().get(1).getComponentInstanceId(), is(OTHER_TARGET_INSTANCE_ID));
@@ -244,13 +243,13 @@ class SimulationActionProcessProcessorTest {
     final Captures captures = getSimulationProcessCaptures(4);
     assertThat(captures.elementCaptor.getAllValues(), hasSize(4));
     assertThat(captures.elementCaptor.getAllValues().get(0).actionType, is(ActionType.COPY));
-    assertThat(captures.elementCaptor.getAllValues().get(0).targetPK, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(0).target, is(TARGET.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(1).actionType, is(ActionType.COPY));
-    assertThat(captures.elementCaptor.getAllValues().get(1).targetPK, is(OTHER_TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(1).target, is(OTHER_TARGET.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(2).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(2).targetPK, is(TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(2).target, is(TARGET.getNodePK()));
     assertThat(captures.elementCaptor.getAllValues().get(3).actionType, is(ActionType.CREATE));
-    assertThat(captures.elementCaptor.getAllValues().get(3).targetPK, is(OTHER_TARGET.getNodePK()));
+    assertThat(captures.elementCaptor.getAllValues().get(3).target, is(OTHER_TARGET.getNodePK()));
     assertThat(captures.contextCaptor.getAllValues(), hasSize(4));
     assertThat(captures.contextCaptor.getAllValues().get(0).getComponentInstanceId(), is(TARGET_INSTANCE_ID));
     assertThat(captures.contextCaptor.getAllValues().get(1).getComponentInstanceId(), is(OTHER_TARGET_INSTANCE_ID));

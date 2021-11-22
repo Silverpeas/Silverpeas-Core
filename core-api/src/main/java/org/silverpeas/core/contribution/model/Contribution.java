@@ -121,8 +121,7 @@ public interface Contribution extends SilverpeasResource, Serializable, Securabl
    * @return a {@link ContributionModel} object. By default, if this method isn't overridden, a
    * {@link DefaultContributionModel} instance is returned.
    */
-  @SuppressWarnings("unchecked")
   default ContributionModel getModel() {
-    return new DefaultContributionModel(this);
+    return new DefaultContributionModel<>(this);
   }
 }

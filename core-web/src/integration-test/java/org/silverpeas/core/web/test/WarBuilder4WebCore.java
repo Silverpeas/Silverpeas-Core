@@ -31,6 +31,10 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
+import org.silverpeas.core.webapi.profile.AuthenticationResource;
+import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
+import org.silverpeas.core.webapi.profile.UserProfileEntity;
+import org.silverpeas.core.webapi.util.UserEntity;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the

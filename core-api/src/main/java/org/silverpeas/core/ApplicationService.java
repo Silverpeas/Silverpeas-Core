@@ -34,7 +34,7 @@ import org.silverpeas.core.util.SettingBundle;
  * <p>
  * The service gathers the business functionalities the application offers to users or to other
  * components in Silverpeas and it gives access to both the application settings and the
- * application specific l10n translations. In the approach used in Silverpeas,  this service should
+ * application specific l10n translations. In the approach used in Silverpeas, this service should
  * not be accessed directly by clients but through the business entities that are managed by the
  * instances of the application (in the DDD (Domain Driven Development) way).
  * </p>
@@ -55,12 +55,13 @@ import org.silverpeas.core.util.SettingBundle;
 public interface ApplicationService<T extends Contribution> {
 
   /**
-   * Gets the content handled by an instance of the component with the specified unique identifier.
+   * Gets the contribution handled by an instance of the component with the specified unique
+   * identifier.
    *
-   * @param contentId the unique identifier of the content to get.
-   * @return a Silverpeas content.
+   * @param contributionId the unique identifier of the contribution to get.
+   * @return a contribution in Silverpeas.
    */
-  T getContentById(String contentId);
+  T getContributionById(String contributionId);
 
   /**
    * Gets the settings of this Silverpeas component.

@@ -92,7 +92,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
       if (service != null) {
         try {
           Contribution commentedContent =
-              service.getContentById(comment.getResourceReference().getLocalId());
+              service.getContributionById(comment.getResourceReference().getLocalId());
           final Set<String> recipients =
               getInterestedUsers(comment.getCreator().getId(), commentedContent);
           if (!recipients.isEmpty()) {

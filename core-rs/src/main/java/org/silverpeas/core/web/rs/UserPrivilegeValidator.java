@@ -61,7 +61,7 @@ import javax.ws.rs.core.Response;
 public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   @Inject
-  private SessionManagement sessionManagement;
+  private SessionManagement sessionManager;
 
   @Inject
   private ComponentAccessControl componentAccessController;
@@ -89,15 +89,20 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   /**
    * Validates the authentication of the user at the origin of a web request.
-   *
-   * The validation checks first the user is already authenticated and then it has a valid opened
-   * session in Silverpeas. Otherwise it attempts to open a new session for the user by using its
+   * <p>
+   * The validation checks first the user is already authenticated, then it has a valid opened
+   * session in Silverpeas. Otherwise, it attempts to open a new session for the user by using its
    * credentials passed through the request (as an HTTP header). Once the authentication succeed,
-   * the identification of the user is done and detail about it can then be got. A runtime exception
-   * is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The validation
-   * fails when one of the below situation is occurring: <ul> <li>The user session key is
-   * invalid;</li> <li>The user isn't authenticated and no credentials are passed with the
-   * request;</li> <li>The user authentication failed.</li> </ul>
+   * the identification of the user is done and detail about it can then be got. His session key is
+   * then passed in the header of the HTTP response. A runtime exception is thrown with an HTTP
+   * status code UNAUTHORIZED (401) at validation failure. The validation fails when one of the
+   * below situation is occurring:
+   * </p>
+   * <ul>
+   *   <li>The user session key is invalid;</li>
+   *   <li>The user isn't authenticated and no credentials are passed within the request;</li>
+   *   <li>The user authentication failed.</li>
+   * </ul>
    *
    * @param request the HTTP request from which the authentication of the caller can be done.
    * @return the opened session of the user at the origin of the specified request.
@@ -260,7 +265,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * session or a session spawned only for the current request.
    */
   private SessionInfo validateUserSession(SessionValidationContext context) {
-    SessionInfo sessionInfo = sessionManagement.validateSession(context);
+    SessionInfo sessionInfo = sessionManager.validateSession(context);
     if (!sessionInfo.isDefined() && UserDetail.isAnonymousUserExist()) {
       // when no existing session whereas anonymous use is set, initializing an anonymous session
       sessionInfo = new SessionInfo(null, UserDetail.getAnonymousUser());

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.process;
 
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.process.io.file.AbstractDummyHandledFile;
@@ -35,37 +35,23 @@ import java.util.EnumSet;
  * Date: 17/10/13
  */
 public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
-  private final static EnumSet<DocumentType> technicalDocumentTypes =
+  private static final EnumSet<DocumentType> technicalDocumentTypes =
       EnumSet.of(DocumentType.wysiwyg);
 
   private final SimpleDocument document;
-  private boolean deleted = false;
-  private WAPrimaryKey targetPK = null;
+  private final boolean deleted;
+  private ResourceReference target = null;
 
-  /**
-   * Default constructor.
-   * @param document
-   */
   public SimpleDocumentDummyHandledFile(final SimpleDocument document) {
     this(document, false);
   }
 
-  /**
-   * Default constructor.
-   * @param document
-   * @param targetPK
-   */
   public SimpleDocumentDummyHandledFile(final SimpleDocument document,
-      final WAPrimaryKey targetPK) {
+      final ResourceReference target) {
     this(document);
-    this.targetPK = targetPK;
+    this.target = target;
   }
 
-  /**
-   * Default constructor.
-   * @param document
-   * @param deleted
-   */
   public SimpleDocumentDummyHandledFile(final SimpleDocument document, final boolean deleted) {
     this.document = document;
     this.deleted = deleted;
@@ -73,8 +59,8 @@ public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
 
   @Override
   public String getComponentInstanceId() {
-    if (targetPK != null) {
-      return targetPK.getInstanceId();
+    if (target != null) {
+      return target.getInstanceId();
     }
     return document.getInstanceId();
   }
@@ -105,5 +91,15 @@ public class SimpleDocumentDummyHandledFile extends AbstractDummyHandledFile {
   @Override
   public boolean isDeleted() {
     return deleted;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

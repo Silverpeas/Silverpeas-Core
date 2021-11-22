@@ -22,14 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.selection;
-
 /**
- * This context indicates that the resources selected and hence put into the selection basket were
- * for transferring information about them to a service. It is the default selection context when
- * no context is specified while putting a resource into the {@link SelectionBasket}.
+ * Defines the REST based web service dedicated to manage the basket of selected resources for
+ * web clients.
  * @author mmoquillon
  */
-public class TransferContext implements SelectionContext {
-
-}
+package org.silverpeas.core.webapi.selection;

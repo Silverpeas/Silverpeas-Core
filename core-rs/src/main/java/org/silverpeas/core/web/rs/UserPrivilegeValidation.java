@@ -35,6 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 
 /**
+ * The behavior to validate the privilege of a user to access a resource or a contribution in
+ * Silverpeas through an HTTP connexion. For doing, a user can first to be authenticated in order
+ * to identify him behind an incoming HTTP request, then its access rights to targeted resource or
+ * contribution are checked. All implementors of such behaviour have to satisfy this
+ * interface.
  * @author mmoquillon
  */
 public interface UserPrivilegeValidation {
@@ -69,16 +74,20 @@ public interface UserPrivilegeValidation {
 
   /**
    * Validates the authentication of the user at the origin of a web request.
-   *
-   * The validation checks first the user is already authenticated and then it has a valid opened
-   * session in Silverpeas. Otherwise it attempts to open a new session for the user by using its
+   * <p>
+   * The validation checks first the user is already authenticated, then it has a valid opened
+   * session in Silverpeas. Otherwise, it attempts to open a new session for the user by using its
    * credentials passed through the request (as an HTTP header). Once the authentication succeed,
    * the identification of the user is done and detail about it can then be got, and the session
    * information is set in the header(s) of the HTTP response. A runtime exception
    * is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The validation
-   * fails when one of the bellowed situation is occurring: <ul> <li>The user session key is
-   * invalid;</li> <li>The user isn't authenticated and no credentials are passed with the
-   * request;</li> <li>The user authentication failed.</li> </ul>
+   * fails when one of the bellowed situation is occurring:
+   * </p>
+   * <ul>
+   *   <li>The user session key is invalid;</li>
+   *   <li>The user isn't authenticated and no credentials are passed with the request;</li>
+   *   <li>The user authentication failed.</li>
+   * </ul>
    *
    * @param request the HTTP request from which the authentication of the caller can be done.
    * @param response the HTTP response that will be sent with the session information set in the
@@ -89,8 +98,8 @@ public interface UserPrivilegeValidation {
   SessionInfo validateUserAuthentication(HttpServletRequest request, HttpServletResponse response);
 
   /**
-   * Sets into the request attributes the {@link
-   * UserPrivilegeValidator#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute to true.
+   * Sets into the request attributes the property to skip the registering of the last access of
+   * the user.
    * @param request the current request performed.
    * @return itself.
    */

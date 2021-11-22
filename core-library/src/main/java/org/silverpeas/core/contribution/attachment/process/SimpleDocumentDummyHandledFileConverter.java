@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment.process;
 
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
@@ -43,7 +43,7 @@ public class SimpleDocumentDummyHandledFileConverter
 
   @Override
   public List<DummyHandledFile> convert(final List<SimpleDocumentSimulationElement> elements,
-      final WAPrimaryKey targetPK, final ActionType actionType) {
+      final ResourceReference target, final ActionType actionType) {
 
     // Initializing the result
     List<DummyHandledFile> dummyHandledFiles = new LinkedList<>();
@@ -67,7 +67,7 @@ public class SimpleDocumentDummyHandledFileConverter
         // old one
         if (!document.isOld()) {
           dummyHandledFiles
-              .add(new SimpleDocumentDummyHandledFile(document.getElement(), targetPK));
+              .add(new SimpleDocumentDummyHandledFile(document.getElement(), target));
         }
       }
     } else {

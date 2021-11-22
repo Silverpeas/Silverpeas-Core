@@ -236,8 +236,8 @@ class SelectionBasketTest {
   }
 
   @Test
-  @DisplayName("Remove a resource in an empty basket should do nothing")
-  void removeAResourceInAnEmptyBasket() {
+  @DisplayName("Remove a resource at a given position in an empty basket should do nothing")
+  void removeAResourceAtAPositionInAnEmptyBasket() {
     SelectionBasket basket = SelectionBasket.get();
     assertThat(basket.isEmpty(), is(true));
 
@@ -247,7 +247,7 @@ class SelectionBasketTest {
 
   @Test
   @DisplayName("Remove a resource at an invalid position in the basket should do nothing")
-  void removeASelectedResourceAtAnInvalidPositionInBasket() {
+  void removeAResourceAtAnInvalidPositionInBasket() {
     SelectionBasket basket = SelectionBasket.get();
     assertThat(basket.isEmpty(), is(true));
 
@@ -261,7 +261,7 @@ class SelectionBasketTest {
 
   @Test
   @DisplayName("Remove a resource at a valid position in the basket should remove it")
-  void removeASelectedResource() {
+  void removeAResourceAtAValidPosition() {
     SelectionBasket basket = SelectionBasket.get();
     assertThat(basket.isEmpty(), is(true));
 
@@ -276,6 +276,51 @@ class SelectionBasketTest {
     assertThat(basket.count(), is(3));
     assertThat(removedContribution.isPresent(), is(true));
     assertThat(removedContribution.get().getResource(), is(contribution));
+    assertThat(basket.getSelectedResources()
+        .map(SelectionEntry::getResource)
+        .anyMatch(r -> r.equals(contribution)), is(false));
+
+  }
+
+  @Test
+  @DisplayName("Remove a resource in an empty basket should do nothing")
+  void removeAResourceInAnEmptyBasket() {
+    SelectionBasket basket = SelectionBasket.get();
+    assertThat(basket.isEmpty(), is(true));
+
+    basket.remove(getContribution(1));
+    assertThat(basket.isEmpty(), is(true));
+  }
+
+  @Test
+  @DisplayName("Remove a resource not present in the basket should do nothing")
+  void removeANonPresentResourceInBasket() {
+    SelectionBasket basket = SelectionBasket.get();
+    assertThat(basket.isEmpty(), is(true));
+
+    basket.put(getContribution(1));
+    basket.put(getContribution(2));
+    assertThat(basket.count(), is(2));
+
+    basket.remove(getContribution(3));
+    assertThat(basket.count(), is(2));
+  }
+
+  @Test
+  @DisplayName("Remove a resource present in the basket should remove it")
+  void removeAnExistingResource() {
+    SelectionBasket basket = SelectionBasket.get();
+    assertThat(basket.isEmpty(), is(true));
+
+    MyContribution contribution = getContribution(2);
+    basket.put(getContribution(1));
+    basket.put(contribution);
+    basket.put(getContribution(3));
+    basket.put(getContribution(4));
+    assertThat(basket.count(), is(4));
+
+    basket.remove(contribution);
+    assertThat(basket.count(), is(3));
     assertThat(basket.getSelectedResources()
         .map(SelectionEntry::getResource)
         .anyMatch(r -> r.equals(contribution)), is(false));

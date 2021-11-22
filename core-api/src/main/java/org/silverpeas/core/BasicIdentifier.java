@@ -24,6 +24,11 @@
 
 package org.silverpeas.core;
 
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 /**
@@ -33,12 +38,21 @@ import java.util.Objects;
  * among others resources of the same type.
  * @author mmoquillon
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class BasicIdentifier implements ResourceIdentifier{
 
   private static final int NO_LOCAL_ID = -1;
 
-  private final int localId;
-  private final String globalId;
+  @XmlElement(required = true)
+  @NotNull
+  private int localId;
+  @XmlElement(required = true)
+  @NotNull
+  private String globalId;
+
+  protected BasicIdentifier()  {
+  }
 
   /**
    * Constructs a basic identifier with only the specified String representation of a unique

@@ -60,8 +60,8 @@ import java.net.URI;
 
 /**
  * It represents the web entity of a user in Silverpeas from which a representation (usually in
- * JSON) ca be produced. This web entity gather common usual user information and an entry point
- * (an URI) to its more complete profile. It is usually used in other web entities to refer a
+ * JSON) can be produced. This web entity gather common usual user information and an entry point
+ * (a URI) to its more complete profile. It is usually used in other web entities to refer a
  * user (for example the author of a contribution represented by the web entity).
  * @author mmoquillon
  */

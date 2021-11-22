@@ -51,15 +51,13 @@ import org.junit.Test;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is
@@ -81,25 +79,22 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
     return uri;
   }
 
-  private static String withAsApiToken(String apiTokenValue) {
-    return apiTokenValue;
-  }
-
   /**
    * Puts at the specified URI the specified new state of the resource.
    * @param <C> the type of the resource's state.
    * @param uri the URI at which the resource is.
    * @param newResourceState the new state of the resource.
-   * @return
+   * @return the updated state of the resource
    */
   public <C> C putAt(String uri, C newResourceState) {
-    return put(newResourceState, at(uri), withAsApiToken(getAPITokenValue()));
+    AuthId authId = AuthId.apiToken(getAPITokenValue());
+    return put(newResourceState, at(uri), withAsAuthId(authId));
   }
 
   @Test
   public void updateOfAResourceByANonAuthenticatedUser() {
     try {
-      put(aResource(), at(aResourceURI()), withAsApiToken(null));
+      put(aResource(), at(aResourceURI()), withAsAuthId(AuthId.NONE));
       fail("A non authenticated user shouldn't update the resource");
     } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -111,7 +106,8 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   @Test
   public void updateOfAResourceWithinADeprecatedSession() {
     try {
-      put(aResource(), at(aResourceURI()), withAsApiToken(UUID.randomUUID().toString()));
+      AuthId authId = AuthId.apiToken(UUID.randomUUID().toString());
+      put(aResource(), at(aResourceURI()), withAsAuthId(authId));
       fail("A user shouldn't update the resource through an expired session");
     } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -160,7 +156,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   @Test
   public void updateWithAnInvalidResourceState() {
     try {
-      putAt(aResourceURI(), "{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}");
+      putAt(aResourceURI(), "{\"uri\": \"https://toto.chez-les-papoos.com/invalid/resource\"}");
     } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int badRequest = Status.BAD_REQUEST.getStatusCode();
@@ -169,21 +165,8 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   }
 
   @SuppressWarnings("unchecked")
-  private <E> E put(final E entity, String atURI, String apiTokenValue) {
-    String thePath = atURI;
-    String queryParams = "";
-    WebTarget resource = resource();
-    if (thePath.contains("?")) {
-      String[] pathParts = thePath.split("\\?");
-      thePath = pathParts[0];
-      queryParams = pathParts[1];
-    }
-    Invocation.Builder resourcePutter = applyQueryParameters(queryParams, resource.path(thePath))
-        .request(MediaType.APPLICATION_JSON);
-    if (isDefined(apiTokenValue)) {
-      resourcePutter =
-          resourcePutter.header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(apiTokenValue));
-    }
+  private <E> E put(final E entity, String atURI, AuthId authId) {
+    Invocation.Builder resourcePutter = setUpHTTPRequest(atURI, MediaType.APPLICATION_JSON, authId);
     Class<E> c = (Class<E>) entity.getClass();
     return resourcePutter.put(Entity.entity(entity, MediaType.APPLICATION_JSON), c);
   }

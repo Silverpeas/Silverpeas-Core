@@ -206,7 +206,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       // create line in db
       ThumbnailDetail thumdAdded = getThumbnailService().createThumbnail(thumbDetail);
       // create crop thumbnail
-      if (thumdAdded.getCropFileName() == null && thumdAdded.isCropable()) {
+      if (thumdAdded.getCropFileName() == null && thumdAdded.isCroppable()) {
         createCropFile(thumbnailWidth, thumbnailHeight, thumdAdded);
       }
       return thumdAdded;
@@ -364,11 +364,6 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     return imageProps[1];
   }
 
-  /**
-   *
-   * @param thumbDetail
-   * @return
-   */
   public static String[] getImageAndMimeType(ThumbnailDetail thumbDetail) {
     try {
       ThumbnailDetail thumbDetailComplete = getThumbnailService().getCompleteThumbnail(thumbDetail);

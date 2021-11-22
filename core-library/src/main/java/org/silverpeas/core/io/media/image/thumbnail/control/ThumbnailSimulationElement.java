@@ -23,19 +23,16 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.process.annotation.AbstractSimulationElement;
 
 /**
  * User: Yohann Chastagnier
  * Date: 28/10/13
  */
-public class ThumbnailSimulationElement extends AbstractSimulationElement<ThumbnailDetail> {
-  /**
-   * Default constructor.
-   * @param element
-   */
-  public ThumbnailSimulationElement(final ThumbnailDetail element) {
+public class ThumbnailSimulationElement extends AbstractSimulationElement<Thumbnail> {
+
+  public ThumbnailSimulationElement(final Thumbnail element) {
     super(element);
   }
 }

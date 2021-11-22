@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.Folder;
 import org.silverpeas.core.contribution.model.I18nContribution;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -55,7 +56,7 @@ import java.util.Set;
 @XmlRootElement(name = "xmlField")
 @XmlAccessorType(XmlAccessType.NONE)
 public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Identifiable,
-    I18nContribution, Folder, Serializable, Securable {
+    I18nContribution, Folder, Serializable, Securable, WithPermanentLink {
 
   private static final long serialVersionUID = -1401884517616404337L;
   private static final String UNKNOWN = "unknown";
@@ -466,6 +467,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
         getNodePK().getInstanceId());
   }
 
+  @Override
   public String getPermalink() {
     if (URLUtil.displayUniversalLinks()) {
       return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, this.nodePK.getId(), this.nodePK.

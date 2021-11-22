@@ -32,6 +32,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
@@ -1063,9 +1064,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private void setIndexEntryWithThumbnail(final FullIndexEntry indexEntry,
       final PublicationDetail pubDetail) {
     try {
-      ThumbnailDetail thumbnail = pubDetail.getThumbnail();
-      if (thumbnail != null) {
-        String[] imageProps = ThumbnailController.getImageAndMimeType(thumbnail);
+      Thumbnail thumbnail = pubDetail.getThumbnail();
+      if (thumbnail instanceof ThumbnailDetail) {
+        String[] imageProps = ThumbnailController.getImageAndMimeType((ThumbnailDetail) thumbnail);
         indexEntry.setThumbnail(imageProps[0]);
         indexEntry.setThumbnailMimeType(imageProps[1]);
       }
@@ -1327,9 +1328,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    * Recupere les coordonnees de la publication (collection de nodePK)
    * @param pubId a publication identifier
    * @param componentId a component identifier
-   * @return
+   * @return a collection of coordinates of the publication in a tree of classification
    */
   @Override
+  @SuppressWarnings("unchecked")
   public Collection<Coordinate> getCoordinates(String pubId, String componentId) {
     PublicationPK pubPK = new PublicationPK(pubId, componentId);
     Collection<NodePK> fatherPKs = getAllFatherPKInSamePublicationComponentInstance(pubPK);
@@ -1415,13 +1417,12 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   /**
    * Get list of SocialInformationPublication of my contacts according to options and number of
-   * Item
-   * and the first Index.
-   * @param myContactsIds
-   * @param options
-   * @param begin
-   * @param end
-   * @return
+   * Item and the first Index.
+   * @param myContactsIds a list of unique identifiers of my contacts.
+   * @param options a list of options to apply when filtering the information to get.
+   * @param begin the date at which the temporal interval starts.
+   * @param end the date at which the temporal interval ends.
+   * @return a list of publications on which my contacts have worked.
    */
   @Override
   public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
@@ -1538,7 +1539,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           PublicationFatherDAO.getAllLocationsByPublicationIds(con, publis.stream()
               .map(PublicationDetail::getId)
               .collect(Collectors.toSet()));
-      final Set<String> instanceIds = criteria.getComponentInstanceIds().stream().collect(Collectors.toSet());
+      final Set<String> instanceIds = new HashSet<>(criteria.getComponentInstanceIds());
       final Map<NodePK, Location> locationsAsNodePKs = indexedLocations.entrySet().stream()
           .flatMap(e -> e.getValue().stream())
           .filter(l -> instanceIds.isEmpty() || instanceIds.contains(l.getInstanceId()))
@@ -1550,10 +1551,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       return publis.stream()
           .filter(p -> {
             final Optional<Location> result = indexedLocations.get(p.getId()).stream()
-              .filter(authorizedLocations::contains)
-              .sorted(comparing((Location l) -> !l.getInstanceId().equals(p.getInstanceId()))
-                  .thenComparing(Location::isAlias).thenComparing(Location::getInstanceId))
-                  .findFirst();
+                .filter(authorizedLocations::contains)
+                .min(comparing((Location l) -> !l.getInstanceId()
+                    .equals(p.getInstanceId())).thenComparing(Location::isAlias)
+                    .thenComparing(Location::getInstanceId));
             if (result.isPresent()) {
               p.setAuthorizedLocation(result.get());
               return true;

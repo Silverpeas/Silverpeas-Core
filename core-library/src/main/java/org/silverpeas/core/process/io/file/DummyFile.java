@@ -42,17 +42,18 @@ public class DummyFile extends AbstractDummyHandledFile {
 
   /**
    * Case of the file is considered as a creation.
-   * @param file
-   * @param componentInstanceId
+   * @param file the file
+   * @param componentInstanceId the component instance in which the file is used
    */
   public DummyFile(final File file, final String componentInstanceId) {
     this(file, componentInstanceId, false);
   }
 
   /**
-   * Default constructor.
-   * @param file
-   * @param deleted
+   * Case of a creation of a deletion of a file.
+   * @param file the file
+   * @param componentInstanceId the component instance in which the file is used
+   * @param deleted is a case of a deletion?
    */
   public DummyFile(final File file, final String componentInstanceId, final boolean deleted) {
     this.file = file;
@@ -91,5 +92,15 @@ public class DummyFile extends AbstractDummyHandledFile {
   @Override
   public boolean isDeleted() {
     return deleted;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

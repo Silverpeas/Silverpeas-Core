@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.session;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -55,7 +55,7 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
    * @param ip the remote user host address IP.
    * @param ud the detail about the connected user.
    */
-  HTTPSessionInfo(HttpSession session, String ip, UserDetail ud) {
+  HTTPSessionInfo(HttpSession session, String ip, User ud) {
     super(session.getId(), ud);
     httpSession = session;
     setIPAddress(ip);

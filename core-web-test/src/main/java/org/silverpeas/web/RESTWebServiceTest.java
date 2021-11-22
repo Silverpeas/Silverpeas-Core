@@ -30,25 +30,51 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
- * The base class for testing REST web services in Silverpeas. This base class wraps all of the
- * mechanismes required to prepare the environment for testing web services with RESTEasy and CDI
+ * The base class for testing REST web services in Silverpeas. This base class wraps all the
+ * mechanisms required to prepare the environment for testing web services with RESTEasy and CDI
  * in the context of Silverpeas.
  */
 public abstract class RESTWebServiceTest {
+
+  /**
+   * The HTTP header parameter in an incoming request that carries the user API token value as it is
+   * defined in the Silverpeas REST web service API.
+   */
+  private static final String AUTH_HTTP_HEADER = "Authorization";
+
+  /**
+   * The HTTP header parameter in an incoming request that carries the user session key value as it
+   * is defined in the Silverpeas REST web service API. the session key is obtained once the user
+   * is authenticated amongst the REST-based Web API.
+   */
+  private static final String SESSION_KEY_HTTP_HEADER = "X-Silverpeas-Session";
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
@@ -92,12 +118,13 @@ public abstract class RESTWebServiceTest {
   public abstract String[] getExistingComponentInstances();
 
   /**
-   * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
+   * Gets tools to take into account in tests. These tools will be considered as existing. Others
    * than those will be rejected with an HTTP error 404 (NOT FOUND).
    *
    * @return an array with the identifier of tools to take into account in tests. The array cannot
-   * be null but it can be empty.
+   * be null, but it can be empty.
    */
+  @SuppressWarnings("unused")
   public String[] getExistingTools() {
     return new String[]{};
   }
@@ -139,7 +166,7 @@ public abstract class RESTWebServiceTest {
 
   /**
    * Denies the access to the silverpeas resources to all users.</br>
-   * It sets non public both the dummy component and all of the existing component instances on
+   * It sets no public both the dummy component and all the existing component instances on
    * which the test is working.
    */
   public void denyAuthorizationToUsers() {
@@ -158,9 +185,44 @@ public abstract class RESTWebServiceTest {
   /**
    * Denies the access to the silverpeas spaces to all users.
    */
+  @SuppressWarnings("unused")
   public void denySpaceAuthorizationToUsers() {
     throw new NotImplementedException(
         "Migration : the implementation of denySpaceAuthorizationToUsers is not yet performed...");
+  }
+
+  /**
+   * Authenticates the specified user through the REST-based Web API and returns the opened session
+   * identifier. The returned session identifier can then be used in the subsequent requests sent
+   * during a test. Once the session is opened for the given user, the session cache service is then
+   * get to be set for the local thread of the current running test, so that the data prepared for
+   * the test and cached in the session cache of the user will be accessible within the thread of
+   * the tested web service.
+   * <p></p>
+   * <p>
+   *   Warning: the authentication is performed by the corresponding REST-based web service
+   *   and as such this one is required to be included in the deployment archive as well as all of
+   *   its dependencies.
+   * </p>
+   * @param user the user to authenticate.
+   * @return the opened user session identifier.
+   */
+  public String authenticate(final User user) {
+    AuthId authId = AuthId.basicAuth(user.getLogin(), user.getDomainId(), "sasa");
+    Invocation.Builder authentication =
+        setUpHTTPRequest("authentication", MediaType.APPLICATION_JSON, authId);
+    Response authResponse =
+        authentication.buildPost(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE))
+            .invoke();
+    assertThat(authResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
+    String sessionKey = authResponse.getHeaderString(UserPrivilegeValidation.HTTP_SESSIONKEY);
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
+    SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+    SessionCacheService cacheService =
+        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+    cacheService.setCurrentSessionCache(sessionInfo.getCache());
+
+    return sessionKey;
   }
 
   protected WebTarget applyQueryParameters(String parameterQueryPart, WebTarget resource) {
@@ -177,5 +239,33 @@ public abstract class RESTWebServiceTest {
       newResource = newResource.queryParam(parameter.getKey(), parameter.getValue().toArray());
     }
     return newResource;
+  }
+
+  protected AuthId withAsAuthId(AuthId credential) {
+    return credential;
+  }
+
+  protected Invocation.Builder setUserIdent(AuthId authId, Invocation.Builder http) {
+    if (authId.isAuthentication()) {
+      http.header(AUTH_HTTP_HEADER, authId.getValue());
+    } else if (authId.isInSession()) {
+      http.header(SESSION_KEY_HTTP_HEADER, authId.getValue());
+    }
+    return http;
+  }
+
+  protected Invocation.Builder setUpHTTPRequest(final String uri, final String mediaType,
+      final AuthId authId) {
+    String thePath = uri;
+    String queryParams = "";
+    WebTarget resource = resource();
+    if (thePath.contains("?")) {
+      String[] pathParts = thePath.split("\\?");
+      thePath = pathParts[0];
+      queryParams = pathParts[1];
+    }
+    Invocation.Builder requestBuilder =
+        applyQueryParameters(queryParams, resource.path(thePath)).request(mediaType);
+    return setUserIdent(authId, requestBuilder);
   }
 }

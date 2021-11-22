@@ -26,7 +26,6 @@
 package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.notification.message.MessageManager;
@@ -67,7 +66,7 @@ public interface WebAuthenticationValidation {
     final HttpServletRequest request = getSilverpeasContext().getRequest();
     final SessionInfo session = validation
         .validateUserAuthentication(request, getSilverpeasContext().getResponse());
-    final UserDetail currentUser = session.getUserDetail();
+    final User currentUser = session.getUserDetail();
     getSilverpeasContext().setUser(currentUser);
     if (currentUser != null) {
       MessageManager.setLanguage(currentUser.getUserPreferences().getLanguage());

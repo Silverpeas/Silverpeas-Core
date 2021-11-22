@@ -236,6 +236,8 @@ public class HTTPAuthentication {
       final SessionInfo session =
           SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());
       context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+      context.getHttpServletResponse()
+          .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
       return session;
     }
     return null;

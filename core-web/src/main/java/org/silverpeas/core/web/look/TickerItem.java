@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.web.look;
 
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
-public class TickerItem {
+public class TickerItem implements WithPermanentLink {
 
-  private PublicationDetail publication;
+  private final PublicationDetail publication;
 
   public TickerItem(PublicationDetail pub) {
     publication = pub;
@@ -49,6 +50,7 @@ public class TickerItem {
     return "";
   }
 
+  @Override
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getId());
   }

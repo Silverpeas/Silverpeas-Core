@@ -119,7 +119,7 @@ public class SessionManager implements SessionManagement, Initialization {
   private final List<String> userNotificationSessions =
       Collections.synchronizedList(new ArrayList<>(100));
   @Inject
-  private SilverStatisticsManager myStatisticsManager = null;
+  private SilverStatisticsManager myStatisticsManager;
   @Inject
   private Scheduler scheduler;
   @Inject
@@ -160,12 +160,7 @@ public class SessionManager implements SessionManagement, Initialization {
       initSchedulerTimeStamp();
 
       // register the shutdown session management process when the server is in shutdown.
-      Runtime.getRuntime().addShutdownHook(new Thread() {
-        @Override
-        public void run() {
-          SessionManager.this.shutdown();
-        }
-      });
+      Runtime.getRuntime().addShutdownHook(new Thread(SessionManager.this::shutdown));
 
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
@@ -201,7 +196,7 @@ public class SessionManager implements SessionManagement, Initialization {
    * timestamp (every time the job will execute) settings is given by minutes and logically must be
    * less than the session timeout.
    *
-   * @throws SchedulerException
+   * @throws SchedulerException if the scheduling fails
    * @see Scheduler for more infos
    */
   private void initSchedulerTimeStamp() throws SchedulerException {
@@ -263,6 +258,7 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   @Override
+  @SuppressWarnings("Duplicates")
   public SessionInfo getSessionInfo(String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
@@ -276,11 +272,6 @@ public class SessionManager implements SessionManagement, Initialization {
     return session;
   }
 
-  /**
-   *
-   * @param userId
-   * @param sessionId
-   */
   private void removeInQueueMessages(String userId, String sessionId) {
     if (StringUtil.isDefined(sessionId)) {
       ServerMessageService.get().deleteAll(userId, sessionId);
@@ -292,7 +283,7 @@ public class SessionManager implements SessionManagement, Initialization {
   /**
    * Gets all the connected users and the duration of their session.
    *
-   * @return
+   * @return a collection of all opened user sessions in Silverpeas.
    */
   @Override
   public Collection<SessionInfo> getConnectedUsersList() {
@@ -300,11 +291,13 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   /**
-   * Gets all the connected users and the duration of their session.
+   * Gets for the specified user all the connected users and the duration of their session. The
+   * actual domain restriction policy is taken into account for the user asking the users currently
+   * connected in Silverpeas.
    *
-   * @return Collection of HTTPSessionInfo
+   * @param user the current user asking for actual opened user sessions.
+   * @return Collection of opened user sessions.
    * @author dlesimple
-   * @param user
    */
   @Override
   public Collection<org.silverpeas.core.security.session.SessionInfo> getDistinctConnectedUsersList(
@@ -313,7 +306,7 @@ public class SessionManager implements SessionManagement, Initialization {
         = new HashMap<>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
-      UserDetail sessionUser = si.getUserDetail();
+      User sessionUser = si.getUserDetail();
       String key = sessionUser.getLogin() + sessionUser.getDomainId();
       // keep users with distinct login and domainId
       if (!distinctConnectedUsersList.containsKey(key) && !sessionUser.isAccessGuest()) {
@@ -326,7 +319,7 @@ public class SessionManager implements SessionManagement, Initialization {
 
   private void addInConnectedUsersList(final User user,
       final Map<String, SessionInfo> distinctConnectedUsersList, final SessionInfo si,
-      final UserDetail sessionUser, final String key) {
+      final User sessionUser, final String key) {
     if (DomainProperties.areDomainsVisibleToAll()) {
       // all users are visible
       distinctConnectedUsersList.put(key, si);
@@ -349,9 +342,10 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   /**
-   * Gets number of connected users
+   * Gets the number of connected users in Silverpeas for the specified user. The domain restriction
+   * policy is taken into account for the given user in the filtering of the opened user sessions.
    *
-   * @param user
+   * @param user the user asking the number of actually connected users.
    * @return nb of connected users
    * @author dlesimple
    */
@@ -376,7 +370,7 @@ public class SessionManager implements SessionManagement, Initialization {
       List<SessionInfo> expiredSessions = new ArrayList<>(allSI.size());
 
       for (SessionInfo si : allSI) {
-        UserDetail userDetail = si.getUserDetail();
+        User userDetail = si.getUserDetail();
         long userSessionTimeoutMillis = userDetail.isAccessAdmin() ? adminSessionTimeout
             : userSessionTimeout;
         // Has the session expired (timeout)
@@ -519,7 +513,7 @@ public class SessionManager implements SessionManagement, Initialization {
    * @return a SessionInfo instance representing the opened session.
    */
   @Override
-  public SessionInfo openSession(UserDetail user) {
+  public SessionInfo openSession(User user) {
     SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), user);
     openSession(session);
     return session;
@@ -533,10 +527,10 @@ public class SessionManager implements SessionManagement, Initialization {
    * @return a SessionInfo instance representing the opened session.
    */
   @Override
-  public SessionInfo openSession(UserDetail user, HttpServletRequest request) {
+  public SessionInfo openSession(User user, HttpServletRequest request) {
     HTTPSessionInfo si = null;
     // If X-Forwarded-For header exists, we use the IP address contained in it as the client IP address
-    // This is the case when Silverpeas is behing a reverse-proxy
+    // This is the case when Silverpeas is behind a reverse-proxy
     final String xForwardedFor = request.getHeader("X-Forwarded-For");
     final String requestRemoteHost = request.getRemoteHost();
     String anIP;
@@ -582,7 +576,7 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   @Override
-  public boolean isUserConnected(UserDetail user) {
+  public boolean isUserConnected(User user) {
     final String userId = user.getId();
     for (SessionInfo session : userDataSessions.values()) {
       if (userId.equals(session.getUserDetail().getId())) {

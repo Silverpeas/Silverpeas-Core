@@ -39,7 +39,7 @@ CREATE TABLE DomainSP_User (
   position      VARCHAR(100)          NULL,
   boss          VARCHAR(100)          NULL,
   login         VARCHAR(50)           NOT NULL,
-  password      VARCHAR(32)           NULL,
+  password      VARCHAR(123)          NULL,
   passwordValid CHAR(1) DEFAULT ('Y') NOT NULL,
   loginMail     VARCHAR(100)          NULL,
   email         VARCHAR(100)          NULL
@@ -151,3 +151,12 @@ CREATE TABLE Personalization (
   menuDisplay         VARCHAR(50)  DEFAULT 'DEFAULT'
 );
 ALTER TABLE Personalization  ADD CONSTRAINT PK_Personalization PRIMARY KEY (id);
+
+-- For authentication
+
+CREATE TABLE ST_KeyStore
+(
+    userKey  decimal(18, 0) NOT NULL,
+    login    varchar(100)   NOT NULL,
+    domainId int            NOT NULL
+);

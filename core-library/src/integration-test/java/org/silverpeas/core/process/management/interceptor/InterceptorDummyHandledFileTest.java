@@ -55,11 +55,21 @@ public class InterceptorDummyHandledFileTest extends AbstractDummyHandledFile {
 
   @Override
   public long getSize() {
-    return 26 * oldOperand;
+    return 26L * oldOperand;
   }
 
   @Override
   public String getMimeType() {
     return "dummy";
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

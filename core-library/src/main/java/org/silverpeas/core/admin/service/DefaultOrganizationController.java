@@ -56,6 +56,7 @@ import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -301,6 +302,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail getUserDetail(String sUserId) {
     try {
@@ -311,6 +313,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getUserDetails(String[] asUserIds) {
     try {
@@ -321,6 +324,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getAllUsers(String componentId) {
     try {
@@ -333,6 +337,7 @@ public class DefaultOrganizationController implements OrganizationController {
     return new UserDetail[0];
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getAllUsersInDomain(String domainId) {
     try {
@@ -345,6 +350,7 @@ public class DefaultOrganizationController implements OrganizationController {
     return new UserDetail[0];
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T extends User> List<T> getUsersOfDomains(List<String> domainIds) {
     try {
@@ -355,6 +361,7 @@ public class DefaultOrganizationController implements OrganizationController {
     return Collections.emptyList();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T extends User> List<T> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
     try {
@@ -377,6 +384,7 @@ public class DefaultOrganizationController implements OrganizationController {
     return new ListSlice<>(Collections.emptyList());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Group[] getAllRootGroupsInDomain(String domainId) {
     try {
@@ -389,10 +397,11 @@ public class DefaultOrganizationController implements OrganizationController {
     return new Group[0];
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getFilteredDirectUsers(String sGroupId, String sUserLastNameFilter) {
     try {
-      return getAdminService().getFiltredDirectUsers(sGroupId, sUserLastNameFilter);
+      return getAdminService().getFilteredDirectUsers(sGroupId, sUserLastNameFilter);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new UserDetail[0];
@@ -407,7 +416,7 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return new SilverpeasArrayList<>();
   }
 
   @Override
@@ -420,6 +429,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Group[] getAllSubGroups(String parentGroupId) {
     try {
@@ -430,6 +440,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Group[] getRecursivelyAllSubgroups(final String parentGroupId) {
     try {
@@ -440,6 +451,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getAllUsers() {
     try {
@@ -450,9 +462,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
-  /**
-   * Return all the users of Silverpeas
-   */
+  @SuppressWarnings("unchecked")
   @Override
   public List<UserDetail> getAllUsersFromNewestToOldest() {
     try {
@@ -463,6 +473,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getUsers(String sPrefixTableName, String sComponentName, String sProfile) {
     try {
@@ -549,7 +560,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getProfilesByObjectTypeAndUserId(profiledObjectType, componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return Collections.emptyMap();
     }
   }
 
@@ -586,6 +597,7 @@ public class DefaultOrganizationController implements OrganizationController {
   // -------------------------------------------------------------------
   // GROUPS QUERIES
   // -------------------------------------------------------------------
+  @SuppressWarnings("unchecked")
   @Override
   public Group getGroup(String sGroupId) {
     try {
@@ -596,6 +608,7 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Group[] getGroups(String[] groupsId) {
     Group[] retour = null;
@@ -607,28 +620,31 @@ public class DefaultOrganizationController implements OrganizationController {
     return retour;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Group[] getAllGroups() {
     try {
       List<GroupDetail> groups = getAdminService().getAllGroups();
-      return groups.toArray(new Group[groups.size()]);
+      return groups.toArray(new Group[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new Group[0];
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Group[] getAllRootGroups() {
     try {
       List<GroupDetail> groups = getAdminService().getAllRootGroups();
-      return groups.toArray(new Group[groups.size()]);
+      return groups.toArray(new Group[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new Group[0];
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public UserDetail[] getAllUsersOfGroup(String groupId) {
 
@@ -765,7 +781,7 @@ public class DefaultOrganizationController implements OrganizationController {
    * Is the specified tool is available in Silverpeas?
    * </p>
    * A tool in Silverpeas is a singleton component that is dedicated to a given user. Each tool is
-   * identified by a unique identifier and it is unique to each user.
+   * identified by a unique identifier, and it is unique to each user.
    *
    * @param toolId the unique identifier of a tool.
    * @return true if the tool is available, false otherwise.
@@ -915,7 +931,7 @@ public class DefaultOrganizationController implements OrganizationController {
       }
 
       userIds = getAdminService().searchUserIdsByProfile(profileIds);
-      return userIds.toArray(new String[userIds.size()]);
+      return userIds.toArray(new String[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new String[0];
@@ -939,7 +955,7 @@ public class DefaultOrganizationController implements OrganizationController {
       } // else return all users !!
 
       List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds);
-      return userIds.toArray(new String[userIds.size()]);
+      return userIds.toArray(new String[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new String[0];
@@ -994,7 +1010,7 @@ public class DefaultOrganizationController implements OrganizationController {
       for (GroupDetail group : groups) {
         listRes = recursiveMajListGroupId(group.getId(), listRes);
       }
-      return listRes.toArray(new String[listRes.size()]);
+      return listRes.toArray(new String[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return ArrayUtil.emptyStringArray();

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.selection;
 
-import org.silverpeas.core.i18n.LocalizedResource;
+import org.silverpeas.core.SilverpeasResource;
 
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ import java.util.Objects;
  * resources.
  * @author mmoquillon
  */
-public class SelectionEntry<T extends LocalizedResource> {
+public class SelectionEntry<T extends SilverpeasResource> {
 
   private final SelectionContext context;
   private final T resource;
@@ -55,7 +55,7 @@ public class SelectionEntry<T extends LocalizedResource> {
 
   /**
    * Gets the selected resource.
-   * @return a {@link LocalizedResource} object.
+   * @return a {@link SilverpeasResource} object.
    */
   public T getResource() {
     return resource;

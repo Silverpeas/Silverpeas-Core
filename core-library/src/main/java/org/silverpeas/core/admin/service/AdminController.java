@@ -139,8 +139,9 @@ public class AdminController implements java.io.Serializable {
 
   /**
    * Return the space Instance corresponding to the given space id : FORMAT EX : WA123
-   */
-  /** If user is Admin, return all space Ids */
+   * If user is Admin, return all space Ids
+   * @return an array of space identifiers
+   **/
   public String[] getUserManageableSpaceClientIds(String sUserId) {
 
     try {
@@ -541,8 +542,8 @@ public class AdminController implements java.io.Serializable {
 
   /**
    * Delete the Profile Instance corresponding to the given Profile id.
-   * @param sProfileId
-   * @return
+   * @param sProfileId the identifier of the role profile.
+   * @return the identifier of the deleted role profile.
    */
   public String deleteProfileInst(String sProfileId) {
     return deleteProfileInst(sProfileId, null);
@@ -581,7 +582,7 @@ public class AdminController implements java.io.Serializable {
   public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
 
     try {
-      return admin.getProfileLabelfromName(sComponentName, sProfileName, lang);
+      return admin.getProfileLabelFromName(sComponentName, sProfileName, lang);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(
           "cannot get profile label from component name ''{0}'' and profile name ''{1}'' ({2})",

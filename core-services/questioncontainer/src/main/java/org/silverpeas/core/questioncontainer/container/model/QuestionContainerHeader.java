@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.util.DateUtil;
@@ -40,7 +41,7 @@ import java.util.Date;
 import java.util.Optional;
 
 public class QuestionContainerHeader extends AbstractBean
-    implements Serializable, SilverContentInterface {
+    implements Serializable, SilverContentInterface, WithPermanentLink {
 
   private static final long serialVersionUID = 6871118433726400355L;
   private QuestionContainerPK pk = null;
@@ -334,6 +335,7 @@ public class QuestionContainerHeader extends AbstractBean
     return this.iconUrl;
   }
 
+  @Override
   public String getPermalink() {
     if (URLUtil.displayUniversalLinks()) {
       return URLUtil.getSimpleURL(URLUtil.URL_SURVEY, getId(), getInstanceId());

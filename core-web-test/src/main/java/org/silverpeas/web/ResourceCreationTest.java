@@ -50,15 +50,13 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unit tests on the creation of a new resource in Silverpeas through a REST web service.
@@ -67,10 +65,6 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public abstract class ResourceCreationTest extends RESTWebServiceTest
     implements WebResourceTesting {
-
-  private static String withAsApiToken(String apiTokenValue) {
-    return apiTokenValue;
-  }
 
   /**
    * A convenient method to improve the readability of the method calls.
@@ -89,12 +83,27 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
    * @return the response of the post.
    */
   public <C> Response post(final C entity, String atURI) {
-    return post(entity, atURI, withAsApiToken(getAPITokenValue()));
+    AuthId authId = AuthId.apiToken(getAPITokenValue());
+    return post(entity, atURI, withAsAuthId(authId));
+  }
+
+  /**
+   * Posts the specified web entity at the specified URI and with the given authentication
+   * identification.
+   * @param <C> the type of the web entity to post.
+   * @param entity the web entity to post.
+   * @param atURI the URI at which the entity has to be posted.
+   * @param authId the authentication identification to use to identify the user behind the request.
+   * @return the response of the post.
+   */
+  public <C> Response post(final C entity, String atURI, final AuthId authId) {
+    Invocation.Builder resourcePoster = setUpHTTPRequest(atURI, MediaType.APPLICATION_JSON, authId);
+    return resourcePoster.post(Entity.entity(entity, MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void creationOfANewResourceByANonAuthenticatedUser() {
-    Response response = post(aResource(), at(aResourceURI()), withAsApiToken(null));
+    Response response = post(aResource(), at(aResourceURI()), withAsAuthId(AuthId.NONE));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -102,8 +111,9 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
 
   @Test
   public void creationOfANewResourceWithADeprecatedSession() {
+    AuthId authId = AuthId.apiToken(UUID.randomUUID().toString());
     Response response =
-        post(aResource(), at(aResourceURI()), withAsApiToken(UUID.randomUUID().toString()));
+        post(aResource(), at(aResourceURI()), withAsAuthId(authId));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -121,29 +131,10 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
   @Test
   public void postAnInvalidResourceState() {
     Response response =
-        post("{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}", at(aResourceURI()));
+        post("{\"uri\": \"https://toto.chez-les-papoos.com/invalid/resource\"}", at(aResourceURI()));
     int receivedStatus = response.getStatus();
     int badRequest = Status.BAD_REQUEST.getStatusCode();
     assertThat(receivedStatus, is(badRequest));
   }
-
-  private <C> Response post(final C entity, String atURI, String apiTokenValue) {
-    String thePath = atURI;
-    String queryParams = "";
-    WebTarget resource = resource();
-    if (thePath.contains("?")) {
-      String[] pathParts = thePath.split("\\?");
-      thePath = pathParts[0];
-      queryParams = pathParts[1];
-    }
-    Invocation.Builder resourcePoster = applyQueryParameters(queryParams, resource.path(thePath))
-        .request(MediaType.APPLICATION_JSON);
-    if (isDefined(apiTokenValue)) {
-      resourcePoster =
-          resourcePoster.header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(apiTokenValue));
-    }
-    return resourcePoster.post(Entity.entity(entity, MediaType.APPLICATION_JSON));
-  }
-
 
 }

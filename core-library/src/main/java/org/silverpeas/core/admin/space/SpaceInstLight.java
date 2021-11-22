@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.persistence.SpaceRow;
+import org.silverpeas.core.admin.space.model.SpacePath;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
@@ -35,7 +36,6 @@ import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -60,7 +60,6 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
   private String updaterName = null;
   private String removerName = null;
   private String look = null;
-  private List<SpaceInstLight> path = null;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
   private boolean inheritanceBlocked = false;
@@ -264,22 +263,14 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
   }
 
   public String getPath(String separator) {
-    StringBuilder sPath = new StringBuilder();
-    if (path != null) {
-      SpaceInstLight space;
-      for (int i = 0; i < path.size(); i++) {
-        if (i > 0) {
-          sPath.append(separator);
-        }
-        space = path.get(i);
-        sPath.append(space.getName());
-      }
+    String myPath;
+    if (isRoot()) {
+      myPath = "";
+    } else {
+      SpacePath spacePath = SpacePath.getPath(getFatherId());
+      myPath = spacePath.format(getLanguage(), true, separator);
     }
-    return sPath.toString();
-  }
-
-  public void setPath(List<SpaceInstLight> path) {
-    this.path = path;
+    return myPath;
   }
 
   public String getLook() {

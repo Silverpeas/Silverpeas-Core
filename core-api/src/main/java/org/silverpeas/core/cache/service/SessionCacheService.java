@@ -98,6 +98,7 @@ public class SessionCacheService implements CacheService {
    * @return the current session cache.
    * @see SessionCacheService#getCurrentSessionCache()
    */
+  @SuppressWarnings("unchecked")
   @Override
   public SimpleCache getCache() {
     return getCurrentSessionCache();

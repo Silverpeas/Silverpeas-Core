@@ -30,14 +30,6 @@ package org.silverpeas.web;
 public interface WebResourceTesting {
 
   /**
-   * The HTTP header parameter in an incoming request that carries the user API token value as it is
-   * defined in the Silverpeas REST web service API. The API token value must be first encoded
-   * before setting the HTTP parameter with it; for doing, please use the
-   * {@link WebResourceTesting#encodesAPITokenValue(String)} ()} method.
-   */
-  String API_TOKEN_HTTP_HEADER = "Authorization";
-
-  /**
    * Gets the URI of a valid and existing web resource backed by a REST web service.
    * @return the URI of a valid web resource.
    */
@@ -73,13 +65,4 @@ public interface WebResourceTesting {
    */
   Class<?> getWebEntityClass();
 
-  /**
-   * encodes the value of the specified API token so that it can be passed into the HTTP header
-   * that carries the API tokens in the HTTP requests.
-   * @param apiTokenValue the value of an API token.
-   * @return the encoded API token value.
-   */
-  default String encodesAPITokenValue(final String apiTokenValue)  {
-    return "Bearer " + apiTokenValue;
-  }
 }

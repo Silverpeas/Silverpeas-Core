@@ -41,6 +41,7 @@ import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.LocalizedResource;
@@ -71,7 +72,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * The class SpaceInst is the representation in memory of a space
  */
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
-    implements Serializable, Identifiable, Securable, LocalizedResource {
+    implements Serializable, Identifiable, Securable, LocalizedResource, WithPermanentLink {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
@@ -832,6 +833,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     data.safeWrite((p, s, c) -> p.removeIf(SpaceProfileInst::isInherited));
   }
 
+  @Override
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_SPACE, getId());
   }

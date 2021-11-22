@@ -24,7 +24,6 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -82,7 +81,7 @@ public interface SessionManagement {
    * @param user the user for which the connection is checked.
    * @return true if the user is connected, false otherwise.
    */
-  boolean isUserConnected(UserDetail user);
+  boolean isUserConnected(User user);
 
   /**
    * Gets the next timeout of the specified user session.
@@ -121,7 +120,7 @@ public interface SessionManagement {
    * @return a SessionInfo instance representing the current opened session with information about
    * that session.
    */
-  SessionInfo openSession(final UserDetail user);
+  SessionInfo openSession(final User user);
 
   /**
    * Opens a new session for the specified user with the specified HTTP request at the origin of the
@@ -134,7 +133,7 @@ public interface SessionManagement {
    * @return a SessionInfo instance representing the current opened session with information about
    * that session.
    */
-  SessionInfo openSession(final UserDetail user, final HttpServletRequest request);
+  SessionInfo openSession(final User user, final HttpServletRequest request);
 
   /**
    * Opens a new anonymous session.

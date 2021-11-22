@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -55,7 +57,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
-    implements SilverpeasSharedComponentInstance {
+    implements SilverpeasSharedComponentInstance, WithPermanentLink {
 
   private static final long serialVersionUID = 1L;
   private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
@@ -106,6 +108,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
    *
    * @param ci a component instance to copy.
    */
+  @SuppressWarnings("IncompleteCopyConstructor")
   public ComponentInst(final ComponentInst ci) {
     super(ci);
     id = "";
@@ -126,7 +129,9 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     isHidden = ci.isHidden;
     isInheritanceBlocked = ci.isInheritanceBlocked;
     ci.profiles.stream().map(ProfileInst::new).forEach(this::addProfileInst);
-    parameters = ci.parameters.stream().map(Parameter::new).collect(Collectors.toList());
+    if (ci.parameters != null) {
+      parameters = ci.parameters.stream().map(Parameter::new).collect(Collectors.toList());
+    }
     setTranslations(ci.getClonedTranslations());
   }
 
@@ -195,7 +200,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   /**
    * This method is a hack (technical debt)
    *
-   * @param sName
+   * @param sName new name of the application.
    */
   @Override
   public void setName(String sName) {
@@ -205,7 +210,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   /**
    * This method is a hack (technical debt)
    *
-   * @return
+   * @return the name of the application.
    */
   @Override
   public String getName() {
@@ -457,6 +462,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
         .isTopicTracker();
   }
 
+  @Override
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, getId());
   }
@@ -476,5 +482,22 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   @Override
   public boolean isRemoved() {
     return STATUS_REMOVED.equals(getStatus());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final ComponentInst that = (ComponentInst) o;
+    return id.equals(that.id) && name.equals(that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name);
   }
 }

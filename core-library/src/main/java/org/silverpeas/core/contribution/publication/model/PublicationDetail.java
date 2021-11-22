@@ -46,12 +46,13 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManageme
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -115,7 +116,7 @@ import static org.silverpeas.core.util.StringUtil.split;
 @ModificationTracked
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, ContributionWithVisibility, SilverContentInterface, Rateable,
-    Serializable, WithAttachment, WithThumbnail, WithReminder {
+    Serializable, WithAttachment, WithThumbnail, WithReminder, WithPermanentLink {
   private static final long serialVersionUID = 9199848912262605680L;
 
   private static final String EXCHANGE_NAMESPACE = "http://www.silverpeas.org/exchange";
@@ -364,7 +365,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getImage() {
-    final ThumbnailDetail thumbDetail = getThumbnail();
+    final Thumbnail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
       return thumbDetail.getImageFileName();
     }
@@ -373,7 +374,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getImageMimeType() {
-    final ThumbnailDetail thumbDetail = getThumbnail();
+    final Thumbnail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
       return thumbDetail.getMimeType();
     }
@@ -387,7 +388,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * </p>
    * @return the {@link ThumbnailDetail} instance if any.
    */
-  public ThumbnailDetail getThumbnail() {
+  @Override
+  public Thumbnail getThumbnail() {
     if (thumbnail == null && getPK() != null && getPK().getInstanceId() != null &&
         getPK().getId() != null) {
       ThumbnailDetail thumbnailReference =
@@ -549,15 +551,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return this.iconUrl;
   }
 
-  /**
-   * *************************************************************************************
-   */
-  /**
+
+  /*
    * FormTemplate exposition for taglibs
    */
-  /**
-   * *************************************************************************************
-   */
+
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
@@ -610,7 +608,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         Field field = data.getField(fieldName);
         GenericFieldTemplate fieldTemplate =
             (GenericFieldTemplate) pub.getRecordTemplate().getFieldTemplate(fieldName);
-        FieldDisplayer fieldDisplayer =
+        FieldDisplayer<Field> fieldDisplayer =
             TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
@@ -707,7 +705,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
   }
 
-  public ContributionContent getContent() {
+  public WysiwygContent getContent() {
     try {
       return WysiwygController.get(getPK().getComponentName(), getPK().getId(), getLanguage());
     } catch (Exception e) {
@@ -1076,6 +1074,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return alias;
   }
 
+  @Override
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getId(),
         authorizedLocation != null && !authorizedLocation.getInstanceId().equals(getInstanceId()) ?

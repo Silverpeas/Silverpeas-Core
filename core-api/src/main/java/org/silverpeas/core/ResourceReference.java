@@ -50,7 +50,7 @@ public class ResourceReference extends WAPrimaryKey
   private static final String ABSOLUTE_ID_FORMAT = "{0}:{1}";
 
   /**
-   * Identifier referring that the resource behind is unknown and doesn't required to be known.
+   * Identifier referring that the resource behind is unknown and doesn't require to be known.
    */
   public static final String UNKNOWN_ID = "";
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.AdminController;
@@ -88,19 +89,23 @@ public class SilverStatisticsPeasDAOAccesVolume {
   }
 
   public static Collection<String> getVolumeYears() throws SQLException {
+    return getYearsWithQuery(SELECT_VOLUME_YEARS);
+  }
+
+  @NotNull
+  private static Collection<String> getYearsWithQuery(final String selectQuery)
+      throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
     try {
       myCon = DBUtil.openConnection();
-      stmt = myCon.prepareStatement(SELECT_VOLUME_YEARS);
+      stmt = myCon.prepareStatement(selectQuery);
       rs = stmt.executeQuery();
       LinkedHashSet<String> years = new LinkedHashSet<>();
       while (rs.next()) {
         String currentYear = extractYearFromDate(rs.getString("dateStat"));
-        if (!years.contains(currentYear)) {
-          years.add(currentYear);
-        }
+        years.add(currentYear);
       }
       return years;
     } finally {
@@ -110,39 +115,13 @@ public class SilverStatisticsPeasDAOAccesVolume {
   }
 
   public static Collection<String> getAccessYears() throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      stmt = myCon.prepareStatement(SELECT_ACCESS_YEARS);
-      rs = stmt.executeQuery();
-      LinkedHashSet<String> years = new LinkedHashSet<>();
-      while (rs.next()) {
-        String currentYear = extractYearFromDate(rs.getString("dateStat"));
-        if (!years.contains(currentYear)) {
-          years.add(currentYear);
-        }
-      }
-      return years;
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
-    }
+    return getYearsWithQuery(SELECT_ACCESS_YEARS);
   }
 
   private static String extractYearFromDate(String date) {
     return date.substring(0, 4);
   }
 
-  /**
-   * Returns the access statistics.
-   * @param dateStat
-   * @param filterIdGroup
-   * @param filterIdUser
-   * @return the access statistics.
-   * @throws SQLException
-   */
   public static Map<String, String[]> getStatsUserVentil(String dateStat, String filterIdGroup,
       String filterIdUser) throws SQLException {
     Map<String, String[]> resultat = new HashMap<>();
@@ -163,15 +142,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return resultat;
   }
 
-  /**
-   * @param entite
-   * @param entiteId
-   * @param filterIdGroup
-   * @param filterIdUser
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   */
   public static List<String[]> getStatsUserEvolution(String entite, String entiteId,
       String filterIdGroup, String filterIdUser) throws SQLException, ParseException {
     if ("SPACE".equals(entite)) {
@@ -194,12 +164,18 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectAccessEvolutionForSpace(String spaceId)
       throws SQLException, ParseException {
+    return getAccessEvolFor(spaceId, SELECT_ACCESS_EVOL_FOR_SPACE);
+  }
+
+  @NotNull
+  private static List<String[]> getAccessEvolFor(final String spaceId,
+      final String accessQuery) throws SQLException, ParseException {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Connection myCon = null;
     try {
       myCon = DBUtil.openConnection();
-      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_SPACE);
+      pstmt = myCon.prepareStatement(accessQuery);
       pstmt.setString(1, spaceId);
       rs = pstmt.executeQuery();
       return getStatsUserFromResultSet(rs);
@@ -211,12 +187,18 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectUserAccessEvolutionForSpace(String spaceId, String userId)
       throws SQLException, ParseException {
+    return getAccessEvolByUser(spaceId, userId, SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
+  }
+
+  @NotNull
+  private static List<String[]> getAccessEvolByUser(final String spaceId, final String userId,
+      final String accessEvolQuery) throws SQLException, ParseException {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Connection myCon = null;
     try {
       myCon = DBUtil.openConnection();
-      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
+      pstmt = myCon.prepareStatement(accessEvolQuery);
       pstmt.setString(1, spaceId);
       pstmt.setInt(2, Integer.parseInt(userId));
       rs = pstmt.executeQuery();
@@ -233,16 +215,13 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Map<String, String[]> allAccesses = new HashMap<>();
     for (UserDetail user : users) {
       List<String[]> userStats = selectUserAccessEvolutionForSpace(spaceId, user.getId());
-      for (String[] stats : userStats) {
-        if (allAccesses.containsKey(stats[0])) {
-          String[] currentData = allAccesses.get(stats[0]);
-          currentData[1] =
-              String.valueOf(Integer.parseInt(currentData[1]) + Integer.parseInt(stats[1]));
-        } else {
-          allAccesses.put(stats[0], stats);
-        }
-      }
+      processAccessEvolStat(allAccesses, userStats);
     }
+    return processAccessEvolDate(allAccesses);
+  }
+
+  @NotNull
+  private static List<String[]> processAccessEvolDate(final Map<String, String[]> allAccesses) {
     List<String> dates = new ArrayList<>(allAccesses.keySet());
     Collections.sort(dates);
     List<String[]> result = new ArrayList<>(dates.size());
@@ -252,39 +231,27 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return result;
   }
 
+  private static void processAccessEvolStat(final Map<String, String[]> allAccesses,
+      final List<String[]> userStats) {
+    for (String[] stats : userStats) {
+      if (allAccesses.containsKey(stats[0])) {
+        String[] currentData = allAccesses.get(stats[0]);
+        currentData[1] =
+            String.valueOf(Integer.parseInt(currentData[1]) + Integer.parseInt(stats[1]));
+      } else {
+        allAccesses.put(stats[0], stats);
+      }
+    }
+  }
+
   public static List<String[]> selectAccessEvolutionForComponent(String componentId)
       throws SQLException, ParseException {
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_COMPONENT);
-      pstmt.setString(1, componentId);
-      rs = pstmt.executeQuery();
-      return getStatsUserFromResultSet(rs);
-    } finally {
-      DBUtil.close(rs, pstmt);
-      DBUtil.close(myCon);
-    }
+    return getAccessEvolFor(componentId, SELECT_ACCESS_EVOL_FOR_COMPONENT);
   }
 
   public static List<String[]> selectUserAccessEvolutionForComponent(String componentId,
       String userId) throws SQLException, ParseException {
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
-    try {
-      myCon = DBUtil.openConnection();
-      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER);
-      pstmt.setString(1, componentId);
-      pstmt.setInt(2, Integer.parseInt(userId));
-      rs = pstmt.executeQuery();
-      return getStatsUserFromResultSet(rs);
-    } finally {
-      DBUtil.close(rs, pstmt);
-      DBUtil.close(myCon);
-    }
+    return getAccessEvolByUser(componentId, userId, SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER);
   }
 
   public static List<String[]> selectGroupAccessEvolutionForComponent(String componentId,
@@ -293,33 +260,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Map<String, String[]> allAccesses = new HashMap<>();
     for (UserDetail user : users) {
       List<String[]> userStats = selectUserAccessEvolutionForComponent(componentId, user.getId());
-      for (String[] stats : userStats) {
-        if (allAccesses.containsKey(stats[0])) {
-          String[] currentData = allAccesses.get(stats[0]);
-          currentData[1] =
-              String.valueOf(Integer.parseInt(currentData[1]) + Integer.parseInt(stats[1]));
-        } else {
-          allAccesses.put(stats[0], stats);
-        }
-      }
+      processAccessEvolStat(allAccesses, userStats);
     }
-    List<String> dates = new ArrayList<>(allAccesses.keySet());
-    Collections.sort(dates);
-    List<String[]> result = new ArrayList<>(dates.size());
-    for (String date : dates) {
-      result.add(allAccesses.get(date));
-    }
-    return result;
+    return processAccessEvolDate(allAccesses);
   }
 
-  /**
-   * Method declaration
-   * @param rs
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   *
-   */
   private static List<String[]> getStatsUserFromResultSet(ResultSet rs)
       throws SQLException, ParseException {
     List<String[]> myList = new ArrayList<>();
@@ -364,13 +309,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
     result.put(date, String.valueOf(count));
   }
 
-  /**
-   * @param dateStat
-   * @param filterIdGroup
-   * @param filterIdUser
-   * @return
-   * @throws SQLException
-   */
   public static Map<String, String[]> getStatsPublicationsVentil(String dateStat,
       String filterIdGroup, String filterIdUser) throws SQLException {
     Map<String, String[]> resultat = new HashMap<>();
@@ -396,10 +334,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       componentStatistic.getValue()[valueIdx] = "0";
     }
 
-    Map<String, String> e = volume;
     for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
       if (componentStatistic.getValue() != null) {
-        componentStatistic.getValue()[valueIdx] = e.get(componentStatistic.getKey());
+        componentStatistic.getValue()[valueIdx] = volume.get(componentStatistic.getKey());
       }
     }
   }
@@ -552,10 +489,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Returns the last accessed components of a user.
-   * @param currentUserId
+   * @param currentUserId the identifier of the current user
    * @param nbObjects to return
    * @return the list of the last accessed components of a user.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
   public static Collection<ComponentInstLight> getLastAccessedComponentsUser(String currentUserId,
       int nbObjects) throws SQLException {
@@ -565,7 +502,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Collection<ComponentInstLight> result = new ArrayList<>();
     OrganizationController orgaController =
         OrganizationControllerProvider.getOrganisationController();
-    AdminController adminController = getAdminController();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_COMPONENTS_USER);
@@ -582,7 +518,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
           ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId);
           if (compoDetail != null) {
             // The compoDetail can be null if componentId references a deleted component
-            compoDetail.setPath(adminController.getPathToComponent(componentId));
             result.add(compoDetail);
           }
         }

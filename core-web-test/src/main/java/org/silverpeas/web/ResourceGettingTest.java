@@ -24,17 +24,15 @@
 package org.silverpeas.web;
 
 import org.junit.Test;
-import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unit tests on the getting of a resource in Silverpeas through a REST web service. This class is
@@ -43,10 +41,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public abstract class ResourceGettingTest extends RESTWebServiceTest implements WebResourceTesting {
 
-  public static String withAsApiToken(String apiTokenValue) {
-    return apiTokenValue;
-  }
-
   public static MediaType asMediaType(MediaType mediaType) {
     return mediaType;
   }
@@ -54,7 +48,6 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
   /**
    * Gets the web resource at the specified URI as an instance of the specified class. The state of
    * the resource sent back by the web resource is expected to be in JSON.
-   *
    * @param <C> the type of the resource to return.
    * @param uri the URI identifying uniquely the resource. the uri can be compound of a query string
    * (starts at ?).
@@ -66,9 +59,23 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
   }
 
   /**
+   * Gets the web resource at the specified URI with the given authentication identification as an
+   * instance of the specified class. The state of the resource sent back by the web resource is
+   * expected to be in JSON.
+   * @param <C> the type of the resource to return.
+   * @param uri the URI identifying uniquely the resource. the uri can be compound of a query string
+   * (starts at ?).
+   * @param authId the authentication identification to use to identify the user behind the request.
+   * @param c the class of which the returned resource should be an instance.
+   * @return the web entity representing the resource at the specified URI.
+   */
+  public <C> C getAt(String uri, AuthId authId, Class<C> c) {
+    return getAt(uri, asMediaType(MediaType.APPLICATION_JSON_TYPE), withAsAuthId(authId), c);
+  }
+
+  /**
    * Gets the web resource at the specified URI as an instance of the specified class in the way it
    * is sent back by the web resource in the specified media type.
-   *
    * @param <C> the type of the resource to return.
    * @param uri the URI identifying uniquely the resource. the uri can be compound of a query string
    * (starts at ?).
@@ -77,23 +84,26 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
    * @return the web entity representing the resource at the specified URI.
    */
   public <C> C getAt(String uri, MediaType mediaType, Class<C> c) {
-    return getAt(uri, withAsApiToken(getAPITokenValue()), asMediaType(mediaType), c);
+    AuthId authId = AuthId.apiToken(getAPITokenValue());
+    return getAt(uri, asMediaType(mediaType), withAsAuthId(authId), c);
   }
 
   @Test
   public void gettingAResourceByANonAuthenticatedUser() {
     final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    Response response =
-        getAt(aResourceURI(), withAsApiToken(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
-            Response.class);
+    Response response = getAt(aResourceURI(), asMediaType(MediaType.APPLICATION_JSON_TYPE),
+        withAsAuthId(AuthId.NONE), Response.class);
     assertThat(response.getStatus(), is(Unauthorized));
   }
 
   @Test
   public void gettingAResourceWithAnExpiredSession() {
     final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    Response response = getAt(aResourceURI(), withAsApiToken(UUID.randomUUID().toString()),
-        asMediaType(MediaType.APPLICATION_JSON_TYPE), Response.class);
+    AuthId authId = AuthId.apiToken(UUID.randomUUID()
+        .toString());
+    Response response =
+        getAt(aResourceURI(), asMediaType(MediaType.APPLICATION_JSON_TYPE), withAsAuthId(authId),
+            Response.class);
     assertThat(response.getStatus(), is(Unauthorized));
   }
 
@@ -112,22 +122,8 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
     assertThat(response.getStatus(), is(NotFound));
   }
 
-  private <C> C getAt(String uri, String apiToken, MediaType mediaType, Class<C> c) {
-    String thePath = uri;
-    String queryParams = "";
-    WebTarget resource = resource();
-    if (thePath.contains("?")) {
-      String[] pathParts = thePath.split("\\?");
-      thePath = pathParts[0];
-      queryParams = pathParts[1];
-    }
-
-    Invocation.Builder requestBuilder =
-        applyQueryParameters(queryParams, resource.path(thePath)).request(mediaType);
-    if (StringUtil.isDefined(apiToken)) {
-      requestBuilder =
-          requestBuilder.header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(apiToken));
-    }
+  private <C> C getAt(String uri, MediaType mediaType, AuthId authId, Class<C> c) {
+    Invocation.Builder requestBuilder = setUpHTTPRequest(uri, mediaType.toString(), authId);
     return requestBuilder.get(c);
   }
 }

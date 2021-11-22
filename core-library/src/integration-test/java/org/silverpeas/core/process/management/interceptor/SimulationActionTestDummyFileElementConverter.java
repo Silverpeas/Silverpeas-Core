@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.process.io.file.DummyHandledFile;
-import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
+import org.silverpeas.core.process.io.file.DummyHandledFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class SimulationActionTestDummyFileElementConverter
 
   @Override
   public List<DummyHandledFile> convert(final List<InterceptorTestSimulationElement> elements,
-      final WAPrimaryKey targetPK, final ActionType actionType) {
+      final ResourceReference target, final ActionType actionType) {
     List<DummyHandledFile> dummyHandledFiles = new ArrayList<>();
     for (InterceptorTestSimulationElement element : elements) {
 

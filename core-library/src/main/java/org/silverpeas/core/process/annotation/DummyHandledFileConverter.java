@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.process.annotation;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.ActionType;
@@ -40,10 +41,10 @@ public interface DummyHandledFileConverter<S extends SimulationElement<?>> exten
   /**
    * Method that contains the treatment of the conversion.
    * @param elements elements to convert
-   * @param targetPK the targets
+   * @param target reference to the targeted resource in Silverpeas
    * @param actionType the action type used for the conversion
    * @return the list of converted elements.
    */
-  List<DummyHandledFile> convert(final List<S> elements, final WAPrimaryKey targetPK,
+  List<DummyHandledFile> convert(final List<S> elements, final ResourceReference target,
       final ActionType actionType);
 }

@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 public class TestApplicationServiceImpl2 implements ApplicationService<TestResource2> {
 
   @Override
-  public TestResource2 getContentById(final String contentId) {
+  public TestResource2 getContributionById(final String contributionId) {
     return null;
   }
 

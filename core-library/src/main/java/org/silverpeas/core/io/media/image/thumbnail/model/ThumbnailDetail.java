@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 
-import java.io.Serializable;
-
 /**
  * Representation of a thumbnail of an object.
  */
-public class ThumbnailDetail implements Serializable {
+public class ThumbnailDetail implements Thumbnail {
 
   private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.publication.publicationSettings");
@@ -55,14 +54,22 @@ public class ThumbnailDetail implements Serializable {
     this.reference = new ThumbnailReference(objectId, instanceId, objectType);
   }
 
+  @Override
   public ThumbnailReference getReference() {
     return reference;
   }
 
+  @Override
+  public boolean isCropped() {
+    return StringUtil.isDefined(cropFileName);
+  }
+
+  @Override
   public String getOriginalFileName() {
     return originalFileName;
   }
 
+  @Override
   public String getCropFileName() {
     return cropFileName;
   }
@@ -72,6 +79,7 @@ public class ThumbnailDetail implements Serializable {
    * If the crop file name exists it is returned, otherwise the original file name is returned.
    * @return a file name as string.
    */
+  @Override
   public String getImageFileName() {
     return this.getCropFileName() != null ? this.getCropFileName() : this.getOriginalFileName();
   }
@@ -144,14 +152,16 @@ public class ThumbnailDetail implements Serializable {
     this.mimeType = mimeType;
   }
 
+  @Override
   public String getMimeType() {
     return mimeType;
   }
 
-  public boolean isCropable() {
+  public boolean isCroppable() {
     return StringUtil.isDefined(getOriginalFileName()) && !getOriginalFileName().startsWith("/");
   }
 
+  @Override
   public String getURL() {
     String image = getOriginalFileName();
     if (image.startsWith("/")) {

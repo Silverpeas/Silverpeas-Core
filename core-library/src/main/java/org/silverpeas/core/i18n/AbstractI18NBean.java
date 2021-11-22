@@ -245,6 +245,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
    * @return a translation. Never null.
    */
   @Override
+  @SuppressWarnings("unchecked")
   public T getTranslation(String language) {
     return selectTranslation(language);
   }

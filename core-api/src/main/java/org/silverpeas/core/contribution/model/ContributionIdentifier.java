@@ -255,7 +255,7 @@ public class ContributionIdentifier implements ComponentResourceIdentifier, Seri
       return true;
     }
 
-    if (o == null || getClass() != o.getClass()) {
+    if (!(o instanceof ContributionIdentifier)) {
       return false;
     }
 

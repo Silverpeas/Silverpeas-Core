@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.space.model.SpacePath;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
@@ -36,7 +36,6 @@ import org.silverpeas.core.util.URLUtil;
 import javax.persistence.Transient;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -70,7 +69,6 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   private String creatorName = null;
   private String updaterName = null;
   private String removerName = null;
-  private List<SpaceInstLight> path = null;
   private boolean isInheritanceBlocked = false;
   private boolean hidden = false;
   private boolean publicApp = false;
@@ -267,23 +265,8 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   }
 
   public String getPath(String separator) {
-    StringBuilder sPath = new StringBuilder();
-    if (path != null) {
-      SpaceInstLight space = null;
-      for (int i = 0; i < path.size(); i++) {
-        if (i > 0) {
-          sPath.append(separator);
-        }
-
-        space = path.get(i);
-        sPath.append(space.getName());
-      }
-    }
-    return sPath.toString();
-  }
-
-  public void setPath(List<SpaceInstLight> path) {
-    this.path = path;
+    SpacePath spacePath = SpacePath.getPath(domainFatherId);
+    return spacePath.format(getLanguage(), true, separator);
   }
 
   /**
@@ -296,7 +279,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
 
   /**
    * This method is a hack (technical debt)
-   * @param name
+   * @param name the name of the component.
    */
   @Override
   public void setName(String name) {
@@ -395,13 +378,8 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     }
     ComponentInstLight other = (ComponentInstLight) obj;
     if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    return true;
+      return other.id == null;
+    } else return id.equals(other.id);
   }
 
   /**

@@ -24,6 +24,13 @@
 
 package org.silverpeas.core.selection;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * The context of a selection by a user of a resource in Silverpeas. It explains in what aim a
  * resource has been put into the {@link SelectionBasket}, in other words for what operation the
@@ -33,6 +40,83 @@ package org.silverpeas.core.selection;
  * has to operate or apply a different behaviour according to their selection context.
  * @author mmoquillon
  */
-public interface SelectionContext {
+@XmlRootElement
+public class SelectionContext implements Serializable {
+
+  @XmlElement(required = true)
+  private Reason reason = Reason.TRANSFER;
+
+  @XmlElement
+  private final Map<String, String> attributes = new HashMap<>();
+
+  protected SelectionContext() {
+
+  }
+
+  public SelectionContext(final Reason reason) {
+    this.reason = reason;
+  }
+
+  /**
+   * Defines a context attribute. Such attributes qualifies the context of a selection.
+   * @param attrName the name of the attribute.
+   * @param attrValue the value of the attribute.
+   */
+  public void putAttribute(final String attrName, final String attrValue) {
+    attributes.put(attrName, attrValue);
+  }
+
+  /**
+   * Gets the value of the specified attribute. If no such attribute is defined for this context,
+   * then null is returned.
+   * @param attrName the name of the attribute.
+   * @return the value of the attribute or null if no such attribute exists.
+   */
+  public String getAttribute(final String attrName) {
+    return attributes.get(attrName);
+  }
+
+  /**
+   * Gets the reason of a why a resource has been put into the selection basket.
+   * @return the reason.
+   */
+  public Reason getReason() {
+    return reason;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final SelectionContext that = (SelectionContext) o;
+    return reason == that.reason && attributes.equals(that.attributes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(reason, attributes);
+  }
+
+  /**
+   * Reason about the selection of a resource by a user.
+   */
+  public enum Reason {
+    /**
+     * Transfer information about the resource to perform some tasks. Default reason.
+     */
+    TRANSFER,
+    /**
+     * Copy the resource in another location in Silverpeas.
+     */
+    COPY,
+    /**
+     * Move the resource in another location in Silverpeas.
+     */
+    MOVE
+  }
 
 }

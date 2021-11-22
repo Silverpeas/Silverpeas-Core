@@ -56,11 +56,11 @@ public class ComponentInstPath extends ArrayList<ComponentInstLight>
   }
 
   /**
-   * Formats this path as a textual value in which each segments are separated by the specified
+   * Formats this path as a textual value in which each segment is separated by the specified
    * separator token. Each path segment is the name of the spaces (and at the end of the component
    * instance) in this path expressed in the given language. If only a relative path is asked,
    * then the path starts with name of the space that contains the component instance targeted by
-   * this path. Otherwise the path starts with the root space for which the targeted component
+   * this path. Otherwise, the path starts with the root space for which the targeted component
    * instance is a descendent. If this path is empty, then an empty String is returned.
    * @param language the language in which the name should be expressed in the path.
    * @param absolutePath if false, only a relative path is returned. If true, an absolute path

@@ -37,7 +37,7 @@ public interface SilverpeasContent extends Identifiable, Contribution {
 
   /**
    * Gets the identifier of this content in the Silverpeas component providing it. This identifier
-   * is only unique among all of the contents managed by the same component (whatever its different
+   * is only unique among all the contents managed by the same component (whatever its different
    * instances). As each type of contents in Silverpeas is provided by a single Silverpeas
    * component, the identifier of a content is then specific to the component it belongs to. It is a
    * way for an instance of a such component to identify uniquely the different contents it manages.
@@ -56,9 +56,9 @@ public interface SilverpeasContent extends Identifiable, Contribution {
   /**
    * Gets the unique identifier of this content among all the contents managed in the Silverpeas
    * collaborative portal. It is the alone unique identifier of a content in the whole Silverpeas
-   * portal and it is refered as the Silverpeas content identifier or the silver content identifier.
+   * portal; it is referred as the Silverpeas content identifier or the silver content identifier.
    * For each content put into the Silverpeas collaborative portal, an entry is uniquely created in
-   * the whole system so that is can be refered by transversal services and by component instances
+   * the whole system so that is can be referred by transversal services and by component instances
    * others the one that manages it. For compatibility reason, the Silverpeas content identifier of
    * contents that are no yet taken into account in the whole system isn't defined, so an empty
    * string is then returned.

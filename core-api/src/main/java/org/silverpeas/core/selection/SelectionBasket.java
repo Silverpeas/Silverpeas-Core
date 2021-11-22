@@ -24,9 +24,10 @@
 
 package org.silverpeas.core.selection;
 
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.i18n.LocalizedResource;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +51,7 @@ import java.util.stream.Stream;
  * </p>
  * @author mmoquillon
  */
-public class SelectionBasket {
+public class SelectionBasket implements Serializable {
 
   private static final String CACHE_KEY = "###SELECTION_BASKET###";
 
@@ -65,7 +66,7 @@ public class SelectionBasket {
         .computeIfAbsent(CACHE_KEY, SelectionBasket.class, SelectionBasket::new);
   }
 
-  private final List<SelectionEntry<?>> selection = new ArrayList<>();
+  private final List<SelectionEntry<SilverpeasResource>> selection = new ArrayList<>();
 
   private SelectionBasket() {
   }
@@ -78,8 +79,8 @@ public class SelectionBasket {
    * @param resource a resource to put.
    * @return the basket enriched with the specified resource.
    */
-  public <T extends LocalizedResource> SelectionBasket put(final T resource) {
-    return put(resource, new TransferContext());
+  public <T extends SilverpeasResource> SelectionBasket put(final T resource) {
+    return put(resource, new SelectionContext());
   }
 
   /**
@@ -90,7 +91,8 @@ public class SelectionBasket {
    * @param resource a resource to put.
    * @return the basket enriched with the specified resource.
    */
-  public <T extends LocalizedResource> SelectionBasket put(final T resource,
+  @SuppressWarnings("unchecked")
+  public <T extends SilverpeasResource> SelectionBasket put(final T resource,
       final SelectionContext context) {
     Objects.requireNonNull(resource);
     Objects.requireNonNull(context);
@@ -100,7 +102,7 @@ public class SelectionBasket {
       if (index > 0) {
         selection.remove(index);
       }
-      selection.add(0, entry);
+      selection.add(0, (SelectionEntry<SilverpeasResource>) entry);
     }
     return this;
   }
@@ -111,15 +113,15 @@ public class SelectionBasket {
    * @return maybe the last resource put in the basket and then removes it from the basket. If the
    * basket is empty, then nothing is returned.
    */
-  public <T extends LocalizedResource> Optional<SelectionEntry<T>> pop() {
+  public <T extends SilverpeasResource> Optional<SelectionEntry<T>> pop() {
     return removeAt(0);
   }
 
   /**
    * Gets a functional stream on the selected resources this basket contains.
-   * @return a stream on {@link LocalizedResource} objects of the basket.
+   * @return a stream on {@link SilverpeasResource} objects of the basket.
    */
-  public Stream<SelectionEntry<?>> getSelectedResources() {
+  public Stream<SelectionEntry<SilverpeasResource>> getSelectedResources() {
     return selection.stream();
   }
 
@@ -130,7 +132,7 @@ public class SelectionBasket {
    * range of the capacity of the basket, then nothing is returned.
    */
   @SuppressWarnings("unchecked")
-  public <T extends LocalizedResource> Optional<SelectionEntry<T>> getAt(final int index) {
+  public <T extends SilverpeasResource> Optional<SelectionEntry<T>> getAt(final int index) {
     return index < 0 || index >= selection.size() ?
         Optional.empty() :
         Optional.of((SelectionEntry<T>) selection.get(index));
@@ -144,10 +146,15 @@ public class SelectionBasket {
    * basket. If the index is out of range of the capacity of the basket, then nothing is returned.
    */
   @SuppressWarnings("unchecked")
-  public <T extends LocalizedResource> Optional<SelectionEntry<T>> removeAt(final int index) {
+  public <T extends SilverpeasResource> Optional<SelectionEntry<T>> removeAt(final int index) {
     return index < 0 || index >= selection.size() ?
         Optional.empty() :
         Optional.of((SelectionEntry<T>) selection.remove(index));
+  }
+
+  public <T extends SilverpeasResource> void remove(final T resource) {
+    SelectionEntry<T> entry = new SelectionEntry<>(resource, new SelectionContext());
+    selection.remove(entry);
   }
 
   /**

@@ -722,7 +722,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     for (SpaceInstLight space: removedSpaces) {
       space.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(space.
           getRemovedBy())).getDisplayedName());
-      space.setPath(adminController.getPathToSpace(space.getId(), false));
 
       // Remove suffix
       name = space.getName();
@@ -738,7 +737,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     for (ComponentInstLight component: removedComponents) {
       component.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(component.
           getRemovedBy())).getDisplayedName());
-      component.setPath(adminController.getPathToComponent(component.getId()));
 
       // Remove suffix
       name = component.getLabel();

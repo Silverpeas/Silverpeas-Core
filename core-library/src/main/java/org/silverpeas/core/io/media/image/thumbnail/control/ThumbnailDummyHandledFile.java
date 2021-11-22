@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.process.io.file.AbstractDummyHandledFile;
+import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
 
@@ -37,32 +37,22 @@ import java.io.File;
  */
 public class ThumbnailDummyHandledFile extends AbstractDummyHandledFile {
 
-  private final ThumbnailDetail thumbnail;
+  private final Thumbnail thumbnail;
   private final File thumbnailFile;
-  private boolean deleted = false;
-  private WAPrimaryKey targetPK = null;
+  private final boolean deleted;
+  private ResourceReference targetPK = null;
 
-  public ThumbnailDummyHandledFile(final ThumbnailDetail thumbnail, final File thumbnailFile) {
+  public ThumbnailDummyHandledFile(final Thumbnail thumbnail, final File thumbnailFile) {
     this(thumbnail, thumbnailFile, false);
   }
 
-  /**
-   * Default constructor.
-   * @param thumbnail
-   * @param targetPK
-   */
-  public ThumbnailDummyHandledFile(final ThumbnailDetail thumbnail, final File thumbnailFile,
-      final WAPrimaryKey targetPK) {
+  public ThumbnailDummyHandledFile(final Thumbnail thumbnail, final File thumbnailFile,
+      final ResourceReference targetPK) {
     this(thumbnail, thumbnailFile);
     this.targetPK = targetPK;
   }
 
-  /**
-   * Default constructor.
-   * @param thumbnail
-   * @param deleted
-   */
-  public ThumbnailDummyHandledFile(final ThumbnailDetail thumbnail, final File thumbnailFile,
+  public ThumbnailDummyHandledFile(final Thumbnail thumbnail, final File thumbnailFile,
       final boolean deleted) {
     this.thumbnail = thumbnail;
     this.thumbnailFile = thumbnailFile;
@@ -74,7 +64,7 @@ public class ThumbnailDummyHandledFile extends AbstractDummyHandledFile {
     if (targetPK != null) {
       return targetPK.getInstanceId();
     }
-    return thumbnail.getInstanceId();
+    return thumbnail.getReference().getComponentInstanceId();
   }
 
   @Override
@@ -106,5 +96,15 @@ public class ThumbnailDummyHandledFile extends AbstractDummyHandledFile {
   @Override
   public boolean isDeleted() {
     return deleted;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }
