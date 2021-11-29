@@ -82,7 +82,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.contribution.attachment.SimpleDocumentServiceContext.canUnlockNotifyUpdateFromRequestContext;
 import static org.silverpeas.core.contribution.attachment.SimpleDocumentServiceContext.unlockMustNotNotifyUpdateIntoRequestContext;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
@@ -889,16 +892,23 @@ public class SimpleDocumentService
   @Override
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName,
       ResourceReference foreign, String lang) {
-    List<SimpleDocument> existingDocuments = listDocumentsByForeignKey(foreign, lang);
-    SimpleDocument document = searchDocumentById(pk, lang);
-    if (document == null) {
-      for (SimpleDocument doc : existingDocuments) {
-        if (doc.getFilename().equalsIgnoreCase(fileName)) {
-          return doc;
-        }
+    final Function<SimpleDocument, String> getLanguageForCompare = d ->  {
+      final String language = d.getAttachment().getLanguage();
+      if (language.equals(lang)) {
+        return "0";
+      } else if (I18NHelper.DEFAULT_LANGUAGE.equals(language)) {
+        return "1";
       }
-    }
-    return document;
+      return language;
+    };
+    return ofNullable(searchDocumentById(pk, lang))
+        .orElseGet(() ->
+            listDocumentsByForeignKey(foreign, lang)
+                .stream()
+                .sorted(comparing(getLanguageForCompare))
+                .filter(d -> d.getFilename().equalsIgnoreCase(fileName))
+                .findFirst()
+                .orElse(null));
   }
 
   @Override
