@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.reminder;
 
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -35,19 +37,17 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * A manager of contributions managed by an custom application dedicated to the tests.
+ * A manager of contributions managed by a custom application dedicated to the tests.
  * @author mmoquillon
  */
 @Singleton
-@Named("kmeliaInstanceContributionManager")
-public class KmeliaInstanceContributionManager implements ComponentInstanceContributionManager {
+@Named("kmeliaService")
+public class KmeliaService implements ApplicationService {
 
-  private static final String APP_PREFIX = "kmelia";
+  private final Map<ContributionIdentifier, Contribution> contributions = new HashMap<>();
 
-  private Map<ContributionIdentifier, Contribution> contributions = new HashMap<>();
-
-  public static KmeliaInstanceContributionManager get() {
-    return ServiceProvider.getService(KmeliaInstanceContributionManager.class);
+  public static KmeliaService get() {
+    return ServiceProvider.getService(KmeliaService.class);
   }
 
   public void clearAll() {
@@ -59,8 +59,24 @@ public class KmeliaInstanceContributionManager implements ComponentInstanceContr
   }
 
   @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
+  @SuppressWarnings("unchecked")
+  public Optional<Contribution> getContributionById(final ContributionIdentifier contributionId) {
     return Optional.ofNullable(contributions.get(contributionId));
+  }
+
+  @Override
+  public SettingBundle getComponentSettings() {
+    return null;
+  }
+
+  @Override
+  public LocalizationBundle getComponentMessages(final String language) {
+    return null;
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("kmelia");
   }
 }
   

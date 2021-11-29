@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.date;
 
+import org.silverpeas.core.util.DateUtil;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -296,10 +298,10 @@ public class TemporalConverter {
 
   private static final Conversion<Instant, Instant> INSTANT_TO_INSTANT =
       Conversion.of(Instant.class, t -> {
-        if (t.equals(Instant.MIN)) {
+        if (t.equals(Instant.MIN) || t.equals(DateUtil.MINIMUM_DATE.toInstant())) {
           return Instant.MIN;
         }
-        if (t.equals(Instant.MAX)) {
+        if (t.equals(Instant.MAX) || t.equals(DateUtil.MAXIMUM_DATE.toInstant())) {
           return Instant.MAX;
         }
         return t;

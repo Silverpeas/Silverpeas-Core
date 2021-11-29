@@ -67,6 +67,8 @@ import static org.silverpeas.core.date.TemporalConverter.asInstant;
 public class Period implements Serializable {
   private static final long serialVersionUID = -4679172808271849961L;
 
+  private static final Period INDEFINITE = betweenInDays(Instant.MIN, Instant.MAX);
+
   @Column(name = "startDate", nullable = false)
   private Instant startDateTime;
   @Column(name = "endDate", nullable = false)
@@ -81,7 +83,7 @@ public class Period implements Serializable {
    * @return an undefined period.
    */
   public static Period indefinite() {
-    return betweenInDays(Instant.MIN, Instant.MAX);
+    return INDEFINITE;
   }
 
   /**
@@ -181,8 +183,8 @@ public class Period implements Serializable {
   public static Period between(Instant startInstant, Instant endInstant) {
     checkPeriod(startInstant, endInstant);
     Period period = new Period();
-    period.startDateTime = startInstant;
-    period.endDateTime = endInstant;
+    period.startDateTime = minOrInstant(startInstant);
+    period.endDateTime = maxOrInstant(endInstant);
     period.inDays = period.startsAtMinDate() && period.endsAtMaxDate();
     return period;
   }

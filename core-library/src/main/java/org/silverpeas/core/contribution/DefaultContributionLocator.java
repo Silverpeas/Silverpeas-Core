@@ -46,7 +46,7 @@ import java.util.Optional;
 @Singleton
 public class DefaultContributionLocator implements ContributionLocator {
 
-  private Map<String, List<Class<? extends ContributionLocatorByLocalIdAndType>>>
+  private final Map<String, List<Class<? extends ContributionLocatorByLocalIdAndType>>>
       potentialLocatorsByType = new HashMap<>();
 
   @Override

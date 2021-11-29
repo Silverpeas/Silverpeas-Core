@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.NoSuchPropertyException;
@@ -39,7 +39,15 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.filter.Filter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
@@ -209,6 +217,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * @param text a text to attach with the reminder.
    * @return itself.
    */
+  @SuppressWarnings("unchecked")
   public <T extends Reminder> T withText(final String text) {
     this.text = text;
     return (T) this;
@@ -387,8 +396,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * @return a {@link Contribution} object.
    */
   protected Contribution getContribution() {
-    return ContributionManager.get()
-        .getById(this.contributionId)
+    return ApplicationService.getInstance(contributionId.getComponentInstanceId())
+        .getContributionById(this.contributionId)
         .orElseThrow(() -> new SilverpeasRuntimeException(
             SilverpeasExceptionMessages.failureOnGetting(contributionId.getType() + " contribution",
                 contributionId.getLocalId())));

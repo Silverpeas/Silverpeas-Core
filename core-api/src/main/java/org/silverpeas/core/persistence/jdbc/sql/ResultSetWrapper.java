@@ -28,6 +28,9 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -79,6 +82,21 @@ public class ResultSetWrapper implements ResultSet {
     Long dateIntoLongFormat = getLongObject(columnIndex);
     if (dateIntoLongFormat != null) {
       return new java.util.Date(dateIntoLongFormat);
+    }
+    return null;
+  }
+
+  /**
+   * Gets a {@link LocalDate} representation of the number of milliseconds from EPOCH encoded as
+   * a long the current result set.
+   * @param columnIndex the first column is 1, the second is 2, ...
+   * @return the {@link LocalDate} value if it exists a long value, null otherwise.
+   * @throws SQLException on SQL error.
+   */
+  public LocalDate getLocalDateFromLong(int columnIndex) throws SQLException {
+    java.util.Date date = getDateFromLong(columnIndex);
+    if (date != null) {
+      return LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
     return null;
   }

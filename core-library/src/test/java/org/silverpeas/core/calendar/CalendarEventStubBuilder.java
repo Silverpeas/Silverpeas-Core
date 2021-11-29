@@ -25,6 +25,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
@@ -56,6 +57,7 @@ public class CalendarEventStubBuilder {
     when(event.getCategories()).thenReturn(new CategorySet());
     when(event.getPersistedOccurrences()).thenReturn(occurrences);
     when(event.asCalendarComponent()).thenReturn(component);
+    when(event.getIdentifier()).thenCallRealMethod();
   }
 
   public static CalendarEventStubBuilder from(Period period) {

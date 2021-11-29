@@ -22,24 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
+import java.text.MessageFormat;
 import java.util.Optional;
 
-import static org.silverpeas.core.contribution.ComponentInstanceContributionManager.getByInstanceId;
-
 /**
+ * Contribution manager centralization about the calendar event resources.
  * @author silveryocha
  */
-@Service
-public class DefaultContributionManager implements ContributionManager {
+public abstract class AbstractCalendarService implements ApplicationService {
 
   @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
-    return getByInstanceId(contributionId.getComponentInstanceId()).getById(contributionId);
+  @SuppressWarnings("unchecked")
+  public Optional<Contribution> getContributionById(final ContributionIdentifier contributionId) {
+    final String localId = contributionId.getLocalId();
+    if (CalendarEventOccurrence.TYPE.equals(contributionId.getType())) {
+      return Optional.ofNullable(CalendarEventOccurrence.getById(localId).orElse(null));
+    } else if (CalendarEvent.TYPE.equals(contributionId.getType())) {
+      return Optional.ofNullable(CalendarEvent.getById(localId));
+    }
+    throw new IllegalStateException(
+        MessageFormat.format("type {0} is not handled", contributionId.getType()));
   }
 }

@@ -34,7 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /***
- * Initializer of all of the scheduler implementations for the integration tests.
+ * Initializer of all the scheduler implementations for the integration tests.
  * The release of the schedulers is performed automatically at shutdown; it is then no necessary to
  * explicitly release them.
  * @author mmoquillon

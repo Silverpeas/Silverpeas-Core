@@ -25,27 +25,25 @@ package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A Silverpeas component service to use in tests.
  */
 @Service
-public class ClassifiedService implements ApplicationService<Classified> {
-
-  public static final String COMPONENT_NAME = "classifieds";
+public class ClassifiedService implements ApplicationService {
 
   @Override
-  public Classified getContentById(String contentId) {
-    if (!classifieds.containsKey(contentId)) {
-      throw new RuntimeException("classified of id " + contentId + " not found");
-    }
-    return classifieds.get(contentId);
+  @SuppressWarnings("unchecked")
+  public Optional<Classified> getContributionById(final ContributionIdentifier id) {
+    return Optional.of(classifieds.get(id.getLocalId()));
   }
 
   @Override
@@ -73,9 +71,5 @@ public class ClassifiedService implements ApplicationService<Classified> {
     return instanceId.startsWith("classified");
   }
 
-  public void putContent(final Classified classified) {
-    classifieds.put(classified.getId(), classified);
-  }
-
-  private Map<String, Classified> classifieds = new HashMap<String, Classified>();
+  private final Map<String, Classified> classifieds = new HashMap<>();
 }

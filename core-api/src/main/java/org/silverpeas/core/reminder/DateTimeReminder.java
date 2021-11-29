@@ -109,8 +109,7 @@ public class DateTimeReminder extends Reminder {
    * @return itself.
    */
   public DateTimeReminder triggerFrom(final String temporalProperty) {
-    withContributionProperty(temporalProperty);
-    return this;
+    return withContributionProperty(temporalProperty);
   }
 
   /**

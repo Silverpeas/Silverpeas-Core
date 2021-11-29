@@ -80,6 +80,12 @@ public interface Thumbnail extends Serializable {
   boolean isCropped();
 
   /**
+   * Is this thumbnail can be cropped?
+   * @return true if the Silverpeas can crop this image. False otherwise.
+   */
+  boolean canBeCropped();
+
+  /**
    * Gets the URL of the thumbnail in Silverpeas in order to be rendered in the Web client.
    * @return the URL of this thumbnail.
    */

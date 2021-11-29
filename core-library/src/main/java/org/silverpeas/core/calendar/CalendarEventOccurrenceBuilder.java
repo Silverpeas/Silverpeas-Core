@@ -32,7 +32,7 @@ import java.time.temporal.Temporal;
  */
 public class CalendarEventOccurrenceBuilder {
 
-  private CalendarEvent event;
+  private final CalendarEvent event;
   private Temporal start;
   private Temporal end;
 

@@ -37,9 +37,9 @@ import java.util.Optional;
  * </p>
  * <p>
  * The aim is to compute from partial identifier the full {@link ContributionIdentifier} which can
- * then be used by {@link ContributionManager} services to get the contribution data.<br>
- * This mechanism is useful for core services which have to perform treatments on contribution data.
- * (permalink for example)
+ * then be used by {@link org.silverpeas.core.ApplicationService} services to get a contribution
+ * instance.<br> This mechanism is useful for core services which have to perform treatments on
+ * contributions (like permalink for example).
  * </p>
  * <p>
  * Its important, from the point of view of performances, to use this service only in particular
@@ -61,12 +61,11 @@ public interface ContributionLocator {
    * and a type.
    * </p>
    * <p>
-   * A local identifier is an identifier which is unique into the context of a component.<br>
-   * In a higher scope level, application level so, there is no guarantee that the local identifier
-   * could be unique.<br>
-   * That is why the type is a mandatory data for the contribution location search. Indeed, a local
-   * id could not be unique at application level, but a couple localId / type has to (publication
-   * services for example).
+   * A local identifier is an identifier which is unique into the context of a component.<br> In a
+   * higher scope level, application level so, there is no guarantee that the local identifier could
+   * be unique.<br> That is why the type is a mandatory data for the contribution location search.
+   * Indeed, a local id could not be unique at application level, but a couple localId / type has to
+   * (publication services for example).
    * </p>
    * @param localId a local identifier.
    * @param type a type of contribution.

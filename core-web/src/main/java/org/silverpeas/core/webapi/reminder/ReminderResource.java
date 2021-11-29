@@ -25,8 +25,8 @@
 package org.silverpeas.core.webapi.reminder;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionLocalizationBundle;
@@ -285,7 +285,9 @@ public class ReminderResource extends RESTWebService {
   }
 
   private Contribution getContribution() {
-    final Contribution contribution = ContributionManager.get().getById(getContributionIdentifier())
+    ContributionIdentifier id = getContributionIdentifier();
+    final Contribution contribution = ApplicationService.getInstance(id.getComponentInstanceId())
+        .getContributionById(id)
         .orElseThrow(() -> new WebApplicationException(
             failureOnGetting("contribution", getContributionIdentifier().asString()), NOT_FOUND));
     if (!contribution.canBeAccessedBy(getUser())) {

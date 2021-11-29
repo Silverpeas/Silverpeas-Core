@@ -23,17 +23,21 @@
  */
 package org.silverpeas.core;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
+
+import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
-public class TestApplicationServiceImpl1 implements ApplicationService<TestResource1> {
+public class TestApplicationServiceImpl1 implements ApplicationService {
 
   @Override
-  public TestResource1 getContributionById(final String contributionId) {
-    return null;
+  @SuppressWarnings("unchecked")
+  public Optional<TestResource1> getContributionById(final ContributionIdentifier contributionId) {
+    return Optional.empty();
   }
 
   @Override

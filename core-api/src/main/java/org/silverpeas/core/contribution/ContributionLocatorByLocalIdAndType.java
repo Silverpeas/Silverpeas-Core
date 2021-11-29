@@ -31,16 +31,14 @@ import java.util.Optional;
 
 /**
  * <p>
- * This interface defines the locator of {@link Contribution} instances which must be implemented
- * by
+ * This interface defines the locator of {@link Contribution} instances which must be implemented by
  * services providing contributions.
  * </p>
  * <p>
- * From a local identifier and a type, the system asks to the several {@link
- * ContributionLocatorByLocalIdAndType} implements the related full {@link
- * ContributionIdentifier}.<br>
- * Ths {@link ContributionIdentifier} permits to use {@link ContributionManager} service to retrieve
- * contribution data.
+ * From a local identifier and a type, the system asks to the several
+ * {@link ContributionLocatorByLocalIdAndType} implements the related full
+ * {@link ContributionIdentifier}.<br> Ths {@link ContributionIdentifier} permits to use
+ * {@link org.silverpeas.core.ApplicationService} service to retrieve some contributions.
  * </p>
  * @author silveryocha
  */
@@ -65,12 +63,11 @@ public interface ContributionLocatorByLocalIdAndType {
    * and a type.
    * </p>
    * <p>
-   * A local identifier is an identifier which is unique into the context of a component.<br>
-   * In a higher scope level, application level so, there is no guarantee that the local identifier
-   * could be unique.<br>
-   * That is why the type is a mandatory data for the contribution location search. Indeed, a local
-   * id could not be unique at application level, but a couple localId / type has to (publication
-   * services for example).
+   * A local identifier is an identifier which is unique into the context of a component.<br> In a
+   * higher scope level, application level so, there is no guarantee that the local identifier could
+   * be unique.<br> That is why the type is a mandatory data for the contribution location search.
+   * Indeed, a local id could not be unique at application level, but a couple localId / type has to
+   * (publication services for example).
    * </p>
    * @param localId a local identifier.
    * @param type a type of contribution.

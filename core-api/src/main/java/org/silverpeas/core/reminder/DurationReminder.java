@@ -162,8 +162,7 @@ public class DurationReminder extends Reminder {
       String temporalProperty) {
     this.duration = duration;
     this.timeUnit = timeUnit;
-    withContributionProperty(temporalProperty);
-    return this;
+    return withContributionProperty(temporalProperty);
   }
 
   @Override

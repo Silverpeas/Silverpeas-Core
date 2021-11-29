@@ -26,6 +26,7 @@ package org.silverpeas.core;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.test.UnitTest;
 
@@ -46,8 +47,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * This Unit test shows a simple method to fetch all implementations of an interface which is
- * dealing with typed objects
+ * Unit test about the fetching of all implementations or of some implementations of an interface
+ * by CDI.
  * @author Yohann Chastagnier
  */
 @UnitTest
@@ -60,22 +61,25 @@ class ApplicationServiceTest {
 
   @Inject
   @Any
-  private Instance<ApplicationService<?>> anyApplicationServiceInstanceGetter;
+  private Instance<ApplicationService> anyApplicationServiceInstanceGetter;
 
   @Inject
   @Any
-  private Provider<ApplicationService<?>> anyApplicationServiceProvider;
+  @SuppressWarnings("CdiInjectionPointsInspection")
+  private Provider<ApplicationService> anyApplicationServiceProvider;
 
   @Inject
-  @Any
-  private Instance<ApplicationService<TestResource2>> res2ApplicationServiceInstanceGetter;
+  @ApplicationServiceTestQualifier
+  private Instance<ApplicationService> res2ApplicationServiceInstanceGetter;
 
   @Inject
-  @Any
-  private Provider<ApplicationService<TestResource2>> res2ApplicationServiceProvider;
+  @ApplicationServiceTestQualifier
+  @SuppressWarnings("CdiInjectionPointsInspection")
+  private Provider<ApplicationService> res2ApplicationServiceProvider;
 
   @Test
-  void gettingAllImplementationsOfTypedInterface() {
+  @DisplayName("Getting an instance for each implementations of a given interface should succeed")
+  void getAllImplementationsOfInterface() {
     final int nbForEachInstances = 10;
     final Set<ApplicationService> instances = new HashSet<>();
     for (int i = 0; i < nbForEachInstances; i++) {
@@ -85,7 +89,7 @@ class ApplicationServiceTest {
       anyApplicationServiceInstanceGetter.forEach(instances::add);
     }
 
-    Map<Class, Integer> result = mapNbInstancesByTypes(instances);
+    Map<Class<?>, Integer> result = mapNbInstancesByTypes(instances);
 
     assertThat(instances, hasSize(nbForEachInstances + 1));
     assertThat(result.size(), is(2));
@@ -94,41 +98,52 @@ class ApplicationServiceTest {
   }
 
   @Test
-  void
-  getInstanceOfTypedInterfaceWithoutPrecisingTheTypeWhereasSeveralImplementationAreProvided() {
-    assertThrows(AmbiguousResolutionException.class, () -> {
-      assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
-      anyApplicationServiceInstanceGetter.get();
-    });
+  @DisplayName("Getting one object of an interface implemented by several classes should fail")
+  void getOneInstanceOfInterfaceWithSeveralImplementations() {
+    assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
+    assertThrows(AmbiguousResolutionException.class,
+        () -> anyApplicationServiceInstanceGetter.get());
   }
 
   @Test
-  void getInstanceOfTypedInterfaceByQualifier() {
+  @DisplayName("Getting one object of an interface with several implementations by giving its " +
+      "qualifier should succeed")
+  void getSingleInstanceOfInterfaceByQualifier() {
     assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
-    Instance<ApplicationService<?>> precised = anyApplicationServiceInstanceGetter.select(
+    Instance<ApplicationService> precised = anyApplicationServiceInstanceGetter.select(
         new AnnotationLiteral<ApplicationServiceTestQualifier>() {});
     assertThat(precised.isAmbiguous(), is(false));
+    assertThat(precised.get(), instanceOf(TestApplicationServiceImpl2.class));
   }
 
   @Test
-  void
-  provideInstanceOfTypedInterfaceWithoutPrecisingTheTypeWhereasSeveralImplementationAreProvided() {
+  @DisplayName("Providing one object of an interface implemented by several classes should fail")
+  void provideOneInstanceOfInterfaceWithSeveralImplementations() {
     assertThrows(AmbiguousResolutionException.class, () -> anyApplicationServiceProvider.get());
   }
 
   @Test
-  void getInstanceOfTypedInterfaceByPrecisingTheType() {
-    assertThat(res2ApplicationServiceInstanceGetter.get(),
-        instanceOf(TestApplicationServiceImpl2.class));
+  @DisplayName("Getting one object of an interface with several implementations by giving the " +
+      "expected concrete type should succeed")
+  void getSingleInstanceOfInterfaceByConcreteType() {
+    assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
+    Instance<TestApplicationServiceImpl2> precised =
+        anyApplicationServiceInstanceGetter.select(TestApplicationServiceImpl2.class);
+    assertThat(precised.isAmbiguous(), is(false));
+    assertThat(precised.get(), instanceOf(TestApplicationServiceImpl2.class));
   }
 
   @Test
-  void provideInstanceOfTypedInterfaceByPrecisingTheType() {
+  @DisplayName("Providing one object of an interface with several implementations by annotating " +
+      "the injection point with a qualifier should succeed")
+  void provideSingleInstanceInterfaceByQualifyingTheInjectionPoint() {
     assertThat(res2ApplicationServiceProvider.get(), instanceOf(TestApplicationServiceImpl2.class));
   }
 
   @Test
-  void gettingAllImplementationsOfTypedInterfaceWhichItIsPrecised() {
+  @DisplayName("Getting all objects of an interface with several implementations by annotating " +
+      "the injection point with a qualifier should succeed")
+  void gettingAllQualifiedImplementationsOfInterface() {
     final int nbForEachInstances = 10;
     final Set<ApplicationService> instances = new HashSet<>();
     for (int i = 0; i < nbForEachInstances; i++) {
@@ -137,15 +152,15 @@ class ApplicationServiceTest {
       res2ApplicationServiceInstanceGetter.forEach(instances::add);
     }
 
-    Map<Class, Integer> result = mapNbInstancesByTypes(instances);
+    Map<Class<?>, Integer> result = mapNbInstancesByTypes(instances);
 
     assertThat(instances, hasSize(1));
     assertThat(result.size(), is(1));
     assertThat(result.get(TestApplicationServiceImpl2.class), is(1));
   }
 
-  private Map<Class, Integer> mapNbInstancesByTypes(Collection<ApplicationService> instances) {
-    Map<Class, Integer> counts = new HashMap<>();
+  private Map<Class<?>, Integer> mapNbInstancesByTypes(Collection<ApplicationService> instances) {
+    Map<Class<?>, Integer> counts = new HashMap<>();
     for (ApplicationService instance : instances) {
       Integer count = counts.get(instance.getClass());
       if (count == null) {

@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
+ * Contribution to use in the tests on the Reminder
  * @author mmoquillon
  */
 public class EventContrib implements Contribution {

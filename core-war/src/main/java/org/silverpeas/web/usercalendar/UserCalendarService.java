@@ -24,14 +24,32 @@
 
 package org.silverpeas.web.usercalendar;
 
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
+import org.silverpeas.core.ApplicationServiceProvider;
+import org.silverpeas.core.calendar.AbstractCalendarService;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Named;
 
 /**
+ * Implementation of the calendar service to serv the calendar of the current user.
  * @author silveryocha
  */
-@Named("userCalendar" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class UserCalendarInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+@Named("userCalendar" + ApplicationServiceProvider.SERVICE_NAME_SUFFIX)
+public class UserCalendarService extends AbstractCalendarService {
+
+  @Override
+  public SettingBundle getComponentSettings() {
+    return UserCalendarSettings.getSettings();
+  }
+
+  @Override
+  public LocalizationBundle getComponentMessages(final String language) {
+    return UserCalendarSettings.getMessagesIn(language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.equals(UserCalendarSettings.COMPONENT_NAME);
+  }
+}

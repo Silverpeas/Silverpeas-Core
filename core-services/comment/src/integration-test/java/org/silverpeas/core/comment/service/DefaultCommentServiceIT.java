@@ -92,7 +92,6 @@ public class DefaultCommentServiceIT {
 
   /**
    * When a comment is added, then any listeners subscribed for a such events should be invoked.
-   * @throws Exception if an error occurs during the test execution.
    */
   @Test
   public void subscribersShouldBeInvokedAtCommentAdding() {
@@ -106,7 +105,6 @@ public class DefaultCommentServiceIT {
 
   /**
    * When a comment is deleted, then any listeners subscribed for a such events should be invoked.
-   * @throws Exception if an error occurs during the test execution.
    */
   @Test
   public void subscribersShouldBeInvokedAtCommentDeletion() {
@@ -123,7 +121,6 @@ public class DefaultCommentServiceIT {
   /**
    * When several comments are deleted, then any listeners subscribed for a such events should be
    * invoked.
-   * @throws Exception if an error occurs during the test execution.
    */
   @Test
   public void subscribersShouldBeInvokedAtSeveralCommentsDeletion() {

@@ -33,6 +33,7 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
@@ -196,13 +197,15 @@ public class BasketItem implements SilverpeasResource, Serializable {
   public <T extends Contribution> T toContribution() {
     if (isContribution()) {
       ContributionIdentifier identifier = ContributionIdentifier.decode(id);
-      Optional<ApplicationService<T>> maybeService = ApplicationServiceProvider.get()
+      Optional<ApplicationService> maybeService = ApplicationServiceProvider.get()
           .getApplicationServiceById(identifier.getComponentInstanceId());
-      ApplicationService<T> service = maybeService.orElseThrow(() -> new NotFoundException(
+      ApplicationService service = maybeService.orElseThrow(() -> new NotFoundException(
           "No application service available for id " + identifier.getComponentInstanceId()));
-      return service.getContributionById(identifier.getLocalId());
+      Optional<T> contribution = service.getContributionById(identifier);
+      return contribution
+          .orElseThrow(() -> new NotFoundException("No such contribution with id " + id));
     }
-    throw new NotFoundException("No such contribution of id " + id);
+    throw new NotFoundException(String.format("Resource %s isn't a contribution", id));
   }
 
   /**

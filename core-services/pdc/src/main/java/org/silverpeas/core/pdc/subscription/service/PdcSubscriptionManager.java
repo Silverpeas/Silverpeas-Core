@@ -32,7 +32,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
- * Utility class. Contains calls of PdcSubscription Ejb
+ * Utility class. It contains calls of PdcSubscription service
  */
 @Service
 public class PdcSubscriptionManager {
@@ -56,13 +56,9 @@ public class PdcSubscriptionManager {
     pdcSubscriptionService.createPDCSubscription(subscription);
   }
 
-  public void updatePDCSubsription(PdcSubscription subscription) {
-    pdcSubscriptionService.updatePDCSubscription(subscription);
-  }
-
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
-      int silverObjectid) {
-    pdcSubscriptionService.checkSubscriptions(classifyValues, componentId, silverObjectid);
+      int silverObjectId) {
+    pdcSubscriptionService.checkSubscriptions(classifyValues, componentId, silverObjectId);
   }
 
   public void checkAxisOnDelete(int axisId, String axisName) {

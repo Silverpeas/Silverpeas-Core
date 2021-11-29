@@ -206,7 +206,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       // create line in db
       ThumbnailDetail thumdAdded = getThumbnailService().createThumbnail(thumbDetail);
       // create crop thumbnail
-      if (thumdAdded.getCropFileName() == null && thumdAdded.isCroppable()) {
+      if (thumdAdded.getCropFileName() == null && thumdAdded.canBeCropped()) {
         createCropFile(thumbnailWidth, thumbnailHeight, thumdAdded);
       }
       return thumdAdded;

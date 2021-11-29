@@ -157,7 +157,8 @@ public class ThumbnailDetail implements Thumbnail {
     return mimeType;
   }
 
-  public boolean isCroppable() {
+  @Override
+  public boolean canBeCropped() {
     return StringUtil.isDefined(getOriginalFileName()) && !getOriginalFileName().startsWith("/");
   }
 

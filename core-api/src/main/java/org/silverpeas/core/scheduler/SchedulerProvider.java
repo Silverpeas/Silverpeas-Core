@@ -64,7 +64,6 @@ public class SchedulerProvider {
    */
   public static Scheduler getPersistentScheduler() {
     return ServiceProvider.getService(Scheduler.class,
-        new AnnotationLiteral<PersistentScheduling>() {
-        });
+        new AnnotationLiteral<PersistentScheduling>() {});
   }
 }

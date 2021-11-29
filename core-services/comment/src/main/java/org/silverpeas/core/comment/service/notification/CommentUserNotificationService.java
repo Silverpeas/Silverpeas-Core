@@ -24,7 +24,11 @@
 package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.ApplicationServiceProvider;
+import org.silverpeas.core.NotFoundException;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
@@ -32,22 +36,19 @@ import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentUserNotification;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -59,7 +60,6 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * notification is sent to all users concerned by the comment. A user is concerned if he has
  * participated in the comment flow of the related contribution or if he's an author of the
  * contribution.
- *
  * @author mmoquillon
  */
 @Service
@@ -73,107 +73,77 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    */
   private static final String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
 
-  private static final Map<String, ApplicationService<?>> services = new ConcurrentHashMap<>();
-
   @Inject
   private CommentService commentService;
-
-  @Inject
-  @Any
-  private Instance<ApplicationService<?>> applicationServiceInstances;
 
   @Override
   public void onCreation(final CommentEvent event) throws Exception {
     Comment comment = event.getTransition().getAfter();
     String componentInstanceId = comment.getComponentInstanceId();
-    String componentName = getComponentName(componentInstanceId);
     if (isDefined(componentInstanceId)) {
-      ApplicationService<?> service = lookupComponentService(componentInstanceId);
-      if (service != null) {
+      Optional<ApplicationService> mayBeService = ApplicationServiceProvider.get()
+          .getApplicationServiceById(componentInstanceId);
+      mayBeService.ifPresent(service -> {
         try {
-          Contribution commentedContent =
-              service.getContributionById(comment.getResourceReference().getLocalId());
-          final Set<String> recipients =
-              getInterestedUsers(comment.getCreator().getId(), commentedContent);
+          ContributionIdentifier contributionId =
+              ContributionIdentifier.from((ResourceIdentifier) comment.getResourceReference());
+          Contribution commentedContent = service.getContributionById(contributionId)
+              .orElseThrow(
+                  () -> new NotFoundException("No such contribution " + contributionId.asString()));
+
+          final Set<String> recipients = getInterestedUsers(comment.getCreator()
+              .getId(), commentedContent);
           if (!recipients.isEmpty()) {
+            String componentName = getComponentName(componentInstanceId);
             Comment newComment =
                 getCommentService().getComment(new CommentId(componentInstanceId, comment.getId()));
             final NotificationMetaData notification = UserNotificationHelper.build(
                 new CommentUserNotification(getCommentService(), newComment, commentedContent,
-                    componentName + "." + SUBJECT_COMMENT_ADDING, service.
-                    getComponentMessages(""), recipients));
+                    componentName + "." + SUBJECT_COMMENT_ADDING, service.getComponentMessages(""),
+                    recipients));
             notifyUsers(notification);
           }
         } catch (Exception ex) {
           SilverLogger.getLogger(this).error(ex.getMessage(), ex);
         }
-      }
+      });
     }
   }
 
-  private ApplicationService<?> lookupComponentService(String instanceId) {
-    String componentServiceName = getComponentName(instanceId) + "Service";
-    final ApplicationService<?>[] service = {services.get(componentServiceName)};
-    if (service[0] == null) {
-      try {
-        service[0] = ServiceProvider.getService(componentServiceName);
-      } catch (IllegalStateException ex) {
-        SilverLogger.getLogger(this).debug(ex.getMessage(), ex);
-        applicationServiceInstances.forEach(applicationService -> {
-          if (service[0] == null && applicationService.isRelatedTo(instanceId)) {
-            service[0] = applicationService;
-          }
-        });
-      }
-      if (service[0] != null) {
-        services.put(componentServiceName, service[0]);
-      }
-    }
-    return service[0];
-  }
-
   /**
-   * Gets the name of the Silverpeas component to which the specified instance belongs.
-   *
-   * @param componentInstanceId the unique identifier of a component instance.
-   * @return the unique name of the Silverpeas component.
-   */
-  private String getComponentName(String componentInstanceId) {
-    return componentInstanceId.split("\\d+")[0];
-  }
-
-  /**
-   * Gets the users that are interested by the adding or the removing of the specified comment and
+   * Gets the users that are interested in the adding or the removing of the specified comment and
    * that have enough privileges to access the commented content.
    * <p>
    * The interested users are the authors of the others comments on the content and the creator of
-   * this content. The author of the added or removed comment isn't considered as interested by the
+   * this content. The author of the added or removed comment isn't considered as interested in the
    * comment.
-   *
    * @param commentAuthorId the identifier of the author of the comment that is concerned by the
-   *                        notification.
-   * @param content         the content that was commented by the specified comment.
+   * notification.
+   * @param contribution the content that was commented by the specified comment.
    * @return a list with the identifier of the interested users.
    */
-  private Set<String> getInterestedUsers(final String commentAuthorId, Contribution content) {
+  private Set<String> getInterestedUsers(final String commentAuthorId, Contribution contribution) {
     Set<String> interestedUsers = new LinkedHashSet<>();
-    ResourceReference ref = new ResourceReference(content.getIdentifier().getLocalId(),
-        content.getIdentifier().getComponentInstanceId());
+    ResourceReference ref = new ResourceReference(contribution.getIdentifier()
+        .getLocalId(), contribution.getIdentifier()
+        .getComponentInstanceId());
     List<Comment> comments =
-        getCommentService().getAllCommentsOnResource(content.getContributionType(), ref);
+        getCommentService().getAllCommentsOnResource(contribution.getContributionType(), ref);
     for (Comment aComment : comments) {
       User author = aComment.getCreator();
-      if (!author.getId().equals(commentAuthorId) && canBeSent(content, author)) {
+      if (!author.getId()
+          .equals(commentAuthorId) && canBeSent(contribution, author)) {
         interestedUsers.add(author.getId());
       }
     }
-    User contentCreator = content.getCreator();
-    if (!commentAuthorId.equals(contentCreator.getId()) && canBeSent(content, contentCreator)) {
+    User contentCreator = contribution.getCreator();
+    if (!commentAuthorId.equals(contentCreator.getId()) && canBeSent(contribution, contentCreator)) {
       interestedUsers.add(contentCreator.getId());
     }
-    User contentUpdater = content.getLastUpdater();
-    if (contentUpdater != null && !contentUpdater.getId().equals(contentCreator.getId()) &&
-        !commentAuthorId.equals(contentUpdater.getId()) && canBeSent(content, contentUpdater)) {
+    User contentUpdater = contribution.getLastUpdater();
+    if (contentUpdater != null && !contentUpdater.getId()
+        .equals(contentCreator.getId()) && !commentAuthorId.equals(contentUpdater.getId()) &&
+        canBeSent(contribution, contentUpdater)) {
       interestedUsers.add(contentUpdater.getId());
     }
     return interestedUsers;
@@ -182,7 +152,6 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
   /**
    * Notifies the specified users, identified by their identifier, with the specified notification
    * information.
-   *
    * @param notification the notification information.
    * @throws NotificationException if the notification of the recipients fail.
    */
@@ -198,7 +167,12 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     return commentService;
   }
 
-  private boolean canBeSent(Contribution content, User recipient) {
-    return content.canBeAccessedBy(recipient);
+  private boolean canBeSent(Contribution contribution, User recipient) {
+    return contribution.canBeAccessedBy(recipient);
   }
+
+  private String getComponentName(String componentInstanceId) {
+    return SilverpeasComponentInstanceProvider.get().getComponentName(componentInstanceId);
+  }
+
 }

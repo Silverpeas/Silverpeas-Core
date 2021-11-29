@@ -50,8 +50,8 @@ import static java.util.Calendar.*;
  * @author squere
  */
 public class DateUtil {
-  public static final Date MINIMUM_DATE = java.sql.Date.valueOf("1900-01-01");
-  public static final Date MAXIMUM_DATE = java.sql.Date.valueOf("2999-12-31");
+  public static final Date MINIMUM_DATE = new Date(java.sql.Date.valueOf("1900-01-01").getTime());
+  public static final Date MAXIMUM_DATE = new Date(java.sql.Date.valueOf("2999-12-31").getTime());
 
   private static final DateUtil instance = new DateUtil();
 

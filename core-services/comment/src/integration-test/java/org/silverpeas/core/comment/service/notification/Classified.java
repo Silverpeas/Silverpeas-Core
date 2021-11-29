@@ -37,11 +37,9 @@ import java.util.List;
 public class Classified implements SilverpeasContent {
 
   private static final long serialVersionUID = -5162002893531236283L;
-  private String id;
-  private String instanceId;
-  private UserDetail author;
-  private String title;
-  private List<String> unauthorizedUsers = new ArrayList<String>();
+  private final String id;
+  private final String instanceId;
+  private final List<String> unauthorizedUsers = new ArrayList<>();
 
   public Classified(String id, String instanceId) {
     this.id = id;
@@ -60,27 +58,17 @@ public class Classified implements SilverpeasContent {
 
   @Override
   public UserDetail getCreator() {
-    return author;
-  }
-
-  public Classified createdBy(final UserDetail author) {
-    this.author = author;
-    return this;
+    return null;
   }
 
   @Override
   public String getTitle() {
-    return title;
+    return "";
   }
 
   @Override
   public String getDescription() {
     return "";
-  }
-
-  public Classified entitled(String title) {
-    this.title = title;
-    return this;
   }
 
   @Override
@@ -101,10 +89,6 @@ public class Classified implements SilverpeasContent {
   @Override
   public String getSilverpeasContentId() {
     return "";
-  }
-
-  public void unauthorize(UserDetail user) {
-    unauthorizedUsers.add(user.getId());
   }
 
   @Override

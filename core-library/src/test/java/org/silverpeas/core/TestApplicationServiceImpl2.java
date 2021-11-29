@@ -23,21 +23,24 @@
  */
 package org.silverpeas.core;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Singleton;
+import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
 @ApplicationServiceTestQualifier
 @Singleton
-public class TestApplicationServiceImpl2 implements ApplicationService<TestResource2> {
+public class TestApplicationServiceImpl2 implements ApplicationService {
 
   @Override
-  public TestResource2 getContributionById(final String contributionId) {
-    return null;
+  @SuppressWarnings("unchecked")
+  public Optional<TestResource2> getContributionById(final ContributionIdentifier contributionId) {
+    return Optional.empty();
   }
 
   @Override

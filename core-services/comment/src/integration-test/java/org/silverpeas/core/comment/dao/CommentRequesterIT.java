@@ -27,15 +27,6 @@
  */
 package org.silverpeas.core.comment.dao;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.comment.dao.jdbc.JDBCCommentRequester;
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentId;
-import org.silverpeas.core.comment.model.CommentedPublicationInfo;
-import org.silverpeas.core.comment.test.WarBuilder4Comment;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -44,9 +35,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.comment.dao.jdbc.JDBCCommentRequester;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.model.CommentId;
+import org.silverpeas.core.comment.model.CommentedPublicationInfo;
+import org.silverpeas.core.comment.test.WarBuilder4Comment;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
@@ -55,9 +55,8 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
@@ -67,9 +66,9 @@ public class CommentRequesterIT {
       "/org/silverpeas/core/comment/create-database.sql";
   private static final String DATASET_SCRIPT = "/org/silverpeas/core/comment/comment-dataset.sql";
 
-  private final String DUMMY_COMMENT_ID = "newCommentId";
-  private final String DUMMY_INSTANCE_ID = "newInstanceId";
-  private final Date DUUMMY_DATE = java.sql.Date.valueOf("2015-01-01");
+  private static final String DUMMY_COMMENT_ID = "newCommentId";
+  private static final String DUMMY_INSTANCE_ID = "newInstanceId";
+  private static final Date DUUMMY_DATE = java.sql.Date.valueOf("2015-01-01");
 
   @Inject
   private JDBCCommentRequester commentRequester;
@@ -96,11 +95,6 @@ public class CommentRequesterIT {
     DBUtil.close(con);
   }
 
-  /**
-   * Test of createComment method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testCreateComment() throws Exception {
     CommentId id = new CommentId("kmelia18", null);
@@ -176,12 +170,7 @@ public class CommentRequesterIT {
     assertTrue(comments.isEmpty());
   }
 
-  /**
-   * Test of createComment method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
-  @Test
+ @Test
   public void testGetComment() throws Exception {
     CommentId id = new CommentId("instanceId10", "1000");
     Comment result = commentRequester.getComment(con, id);
@@ -193,11 +182,6 @@ public class CommentRequesterIT {
     assertEquals(result.getCreationDate(), result.getLastUpdateDate());
   }
 
-  /**
-   * Test of createComment method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testDeleteComment() throws Exception {
     CommentId id = new CommentId("instanceId10", "1000");
@@ -213,11 +197,6 @@ public class CommentRequesterIT {
     assertNull(result);
   }
 
-  /**
-   * Test of createComment method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testUpdateComment() throws Exception {
     CommentId id = new CommentId("instanceId10", "1000");
@@ -243,11 +222,6 @@ public class CommentRequesterIT {
     assertEquals(id, result.getIdentifier());
   }
 
-  /**
-   * Test of createComment method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testMoveComment() throws Exception {
     // get the comment and check his attributes
@@ -297,11 +271,6 @@ public class CommentRequesterIT {
     assertEquals(targetResourceRef.getComponentInstanceId(), result.getIdentifier().getComponentInstanceId());
   }
 
-  /**
-   * Test of getMostCommentedAllPublications method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetMostCommentedAllPublications() throws Exception {
     List<CommentedPublicationInfo> result =
@@ -322,11 +291,6 @@ public class CommentRequesterIT {
     assertEquals(1, result.get(1).getCommentCount());
   }
 
-  /**
-   * Test of getCommentsCount method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetCommentsCount() throws Exception {
     ResourceReference resourceRef = new ResourceReference("500", "instanceId10");
@@ -350,11 +314,6 @@ public class CommentRequesterIT {
     assertEquals(1, commentRequester.getCommentsCount(con, srcResourceType, resourceRef));
   }
 
-  /**
-   * Test of getAllComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetAllComments() throws Exception {
     ResourceReference resourceRef = new ResourceReference("500", "instanceId10");
@@ -419,11 +378,6 @@ public class CommentRequesterIT {
     assertTrue(isIllegalArgumentException);
   }
 
-  /**
-   * Test of deleteAllComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testDeleteAllComments() throws Exception {
     ResourceReference resourceRef = new ResourceReference("500", "instanceId10");
@@ -440,11 +394,6 @@ public class CommentRequesterIT {
     assertEquals(0, comments.size());
   }
 
-  /**
-   * Test of deleteAllComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testDeleteAllCommentsOnNullValues() throws Exception {
     boolean isIllegalArgumentException = false;
@@ -456,11 +405,6 @@ public class CommentRequesterIT {
     assertTrue(isIllegalArgumentException);
   }
 
-  /**
-   * Test of deleteAllComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testDeleteAllCommentsOnResourceTypeOnly() throws Exception {
     String resourceType = "RtypeTest";
@@ -471,11 +415,6 @@ public class CommentRequesterIT {
     assertEquals(0, nbDeletes);
   }
 
-  /**
-   * Test of deleteAllComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testDeleteAllCommentsOnResourceIdOnly() throws Exception {
     ResourceReference resourceRef = new ResourceReference("500");
@@ -486,11 +425,6 @@ public class CommentRequesterIT {
     assertEquals(0, nbDeletes);
   }
 
-  /**
-   * Test of deleteAllComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testDeleteAllCommentsOnInstanceIdOnly() throws Exception {
     ResourceReference resourceRef = new ResourceReference(null, "instanceId20");
@@ -501,25 +435,15 @@ public class CommentRequesterIT {
     assertEquals(0, nbDeletes);
   }
 
-  /**
-   * Test of getSocialInformationCommentsListByUserId method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test(expected = IllegalArgumentException.class)
   public void testGetDataWithNoFiltersShouldNotWork() throws Exception {
     commentRequester.getSocialInformationComments(con, null, null, null, null);
   }
 
-  /**
-   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsReturningOneSocialInformationOfCreation()
       throws Exception {
-    List<String> contactIds = asList("10");
+    List<String> contactIds = List.of("10");
 
     List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
@@ -538,14 +462,9 @@ public class CommentRequesterIT {
     assertThat(socialInformationOfCreation.isUpdated(), is(false));
   }
 
-  /**
-   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsForOneUser() throws Exception {
-    List<String> contactIds = asList("12");
+    List<String> contactIds = List.of("12");
 
     List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
@@ -564,72 +483,52 @@ public class CommentRequesterIT {
     assertThat(socialInformationOfCreation.isUpdated(), is(true));
   }
 
-  /**
-   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsFilteredOnUserId() throws Exception {
-    List<String> contactIds = asList("12");
+    List<String> contactIds = List.of("12");
 
     List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
     assertThat(socialInformationList, hasSize(6));
 
-    contactIds = asList("10", "12");
+    contactIds = List.of("10", "12");
 
     socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
     assertThat(socialInformationList, hasSize(7));
   }
 
-  /**
-   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsFilteredOnResourceTypes() throws Exception {
 
     List<? extends SocialInformation> socialInformationList =
-        commentRequester.getSocialInformationComments(con, asList("RtypeTest"), null, null, null);
+        commentRequester.getSocialInformationComments(con, List.of("RtypeTest"), null, null, null);
     assertThat(socialInformationList, hasSize(3));
 
     socialInformationList =
-        commentRequester.getSocialInformationComments(con, asList("RtypeTest", "RtypeTestAutre"),
+        commentRequester.getSocialInformationComments(con, List.of("RtypeTest", "RtypeTestAutre"),
             null, null, null);
     assertThat(socialInformationList, hasSize(5));
   }
 
-  /**
-   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsFilteredOnInstanceId() throws Exception {
 
     List<? extends SocialInformation> socialInformationList =
-        commentRequester.getSocialInformationComments(con, null, null, asList("instanceId10"),
+        commentRequester.getSocialInformationComments(con, null, null, List.of("instanceId10"),
             null);
     assertThat(socialInformationList, hasSize(3));
 
     socialInformationList =
-        commentRequester.getSocialInformationComments(con, null, null, asList("instanceId20"),
+        commentRequester.getSocialInformationComments(con, null, null, List.of("instanceId20"),
             null);
     assertThat(socialInformationList, hasSize(2));
 
     socialInformationList = commentRequester.getSocialInformationComments(con, null, null,
-        asList("instanceId10", "instanceId20"), null);
+        List.of("instanceId10", "instanceId20"), null);
     assertThat(socialInformationList, hasSize(5));
   }
 
-  /**
-   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsFilteredOnPeriod() throws Exception {
 
@@ -665,22 +564,17 @@ public class CommentRequesterIT {
     assertThat(socialInformationList, empty());
   }
 
-  /**
-   * Test of getSocialInformationCommentsListByUserId method, of class JDBCCommentRequester.
-   *
-   * @throws Exception
-   */
   @Test
   public void testGetSocialInformationCommentsAndApplyingAllFilters() throws Exception {
-    List<String> contactIds = asList("12");
+    List<String> contactIds = List.of("12");
 
     List<? extends SocialInformation> socialInformationList =
-        commentRequester.getSocialInformationComments(con, asList("RtypeTest"), contactIds, null,
+        commentRequester.getSocialInformationComments(con, List.of("RtypeTest"), contactIds, null,
             Period.between(LocalDate.parse("2020-06-16"), LocalDate.parse("2020-06-16")));
     assertThat(socialInformationList, hasSize(2));
 
     socialInformationList =
-        commentRequester.getSocialInformationComments(con, asList("RtypeTest", "RtypeTestAutre"),
+        commentRequester.getSocialInformationComments(con, List.of("RtypeTest", "RtypeTestAutre"),
             contactIds, null,
             Period.between(LocalDate.parse("2020-06-16"), LocalDate.parse("2020-06-16")));
     assertThat(socialInformationList, hasSize(4));
@@ -688,7 +582,7 @@ public class CommentRequesterIT {
     // Period which the begin date and end date are both greater than the greatest date of
     // registered comments
     socialInformationList =
-        commentRequester.getSocialInformationComments(con, asList("RtypeTest", "RtypeTestAutre"),
+        commentRequester.getSocialInformationComments(con, List.of("RtypeTest", "RtypeTestAutre"),
             contactIds, null,
             Period.between(LocalDate.parse("2020-06-17"), LocalDate.parse("2020-06-17")));
     assertThat(socialInformationList, empty());

@@ -27,44 +27,66 @@ package org.silverpeas.core;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.util.Optional;
 
 /**
- * A provider of objets implementing the {@link ApplicationService} interface.
+ * A provider of objets implementing the {@link ApplicationService} interface. The provider looks
+ * for an implementation of the {@link ApplicationService} interface by the identifier of the
+ * application instance. In order the discovery of such a service succeeds, it is required that each
+ * implementation are annotated by the @{@link javax.inject.Named} annotation with as value the name
+ * of the component with the first character in lowercase following by the term
+ * <code>Service</code>; for example an application <code>Toto</code> should provide an
+ * implementation of the {@link ApplicationService} interface named (with the {@link
+ * javax.inject.Named} annotation) <code>totoService</code>.
  * @author mmoquillon
  */
 @Provider
+@Singleton
 public class ApplicationServiceProvider {
 
-  private static final String SERVICE_NAME_PATTERN = "%sService";
+  private static final String CACHE_PREFIX_KEY =
+      ApplicationServiceProvider.class.getSimpleName() + "#";
+
+  /**
+   * The suffix to use when naming a service satisfying the {@link ApplicationService} interface
+   * with the {@link javax.inject.Named} annotation.
+   */
+  public static final String SERVICE_NAME_SUFFIX = "Service";
 
   /**
    * Gets an instance of the {@link ApplicationServiceProvider} class.
    * @return an {@link ApplicationServiceProvider} instance.
    */
   public static ApplicationServiceProvider get() {
-    return ServiceProvider.getService(ApplicationServiceProvider.class);
+    return ServiceProvider.getSingleton(ApplicationServiceProvider.class);
   }
 
   /**
    * Gets the application service that is defined for the given application instance. If no such
    * application service exists, then nothing is returned.
    * @param appId the unique identifier of an application instance in Silverpeas.
-   * @param <T> the type of {@link Contribution}s on which the service works.
    * @return optionally the transverse service that is defined for the type of applications the
    * given component instance is of. If no such application service exists, then nothing is
    * returned.
    */
-  public <T extends Contribution> Optional<ApplicationService<T>> getApplicationServiceById(
+  public Optional<ApplicationService> getApplicationServiceById(
       final String appId) {
+    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     String appName = SilverpeasComponentInstance.getComponentName(appId);
+    if (StringUtil.isNotDefined(appName)) {
+      return Optional.empty();
+    }
     try {
-      String serviceName = String.format(SERVICE_NAME_PATTERN, appName);
-      return Optional.of(ServiceProvider.getService(serviceName));
+      return Optional.of(cache.computeIfAbsent(CACHE_PREFIX_KEY + appName, ApplicationService.class,
+          () -> ServiceProvider.getServiceByComponentInstanceAndNameSuffix(appId,
+              SERVICE_NAME_SUFFIX)));
     } catch (IllegalStateException e) {
       SilverLogger.getLogger(this).warn(e.getMessage());
       return Optional.empty();

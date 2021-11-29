@@ -23,38 +23,50 @@
  */
 package org.silverpeas.core.reminder;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.NoSuchPropertyException;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.test.rule.CommonAPIRule;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
+import org.silverpeas.core.test.extension.EnableSilverTestEnv;
+import org.silverpeas.core.test.extension.TestManagedBean;
+import org.silverpeas.core.test.extension.TestManagedMocks;
 
 import java.time.OffsetDateTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.silverpeas.core.reminder.ReminderTestContext.PROCESS_NAME;
 
 /**
  * Unit tests on the reminder engine. Its goal is to help to design it.
  * @author mmoquillon
  */
-public class ReminderTest {
+@EnableSilverTestEnv
+@TestManagedMocks({UserProvider.class, ApplicationServiceProvider.class, ApplicationService.class,
+    EntityManagerProvider.class, ReminderRepository.class, ReminderProcess.class})
+class ReminderTest {
 
-  @Rule
-  public CommonAPIRule commonAPIRule = new CommonAPIRule();
-  private ReminderTestContext context = new ReminderTestContext(commonAPIRule);
+  @TestManagedBean
+  @SuppressWarnings("unused")
+  private final Transaction transaction = new Transaction();
 
-  @Before
+  private final ReminderTestContext context = new ReminderTestContext();
+
+  @BeforeEach
   public void prepareInjection() {
     context.setUp();
   }
 
   @Test
-  public void createNewReminderToTriggerBeforeTheStartDateOfAPlannableContribution() {
+  void createNewReminderToTriggerBeforeTheStartDateOfAPlannableContribution() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
@@ -66,7 +78,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void useTriggerBeforeWithANonPlannable() {
+  void useTriggerBeforeWithANonPlannable() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
     Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
@@ -79,7 +91,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void useSystemTriggerBeforeWithANonPlannable() {
+  void useSystemTriggerBeforeWithANonPlannable() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     Reminder reminder = new DurationReminder(contribution, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
@@ -91,48 +103,48 @@ public class ReminderTest {
     assertThat(reminder.isScheduled(), is(true));
   }
 
-  @Test(expected = NoSuchPropertyException.class)
-  public void useTriggerFromANonValidProperty() {
+  @Test
+  void useTriggerFromANonValidProperty() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
-    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
+    DateTimeReminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
-        .triggerFrom("startDate")
-        .schedule();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void useTriggerFromANonValidPropertyType() {
-    ContributionIdentifier contribution = context.getNonPlannableContribution();
-    User user = context.getUser();
-    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
-        .withText("Don't forget the meeting in two days!")
-        .triggerFrom("title")
-        .schedule();
-  }
-
-  @Test(expected = NoSuchPropertyException.class)
-  public void useTriggerBeforeANonValidProperty() {
-    ContributionIdentifier contribution = context.getNonPlannableContribution();
-    User user = context.getUser();
-    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
-        .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY, "startDate")
-        .schedule();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void useTriggerBeforeANonValidPropertyType() {
-    ContributionIdentifier contribution = context.getNonPlannableContribution();
-    User user = context.getUser();
-    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
-        .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY, "title")
-        .schedule();
+        .triggerFrom("startDate");
+    assertThrows(NoSuchPropertyException.class, reminder::schedule);
   }
 
   @Test
-  public void createNewReminderToTriggerAtDateTime() {
+  void useTriggerFromANonValidPropertyType() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerFrom("title");
+    assertThrows(IllegalArgumentException.class, reminder::schedule);
+  }
+
+  @Test
+  void useTriggerBeforeANonValidProperty() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerBefore(2, TimeUnit.DAY, "startDate");
+    assertThrows(NoSuchPropertyException.class, reminder::schedule);
+  }
+
+  @Test
+  void useTriggerBeforeANonValidPropertyType() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerBefore(2, TimeUnit.DAY, "title");
+    assertThrows(IllegalArgumentException.class, reminder::schedule);
+  }
+
+  @Test
+  void createNewReminderToTriggerAtDateTime() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
@@ -144,7 +156,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewReminderToTriggerFromContributionModelProperty() {
+  void createNewReminderToTriggerFromContributionModelProperty() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
@@ -156,7 +168,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewReminderAboutPlannableToTriggerAtDateTime() {
+  void createNewReminderAboutPlannableToTriggerAtDateTime() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
     Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
@@ -168,7 +180,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewSystemReminderAboutPlannableToTriggerAtDateTime() {
+  void createNewSystemReminderAboutPlannableToTriggerAtDateTime() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     Reminder reminder = new DateTimeReminder(contribution, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
@@ -181,7 +193,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewReminderAboutPlannableToTriggerFromContributionModelProperty() {
+  void createNewReminderAboutPlannableToTriggerFromContributionModelProperty() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
     Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)

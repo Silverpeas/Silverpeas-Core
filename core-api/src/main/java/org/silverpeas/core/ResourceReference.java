@@ -25,6 +25,7 @@ package org.silverpeas.core;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -43,6 +44,7 @@ import java.text.MessageFormat;
  * @author Nicolas Eysseric
  * @author mmoquillon
  */
+@SuppressWarnings("deprecation")
 public class ResourceReference extends WAPrimaryKey
     implements ComponentResourceIdentifier, Serializable {
 
@@ -53,6 +55,14 @@ public class ResourceReference extends WAPrimaryKey
    * Identifier referring that the resource behind is unknown and doesn't require to be known.
    */
   public static final String UNKNOWN_ID = "";
+
+  /**
+   * Constructs a new reference to the specified contribution.
+   * @param identifier the unique identifier of a contribution.
+   */
+  public ResourceReference(ContributionIdentifier identifier) {
+    super(identifier.getLocalId(), identifier.getComponentInstanceId());
+  }
 
   /**
    * Constructs a new reference to a resource with the specified identifier. The resource doesn't

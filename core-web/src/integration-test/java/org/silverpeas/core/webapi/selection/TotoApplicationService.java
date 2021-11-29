@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.selection;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -34,6 +35,7 @@ import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Optional;
 
 /**
  * The service provided by the application Toto. For tests.
@@ -41,14 +43,17 @@ import javax.inject.Named;
  */
 @Service
 @Named("totoService")
-public class TotoApplicationService implements ApplicationService<PublicationDetail> {
+public class TotoApplicationService implements ApplicationService {
 
   @Inject
   private PublicationService publicationService;
 
   @Override
-  public PublicationDetail getContributionById(final String contributionId) {
-    return publicationService.getDetail(new PublicationPK(contributionId));
+  @SuppressWarnings("unchecked")
+  public Optional<PublicationDetail> getContributionById(
+      final ContributionIdentifier contributionId) {
+    return Optional.ofNullable(publicationService.getDetail(
+        new PublicationPK(contributionId.getLocalId(), contributionId.getComponentInstanceId())));
   }
 
   @Override

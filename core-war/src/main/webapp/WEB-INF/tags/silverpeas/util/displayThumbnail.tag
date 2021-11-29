@@ -45,7 +45,7 @@ if (galleries.size() == 1) {
 }
 %>
 
-<%@ attribute name="thumbnail" required="true" type="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail" description="The thumbnail to manage" %>
+<%@ attribute name="thumbnail" required="true" type="org.silverpeas.core.contribution.model.Thumbnail" description="The thumbnail to manage" %>
 <%@ attribute name="mandatory" required="true" type="java.lang.Boolean" description="If thumbnail is mandatory" %>
 <%@ attribute name="error" required="false" type="java.lang.String" description="Error" %>
 <%@ attribute name="componentId" required="true" type="java.lang.String" description="Instance ID of object" %>
@@ -181,7 +181,7 @@ function updateThumbnail() {
 				</c:if>
 			</div>
 			<div id="thumbnailActions">
-				<c:if test="${thumbnail != null && thumbnail.croppable}">
+				<c:if test="${thumbnail != null && thumbnail.canBeCropped()}">
 					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop" bundle="${generalBundle}"/></a>
 				</c:if>
 				<c:if test="${thumbnail != null && !mandatory}">

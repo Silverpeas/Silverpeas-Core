@@ -140,7 +140,7 @@ public class ReminderIT {
           return new UserPreferences(userId, "fr", ZoneId.of("UTC"), "", "", false, false, false,
               UserMenuDisplay.DEFAULT);
         });
-    KmeliaInstanceContributionManager manager = KmeliaInstanceContributionManager.get();
+    KmeliaService manager = KmeliaService.get();
     User aUser = User.getById(USER_ID);
     manager.clearAll();
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_NOW).authoredBy(aUser));
@@ -294,8 +294,8 @@ public class ReminderIT {
     assertThat(reminder, notNullValue());
     assertThat(reminder, instanceOf(DateTimeReminder.class));
 
-    EventContrib forLater = (EventContrib) KmeliaInstanceContributionManager.get()
-        .getById(CONTRIBUTION_FOR_LATER).orElseThrow(IllegalArgumentException::new);
+    EventContrib forLater = (EventContrib) KmeliaService.get()
+        .getContributionById(CONTRIBUTION_FOR_LATER).orElseThrow(IllegalArgumentException::new);
 
     DateTimeReminder actualReminder = (DateTimeReminder) reminder;
     assertThat(actualReminder, notNullValue());
@@ -526,7 +526,7 @@ public class ReminderIT {
   @Priority(APPLICATION + 10)
   public static class StubbedPersonalizationService extends DefaultPersonalizationService {
 
-    private PersonalizationService mock = mock(PersonalizationService.class);
+    private final PersonalizationService mock = mock(PersonalizationService.class);
 
     static PersonalizationService getMock() {
       return ((StubbedPersonalizationService) ServiceProvider

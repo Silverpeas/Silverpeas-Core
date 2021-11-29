@@ -34,7 +34,7 @@ import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
 
 /**
- * This class is an utilitary one that gather all matchers on NotificationMetaData objects and that
+ * This class is a utility one that gather all matchers on NotificationMetaData objects and that
  * is dedicated to be use in JUnit assertion.
  */
 public final class NotificationMatchers {
@@ -55,7 +55,7 @@ public final class NotificationMatchers {
    */
   private static class CommentSettingMatcher extends CustomMatcher<Comment> {
 
-    private NotificationMetaData notif;
+    private final NotificationMetaData notif;
 
     public CommentSettingMatcher(NotificationMetaData notificationMetaData) {
       super("The comment should be set in the notification message for all supported languages");
