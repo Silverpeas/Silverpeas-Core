@@ -303,7 +303,8 @@ public class RepositoriesTypeManager {
         findExistingDocument(documentPK, fileName, descriptor.getResourceReference(),
             descriptor.getContentLanguage());
 
-    final boolean needCreation = (document == null || !document.isVersioned());
+    final boolean needCreation = document == null || !document.isVersioned() ||
+        !document.getAttachment().getLanguage().equalsIgnoreCase(descriptor.getContentLanguage());
     if (needCreation) {
       if (descriptor.isComponentVersionActivated()) {
         document = new HistorisedDocument(documentPK, descriptor.resourceId, 0,
