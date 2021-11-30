@@ -304,7 +304,8 @@ public class RepositoriesTypeManager {
         findExistingDocument(documentPK, fileName, descriptor.getResourceReference(),
             descriptor.getContentLanguage());
 
-    final boolean needCreation = (document == null || !document.isVersioned());
+    final boolean needCreation = document == null || !document.isVersioned() ||
+        !document.getAttachment().getLanguage().equalsIgnoreCase(descriptor.getContentLanguage());
     if (needCreation) {
       if (descriptor.isComponentVersionActivated()) {
         SimpleAttachment attachment = SimpleAttachment.builder(descriptor.contentLanguage)
