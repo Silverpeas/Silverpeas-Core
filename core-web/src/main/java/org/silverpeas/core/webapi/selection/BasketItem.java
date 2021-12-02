@@ -33,7 +33,6 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
@@ -42,6 +41,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.util.UserEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -55,7 +55,10 @@ import java.util.Optional;
 
 /**
  * Item in the {@link org.silverpeas.core.selection.SelectionBasket}. It is the web entity
- * representing in the more generic way a Silverpeas resource, whatever it is.
+ * representing in the more generic way a Silverpeas resource, whatever it is. It requires the
+ * unique identifier of the resource to be set. The item is complete if and only if its name, its
+ * creation data and its last modification data are set, as any others properties are optional and
+ * depend on the represented resource.
  * @author mmoquillon
  */
 @XmlRootElement
@@ -65,6 +68,7 @@ public class BasketItem implements SilverpeasResource, Serializable {
 
   @XmlElement(required = true)
   private String id;
+  @XmlElement(required = true)
   private String type;
   private String name;
   private String description;
@@ -83,10 +87,8 @@ public class BasketItem implements SilverpeasResource, Serializable {
       return (BasketItem) resource;
     }
     BasketItem item = new BasketItem();
-    item.id = resource.getIdentifier()
-        .asString();
-    item.type = resource.getClass()
-        .getSimpleName();
+    item.id = resource.getIdentifier().asString();
+    item.type = resource.getClass().getSimpleName();
     item.creationDate = resource.getCreationDate();
     item.creator = new UserEntity(resource.getCreator());
     item.lastUpdateDate = resource.getLastUpdateDate();
@@ -186,6 +188,17 @@ public class BasketItem implements SilverpeasResource, Serializable {
    */
   public boolean isContribution() {
     return ContributionIdentifier.isValid(id);
+  }
+
+  /**
+   * Is the data of the Silverpeas resource represented by this {@link BasketItem} complete? The
+   * data are considered completed if and only if the name, the creation data and the last update
+   * data of the represented resource are set.
+   * @return true if this item represents completely the Silverpeas resource.
+   */
+  public boolean isComplete() {
+    return StringUtil.isDefined(this.name) && this.creator != null && this.creationDate != null
+        && this.lastUpdateDate != null && this.lastUpdater != null;
   }
 
   /**

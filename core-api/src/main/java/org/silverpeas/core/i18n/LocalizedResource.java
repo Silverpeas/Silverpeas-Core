@@ -32,6 +32,7 @@ import org.silverpeas.core.SilverpeasResource;
  */
 public interface LocalizedResource extends SilverpeasResource, Translatable {
 
+  @SuppressWarnings("unchecked")
   @Override
   ResourceTranslation getTranslation(final String language);
 }

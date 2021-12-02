@@ -498,8 +498,6 @@ public interface PublicationService {
   List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       List<String> myContactsIds, List<String> options, Date begin, Date end);
 
-  Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone);
-
   /**
    * get all publications of given user in state 'Draft'. It returns simple publications in state
    * 'Draft' and cloned publications with a clone in state 'Draft'.

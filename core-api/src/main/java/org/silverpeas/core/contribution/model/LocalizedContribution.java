@@ -29,8 +29,8 @@ import org.silverpeas.core.i18n.Translation;
 /**
  * A contribution produced in a given l10n (Localisation). Such contributions are authored in a
  * given language. They can be either a non-i18n contribution, that is a contribution that is always
- * produced in the default language of Silverpeas, or a translation of a i18 contribution for a
- * given language.
+ * produced in the default language of Silverpeas, or a localized version of an i18 contribution in
+ * a given language.
  * <p>
  * Any contributions in Silverpeas that are a translation of a i18n contribution in a given
  * localization (id est language) should implement this interface.

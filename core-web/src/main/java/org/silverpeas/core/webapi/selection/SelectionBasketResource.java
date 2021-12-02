@@ -28,6 +28,7 @@ import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.selection.SelectionBasket;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
@@ -169,6 +170,7 @@ public class SelectionBasketResource extends RESTWebService {
   private List<SelectionBasketEntry> listBasketEntries(final SelectionBasket basket) {
     return basket.getSelectedResources()
         .map(SelectionBasketEntry::from)
+        .map(SelectionBasketEntry::reload)
         .map(e -> e.withURI(identifiedBy(e.getItem().getIdentifier().asString())))
         .collect(Collectors.toList());
   }

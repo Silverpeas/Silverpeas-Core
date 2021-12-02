@@ -34,7 +34,7 @@ public interface Identifiable {
 
   /**
    * Gets the unique identifier of the object in Silverpeas. If he's also identified by a local
-   * identifier, then this method should returns the one global to Silverpeas.
+   * identifier, then this method should return the one global to Silverpeas.
    * @return the identifier encoded as a String. If the identifier is a complex one, that is made up
    * of several identification parts, then the returned representation should take care of such
    * a structure.

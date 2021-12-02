@@ -134,25 +134,12 @@ public class QueryStringFactoryIT {
     }
   }
 
-  /**
-   * Checking a query
-   *
-   * @param query
-   * @param fileNameContainingExpectedQueryStructureResult
-   */
   private void assertQuery(final String query,
       final String fileNameContainingExpectedQueryStructureResult) throws Exception {
     assertQueryStructure(query, fileNameContainingExpectedQueryStructureResult);
     assertQueryExecution(query);
   }
 
-  /**
-   * Checking the string query
-   *
-   * @param query
-   * @param fileNameContainingExpectedQueryResult
-   * @throws Exception
-   */
   private void assertQueryStructure(final String query,
       final String fileNameContainingExpectedQueryResult) throws Exception {
     assertThat(
@@ -164,12 +151,6 @@ public class QueryStringFactoryIT {
             .replaceAll("[\r\n]", "")));
   }
 
-  /**
-   * Trying to execute the query
-   *
-   * @param query
-   * @throws Exception
-   */
   private void assertQueryExecution(final String query) throws Exception {
     try (Connection connection = getSafeConnection();
          PreparedStatement prepStmt = connection.prepareStatement(query)) {

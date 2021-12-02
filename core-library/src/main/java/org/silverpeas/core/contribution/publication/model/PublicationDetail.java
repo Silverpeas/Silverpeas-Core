@@ -160,7 +160,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private String targetValidatorId;
   private String cloneId;
   private String cloneStatus;
-  private Date draftOutDate;
   // added for the components - PDC integration
   private String silverObjectId;
   private String iconUrl;
@@ -704,14 +703,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
   }
 
-  public PublicationService getPublicationService() {
-    try {
-      return PublicationService.get();
-    } catch (Exception e) {
-      throw new PublicationRuntimeException(e);
-    }
-  }
-
   public WysiwygContent getContent() {
     try {
       return WysiwygController.get(getPK().getComponentName(), getPK().getId(), getLanguage());
@@ -924,20 +915,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       visibility = Visibility.from(this, beginDate, beginHour, endDate, endHour);
     }
     return visibility;
-  }
-
-  public Date getDraftOutDate() {
-    if (draftOutDate != null) {
-      return (Date) draftOutDate.clone();
-    }
-    return null;
-  }
-
-  public void setDraftOutDate(Date draftOutDate) {
-    if (draftOutDate != null) {
-      this.draftOutDate = (Date) draftOutDate.clone();
-    }
-    this.draftOutDate = null;
   }
 
   @Override

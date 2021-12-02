@@ -87,13 +87,6 @@ public class QueryStringFactory {
     }
   }
 
-  /**
-   * Centralizes common SQL blocks
-   * @param tableName
-   * @param isPeriodSensitive
-   * @param isUserId
-   * @return
-   */
   private static String buildSelectByFatherPK(final String tableName,
       final boolean isPeriodSensitive, final boolean isUserId) {
 
@@ -106,7 +99,7 @@ public class QueryStringFactory {
     query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
     query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
     query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
-    query.append("P.pubDraftOutDate, F.pubOrder FROM ");
+    query.append("F.pubOrder FROM ");
     query.append(tableName).append(" P, ").append(tableName).append("Father F ");
     query.append("WHERE F.instanceId = ? AND F.nodeId = ? AND F.pubId = P.pubId ");
 
@@ -115,7 +108,7 @@ public class QueryStringFactory {
       query.append("AND (P.pubUpdaterId = ? OR P.pubCreatorId = ? ) ");
     }
 
-    // adding sensitive periode clause if necessary
+    // adding sensitive period clause if necessary
     if (isPeriodSensitive) {
       query.append("AND (");
       query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
@@ -132,22 +125,18 @@ public class QueryStringFactory {
 
   public static synchronized String getSelectNotInFatherPK(final String tableName) {
     if (selectNotInFatherPK == null) {
-      final StringBuilder query = new StringBuilder();
-      query.append("SELECT DISTINCT P.pubId, P.infoId, P.pubName, P.pubDescription, ");
-      query.append("P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, ");
-      query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, P.pubStatus, ");
-      query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
-      query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
-      query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
-      query.append("P.pubDraftOutDate FROM ").append(tableName).append(" P, ").append(tableName);
-      query.append("Father F WHERE F.instanceId = ? AND F.nodeId <> ? ");
-      query.append("AND F.pubId = P.pubId AND (");
-      query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-      query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      query.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour ");
-      query.append(" AND ? < P.pubEndHour )) ");
-      selectNotInFatherPK = query.toString();
+      selectNotInFatherPK = "SELECT DISTINCT P.pubId, P.infoId, P.pubName, P.pubDescription, " +
+          "P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, " +
+          "P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, P.pubStatus, " +
+          "P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, " +
+          "P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, " +
+          "P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang " + "FROM " + tableName +
+          " P, " + tableName + "Father F WHERE F.instanceId = ? AND F.nodeId <> ? " +
+          "AND F.pubId = P.pubId AND (" + "( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR " +
+          "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR " +
+          "( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR " +
+          "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour " +
+          " AND ? < P.pubEndHour )) ";
     }
     return selectNotInFatherPK;
   }
@@ -166,7 +155,7 @@ public class QueryStringFactory {
           "pubcontent, pubstatus, pubupdatedate," +
           "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour," +
           "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus," +
-          "lang, pubDraftOutDate ";
+          "lang ";
     }
     return loadRowFields;
   }

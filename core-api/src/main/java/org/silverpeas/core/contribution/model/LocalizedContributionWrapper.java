@@ -25,19 +25,31 @@
 package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.i18n.ResourceTranslation;
 
 import java.util.Date;
 
 /**
+ * Implementation by default of a {@link LocalizedContribution} for a {@link Contribution}
+ * object. It is a generic representation of a contribution, whatever it is, localized in a given
+ * language. If the contribution is an i18n one, then the {@link LocalizedContributionWrapper}
+ * object will represent the version of the contribution in the given language. Otherwise, the
+ * {@link LocalizedContributionWrapper} object will be a localized representation of the
+ * contribution like expressed in the default language of the platform.
  * @author silveryocha
  */
 class LocalizedContributionWrapper implements LocalizedContribution {
+
   private final Contribution contribution;
-  private final String language;
+  private final ResourceTranslation translation;
 
   LocalizedContributionWrapper(final Contribution contribution, final String language) {
     this.contribution = contribution;
-    this.language = language;
+    if (contribution instanceof I18nContribution) {
+      this.translation = ((I18nContribution)contribution).getTranslation(language);
+    } else {
+      this.translation = new TranslationWrapper(language, contribution);
+    }
   }
 
   @Override
@@ -47,12 +59,12 @@ class LocalizedContributionWrapper implements LocalizedContribution {
 
   @Override
   public String getTitle() {
-    return contribution.getTitle();
+    return translation.getName();
   }
 
   @Override
   public String getDescription() {
-    return contribution.getDescription();
+    return translation.getDescription();
   }
 
   @Override
@@ -92,6 +104,37 @@ class LocalizedContributionWrapper implements LocalizedContribution {
 
   @Override
   public String getLanguage() {
-    return language;
+    return translation.getLanguage();
+  }
+
+  private static class TranslationWrapper implements ResourceTranslation {
+
+    private final String language;
+    private final Contribution contribution;
+
+    private TranslationWrapper(final String language, final Contribution contribution) {
+      this.language = language;
+      this.contribution = contribution;
+    }
+
+    @Override
+    public String getId() {
+      return contribution.getIdentifier().asString();
+    }
+
+    @Override
+    public String getName() {
+      return contribution.getName();
+    }
+
+    @Override
+    public String getDescription() {
+      return contribution.getDescription();
+    }
+
+    @Override
+    public String getLanguage() {
+      return language;
+    }
   }
 }

@@ -26,11 +26,13 @@ package org.silverpeas.core.i18n;
 
 import org.silverpeas.core.Identifiable;
 
+import java.io.Serializable;
+
 /**
  * Translation about the properties of a resource in Silverpeas.
  * @author mmoquillon
  */
-public interface ResourceTranslation extends Translation, Identifiable {
+public interface ResourceTranslation extends Translation, Identifiable, Serializable {
 
   /**
    * Gets the name of the resource in the underlying language.

@@ -28,7 +28,10 @@ import org.silverpeas.core.i18n.LocalizedResource;
 /**
  * An internationalized contribution. It supports different languages and regional specificity
  * (i18n). Any contribution supporting the translation of some of its properties in different
- * language should implement this interface.
+ * language should implement this interface. The peculiar characteristic of such a contribution is
+ * that it can have one or more versions of itself in different languages supported by Silverpeas.
+ * So, the translation of itself can be also obtained not only as a translation but also as a
+ * localized contribution.
  *
  * @author mmoquillon
  */
@@ -40,5 +43,14 @@ public interface I18nContribution extends Contribution, LocalizedResource {
    */
   @SuppressWarnings("unchecked")
   ContributionIdentifier getIdentifier();
+
+  /**
+   * Gets a version of itself in the specified language.
+   * @param language the ISO 639-1 code of the language.
+   * @return the localized version of this i18n contribution in the specified language.
+   */
+  default LocalizedContribution getLocalizationIn(final String language) {
+    return LocalizedContribution.from(this, language);
+  }
 
 }

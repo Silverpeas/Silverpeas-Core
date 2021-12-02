@@ -40,6 +40,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import java.util.Objects;
+
 import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
 
 /**
@@ -63,6 +65,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
 
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
+  @NotNull
   private Calendar calendar;
 
   @Embedded
@@ -165,11 +168,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * @param title the new title to set.
    */
   public void setTitle(final String title) {
-    if (title == null) {
-      this.title = "";
-    } else {
-      this.title = title;
-    }
+    this.title = Objects.requireNonNullElse(title, "");
   }
 
   /**
@@ -185,11 +184,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * @param description the new description to set.
    */
   public void setDescription(String description) {
-    if (description == null) {
-      this.description = "";
-    } else {
-      this.description = description;
-    }
+    this.description = Objects.requireNonNullElse(description, "");
   }
 
   /**
@@ -319,7 +314,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * by the internal mechanisms of the Silverpeas Calendar Engine when working with components
    * detached from any persistence context or with copies of calendar components.
    *
-   * @param sequence
+   * @param sequence the number of this calendar component in a sequence of occurrences.
    */
   void setSequence(final long sequence) {
     this.sequence = sequence;

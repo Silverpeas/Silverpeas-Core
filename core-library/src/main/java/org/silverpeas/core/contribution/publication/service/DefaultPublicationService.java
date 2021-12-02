@@ -499,7 +499,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
     publi.setCloneId(pubDetail.getCloneId());
     publi.setCloneStatus(pubDetail.getCloneStatus());
-    publi.setDraftOutDate(pubDetail.getDraftOutDate());
 
     if (pubDetail.getLanguage() != null) {
       publi.setLanguage(pubDetail.getLanguage());
@@ -1430,15 +1429,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       return PublicationDAO
           .getSocialInformationsListOfMyContacts(con, myContactsIds, options, begin, end);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException(e);
-    }
-  }
-
-  @Override
-  public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone) {
-    try (Connection con = getConnection()) {
-      return PublicationDAO.getPublicationsToDraftOut(con, useClone);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }

@@ -25,6 +25,9 @@
 package org.silverpeas.core.webapi.selection;
 
 import org.silverpeas.core.SilverpeasResource;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.I18nContribution;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.selection.SelectionContext;
 import org.silverpeas.core.selection.SelectionEntry;
 import org.silverpeas.core.web.rs.WebEntity;
@@ -40,8 +43,8 @@ import java.util.Objects;
  * An entry in the basket. Any items in the basket are wrapped by an entry that maps the item, id
  * est the Silverpeas resource, to a context that indicates for what reason the resource was put in
  * the basket. When an item is put or get from the
- * {@link org.silverpeas.core.selection.SelectionBasket}, it is always done through a
- * {@link SelectionBasketEntry} instance.
+ * {@link org.silverpeas.core.selection.SelectionBasket},
+ * it is always done through a {@link SelectionBasketEntry} instance.
  * @author mmoquillon
  */
 @XmlRootElement
@@ -102,6 +105,26 @@ public class SelectionBasketEntry implements WebEntity {
    */
   public SelectionContext getContext() {
     return context;
+  }
+
+  /**
+   * Reloads the data of the represented Silverpeas resource. By calling this method, you ensure the
+   * representation of the resource is up-to-date. If the resource supports the l10n, then the data
+   * get is in the language of the current user behind the request; by doing this, you ensure the
+   * data of the resource will be presented to the user in his language.
+   * @return itself
+   */
+  public SelectionBasketEntry reload() {
+    String language = User.getCurrentRequester().getUserPreferences().getLanguage();
+    SilverpeasResource resource = getItem().toResource();
+    if (resource instanceof I18nContribution) {
+      LocalizedContribution contribution =
+          ((I18nContribution) resource).getLocalizationIn(language);
+      this.item = BasketItem.from(contribution);
+    } else {
+      this.item = BasketItem.from(resource);
+    }
+    return this;
   }
 
   @Override

@@ -86,6 +86,12 @@
     }
   };
 
+  window.BasketService.Context = {
+    transfert: 'TRANSFER',
+    copy: 'COPY',
+    move: 'MOVE'
+  }
+
   window.BasketService.Filters = {
     /**
      * Filters element with data transfer reason.

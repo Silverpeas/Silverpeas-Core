@@ -61,9 +61,9 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
@@ -75,9 +75,9 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
  *
  * An event in a calendar is a possibly {@link Recurrent} and a {@link Plannable} general business
  * component that can be planned on one and only one given existing {@link Calendar};
- * we ensures an event is unique in a per-calendar basis.
+ * we ensure an event is unique in a per-calendar basis.
  * It occurs on a {@link Period} and as a such it must be well limited in the time (id est it must
- * have a start and an end dates/datetimes).
+ * have a start and an end date/datetime).
  * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}s.
  * In order to be customized for different kinds of use, some additional information can be set
  * through its {@link AttributeSet} property.
@@ -85,7 +85,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
  * An event in a calendar in Silverpeas can be originated from an external calendar. This comes
  * from an export process of the events planned in an external calendar (for example from a calendar
  * in Google Calendar). When such an event is in a Silverpeas's calendar, then the identifier of
- * this event on the external calendar can be get with the {@link CalendarEvent#getExternalId()}
+ * this event on the external calendar can be got with the {@link CalendarEvent#getExternalId()}
  * method.
  *
  * When a list of events is retrieved from one or more calendars, they are all ordered by the
@@ -254,6 +254,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @OneToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "componentId", referencedColumnName = "id", unique = true)
+  @NotNull
   private CalendarComponent component;
 
   @Column(name = "visibility")
@@ -985,6 +986,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       throw new IllegalStateException(THE_EVENT + this.getId() + " is not yet planned");
     }
     CalendarEvent previousState = getEventPreviousState();
+    Objects.requireNonNull(previousState);
     return Transaction.performInOne(() -> {
       applyChanges(previousState);
       final EventOperationResult result;
@@ -998,9 +1000,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (!OperationContext.statesOf(IMPORT)) {
         CalendarEvent updatedEvent =
             result.created().orElseGet(() -> result.updated().orElse(null));
-        CalendarComponentDiffDescriptor diffDescriptor =
-            diffBetween(updatedEvent.asCalendarComponent(), previousState.asCalendarComponent());
-        applyToPersistedOccurrences(updatedEvent, diffDescriptor, result.created().isPresent());
+        if (updatedEvent != null) {
+          CalendarComponentDiffDescriptor diffDescriptor =
+              diffBetween(updatedEvent.asCalendarComponent(), previousState.asCalendarComponent());
+          applyToPersistedOccurrences(updatedEvent, diffDescriptor, result.created()
+              .isPresent());
+        }
       }
       return result;
     });
@@ -1143,14 +1148,17 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
       boolean isCalendarSynchronized = getCalendar().getExternalCalendarUrl() != null;
       if (!isCalendarSynchronized && canBeAccessedBy(u)) {
-        final SilverpeasRole highestUserSilverpeas =
-            SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).get()
-                .getHighestSilverpeasRolesFor(u);
-        if (highestUserSilverpeas == SilverpeasRole.WRITER) {
-          return u.getId().equals(getCreator().getId());
+        var mayBeCompInst =
+            SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId());
+        if (mayBeCompInst.isPresent()) {
+          final SilverpeasRole highestUserSilverpeas = mayBeCompInst.get()
+              .getHighestSilverpeasRolesFor(u);
+          if (highestUserSilverpeas == SilverpeasRole.WRITER) {
+            return u.getId().equals(getCreator().getId());
+          }
+          return highestUserSilverpeas != null &&
+              highestUserSilverpeas.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
         }
-        return highestUserSilverpeas != null &&
-            highestUserSilverpeas.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
       }
       return false;
     });
@@ -1195,8 +1203,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return this;
   }
 
-  private long deleteAllOccurrencesFromPersistence() {
-    return Transaction.performInOne(() -> {
+  private void deleteAllOccurrencesFromPersistence() {
+    Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       List<CalendarEventOccurrence> occurrences = repository.getAllByEvent(this);
       repository.delete(occurrences);
@@ -1321,9 +1329,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private boolean isUserParticipant(final User user) {
-    return !getAttendees().stream().filter(attendee -> attendee.getId().equals(user.getId()))
-        .collect(Collectors.toList())
-        .isEmpty();
+    return getAttendees().stream().anyMatch(attendee -> attendee.getId().equals(user.getId()));
   }
 
   private void applyChanges(final CalendarEvent previousState) {
@@ -1429,7 +1435,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   private class OrElse {
 
-    private Supplier<EventOperationResult> operationForSingleOccurrence;
+    private final Supplier<EventOperationResult> operationForSingleOccurrence;
 
     public OrElse(Supplier<EventOperationResult> operationForSingleOccurrence) {
       this.operationForSingleOccurrence = operationForSingleOccurrence;
@@ -1442,6 +1448,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     public EventOperationResult orElse(
         Supplier<EventOperationResult> operationForSeveralOccurrences) {
       final CalendarEvent previousEvent = getEventPreviousState();
+      Objects.requireNonNull(previousEvent);
       return Transaction.performInOne(() -> {
         long occurrenceCount = generator().countOccurrencesOf(previousEvent, null);
         if (occurrenceCount > 1) {

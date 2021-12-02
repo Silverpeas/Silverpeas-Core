@@ -38,5 +38,9 @@ package org.silverpeas.core.i18n;
  */
 public interface Translation {
 
+  /**
+   * Gets the language in which is this translation.
+   * @return the ISO 639-1 code of the language.
+   */
   String getLanguage();
 }
