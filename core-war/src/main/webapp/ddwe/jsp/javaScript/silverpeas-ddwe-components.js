@@ -122,7 +122,7 @@
           if (!commandExists) {
             defaultToolbar.push({
               attributes : {
-                class : commandIcon
+                'class' : commandIcon
               },
               command : commandToAdd
             });

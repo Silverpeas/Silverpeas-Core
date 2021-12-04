@@ -106,7 +106,7 @@
   const BasketElement = function() {
     this.type = 'BasketElement';
     this.isDataTransfer = function() {
-      return this.context.reason === 'TRANSFER';
+      return this.context.reason === BasketService.Context.transfert;
     };
     this.getId = function() {
       return this.item.id;

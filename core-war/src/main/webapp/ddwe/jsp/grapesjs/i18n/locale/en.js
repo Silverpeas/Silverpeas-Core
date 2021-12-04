@@ -131,7 +131,7 @@ const gI18n = {
       // In a trait like select, these are used to translate option names
       options: {
         target: {
-          false: 'This window',
+          'false': 'This window',
           _blank: 'New window'
         }
       }

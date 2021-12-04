@@ -108,7 +108,7 @@ const gI18n = {
     },
     // The core library generates the name by their `property` name
     properties: {
-      float: 'Ausrichtung',
+      'float' : 'Ausrichtung',
       display: 'Anzeige',
       position: 'Position',
       top: 'Oben',
@@ -214,7 +214,7 @@ const gI18n = {
       // In a trait like select, these are used to translate option names
       options: {
         target: {
-          false: 'Dieses Fenster',
+          'false': 'Dieses Fenster',
           _blank: 'Neues Fenster'
         }
       }
