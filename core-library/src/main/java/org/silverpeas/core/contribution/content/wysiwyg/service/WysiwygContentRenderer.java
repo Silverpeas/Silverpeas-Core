@@ -42,13 +42,14 @@ public class WysiwygContentRenderer extends AbstractContributionRenderer<Wysiwyg
   private static final long serialVersionUID = -5283748624108237499L;
 
   @Override
-  public String renderView() {
-    return WysiwygContentTransformer
-        .on(getContent().getData())
+  public String renderView(final boolean externalApplicationContext) {
+    final var transformer = WysiwygContentTransformer.on(getContent().getData())
         .modifyImageUrlAccordingToHtmlSizeDirective()
-        .resolveVariablesDirective()
-        .applySilverpeasLinkCssDirective()
-        .transform();
+        .resolveVariablesDirective();
+    if (!externalApplicationContext) {
+      transformer.applySilverpeasLinkCssDirective();
+    }
+    return transformer.transform();
   }
 
   @Override

@@ -38,20 +38,21 @@
   document.addEventListener('ddwe-editor-plugins', function(event) {
     const params = event.detail;
     params.plugins.push(function(editor) {
-      __setupPublicationComponent(editor, params.options, params.gI18n);
+      __setupContributionComponent(editor, params.options, params.gI18n);
       __setupImageLinkComponent(editor, params.options, params.gI18n);
+      __setupSimpleBlockComponent(editor, params.options, params.gI18n);
     })
   })
 
   /**
-   *
+   * Setup the Contribution component.
    * @param editor grapes instance.
    * @param initOptions the options given at initialization of DragAndDropWebEditorManager instance.
    * @param gI18n the i18n stuffs.
    * @private
    */
-  function __setupPublicationComponent(editor, initOptions, gI18n) {
-    const componentType = 'publication-header';
+  function __setupContributionComponent(editor, initOptions, gI18n) {
+    const componentType = 'contribution-header';
     gI18n.domComponents.names[componentType] = sp.i18n.get('contributionBlockTitle');
     editor.DomComponents.addType(componentType, {
       /**
@@ -79,32 +80,32 @@
             tagName : 'img',
             attributes : {
               'src' : initOptions.defaultEditorImageSrc,
-              'class': 'imagePublication'
+              'class': 'imageContribution'
             }
           }, {
             tagName : 'div',
             attributes: {
-              'class': 'editorialPublication'
+              'class': 'editorialContribution'
             },
             components : [{
               type : 'text',
               tagName : 'h3',
               attributes: {
-                'class': 'titrePublication'
+                'class': 'titreContribution'
               },
               components : sp.i18n.get('contributionBlockContentTitle')
             }, {
               type : 'text',
               tagName : 'div',
               attributes: {
-                'class': 'textPublication'
+                'class': 'textContribution'
               },
               components : sp.i18n.get('contributionBlockContent')
             }, {
               type : 'link',
               tagName : 'a',
               attributes: {
-                'class': 'lienPublication',
+                'class': 'lienContribution',
                 'target': '_blank',
                 'rel': 'noopener noreferrer'
               },
@@ -139,7 +140,7 @@
           const nonCopyable = {
             copyable : false
           };
-          this.model.find('.imagePublication, .editorialPublication, .titrePublication, .textPublication, .lienPublication').forEach(function(model) {
+          this.model.find('.imageContribution, .editorialContribution, .titreContribution, .textContribution, .lienContribution').forEach(function(model) {
             model.set(nonCopyable);
             initOptions.tools.updateToolbar(model);
           }.bind(this.model));
@@ -147,7 +148,7 @@
       }
     });
     editor.on('block:drag:stop', function(model) {
-      if (model.get('type') === componentType) {
+      if (model && model.get('type') === componentType) {
         editor.select(model);
         editor.runCommand('tlb-sp-basket-selector');
       }
@@ -168,17 +169,17 @@
                   }
                 }
               }, {
-                cssSelector : '.titrePublication',
+                cssSelector : '.titreContribution',
                 updateWith : function(model) {
-                  model.components(basketElement.getTitle());
+                  model.components(basketElement.getTitle().noHTML().convertNewLineAsHtml());
                 }
               }, {
-                cssSelector : '.textPublication',
+                cssSelector : '.textContribution',
                 updateWith : function(model) {
-                  model.components(basketElement.getDescription());
+                  model.components(basketElement.getDescription().noHTML().convertNewLineAsHtml());
                 }
               }, {
-                cssSelector : '.lienPublication',
+                cssSelector : '.lienContribution',
                 updateWith : function(model) {
                   model.addAttributes({
                     'href' : basketElement.getLink()
@@ -197,7 +198,7 @@
     editor.BlockManager.add(componentType, {
       label : sp.i18n.get('contributionBlockTitle'),
       attributes : {
-        'class' : 'fa fa-sp-publication'
+        'class' : 'fa fa-sp-contribution'
       },
       category: sp.i18n.get('silverpeasCategoryLabel'),
       content: {
@@ -207,7 +208,7 @@
   }
 
   /**
-   *
+   * Setup the Image Link component.
    * @param editor grapes instance.
    * @param initOptions the options given at initialization of DragAndDropWebEditorManager instance.
    * @param gI18n the i18n stuffs.
@@ -316,6 +317,60 @@
         'class' : 'fa fa-sp-image-link'
       },
       category: sp.i18n.get('silverpeasCategoryLabel'),
+      content: {
+        type : componentType
+      }
+    });
+  }
+
+  /**
+   * Setups Simple Block component.
+   * @param editor grapes instance.
+   * @param initOptions the options given at initialization of DragAndDropWebEditorManager instance.
+   * @param gI18n the i18n stuffs.
+   * @private
+   */
+  function __setupSimpleBlockComponent(editor, initOptions, gI18n) {
+    const componentType = 'simple-block';
+    gI18n.domComponents.names[componentType] = sp.i18n.get('simpleBlockTitle');
+    editor.DomComponents.addType(componentType, {
+      /**
+       * This method permits to identify a component when code is added manually.
+       * @param el an HTML element.
+       * @returns {{type: string}}
+       */
+      isComponent : function(el) {
+        console.log(el)
+        if (el && el.tagName && el.tagName.toLowerCase() === 'div' &&
+            StringUtil.defaultStringIfNotDefined(el.getAttribute('sp-behavior')).indexOf(componentType) >= 0) {
+          return {
+            tagName: 'div',
+            type : componentType,
+            style: {
+              'min-height': '20px'
+            },
+          };
+        }
+      },
+      model : {
+        defaults : {
+          tagName: 'div',
+          type : componentType,
+          attributes: {
+            'sp-behavior': componentType
+          },
+          style: {
+            'min-height': '30px'
+          },
+          editable: true
+        }
+      }
+    });
+    editor.BlockManager.add(componentType, {
+      label : sp.i18n.get('simpleBlockTitle'),
+      attributes : {
+        'class' : 'gjs-fonts gjs-f-b1 fa-sp-simple-bloc'
+      },
       content: {
         type : componentType
       }

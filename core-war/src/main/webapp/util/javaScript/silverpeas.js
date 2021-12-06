@@ -1842,7 +1842,7 @@ if (typeof window.sp === 'undefined') {
         const that = this;
         timeoutId = setTimeout(function () {
           fn.apply(that, args);
-        }, delay)
+        }, delay);
       };
     },
     element : {
@@ -2221,12 +2221,13 @@ if (typeof window.sp === 'undefined') {
       ajaxControls : function(containerCssSelector, options) {
         var __refreshFromRequestResponse = function(request) {
           return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
-              .then(function() {
+              .then(function(html) {
                 if (window.spProgressMessage) {
                   window.spProgressMessage.hide();
                 } else if (window.top.spProgressMessage) {
                   window.top.spProgressMessage.hide();
                 }
+                return html
               });
         };
         var params = {

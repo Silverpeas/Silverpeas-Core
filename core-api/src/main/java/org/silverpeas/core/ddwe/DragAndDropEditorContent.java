@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.web.ddwe;
+package org.silverpeas.core.ddwe;
 
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
@@ -49,10 +49,12 @@ public class DragAndDropEditorContent {
   @SuppressWarnings("unchecked")
   public DragAndDropEditorContent(final String content) {
     this.content = defaultStringIfNotDefined(content);
-    json = ofNullable(content)
-        .filter(StringUtil::isDefined)
-        .map(f -> JSONCodec.decode(f, Map.class))
-        .orElseGet(HashMap::new);
+    json = getSimpleContent().isPresent() ?
+        new HashMap<>() :
+        ofNullable(content)
+            .filter(StringUtil::isDefined)
+            .map(f -> JSONCodec.decode(f, Map.class))
+            .orElseGet(HashMap::new);
   }
 
   /**
@@ -62,7 +64,7 @@ public class DragAndDropEditorContent {
    * </p>
    * @return an option simple HTML content.
    */
-  Optional<String> getSimpleContent() {
+  public Optional<String> getSimpleContent() {
     return of(content).filter(StringUtil::isDefined).filter(not(c -> c.startsWith("{")));
   }
 
@@ -74,7 +76,7 @@ public class DragAndDropEditorContent {
    * </p>
    * @param html an inlined HTML as string.
    */
-  void setTemporaryInlinedHtml(final String html) {
+  public void setTemporaryInlinedHtml(final String html) {
     json.put("gjs-tmp-inlinedHtml", defaultStringIfNotDefined(html));
   }
 
@@ -86,7 +88,7 @@ public class DragAndDropEditorContent {
    * </p>
    * @return an inlined HTML content.
    */
-  String getInlinedHtml() {
+  public String getInlinedHtml() {
     return json.getOrDefault("gjs-inlinedHtml", EMPTY);
   }
 
@@ -94,7 +96,7 @@ public class DragAndDropEditorContent {
    * Gets the JSON content handled by Drag and Drop Editor.
    * @return a string representing a JSON structure.
    */
-  String getEncodedJson() {
+  public String getEncodedJson() {
     return JSONCodec.encode(json);
   }
 

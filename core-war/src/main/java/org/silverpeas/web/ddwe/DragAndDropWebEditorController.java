@@ -29,6 +29,7 @@ import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
@@ -164,7 +165,7 @@ public class DragAndDropWebEditorController extends
       final String currentFileContent = getTemporaryContent(e).getSimpleContent()
           .orElseGet(() -> getTemporaryContent(e).getInlinedHtml());
       final WysiwygContent wysiwygContent = new WysiwygContent(null, currentFileContent);
-      context.getRequest().setAttribute("result", wysiwygContent.getRenderer().renderView());
+      context.getRequest().setAttribute("result", wysiwygContent.getRenderer().renderView(true));
       return null;
     });
   }

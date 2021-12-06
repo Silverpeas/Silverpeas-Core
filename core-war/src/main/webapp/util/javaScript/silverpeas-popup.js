@@ -615,7 +615,7 @@
         title: options.title,
         autoOpen: false,
         modal: true,
-        resizable: !!options.resizable,
+        resizable: false,
         height: options.height,
         dialogClass: options.dialogClass
       });

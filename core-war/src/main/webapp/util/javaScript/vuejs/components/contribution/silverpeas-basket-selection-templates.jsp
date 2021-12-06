@@ -31,8 +31,10 @@
 
 <c:url var="deleteIconUrl" value="/util/icons/delete.gif"/>
 
+<fmt:message key="GML.emptyBasket" var="emptyBasketLabel"/>
 <fmt:message key="GML.close" var="closeLabel"/>
 <fmt:message key="GML.delete" var="deleteLabel"/>
+<fmt:message key="GML.myBasket" var="buttonLabel"/>
 <fmt:message key="contribution.basket.selector.title" var="popinTitle"/>
 <fmt:message key="contribution.basket.selector.validation.noElementSelected" var="noElementSelectedMsg"/>
 
@@ -41,6 +43,11 @@
   <div class="silverpeas-basket-selection"
        v-show="displayed"
        v-on:click="api.toggleView()">
+    <div v-sp-init>
+      {{addMessages({
+      buttonLabel : '${silfn:escapeJs(buttonLabel)}'
+    })}}
+    </div>
     <slot></slot>
     <silverpeas-attached-popin v-if="displayPopin"
                                v-bind:to-element="$el"
@@ -55,6 +62,7 @@
                        v-bind:with-fade-transition="true">
         <silverpeas-list-item v-for="basketElement in basketElements" v-bind:key="basketElement.getId()">
           <basket-element v-bind:basket-element="basketElement"
+                          v-on:click.native="goTo(basketElement)"
                           v-on:delete="deleteBasketElement"></basket-element>
         </silverpeas-list-item>
       </silverpeas-list>
@@ -70,12 +78,14 @@
       noElementSelectedMsg : '${silfn:escapeJs(noElementSelectedMsg)}'
     })}}
     </div>
-    <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" minWidth="650" v-bind:resizable="true">
+    <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" minWidth="650">
       <div class="publication-basket-selector-container">
+        <p v-if="!basketElements.length">${emptyBasketLabel}</p>
         <silverpeas-fade-transition-group duration-type="fast" class="basket-element-list">
           <li v-for="basketElement in basketElements" v-bind:key="basketElement.getId()">
             <basket-element v-bind:basket-element="basketElement"
                             v-on:select="selectBasketElement"
+                            v-on:selectAndValidate="selectAndValidateBasketElement"
                             v-bind:read-only="true"
                             v-bind:class="{'selected' : (currentBasketElement && currentBasketElement.getId() === basketElement.getId())}"></basket-element>
           </li>
@@ -88,12 +98,14 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="basket-element">
   <div class="basket-element"
-       v-on:click="$emit('select', basketElement)">
-    <div class="image"><img v-bind:src="basketElement.getImageSrc()" alt=""></div>
+       v-on:click="$emit('select', basketElement)"
+       v-on:dblclick="$emit('selectAndValidate', basketElement)">
+    <div class="image" v-if="basketElement.getImageSrc()">
+      <img v-bind:src="basketElement.getImageSrc()" alt="">
+    </div>
     <div class="editorial">
-      <div class="title">{{basketElement.getTitle()}}</div>
-      <div class="description">{{basketElement.getDescription()}}</div>
-      <div class="link"><a v-bind:href="basketElement.getLink()" target="_blank" rel="noopener">Vas y, clique pour y accéder si tu l'oses</a></div>
+      <div class="title" v-html="title"></div>
+      <div class="description" v-html="description"></div>
     </div>
     <silverpeas-fade-transition>
       <a href="javascript:void(0)"

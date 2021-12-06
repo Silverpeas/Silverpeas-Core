@@ -85,6 +85,7 @@ public class JavascriptPluginInclusion {
   private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
   private static final String ADMIN_PATH = getApplicationURL() + "/admin/jsp/javaScript/";
   private static final String JAVASCRIPT_PATH = getApplicationURL() + "/util/javaScript/";
+  private static final String SERVICE_PATH = JAVASCRIPT_PATH + "services/";
   private static final String FLASH_PATH = getApplicationURL() + "/util/flash/";
   private static final String STYLESHEET_PATH = getApplicationURL() + "/util/styleSheets/";
   private static final String FP_VIEWER_BASE = getApplicationURL() + "/media/jsp/fp";
@@ -1006,7 +1007,7 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeImageSelector(final ElementContainer xhtml,
       final String language) {
     includeDragAndDropUpload(xhtml, language);
-    xhtml.addElement(script(VUEJS_PATH + "services/content/silverpeas-image-service.js"));
+    xhtml.addElement(script(SERVICE_PATH + "content/silverpeas-image-service.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-image-selector.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-image-selector.js"));
     return xhtml;
@@ -1018,7 +1019,7 @@ public class JavascriptPluginInclusion {
    */
   static ElementContainer includeBasketSelection(final ElementContainer xhtml,
       final String language) {
-    xhtml.addElement(script(VUEJS_PATH + "services/contribution/silverpeas-basket-service.js"));
+    xhtml.addElement(script(SERVICE_PATH + "contribution/silverpeas-basket-service.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "contribution/silverpeas-basket-selection.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "contribution/silverpeas-basket-selection.js"));
     return xhtml;

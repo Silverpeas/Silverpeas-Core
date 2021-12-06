@@ -31,7 +31,7 @@
 
   Vue.component('silverpeas-basket-selection',
       templateRepository.get('basket-selection-main', {
-        mixins : [VuejsApiMixin],
+        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
         provide : function() {
           return {
             basketService: this.service
@@ -53,6 +53,9 @@
         },
         created : function() {
           this.extendApiWith({
+            length : function() {
+              return this.basketElements.length;
+            },
             updateWith : function(basketElements) {
               this.updateWith(basketElements);
             },
@@ -70,6 +73,7 @@
         },
         mounted : function() {
           this.loadBasketElements();
+          this.$el.querySelector('a').innerText = this.messages.buttonLabel;
         },
         methods : {
           open : function() {
@@ -93,6 +97,12 @@
             this.loadQueue.push(function() {
               this.service.deleteEntry(basketElement);
             }.bind(this));
+          },
+          goTo : function(basketElement) {
+            const basketContributionLink = basketElement.getLink();
+            if (spWindow.isPermalink(basketContributionLink)) {
+              spWindow.loadPermalink(basketContributionLink);
+            }
           }
         },
         computed : {
@@ -116,7 +126,8 @@
             service : new BasketService(),
             popinApi : undefined,
             basketElements : [],
-            currentBasketElement : undefined
+            currentBasketElement : undefined,
+            options : {}
           };
         },
         created : function() {
@@ -130,26 +141,35 @@
           selectBasketElement : function(basketElement) {
             this.currentBasketElement = basketElement;
           },
+          selectAndValidateBasketElement : function(basketElement) {
+            this.currentBasketElement = basketElement;
+            this.validate();
+            this.close();
+          },
+          validate : function() {
+            if (this.currentBasketElement) {
+              this.options.select(this.currentBasketElement);
+            } else {
+              SilverpeasError.add(this.messages.noElementSelectedMsg).show();
+              return false;
+            }
+          },
           open : function(options) {
             this.service.withBasketSelectionApi(function(api) {
               api.close();
             });
+            this.options = options;
             this.currentBasketElement = undefined;
             this.basketElements = [];
             this.service.getBasketSelectionElements().then(function(basketElements) {
               this.basketElements = basketElements;
               this.popinApi.open({
-                callback : function() {
-                  if (this.currentBasketElement) {
-                    options.select(this.currentBasketElement);
-                  } else {
-                    console.log('message', this.messages.noElementSelectedMsg)
-                    SilverpeasError.add(this.messages.noElementSelectedMsg).show();
-                    return false;
-                  }
-                }.bind(this)
+                callback : this.validate
               });
             }.bind(this));
+          },
+          close : function() {
+            this.popinApi.close();
           }
         }
       }));
@@ -167,8 +187,17 @@
           }
         },
         computed : {
+          title : function() {
+            return this.basketElement.getTitle().noHTML().convertNewLineAsHtml();
+          },
+          description : function() {
+            return this.basketElement.getDescription().noHTML().convertNewLineAsHtml();
+          },
           displayDelete : function() {
             return !this.readOnly;
+          },
+          accessLinkLabel : function() {
+            return sp.i18n.get('contribution.' + this.basketElement.getResourceType() + '.link');
           }
         }
       }));

@@ -29,6 +29,7 @@ import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.TemporalConverter;
@@ -39,6 +40,7 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.wbe.WbeHostManager;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -125,6 +127,16 @@ public class DragAndDropWebEditorStore implements SilverpeasResource, Serializab
   public void save() {
     getFile().save();
   }
+
+  /**
+   * Deletes the structured content into Silverpeas's home data.
+   * return true id deletion is well performed (false if file not exists)
+   */
+  public boolean delete() {
+    WbeHostManager.get().revokeFile(new DragAndDropWbeFile(this));
+    return getFile().delete();
+  }
+
 
   @Override
   public String getName() {

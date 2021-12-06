@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.split;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * An HTTP request decorating an HTTP servlet request with some additional methods and by changing
@@ -345,6 +346,20 @@ public class HttpRequest extends HttpServletRequestWrapper {
       map = Collections.unmodifiableMap(map);
     }
     return map;
+  }
+
+  /**
+   * Same as {@link #getParameterMap()} but with a String as value instead of an array of string.
+   *
+   * @return an immutable java.util.Map containing parameter names as keys and parameter values as
+   * map values. The keys in the parameter map are of type String. The values in the parameter map
+   * are of type String.
+   */
+  public Map<String, String> getParameterSimpleMap() {
+    return getParameterMap().entrySet()
+        .stream()
+        .collect(Collectors.toMap(Map.Entry::getKey,
+            e -> stream(e.getValue()).findFirst().orElse(EMPTY)));
   }
 
   /**

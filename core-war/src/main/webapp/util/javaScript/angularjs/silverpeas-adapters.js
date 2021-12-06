@@ -71,6 +71,9 @@
     }
 
     function _http(config, data, convert) {
+      if (this.sessionKey) {
+        config.headers = extendsObject({'X-Silverpeas-Session' : this.sessionKey}, config.headers);
+      }
       if (typeof data === 'object') {
         config.headers =
             extendsObject({'Content-Type' : 'application/json; charset=UTF-8'}, config.headers);
@@ -84,8 +87,9 @@
       $http(config).
       then(function(response) {
         var result = _fetchData(response.data, convert, response.headers);
+        this.sessionKey = response.headers('X-Silverpeas-Session');
         deferred.resolve(result);
-      }, function(response) {
+      }.bind(this), function(response) {
         if (response.headers) {
           var responseData = response.data;
           _error(responseData, response.status, response.headers);
@@ -97,8 +101,8 @@
 
     function _get(url, convert) {
       var _realGet = function(url, convert) {
-        return _http({method: 'GET', url: url}, undefined, convert);
-      };
+        return _http.call(this, {method: 'GET', url: url}, undefined, convert);
+      }.bind(this);
       var urls = new UrlParamSplitter(url).getUrls();
       if (urls.length > 1) {
         var promises = [];
@@ -116,15 +120,15 @@
     }
 
     function _post(url, data, convert) {
-     return  _http({method: 'POST', url: url}, data, convert);
+     return  _http.call(this, {method: 'POST', url: url}, data, convert);
     }
 
     function _put(url, data, convert) {
-     return  _http({method: 'PUT', url: url}, data, convert);
+     return  _http.call(this, {method: 'PUT', url: url}, data, convert);
     }
 
     function _delete(url, data, convert) {
-      return _http({method : 'DELETE', url : url}, data, convert);
+      return _http.call(this, {method : 'DELETE', url : url}, data, convert);
     }
 
     /**
@@ -135,6 +139,7 @@
      * a well-typed object.
      */
     var RESTAdapter = function(url, converter) {
+      this.sessionKey = undefined;
       this.url = url;
       this.converter = converter;
     };
@@ -154,7 +159,7 @@
         requestedUrl = arguments[0];
         data = arguments[1];
       }
-      return _post(requestedUrl, data, this.converter);
+      return _post.call(this, requestedUrl, data, this.converter);
     };
 
     /**
@@ -172,7 +177,7 @@
         requestedUrl = arguments[0];
         data = arguments[1];
       }
-      return _put(requestedUrl, data, this.converter);
+      return _put.call(this, requestedUrl, data, this.converter);
     };
 
     /**
@@ -190,7 +195,7 @@
         requestedUrl = arguments[0];
         value = arguments[1];
       }
-      return _delete(requestedUrl, value, this.converter);
+      return _delete.call(this, requestedUrl, value, this.converter);
     };
 
     /**
@@ -252,7 +257,7 @@
       var uri = id.trim();
       if (uri.indexOf('/') !== 0 && uri.indexOf('http') !== 0)
         uri = this.url + '/' + uri;
-      return _put(uri, data, this.converter);
+      return _put.call(this, uri, data, this.converter);
     };
 
     /**
@@ -271,13 +276,13 @@
           if (parameters.criteria) {
             return this.findByCriteria(parameters.url, parameters.criteria);
           } else {
-            return _get(parameters.url, this.converter);
+            return _get.call(this, parameters.url, this.converter);
           }
         } else {
           return this.findByCriteria(this.url, parameters);
         }
       } else {
-        return _get(this.url, this.converter);
+        return _get.call(this, this.url, this.converter);
       }
     };
 
@@ -288,7 +293,7 @@
      * @returns {promise|a.fn.promise} - an object.
      */
     RESTAdapter.prototype.findById = function(url, id) {
-      return _get(url + '/' + id, this.converter);
+      return _get.call(this, url + '/' + id, this.converter);
     };
 
     /**
@@ -317,7 +322,7 @@
           }
         }
       }
-      return _get(requestedUrl, this.converter);
+      return _get.call(this, requestedUrl, this.converter);
     };
 
     return {

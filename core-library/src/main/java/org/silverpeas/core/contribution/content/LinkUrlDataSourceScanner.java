@@ -28,10 +28,12 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
 
 import javax.activation.DataSource;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * An implementation of this interface provides a list of {@link RegexpPatternDirective} to extract
@@ -42,11 +44,18 @@ import java.util.stream.Collectors;
 public interface LinkUrlDataSourceScanner {
 
   static List<LinkUrlDataSourceScanner> getAll() {
-    final List<LinkUrlDataSourceScanner> asList = ServiceProvider.getAllServices(LinkUrlDataSourceScanner.class)
+    return ServiceProvider.getAllServices(LinkUrlDataSourceScanner.class)
         .stream()
         .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
-        .collect(Collectors.toList());
-    return Collections.unmodifiableList(asList);
+        .collect(Collectors.toUnmodifiableList());
+  }
+
+  static Map<String, String> extractUrlParameters(final String url) {
+    return Optional.ofNullable(url)
+        .stream()
+        .flatMap(u -> Stream.of(u.substring(u.indexOf('?') + 1).replace("&amp;", "&").split("[&]")))
+        .map(p -> p.split("[=]"))
+        .collect(Collectors.toMap(p -> p[0], p -> p[1]));
   }
 
   /**

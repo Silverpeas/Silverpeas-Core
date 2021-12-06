@@ -118,7 +118,7 @@ body div.hautFrame {
 }
 
 .gjs-rte-toolbar {
-  min-width: 632px;
+  min-width: 637px;
 }
 
 .gjs-mdl-dialog {
@@ -133,11 +133,15 @@ body div.hautFrame {
   display: none;
 }
 
+.gjs-pn-panels .gjs-pn-buttons .fa-arrows-alt {
+  display: none;
+}
+
 .gjs-block-categories .gjs-block {
   background-color: #FFF;
 }
 
-.fa-sp-publication::before {
+.fa-sp-contribution::before {
   content: '\f1ea'
 }
 
@@ -154,6 +158,10 @@ body div.hautFrame {
 }
 
 .gjs-blocks-no-cat .gjs-f-text {
+  order: -3;
+}
+
+.gjs-blocks-no-cat .fa-sp-simple-bloc {
   order: -3;
 }
 

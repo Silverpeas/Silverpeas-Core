@@ -216,10 +216,6 @@
           'type' : String,
           'default' : '800px'
         },
-        'resizable' : {
-          'type' : Boolean,
-          'default' : false
-        },
         'openPromise' : {
           'type' : Promise,
           'default' : undefined
@@ -248,7 +244,6 @@
               title : this.title,
               minWidth : this.minWidth,
               maxWidth : this.maxWidth,
-              resizable : this.resizable,
               openPromise : this.openPromise
             }, options));
           }.bind(this));

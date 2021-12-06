@@ -30,7 +30,7 @@
   /**
    * The different player methods handled by the plugin.
    */
-  var methods = {
+  const methods = {
 
     /**
      * Prepare UI and behavior for embed playing
@@ -67,16 +67,17 @@
     }
 
     return $targets.each(function() {
-      var $container = $(this);
+      const $container = $(this);
 
       // Player configuration
-      var defaultParams = {
+      const defaultParams = {
         url : undefined,
         width : '600px',
         height : '400px',
-        playerParameters : undefined
+        playerParameters : undefined,
+        messageEventHandler : undefined
       };
-      var config = $.extend({}, defaultParams);
+      const config = $.extend({}, defaultParams);
       $.extend(config, options);
 
       // Container configuration
@@ -92,30 +93,36 @@
    */
   function __configurePlayerContainer($container, config) {
     $container.empty();
-    var $embed = $('<iframe>');
-    $embed.attr('class', 'embed');
-    $embed.attr('frameborder', '0');
-    $embed.attr('width', config.width);
-    $embed.attr('height', config.height);
-    $embed.attr('scrolling', 'no');
-    $embed.attr('webkitallowfullscreen', 'true');
-    $embed.attr('mozallowfullscreen', 'true');
-    $embed.attr('allowfullscreen', 'true');
-    $container.append($embed);
     setTimeout(function() {
-      var playerParameters = jQuery.extend(config.playerParameters, {
+      const playerParameters = extendsObject(config.playerParameters, {
         'embedPlayer' : true,
         'width' : config.width,
         'height' : config.height,
         '_' : new Date().getTime()
       });
-      for (var paramName in playerParameters) {
+      for (let paramName in playerParameters) {
         if (paramName) {
           config.url += (config.url.indexOf('?') > 0) ? '&' : '?';
           config.url += paramName + '=' + encodeURIComponent(playerParameters[paramName]);
         }
       }
-      $embed.attr('src', config.url);
+      let $iframe = document.createElement('iframe');
+      $iframe.setAttribute('src', config.url);
+      $iframe.setAttribute("class", "embed");
+      $iframe.setAttribute("frameborder", "0");
+      $iframe.setAttribute('width', config.width);
+      $iframe.setAttribute('height', config.height);
+      $iframe.setAttribute('scrolling', 'no');
+      $iframe.setAttribute('webkitallowfullscreen', 'true');
+      $iframe.setAttribute('mozallowfullscreen', 'true');
+      $iframe.setAttribute('allowfullscreen', 'true');
+      $container.append(jQuery($iframe));
+      if (typeof config.messageEventHandler === 'function') {
+        $iframe.contentWindow.addEventListener("message", function (event) {
+          event.$iframe = $iframe;
+          config.messageEventHandler(event);
+        }, false);
+      }
     }, 0)
   }
 

@@ -25,6 +25,9 @@ package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.content.LinkUrlDataSource;
+import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
@@ -34,16 +37,28 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
+import javax.activation.FileDataSource;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner.extractUrlParameters;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
+import static org.silverpeas.core.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.file.FileServerUtils.*;
 
 public class FileServer extends AbstractFileSender {
@@ -61,10 +76,10 @@ public class FileServer extends AbstractFileSender {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) {
     try {
-      String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
-
-      HttpSession session = req.getSession(true);
-      MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+      final Map<String, String> params = HttpRequest.decorate(req).getParameterSimpleMap();
+      final String componentId = params.get(COMPONENT_ID_PARAMETER);
+      final HttpSession session = req.getSession(true);
+      final MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
         SilverLogger.getLogger(this)
@@ -74,47 +89,48 @@ public class FileServer extends AbstractFileSender {
             ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
         return;
       }
-
-      String mimeType = req.getParameter(MIME_TYPE_PARAMETER);
-      String sourceFile = req.getParameter(SOURCE_FILE_PARAMETER);
-      String archiveIt = req.getParameter(ARCHIVE_IT_PARAMETER);
-      String dirType = req.getParameter(DIR_TYPE_PARAMETER);
-      String userId = req.getParameter(USER_ID_PARAMETER);
-      String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
-      String size = req.getParameter(SIZE_PARAMETER);
-
-      if (StringUtil.isDefined(size)) {
-        sourceFile = size + File.separatorChar + sourceFile;
-      }
-
-      SilverpeasFileDescriptor descriptor =
-          new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
-      if (typeUpload != null) {
-        descriptor.absolutePath();
-      } else {
-        if (dirType != null) {
-          if (dirType.equals(
-              ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
-            descriptor = descriptor.temporaryFile();
-          }
-        } else {
-          String directory = req.getParameter(DIRECTORY_PARAMETER);
-          descriptor = descriptor.parentDirectory(directory);
-        }
-      }
-      SilverpeasFile file = SilverpeasFileProvider.getFile(descriptor);
+      final SilverpeasFile file = getSilverpeasFile(params);
       sendFile(req, res, file);
-
+      final String archiveIt = params.get(ARCHIVE_IT_PARAMETER);
+      final String userId = params.get(USER_ID_PARAMETER);
       if (StringUtil.isDefined(archiveIt)) {
-        String nodeId = req.getParameter(NODE_ID_PARAMETER);
-        String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
-        ResourceReference pubPK = new ResourceReference(pubId, componentId);
+        final String nodeId = params.get(NODE_ID_PARAMETER);
+        final String pubId = params.get(PUBLICATION_ID_PARAMETER);
+        final ResourceReference pubPK = new ResourceReference(pubId, componentId);
         addStatistic(userId, nodeId, pubPK);
       }
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e);
       res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private static SilverpeasFile getSilverpeasFile(final Map<String, String> params) {
+    final String componentId = params.get(COMPONENT_ID_PARAMETER);
+    final String mimeType = params.get(MIME_TYPE_PARAMETER);
+    final String dirType = params.get(DIR_TYPE_PARAMETER);
+    final String typeUpload = params.get(TYPE_UPLOAD_PARAMETER);
+    final String size = params.get(SIZE_PARAMETER);
+    String sourceFile = params.get(SOURCE_FILE_PARAMETER);
+    if (StringUtil.isDefined(size)) {
+      sourceFile = size + File.separatorChar + sourceFile;
+    }
+    SilverpeasFileDescriptor descriptor =
+        new SilverpeasFileDescriptor(componentId).fileName(sourceFile).mimeType(mimeType);
+    if (typeUpload != null) {
+      descriptor.absolutePath();
+    } else {
+      if (dirType != null) {
+        if (dirType.equals(
+            ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
+          descriptor = descriptor.temporaryFile();
+        }
+      } else {
+        String directory = params.get(DIRECTORY_PARAMETER);
+        descriptor = descriptor.parentDirectory(directory);
+      }
+    }
+    return SilverpeasFileProvider.getFile(descriptor);
   }
 
   private void addStatistic(final String userId, final String nodeId,
@@ -151,5 +167,37 @@ public class FileServer extends AbstractFileSender {
   protected SettingBundle getSettingBunde() {
     return ResourceLocator.getSettingBundle(
         "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
+  }
+
+  @Singleton
+  public static class ImageUrlToDataSourceScanner implements LinkUrlDataSourceScanner {
+
+    private static final Pattern FILESERVER_CONTENT_LINK_PATTERN =
+        Pattern.compile("(?i)=\"([^\"]*/FileServer/thumbnail[^\"]+)");
+
+    @Override
+    public List<LinkUrlDataSource> scanHtml(final String htmlContent) {
+      final List<LinkUrlDataSource> result = new ArrayList<>();
+      from(htmlContent).withDirectives(singletonList(regexp(FILESERVER_CONTENT_LINK_PATTERN, 1)))
+          .extract()
+          .forEach(l -> {
+            final Map<String, String> params = extractUrlParameters(l);
+            final SilverpeasFile imageFile = getSilverpeasFile(params);
+            if (imageFile.exists()) {
+              result.add(new LinkUrlDataSource(l, () -> new FileDataSource(imageFile)));
+            }
+          });
+      return result;
+    }
+  }
+
+  @Singleton
+  public static class ImageUrlAccordingToHtmlSizeDirectiveTranslator extends
+      ImageUrlAccordingToHtmlSizeDirective.SrcWithSizeParametersTranslator {
+
+    @Override
+    public boolean isCompliantUrl(final String url) {
+      return defaultStringIfNotDefined(url).contains("/FileServer/thumbnail");
+    }
   }
 }

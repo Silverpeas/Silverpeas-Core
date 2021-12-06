@@ -115,9 +115,9 @@
 }
 
 .silverpeas-attached-popin-content .basket-element-list .image {
-  width: 160px;
+  width: 140px;
   text-align: center;
-
+  display: inline-flex;
 }
 
 .silverpeas-attached-popin-content .basket-element-list .title {
@@ -130,6 +130,7 @@
 
 .silverpeas-attached-popin-content .basket-element-list .editorial {
   padding: 5px 10px;
+  width: 228px;
 }
 
 .silverpeas-attached-popin-content .basket-element-list .link {
@@ -163,6 +164,7 @@
   list-style-type: none;
   padding: 0 0 10px 0;
   margin: 0;
+  max-height: 300px;
 }
 
 .publication-basket-selector-container .basket-element {
@@ -184,9 +186,9 @@
 }
 
 .publication-basket-selector-container .basket-element-list .image {
-  width: 160px;
+  width: 140px;
   text-align: center;
-  background-color: #efefef;
+  display: inline-flex;
 }
 
 .publication-basket-selector-container .basket-element-list .title {
@@ -199,6 +201,7 @@
 
 .publication-basket-selector-container .basket-element-list .editorial {
   padding: 5px 10px;
+  width: 424px;
 }
 
 .publication-basket-selector-container .basket-element-list .basket-element {

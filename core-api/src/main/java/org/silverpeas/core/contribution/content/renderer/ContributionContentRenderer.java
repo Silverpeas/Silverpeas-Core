@@ -43,7 +43,17 @@ public interface ContributionContentRenderer extends Serializable {
    * Rendering the HTML content in order to be displayed into a context of edition.
    * @return HTML as {@link String}.
    */
-  String renderView();
+  default String renderView() {
+    return renderView(false);
+  }
+
+  /**
+   * Rendering the HTML content in order to be displayed into a context of edition.
+   * @param externalApplicationContext true if the wysiwyg content will be used outside the
+   * Silverpeas's application context.
+   * @return HTML as {@link String}.
+   */
+  String renderView(final boolean externalApplicationContext);
 
   /**
    * Rendering the HTML content in order to be displayed into a context of edition.

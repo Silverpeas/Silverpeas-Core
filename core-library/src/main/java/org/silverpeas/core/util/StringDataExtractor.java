@@ -38,7 +38,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class StringDataExtractor {
 
   private final String source;
-  private final List<ExtractorDirective> directives = new ArrayList<ExtractorDirective>();
+  private final List<ExtractorDirective> directives = new ArrayList<>();
 
   /**
    * Gets an instance of {@link StringDataExtractor}
@@ -84,11 +84,11 @@ public class StringDataExtractor {
    * @return the list of data.
    */
   public List<String> extract() {
-    Set<String> data = new LinkedHashSet<String>();
+    Set<String> data = new LinkedHashSet<>();
     for (ExtractorDirective directive : directives) {
       data.addAll(directive.extract(source));
     }
-    return new ArrayList<String>(data);
+    return new ArrayList<>(data);
   }
 
   /**
@@ -149,8 +149,7 @@ public class StringDataExtractor {
      */
     public static List<RegexpPatternDirective> regexps(final List<Pattern> patterns,
         final int... groupIndexesToExtract) {
-      List<RegexpPatternDirective> regexpPatternDirectives =
-          new ArrayList<RegexpPatternDirective>();
+      List<RegexpPatternDirective> regexpPatternDirectives = new ArrayList<>();
       for (Pattern pattern : patterns) {
         regexpPatternDirectives.add(regexp(pattern, groupIndexesToExtract));
       }
@@ -176,13 +175,13 @@ public class StringDataExtractor {
 
     @Override
     public Set<String> extract(String source) {
-      Set<String> data = new LinkedHashSet<String>();
+      Set<String> data = new LinkedHashSet<>();
       if (isDefined(source)) {
-        int[] groupIndexesToExtract =
+        int[] safeGroupIndexesToExtract =
             (this.groupIndexesToExtract.length == 0) ? new int[]{0} : this.groupIndexesToExtract;
         Matcher matcher = pattern.matcher(source);
         while (matcher.find()) {
-          for (Integer groupIndex : groupIndexesToExtract) {
+          for (Integer groupIndex : safeGroupIndexesToExtract) {
             String extractData = matcher.group(groupIndex);
             if (isDefined(extractData)) {
               data.add(extractData);

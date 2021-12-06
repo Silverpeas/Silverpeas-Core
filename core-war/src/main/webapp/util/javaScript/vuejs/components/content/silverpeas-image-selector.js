@@ -149,11 +149,17 @@
               this.imgAttachments = attachments;
             }.bind(this)));
             sp.promise.whenAllResolved(promises).then(function() {
-              this.popinApi.open({
+              const popinOptions = {
                 callback : function() {
                   options.select(this.imageUrlApi.getUrl());
                 }.bind(this)
-              });
+              };
+              if (typeof options.close === 'function') {
+                popinOptions.callbackOnClose = function() {
+                  options.close();
+                }
+              }
+              this.popinApi.open(popinOptions);
             }.bind(this));
           },
           close : function() {

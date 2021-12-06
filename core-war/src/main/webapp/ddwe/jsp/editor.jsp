@@ -36,9 +36,6 @@
 <view:setBundle bundle="${resources.multilangBundle}"/>
 
 <c:set var="defaultEditorImage" value="${resources.getSetting('ddwe.editor.img.src.default')}" />
-<c:if test="${empty defaultEditorImage}">
-  <c:url var="defaultEditorImage" value="/ddwe/jsp/resources/default-img.png"/>
-</c:if>
 <c:set var="specificJsPath" value="${resources.getSetting('ddwe.editor.specific.js.path', '')}" />
 <c:set var="specificCssPath" value="${resources.getSetting('ddwe.editor.specific.css.path', '')}" />
 
@@ -54,11 +51,17 @@
 <fmt:message key="ddwe.grapes.htmlSource" var="htmlSource" />
 <fmt:message key="ddwe.grapes.editHtml" var="editHtml" />
 <fmt:message key="ddwe.editor.component.categories.sp" var="silverpeasCategoryLabel" />
+<fmt:message key="ddwe.editor.component.simpleBlock.title" var="simpleBlockTitle" />
 <fmt:message key="ddwe.editor.component.contribution.title" var="contributionBlockTitle" />
 <fmt:message key="ddwe.editor.component.contribution.content.title" var="contributionBlockContentTitle" />
 <fmt:message key="ddwe.editor.component.contribution.content" var="contributionBlockContent" />
 <fmt:message key="ddwe.editor.component.contribution.content.readMore" var="contributionBlockContentReadMore" />
 <fmt:message key="ddwe.editor.component.imageWithLink.title" var="imageWithLinkBlockTitle" />
+<fmt:message key="ddwe.editor.component.toolbar.fa-arrow-up" var="fa_arrow_up_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.fa-arrows" var="fa_arrows_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.fa-clone" var="fa_clone_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.fa-trash-o" var="fa_trash_o_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.fa-sp-basket-selector" var="fa_sp_basket_selector_Label" />
 
 <fmt:message key="ddwe.menu.action" var="editionLabel" />
 
@@ -113,11 +116,17 @@
         'htmlSource' : '${silfn:escapeJs(htmlSource)}',
         'editHtml' : '${silfn:escapeJs(editHtml)}',
         'silverpeasCategoryLabel' : '${silfn:escapeJs(silverpeasCategoryLabel)}',
+        'simpleBlockTitle' : '${silfn:escapeJs(simpleBlockTitle)}',
         'contributionBlockTitle' : '${silfn:escapeJs(contributionBlockTitle)}',
         'contributionBlockContentTitle' : '${silfn:escapeJs(contributionBlockContentTitle)}',
         'contributionBlockContent' : '${silfn:escapeJs(contributionBlockContent)}',
         'contributionBlockContentReadMore' : '${silfn:escapeJs(contributionBlockContentReadMore)}',
-        'imageWithLinkBlockTitle' : '${silfn:escapeJs(imageWithLinkBlockTitle)}'
+        'imageWithLinkBlockTitle' : '${silfn:escapeJs(imageWithLinkBlockTitle)}',
+        'fa_arrow_up_Label' : '${silfn:escapeJs(fa_arrow_up_Label)}',
+        'fa_arrows_Label' : '${silfn:escapeJs(fa_arrows_Label)}',
+        'fa_clone_Label' : '${silfn:escapeJs(fa_clone_Label)}',
+        'fa_trash_o_Label' : '${silfn:escapeJs(fa_trash_o_Label)}',
+        'fa_sp_basket_selector_Label' : '${silfn:escapeJs(fa_sp_basket_selector_Label)}'
       });
       function __applyRequestCommonParams(request) {
         return request.withParam("access_token", '${user.accessToken}')
@@ -129,7 +138,6 @@
             .go();
       }
       function validate() {
-        console.log("VALIDATE UNDER CONSTRUCTION")
         performUrl('${validateUrl}');
       }
       function cancel() {
@@ -141,7 +149,6 @@
           });
       }
       function goBack(url) {
-        console.log("GO BACK UNDER CONSTRUCTION")
         performUrl(url);
       }
       function performUrl(url) {

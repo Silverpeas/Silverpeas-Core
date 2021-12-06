@@ -70,7 +70,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -117,26 +116,20 @@ class CalendarEventUserNotificationReminderTest {
 
   @SuppressWarnings("unused")
   @TestManagedMock
-  @SuppressWarnings("unused")
   private PublicationService publicationService;
   @SuppressWarnings("unused")
   @TestManagedMock
-  @SuppressWarnings("unused")
   private ComponentAccessControl componentAccessControl;
   @SuppressWarnings("unused")
   @TestManagedMock
-  @SuppressWarnings("unused")
   private Administration administration;
-  @SuppressWarnings("unused")
   @TestManagedMock
   @SuppressWarnings("unused")
   private ApplicationService applicationService;
-  @SuppressWarnings("unused")
   @TestManagedMock
   @SuppressWarnings("unused")
   private CalendarEventOccurrenceRepository calendarEventOccurrenceRepository;
   private User receiver;
-  @SuppressWarnings("unused")
   @TestManagedMock
   @SuppressWarnings("unused")
   private ComponentInstanceRoutingMap componentInstanceRoutingMap;

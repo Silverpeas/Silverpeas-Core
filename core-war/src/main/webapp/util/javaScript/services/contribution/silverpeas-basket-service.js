@@ -26,6 +26,11 @@
 
 (function() {
 
+  sp.i18n.load({
+    bundle : 'org.silverpeas.contribution.multilang.contribution',
+    async : true
+  });
+
   window.BasketService = function() {
     const basketRepository = new BasketRepository();
 
@@ -61,8 +66,19 @@
     };
 
     const __updateEntries = function(entries) {
+      const safeEntries = entries || []
       this.withBasketSelectionApi(function(api) {
-        api.updateWith(entries);
+        api.updateWith(safeEntries);
+      });
+      return entries;
+    }.bind(this);
+
+    const __updateSuccessMsg = function(entries) {
+      const safeEntries = entries || []
+      this.withBasketSelectionApi(function(api) {
+        if (api.length() !== safeEntries.length) {
+          notySuccess(sp.i18n.get(safeEntries.length ? 'GML.basketCompleted' : 'GML.emptyBasket'));
+        }
       });
       return entries;
     }.bind(this);
@@ -73,16 +89,63 @@
      * @returns {*}
      */
     this.putNewEntry = function(entry) {
-      return basketRepository.putNewEntry(entry).then(__updateEntries);
+      return this.putNewEntries([entry]);
+    }
+
+    /**
+     * Puts a new entries into the Silverpeas's context.
+     * @param entries an array of basket entry to add.
+     * @returns {*}
+     */
+    this.putNewEntries = function(entries) {
+      const promises = entries.map(function(entry) {
+        return basketRepository.putNewEntry(entry);
+      });
+      return sp.promise.whenAllResolved(promises)
+          .then(function(result) {
+            if (!result.length) {
+              return result;
+            }
+            return result.reduce(function(a, b) {
+              return a.length >= b.length ? a : b;
+            });
+          })
+          .then(__updateSuccessMsg)
+          .then(__updateEntries);
     }
 
     /**
      * Puts a new entry into the Silverpeas's context.
-     * @param entry a basket entry to add.
+     * @param entry a basket entry to delete.
+     * @param skipUpdateApiEntries true to avoid update the entries with API of basket.
      * @returns {*}
      */
-    this.deleteEntry = function(entry) {
-      return basketRepository.deleteEntry(entry).then(__updateEntries);
+    this.deleteEntry = function(entry, skipUpdateApiEntries) {
+      return this.deleteEntries([entry], skipUpdateApiEntries);
+    }
+
+    /**
+     * Puts a new entry into the Silverpeas's context.
+     * @param entries array of basket entries to delete.
+     * @param skipUpdateApiEntries true to avoid update the entries with API of basket.
+     * @returns {*}
+     */
+    this.deleteEntries = function(entries, skipUpdateApiEntries) {
+      const promises = entries.map(function(entry) {
+        return basketRepository.deleteEntry(entry);
+      });
+      let promise = sp.promise.whenAllResolved(promises).then(function(result) {
+        if (!result.length) {
+          return result;
+        }
+        return result.reduce(function(a, b) {
+          return a.length > b.length ? b : a;
+        });
+      });
+      if (!skipUpdateApiEntries) {
+        promise = promise.then(__updateEntries);
+      }
+      return promise;
     }
   };
 
@@ -108,6 +171,9 @@
     this.isDataTransfer = function() {
       return this.context.reason === BasketService.Context.transfert;
     };
+    this.getResourceType = function() {
+      return sp.contribution.id.fromString(this.item.id).getType();
+    };
     this.getId = function() {
       return this.item.id;
     };
@@ -115,13 +181,13 @@
       return this.item.thumbnailURI;
     };
     this.getTitle = function() {
-      return this.item.name;
+      return StringUtil.defaultStringIfNotDefined(this.item.name);
     };
     this.getDescription = function() {
-      return this.item.description;
+      return StringUtil.defaultStringIfNotDefined(this.item.description);
     };
     this.getLink = function() {
-      return this.item.permalink;
+      return StringUtil.defaultStringIfNotDefined(this.item.permalink);
     };
   };
 

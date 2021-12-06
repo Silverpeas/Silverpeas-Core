@@ -170,4 +170,32 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
      */
     String translateUrl(final String url, final String width, final String height);
   }
+
+  /**
+   * Abstract implementation which centralizing the processing of an URL with parameters.
+   */
+  public abstract static class SrcWithSizeParametersTranslator implements SrcTranslator {
+
+    private static final String AMP = "&amp;";
+
+    @Override
+    public String translateUrl(final String url, final String width, final String height) {
+      // Computing the new src URL
+      // at first, removing the size from the URL
+      String newUrl = url.replaceFirst("(?i)(&|&amp;)size[ ]*=[ ]*[0-9 x]+", "");
+      // then guessing the new src URL
+      StringBuilder sizeUrlPart = new StringBuilder().append(width).append("x").append(height);
+      if (sizeUrlPart.length() > 1) {
+        final String separator;
+        if (url.indexOf('?') < 0) {
+          separator = "?";
+        } else {
+          separator = url.contains(AMP) ? AMP : "&";
+        }
+        sizeUrlPart.insert(0, separator + "Size=");
+        newUrl += sizeUrlPart;
+      }
+      return newUrl;
+    }
+  }
 }

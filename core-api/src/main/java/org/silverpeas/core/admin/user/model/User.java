@@ -30,6 +30,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * This interface represents simple data of a user.
@@ -59,6 +60,22 @@ public interface User extends Serializable, Comparable<User> {
   static boolean isActivatedStateFor(String userId) {
     User user = getById(userId);
     return user != null && user.isActivatedState();
+  }
+
+  /**
+   * Gets the current user behind the current treatment processing.
+   * <p>
+   *   If the current process is linked to an HTTP request, then the current user will be the one
+   *   attached to the session of the request. Otherwise, the given user is the system one.
+   * </p>
+   * <p>
+   *   If the SYSTEM user MUST NOT be returned in case it does not exist a real user linked to
+   *   the thread, then use {@link #getCurrentRequester()}.
+   * </p>
+   * @return the {@link User} instance of current user.
+   */
+  static User getCurrentUser() {
+    return Optional.ofNullable(User.getCurrentRequester()).orElseGet(User::getSystemUser);
   }
 
   /**

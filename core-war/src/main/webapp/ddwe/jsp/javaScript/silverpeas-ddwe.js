@@ -145,6 +145,27 @@
         height: 'calc(100% - ' + bottomOffset + 'px)',
         container : '#gjs',
         fromElement: true,
+        assetManager: {
+          custom: {
+            open : function(props) {
+              __options.imageSelectorApi.open({
+                currentImageSrc : props.options.target.get('src'),
+                select : function(src) {
+                  props.options.select({
+                    getSrc : function() {
+                      return src;
+                    }
+                  });
+                },
+                close : function() {
+                  gEditor.AssetManager.close();
+                }
+              });
+            },
+            close : function(props) {
+            }
+          },
+        },
         storageManager: {
           type: 'remote',
           urlStore: webContext + '/Rddwe/jsp/store',
@@ -186,7 +207,9 @@
                 }, 0);
               },
               alternativeCallback : function() {
-                gEditor.store();
+                setTimeout(function() {
+                  gEditor.store();
+                }, 0);
               }
             }).then(function() {
               document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML = data['tmp-inlinedHtml'];
@@ -233,6 +256,7 @@
       self.getOptions = function() {
         return __options;
       };
+      __adjustComponentToolbars(gEditor);
       __adjustStyles(gEditor);
       __setupImageManagement(gEditor, options);
       __addRichTextEditorPositionHandler(gEditor);
@@ -262,26 +286,28 @@
     });
   }
 
+  function __adjustComponentToolbars(editor) {
+    editor.on('component:selected', function(model) {
+      const defaultToolbar = model.get('toolbar');
+      defaultToolbar.forEach(function(menu) {
+        const attr = menu.attributes;
+        if (!attr.title && attr['class']) {
+          attr['class'].split(' ').forEach(function(aClass) {
+            const key = aClass.replace(/[-]/g, '_') + '_Label';
+            const label = sp.i18n.get(key);
+            if (label.indexOf(key) < 0) {
+              attr.title = label;
+            }
+          });
+        }
+      });
+    });
+  }
+
   function __setupImageManagement(editor, initOptions) {
     editor.BlockManager.get('image').attributes.content.attributes = {
       src : initOptions.defaultEditorImageSrc
     };
-    editor.Commands.add('open-assets', {
-      run : function(ed, sender, opts) {
-        if (opts) {
-          initOptions.imageSelectorApi.open({
-            currentImageSrc : opts.target.get('src'),
-            select : function(src) {
-              opts.select({
-                getSrc : function() {
-                  return src;
-                }
-              });
-            }
-          });
-        }
-      }
-    });
   }
 
   function __addRichTextEditorPositionHandler(editor) {

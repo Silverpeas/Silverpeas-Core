@@ -38,6 +38,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * @author mmoquillon
  */
 public class WysiwygContent implements ContributionContent<String> {
+  private static final long serialVersionUID = 356629338911833531L;
 
   private final LocalizedContribution contribution;
   private String text;

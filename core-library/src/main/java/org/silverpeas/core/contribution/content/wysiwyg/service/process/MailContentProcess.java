@@ -25,23 +25,21 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.contribution.content.AbstractLocalhostLinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
 import org.silverpeas.core.mail.MailContent;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.StringDataExtractor;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
 import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +49,6 @@ import java.util.regex.Pattern;
 
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
-import static org.silverpeas.core.util.StringDataExtractor.from;
 import static org.silverpeas.core.util.file.FileUtil.isImage;
 
 /**
@@ -112,28 +109,14 @@ public class MailContentProcess
 
   @Singleton
   public static class WysiwygCkeditorMediaLinkUrlToDataSourceScanner
-      implements LinkUrlDataSourceScanner {
+      extends AbstractLocalhostLinkUrlDataSourceScanner {
 
     private static final Pattern CKEDITOR_LINK_PATTERNS =
         Pattern.compile("(?i)=\"([^\"]*/wysiwyg/jsp/ckeditor/[^\"]+)");
 
     @Override
-    public List<LinkUrlDataSource> scanHtml(final String htmlContent) {
-      final List<LinkUrlDataSource> result = new ArrayList<>();
-      from(htmlContent).withDirectives(singletonList(regexp(CKEDITOR_LINK_PATTERNS, 1))).extract().forEach(l -> {
-        String linkForDataSource = l;
-        if (linkForDataSource.trim().toLowerCase().startsWith("/")) {
-          linkForDataSource = URLUtil.getCurrentLocalServerURL() + l;
-        }
-        linkForDataSource = linkForDataSource.replace("&amp;", "&");
-        try {
-          final URL url = new URL(linkForDataSource);
-          result.add(new LinkUrlDataSource(l, () -> new URLDataSource(url)));
-        } catch (MalformedURLException e) {
-          throw new SilverpeasRuntimeException(e);
-        }
-      });
-      return result;
+    protected List<StringDataExtractor.ExtractorDirective> directives() {
+      return singletonList(regexp(CKEDITOR_LINK_PATTERNS, 1));
     }
   }
 
