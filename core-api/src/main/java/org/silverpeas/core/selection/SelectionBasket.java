@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 /**
@@ -66,7 +67,7 @@ public class SelectionBasket implements Serializable {
         .computeIfAbsent(CACHE_KEY, SelectionBasket.class, SelectionBasket::new);
   }
 
-  private final List<SelectionEntry<SilverpeasResource>> selection = new ArrayList<>();
+  private final List<SelectionEntry<SilverpeasResource>> selection = new CopyOnWriteArrayList<>();
 
   private SelectionBasket() {
   }

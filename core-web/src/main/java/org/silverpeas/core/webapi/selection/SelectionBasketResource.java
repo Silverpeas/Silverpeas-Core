@@ -25,10 +25,10 @@
 package org.silverpeas.core.webapi.selection;
 
 import org.silverpeas.core.BasicIdentifier;
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.selection.SelectionBasket;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
 
@@ -45,6 +45,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -168,6 +169,7 @@ public class SelectionBasketResource extends RESTWebService {
   }
 
   private List<SelectionBasketEntry> listBasketEntries(final SelectionBasket basket) {
+    CopyOnWriteArrayList<SilverpeasResource> t;
     return basket.getSelectedResources()
         .map(SelectionBasketEntry::from)
         .map(SelectionBasketEntry::reload)

@@ -53,6 +53,30 @@ public class StringUtil extends StringUtils {
   }
 
   /**
+   * <p>Case insensitive check if a CharSequence starts with a specified prefix.</p>
+   *
+   * <p>{@code null}s are handled without exceptions. Two {@code null}
+   * references are considered to be equal. The comparison is case insensitive.</p>
+   *
+   * <pre>
+   * StringUtils.startsWithIgnoreCase(null, null)      = true
+   * StringUtils.startsWithIgnoreCase(null, "abc")     = false
+   * StringUtils.startsWithIgnoreCase("abcdef", null)  = false
+   * StringUtils.startsWithIgnoreCase("abcdef", "abc") = true
+   * StringUtils.startsWithIgnoreCase("ABCDEF", "abc") = true
+   * </pre>
+   *
+   * @see java.lang.String#startsWith(String)
+   * @param str  the text to check, may be null
+   * @param prefix the text to find, may be null
+   * @return {@code true} if the CharSequence starts with the prefix, case-insensitive, or
+   *  both {@code null}
+   */
+  public static boolean startsWithIgnoreCase(final String str, final String prefix) {
+    return StringUtils.startsWithIgnoreCase(str, prefix);
+  }
+
+  /**
    * <p>Joins the elements of the provided array into a single String
    * containing the provided list of elements.</p>
    *

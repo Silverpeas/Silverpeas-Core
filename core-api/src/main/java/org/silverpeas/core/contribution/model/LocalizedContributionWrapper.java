@@ -30,15 +30,19 @@ import org.silverpeas.core.i18n.ResourceTranslation;
 import java.util.Date;
 
 /**
- * Implementation by default of a {@link LocalizedContribution} for a {@link Contribution}
- * object. It is a generic representation of a contribution, whatever it is, localized in a given
- * language. If the contribution is an i18n one, then the {@link LocalizedContributionWrapper}
- * object will represent the version of the contribution in the given language. Otherwise, the
- * {@link LocalizedContributionWrapper} object will be a localized representation of the
- * contribution like expressed in the default language of the platform.
+ * Implementation by default of a {@link LocalizedContribution} for a {@link Contribution} object.
+ * It is a generic representation of a contribution, whatever it is, localized in a given language,
+ * and supporting by default the thumbnails and the permalink. If the contribution is an i18n one,
+ * then the {@link LocalizedContributionWrapper} object will represent the version of the
+ * contribution in the given language. Otherwise, the {@link LocalizedContributionWrapper} object
+ * will be a localized representation of the contribution like expressed in the default language of
+ * the platform. If the related contribution doesn't support thumbnail or permalink then nothing is
+ * returned when the corresponding getter is invoked, otherwise the ask is delegated to the
+ * underlying contribution.
  * @author silveryocha
  */
-class LocalizedContributionWrapper implements LocalizedContribution {
+class LocalizedContributionWrapper
+    implements LocalizedContribution, WithThumbnail, WithPermanentLink {
 
   private final Contribution contribution;
   private final ResourceTranslation translation;
@@ -46,7 +50,7 @@ class LocalizedContributionWrapper implements LocalizedContribution {
   LocalizedContributionWrapper(final Contribution contribution, final String language) {
     this.contribution = contribution;
     if (contribution instanceof I18nContribution) {
-      this.translation = ((I18nContribution)contribution).getTranslation(language);
+      this.translation = ((I18nContribution) contribution).getTranslation(language);
     } else {
       this.translation = new TranslationWrapper(language, contribution);
     }
@@ -107,6 +111,32 @@ class LocalizedContributionWrapper implements LocalizedContribution {
     return translation.getLanguage();
   }
 
+  /**
+   * Gets the permalink of this contribution or an empty string if this contribution doesn't support
+   * such permalink.
+   * @return either the permalink of the contribution or an empty string.
+   */
+  @Override
+  public String getPermalink() {
+    if (contribution instanceof WithPermanentLink) {
+      return ((WithPermanentLink) contribution).getPermalink();
+    }
+    return "";
+  }
+
+  /**
+   * Gets the thumbnail of this contribution or null if this contribution doesn't support
+   * such thumbnail, or it has no thumbnail.
+   * @return either the thumbnail of the contribution or null.
+   */
+  @Override
+  public Thumbnail getThumbnail() {
+    if (contribution instanceof WithThumbnail) {
+      return ((WithThumbnail) contribution).getThumbnail();
+    }
+    return null;
+  }
+
   private static class TranslationWrapper implements ResourceTranslation {
 
     private final String language;
@@ -119,7 +149,8 @@ class LocalizedContributionWrapper implements LocalizedContribution {
 
     @Override
     public String getId() {
-      return contribution.getIdentifier().asString();
+      return contribution.getIdentifier()
+          .asString();
     }
 
     @Override

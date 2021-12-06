@@ -96,7 +96,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   // Attribute used to manage user favorite space look
   private UserMenuDisplay displayUserMenu = UserMenuDisplay.DISABLE;
   private boolean enableUFSContainsState = false;
-  private HttpSession session = null;
+  private final HttpSession session;
   private String currentLookName = null;
   private LayoutConfiguration layoutConfiguration;
 
@@ -248,7 +248,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     init(resources);
   }
 
-  private final void init(SettingBundle resources) {
+  private void init(SettingBundle resources) {
     this.organizationController = OrganizationControllerProvider.getOrganisationController();
     this.publicationService = PublicationService.get();
     this.resources = resources;
@@ -782,7 +782,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
       String sParsed = sDestination.substring(0, nLoginIndex);
       sParsed = sParsed + sValue;
       if (sDestination.length() > nLoginIndex + sKeyword.length()) {
-        sParsed += sDestination.substring(nLoginIndex + sKeyword.length(), sDestination.length());
+        sParsed += sDestination.substring(nLoginIndex + sKeyword.length());
       }
       parsedDestination = sParsed;
     }
@@ -797,9 +797,6 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return displayUserMenu;
   }
 
-  /**
-   * @param displayUserMenu
-   */
   @Override
   public void setDisplayUserMenu(UserMenuDisplay displayUserMenu) {
     this.displayUserMenu = displayUserMenu;

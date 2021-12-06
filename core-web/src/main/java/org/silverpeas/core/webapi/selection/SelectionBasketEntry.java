@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.webapi.selection;
 
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.I18nContribution;
@@ -32,6 +33,8 @@ import org.silverpeas.core.selection.SelectionContext;
 import org.silverpeas.core.selection.SelectionEntry;
 import org.silverpeas.core.web.rs.WebEntity;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -116,15 +119,18 @@ public class SelectionBasketEntry implements WebEntity {
    */
   public SelectionBasketEntry reload() {
     String language = User.getCurrentRequester().getUserPreferences().getLanguage();
-    SilverpeasResource resource = getItem().toResource();
-    if (resource instanceof I18nContribution) {
-      LocalizedContribution contribution =
-          ((I18nContribution) resource).getLocalizationIn(language);
-      this.item = BasketItem.from(contribution);
-    } else {
-      this.item = BasketItem.from(resource);
+    try {
+      SilverpeasResource resource = getItem().toResource();
+      if (resource instanceof I18nContribution) {
+        LocalizedContribution contribution = ((I18nContribution) resource).getLocalizationIn(language);
+        this.item = BasketItem.from(contribution);
+      } else {
+        this.item = BasketItem.from(resource);
+      }
+      return this;
+    } catch (NotFoundException e) {
+      throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
     }
-    return this;
   }
 
   @Override
