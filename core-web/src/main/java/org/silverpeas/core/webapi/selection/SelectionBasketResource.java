@@ -25,7 +25,6 @@
 package org.silverpeas.core.webapi.selection;
 
 import org.silverpeas.core.BasicIdentifier;
-import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.selection.SelectionBasket;
@@ -45,14 +44,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
  * It represents the {@link org.silverpeas.core.selection.SelectionBasket} exposed in the web and
- * accessible through a REST-based web API. The selection basket behaves like a FILO list: the
- * first resource put in the basket is at the tail of the basket whereas the last one put is at the
- * head of the basket and hence it will be the first one to get or to pop. The resources put in the
+ * accessible through a REST-based web API. The selection basket behaves like a FILO list: the first
+ * resource put in the basket is at the tail of the basket whereas the last one put is at the head
+ * of the basket and hence it will be the first one to get or to pop. The resources put in the
  * basket aren't as such, but they are wrapped within an object that maps them to the context for
  * which they have been put in the basket by the user: a {@link SelectionBasketEntry} instance.
  * @author mmoquillon
@@ -114,8 +112,8 @@ public class SelectionBasketResource extends RESTWebService {
   }
 
   /**
-   * Deletes in the basket the item with the specified unique identifier. If no
-   * such Silverpeas resource is found in the basket, then a {@link NotFoundException} is thrown.
+   * Deletes in the basket the item with the specified unique identifier. If no such Silverpeas
+   * resource is found in the basket, then a {@link NotFoundException} is thrown.
    * @param itemId the unique identifier of a Silverpeas resource placed in the basket.
    * @return the new state of the basket, that is to say its new content without the deleted item.
    */
@@ -135,8 +133,8 @@ public class SelectionBasketResource extends RESTWebService {
   }
 
   /**
-   * Deletes in the basket the item placed at the specified position. If there is no
-   * resource at the given position in the basket, then a {@link NotFoundException} is thrown.
+   * Deletes in the basket the item placed at the specified position. If there is no resource at the
+   * given position in the basket, then a {@link NotFoundException} is thrown.
    * @param index the position index of the resource in the basket to remove. The index starts at 0
    * for the head position.
    * @return the new state of the basket, that is to say its new content without the deleted item.
@@ -169,7 +167,6 @@ public class SelectionBasketResource extends RESTWebService {
   }
 
   private List<SelectionBasketEntry> listBasketEntries(final SelectionBasket basket) {
-    CopyOnWriteArrayList<SilverpeasResource> t;
     return basket.getSelectedResources()
         .map(SelectionBasketEntry::from)
         .map(SelectionBasketEntry::reload)

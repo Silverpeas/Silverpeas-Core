@@ -446,8 +446,7 @@ public class CalendarResource extends AbstractCalendarResource {
     final String volatileEventId = eventEntity.getEventId();
     CalendarEvent createdEvent = process(() -> {
       final CalendarEvent event = getCalendarWebManager()
-          .createEvent(calendar, eventEntity.getMergedEvent(calendar.getComponentInstanceId()),
-              volatileEventId);
+          .createEvent(calendar, eventEntity.getMergedEvent(), volatileEventId);
       Attachments.from(eventEntity.getAttachmentParameters())
           .attachTo(LocalizedContribution.from(event));
       if (!eventEntity.getPdcClassification().isUndefined()) {
@@ -489,7 +488,9 @@ public class CalendarResource extends AbstractCalendarResource {
     final Calendar calendar = Calendar.getById(calendarId);
     final CalendarEvent event = CalendarEvent.getById(eventId);
     final CalendarEventOccurrence occurrence =
-        CalendarEventOccurrence.getById(decodeId(occurrenceId)).orElse(null);
+        CalendarEventOccurrence.getById(decodeId(occurrenceId))
+            .orElseThrow(() -> new WebApplicationException("No such occurrence " + occurrenceId,
+                Response.Status.NOT_FOUND));
     assertDataConsistency(calendar.getComponentInstanceId(), calendar, event, occurrence);
     return asOccurrenceWebEntity(occurrence);
   }
@@ -513,13 +514,8 @@ public class CalendarResource extends AbstractCalendarResource {
   public List<CalendarEventEntity> updateEventOccurrence(@PathParam("calendarId") String calendarId,
       @PathParam("eventId") String eventId, @PathParam("occurrenceId") String occurrenceId,
       CalendarEventOccurrenceUpdateEntity occurrenceEntity) {
-    final Calendar originalCalendar = Calendar.getById(calendarId);
-    final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
     final CalendarEventOccurrence occToUpdate = occurrenceEntity.getMergedOccurrence();
-    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, occToUpdate);
-    if (!occToUpdate.getId().equals(decodeId(occurrenceId))) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
+    checkEventOccurrence(calendarId, eventId, occurrenceId, occToUpdate);
     List<CalendarEvent> updatedEvents = process(() -> getCalendarWebManager()
         .saveOccurrence(occToUpdate, occurrenceEntity.getUpdateMethodType(), getZoneId()))
         .execute();
@@ -548,6 +544,18 @@ public class CalendarResource extends AbstractCalendarResource {
     return asEventWebEntities(updatedEvents);
   }
 
+  private void checkEventOccurrence(final String calendarId,
+      final String eventId,
+      final String occurrenceId,
+      final CalendarEventOccurrence occurrence) {
+    final Calendar originalCalendar = Calendar.getById(calendarId);
+    final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
+    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, occurrence);
+    if (!occurrence.getId().equals(decodeId(occurrenceId))) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+  }
+
   /**
    * Deletes an event from the JSON representation of an occurrence and returns an updated event if
    * any.<br> If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
@@ -567,13 +575,8 @@ public class CalendarResource extends AbstractCalendarResource {
   public CalendarEventEntity deleteEventOccurrence(@PathParam("calendarId") String calendarId,
       @PathParam("eventId") String eventId, @PathParam("occurrenceId") String occurrenceId,
       CalendarEventOccurrenceDeleteEntity occurrenceEntity) {
-    final Calendar originalCalendar = Calendar.getById(calendarId);
-    final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
     final CalendarEventOccurrence occToDelete = occurrenceEntity.getMergedOccurrence();
-    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, occToDelete);
-    if (!occToDelete.getId().equals(decodeId(occurrenceId))) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
+    checkEventOccurrence(calendarId, eventId, occurrenceId, occToDelete);
     CalendarEvent updatedEvent = process(() -> getCalendarWebManager()
         .deleteOccurrence(occToDelete, occurrenceEntity.getDeleteMethodType(), getZoneId()))
         .execute();

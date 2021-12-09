@@ -150,6 +150,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * copied as it should be unique.
    * @param si the collaboration space to copy.
    */
+  @SuppressWarnings("IncompleteCopyConstructor")
   public SpaceInst(final SpaceInst si) {
     super(si);
     setDescription(si.getDescription());
@@ -468,9 +469,9 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   /**
-   * Get all the space profiles from space profile list
+   * Get all the user profiles defined for this space instance.
    *
-   * @return The space profiles of that space
+   * @return an unmodifiable list of user profiles for this space instance.
    */
   public List<SpaceProfileInst> getAllSpaceProfilesInst() {
     return data.safeRead((p, s, c) -> List.copyOf(p));

@@ -24,11 +24,10 @@
 
 (function() {
 
-  var ParticipationCache = SilverpeasCache.extend({
+  const ParticipationCache = SilverpeasCache.extend({
     setParticipants : function(participants) {
       this.put('participants', participants);
-    },
-    getParticipants : function() {
+    }, getParticipants : function() {
       return this.get('participants');
     }
   });
@@ -42,17 +41,17 @@
           $scope.participation =
               new ParticipationCache(context.componentUriBase + "_participation");
 
-          $scope.goToPage = function(uri, context) {
-            var ajaxConfig = sp.ajaxConfig(uri);
-            if (context && context.startMoment) {
-              ajaxConfig.withParam("occurrenceStartDate", encodeURIComponent(context.startMoment.format()))
+          $scope.goToPage = function(uri, ctx) {
+            const ajaxRequest = sp.ajaxRequest(uri);
+            if (ctx && ctx.startMoment) {
+              ajaxRequest.withParam("occurrenceStartDate", encodeURIComponent(ctx.startMoment.format()))
             }
-            spWindow.loadContent(ajaxConfig.getUrl());
+            spWindow.loadContent(ajaxRequest.getUrl());
           };
 
           $scope.openPage = function(uri) {
-            var windowName = "userPanelWindow";
-            var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+            const windowName = "userPanelWindow";
+            const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
             SP_openUserPanel(uri, windowName, windowParams);
           };
 
@@ -64,9 +63,9 @@
            */
 
           function __getOccurrenceViewUrl(occurrence, edition) {
-            var uri = edition ? occurrence.occurrenceEditionUrl : occurrence.occurrenceViewUrl;
-            var fromSharedComponent = uri.indexOf('/userCalendar') < 0;
-            var params = {};
+            const uri = edition ? occurrence.occurrenceEditionUrl : occurrence.occurrenceViewUrl;
+            const fromSharedComponent = uri.indexOf('/userCalendar') < 0;
+            const params = {};
             if (fromSharedComponent && uri.indexOf('/' + context.component + '/') < 0) {
               params.previousPageFullUri = location.href;
             }
@@ -74,27 +73,40 @@
           }
 
           $scope.newEvent = function(startMoment) {
-            var uri = context.componentUriBase + 'calendars/events/new';
+            const uri = context.componentUriBase + 'calendars/events/new';
             $scope.goToPage(uri, {startMoment : startMoment});
           };
 
           $scope.notifyEventOccurrence = function(occurrence) {
-            sp.messager.open(context.component, {contributionId: occurrence.id,
+            sp.messager.open(context.component, {contributionId: occurrence.occurrenceId,
               publicationId: occurrence.eventId});
           };
           $scope.gotToEventOccurrence = function(occurrence) {
+            // noinspection JSUnresolvedVariable
             spWindow.loadPermalink(occurrence.occurrencePermalinkUrl);
           };
           $scope.viewEventOccurrence = function(occurrence) {
-            var uri = __getOccurrenceViewUrl(occurrence);
+            const uri = __getOccurrenceViewUrl(occurrence);
             $scope.goToPage(uri);
           };
           $scope.editEventOccurrence = function(occurrence) {
-            var uri = __getOccurrenceViewUrl(occurrence, true);
+            const uri = __getOccurrenceViewUrl(occurrence, true);
             $scope.goToPage(uri);
           };
+          $scope.putEventOccurrenceInBasket = function(occurrence) {
+            const basket = new BasketService();
+            // noinspection JSUnresolvedVariable
+            basket.putNewEntry({
+              context : {
+                reason : BasketService.Context.transfert
+              }, item : {
+                id : occurrence.id,
+                type : occurrence.contributionType
+              }
+            });
+          };
           $scope.getVisibleCalendars = function(calendars) {
-            var visibleCalendars = visibleFilter(calendars, true);
+            let visibleCalendars = visibleFilter(calendars, true);
             if (visibleCalendars && !visibleCalendars.length) {
               visibleCalendars = defaultFilter(calendars, true);
             }
@@ -107,6 +119,7 @@
 
           $scope.loadCalendarsFromContext = function() {
             return CalendarService.list().then(function(calendars) {
+              // noinspection JSUnresolvedFunction
               SilverpeasCalendarTools.decorateCalendars(calendars);
               return calendars;
             });
@@ -142,11 +155,14 @@
             });
           };
 
+          // noinspection JSUnresolvedFunction
           $scope.reloadEventOccurrence = function(occurrenceUri, editionMode) {
             if (occurrenceUri) {
               // Case or existing event occurrence
+              // noinspection JSUnresolvedFunction
               return CalendarService.getEventOccurrenceByUri(occurrenceUri, editionMode)
                   .then(function(reloadedOccurrence) {
+                    // noinspection JSUnresolvedFunction
                     return CalendarService.getByUri(reloadedOccurrence.calendarUri).then(
                         function(calendar) {
                           reloadedOccurrence.calendar = calendar;
@@ -156,12 +172,14 @@
             } else if (editionMode) {
               // Case of creation
               return sp.volatileIdentifier.newOn(context.component).then(function(volatileId) {
-                var newOccurrence = SilverpeasCalendarTools.newEventOccurrenceEntity();
+                // noinspection JSUnresolvedFunction
+                const newOccurrence = SilverpeasCalendarTools.newEventOccurrenceEntity();
                 newOccurrence.eventId = volatileId;
                 return newOccurrence;
               });
             }
             // Default case
+            // noinspection JSUnresolvedFunction
             return sp.promise.resolveDirectlyWith(SilverpeasCalendarTools.newEventOccurrenceEntity());
           };
         }]);

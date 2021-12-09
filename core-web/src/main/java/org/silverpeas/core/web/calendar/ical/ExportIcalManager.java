@@ -50,7 +50,6 @@ import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
 import java.io.FileWriter;
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class ExportIcalManager {
   private SilverpeasCalendar calendar;
   private static final String FIRST_DATE = "1970/01/01";
   private static final String LAST_DATE = "2050/01/01";
-  private String userId;
+  private final String userId;
   private String language = "fr";
 
   public ExportIcalManager(AgendaSessionController agendaSessionController) {
@@ -78,7 +77,7 @@ public class ExportIcalManager {
   /**
    * Constructs a new manager of iCal export processes for the agenda core component.
    *
-   * @param userId the unique identifier of the user for which the manager has to be instanciated.
+   * @param userId the unique identifier of the user for which the manager has to be instantiated.
    */
   public ExportIcalManager(String userId) {
     this.userId = userId;
@@ -143,21 +142,9 @@ public class ExportIcalManager {
   }
 
   /**
-   * Exports in iCal the user agenda. Actually, it is the event occurrences that are exported in the
-   * iCal file. This iCal file name is built withWriter the user identifier and it the file is
-   * generated in the temporary directory.
-   *
-   * @return an export status code indicating if it has been successfull or not.
-   * @throws AgendaException if an unexpected error occurs while exporting the events.
-   */
-  public String exportIcalAgenda() throws AgendaException {
-    return exportIcalAgenda(null, null);
-  }
-
-  /**
    * Exports in iCal the user agenda within a synchronization process. Actually, it is the event
    * occurrences that are exported in the iCal file. This iCal file name is built withWriter the
-   * user identifier and it the file is generated in the temporary directory.
+   * user identifier and the file is generated in the temporary directory.
    *
    * @return the path of the generated ics file.
    * @throws AgendaException if an unexpected error occurs while exporting the events.
@@ -195,7 +182,6 @@ public class ExportIcalManager {
    * @param startDate the start date of the interval.
    * @param endDate the end date of the interval.
    * @return a collection of the schedulable events between the interval of time.
-   * @throws RemoteException if the remote calendar of the user cannot be accessed.
    * @throws ParseException if the specified dates aren't formatted as expected.
    */
   private Collection<JournalHeader> getSchedulableCalendar(String startDate, String endDate)
@@ -212,10 +198,8 @@ public class ExportIcalManager {
    * @param startDate the start date of the interval of time.
    * @param endDate the end date of the interval of time.
    * @return a list of calendar events.
-   * @throws RemoteException if the events cannot be fetched from the user calendar.
    * @throws ParseException if the specified dates are not formatted as expected.
    */
-  @SuppressWarnings("rawtypes")
   private List<CalendarEvent> getCalendarEvents(String startDate, String endDate) throws
       ParseException {
     List<CalendarEvent> events = new ArrayList<>();

@@ -29,6 +29,7 @@ import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
@@ -38,6 +39,7 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourcePath;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -71,7 +73,7 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
  * timeline. It occurs several time in the calendar in a regular way according to its recurrence
  * rule; at each time such an event occurs is represented by an occurrence.
  *
- * By default, the occurrences of an event aren't persisted but they are generated from the period
+ * By default, the occurrences of an event aren't persisted, but they are generated from the period
  * of time at which occurs the event and, if any, from its recurrence rule. If an occurrence of a
  * non-recurrent event is deleted, then the related event is deleted. If an occurrence of a
  * recurrent event is deleted, then an exception is added into the recurrence rule of the event.
@@ -98,7 +100,7 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
     query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event")
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
-    implements IdentifiableEntity, Occurrence, Contribution, WithReminder {
+    implements IdentifiableEntity, Occurrence, Contribution, WithReminder, WithPermanentLink {
 
   public static final String TYPE = "CalendarEventOccurrence";
 
@@ -171,7 +173,7 @@ public class CalendarEventOccurrence
 
   /**
    * Gets optionally an event occurrence by its identifier.
-   * <p>If the occurrence exists into the persistence, it is returned. Otherwise it is generated.
+   * <p>If the occurrence exists into the persistence, it is returned. Otherwise, it is generated.
    * <p>Otherwise and if start date is valid, the occurrence is generated.
    * @param id the identifier of the aimed occurrence.
    * @return an optional calendar event occurrence.
@@ -242,7 +244,7 @@ public class CalendarEventOccurrence
    * Gets the next occurrence of the given event since the specified datetime. If the datetime is
    * before the event start date, then the first occurrence of the event is returned. If the event
    * has no occurrence since the specified datetime, then nothing is returned.
-   * @param event the event the event for which the next occurrence is asked.
+   * @param event the event for which the next occurrence is asked.
    * @param dateTime the datetime after which the next occurrence should occur.
    * @return optionally the next event's occurrence occurring after the specified datetime or
    * nothing if there is no more occurrences after that datetime.
@@ -306,7 +308,7 @@ public class CalendarEventOccurrence
    * occurrence to apply the modifications only to this occurrence. Only the period at which the
    * event occur in the calendar cannot be used to update this occurrence. For doing, please use
    * either the {@code setPeriod} or the {@code setDay} method of {@link CalendarEventOccurrence}.
-   * @return the event from which this occurrence is instanciated.
+   * @return the event from which this occurrence is instantiated.
    */
   public CalendarEvent getCalendarEvent() {
     return this.event;
@@ -329,7 +331,7 @@ public class CalendarEventOccurrence
 
   /**
    * Gets the original start date of this occurrence. If the start date wasn't modified, then the
-   * returning date should be the same than the start date returned by the method
+   * returning date should be the same as the start date returned by the method
    * {@link CalendarEventOccurrence#getStartDate()}.
    * @return the original start date of this occurrence of calendar event.
    */
@@ -490,12 +492,21 @@ public class CalendarEventOccurrence
   }
 
   /**
-   * Gets the content of this event occurrence. The content is the one of the event and it cannot
+   * Gets the content of this event occurrence. The content is the one of the event, and it cannot
    * be modified per occurrence but for the whole event occurrence(s).
    * @return optionally the content of the event.
    */
   public Optional<WysiwygContent> getContent() {
     return getCalendarEvent().getContent();
+  }
+
+  @Override
+  public String getPermalink() {
+    return ComponentInstanceRoutingMapProviderByInstance.get()
+        .getByInstanceId(getCalendarEvent().getCalendar().getComponentInstanceId())
+        .absolute()
+        .getPermalink(getIdentifier())
+        .toString();
   }
 
   /**
@@ -518,12 +529,12 @@ public class CalendarEventOccurrence
   }
 
   /**
-   * Updates this occurrence and all of the forthcoming occurrences of the same event with the
+   * Updates this occurrence and all the forthcoming occurrences of the same event with the
    * changes in this occurrence.
    *
-   * If the event is non recurrent, then the event is itself updated. Otherwise a new event is
-   * created for this occurrence and all of the forthcoming occurrences and with the modifications
-   * carried by this occurrences. The recurrence of the original event is updated to end up at this
+   * If the event is non-recurrent, then the event is itself updated. Otherwise, a new event is
+   * created for this occurrence and for all the forthcoming occurrences with the modifications
+   * carried by this occurrence. The recurrence of the original event is updated to end up at this
    * occurrence minus one day (the recurrence end date is inclusive).
    *
    * In the case the temporal period of the occurrences is modified, the participation status of
@@ -543,7 +554,7 @@ public class CalendarEventOccurrence
   /**
    * Updates only this occurrence among the occurrences of the event it comes from.
    *
-   * If the event is non recurrent, then the event is itself updated. Otherwise the changes in
+   * If the event is non-recurrent, then the event is itself updated. Otherwise, the changes in
    * this occurrence are persisted and its sequence number is incremented by one, diverging then
    * from the sequence number of the event it comes from.
    * <p>
@@ -572,11 +583,11 @@ public class CalendarEventOccurrence
   }
 
   /**
-   * Deletes this occurrence and all of the forthcoming occurrences of the same event.
+   * Deletes this occurrence and all the forthcoming occurrences of the same event.
    *
-   * If the event is non recurrent, then the event is itself deleted. Otherwise the
-   * original starting date of this occurrence and of all of the forthcoming occurrences are added
-   * in the exception dates of the event's recurrence rule. If some of the occurrences were
+   * If the event is non-recurrent, then the event is itself deleted. Otherwise, the
+   * original starting date of this occurrence and of all the forthcoming occurrences are added
+   * in the exception dates of the event's recurrence rule. If some occurrences were
    * persisted, then they are all removed from the persistence context.
    *
    *  This is equivalent to
@@ -593,7 +604,7 @@ public class CalendarEventOccurrence
   /**
    * Deletes only this occurrence among the occurrences of the event it comes from.
    *
-   * If the event is non recurrent, then the event is itself deleted. Otherwise the
+   * If the event is non-recurrent, then the event is itself deleted. Otherwise, the
    * original starting date of this occurrence is added in the exception dates of the event's
    * recurrence rule. If the occurrence was previously persisted, then it is removed from the
    * persistence context.
@@ -664,7 +675,7 @@ public class CalendarEventOccurrence
    * instance. This method is dedicated to the {@link CalendarEvent} class.
    * <p>
    * If the occurrence comes from a non-recurrent event, then the returned event won't be
-   * neither recurrent. Otherwise the recurrence of the new event will start at the start date of
+   * recurrent either. Otherwise, the recurrence of the new event will start at the start date of
    * this occurrence and will end up at the actual end date of the recurrence of the event of this
    * occurrence.
    * @return a new possibly recurrent {@link CalendarEvent} instance from this occurrence.
@@ -697,17 +708,16 @@ public class CalendarEventOccurrence
   }
 
   /**
-   * Saves this occurrence of a calendar event into a data source so that it can be get later.
+   * Saves this occurrence of a calendar event into a data source so that it can be got later.
    * This method is dedicated to the {@link CalendarEvent} class.
    * <p>
    * Saving an event occurrence is done when this occurrence has changed from the event or from
    * its original planning in the timeline of a calendar. This is only done with occurrences of
    * a recurrent event as any change to the single occurrence of a non-recurrent event modifies the
    * event itself.
-   * @return the persisted event occurrence.
    */
-  CalendarEventOccurrence saveIntoPersistence() {
-    return Transaction.performInOne(() -> {
+  void saveIntoPersistence() {
+    Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       final CalendarEventOccurrence previous = getPreviousState();
       final CalendarComponent pcc;
@@ -738,7 +748,7 @@ public class CalendarEventOccurrence
   }
 
   /**
-   * Deletes this occurrence of a calendar event in the data source. If this occurrences wasn't
+   * Deletes this occurrence of a calendar event in the data source. If this occurrence wasn't
    * persisted, then nothing is done.
    * This method is dedicated to the {@link CalendarEvent} class.
    */
@@ -753,10 +763,9 @@ public class CalendarEventOccurrence
   /**
    * Deletes this occurrence and all the occurrences belonging to the same event of this occurrence
    * and that are after this one. This method is dedicated to the {@link CalendarEvent} class.
-   * @return the count of actually occurrences removed from the data source.
    */
-  long deleteAllSinceMeFromThePersistence() {
-    return Transaction.performInOne(() -> {
+  void deleteAllSinceMeFromThePersistence() {
+    Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       List<CalendarEventOccurrence> occurrences = repository.getAllSince(this);
       repository.delete(occurrences);

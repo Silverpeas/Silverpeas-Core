@@ -132,6 +132,14 @@ public final class Mutable<T> {
   }
 
   /**
+   * Return {@code true} if no value is present, otherwise {@code false}.
+   * @return {@code true} if there is no value, otherwise {@code false}
+   */
+  public boolean isEmpty() {
+    return value == null;
+  }
+
+  /**
    * If a value is present, invoke the specified consumer with the value,
    * otherwise do nothing.
    * @param consumer block to be executed if a value is present

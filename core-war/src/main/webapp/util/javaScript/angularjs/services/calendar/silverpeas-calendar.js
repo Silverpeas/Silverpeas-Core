@@ -24,16 +24,18 @@
 
 (function() {
 
+  // noinspection JSValidateJSDoc
   /**
    * The module silverpeas within which the business objects are defined.
    * @type {Angular.Module} the silverpeas.services module.
    */
-  var services = angular.module('silverpeas.services');
+  const services = angular.module('silverpeas.services');
 
+  // noinspection JSUnresolvedFunction
   services.factory('CalendarEventOccurrence',
       ['context', 'RESTAdapter', function(context, RESTAdapter) {
         return new function() {
-          var baseUri;
+          let baseUri;
 
           /**
            * This is useful for services which extend this service.
@@ -44,15 +46,16 @@
           };
 
           // the type CalendarEvent
-          var CalendarEvent = function() {
+          const CalendarEvent = function() {
             this.type = 'CalendarEvent';
           };
 
           // the type CalendarEventOccurrence
-          var CalendarEventOccurrence = function() {
+          const CalendarEventOccurrence = function() {
             this.type = 'CalendarEventOccurrence';
             this.eventType = 'CalendarEvent';
             this.occurrenceType = 'CalendarEventOccurrence';
+            // noinspection JSUnresolvedFunction
             SilverpeasCalendarTools.applyEventOccurrenceEntityAttributeWrappers(this);
           };
 
@@ -64,12 +67,15 @@
            *     parameter.
            */
           this.getEventOccurrencesBetween = function(eventUri, period) {
-            var adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
-            var criteria = {
-              startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
-              endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString(),
-              zoneid: context.zoneId
-            }
+            const adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
+            // noinspection JSUnresolvedFunction
+            const criteria = {
+              startDateOfWindowTime : SilverpeasCalendarTools.moment(
+                  period.startDateTime).toISOString(),
+              endDateOfWindowTime : SilverpeasCalendarTools.moment(
+                  period.endDateTime).toISOString(),
+              zoneid : context.zoneId
+            };
             return adapter.find({
               url : adapter.url,
               criteria : adapter.criteria(criteria)
@@ -83,16 +89,17 @@
            *     parameter.
            */
           this.getEventByUri = function(eventUri) {
-            var adapter = RESTAdapter.get(eventUri, CalendarEvent);
-            var criteria = {
+            const adapter = RESTAdapter.get(eventUri, CalendarEvent);
+            const criteria = {
               zoneid : context.zoneId
-            }
+            };
             return adapter.find({
               url : adapter.url,
               criteria : adapter.criteria(criteria)
             });
           };
 
+          // noinspection JSUnusedGlobalSymbols
           /**
            * Gets the occurrence by its uri.
            * @param occurrenceUri uri of occurrence to get.
@@ -101,17 +108,17 @@
            *     parameter.
            */
           this.getEventOccurrenceByUri = function(occurrenceUri, editionMode) {
-            var adapter = RESTAdapter.get(occurrenceUri, CalendarEventOccurrence);
-            var criteria = {
-              zoneid : context.zoneId,
-              editionMode : editionMode ? true : false
-            }
+            const adapter = RESTAdapter.get(occurrenceUri, CalendarEventOccurrence);
+            const criteria = {
+              zoneid : context.zoneId, editionMode : !!editionMode
+            };
             return adapter.find({
               url : adapter.url,
               criteria : adapter.criteria(criteria)
             });
           };
 
+          // noinspection JSUnusedGlobalSymbols
           /**
            * Gets all participation calendar linked to given users represented by the array of
            * user identier and between the start and end dates.
@@ -124,9 +131,13 @@
            *     parameter.
            */
           this.getParticipationCalendarsBetween = function(userIds, period) {
+            // noinspection JSIgnoredPromiseFromCall
             if (context.component) {
-              var url = baseUri + '/events/occurrences';
-              var adapter = RESTAdapter.get(url, function() {});
+              const url = baseUri + '/events/occurrences';
+              const adapter = RESTAdapter.get(url, function() {
+                // nothing to convert
+              });
+              // noinspection JSUnresolvedFunction
               return adapter.find({
                 url : url,
                 criteria : adapter.criteria({
@@ -137,7 +148,7 @@
                 })
               });
             } else {
-              var msgError = "Error: missing context.component attribute (component instance identifier)";
+              const msgError = "Error: missing context.component attribute (component instance identifier)";
               notyError(msgError);
               sp.promise.rejectDirectlyWith(msgError);
             }
@@ -151,8 +162,8 @@
           this.getNextOccurrences = function(parameters) {
             if (context.component) {
               parameters = extendsObject({}, parameters);
-              var url = baseUri + '/events/occurrences/next';
-              var adapter = RESTAdapter.get(url, CalendarEventOccurrence);
+              const url = baseUri + '/events/occurrences/next';
+              const adapter = RESTAdapter.get(url, CalendarEventOccurrence);
               return adapter.find({
                 url : url,
                 criteria : adapter.criteria({
@@ -164,7 +175,7 @@
                 })
               });
             } else {
-              var msgError = "Error: missing context.component attribute (component instance identifier)";
+              const msgError = "Error: missing context.component attribute (component instance identifier)";
               notyError(msgError);
               sp.promise.rejectDirectlyWith(msgError);
             }
@@ -191,30 +202,32 @@
           /**
            * Removes the event occurrence.
            * @param occurrence the occurrence to delete (indeed delete/update events).
+           * @param actionMethodType the type of the action to apply
            * @returns {promise|a.fn.promise|*}
            */
           this.removeOccurrence = function(occurrence, actionMethodType) {
-            var occurrenceCopy = angular.copy(occurrence);
+            const occurrenceCopy = angular.copy(occurrence);
             occurrenceCopy.deleteMethodType = actionMethodType;
-            var adapter = RESTAdapter.get(
-                occurrence.occurrenceUri + '?zoneid=' + context.zoneId,
+            const adapter = RESTAdapter.get(occurrence.occurrenceUri + '?zoneid=' + context.zoneId,
                 CalendarEvent);
             return adapter["delete"](occurrenceCopy);
           };
 
           /**
-           * Updates th particpation status of attendee linked to given event occurrence.
+           * Updates th participation status of attendee linked to given event occurrence.
            * @param occurrence the occurrence reference.
+           * @param attendee attendee
+           * @param actionMethodType the type of the action to apply
            * @returns {promise|a.fn.promise|*}
            */
           this.updateOccurrenceAttendeeParticipation =
               function(occurrence, attendee, actionMethodType) {
-                var answerData = angular.copy(attendee);
+                const answerData = angular.copy(attendee);
                 answerData.answerMethodType = actionMethodType;
                 answerData.occurrence = angular.copy(occurrence);
-                var adapter = RESTAdapter.get(
-                    occurrence.occurrenceUri + '/attendees/' +
-                    attendee.id + '?zoneid=' + context.zoneId, CalendarEvent);
+                const adapter = RESTAdapter.get(
+                    occurrence.occurrenceUri + '/attendees/' + attendee.id + '?zoneid=' +
+                    context.zoneId, CalendarEvent);
                 return adapter.put(answerData);
               };
 
@@ -225,7 +238,7 @@
            */
           this.occurrences = function(calendarUri) {
             return new function() {
-              var adapter = RESTAdapter.get(calendarUri + '/events/occurrences',
+              const adapter = RESTAdapter.get(calendarUri + '/events/occurrences',
                   CalendarEventOccurrence);
 
               /**
@@ -234,12 +247,15 @@
                * @returns {Array} the asked calendar event occurrences.
                */
               this.between = function(period) {
-                var url = adapter.url;
-                var criteria = {
-                  startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
-                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString(),
-                  zoneid: context.zoneId
-                }
+                const url = adapter.url;
+                // noinspection JSUnresolvedFunction
+                const criteria = {
+                  startDateOfWindowTime : SilverpeasCalendarTools.moment(
+                      period.startDateTime).toISOString(),
+                  endDateOfWindowTime : SilverpeasCalendarTools.moment(
+                      period.endDateTime).toISOString(),
+                  zoneid : context.zoneId
+                };
                 return adapter.find({
                   url : url,
                   criteria : adapter.criteria(criteria)
@@ -252,19 +268,34 @@
                * @returns {promise|a.fn.promise|*}
                */
               this.create = function(event) {
-                var adapter = RESTAdapter.get(calendarUri + '/events', CalendarEvent);
-                return adapter.post(event);
+                let requester = RESTAdapter.get(calendarUri + '/events', CalendarEvent);
+                return requester.post(event);
               }.bind(this);
             };
           };
         };
       }]);
 
+  // noinspection JSUnresolvedFunction
   services.factory('Calendar', ['context', 'RESTAdapter', 'CalendarEventOccurrence',
     function(context, RESTAdapter, CalendarEventOccurrence) {
       return new function() {
-        var baseUri;
-        var adapter;
+
+        // The Calendar type
+        const Calendar = function() {
+          this.$onInit = function() {
+            this.events = CalendarEventOccurrence.occurrences(this.uri);
+            this.isSynchronized = StringUtil.isDefined(this.externalUrl);
+            // noinspection JSUnresolvedFunction
+            SilverpeasCalendarTools.applyCalendarEntityAttributeWrappers(this);
+            if (context.component !== this.componentInstanceId()) {
+              this.canBeModified = false;
+              this.canBeDeleted = false;
+            }
+          }
+        };
+        let baseUri;
+        let adapter;
 
         /**
          * This is useful for services which extend this service.
@@ -273,34 +304,22 @@
         this.setBaseUri = function(uri) {
           baseUri = uri;
           adapter = RESTAdapter.get(baseUri, Calendar);
+          // noinspection JSUnresolvedFunction
           CalendarEventOccurrence.setBaseUri(uri);
-        };
-
-        // The Calendar type
-        var Calendar = function() {
-          this.$onInit = function() {
-            this.events = CalendarEventOccurrence.occurrences(this.uri);
-            this.isSynchronized = StringUtil.isDefined(this.externalUrl);
-            SilverpeasCalendarTools.applyCalendarEntityAttributeWrappers(this);
-            if (context.component !== this.componentInstanceId()) {
-              this.canBeModified = false;
-              this.canBeDeleted = false;
-            }
-          }
         };
 
         this.setBaseUri(webContext + '/services/calendar/' + context.component);
 
         /**
          * Gets the calendar represented by the given identifier.
-         * @param calendar id the identifier of calendar to get.
+         * @param calendarId id the identifier of calendar to get.
          * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck parameter.
          */
         this.get = function(calendarId) {
           if (context.component) {
             return adapter.find(calendarId);
           } else {
-            var msgError = "Error: missing context.component attribute (component instance identifier)";
+            const msgError = "Error: missing context.component attribute (component instance identifier)";
             notyError(msgError);
             sp.promise.rejectDirectlyWith(msgError);
           }
@@ -322,6 +341,7 @@
          *     parameter.
          */
         this.getEventByUri = function(eventUri) {
+          // noinspection JSUnresolvedFunction
           return CalendarEventOccurrence.getEventByUri(eventUri);
         };
 
@@ -332,9 +352,11 @@
          * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callback parameter.
          */
         this.getEventOccurrencesBetween = function(eventUri, period) {
+          // noinspection JSUnresolvedFunction
           return CalendarEventOccurrence.getEventOccurrencesBetween(eventUri, period);
         };
 
+        // noinspection JSUnusedGlobalSymbols
         /**
          * Gets the occurrence by its uri.
          * @param occurrenceUri uri of occurrence to get.
@@ -343,19 +365,24 @@
          *     parameter.
          */
         this.getEventOccurrenceByUri = function(occurrenceUri, editionMode) {
+          // noinspection JSUnresolvedFunction
           return CalendarEventOccurrence.getEventOccurrenceByUri(occurrenceUri, editionMode);
         };
 
         /**
          * Gets the occurrence by its uri.
-         * @param occurrenceUri uri of occurrence to get.
+         * @param occurrence an occurrence of an event from which the first occurrence will be
+         * found.
          * @returns {promise|a.fn.promise|*} a promise with the asked occurrence as callback
          *     parameter.
          */
         this.getFirstEventOccurrenceFrom = function(occurrence) {
           return this.getEventByUri(occurrence.eventUri).then(function(event) {
-            var firstOccurrenceId = sp.base64.encode(event.id + '@' + sp.moment.toISOJavaString(event.startDate));
-            var firstOccurrenceUri = occurrence.occurrenceUri.replace(occurrence.occurrenceId, firstOccurrenceId);
+            const firstOccurrenceId = sp.base64.encode(
+                event.eventId + '@' + sp.moment.toISOJavaString(event.startDate));
+            const firstOccurrenceUri = occurrence.occurrenceUri.replace(occurrence.occurrenceId,
+                firstOccurrenceId);
+            // noinspection JSUnresolvedFunction
             return CalendarEventOccurrence.getEventOccurrenceByUri(firstOccurrenceUri);
           });
         };
@@ -369,12 +396,13 @@
           if (context.component) {
             return adapter.find();
           } else {
-            var msgError = "Error: missing context.component attribute (component instance identifier)";
+            const msgError = "Error: missing context.component attribute (component instance identifier)";
             notyError(msgError);
             sp.promise.rejectDirectlyWith(msgError);
           }
         };
 
+        // noinspection JSUnusedGlobalSymbols
         /**
          * Gets all calendar event occurrences linked to given users represented by the array of
          * user identier and included into a period.
@@ -383,6 +411,7 @@
          *     parameter.
          */
         this.getParticipationCalendarsBetween = function(userIds, period) {
+          // noinspection JSUnresolvedFunction
           return CalendarEventOccurrence.getParticipationCalendarsBetween(userIds, period);
         };
 
@@ -392,6 +421,7 @@
          *     parameter.
          */
         this.getNextOccurrences = function(parameters) {
+          // noinspection JSUnresolvedFunction
           return CalendarEventOccurrence.getNextOccurrences(parameters);
         };
 
@@ -422,8 +452,8 @@
          * @returns {promise|a.fn.promise|*}
          */
         this.synchronize = function(calendar) {
-          var adapter = RESTAdapter.get(calendar.uri + '/synchronization', Calendar);
-          return adapter.put({});
+          let requester = RESTAdapter.get(calendar.uri + '/synchronization', Calendar);
+          return requester.put({});
         };
 
         /**
@@ -443,29 +473,38 @@
          * @param subscriptionParams optional additional parameters concerning the subscription management.
          */
         this.updateEventOccurrence = function(occurrence, actionMethodType, subscriptionParams) {
-          var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
+          // noinspection JSUnresolvedFunction
+          const occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
+          // noinspection JSUnresolvedFunction
           return CalendarEventOccurrence.updateOccurrence(occurrenceEntity, actionMethodType, subscriptionParams);
         };
 
         /**
          * Deletes an occurrence.
-         * @param occurrence the coccurrence to delete which contains all necessary data.
+         * @param occurrence the occurrence to delete which contains all necessary data.
+         * @param actionMethodType the type of the action to apply
          */
         this.removeEventOccurrence = function(occurrence, actionMethodType) {
-          var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
+          // noinspection JSUnresolvedFunction
+          const occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
           return CalendarEventOccurrence.removeOccurrence(occurrenceEntity, actionMethodType);
         };
 
+        // noinspection JSUnusedGlobalSymbols
         /**
          * Updates the attendee participation status from an occurrence.
-         * @param occurrence the coccurrence reference.
+         * @param occurrence the occurrence reference.
+         * @param attendee the attendee
+         * @param actionMethodType the type of the action to apply on the participation
          */
         this.updateEventOccurrenceAttendeeParticipation =
             function(occurrence, attendee, actionMethodType) {
-              var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
+              // noinspection JSUnresolvedFunction
+              const occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
                   occurrence);
+              // noinspection JSUnresolvedFunction
               return CalendarEventOccurrence.updateOccurrenceAttendeeParticipation(occurrenceEntity,
                   attendee, actionMethodType);
             };

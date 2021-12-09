@@ -35,6 +35,7 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Default implementation of the <code>ProcessManagement</code> interface.
@@ -52,11 +53,10 @@ public class DefaultProcessManagement implements ProcessManagement {
    * org.silverpeas.io.ProcessManagement#execute(org.silverpeas.core.admin.user.model.UserDetail,
    * java.lang.String, org.silverpeas.io.process.SilverpeasProcess)
    */
-  @SuppressWarnings("unchecked")
   @Override
   public <C extends ProcessExecutionContext> void execute(final SilverpeasProcess<C> process,
       final C processExecutionContext) throws Exception {
-    execute(new ProcessList<C>(process), processExecutionContext);
+    execute(new ProcessList<>(process), processExecutionContext);
   }
 
   /*
@@ -145,8 +145,8 @@ public class DefaultProcessManagement implements ProcessManagement {
     // Required or New file transaction ?
     if (!internalParentContexts.isEmpty() && !processExecutionContext.requiresNewFileTransaction()) {
       // Attaching internal context to parents
-      context = new InternalContext<>(internalParentContexts.peekLast().getLast(),
-          processExecutionContext);
+      context = new InternalContext<>(Objects.requireNonNull(internalParentContexts.peekLast())
+          .getLast(), processExecutionContext);
     } else {
       // Prepare the context saving : new transaction case
       if (internalParentContexts.isEmpty()) {
@@ -163,9 +163,9 @@ public class DefaultProcessManagement implements ProcessManagement {
 
   /**
    * Files processing
-   * @param process
-   * @param context
-   * @throws Exception
+   * @param process the process working on files.
+   * @param context the execution context of the process
+   * @throws Exception if an error occurs while processing the files.
    */
   private <C extends ProcessExecutionContext> void processing(final SilverpeasProcess<C> process,
       final InternalContext<C> context) throws Exception {
@@ -178,7 +178,7 @@ public class DefaultProcessManagement implements ProcessManagement {
 
   /**
    * Checks processing
-   * @param context
+   * @param context the context of execution of the process.
    */
   private void checks(final InternalContext<?> context) throws Exception {
     synchronized (ProcessMonitoring.SYNCHRONIZE) {
@@ -196,11 +196,10 @@ public class DefaultProcessManagement implements ProcessManagement {
 
   /**
    * On successful processing
-   * @param process
-   * @param context
+   * @param process the process to execute.
+   * @param context the context of execution of the process.
    */
-  private void onSuccessful(final SilverpeasProcess<?> process, final InternalContext<?> context)
-      throws Exception {
+  private void onSuccessful(final SilverpeasProcess<?> process, final InternalContext<?> context) {
     try {
       process.onSuccessful();
     } catch (Exception e) {
@@ -265,11 +264,6 @@ public class DefaultProcessManagement implements ProcessManagement {
     return continueException;
   }
 
-  /**
-   * COMMIT
-   * @param context
-   * @throws Exception
-   */
   private void commit(final InternalContext<?> context) throws Exception {
     synchronized (ProcessMonitoring.SYNCHRONIZE) {
       try {
@@ -281,11 +275,7 @@ public class DefaultProcessManagement implements ProcessManagement {
     }
   }
 
-  /**
-   * ROLLBACK
-   * @param context
-   */
-  private void rollback(final InternalContext<?> context) {
+ private void rollback(final InternalContext<?> context) {
     if (context.isOpeningFileTransaction()) {
       synchronized (ProcessMonitoring.SYNCHRONIZE) {
         clearSession(context);
@@ -293,10 +283,6 @@ public class DefaultProcessManagement implements ProcessManagement {
     }
   }
 
-  /**
-   * Clearing session
-   * @param context
-   */
   private void clearSession(final InternalContext<?> context) {
     if (context.isOpeningFileTransaction()) {
       ((FileHandler) context.getProcessExecutionContext().getFileHandler())
@@ -307,8 +293,8 @@ public class DefaultProcessManagement implements ProcessManagement {
   /**
    * @author Yohann Chastagnier
    */
-  private final class FileHandler extends org.silverpeas.core.process.io.file.FileHandler {
-    protected FileHandler(final ProcessSession session) {
+  private static final class FileHandler extends org.silverpeas.core.process.io.file.FileHandler {
+    private FileHandler(final ProcessSession session) {
       super(session);
     }
 

@@ -43,8 +43,8 @@
       controller : [function() {
 
         this.onSameDay = function() {
-          var startDate = this.startDate().split('T')[0];
-          var endDate = this.endDate().split('T')[0];
+          const startDate = this.startDate().split('T')[0];
+          const endDate = this.endDate().split('T')[0];
           return startDate === endDate;
         };
 

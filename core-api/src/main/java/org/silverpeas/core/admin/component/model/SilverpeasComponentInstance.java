@@ -81,8 +81,8 @@ public interface SilverpeasComponentInstance extends Identifiable, Nameable, Ser
   /**
    * Gets the translated name of the component according to given language (from a functional point
    * of view).<br>
-   * If no translation exists for given language, then the one of {@link
-   * DisplayI18NHelper#defaultLanguage} is returned.
+   * If no translation exists for given language, then the one of
+   * {@link DisplayI18NHelper#getDefaultLanguage()} is returned.
    * @return the translated name of the component.
    */
   String getLabel(String language);

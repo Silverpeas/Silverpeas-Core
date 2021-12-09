@@ -85,7 +85,6 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
    * @param occurrenceViewUrl the occurrence web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventOccurrenceEntity withOccurrenceViewURL(final URI occurrenceViewUrl) {
     setOccurrenceViewUrl(occurrenceViewUrl);
     return this;
@@ -96,7 +95,6 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
    * @param occurrenceEditionUrl the occurrence web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventOccurrenceEntity withOccurrenceEditionURL(final URI occurrenceEditionUrl) {
     setOccurrenceEditionUrl(occurrenceEditionUrl);
     return this;
@@ -107,7 +105,6 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
    * @param permalinkUrl the web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventOccurrenceEntity withOccurrencePermalinkURL(final URI permalinkUrl) {
     this.occurrencePermalinkUrl = permalinkUrl;
     return this;
@@ -118,7 +115,6 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
    * @param occurrenceUri the occurrence web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventOccurrenceEntity withOccurrenceURI(final URI occurrenceUri) {
     this.occurrenceUri = occurrenceUri;
     return this;
@@ -144,7 +140,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   /**
    * Sets attendees to the occurrence entity.
-   * @param attendees the attendees entity to set.
+   * @param attendees the attendees to set.
    * @return itself.
    */
   @Override
@@ -156,7 +152,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   /**
    * Sets attributes to the occurrence entity.
-   * @param attributes the attributes entity to set.
+   * @param attributes the attributes to set.
    * @return itself.
    */
   @Override
@@ -202,14 +198,6 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   public void setOccurrencePermalinkUrl(final URI occurrencePermalinkUrl) {
     this.occurrencePermalinkUrl = occurrencePermalinkUrl;
-  }
-
-  public String getId() {
-    return getOccurrenceId();
-  }
-
-  protected void setId(String occurrenceId) {
-    setOccurrenceId(occurrenceId);
   }
 
   public String getOccurrenceId() {
@@ -258,6 +246,8 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
       final ZoneId zoneId, final boolean isEditionMode) {
     final CalendarEvent calEvent = calendarEventOccurrence.getCalendarEvent();
     decorate(calEvent, calEvent.getCalendar().getComponentInstanceId(), zoneId, isEditionMode);
+    setId(calendarEventOccurrence.getIdentifier().asString());
+    setContributionType(calendarEventOccurrence.getContributionType());
     this.occurrenceId = StringUtil.asBase64(calendarEventOccurrence.getId().getBytes());
     this.originalStartDate = calendarEventOccurrence.getOriginalStartDate().toString();
     setFirstEventOccurrence(calendarEventOccurrence.getOriginalStartDate()
@@ -282,7 +272,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   @Override
   protected ToStringBuilder toStringBuilder() {
     ToStringBuilder builder = super.toStringBuilder();
-    builder.append("occurrenceId", getId());
+    builder.append("occurrenceId", getOccurrenceId());
     builder.append("calendarZoneId", getCalendarZoneId());
     builder.append("originalStartDate", getOriginalStartDate());
     builder.append("firstEventOccurrence", isFirstEventOccurrence());

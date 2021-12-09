@@ -81,6 +81,8 @@ public class CalendarEventEntity implements WebEntity {
   private String eventId;
   private String calendarId;
   private String calendarZoneId;
+  private String id;
+  private String type;
   private String title;
   private String description;
   private String content;
@@ -101,8 +103,11 @@ public class CalendarEventEntity implements WebEntity {
   private boolean canBeAccessed;
   private boolean canBeModified;
   private boolean canBeDeleted;
-  private List<AttachmentParameterEntity> attachmentParameters = new ArrayList<>();
+  @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+  private final List<AttachmentParameterEntity> attachmentParameters = new ArrayList<>();
+  @SuppressWarnings("unused")
   private ReminderEntity reminder;
+  @SuppressWarnings("unused")
   private PdcClassificationEntity pdcClassification;
 
   protected CalendarEventEntity() {
@@ -118,7 +123,6 @@ public class CalendarEventEntity implements WebEntity {
    * @param eventUri the web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventEntity withEventURI(final URI eventUri) {
     this.eventUri = eventUri;
     return this;
@@ -129,7 +133,6 @@ public class CalendarEventEntity implements WebEntity {
    * @param calendarUri the linked calendar web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventEntity withCalendarURI(final URI calendarUri) {
     this.calendarUri = calendarUri;
     return this;
@@ -140,7 +143,6 @@ public class CalendarEventEntity implements WebEntity {
    * @param permalinkUrl the web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
   public CalendarEventEntity withEventPermalinkURL(final URI permalinkUrl) {
     this.eventPermalinkUrl = permalinkUrl;
     return this;
@@ -188,6 +190,7 @@ public class CalendarEventEntity implements WebEntity {
     return calendarUri;
   }
 
+  @SuppressWarnings("unused")
   protected void setCalendarUri(final URI calendarUri) {
     this.calendarUri = calendarUri;
   }
@@ -201,11 +204,19 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   public String getId() {
-    return getEventId();
+    return id;
   }
 
-  protected void setId(String eventId) {
-    setEventId(eventId);
+  protected void setId(String id) {
+    this.id = id;
+  }
+
+  public String getContributionType() {
+    return type;
+  }
+
+  protected void setContributionType(final String type) {
+    this.type = type;
   }
 
   public String getEventId() {
@@ -228,6 +239,7 @@ public class CalendarEventEntity implements WebEntity {
     return calendarZoneId;
   }
 
+  @SuppressWarnings("unused")
   protected void setCalendarZoneId(final String calendarZoneId) {
     this.calendarZoneId = calendarZoneId;
   }
@@ -436,11 +448,10 @@ public class CalendarEventEntity implements WebEntity {
   /**
    * Get the persistent data representation of an event merged with the entity data.
    * The data of the entity are applied to the returned instance.
-   * @param componentInstanceId identifier of the component instance host.
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  CalendarEvent getMergedEvent(final String componentInstanceId) {
+  CalendarEvent getMergedEvent() {
     final CalendarEvent event;
     if (isDefined(getEventId()) &&
         !getSessionVolatileResourceCacheService().couldBeVolatileId(getEventId())) {
@@ -509,6 +520,8 @@ public class CalendarEventEntity implements WebEntity {
     User currentUser = User.getCurrentRequester();
     final Calendar calendar = calendarEvent.getCalendar();
     final CalendarComponent component = calendarEvent.asCalendarComponent();
+    id = calendarEvent.getIdentifier().asString();
+    type = calendarEvent.getContributionType();
     eventId = calendarEvent.getId();
     calendarId = calendar.getId();
     calendarZoneId = calendar.getZoneId().toString();

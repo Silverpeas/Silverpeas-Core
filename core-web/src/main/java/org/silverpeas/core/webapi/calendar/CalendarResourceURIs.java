@@ -130,9 +130,7 @@ public final class CalendarResourceURIs {
     if (occurrence == null) {
       return null;
     }
-    final CalendarEvent event = occurrence.getCalendarEvent();
-    final String instanceId = event.getCalendar().getComponentInstanceId();
-    return getRoutingMap(instanceId).absolute().getPermalink(event.getIdentifier());
+    return URI.create(occurrence.getCalendarEvent().getPermalink());
   }
 
   /**
@@ -144,9 +142,7 @@ public final class CalendarResourceURIs {
     if (occurrence == null) {
       return null;
     }
-    final CalendarEvent event = occurrence.getCalendarEvent();
-    final String instanceId = event.getCalendar().getComponentInstanceId();
-    return getRoutingMap(instanceId).absolute().getPermalink(occurrence.getIdentifier());
+    return URI.create(occurrence.getPermalink());
   }
 
   /**

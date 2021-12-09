@@ -102,7 +102,7 @@ public class PersonalSpaceManager {
       profile.setName("admin");
       profile.addUser(userId);
       profile.setInherited(false);
-      space.getAllSpaceProfilesInst().add(profile);
+      space.addSpaceProfileInst(profile);
 
       // add component to space
       try {
@@ -117,7 +117,7 @@ public class PersonalSpaceManager {
   public String addComponent(User user, String componentName)
       throws AdminException, QuotaException {
     Optional<WAComponent> optionalWAComponent = WAComponent.getByName(componentName);
-    if (!optionalWAComponent.isPresent() || !optionalWAComponent.get().isVisibleInPersonalSpace()) {
+    if (optionalWAComponent.isEmpty() || !optionalWAComponent.get().isVisibleInPersonalSpace()) {
       LocalizationBundle messages = getMessages(user.getUserPreferences().getLanguage());
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");
       throw new AdminException(MessageFormat.format(errorText, componentName));

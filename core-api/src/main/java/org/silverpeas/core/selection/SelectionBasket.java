@@ -28,7 +28,6 @@ import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

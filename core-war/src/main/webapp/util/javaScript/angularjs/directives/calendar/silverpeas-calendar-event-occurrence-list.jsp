@@ -47,7 +47,7 @@
       ng-if="monthOccurrences.selected">
     <h3>{{monthOccurrences.monthLabel}}</h3>
     <ul>
-      <li ng-repeat="monthOccurrence in monthOccurrences track by monthOccurrence.id"
+      <li ng-repeat="monthOccurrence in monthOccurrences track by monthOccurrence.occurrenceId"
           ng-class="{'high-priority':(monthOccurrence.priority === 'HIGH')}"
           class="day-events"
           ng-click="$ctrl.onEventOccurrenceClick({occurrence:monthOccurrence})">
@@ -79,7 +79,7 @@
       <span class="full-date">{{$ctrl.getDayDate(dayOccurrences.dayDate)}}</span>
     </div>
     <silverpeas-calendar-event-occurrence-list-item
-        ng-repeat="occurrence in dayOccurrences track by occurrence.id"
+        ng-repeat="occurrence in dayOccurrences track by occurrence.occurrenceId"
         group-by-month="$ctrl.groupByMonth"
         occurrence="occurrence"
         class="{{$ctrl.getOccurrenceClasses(occurrence)}}"

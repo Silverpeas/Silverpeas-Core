@@ -130,7 +130,7 @@ public class SpaceResource extends AbstractAdminResource {
   /**
    * Gets users and groups roles indexed by role names.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
@@ -156,8 +156,7 @@ public class SpaceResource extends AbstractAdminResource {
 
       // Getting space profiles
       SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
-      List<SpaceProfileInst> profiles = new ArrayList<>();
-      profiles.addAll(spaceInst.getAllSpaceProfilesInst());
+      List<SpaceProfileInst> profiles = new ArrayList<>(spaceInst.getAllSpaceProfilesInst());
 
       // Building entities
       LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
@@ -370,13 +369,12 @@ public class SpaceResource extends AbstractAdminResource {
    * When all query parameters are set at false then the service understands that it has to return
    * all personal entities.
    * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param getNotUsedComponents
-   * @param getUsedComponents
-   * @param getUsedTools
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @param getNotUsedComponents boolean indicating if the not used components are concerned
+   * @param getUsedComponents boolean indicating if the used components are concerned
+   * @param getUsedTools a boolean indicating if the used tools are concerned
+   * @return the response to the HTTP GET request with the JSON representation of the asked space
    */
   @GET
   @Path(SPACES_PERSONAL_URI_PART)

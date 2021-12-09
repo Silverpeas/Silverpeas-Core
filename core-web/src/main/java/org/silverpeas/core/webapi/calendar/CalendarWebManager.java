@@ -141,7 +141,7 @@ public class CalendarWebManager {
 
   /**
    * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br>
-   * Calendar must exists and be linked to the component instance represented bu given identifier.
+   * Calendar must exist and be linked to the component instance represented by the given identifier.
    * @param componentInstanceId the identifier of current handled component instance.
    * @param originalCalendar the calendar to check against the other data.
    */
@@ -212,7 +212,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Asserts the specified entity is well defined, otherwise an HTTP 404 error is sent back.
+   * Asserts the specified entity is well-defined, otherwise an HTTP 404 error is sent back.
    * @param entity the entity to check.
    */
   static void assertEntityIsDefined(final IdentifiableEntity entity) {
@@ -329,7 +329,7 @@ public class CalendarWebManager {
    * Exports the given calendar into ICalendar format.
    * @param calendar the calendar to export.
    * @param descriptor the export descriptor.
-   * @throws ExportException on export exception.
+   * @throws ExportException on error in the export.
    */
   protected void exportCalendarAsICalendarFormat(final Calendar calendar, final ExportDescriptor descriptor)
       throws ExportException {
@@ -438,7 +438,7 @@ public class CalendarWebManager {
     });
 
     updatedEvent.ifPresent(e -> {
-      if (!createdEvent.isPresent()) {
+      if (createdEvent.isEmpty()) {
         successMessage("calendar.message.event.updated", e.getTitle());
       } else {
         //noinspection OptionalGetWithoutIsPresent
@@ -486,7 +486,7 @@ public class CalendarWebManager {
     }
 
     Optional<CalendarEvent> updatedEvent = result.updated();
-    if (!updatedEvent.isPresent() || !updatedEvent.get().isRecurrent()) {
+    if (updatedEvent.isEmpty() || !updatedEvent.get().isRecurrent()) {
       successMessage("calendar.message.event.deleted", occurrence.getTitle());
     } else {
       final String bundleKey;
@@ -496,7 +496,6 @@ public class CalendarWebManager {
         endDate = occurrence.getOriginalStartDate();
       } else {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
-        //noinspection OptionalGetWithoutIsPresent
         endDate = updatedEvent.get()
             .getRecurrence()
             .getRecurrenceEndDate()
@@ -524,42 +523,36 @@ public class CalendarWebManager {
       String attendeeId, ParticipationStatus participationStatus,
       OccurrenceEventActionMethodType answerMethodType, final ZoneId zoneId) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;
-    CalendarEvent modifiedEvent = null;
+    final Mutable<CalendarEvent> modifiedEvent = Mutable.empty();
     if (methodType == UNIQUE) {
       Optional<EventOperationResult> optionalResult =
           updateSingleOccurrenceAttendeeParticipation(occurrence, attendeeId, participationStatus);
-      if (optionalResult.isPresent()) {
-        modifiedEvent = optionalResult.get()
-            .instance()
+      optionalResult.ifPresent(r -> {
+        modifiedEvent.set(r.instance()
             .orElseThrow(() -> new SilverpeasRuntimeException(
                 "No event occurrence in the operation result!"))
-            .getCalendarEvent();
+            .getCalendarEvent());
         successMessage("calendar.message.event.occurrence.attendee.participation.updated.unique",
             occurrence.getTitle(), getMessager().formatDate(
                 getDateWithOffset(occurrence.asCalendarComponent(),
                     occurrence.getOriginalStartDate(), zoneId)));
-      }
+      });
     } else if (methodType == ALL) {
       Optional<EventOperationResult> optionalResult =
           updateEventAttendeeParticipation(occurrence, attendeeId, participationStatus);
-      if (optionalResult.isPresent()) {
-        if (optionalResult.get().updated().isPresent()) {
-          modifiedEvent = optionalResult.get().updated().get();
-        } else {
-          modifiedEvent = optionalResult.get()
-              .instance()
-              .orElseThrow(() -> new SilverpeasRuntimeException(
-                  "No event occurrence in the operation result!"))
-              .getCalendarEvent();
-        }
+      optionalResult.ifPresent(r -> {
+        r.updated().ifPresentOrElse(modifiedEvent::set,
+            () -> modifiedEvent.set(r.instance()
+                .orElseThrow(() -> new SilverpeasRuntimeException(
+                    "No event occurrence in the operation result!"))
+                .getCalendarEvent()));
         successMessage("calendar.message.event.attendee.participation.updated",
             occurrence.getCalendarEvent().getTitle());
-      }
+      });
     }
-    if (modifiedEvent == null) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
-    return modifiedEvent;
+
+    return modifiedEvent
+        .orElseThrow(() -> new WebApplicationException(Response.Status.FORBIDDEN));
   }
 
   private Optional<EventOperationResult> updateEventAttendeeParticipation(
@@ -637,8 +630,8 @@ public class CalendarWebManager {
   }
 
   /**
-   * Gets the event occurrences associated to a calendar and contained a the time window specified
-   * by the start and end datetimes.<br>
+   * Gets the event occurrences associated to a calendar and contained a time window specified
+   * by the start and end datetime.<br>
    * The occurrences are sorted from the lowest to the highest date.
    * @param startDate the start date of time window.
    * @param endDate the end date of time window.
@@ -651,8 +644,8 @@ public class CalendarWebManager {
   }
 
   /**
-   * Gets the event occurrences associated to a calendar and contained a the time window specified
-   * by the start and end datetimes.<br>
+   * Gets the event occurrences associated to a calendar and contained a time window specified
+   * by the start and end datetime.<br>
    * The occurrences are sorted from the lowest to the highest date.
    * @param startDate the start date of time window.
    * @param endDate the end date of time window.
@@ -671,7 +664,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Gets all event occurrences associated to users and contained a the time window specified
+   * Gets all event occurrences associated to users and contained a time window specified
    * by the start and end date times.<br>
    * Attendees which have answered negatively about their presence are not taken into account.
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.

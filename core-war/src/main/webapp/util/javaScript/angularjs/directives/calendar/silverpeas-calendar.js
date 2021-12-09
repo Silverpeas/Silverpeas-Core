@@ -61,6 +61,7 @@
         let itemValue = item['componentInstanceId'];
         let typeOfItemValue = typeof itemValue;
         if (typeOfItemValue === 'undefined') {
+          // noinspection JSUnresolvedFunction
           itemValue = SilverpeasCalendarTools.extractComponentInstanceIdFromUri(item['uri']);
           typeOfItemValue = typeof itemValue;
         }
@@ -147,11 +148,12 @@
       let sortedCalendars = [];
       Array.prototype.push.apply(sortedCalendars, items);
       let instanceIdHost = typeof context === 'object' ? context.component : undefined;
+      // noinspection JSUnresolvedFunction
       SilverpeasCalendarTools.sortCalendars(sortedCalendars, instanceIdHost);
       let previousInstanceId = '';
       sortedCalendars.forEach(function(calendar) {
         if (!calendar.__cssListClasses) {
-          let __cssListClasses = '';
+          let __cssListClasses;
           let currentInstanceId = calendar.componentInstanceId();
           __cssListClasses = 'calendar-' + currentInstanceId;
           if (currentInstanceId === instanceIdHost) {
@@ -224,6 +226,7 @@
              */
             const _decorate = function() {
               const _allCalendars = __getAllCalendars();
+              // noinspection JSUnresolvedFunction
               SilverpeasCalendarTools.decorateCalendars(_allCalendars);
             }.bind(this);
 
@@ -234,9 +237,6 @@
              */
             const _showEventDetails = function(occurrence) {
               _triggerEventDetails('showEventDetails', occurrence);
-            };
-            const _hideEventDetails = function(occurrence) {
-              _triggerEventDetails('hideEventDetails', occurrence);
             };
             const _destroyEventDetails = function(occurrence) {
               _triggerEventDetails('destroyEventDetails', occurrence);
@@ -264,12 +264,13 @@
               return this.api.isOccurrenceVisible(occurrence);
             }.bind(this);
 
+            // noinspection JSUnusedLocalSymbols
             /**
              * Handles the rendering of an event occurrence.
              */
-            const _eventOccurrenceRender = function(occurrence, $element, view) {
-              occurrence.$element = $element;
-              const $eventDotElement = angular.element('.fc-event-dot', $element);
+            const _eventOccurrenceRender = function(occurrence, $elt, view) {
+              occurrence.$element = $elt;
+              const $eventDotElement = angular.element('.fc-event-dot', $elt);
               if ($eventDotElement.length) {
                 const __eventDotElement = $eventDotElement[0];
                 __eventDotElement.style.borderColor = __eventDotElement.style.backgroundColor;
@@ -311,6 +312,7 @@
               if (!occurrence.canBeAccessed) {
                 return false;
               }
+              // noinspection JSUnusedLocalSymbols
               const promise = new Promise(function(resolve, reject) {
                 TipManager.destroyAll(occurrence.$element);
                 const $content = _compileEventOccurrenceTip();
@@ -321,44 +323,44 @@
                   if ($data.endsWith('Controller')) {
                     const data = $inheritedData[$data];
                     data.occurrence = occurrence;
-                    data.onView = function(occurrence) {
+                    data.onView = function(occ) {
                       if (this.onEventOccurrenceView) {
-                        this.onEventOccurrenceView({occurrence : occurrence});
+                        this.onEventOccurrenceView({occurrence : occ});
                       }
                     }.bind(this);
-                    data.onModify = function(occurrence) {
+                    data.onModify = function(occ) {
                       if (this.onEventOccurrenceModify) {
-                        this.onEventOccurrenceModify({occurrence : occurrence});
+                        this.onEventOccurrenceModify({occurrence : occ});
                       }
                     }.bind(this);
-                    data.onDelete = function(occurrence) {
+                    data.onDelete = function(occ) {
                       if (this.onEventOccurrenceRemove) {
-                        this.onEventOccurrenceRemove({occurrence : occurrence});
+                        this.onEventOccurrenceRemove({occurrence : occ});
                       } else {
-                        this.eventMng.removeOccurrence(occurrence);
+                        this.eventMng.removeOccurrence(occ);
                       }
                     }.bind(this);
-                    data.onGoToFirstOccurrence = function(occurrence) {
+                    data.onGoToFirstOccurrence = function(occ) {
                       if (this.onGoToFirstOccurrence) {
-                        this.onGoToFirstOccurrence({occurrence : occurrence});
+                        this.onGoToFirstOccurrence({occurrence : occ});
                       } else {
-                        CalendarService.getEventByUri(occurrence.eventUri).then(function(event) {
-                          this.api.changeTimeWindow('referenceDay', event.startDate, occurrence.startDate);
+                        CalendarService.getEventByUri(occ.eventUri).then(function(event) {
+                          this.api.changeTimeWindow('referenceDay', event.startDate, occ.startDate);
                         }.bind(this));
                       }
                     }.bind(this);
-                    data.onAttendeeParticipationAnswer = function(occurrence, attendee) {
+                    data.onAttendeeParticipationAnswer = function(occ, attendee) {
                       if (this.onEventAttendeeParticipationAnswer) {
                         this.onEventAttendeeParticipationAnswer({
-                          occurrence : occurrence,
+                          occurrence : occ,
                           attendee : attendee
                         });
                       } else {
-                        this.eventMng.eventAttendeeParticipationAnswer(occurrence, attendee);
+                        this.eventMng.eventAttendeeParticipationAnswer(occ, attendee);
                       }
                     }.bind(this);
-                    data.onReminderChange = function(occurrence) {
-                      this.api.refetchCalendarEvent({id: occurrence.eventId, uri: occurrence.eventUri});
+                    data.onReminderChange = function(occ) {
+                      this.api.refetchCalendarEvent({id: occ.eventId, uri: occ.eventUri});
                     }.bind(this);
                     $scope.$apply();
                     break;
@@ -395,7 +397,7 @@
                     qTipOptions.position.target = $markerOfListView;
                     qTipOptions.position.adjust = {x : 4};
                     qTipOptions.events = {
-                      hidden : function(event, api) {
+                      hidden : function() {
                         if ($markerOfListView.$tip$ && $markerOfListView.$tip$shown) {
                           $scrollContainer.unbind("scroll", $markerOfListView.$tip$listener);
                           $markerOfListView.$tip$.destroy();
@@ -763,7 +765,7 @@
                 if (!this.api.isCalendarView()) {
                   return;
                 }
-                const _eventId = event.id;
+                const _eventId = event.eventId;
                 const _eventUri = event.uri;
 
                 const occurrencesToRefresh = [];
@@ -775,12 +777,12 @@
 
                 const period = __getAjaxCurrentTimeWindowPeriod();
                 const _sp_ui_version = new Date().getTime();
+                // noinspection JSUnresolvedFunction
                 CalendarService.getEventOccurrencesBetween(_eventUri, period).then(
                     function(occurrences) {
                       occurrences.forEach(function(occurrence) {
-                        for (let i = 0; i < occurrencesToRefresh.length; i++) {
-                          const occurrenceToRefresh = occurrencesToRefresh[i];
-                          if (occurrenceToRefresh.id === occurrence.id) {
+                        for (const occurrenceToRefresh of occurrencesToRefresh) {
+                          if (occurrenceToRefresh.occurrenceId === occurrence.occurrenceId) {
                             extendsObject(occurrenceToRefresh, occurrence);
                             occurrenceToRefresh._sp_ui_version = _sp_ui_version;
                             break;
@@ -852,8 +854,7 @@
                       this.participationUserIds, period).then(
                       function(partipationCalendars) {
                         const _promises = [];
-                        for (let i = 0; i < partipationCalendars.length; i++) {
-                          const participationCalendar = partipationCalendars[i];
+                        for (const participationCalendar of partipationCalendars) {
                           participationCalendar.uri = participationCalendar.id;
                           participationCalendar.canBeRemoved = true;
                           _promises.push(_decorateSpCalEventOccurrences(participationCalendar,
@@ -1078,8 +1079,8 @@
                 }.bind(this));
                 function __viewNavigation(buttons) {
                   let selected;
-                  for (let i = 0; i < buttons.length; i++) {
-                    const button = angular.element(buttons[i]);
+                  for (const btn of buttons) {
+                    const button = angular.element(btn);
                     if (!selected) {
                       selected = button.hasClass('selected');
                     } else {
@@ -1131,6 +1132,7 @@
                 }
               }
               this.instanceIds = visibleCalendars.extractElementAttribute('uri', function(value) {
+                // noinspection JSUnresolvedFunction
                 return SilverpeasCalendarTools.extractComponentInstanceIdFromUri(value);
               });
             }.bind(this));
@@ -1144,11 +1146,12 @@
 
   /**
    * Gets a moment instance from a given time window view context.
-   * @param tvwc a time window view context.
+   * @param twvc a time window view context.
    * @returns {*}
    * @private
    */
   function __getCurrentDateMomentFromTimeWindowViewContext(twvc) {
+    // noinspection JSUnresolvedVariable
     return moment({
       'year' : twvc.referenceDay.year,
       'month' : twvc.referenceDay.month,

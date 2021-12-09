@@ -63,14 +63,14 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestC
  */
 @Service
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
-  private static boolean dataStorageInSpaceQuotaActivated;
+  private static final boolean DATA_STORAGE_IN_SPACE_QUOTA_ACTIVATED;
 
   private static final String PREVIOUS_CACHE_KEY = "DataStorageQuotaProcessCheck@previous@key";
 
   static {
     final SettingBundle settings = ResourceLocator.getSettingBundle(
         "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
-    dataStorageInSpaceQuotaActivated =
+    DATA_STORAGE_IN_SPACE_QUOTA_ACTIVATED =
         settings.getBoolean("quota.space.datastorage.activated", false);
   }
 
@@ -89,7 +89,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
       final FileHandler fileHandler) {
 
     // If not activated, noting is done
-    if (!dataStorageInSpaceQuotaActivated) {
+    if (!DATA_STORAGE_IN_SPACE_QUOTA_ACTIVATED) {
       return;
     }
 
@@ -137,9 +137,9 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
 
   /**
    * Identifying all spaces aimed by the process chained execution
-   * @param processExecutionContext
-   * @param fileHandler
-   * @return
+   * @param processExecutionContext the context of the process execution
+   * @param fileHandler a handler on a file
+   * @return a collection of space instances.
    */
   private Collection<SpaceInst> identifyHandledSpaces(
       final ProcessExecutionContext processExecutionContext, final FileHandler fileHandler) {

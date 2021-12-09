@@ -36,6 +36,7 @@
           controllerAs: '$ctrl',
           bindToController: true,
           controller : [function() {
+            // nothing to do
           }]
         }
       }]);
