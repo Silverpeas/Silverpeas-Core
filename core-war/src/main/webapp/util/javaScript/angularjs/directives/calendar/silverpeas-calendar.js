@@ -781,7 +781,8 @@
                 CalendarService.getEventOccurrencesBetween(_eventUri, period).then(
                     function(occurrences) {
                       occurrences.forEach(function(occurrence) {
-                        for (const occurrenceToRefresh of occurrencesToRefresh) {
+                        for (let i = 0; i < occurrencesToRefresh.length; i++){
+                          const occurrenceToRefresh = occurrencesToRefresh[i];
                           if (occurrenceToRefresh.occurrenceId === occurrence.occurrenceId) {
                             extendsObject(occurrenceToRefresh, occurrence);
                             occurrenceToRefresh._sp_ui_version = _sp_ui_version;
@@ -854,7 +855,8 @@
                       this.participationUserIds, period).then(
                       function(partipationCalendars) {
                         const _promises = [];
-                        for (const participationCalendar of partipationCalendars) {
+                        for (let i = 0 ; i < partipationCalendars.length ; i++) {
+                          const participationCalendar = partipationCalendars[i];
                           participationCalendar.uri = participationCalendar.id;
                           participationCalendar.canBeRemoved = true;
                           _promises.push(_decorateSpCalEventOccurrences(participationCalendar,
@@ -1079,8 +1081,8 @@
                 }.bind(this));
                 function __viewNavigation(buttons) {
                   let selected;
-                  for (const btn of buttons) {
-                    const button = angular.element(btn);
+                  for (let i = 0 ; i < buttons.length ; i++) {
+                    const button = angular.element(buttons[i]);
                     if (!selected) {
                       selected = button.hasClass('selected');
                     } else {

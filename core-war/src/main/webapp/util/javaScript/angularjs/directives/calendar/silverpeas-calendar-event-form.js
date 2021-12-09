@@ -677,7 +677,7 @@
             }.bind(this));
 
             this.$onInit = function() {
-              this.calendarEventApi.handleyFormValidation(this.api);
+              this.calendarEventApi.handleFormValidation(this.api);
               this.initUserPanelUrl = context.componentUriBase + 'calendars/events/attendees/select';
             }.bind(this);
           }]
