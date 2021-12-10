@@ -1,15 +1,15 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7706:
+/***/ 4567:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-const atob = __webpack_require__(171);
+const atob = __webpack_require__(4095);
 
-const btoa = __webpack_require__(8713);
+const btoa = __webpack_require__(257);
 
 module.exports = {
   atob,
@@ -18,7 +18,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 171:
+/***/ 4095:
 /***/ ((module) => {
 
 "use strict";
@@ -126,7 +126,7 @@ module.exports = atob;
 
 /***/ }),
 
-/***/ 8713:
+/***/ 257:
 /***/ ((module) => {
 
 "use strict";
@@ -197,37 +197,37 @@ module.exports = btoa;
 
 /***/ }),
 
-/***/ 8826:
+/***/ 6561:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = {
-  "default": __webpack_require__(5820),
+  "default": __webpack_require__(1966),
   __esModule: true
 };
 
 /***/ }),
 
-/***/ 1060:
+/***/ 5460:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = {
-  "default": __webpack_require__(3248),
+  "default": __webpack_require__(4064),
   __esModule: true
 };
 
 /***/ }),
 
-/***/ 3415:
+/***/ 9251:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = {
-  "default": __webpack_require__(9830),
+  "default": __webpack_require__(9791),
   __esModule: true
 };
 
 /***/ }),
 
-/***/ 8681:
+/***/ 1683:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -235,7 +235,7 @@ module.exports = {
 
 exports.__esModule = true;
 
-var _promise = __webpack_require__(3415);
+var _promise = __webpack_require__(9251);
 
 var _promise2 = _interopRequireDefault(_promise);
 
@@ -276,7 +276,7 @@ exports.default = function (fn) {
 
 /***/ }),
 
-/***/ 8584:
+/***/ 8339:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -284,7 +284,7 @@ exports.default = function (fn) {
 
 exports.__esModule = true;
 
-var _defineProperty = __webpack_require__(8826);
+var _defineProperty = __webpack_require__(6561);
 
 var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
@@ -311,7 +311,7 @@ exports.default = function (obj, key, value) {
 
 /***/ }),
 
-/***/ 7034:
+/***/ 342:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /**
@@ -333,7 +333,7 @@ var hadRuntime = g.regeneratorRuntime && Object.getOwnPropertyNames(g).indexOf("
 var oldRuntime = hadRuntime && g.regeneratorRuntime; // Force reevalutation of runtime.js.
 
 g.regeneratorRuntime = undefined;
-module.exports = __webpack_require__(4267);
+module.exports = __webpack_require__(5987);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -349,7 +349,7 @@ if (hadRuntime) {
 
 /***/ }),
 
-/***/ 4267:
+/***/ 5987:
 /***/ ((module) => {
 
 /**
@@ -1066,14 +1066,14 @@ function () {
 
 /***/ }),
 
-/***/ 1161:
+/***/ 8161:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = __webpack_require__(7034);
+module.exports = __webpack_require__(342);
 
 /***/ }),
 
-/***/ 6434:
+/***/ 1505:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.27 | © dnp_theme | MIT-License
@@ -2550,12 +2550,955 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ 5820:
+/***/ 2234:
+/***/ ((module) => {
+
+!function (t, e) {
+   true ? module.exports = e() : 0;
+}(window, function () {
+  return function (t) {
+    var e = {};
+
+    function r(n) {
+      if (e[n]) return e[n].exports;
+      var i = e[n] = {
+        i: n,
+        l: !1,
+        exports: {}
+      };
+      return t[n].call(i.exports, i, i.exports, r), i.l = !0, i.exports;
+    }
+
+    return r.m = t, r.c = e, r.d = function (t, e, n) {
+      r.o(t, e) || Object.defineProperty(t, e, {
+        configurable: !1,
+        enumerable: !0,
+        get: n
+      });
+    }, r.r = function (t) {
+      Object.defineProperty(t, "__esModule", {
+        value: !0
+      });
+    }, r.n = function (t) {
+      var e = t && t.__esModule ? function () {
+        return t.default;
+      } : function () {
+        return t;
+      };
+      return r.d(e, "a", e), e;
+    }, r.o = function (t, e) {
+      return Object.prototype.hasOwnProperty.call(t, e);
+    }, r.p = "", r(r.s = 7);
+  }([function (t, e, r) {
+    "use strict";
+
+    Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+    e.loadImageElement = function (t, e) {
+      return new Promise(function (r, n) {
+        t.addEventListener("load", function () {
+          r(t);
+        }, !1), t.addEventListener("error", function (t) {
+          n(t);
+        }, !1), t.src = e;
+      });
+    }, e.resize = function (t, e, r, n) {
+      if (!r && !n) return {
+        currentWidth: t,
+        currentHeight: e
+      };
+      var i = t / e,
+          o = void 0,
+          a = void 0;
+      return i > r / n ? a = (o = Math.min(t, r)) / i : o = (a = Math.min(e, n)) * i, {
+        width: o,
+        height: a
+      };
+    };
+  }, function (t, e, r) {
+    "use strict";
+
+    Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+    e.base64ToFile = function (t) {
+      for (var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "image/jpeg", r = window.atob(t), n = [], i = 0; i < r.length; i++) n[i] = r.charCodeAt(i);
+
+      return new window.Blob([new Uint8Array(n)], {
+        type: e
+      });
+    }, e.imageToCanvas = function (t, e, r, n) {
+      var i = document.createElement("canvas"),
+          o = i.getContext("2d");
+      if (i.width = e, i.height = r, !n || n > 8) return o.drawImage(t, 0, 0, i.width, i.height), i;
+
+      switch (n > 4 && (i.width = r, i.height = e), n) {
+        case 2:
+          o.translate(e, 0), o.scale(-1, 1);
+          break;
+
+        case 3:
+          o.translate(e, r), o.rotate(Math.PI);
+          break;
+
+        case 4:
+          o.translate(0, r), o.scale(1, -1);
+          break;
+
+        case 5:
+          o.rotate(.5 * Math.PI), o.scale(1, -1);
+          break;
+
+        case 6:
+          o.rotate(.5 * Math.PI), o.translate(0, -r);
+          break;
+
+        case 7:
+          o.rotate(.5 * Math.PI), o.translate(e, -r), o.scale(-1, 1);
+          break;
+
+        case 8:
+          o.rotate(-.5 * Math.PI), o.translate(-e, 0);
+      }
+
+      return n > 4 ? o.drawImage(t, 0, 0, i.height, i.width) : o.drawImage(t, 0, 0, i.width, i.height), i;
+    }, e.canvasToBlob = function (t, e) {
+      return new Promise(function (r, n) {
+        t.toBlob(function (t) {
+          r(t);
+        }, "image/jpeg", e);
+      });
+    }, e.size = function (t) {
+      return {
+        kB: .001 * t,
+        MB: 1e-6 * t
+      };
+    }, e.blobToBase64 = function (t) {
+      return new Promise(function (e, r) {
+        var n = new window.FileReader();
+        n.addEventListener("load", function (t) {
+          e(t.target.result);
+        }, !1), n.addEventListener("error", function (t) {
+          r(t);
+        }, !1), n.readAsDataURL(t);
+      });
+    };
+  }, function (t, e, r) {
+    t.exports = r(6);
+  }, function (t, e, r) {
+    "use strict";
+
+    Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+
+    e.extractOrientation = function (t) {
+      return new Promise(function (e, r) {
+        var n = new window.FileReader();
+        n.onload = function (t) {
+          var r = new DataView(t.target.result);
+          65496 !== r.getUint16(0, !1) && e(-2);
+
+          for (var n = r.byteLength, i = 2; i < n;) {
+            var o = r.getUint16(i, !1);
+
+            if (i += 2, 65505 === o) {
+              1165519206 !== r.getUint32(i += 2, !1) && e(-1);
+              var a = 18761 === r.getUint16(i += 6, !1);
+              i += r.getUint32(i + 4, a);
+              var u = r.getUint16(i, a);
+              i += 2;
+
+              for (var s = 0; s < u; s++) 274 === r.getUint16(i + 12 * s, a) && e(r.getUint16(i + 12 * s + 8, a));
+            } else {
+              if (65280 != (65280 & o)) break;
+              i += r.getUint16(i, !1);
+            }
+          }
+
+          e(-1);
+        }, n.readAsArrayBuffer(t.slice(0, 65536));
+      });
+    };
+  }, function (t, e, r) {
+    "use strict";
+
+    Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+
+    var n,
+        i = r(2),
+        o = (n = i) && n.__esModule ? n : {
+      default: n
+    },
+        a = function () {
+      function t(t, e) {
+        for (var r = 0; r < e.length; r++) {
+          var n = e[r];
+          n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n && (n.writable = !0), Object.defineProperty(t, n.key, n);
+        }
+      }
+
+      return function (e, r, n) {
+        return r && t(e.prototype, r), n && t(e, n), e;
+      };
+    }(),
+        u = r(3),
+        s = r(0),
+        c = r(1);
+
+    function f(t) {
+      return function () {
+        var e = t.apply(this, arguments);
+        return new Promise(function (t, r) {
+          return function n(i, o) {
+            try {
+              var a = e[i](o),
+                  u = a.value;
+            } catch (t) {
+              return void r(t);
+            }
+
+            if (!a.done) return Promise.resolve(u).then(function (t) {
+              n("next", t);
+            }, function (t) {
+              n("throw", t);
+            });
+            t(u);
+          }("next");
+        });
+      };
+    }
+
+    var l = function () {
+      function t(e) {
+        !function (t, e) {
+          if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function");
+        }(this, t), this.data = e, this.name = e.name, this.type = e.type, this.size = e.size;
+      }
+
+      return a(t, [{
+        key: "setData",
+        value: function (t) {
+          this.data = t, this.size = t.size, this.type = t.type;
+        }
+      }, {
+        key: "_calculateOrientation",
+        value: function () {
+          var t = f(o.default.mark(function t() {
+            var e;
+            return o.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return t.next = 2, (0, u.extractOrientation)(this.data);
+
+                case 2:
+                  e = t.sent, this.orientation = e;
+
+                case 4:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function () {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "load",
+        value: function () {
+          var t = f(o.default.mark(function t() {
+            var e, r;
+            return o.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return t.next = 2, this._calculateOrientation();
+
+                case 2:
+                  return e = URL.createObjectURL(this.data), r = new window.Image(), t.next = 6, (0, s.loadImageElement)(r, e);
+
+                case 6:
+                  URL.revokeObjectURL(e), this._img = r, this.width = r.naturalWidth, this.height = r.naturalHeight;
+
+                case 10:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function () {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "getCanvas",
+        value: function (t, e, r) {
+          return void 0 !== r ? (0, c.imageToCanvas)(this._img, t, e, r) : (0, c.imageToCanvas)(this._img, t, e, this.orientation);
+        }
+      }]), t;
+    }();
+
+    e.default = l, t.exports = e.default;
+  }, function (t, e) {
+    !function (e) {
+      "use strict";
+
+      var r,
+          n = Object.prototype,
+          i = n.hasOwnProperty,
+          o = "function" == typeof Symbol ? Symbol : {},
+          a = o.iterator || "@@iterator",
+          u = o.asyncIterator || "@@asyncIterator",
+          s = o.toStringTag || "@@toStringTag",
+          c = "object" == typeof t,
+          f = e.regeneratorRuntime;
+      if (f) c && (t.exports = f);else {
+        (f = e.regeneratorRuntime = c ? t.exports : {}).wrap = w;
+        var l = "suspendedStart",
+            h = "suspendedYield",
+            p = "executing",
+            d = "completed",
+            A = {},
+            v = {};
+
+        v[a] = function () {
+          return this;
+        };
+
+        var y = Object.getPrototypeOf,
+            g = y && y(y(z([])));
+        g && g !== n && i.call(g, a) && (v = g);
+        var m = B.prototype = x.prototype = Object.create(v);
+        b.prototype = m.constructor = B, B.constructor = b, B[s] = b.displayName = "GeneratorFunction", f.isGeneratorFunction = function (t) {
+          var e = "function" == typeof t && t.constructor;
+          return !!e && (e === b || "GeneratorFunction" === (e.displayName || e.name));
+        }, f.mark = function (t) {
+          return Object.setPrototypeOf ? Object.setPrototypeOf(t, B) : (t.__proto__ = B, s in t || (t[s] = "GeneratorFunction")), t.prototype = Object.create(m), t;
+        }, f.awrap = function (t) {
+          return {
+            __await: t
+          };
+        }, Q(_.prototype), _.prototype[u] = function () {
+          return this;
+        }, f.AsyncIterator = _, f.async = function (t, e, r, n) {
+          var i = new _(w(t, e, r, n));
+          return f.isGeneratorFunction(e) ? i : i.next().then(function (t) {
+            return t.done ? t.value : i.next();
+          });
+        }, Q(m), m[s] = "Generator", m[a] = function () {
+          return this;
+        }, m.toString = function () {
+          return "[object Generator]";
+        }, f.keys = function (t) {
+          var e = [];
+
+          for (var r in t) e.push(r);
+
+          return e.reverse(), function r() {
+            for (; e.length;) {
+              var n = e.pop();
+              if (n in t) return r.value = n, r.done = !1, r;
+            }
+
+            return r.done = !0, r;
+          };
+        }, f.values = z, O.prototype = {
+          constructor: O,
+          reset: function (t) {
+            if (this.prev = 0, this.next = 0, this.sent = this._sent = r, this.done = !1, this.delegate = null, this.method = "next", this.arg = r, this.tryEntries.forEach(P), !t) for (var e in this) "t" === e.charAt(0) && i.call(this, e) && !isNaN(+e.slice(1)) && (this[e] = r);
+          },
+          stop: function () {
+            this.done = !0;
+            var t = this.tryEntries[0].completion;
+            if ("throw" === t.type) throw t.arg;
+            return this.rval;
+          },
+          dispatchException: function (t) {
+            if (this.done) throw t;
+            var e = this;
+
+            function n(n, i) {
+              return u.type = "throw", u.arg = t, e.next = n, i && (e.method = "next", e.arg = r), !!i;
+            }
+
+            for (var o = this.tryEntries.length - 1; o >= 0; --o) {
+              var a = this.tryEntries[o],
+                  u = a.completion;
+              if ("root" === a.tryLoc) return n("end");
+
+              if (a.tryLoc <= this.prev) {
+                var s = i.call(a, "catchLoc"),
+                    c = i.call(a, "finallyLoc");
+
+                if (s && c) {
+                  if (this.prev < a.catchLoc) return n(a.catchLoc, !0);
+                  if (this.prev < a.finallyLoc) return n(a.finallyLoc);
+                } else if (s) {
+                  if (this.prev < a.catchLoc) return n(a.catchLoc, !0);
+                } else {
+                  if (!c) throw new Error("try statement without catch or finally");
+                  if (this.prev < a.finallyLoc) return n(a.finallyLoc);
+                }
+              }
+            }
+          },
+          abrupt: function (t, e) {
+            for (var r = this.tryEntries.length - 1; r >= 0; --r) {
+              var n = this.tryEntries[r];
+
+              if (n.tryLoc <= this.prev && i.call(n, "finallyLoc") && this.prev < n.finallyLoc) {
+                var o = n;
+                break;
+              }
+            }
+
+            o && ("break" === t || "continue" === t) && o.tryLoc <= e && e <= o.finallyLoc && (o = null);
+            var a = o ? o.completion : {};
+            return a.type = t, a.arg = e, o ? (this.method = "next", this.next = o.finallyLoc, A) : this.complete(a);
+          },
+          complete: function (t, e) {
+            if ("throw" === t.type) throw t.arg;
+            return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), A;
+          },
+          finish: function (t) {
+            for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+              var r = this.tryEntries[e];
+              if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), P(r), A;
+            }
+          },
+          catch: function (t) {
+            for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+              var r = this.tryEntries[e];
+
+              if (r.tryLoc === t) {
+                var n = r.completion;
+
+                if ("throw" === n.type) {
+                  var i = n.arg;
+                  P(r);
+                }
+
+                return i;
+              }
+            }
+
+            throw new Error("illegal catch attempt");
+          },
+          delegateYield: function (t, e, n) {
+            return this.delegate = {
+              iterator: z(t),
+              resultName: e,
+              nextLoc: n
+            }, "next" === this.method && (this.arg = r), A;
+          }
+        };
+      }
+
+      function w(t, e, r, n) {
+        var i = e && e.prototype instanceof x ? e : x,
+            o = Object.create(i.prototype),
+            a = new O(n || []);
+        return o._invoke = function (t, e, r) {
+          var n = l;
+          return function (i, o) {
+            if (n === p) throw new Error("Generator is already running");
+
+            if (n === d) {
+              if ("throw" === i) throw o;
+              return j();
+            }
+
+            for (r.method = i, r.arg = o;;) {
+              var a = r.delegate;
+
+              if (a) {
+                var u = k(a, r);
+
+                if (u) {
+                  if (u === A) continue;
+                  return u;
+                }
+              }
+
+              if ("next" === r.method) r.sent = r._sent = r.arg;else if ("throw" === r.method) {
+                if (n === l) throw n = d, r.arg;
+                r.dispatchException(r.arg);
+              } else "return" === r.method && r.abrupt("return", r.arg);
+              n = p;
+              var s = E(t, e, r);
+
+              if ("normal" === s.type) {
+                if (n = r.done ? d : h, s.arg === A) continue;
+                return {
+                  value: s.arg,
+                  done: r.done
+                };
+              }
+
+              "throw" === s.type && (n = d, r.method = "throw", r.arg = s.arg);
+            }
+          };
+        }(t, r, a), o;
+      }
+
+      function E(t, e, r) {
+        try {
+          return {
+            type: "normal",
+            arg: t.call(e, r)
+          };
+        } catch (t) {
+          return {
+            type: "throw",
+            arg: t
+          };
+        }
+      }
+
+      function x() {}
+
+      function b() {}
+
+      function B() {}
+
+      function Q(t) {
+        ["next", "throw", "return"].forEach(function (e) {
+          t[e] = function (t) {
+            return this._invoke(e, t);
+          };
+        });
+      }
+
+      function _(t) {
+        var e;
+
+        this._invoke = function (r, n) {
+          function o() {
+            return new Promise(function (e, o) {
+              !function e(r, n, o, a) {
+                var u = E(t[r], t, n);
+
+                if ("throw" !== u.type) {
+                  var s = u.arg,
+                      c = s.value;
+                  return c && "object" == typeof c && i.call(c, "__await") ? Promise.resolve(c.__await).then(function (t) {
+                    e("next", t, o, a);
+                  }, function (t) {
+                    e("throw", t, o, a);
+                  }) : Promise.resolve(c).then(function (t) {
+                    s.value = t, o(s);
+                  }, a);
+                }
+
+                a(u.arg);
+              }(r, n, e, o);
+            });
+          }
+
+          return e = e ? e.then(o, o) : o();
+        };
+      }
+
+      function k(t, e) {
+        var n = t.iterator[e.method];
+
+        if (n === r) {
+          if (e.delegate = null, "throw" === e.method) {
+            if (t.iterator.return && (e.method = "return", e.arg = r, k(t, e), "throw" === e.method)) return A;
+            e.method = "throw", e.arg = new TypeError("The iterator does not provide a 'throw' method");
+          }
+
+          return A;
+        }
+
+        var i = E(n, t.iterator, e.arg);
+        if ("throw" === i.type) return e.method = "throw", e.arg = i.arg, e.delegate = null, A;
+        var o = i.arg;
+        return o ? o.done ? (e[t.resultName] = o.value, e.next = t.nextLoc, "return" !== e.method && (e.method = "next", e.arg = r), e.delegate = null, A) : o : (e.method = "throw", e.arg = new TypeError("iterator result is not an object"), e.delegate = null, A);
+      }
+
+      function L(t) {
+        var e = {
+          tryLoc: t[0]
+        };
+        1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
+      }
+
+      function P(t) {
+        var e = t.completion || {};
+        e.type = "normal", delete e.arg, t.completion = e;
+      }
+
+      function O(t) {
+        this.tryEntries = [{
+          tryLoc: "root"
+        }], t.forEach(L, this), this.reset(!0);
+      }
+
+      function z(t) {
+        if (t) {
+          var e = t[a];
+          if (e) return e.call(t);
+          if ("function" == typeof t.next) return t;
+
+          if (!isNaN(t.length)) {
+            var n = -1,
+                o = function e() {
+              for (; ++n < t.length;) if (i.call(t, n)) return e.value = t[n], e.done = !1, e;
+
+              return e.value = r, e.done = !0, e;
+            };
+
+            return o.next = o;
+          }
+        }
+
+        return {
+          next: j
+        };
+      }
+
+      function j() {
+        return {
+          value: r,
+          done: !0
+        };
+      }
+    }(function () {
+      return this;
+    }() || Function("return this")());
+  }, function (t, e, r) {
+    var n = function () {
+      return this;
+    }() || Function("return this")(),
+        i = n.regeneratorRuntime && Object.getOwnPropertyNames(n).indexOf("regeneratorRuntime") >= 0,
+        o = i && n.regeneratorRuntime;
+
+    if (n.regeneratorRuntime = void 0, t.exports = r(5), i) n.regeneratorRuntime = o;else try {
+      delete n.regeneratorRuntime;
+    } catch (t) {
+      n.regeneratorRuntime = void 0;
+    }
+  }, function (t, e, r) {
+    "use strict";
+
+    Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+
+    var n = s(r(2)),
+        i = function () {
+      function t(t, e) {
+        for (var r = 0; r < e.length; r++) {
+          var n = e[r];
+          n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n && (n.writable = !0), Object.defineProperty(t, n.key, n);
+        }
+      }
+
+      return function (e, r, n) {
+        return r && t(e.prototype, r), n && t(e, n), e;
+      };
+    }(),
+        o = function (t) {
+      if (t && t.__esModule) return t;
+      var e = {};
+      if (null != t) for (var r in t) Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
+      return e.default = t, e;
+    }(r(1)),
+        a = r(0),
+        u = s(r(4));
+
+    function s(t) {
+      return t && t.__esModule ? t : {
+        default: t
+      };
+    }
+
+    function c(t) {
+      return function () {
+        var e = t.apply(this, arguments);
+        return new Promise(function (t, r) {
+          return function n(i, o) {
+            try {
+              var a = e[i](o),
+                  u = a.value;
+            } catch (t) {
+              return void r(t);
+            }
+
+            if (!a.done) return Promise.resolve(u).then(function (t) {
+              n("next", t);
+            }, function (t) {
+              n("throw", t);
+            });
+            t(u);
+          }("next");
+        });
+      };
+    }
+
+    var f = function () {
+      function t() {
+        var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+        !function (t, e) {
+          if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function");
+        }(this, t), this.setOptions(e);
+      }
+
+      return i(t, [{
+        key: "setOptions",
+        value: function (t) {
+          var e = {
+            targetSize: 1 / 0,
+            quality: .75,
+            minQuality: .5,
+            qualityStepSize: .1,
+            maxWidth: 1920,
+            maxHeight: 1920,
+            resize: !0,
+            throwIfSizeNotReached: !1,
+            autoRotate: !0
+          },
+              r = new Proxy(t, {
+            get: function (t, r) {
+              return r in t ? t[r] : e[r];
+            }
+          });
+          this.options = r;
+        }
+      }, {
+        key: "_compressFile",
+        value: function () {
+          var t = c(n.default.mark(function t(e) {
+            var r, i;
+            return n.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return r = new u.default(e), (i = {}).start = window.performance.now(), i.quality = this.options.quality, i.startType = r.type, t.next = 7, r.load();
+
+                case 7:
+                  return t.next = 9, this._compressImage(r, i);
+
+                case 9:
+                  return t.abrupt("return", t.sent);
+
+                case 10:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function (e) {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "_compressImage",
+        value: function () {
+          var t = c(n.default.mark(function t(e, r) {
+            var i, u, s, c, f;
+            return n.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return r.startWidth = e.width, r.startHeight = e.height, i = void 0, u = void 0, this.options.resize ? (s = (0, a.resize)(e.width, e.height, this.options.maxWidth, this.options.maxHeight), i = s.width, u = s.height) : (i = e.width, u = e.height), r.endWidth = i, r.endHeight = u, c = this.doAutoRotation ? void 0 : 1, f = e.getCanvas(i, u, c), r.iterations = 0, r.startSizeMB = o.size(e.size).MB, t.next = 12, this._loopCompression(f, e, r);
+
+                case 12:
+                  return r.endSizeMB = o.size(e.size).MB, r.sizeReducedInPercent = (r.startSizeMB - r.endSizeMB) / r.startSizeMB * 100, r.end = window.performance.now(), r.elapsedTimeInSeconds = (r.end - r.start) / 1e3, r.endType = e.type, t.abrupt("return", {
+                    photo: e,
+                    info: r
+                  });
+
+                case 18:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function (e, r) {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "_loopCompression",
+        value: function () {
+          var t = c(n.default.mark(function t(e, r, i) {
+            var a;
+            return n.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return i.iterations++, t.t0 = r, t.next = 4, o.canvasToBlob(e, i.quality);
+
+                case 4:
+                  if (t.t1 = t.sent, t.t0.setData.call(t.t0, t.t1), 1 == i.iterations && (r.width = i.endWidth, r.height = i.endHeight), !(o.size(r.size).MB > this.options.targetSize)) {
+                    t.next = 24;
+                    break;
+                  }
+
+                  if (!(i.quality.toFixed(10) - .1 < this.options.minQuality)) {
+                    t.next = 18;
+                    break;
+                  }
+
+                  if (a = "Couldn't compress image to target size while maintaining quality.\n        Target size: " + this.options.targetSize + "\n        Actual size: " + o.size(r.size).MB, this.options.throwIfSizeNotReached) {
+                    t.next = 14;
+                    break;
+                  }
+
+                  console.error(a), t.next = 15;
+                  break;
+
+                case 14:
+                  throw new Error(a);
+
+                case 15:
+                  return t.abrupt("return");
+
+                case 18:
+                  return i.quality -= this.options.qualityStepSize, t.next = 21, this._loopCompression(e, r, i);
+
+                case 21:
+                  return t.abrupt("return", t.sent);
+
+                case 22:
+                  t.next = 25;
+                  break;
+
+                case 24:
+                  return t.abrupt("return");
+
+                case 25:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function (e, r, n) {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "setAutoRotate",
+        value: function () {
+          var e = c(n.default.mark(function e() {
+            var r;
+            return n.default.wrap(function (e) {
+              for (;;) switch (e.prev = e.next) {
+                case 0:
+                  return e.next = 2, t.automaticRotationFeatureTest();
+
+                case 2:
+                  r = e.sent, this.doAutoRotation = this.options.autoRotate && !r;
+
+                case 4:
+                case "end":
+                  return e.stop();
+              }
+            }, e, this);
+          }));
+          return function () {
+            return e.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "compress",
+        value: function () {
+          var t = c(n.default.mark(function t(e) {
+            var r = this;
+            return n.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return t.next = 2, this.setAutoRotate();
+
+                case 2:
+                  return t.abrupt("return", Promise.all(e.map(function (t) {
+                    return r._compressFile(t);
+                  })));
+
+                case 3:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function (e) {
+            return t.apply(this, arguments);
+          };
+        }()
+      }], [{
+        key: "blobToBase64",
+        value: function () {
+          var t = c(n.default.mark(function t() {
+            var e = arguments;
+            return n.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return t.next = 2, o.blobToBase64.apply(o, e);
+
+                case 2:
+                  return t.abrupt("return", t.sent);
+
+                case 3:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function () {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "loadImageElement",
+        value: function () {
+          var t = c(n.default.mark(function t() {
+            var e = arguments;
+            return n.default.wrap(function (t) {
+              for (;;) switch (t.prev = t.next) {
+                case 0:
+                  return t.next = 2, a.loadImageElement.apply(void 0, e);
+
+                case 2:
+                  return t.abrupt("return", t.sent);
+
+                case 3:
+                case "end":
+                  return t.stop();
+              }
+            }, t, this);
+          }));
+          return function () {
+            return t.apply(this, arguments);
+          };
+        }()
+      }, {
+        key: "automaticRotationFeatureTest",
+        value: function () {
+          return new Promise(function (t) {
+            var e = new Image();
+            e.onload = function () {
+              var r = 1 === e.width && 2 === e.height;
+              t(r);
+            }, e.src = "data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAYAAAAAAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAEAAgMBEQACEQEDEQH/xABKAAEAAAAAAAAAAAAAAAAAAAALEAEAAAAAAAAAAAAAAAAAAAAAAQEAAAAAAAAAAAAAAAAAAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8H//2Q==";
+          });
+        }
+      }]), t;
+    }();
+
+    e.default = f, t.exports = e.default;
+  }]);
+});
+
+/***/ }),
+
+/***/ 1966:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-__webpack_require__(964);
+__webpack_require__(7252);
 
-var $Object = __webpack_require__(7913).Object;
+var $Object = __webpack_require__(6356).Object;
 
 module.exports = function defineProperty(it, key, desc) {
   return $Object.defineProperty(it, key, desc);
@@ -2563,35 +3506,35 @@ module.exports = function defineProperty(it, key, desc) {
 
 /***/ }),
 
-/***/ 3248:
+/***/ 4064:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-__webpack_require__(4180);
+__webpack_require__(4304);
 
-module.exports = __webpack_require__(7913).Object.keys;
+module.exports = __webpack_require__(6356).Object.keys;
 
 /***/ }),
 
-/***/ 9830:
+/***/ 9791:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-__webpack_require__(6542);
+__webpack_require__(5693);
 
-__webpack_require__(4815);
+__webpack_require__(5758);
 
-__webpack_require__(8160);
+__webpack_require__(4291);
 
-__webpack_require__(8314);
+__webpack_require__(9870);
 
-__webpack_require__(8245);
+__webpack_require__(814);
 
-__webpack_require__(5953);
+__webpack_require__(955);
 
-module.exports = __webpack_require__(7913).Promise;
+module.exports = __webpack_require__(6356).Promise;
 
 /***/ }),
 
-/***/ 472:
+/***/ 8640:
 /***/ ((module) => {
 
 module.exports = function (it) {
@@ -2601,7 +3544,7 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 5057:
+/***/ 5678:
 /***/ ((module) => {
 
 module.exports = function () {
@@ -2610,7 +3553,7 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ 9945:
+/***/ 1241:
 /***/ ((module) => {
 
 module.exports = function (it, Constructor, name, forbiddenField) {
@@ -2623,10 +3566,10 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 
 /***/ }),
 
-/***/ 7237:
+/***/ 2854:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var isObject = __webpack_require__(9900);
+var isObject = __webpack_require__(9773);
 
 module.exports = function (it) {
   if (!isObject(it)) throw TypeError(it + ' is not an object!');
@@ -2635,16 +3578,16 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 7097:
+/***/ 7343:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // false -> Array#indexOf
 // true  -> Array#includes
-var toIObject = __webpack_require__(6591);
+var toIObject = __webpack_require__(1520);
 
-var toLength = __webpack_require__(1872);
+var toLength = __webpack_require__(5836);
 
-var toAbsoluteIndex = __webpack_require__(8367);
+var toAbsoluteIndex = __webpack_require__(9271);
 
 module.exports = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
@@ -2667,13 +3610,13 @@ module.exports = function (IS_INCLUDES) {
 
 /***/ }),
 
-/***/ 8874:
+/***/ 2791:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(4606);
+var cof = __webpack_require__(103);
 
-var TAG = __webpack_require__(9506)('toStringTag'); // ES3 wrong here
+var TAG = __webpack_require__(3309)('toStringTag'); // ES3 wrong here
 
 
 var ARG = cof(function () {
@@ -2698,7 +3641,7 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 4606:
+/***/ 103:
 /***/ ((module) => {
 
 var toString = {}.toString;
@@ -2709,7 +3652,7 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 7913:
+/***/ 6356:
 /***/ ((module) => {
 
 var core = module.exports = {
@@ -2719,11 +3662,11 @@ if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 /***/ }),
 
-/***/ 8773:
+/***/ 2389:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // optional / simple context binding
-var aFunction = __webpack_require__(472);
+var aFunction = __webpack_require__(8640);
 
 module.exports = function (fn, that, length) {
   aFunction(fn);
@@ -2755,7 +3698,7 @@ module.exports = function (fn, that, length) {
 
 /***/ }),
 
-/***/ 1011:
+/***/ 7009:
 /***/ ((module) => {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -2766,11 +3709,11 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 6580:
+/***/ 6033:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(7287)(function () {
+module.exports = !__webpack_require__(2889)(function () {
   return Object.defineProperty({}, 'a', {
     get: function () {
       return 7;
@@ -2780,12 +3723,12 @@ module.exports = !__webpack_require__(7287)(function () {
 
 /***/ }),
 
-/***/ 6590:
+/***/ 3640:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var isObject = __webpack_require__(9900);
+var isObject = __webpack_require__(9773);
 
-var document = __webpack_require__(5677).document; // typeof document.createElement is 'object' in old IE
+var document = __webpack_require__(8942).document; // typeof document.createElement is 'object' in old IE
 
 
 var is = isObject(document) && isObject(document.createElement);
@@ -2796,7 +3739,7 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 4330:
+/***/ 1159:
 /***/ ((module) => {
 
 // IE 8- don't enum bug keys
@@ -2804,18 +3747,18 @@ module.exports = 'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,
 
 /***/ }),
 
-/***/ 9749:
+/***/ 3948:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
-var core = __webpack_require__(7913);
+var core = __webpack_require__(6356);
 
-var ctx = __webpack_require__(8773);
+var ctx = __webpack_require__(2389);
 
-var hide = __webpack_require__(51);
+var hide = __webpack_require__(7270);
 
-var has = __webpack_require__(3945);
+var has = __webpack_require__(9638);
 
 var PROTOTYPE = 'prototype';
 
@@ -2894,7 +3837,7 @@ module.exports = $export;
 
 /***/ }),
 
-/***/ 7287:
+/***/ 2889:
 /***/ ((module) => {
 
 module.exports = function (exec) {
@@ -2907,20 +3850,20 @@ module.exports = function (exec) {
 
 /***/ }),
 
-/***/ 5614:
+/***/ 5766:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var ctx = __webpack_require__(8773);
+var ctx = __webpack_require__(2389);
 
-var call = __webpack_require__(352);
+var call = __webpack_require__(281);
 
-var isArrayIter = __webpack_require__(2887);
+var isArrayIter = __webpack_require__(692);
 
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
-var toLength = __webpack_require__(1872);
+var toLength = __webpack_require__(5836);
 
-var getIterFn = __webpack_require__(7670);
+var getIterFn = __webpack_require__(4492);
 
 var BREAK = {};
 var RETURN = {};
@@ -2948,7 +3891,7 @@ exports.RETURN = RETURN;
 
 /***/ }),
 
-/***/ 5677:
+/***/ 8942:
 /***/ ((module) => {
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
@@ -2958,7 +3901,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 /***/ }),
 
-/***/ 3945:
+/***/ 9638:
 /***/ ((module) => {
 
 var hasOwnProperty = {}.hasOwnProperty;
@@ -2969,14 +3912,14 @@ module.exports = function (it, key) {
 
 /***/ }),
 
-/***/ 51:
+/***/ 7270:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var dP = __webpack_require__(8301);
+var dP = __webpack_require__(8397);
 
-var createDesc = __webpack_require__(7269);
+var createDesc = __webpack_require__(4785);
 
-module.exports = __webpack_require__(6580) ? function (object, key, value) {
+module.exports = __webpack_require__(6033) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
 } : function (object, key, value) {
   object[key] = value;
@@ -2985,20 +3928,20 @@ module.exports = __webpack_require__(6580) ? function (object, key, value) {
 
 /***/ }),
 
-/***/ 8387:
+/***/ 4455:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var document = __webpack_require__(5677).document;
+var document = __webpack_require__(8942).document;
 
 module.exports = document && document.documentElement;
 
 /***/ }),
 
-/***/ 1430:
+/***/ 2375:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = !__webpack_require__(6580) && !__webpack_require__(7287)(function () {
-  return Object.defineProperty(__webpack_require__(6590)('div'), 'a', {
+module.exports = !__webpack_require__(6033) && !__webpack_require__(2889)(function () {
+  return Object.defineProperty(__webpack_require__(3640)('div'), 'a', {
     get: function () {
       return 7;
     }
@@ -3007,7 +3950,7 @@ module.exports = !__webpack_require__(6580) && !__webpack_require__(7287)(functi
 
 /***/ }),
 
-/***/ 2229:
+/***/ 2240:
 /***/ ((module) => {
 
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
@@ -3036,11 +3979,11 @@ module.exports = function (fn, args, that) {
 
 /***/ }),
 
-/***/ 9734:
+/***/ 4083:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(4606); // eslint-disable-next-line no-prototype-builtins
+var cof = __webpack_require__(103); // eslint-disable-next-line no-prototype-builtins
 
 
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
@@ -3049,13 +3992,13 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 
 /***/ }),
 
-/***/ 2887:
+/***/ 692:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // check on default Array iterator
-var Iterators = __webpack_require__(3829);
+var Iterators = __webpack_require__(4098);
 
-var ITERATOR = __webpack_require__(9506)('iterator');
+var ITERATOR = __webpack_require__(3309)('iterator');
 
 var ArrayProto = Array.prototype;
 
@@ -3065,7 +4008,7 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 9900:
+/***/ 9773:
 /***/ ((module) => {
 
 module.exports = function (it) {
@@ -3074,11 +4017,11 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 352:
+/***/ 281:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // call something on iterator step with safe closing on error
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
 module.exports = function (iterator, fn, value, entries) {
   try {
@@ -3092,21 +4035,21 @@ module.exports = function (iterator, fn, value, entries) {
 
 /***/ }),
 
-/***/ 4419:
+/***/ 3463:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var create = __webpack_require__(8933);
+var create = __webpack_require__(8910);
 
-var descriptor = __webpack_require__(7269);
+var descriptor = __webpack_require__(4785);
 
-var setToStringTag = __webpack_require__(8536);
+var setToStringTag = __webpack_require__(8200);
 
 var IteratorPrototype = {}; // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
 
-__webpack_require__(51)(IteratorPrototype, __webpack_require__(9506)('iterator'), function () {
+__webpack_require__(7270)(IteratorPrototype, __webpack_require__(3309)('iterator'), function () {
   return this;
 });
 
@@ -3119,29 +4062,29 @@ module.exports = function (Constructor, NAME, next) {
 
 /***/ }),
 
-/***/ 2361:
+/***/ 8534:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var LIBRARY = __webpack_require__(7560);
+var LIBRARY = __webpack_require__(7757);
 
-var $export = __webpack_require__(9749);
+var $export = __webpack_require__(3948);
 
-var redefine = __webpack_require__(836);
+var redefine = __webpack_require__(9858);
 
-var hide = __webpack_require__(51);
+var hide = __webpack_require__(7270);
 
-var Iterators = __webpack_require__(3829);
+var Iterators = __webpack_require__(4098);
 
-var $iterCreate = __webpack_require__(4419);
+var $iterCreate = __webpack_require__(3463);
 
-var setToStringTag = __webpack_require__(8536);
+var setToStringTag = __webpack_require__(8200);
 
-var getPrototypeOf = __webpack_require__(2008);
+var getPrototypeOf = __webpack_require__(7471);
 
-var ITERATOR = __webpack_require__(9506)('iterator');
+var ITERATOR = __webpack_require__(3309)('iterator');
 
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
 
@@ -3231,10 +4174,10 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 /***/ }),
 
-/***/ 3540:
+/***/ 4589:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var ITERATOR = __webpack_require__(9506)('iterator');
+var ITERATOR = __webpack_require__(3309)('iterator');
 
 var SAFE_CLOSING = false;
 
@@ -3281,7 +4224,7 @@ module.exports = function (exec, skipClosing) {
 
 /***/ }),
 
-/***/ 4362:
+/***/ 3434:
 /***/ ((module) => {
 
 module.exports = function (done, value) {
@@ -3293,31 +4236,31 @@ module.exports = function (done, value) {
 
 /***/ }),
 
-/***/ 3829:
+/***/ 4098:
 /***/ ((module) => {
 
 module.exports = {};
 
 /***/ }),
 
-/***/ 7560:
+/***/ 7757:
 /***/ ((module) => {
 
 module.exports = true;
 
 /***/ }),
 
-/***/ 7231:
+/***/ 7189:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
-var macrotask = __webpack_require__(8226).set;
+var macrotask = __webpack_require__(6673).set;
 
 var Observer = global.MutationObserver || global.WebKitMutationObserver;
 var process = global.process;
 var Promise = global.Promise;
-var isNode = __webpack_require__(4606)(process) == 'process';
+var isNode = __webpack_require__(103)(process) == 'process';
 
 module.exports = function () {
   var head, last, notify;
@@ -3397,13 +4340,13 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ 7789:
+/***/ 8278:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
  // 25.4.1.5 NewPromiseCapability(C)
 
-var aFunction = __webpack_require__(472);
+var aFunction = __webpack_require__(8640);
 
 function PromiseCapability(C) {
   var resolve, reject;
@@ -3422,17 +4365,17 @@ module.exports.f = function (C) {
 
 /***/ }),
 
-/***/ 8933:
+/***/ 8910:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
-var dPs = __webpack_require__(8138);
+var dPs = __webpack_require__(5244);
 
-var enumBugKeys = __webpack_require__(4330);
+var enumBugKeys = __webpack_require__(1159);
 
-var IE_PROTO = __webpack_require__(4261)('IE_PROTO');
+var IE_PROTO = __webpack_require__(6962)('IE_PROTO');
 
 var Empty = function () {
   /* empty */
@@ -3442,7 +4385,7 @@ var PROTOTYPE = 'prototype'; // Create object with fake `null` prototype: use if
 
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(6590)('iframe');
+  var iframe = __webpack_require__(3640)('iframe');
 
   var i = enumBugKeys.length;
   var lt = '<';
@@ -3450,7 +4393,7 @@ var createDict = function () {
   var iframeDocument;
   iframe.style.display = 'none';
 
-  __webpack_require__(8387).appendChild(iframe);
+  __webpack_require__(4455).appendChild(iframe);
 
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
   // createDict = iframe.contentWindow.Object;
@@ -3483,17 +4426,17 @@ module.exports = Object.create || function create(O, Properties) {
 
 /***/ }),
 
-/***/ 8301:
+/***/ 8397:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
-var IE8_DOM_DEFINE = __webpack_require__(1430);
+var IE8_DOM_DEFINE = __webpack_require__(2375);
 
-var toPrimitive = __webpack_require__(3216);
+var toPrimitive = __webpack_require__(2737);
 
 var dP = Object.defineProperty;
-exports.f = __webpack_require__(6580) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+exports.f = __webpack_require__(6033) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
   anObject(O);
   P = toPrimitive(P, true);
   anObject(Attributes);
@@ -3509,16 +4452,16 @@ exports.f = __webpack_require__(6580) ? Object.defineProperty : function defineP
 
 /***/ }),
 
-/***/ 8138:
+/***/ 5244:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var dP = __webpack_require__(8301);
+var dP = __webpack_require__(8397);
 
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
-var getKeys = __webpack_require__(1302);
+var getKeys = __webpack_require__(180);
 
-module.exports = __webpack_require__(6580) ? Object.defineProperties : function defineProperties(O, Properties) {
+module.exports = __webpack_require__(6033) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
   var keys = getKeys(Properties);
   var length = keys.length;
@@ -3532,15 +4475,15 @@ module.exports = __webpack_require__(6580) ? Object.defineProperties : function 
 
 /***/ }),
 
-/***/ 2008:
+/***/ 7471:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has = __webpack_require__(3945);
+var has = __webpack_require__(9638);
 
-var toObject = __webpack_require__(6581);
+var toObject = __webpack_require__(4661);
 
-var IE_PROTO = __webpack_require__(4261)('IE_PROTO');
+var IE_PROTO = __webpack_require__(6962)('IE_PROTO');
 
 var ObjectProto = Object.prototype;
 
@@ -3557,16 +4500,16 @@ module.exports = Object.getPrototypeOf || function (O) {
 
 /***/ }),
 
-/***/ 9483:
+/***/ 5667:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var has = __webpack_require__(3945);
+var has = __webpack_require__(9638);
 
-var toIObject = __webpack_require__(6591);
+var toIObject = __webpack_require__(1520);
 
-var arrayIndexOf = __webpack_require__(7097)(false);
+var arrayIndexOf = __webpack_require__(7343)(false);
 
-var IE_PROTO = __webpack_require__(4261)('IE_PROTO');
+var IE_PROTO = __webpack_require__(6962)('IE_PROTO');
 
 module.exports = function (object, names) {
   var O = toIObject(object);
@@ -3586,13 +4529,13 @@ module.exports = function (object, names) {
 
 /***/ }),
 
-/***/ 1302:
+/***/ 180:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(9483);
+var $keys = __webpack_require__(5667);
 
-var enumBugKeys = __webpack_require__(4330);
+var enumBugKeys = __webpack_require__(1159);
 
 module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
@@ -3600,15 +4543,15 @@ module.exports = Object.keys || function keys(O) {
 
 /***/ }),
 
-/***/ 8438:
+/***/ 8745:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // most Object methods by ES6 should accept primitives
-var $export = __webpack_require__(9749);
+var $export = __webpack_require__(3948);
 
-var core = __webpack_require__(7913);
+var core = __webpack_require__(6356);
 
-var fails = __webpack_require__(7287);
+var fails = __webpack_require__(2889);
 
 module.exports = function (KEY, exec) {
   var fn = (core.Object || {})[KEY] || Object[KEY];
@@ -3621,7 +4564,7 @@ module.exports = function (KEY, exec) {
 
 /***/ }),
 
-/***/ 5472:
+/***/ 885:
 /***/ ((module) => {
 
 module.exports = function (exec) {
@@ -3640,14 +4583,14 @@ module.exports = function (exec) {
 
 /***/ }),
 
-/***/ 3243:
+/***/ 2503:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
-var isObject = __webpack_require__(9900);
+var isObject = __webpack_require__(9773);
 
-var newPromiseCapability = __webpack_require__(7789);
+var newPromiseCapability = __webpack_require__(8278);
 
 module.exports = function (C, x) {
   anObject(C);
@@ -3660,7 +4603,7 @@ module.exports = function (C, x) {
 
 /***/ }),
 
-/***/ 7269:
+/***/ 4785:
 /***/ ((module) => {
 
 module.exports = function (bitmap, value) {
@@ -3674,10 +4617,10 @@ module.exports = function (bitmap, value) {
 
 /***/ }),
 
-/***/ 2853:
+/***/ 4724:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var hide = __webpack_require__(51);
+var hide = __webpack_require__(7270);
 
 module.exports = function (target, src, safe) {
   for (var key in src) {
@@ -3689,28 +4632,28 @@ module.exports = function (target, src, safe) {
 
 /***/ }),
 
-/***/ 836:
+/***/ 9858:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = __webpack_require__(51);
+module.exports = __webpack_require__(7270);
 
 /***/ }),
 
-/***/ 5003:
+/***/ 4431:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
-var core = __webpack_require__(7913);
+var core = __webpack_require__(6356);
 
-var dP = __webpack_require__(8301);
+var dP = __webpack_require__(8397);
 
-var DESCRIPTORS = __webpack_require__(6580);
+var DESCRIPTORS = __webpack_require__(6033);
 
-var SPECIES = __webpack_require__(9506)('species');
+var SPECIES = __webpack_require__(3309)('species');
 
 module.exports = function (KEY) {
   var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
@@ -3724,14 +4667,14 @@ module.exports = function (KEY) {
 
 /***/ }),
 
-/***/ 8536:
+/***/ 8200:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var def = __webpack_require__(8301).f;
+var def = __webpack_require__(8397).f;
 
-var has = __webpack_require__(3945);
+var has = __webpack_require__(9638);
 
-var TAG = __webpack_require__(9506)('toStringTag');
+var TAG = __webpack_require__(3309)('toStringTag');
 
 module.exports = function (it, tag, stat) {
   if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, {
@@ -3742,12 +4685,12 @@ module.exports = function (it, tag, stat) {
 
 /***/ }),
 
-/***/ 4261:
+/***/ 6962:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var shared = __webpack_require__(7626)('keys');
+var shared = __webpack_require__(4581)('keys');
 
-var uid = __webpack_require__(1497);
+var uid = __webpack_require__(1453);
 
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
@@ -3755,12 +4698,12 @@ module.exports = function (key) {
 
 /***/ }),
 
-/***/ 7626:
+/***/ 4581:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var core = __webpack_require__(7913);
+var core = __webpack_require__(6356);
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
 var SHARED = '__core-js_shared__';
 var store = global[SHARED] || (global[SHARED] = {});
@@ -3768,21 +4711,21 @@ var store = global[SHARED] || (global[SHARED] = {});
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
   version: core.version,
-  mode: __webpack_require__(7560) ? 'pure' : 'global',
+  mode: __webpack_require__(7757) ? 'pure' : 'global',
   copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
 });
 
 /***/ }),
 
-/***/ 6647:
+/***/ 4463:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
-var anObject = __webpack_require__(7237);
+var anObject = __webpack_require__(2854);
 
-var aFunction = __webpack_require__(472);
+var aFunction = __webpack_require__(8640);
 
-var SPECIES = __webpack_require__(9506)('species');
+var SPECIES = __webpack_require__(3309)('species');
 
 module.exports = function (O, D) {
   var C = anObject(O).constructor;
@@ -3792,12 +4735,12 @@ module.exports = function (O, D) {
 
 /***/ }),
 
-/***/ 4757:
+/***/ 6995:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var toInteger = __webpack_require__(1517);
+var toInteger = __webpack_require__(4709);
 
-var defined = __webpack_require__(1011); // true  -> String#at
+var defined = __webpack_require__(7009); // true  -> String#at
 // false -> String#codePointAt
 
 
@@ -3815,18 +4758,18 @@ module.exports = function (TO_STRING) {
 
 /***/ }),
 
-/***/ 8226:
+/***/ 6673:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var ctx = __webpack_require__(8773);
+var ctx = __webpack_require__(2389);
 
-var invoke = __webpack_require__(2229);
+var invoke = __webpack_require__(2240);
 
-var html = __webpack_require__(8387);
+var html = __webpack_require__(4455);
 
-var cel = __webpack_require__(6590);
+var cel = __webpack_require__(3640);
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
 var process = global.process;
 var setTask = global.setImmediate;
@@ -3874,7 +4817,7 @@ if (!setTask || !clearTask) {
   }; // Node.js 0.8-
 
 
-  if (__webpack_require__(4606)(process) == 'process') {
+  if (__webpack_require__(103)(process) == 'process') {
     defer = function (id) {
       process.nextTick(ctx(run, id, 1));
     }; // Sphere (JS game engine) Dispatch API
@@ -3918,10 +4861,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ 8367:
+/***/ 9271:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var toInteger = __webpack_require__(1517);
+var toInteger = __webpack_require__(4709);
 
 var max = Math.max;
 var min = Math.min;
@@ -3933,7 +4876,7 @@ module.exports = function (index, length) {
 
 /***/ }),
 
-/***/ 1517:
+/***/ 4709:
 /***/ ((module) => {
 
 // 7.1.4 ToInteger
@@ -3946,13 +4889,13 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 6591:
+/***/ 1520:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(9734);
+var IObject = __webpack_require__(4083);
 
-var defined = __webpack_require__(1011);
+var defined = __webpack_require__(7009);
 
 module.exports = function (it) {
   return IObject(defined(it));
@@ -3960,11 +4903,11 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 1872:
+/***/ 5836:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 7.1.15 ToLength
-var toInteger = __webpack_require__(1517);
+var toInteger = __webpack_require__(4709);
 
 var min = Math.min;
 
@@ -3974,11 +4917,11 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 6581:
+/***/ 4661:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(1011);
+var defined = __webpack_require__(7009);
 
 module.exports = function (it) {
   return Object(defined(it));
@@ -3986,11 +4929,11 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ 3216:
+/***/ 2737:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(9900); // instead of the ES6 spec version, we didn't implement @@toPrimitive case
+var isObject = __webpack_require__(9773); // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
 
 
@@ -4005,7 +4948,7 @@ module.exports = function (it, S) {
 
 /***/ }),
 
-/***/ 1497:
+/***/ 1453:
 /***/ ((module) => {
 
 var id = 0;
@@ -4017,24 +4960,24 @@ module.exports = function (key) {
 
 /***/ }),
 
-/***/ 8877:
+/***/ 4593:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
 var navigator = global.navigator;
 module.exports = navigator && navigator.userAgent || '';
 
 /***/ }),
 
-/***/ 9506:
+/***/ 3309:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var store = __webpack_require__(7626)('wks');
+var store = __webpack_require__(4581)('wks');
 
-var uid = __webpack_require__(1497);
+var uid = __webpack_require__(1453);
 
-var Symbol = __webpack_require__(5677).Symbol;
+var Symbol = __webpack_require__(8942).Symbol;
 
 var USE_SYMBOL = typeof Symbol == 'function';
 
@@ -4046,40 +4989,40 @@ $exports.store = store;
 
 /***/ }),
 
-/***/ 7670:
+/***/ 4492:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var classof = __webpack_require__(8874);
+var classof = __webpack_require__(2791);
 
-var ITERATOR = __webpack_require__(9506)('iterator');
+var ITERATOR = __webpack_require__(3309)('iterator');
 
-var Iterators = __webpack_require__(3829);
+var Iterators = __webpack_require__(4098);
 
-module.exports = __webpack_require__(7913).getIteratorMethod = function (it) {
+module.exports = __webpack_require__(6356).getIteratorMethod = function (it) {
   if (it != undefined) return it[ITERATOR] || it['@@iterator'] || Iterators[classof(it)];
 };
 
 /***/ }),
 
-/***/ 66:
+/***/ 4999:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var addToUnscopables = __webpack_require__(5057);
+var addToUnscopables = __webpack_require__(5678);
 
-var step = __webpack_require__(4362);
+var step = __webpack_require__(3434);
 
-var Iterators = __webpack_require__(3829);
+var Iterators = __webpack_require__(4098);
 
-var toIObject = __webpack_require__(6591); // 22.1.3.4 Array.prototype.entries()
+var toIObject = __webpack_require__(1520); // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
 // 22.1.3.29 Array.prototype.values()
 // 22.1.3.30 Array.prototype[@@iterator]()
 
 
-module.exports = __webpack_require__(2361)(Array, 'Array', function (iterated, kind) {
+module.exports = __webpack_require__(8534)(Array, 'Array', function (iterated, kind) {
   this._t = toIObject(iterated); // target
 
   this._i = 0; // next index
@@ -4108,27 +5051,27 @@ addToUnscopables('entries');
 
 /***/ }),
 
-/***/ 964:
+/***/ 7252:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-var $export = __webpack_require__(9749); // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
+var $export = __webpack_require__(3948); // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
 
 
-$export($export.S + $export.F * !__webpack_require__(6580), 'Object', {
-  defineProperty: __webpack_require__(8301).f
+$export($export.S + $export.F * !__webpack_require__(6033), 'Object', {
+  defineProperty: __webpack_require__(8397).f
 });
 
 /***/ }),
 
-/***/ 4180:
+/***/ 4304:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(6581);
+var toObject = __webpack_require__(4661);
 
-var $keys = __webpack_require__(1302);
+var $keys = __webpack_require__(180);
 
-__webpack_require__(8438)('keys', function () {
+__webpack_require__(8745)('keys', function () {
   return function keys(it) {
     return $keys(toObject(it));
   };
@@ -4136,50 +5079,50 @@ __webpack_require__(8438)('keys', function () {
 
 /***/ }),
 
-/***/ 6542:
+/***/ 5693:
 /***/ (() => {
 
 
 
 /***/ }),
 
-/***/ 8314:
+/***/ 9870:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var LIBRARY = __webpack_require__(7560);
+var LIBRARY = __webpack_require__(7757);
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
-var ctx = __webpack_require__(8773);
+var ctx = __webpack_require__(2389);
 
-var classof = __webpack_require__(8874);
+var classof = __webpack_require__(2791);
 
-var $export = __webpack_require__(9749);
+var $export = __webpack_require__(3948);
 
-var isObject = __webpack_require__(9900);
+var isObject = __webpack_require__(9773);
 
-var aFunction = __webpack_require__(472);
+var aFunction = __webpack_require__(8640);
 
-var anInstance = __webpack_require__(9945);
+var anInstance = __webpack_require__(1241);
 
-var forOf = __webpack_require__(5614);
+var forOf = __webpack_require__(5766);
 
-var speciesConstructor = __webpack_require__(6647);
+var speciesConstructor = __webpack_require__(4463);
 
-var task = __webpack_require__(8226).set;
+var task = __webpack_require__(6673).set;
 
-var microtask = __webpack_require__(7231)();
+var microtask = __webpack_require__(7189)();
 
-var newPromiseCapabilityModule = __webpack_require__(7789);
+var newPromiseCapabilityModule = __webpack_require__(8278);
 
-var perform = __webpack_require__(5472);
+var perform = __webpack_require__(885);
 
-var userAgent = __webpack_require__(8877);
+var userAgent = __webpack_require__(4593);
 
-var promiseResolve = __webpack_require__(3243);
+var promiseResolve = __webpack_require__(2503);
 
 var PROMISE = 'Promise';
 var TypeError = global.TypeError;
@@ -4200,7 +5143,7 @@ var USE_NATIVE = !!function () {
     // correct subclassing with @@species support
     var promise = $Promise.resolve(1);
 
-    var FakePromise = (promise.constructor = {})[__webpack_require__(9506)('species')] = function (exec) {
+    var FakePromise = (promise.constructor = {})[__webpack_require__(3309)('species')] = function (exec) {
       exec(empty, empty);
     }; // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
 
@@ -4400,7 +5343,7 @@ if (!USE_NATIVE) {
     this._n = false; // <- notify
   };
 
-  Internal.prototype = __webpack_require__(2853)($Promise.prototype, {
+  Internal.prototype = __webpack_require__(4724)($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected) {
       var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
@@ -4436,11 +5379,11 @@ $export($export.G + $export.W + $export.F * !USE_NATIVE, {
   Promise: $Promise
 });
 
-__webpack_require__(8536)($Promise, PROMISE);
+__webpack_require__(8200)($Promise, PROMISE);
 
-__webpack_require__(5003)(PROMISE);
+__webpack_require__(4431)(PROMISE);
 
-Wrapper = __webpack_require__(7913)[PROMISE]; // statics
+Wrapper = __webpack_require__(6356)[PROMISE]; // statics
 
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
   // 25.4.4.5 Promise.reject(r)
@@ -4457,7 +5400,7 @@ $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
     return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(3540)(function (iter) {
+$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(4589)(function (iter) {
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
@@ -4504,16 +5447,16 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(3540)(functi
 
 /***/ }),
 
-/***/ 4815:
+/***/ 5758:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var $at = __webpack_require__(4757)(true); // 21.1.3.27 String.prototype[@@iterator]()
+var $at = __webpack_require__(6995)(true); // 21.1.3.27 String.prototype[@@iterator]()
 
 
-__webpack_require__(2361)(String, 'String', function (iterated) {
+__webpack_require__(8534)(String, 'String', function (iterated) {
   this._t = String(iterated); // target
 
   this._i = 0; // next index
@@ -4536,22 +5479,22 @@ __webpack_require__(2361)(String, 'String', function (iterated) {
 
 /***/ }),
 
-/***/ 8245:
+/***/ 814:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 // https://github.com/tc39/proposal-promise-finally
 
 
-var $export = __webpack_require__(9749);
+var $export = __webpack_require__(3948);
 
-var core = __webpack_require__(7913);
+var core = __webpack_require__(6356);
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
-var speciesConstructor = __webpack_require__(6647);
+var speciesConstructor = __webpack_require__(4463);
 
-var promiseResolve = __webpack_require__(3243);
+var promiseResolve = __webpack_require__(2503);
 
 $export($export.P + $export.R, 'Promise', {
   'finally': function (onFinally) {
@@ -4571,17 +5514,17 @@ $export($export.P + $export.R, 'Promise', {
 
 /***/ }),
 
-/***/ 5953:
+/***/ 955:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
  // https://github.com/tc39/proposal-promise-try
 
-var $export = __webpack_require__(9749);
+var $export = __webpack_require__(3948);
 
-var newPromiseCapability = __webpack_require__(7789);
+var newPromiseCapability = __webpack_require__(8278);
 
-var perform = __webpack_require__(5472);
+var perform = __webpack_require__(885);
 
 $export($export.S, 'Promise', {
   'try': function (callbackfn) {
@@ -4594,18 +5537,18 @@ $export($export.S, 'Promise', {
 
 /***/ }),
 
-/***/ 8160:
+/***/ 4291:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-__webpack_require__(66);
+__webpack_require__(4999);
 
-var global = __webpack_require__(5677);
+var global = __webpack_require__(8942);
 
-var hide = __webpack_require__(51);
+var hide = __webpack_require__(7270);
 
-var Iterators = __webpack_require__(3829);
+var Iterators = __webpack_require__(4098);
 
-var TO_STRING_TAG = __webpack_require__(9506)('toStringTag');
+var TO_STRING_TAG = __webpack_require__(3309)('toStringTag');
 
 var DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' + 'DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,' + 'MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,' + 'SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,' + 'TextTrackList,TouchList').split(',');
 
@@ -4619,7 +5562,7 @@ for (var i = 0; i < DOMIterables.length; i++) {
 
 /***/ }),
 
-/***/ 1246:
+/***/ 7180:
 /***/ ((module) => {
 
 "use strict";
@@ -4692,7 +5635,7 @@ module.exports = function (cssWithMappingToString) {
 
 /***/ }),
 
-/***/ 7620:
+/***/ 8531:
 /***/ ((module) => {
 
 "use strict";
@@ -4784,7 +5727,7 @@ module.exports = function cssWithMappingToString(item) {
 
 /***/ }),
 
-/***/ 8169:
+/***/ 8570:
 /***/ (function(module) {
 
 !function (t, e) {
@@ -5115,7 +6058,7 @@ module.exports = function cssWithMappingToString(item) {
 
 /***/ }),
 
-/***/ 8674:
+/***/ 8030:
 /***/ (function(module) {
 
 !function (e, t) {
@@ -5186,7 +6129,7 @@ module.exports = function cssWithMappingToString(item) {
 
 /***/ }),
 
-/***/ 1041:
+/***/ 1454:
 /***/ (function(module) {
 
 /*! @license DOMPurify 2.3.1 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.3.1/LICENSE */
@@ -6671,7 +7614,7 @@ module.exports = function cssWithMappingToString(item) {
 
 /***/ }),
 
-/***/ 2329:
+/***/ 5402:
 /***/ ((module, exports) => {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -7540,7 +8483,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ 3964:
+/***/ 1210:
 /***/ (function(module) {
 
 /*!
@@ -7631,7 +8574,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ 2501:
+/***/ 1971:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -7712,7 +8655,7 @@ function immediate(task) {
 
 /***/ }),
 
-/***/ 6336:
+/***/ 6066:
 /***/ (function(module, exports) {
 
 /**
@@ -9282,13 +10225,13 @@ in order to offer easy upgrades -- jsgettext.berlios.de
 
 /***/ }),
 
-/***/ 7152:
+/***/ 83:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var immediate = __webpack_require__(2501);
+var immediate = __webpack_require__(1971);
 /* istanbul ignore next */
 
 
@@ -9584,19 +10527,19 @@ function race(iterable) {
 
 /***/ }),
 
-/***/ 5004:
+/***/ 5803:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
 if (typeof __webpack_require__.g.Promise !== 'function') {
-  __webpack_require__.g.Promise = __webpack_require__(7152);
+  __webpack_require__.g.Promise = __webpack_require__(83);
 }
 
 /***/ }),
 
-/***/ 2272:
+/***/ 5533:
 /***/ (function(__unused_webpack_module, exports) {
 
 /*!
@@ -10339,11 +11282,11 @@ SOFTWARE.
 
 /***/ }),
 
-/***/ 7667:
+/***/ 8806:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(6639)) : 0;
+   true ? factory(exports, __webpack_require__(3871)) : 0;
 })(this, function (exports, localforage) {
   'use strict';
 
@@ -10546,7 +11489,7 @@ SOFTWARE.
 
 /***/ }),
 
-/***/ 1253:
+/***/ 6678:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -10556,29 +11499,29 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var _defineProperty2 = __webpack_require__(8584);
+var _defineProperty2 = __webpack_require__(8339);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _keys = __webpack_require__(1060);
+var _keys = __webpack_require__(5460);
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _regenerator = __webpack_require__(1161);
+var _regenerator = __webpack_require__(8161);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = __webpack_require__(8681);
+var _asyncToGenerator2 = __webpack_require__(1683);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _promise = __webpack_require__(3415);
+var _promise = __webpack_require__(9251);
 
 var _promise2 = _interopRequireDefault(_promise);
 
 exports.default = createDriver;
 
-var _utils = __webpack_require__(4136);
+var _utils = __webpack_require__(3203);
 
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {
@@ -10816,7 +11759,7 @@ function createDriver(name, property) {
 
 /***/ }),
 
-/***/ 721:
+/***/ 6916:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -10827,7 +11770,7 @@ __webpack_unused_export__ = ({
   value: true
 });
 
-var _driver = __webpack_require__(1253);
+var _driver = __webpack_require__(6678);
 
 var _driver2 = _interopRequireDefault(_driver);
 
@@ -10841,7 +11784,7 @@ exports.Z = (0, _driver2.default)('webExtensionLocalStorage', 'local');
 
 /***/ }),
 
-/***/ 3634:
+/***/ 7993:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -10852,7 +11795,7 @@ __webpack_unused_export__ = ({
   value: true
 });
 
-var _driver = __webpack_require__(1253);
+var _driver = __webpack_require__(6678);
 
 var _driver2 = _interopRequireDefault(_driver);
 
@@ -10866,7 +11809,7 @@ exports.Z = (0, _driver2.default)('webExtensionSyncStorage', 'sync');
 
 /***/ }),
 
-/***/ 4136:
+/***/ 3203:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -10876,7 +11819,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var _promise = __webpack_require__(3415);
+var _promise = __webpack_require__(9251);
 
 var _promise2 = _interopRequireDefault(_promise);
 
@@ -10932,7 +11875,7 @@ function usePromise(fn, arg) {
 
 /***/ }),
 
-/***/ 6639:
+/***/ 3871:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /*!
@@ -13829,10 +14772,10 @@ function usePromise(fn, arg) {
 
 /***/ }),
 
-/***/ 6360:
+/***/ 1982:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var root = __webpack_require__(8642);
+var root = __webpack_require__(9998);
 /** Built-in value references. */
 
 
@@ -13841,12 +14784,12 @@ module.exports = Symbol;
 
 /***/ }),
 
-/***/ 7291:
+/***/ 7703:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var Symbol = __webpack_require__(6360),
-    getRawTag = __webpack_require__(4),
-    objectToString = __webpack_require__(73);
+var Symbol = __webpack_require__(1982),
+    getRawTag = __webpack_require__(4154),
+    objectToString = __webpack_require__(3994);
 /** `Object#toString` result references. */
 
 
@@ -13875,10 +14818,10 @@ module.exports = baseGetTag;
 
 /***/ }),
 
-/***/ 3028:
+/***/ 6730:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var trimmedEndIndex = __webpack_require__(4019);
+var trimmedEndIndex = __webpack_require__(8999);
 /** Used to match leading whitespace. */
 
 
@@ -13899,7 +14842,7 @@ module.exports = baseTrim;
 
 /***/ }),
 
-/***/ 6936:
+/***/ 7637:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /** Detect free variable `global` from Node.js. */
@@ -13908,10 +14851,10 @@ module.exports = freeGlobal;
 
 /***/ }),
 
-/***/ 4:
+/***/ 4154:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var Symbol = __webpack_require__(6360);
+var Symbol = __webpack_require__(1982);
 /** Used for built-in method references. */
 
 
@@ -13963,7 +14906,7 @@ module.exports = getRawTag;
 
 /***/ }),
 
-/***/ 73:
+/***/ 3994:
 /***/ ((module) => {
 
 /** Used for built-in method references. */
@@ -13991,10 +14934,10 @@ module.exports = objectToString;
 
 /***/ }),
 
-/***/ 8642:
+/***/ 9998:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var freeGlobal = __webpack_require__(6936);
+var freeGlobal = __webpack_require__(7637);
 /** Detect free variable `self`. */
 
 
@@ -14006,7 +14949,7 @@ module.exports = root;
 
 /***/ }),
 
-/***/ 4019:
+/***/ 8999:
 /***/ ((module) => {
 
 /** Used to match a single whitespace character. */
@@ -14032,12 +14975,12 @@ module.exports = trimmedEndIndex;
 
 /***/ }),
 
-/***/ 4971:
+/***/ 7272:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var isObject = __webpack_require__(4727),
-    now = __webpack_require__(2301),
-    toNumber = __webpack_require__(1636);
+var isObject = __webpack_require__(9910),
+    now = __webpack_require__(4522),
+    toNumber = __webpack_require__(2672);
 /** Error message constants. */
 
 
@@ -14232,7 +15175,7 @@ module.exports = debounce;
 
 /***/ }),
 
-/***/ 4727:
+/***/ 9910:
 /***/ ((module) => {
 
 /**
@@ -14269,7 +15212,7 @@ module.exports = isObject;
 
 /***/ }),
 
-/***/ 7837:
+/***/ 7358:
 /***/ ((module) => {
 
 /**
@@ -14304,11 +15247,11 @@ module.exports = isObjectLike;
 
 /***/ }),
 
-/***/ 7946:
+/***/ 730:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var baseGetTag = __webpack_require__(7291),
-    isObjectLike = __webpack_require__(7837);
+var baseGetTag = __webpack_require__(7703),
+    isObjectLike = __webpack_require__(7358);
 /** `Object#toString` result references. */
 
 
@@ -14339,10 +15282,10 @@ module.exports = isSymbol;
 
 /***/ }),
 
-/***/ 2301:
+/***/ 4522:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var root = __webpack_require__(8642);
+var root = __webpack_require__(9998);
 /**
  * Gets the timestamp of the number of milliseconds that have elapsed since
  * the Unix epoch (1 January 1970 00:00:00 UTC).
@@ -14369,12 +15312,12 @@ module.exports = now;
 
 /***/ }),
 
-/***/ 1636:
+/***/ 2672:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var baseTrim = __webpack_require__(3028),
-    isObject = __webpack_require__(4727),
-    isSymbol = __webpack_require__(7946);
+var baseTrim = __webpack_require__(6730),
+    isObject = __webpack_require__(9910),
+    isSymbol = __webpack_require__(730);
 /** Used as references for various `Number` constants. */
 
 
@@ -14442,7 +15385,7 @@ module.exports = toNumber;
 
 /***/ }),
 
-/***/ 1751:
+/***/ 1766:
 /***/ ((module, exports, __webpack_require__) => {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16592,7 +17535,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 /***/ }),
 
-/***/ 4457:
+/***/ 4223:
 /***/ ((module, exports, __webpack_require__) => {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
@@ -16866,7 +17809,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
 
 /***/ }),
 
-/***/ 1059:
+/***/ 8677:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17059,7 +18002,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 /***/ }),
 
-/***/ 4463:
+/***/ 9827:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17328,7 +18271,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 /***/ }),
 
-/***/ 2369:
+/***/ 5215:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17348,10 +18291,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   if ( true && module.exports) {
     // Node
-    module.exports = factory(__webpack_require__(6635), __webpack_require__(1059), __webpack_require__(4463));
+    module.exports = factory(__webpack_require__(7819), __webpack_require__(8677), __webpack_require__(9827));
   } else if (true) {
     // AMD. Register as an anonymous module.
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6635), __webpack_require__(1059), __webpack_require__(4463)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7819), __webpack_require__(8677), __webpack_require__(9827)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -19775,7 +20718,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ 6635:
+/***/ 7819:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* module decorator */ module = __webpack_require__.nmd(module);
@@ -20326,7 +21269,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.4.0 by @mathia
 
 /***/ }),
 
-/***/ 8884:
+/***/ 2291:
 /***/ ((module) => {
 
 "use strict";
@@ -20338,7 +21281,7 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ 6853:
+/***/ 8393:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var __webpack_unused_export__;
@@ -20621,22 +21564,22 @@ function appendElement(hander, node) {
 //if(typeof require == 'function'){
 
 
-var htmlEntity = __webpack_require__(1814);
+var htmlEntity = __webpack_require__(414);
 
-var sax = __webpack_require__(63);
+var sax = __webpack_require__(5650);
 
 var XMLReader = sax.XMLReader;
 var ParseError = sax.ParseError;
 
-var DOMImplementation = exports.DOMImplementation = __webpack_require__(823).DOMImplementation;
+var DOMImplementation = exports.DOMImplementation = __webpack_require__(7580).DOMImplementation;
 
-/* unused reexport */ __webpack_require__(823);
+/* unused reexport */ __webpack_require__(7580);
 exports.a = DOMParser;
 __webpack_unused_export__ = DOMHandler; //}
 
 /***/ }),
 
-/***/ 823:
+/***/ 7580:
 /***/ ((__unused_webpack_module, exports) => {
 
 var __webpack_unused_export__;
@@ -22127,7 +23070,7 @@ __webpack_unused_export__ = XMLSerializer; //}
 
 /***/ }),
 
-/***/ 1814:
+/***/ 414:
 /***/ ((__unused_webpack_module, exports) => {
 
 exports.entityMap = {
@@ -22376,7 +23319,7 @@ exports.entityMap = {
 
 /***/ }),
 
-/***/ 63:
+/***/ 5650:
 /***/ ((__unused_webpack_module, exports) => {
 
 //[4]   	NameStartChar	   ::=   	":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
@@ -23166,7 +24109,7 @@ exports.ParseError = ParseError;
 
 /***/ }),
 
-/***/ 6387:
+/***/ 5703:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -23179,10 +24122,10 @@ __webpack_require__.d(__webpack_exports__, {
 });
 
 // EXTERNAL MODULE: ./node_modules/urijs/src/URI.js
-var URI = __webpack_require__(2369);
+var URI = __webpack_require__(5215);
 var URI_default = /*#__PURE__*/__webpack_require__.n(URI);
 // EXTERNAL MODULE: ./node_modules/sprintf-js/src/sprintf.js
-var sprintf = __webpack_require__(4457);
+var sprintf = __webpack_require__(4223);
 ;// CONCATENATED MODULE: ./src/headless/shared/i18n.js
 
 /**
@@ -23603,7 +24546,7 @@ function getWebSocketImplementation() {
 
   if (typeof WebSocketImplementation === 'undefined') {
     try {
-      WebSocketImplementation = __webpack_require__(8884);
+      WebSocketImplementation = __webpack_require__(2291);
     } catch (err) {
       throw new Error('You must install the "ws" package to use Strophe in nodejs.');
     }
@@ -23631,7 +24574,7 @@ function getDOMParserImplementation() {
 
   if (typeof DOMParserImplementation === 'undefined') {
     try {
-      DOMParserImplementation = __webpack_require__(6853)/* .DOMParser */ .a;
+      DOMParserImplementation = __webpack_require__(8393)/* .DOMParser */ .a;
     } catch (err) {
       throw new Error('You must install the "xmldom" package to use Strophe in nodejs.');
     }
@@ -23677,7 +24620,7 @@ function getDummyXMLDOMDocument() {
   // nodejs
   if (typeof document === 'undefined') {
     try {
-      const DOMImplementation = __webpack_require__(6853).DOMImplementation;
+      const DOMImplementation = __webpack_require__(8393).DOMImplementation;
 
       return new DOMImplementation().createDocument('jabber:client', 'strophe', null);
     } catch (err) {
@@ -24576,7 +25519,7 @@ class SASLXOAuth2 extends SASLMechanism {
 
 }
 // EXTERNAL MODULE: ./node_modules/abab/index.js
-var abab = __webpack_require__(7706);
+var abab = __webpack_require__(4567);
 ;// CONCATENATED MODULE: ./node_modules/strophe.js/src/core.js
 /*
     This program is distributed under the terms of the MIT license.
@@ -29836,7 +30779,7 @@ CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT'; // Core plugins are whi
 
 const CORE_PLUGINS = ['converse-adhoc', 'converse-bookmarks', 'converse-bosh', 'converse-caps', 'converse-carbons', 'converse-chat', 'converse-chatboxes', 'converse-disco', 'converse-emoji', 'converse-headlines', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-smacks', 'converse-status', 'converse-vcard'];
 const URL_PARSE_OPTIONS = {
-  'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
+  'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
 };
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/isObject.js
 /**
@@ -35794,7 +36737,7 @@ function createBlob(parts, properties) {
 if (typeof Promise === 'undefined') {
   // In the "nopromises" build this will just throw if you don't have
   // a global promise object, but it would throw anyway later.
-  __webpack_require__(5004);
+  __webpack_require__(5803);
 }
 
 /* harmony default export */ const utils_promise = (Promise);
@@ -38189,7 +39132,7 @@ class LocalForage {
 
 /* harmony default export */ const localforage = (new LocalForage());
 // EXTERNAL MODULE: ./node_modules/localforage-driver-memory/_bundle/umd.js
-var umd = __webpack_require__(2272);
+var umd = __webpack_require__(5533);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/_arrayEach.js
 /**
  * A specialized version of `_.forEach` for arrays without support for
@@ -39098,7 +40041,7 @@ const sessionStorageWrapper = {
 };
 /* harmony default export */ const drivers_sessionStorage = (sessionStorageWrapper);
 // EXTERNAL MODULE: ./node_modules/localforage-setitems/dist/localforage-setitems.js
-var localforage_setitems = __webpack_require__(7667);
+var localforage_setitems = __webpack_require__(8806);
 ;// CONCATENATED MODULE: ./node_modules/@converse/skeletor/src/storage.js
 /**
  * IndexedDB, localStorage and sessionStorage adapter
@@ -39416,7 +40359,7 @@ function createStore(id, store) {
 }
 function initStorage(model, id, type) {
   const store = type || getDefaultStore();
-  model.browserStorage = shared_converse.createStore(id, store);
+  model.browserStorage = createStore(id, store);
 
   if (storeUsesIndexedDB(store)) {
     const flush = () => model.browserStorage.flush();
@@ -39426,6 +40369,42 @@ function initStorage(model, id, type) {
     model.listenTo(shared_converse, 'beforeLogout', flush);
   }
 }
+;// CONCATENATED MODULE: ./node_modules/lodash-es/isEqual.js
+
+/**
+ * Performs a deep comparison between two values to determine if they are
+ * equivalent.
+ *
+ * **Note:** This method supports comparing arrays, array buffers, booleans,
+ * date objects, error objects, maps, numbers, `Object` objects, regexes,
+ * sets, strings, symbols, and typed arrays. `Object` objects are compared
+ * by their own, not inherited, enumerable properties. Functions and DOM
+ * nodes are compared by strict equality, i.e. `===`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ * var other = { 'a': 1 };
+ *
+ * _.isEqual(object, other);
+ * // => true
+ *
+ * object === other;
+ * // => false
+ */
+
+function isEqual(value, other) {
+  return _baseIsEqual(value, other);
+}
+
+/* harmony default export */ const lodash_es_isEqual = (isEqual);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/_baseSet.js
 
 
@@ -39657,7 +40636,7 @@ var pick = _flatRest(function (object, paths) {
 });
 /* harmony default export */ const lodash_es_pick = (pick);
 // EXTERNAL MODULE: ./node_modules/dompurify/dist/purify.js
-var purify = __webpack_require__(1041);
+var purify = __webpack_require__(1454);
 var purify_default = /*#__PURE__*/__webpack_require__.n(purify);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/compact.js
 /**
@@ -39715,7 +40694,7 @@ function last(array) {
 
 /* harmony default export */ const lodash_es_last = (last);
 // EXTERNAL MODULE: ./node_modules/sizzle/dist/sizzle.js
-var sizzle = __webpack_require__(1751);
+var sizzle = __webpack_require__(1766);
 var sizzle_default = /*#__PURE__*/__webpack_require__.n(sizzle);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/clone.js
 
@@ -40026,42 +41005,6 @@ var invert = _createInverter(function (result, value, key) {
   result[value] = key;
 }, lodash_es_constant(lodash_es_identity));
 /* harmony default export */ const lodash_es_invert = (invert);
-;// CONCATENATED MODULE: ./node_modules/lodash-es/isEqual.js
-
-/**
- * Performs a deep comparison between two values to determine if they are
- * equivalent.
- *
- * **Note:** This method supports comparing arrays, array buffers, booleans,
- * date objects, error objects, maps, numbers, `Object` objects, regexes,
- * sets, strings, symbols, and typed arrays. `Object` objects are compared
- * by their own, not inherited, enumerable properties. Functions and DOM
- * nodes are compared by strict equality, i.e. `===`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- * @example
- *
- * var object = { 'a': 1 };
- * var other = { 'a': 1 };
- *
- * _.isEqual(object, other);
- * // => true
- *
- * object === other;
- * // => false
- */
-
-function isEqual(value, other) {
-  return _baseIsEqual(value, other);
-}
-
-/* harmony default export */ const lodash_es_isEqual = (isEqual);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/iteratee.js
 
 
@@ -40680,6 +41623,187 @@ Object.assign(Model.prototype, Events, {
     return false;
   }
 });
+;// CONCATENATED MODULE: ./src/headless/shared/settings/api.js
+
+
+
+/**
+ * This grouping allows access to the
+ * [configuration settings](/docs/html/configuration.html#configuration-settings)
+ * of Converse.
+ *
+ * @namespace _converse.api.settings
+ * @memberOf _converse.api
+ */
+
+const settings_api = {
+  /**
+   * Allows new configuration settings to be specified, or new default values for
+   * existing configuration settings to be specified.
+   *
+   * Note, calling this method *after* converse.initialize has been
+   * called will *not* change the initialization settings provided via
+   * `converse.initialize`.
+   *
+   * @method _converse.api.settings.extend
+   * @param {object} settings The configuration settings
+   * @example
+   * _converse.api.settings.extend({
+   *    'enable_foo': true
+   * });
+   *
+   * // The user can then override the default value of the configuration setting when
+   * // calling `converse.initialize`.
+   * converse.initialize({
+   *     'enable_foo': false
+   * });
+   */
+  extend(settings) {
+    return extendAppSettings(settings);
+  },
+
+  update(settings) {
+    headless_log.warn('The api.settings.update method has been deprecated and will be removed. ' + 'Please use api.settings.extend instead.');
+    return this.extend(settings);
+  },
+
+  /**
+   * @method _converse.api.settings.get
+   * @returns {*} Value of the particular configuration setting.
+   * @example _converse.api.settings.get("play_sounds");
+   */
+  get(key) {
+    return getAppSetting(key);
+  },
+
+  /**
+   * Set one or many configuration settings.
+   *
+   * Note, this is not an alternative to calling {@link converse.initialize}, which still needs
+   * to be called. Generally, you'd use this method after Converse is already
+   * running and you want to change the configuration on-the-fly.
+   *
+   * @method _converse.api.settings.set
+   * @param {Object} [settings] An object containing configuration settings.
+   * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
+   * @param {string} [value]
+   * @example _converse.api.settings.set("play_sounds", true);
+   * @example
+   * _converse.api.settings.set({
+   *     "play_sounds": true,
+   *     "hide_offline_users": true
+   * });
+   */
+  set(key, val) {
+    updateAppSettings(key, val);
+  },
+
+  /**
+   * The `listen` namespace exposes methods for creating event listeners
+   * (aka handlers) for events related to settings.
+   *
+   * @namespace _converse.api.settings.listen
+   * @memberOf _converse.api.settings
+   */
+  listen: {
+    /**
+     * Register an event listener for the passed in event.
+     * @method _converse.api.settings.listen.on
+     * @param { ('change') } name - The name of the event to listen for.
+     *  Currently there is only the 'change' event.
+     * @param { Function } handler - The event handler function
+     * @param { Object } [context] - The context of the `this` attribute of the
+     *  handler function.
+     * @example _converse.api.settings.listen.on('change', callback);
+     */
+    on(name, handler, context) {
+      registerListener(name, handler, context);
+    },
+
+    /**
+     * To stop listening to an event, you can use the `not` method.
+     * @method _converse.api.settings.listen.not
+     * @param { String } name The event's name
+     * @param { Function } callback The callback method that is to no longer be called when the event fires
+     * @example _converse.api.settings.listen.not('change', callback);
+     */
+    not(name, handler) {
+      unregisterListener(name, handler);
+    }
+
+  }
+};
+/**
+ * API for accessing and setting user settings. User settings are
+ * different from the application settings from {@link _converse.api.settings}
+ * because they are per-user and set via user action.
+ * @namespace _converse.api.user.settings
+ * @memberOf _converse.api.user
+ */
+
+const user_settings_api = {
+  /**
+   * Returns the user settings model. Useful when you want to listen for change events.
+   * @async
+   * @method _converse.api.user.settings.getModel
+   * @returns {Promise<Model>}
+   * @example const settings = await _converse.api.user.settings.getModel();
+   */
+  getModel() {
+    return getUserSettings();
+  },
+
+  /**
+   * Get the value of a particular user setting.
+   * @method _converse.api.user.settings.get
+   * @param {String} key - The setting name
+   * @param {*} [fallback] - An optional fallback value if the user setting is undefined
+   * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
+   * @example _converse.api.user.settings.get("foo");
+   */
+  async get(key, fallback) {
+    const user_settings = await getUserSettings();
+    return user_settings.get(key) === undefined ? fallback : user_settings.get(key);
+  },
+
+  /**
+   * Set one or many user settings.
+   * @async
+   * @method _converse.api.user.settings.set
+   * @param {Object} [settings] An object containing configuration settings.
+   * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
+   * @param {string} [value]
+   * @example _converse.api.user.settings.set("foo", "bar");
+   * @example
+   * _converse.api.user.settings.set({
+   *     "foo": "bar",
+   *     "baz": "buz"
+   * });
+   */
+  set(key, val) {
+    if (lodash_es_isObject(key)) {
+      return updateUserSettings(key, {
+        'promise': true
+      });
+    } else {
+      const o = {};
+      o[key] = val;
+      return updateUserSettings(o, {
+        'promise': true
+      });
+    }
+  },
+
+  /**
+   * Clears all the user settings
+   * @async
+   * @method _converse.api.user.settings.clear
+   */
+  clear() {
+    return clearUserSettings();
+  }
+
+};
 ;// CONCATENATED MODULE: ./src/headless/utils/core.js
 /**
  * @copyright The Converse.js contributors
@@ -40697,12 +41821,22 @@ Object.assign(Model.prototype, Events, {
 
 
 
+
 function isEmptyMessage(attrs) {
   if (attrs instanceof Model) {
     attrs = attrs.attributes;
   }
 
   return !attrs['oob_url'] && !attrs['file'] && !(attrs['is_encrypted'] && attrs['plaintext']) && !attrs['message'];
+}
+/* We distinguish between UniView and MultiView instances.
+ *
+ * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
+ * MultiView means that multiple chats may be visible simultaneously.
+ */
+
+function isUniView() {
+  return ['mobile', 'fullscreen', 'embedded'].includes(settings_api.get("view_mode"));
 }
 /**
  * The utils object
@@ -41090,17 +42224,6 @@ u.getSelectValues = function (select) {
   return result;
 };
 
-u.formatFingerprint = function (fp) {
-  fp = fp.replace(/^05/, '');
-
-  for (let i = 1; i < 8; i++) {
-    const idx = i * 8 + i - 1;
-    fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
-  }
-
-  return fp;
-};
-
 u.getRandomInt = function (max) {
   return Math.floor(Math.random() * Math.floor(max));
 };
@@ -41133,9 +42256,9 @@ u.getUniqueId = function (suffix) {
   }
 };
 
-u.httpToGeoUri = function (text, _converse) {
+u.httpToGeoUri = function (text) {
   const replacement = 'geo:$1,$2';
-  return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
+  return text.replace(settings_api.get("geouri_regex"), replacement);
 };
 /**
  * Clears the specified timeout and interval.
@@ -41268,22 +42391,41 @@ function decodeHTMLEntities(str) {
 /* harmony default export */ const utils_core = (Object.assign({
   isEmptyMessage
 }, u));
-;// CONCATENATED MODULE: ./src/headless/shared/settings.js
-
-
-
-
-
-
-
-
-let init_settings = {}; // Container for settings passed in via converse.initialize
-
-let app_settings = {};
-let user_settings; // User settings, populated via api.users.settings
-// Default configuration values
-// ----------------------------
-
+;// CONCATENATED MODULE: ./src/headless/shared/settings/constants.js
+/**
+ * @typedef { Object } ConfigurationSettings
+ * Converse's core configuration values
+ * @property { Boolean } [allow_non_roster_messaging=false]
+ * @property { Boolean } [allow_url_history_change=true]
+ * @property { String } [assets_path='/dist']
+ * @property { ('login'|'prebind'|'anonymous'|'external' } [authentication='login']
+ * @property { Boolean } [auto_login=false] - Currently only used in connection with anonymous login
+ * @property { Boolean } [auto_reconnect=true]
+ * @property { Array<String>} [blacklisted_plugins]
+ * @property { Boolean } [clear_cache_on_logout=false]
+ * @property { Object } [connection_options]
+ * @property { String } [credentials_url] - URL from where login credentials can be fetched
+ * @property { Boolean } [discover_connection_methods=true]
+ * @property { RegExp } [geouri_regex]
+ * @property { RegExp } [geouri_replacement='https - //www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
+ * @property { String } [i18n]
+ * @property { Number } [idle_presence_timeout=300] - Seconds after which an idle presence is sent
+ * @property { String } [jid]
+ * @property { Boolean } [keepalive=true]
+ * @property { ('debug'|'info'|'eror') } [loglevel='info']
+ * @property { Array<String> } [locales]
+ * @property { String } [nickname]
+ * @property { String } [password]
+ * @property { ('IndexedDB'|'localStorage') } [persistent_store='IndexedDB']
+ * @property { String } [rid]
+ * @property { Element } [root=window.document]
+ * @property { String } [sid]
+ * @property { Boolean } [singleton=false]
+ * @property { Boolean } [strict_plugin_dependencies=false]
+ * @property { ('overlayed'|'fullscreen'|'mobile') } [view_mode='overlayed']
+ * @property { String } [websocket_url]
+ * @property { Array<String>} [whitelisted_plugins]
+ */
 const DEFAULT_SETTINGS = {
   allow_non_roster_messaging: false,
   allow_url_history_change: true,
@@ -41321,16 +42463,32 @@ const DEFAULT_SETTINGS = {
   websocket_url: undefined,
   whitelisted_plugins: []
 };
+;// CONCATENATED MODULE: ./src/headless/shared/settings/utils.js
+
+
+
+
+
+
+
+
+
+
+
+let app_settings;
+let init_settings = {}; // Container for settings passed in via converse.initialize
+
+let user_settings; // User settings, populated via api.users.settings
+
 function getAppSettings() {
   return app_settings;
 }
 function initAppSettings(settings) {
   init_settings = settings;
-  app_settings = {}; // Allow only whitelisted settings to be overwritten via converse.initialize
+  app_settings = {};
+  Object.assign(app_settings, Events); // Allow only whitelisted settings to be overwritten via converse.initialize
 
   const allowed_settings = lodash_es_pick(settings, Object.keys(DEFAULT_SETTINGS));
-  lodash_es_assignIn(shared_converse, DEFAULT_SETTINGS, allowed_settings); // FIXME: remove
-
   lodash_es_assignIn(app_settings, DEFAULT_SETTINGS, allowed_settings);
 }
 function getInitSettings() {
@@ -41349,21 +42507,37 @@ function extendAppSettings(settings) {
   const allowed_site_settings = lodash_es_pick(init_settings, allowed_keys);
   const updated_settings = lodash_es_assignIn(lodash_es_pick(settings, allowed_keys), allowed_site_settings);
   utils_core.merge(app_settings, updated_settings);
-  utils_core.merge(shared_converse, updated_settings); // FIXME: remove
+}
+function registerListener(name, func, context) {
+  app_settings.on(name, func, context);
+}
+function unregisterListener(name, func) {
+  app_settings.off(name, func);
 }
 function updateAppSettings(key, val) {
-  const o = {};
+  if (key == null) return this; // eslint-disable-line no-eq-null
+
+  let attrs;
 
   if (lodash_es_isObject(key)) {
-    lodash_es_assignIn(shared_converse, lodash_es_pick(key, Object.keys(DEFAULT_SETTINGS))); // FIXME: remove
-
-    lodash_es_assignIn(app_settings, lodash_es_pick(key, Object.keys(DEFAULT_SETTINGS)));
+    attrs = key;
   } else if (typeof key === 'string') {
-    o[key] = val;
-    lodash_es_assignIn(shared_converse, lodash_es_pick(o, Object.keys(DEFAULT_SETTINGS))); // FIXME: remove
-
-    lodash_es_assignIn(app_settings, lodash_es_pick(o, Object.keys(DEFAULT_SETTINGS)));
+    attrs = {};
+    attrs[key] = val;
   }
+
+  const allowed_keys = Object.keys(lodash_es_pick(attrs, Object.keys(DEFAULT_SETTINGS)));
+  const changed = {};
+  allowed_keys.forEach(k => {
+    const val = attrs[k];
+
+    if (!lodash_es_isEqual(app_settings[k], val)) {
+      changed[k] = val;
+      app_settings[k] = val;
+    }
+  });
+  Object.keys(changed).forEach(k => app_settings.trigger('change:' + k, changed[k]));
+  app_settings.trigger('change', changed);
 }
 /**
  * @async
@@ -41512,10 +42686,10 @@ const _converse = {
 };
 /* harmony default export */ const shared_converse = (_converse);
 // EXTERNAL MODULE: ./node_modules/dayjs/plugin/advancedFormat.js
-var advancedFormat = __webpack_require__(8674);
+var advancedFormat = __webpack_require__(8030);
 var advancedFormat_default = /*#__PURE__*/__webpack_require__.n(advancedFormat);
 // EXTERNAL MODULE: ./node_modules/dayjs/dayjs.min.js
-var dayjs_min = __webpack_require__(8169);
+var dayjs_min = __webpack_require__(8570);
 var dayjs_min_default = /*#__PURE__*/__webpack_require__.n(dayjs_min);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/_baseInvoke.js
 
@@ -41839,81 +43013,6 @@ function enable(object, name, attrname) {
 
 /* harmony default export */ const pluggable = ({
   enable
-});
-;// CONCATENATED MODULE: ./src/headless/api/settings.js
-
-
-/**
- * This grouping allows access to the
- * [configuration settings](/docs/html/configuration.html#configuration-settings)
- * of Converse.
- *
- * @namespace _converse.api.settings
- * @memberOf _converse.api
- */
-
-/* harmony default export */ const settings = ({
-  /**
-   * Allows new configuration settings to be specified, or new default values for
-   * existing configuration settings to be specified.
-   *
-   * Note, calling this method *after* converse.initialize has been
-   * called will *not* change the initialization settings provided via
-   * `converse.initialize`.
-   *
-   * @method _converse.api.settings.extend
-   * @param {object} settings The configuration settings
-   * @example
-   * _converse.api.settings.extend({
-   *    'enable_foo': true
-   * });
-   *
-   * // The user can then override the default value of the configuration setting when
-   * // calling `converse.initialize`.
-   * converse.initialize({
-   *     'enable_foo': false
-   * });
-   */
-  extend(settings) {
-    return extendAppSettings(settings);
-  },
-
-  update(settings) {
-    headless_log.warn('The api.settings.update method has been deprecated and will be removed. ' + 'Please use api.settings.extend instead.');
-    return this.extend(settings);
-  },
-
-  /**
-   * @method _converse.api.settings.get
-   * @returns {*} Value of the particular configuration setting.
-   * @example _converse.api.settings.get("play_sounds");
-   */
-  get(key) {
-    return getAppSetting(key);
-  },
-
-  /**
-   * Set one or many configuration settings.
-   *
-   * Note, this is not an alternative to calling {@link converse.initialize}, which still needs
-   * to be called. Generally, you'd use this method after Converse is already
-   * running and you want to change the configuration on-the-fly.
-   *
-   * @method _converse.api.settings.set
-   * @param {Object} [settings] An object containing configuration settings.
-   * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-   * @param {string} [value]
-   * @example _converse.api.settings.set("play_sounds", true);
-   * @example
-   * _converse.api.settings.set({
-   *     "play_sounds": true,
-   *     "hide_offline_users": true
-   * });
-   */
-  set(key, val) {
-    updateAppSettings(key, val);
-  }
-
 });
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/_arrayAggregator.js
 /**
@@ -45031,9 +46130,9 @@ const lit_element_u = {
 
 
 // EXTERNAL MODULE: ./node_modules/localforage-webextensionstorage-driver/local.js
-var local = __webpack_require__(721);
+var local = __webpack_require__(6916);
 // EXTERNAL MODULE: ./node_modules/localforage-webextensionstorage-driver/sync.js
-var localforage_webextensionstorage_driver_sync = __webpack_require__(3634);
+var localforage_webextensionstorage_driver_sync = __webpack_require__(7993);
 ;// CONCATENATED MODULE: ./src/headless/utils/init.js
 
 
@@ -45295,8 +46394,8 @@ async function getLoginCredentials() {
 }
 
 function fetchLoginCredentials(wait = 0) {
-  return new Promise(lodash_es_debounce((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
+  return new Promise(lodash_es_debounce(async (resolve, reject) => {
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', shared_converse.api.settings.get("credentials_url"), true);
     xhr.setRequestHeader('Accept', 'application/json, text/javascript');
 
@@ -45316,6 +46415,12 @@ function fetchLoginCredentials(wait = 0) {
     };
 
     xhr.onerror = reject;
+    /**
+     * *Hook* which allows modifying the server request
+     * @event _converse#beforeFetchLoginCredentials
+     */
+
+    xhr = await shared_converse.api.hook('beforeFetchLoginCredentials', this, xhr);
     xhr.send();
   }, wait));
 }
@@ -45415,7 +46520,6 @@ function connect(credentials) {
 
 
 
-
 dayjs_min_default().extend((advancedFormat_default())); // Add Strophe Namespaces
 
 Strophe.addNamespace('ACTIVITY', 'http://jabber.org/protocol/activity');
@@ -45435,6 +46539,7 @@ Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
 Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+Strophe.addNamespace('OCCUPANTID', 'urn:xmpp:occupant-id:0');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
@@ -45453,7 +46558,7 @@ Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
-shared_converse.VERSION_NAME = "v8.0.1";
+shared_converse.VERSION_NAME = "v9.0.0";
 Object.assign(shared_converse, Events); // Make converse pluggable
 
 pluggable.enable(shared_converse, '_converse', 'pluggable');
@@ -45652,6 +46757,8 @@ const api = shared_converse.api = {
    * @memberOf _converse.api
    */
   user: {
+    settings: user_settings_api,
+
     /**
      * @method _converse.api.user.jid
      * @returns {string} The current user's full JID (Jabber ID)
@@ -45681,7 +46788,7 @@ const api = shared_converse.api = {
     async login(jid, password, automatic = false) {
       var _converse$connection3, _api$settings$get;
 
-      jid = jid || shared_converse.jid;
+      jid = jid || api.settings.get('jid');
 
       if (!((_converse$connection3 = shared_converse.connection) !== null && _converse$connection3 !== void 0 && _converse$connection3.jid) || jid && !utils_core.isSameDomain(shared_converse.connection.jid, jid)) {
         await shared_converse.initConnection();
@@ -45753,80 +46860,10 @@ const api = shared_converse.api = {
       }
 
       return promise;
-    },
-
-    /**
-     * API for accessing and setting user settings. User settings are
-     * different from the application settings from {@link _converse.api.settings}
-     * because they are per-user and set via user action.
-     * @namespace _converse.api.user.settings
-     * @memberOf _converse.api.user
-     */
-    settings: {
-      /**
-       * Returns the user settings model. Useful when you want to listen for change events.
-       * @async
-       * @method _converse.api.user.settings.getModel
-       * @returns {Promise<Model>}
-       * @example const settings = await _converse.api.user.settings.getModel();
-       */
-      getModel() {
-        return getUserSettings();
-      },
-
-      /**
-       * Get the value of a particular user setting.
-       * @method _converse.api.user.settings.get
-       * @param {String} key - The setting name
-       * @param {*} [fallback] - An optional fallback value if the user setting is undefined
-       * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
-       * @example _converse.api.user.settings.get("foo");
-       */
-      async get(key, fallback) {
-        const user_settings = await getUserSettings();
-        return user_settings.get(key) === undefined ? fallback : user_settings.get(key);
-      },
-
-      /**
-       * Set one or many user settings.
-       * @async
-       * @method _converse.api.user.settings.set
-       * @param {Object} [settings] An object containing configuration settings.
-       * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
-       * @param {string} [value]
-       * @example _converse.api.user.settings.set("foo", "bar");
-       * @example
-       * _converse.api.user.settings.set({
-       *     "foo": "bar",
-       *     "baz": "buz"
-       * });
-       */
-      set(key, val) {
-        if (lodash_es_isObject(key)) {
-          return updateUserSettings(key, {
-            'promise': true
-          });
-        } else {
-          const o = {};
-          o[key] = val;
-          return updateUserSettings(o, {
-            'promise': true
-          });
-        }
-      },
-
-      /**
-       * Clears all the user settings
-       * @async
-       * @method _converse.api.user.settings.clear
-       */
-      clear() {
-        return clearUserSettings();
-      }
-
     }
+
   },
-  settings: settings,
+  settings: settings_api,
 
   /**
    * Converse and its plugins trigger various events which you can listen to via the
@@ -46045,16 +47082,6 @@ const api = shared_converse.api = {
   }
 
 };
-
-shared_converse.isUniView = function () {
-  /* We distinguish between UniView and MultiView instances.
-   *
-   * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
-   * MultiView means that multiple chats may be visible simultaneously.
-   */
-  return ['mobile', 'fullscreen', 'embedded'].includes(api.settings.get("view_mode"));
-};
-
 async function tearDown() {
   await shared_converse.api.trigger('beforeTearDown', {
     'synchronous': true
@@ -46300,7 +47327,9 @@ Object.assign(core_converse, {
     await initSessionStorage(shared_converse);
     await initClientConfig(shared_converse);
     await i18n.initialize();
-    initPlugins(shared_converse);
+    initPlugins(shared_converse); // Register all custom elements
+
+    api.elements.register();
     registerGlobalEventHandlers(shared_converse);
 
     try {
@@ -46478,61 +47507,52 @@ function checkFileTypes(types, url) {
   return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
-function isDomainAllowed(whitelist, url) {
+function isDomainWhitelisted(whitelist, url) {
   const uri = getURI(url);
   const subdomain = uri.subdomain();
   const domain = uri.domain();
   const fulldomain = `${subdomain ? `${subdomain}.` : ''}${domain}`;
   return whitelist.includes(domain) || whitelist.includes(fulldomain);
 }
+function shouldRenderMediaFromURL(url_text, type) {
+  const may_render = api.settings.get('render_media');
+  const is_domain_allowed = isDomainAllowed(url_text, `allowed_${type}_domains`);
 
+  if (Array.isArray(may_render)) {
+    return is_domain_allowed && isDomainWhitelisted(may_render, url_text);
+  } else {
+    return is_domain_allowed && may_render;
+  }
+}
 function filterQueryParamsFromURL(url) {
   const paramsArray = api.settings.get('filter_url_query_params');
   if (!paramsArray) return url;
   const parsed_uri = getURI(url);
   return parsed_uri.removeQuery(paramsArray).toString();
 }
-function isAudioDomainAllowed(url) {
-  const embed_audio = api.settings.get('embed_audio');
+function isDomainAllowed(url, setting) {
+  const allowed_domains = api.settings.get(setting);
 
-  if (!Array.isArray(embed_audio)) {
-    return embed_audio;
+  if (!Array.isArray(allowed_domains)) {
+    return true;
   }
 
   try {
-    return isDomainAllowed(embed_audio, url);
+    return isDomainWhitelisted(allowed_domains, url);
   } catch (error) {
     headless_log.debug(error);
     return false;
   }
 }
-function isVideoDomainAllowed(url) {
-  const embed_videos = api.settings.get('embed_videos');
+/**
+ * Accepts a {@link MediaURL} object and then checks whether its domain is
+ * allowed for rendering in the chat.
+ * @param { MediaURL } o
+ * @returns { Bool }
+ */
 
-  if (!Array.isArray(embed_videos)) {
-    return embed_videos;
-  }
-
-  try {
-    return isDomainAllowed(embed_videos, url);
-  } catch (error) {
-    headless_log.debug(error);
-    return false;
-  }
-}
-function isImageDomainAllowed(url) {
-  const show_images_inline = api.settings.get('show_images_inline');
-
-  if (!Array.isArray(show_images_inline)) {
-    return show_images_inline;
-  }
-
-  try {
-    return isDomainAllowed(show_images_inline, url);
-  } catch (error) {
-    headless_log.debug(error);
-    return false;
-  }
+function isMediaURLDomainAllowed(o) {
+  return o.is_audio && isDomainAllowed(o.url, 'allowed_audio_domains') || o.is_video && isDomainAllowed(o.url, 'allowed_video_domains') || o.is_image && isDomainAllowed(o.url, 'allowed_image_domains');
 }
 function isURLWithImageExtension(url) {
   return checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
@@ -46610,9 +47630,7 @@ function getStanzaIDs(stanza, original_stanza) {
 
   return attrs;
 }
-function getEncryptionAttributes(stanza, _converse) {
-  var _converse$omemo_store;
-
+function getEncryptionAttributes(stanza) {
   const eme_tag = sizzle_default()(`encryption[xmlns="${Strophe.NS.EME}"]`, stanza).pop();
   const namespace = eme_tag === null || eme_tag === void 0 ? void 0 : eme_tag.getAttribute('namespace');
   const attrs = {};
@@ -46620,39 +47638,9 @@ function getEncryptionAttributes(stanza, _converse) {
   if (namespace) {
     attrs.is_encrypted = true;
     attrs.encryption_namespace = namespace;
-
-    if (namespace !== Strophe.NS.OMEMO) {
-      // Found an encrypted message, but it's not OMEMO
-      return attrs;
-    }
-  }
-
-  const encrypted = sizzle_default()(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
-
-  if (!eme_tag) {
-    attrs.is_encrypted = !!encrypted;
-  }
-
-  if (!encrypted || api.settings.get('clear_cache_on_logout')) {
-    return attrs;
-  }
-
-  const header = encrypted.querySelector('header');
-  attrs.encrypted = {
-    'device_id': header.getAttribute('sid')
-  };
-  const device_id = (_converse$omemo_store = _converse.omemo_store) === null || _converse$omemo_store === void 0 ? void 0 : _converse$omemo_store.get('device_id');
-  const key = device_id && sizzle_default()(`key[rid="${device_id}"]`, encrypted).pop();
-
-  if (key) {
-    var _encrypted$querySelec;
-
-    Object.assign(attrs.encrypted, {
-      'iv': header.querySelector('iv').textContent,
-      'key': key.textContent,
-      'payload': ((_encrypted$querySelec = encrypted.querySelector('payload')) === null || _encrypted$querySelec === void 0 ? void 0 : _encrypted$querySelec.textContent) || null,
-      'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
-    });
+  } else if (sizzle_default()(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop()) {
+    attrs.is_encrypted = true;
+    attrs.encryption_namespace = Strophe.NS.OMEMO;
   }
 
   return attrs;
@@ -46750,7 +47738,7 @@ function getOpenGraphMetadata(stanza) {
 
   return {};
 }
-function getMediaURLs(text) {
+function getMediaURLsMetadata(text) {
   const objs = [];
 
   if (!text) {
@@ -46759,6 +47747,16 @@ function getMediaURLs(text) {
 
   try {
     URI_default().withinString(text, (url, start, end) => {
+      if (url.startsWith('_')) {
+        url = url.slice(1);
+        start += 1;
+      }
+
+      if (url.endsWith('_')) {
+        url = url.slice(0, url.length - 1);
+        end -= 1;
+      }
+
       objs.push({
         url,
         start,
@@ -46769,12 +47767,25 @@ function getMediaURLs(text) {
   } catch (error) {
     headless_log.debug(error);
   }
+  /**
+   * @typedef { Object } MediaURLMetadata
+   * An object representing the metadata of a URL found in a chat message
+   * The actual URL is not saved, it can be extracted via the `start` and `end` indexes.
+   * @property { Boolean } is_audio
+   * @property { Boolean } is_image
+   * @property { Boolean } is_video
+   * @property { String } end
+   * @property { String } start
+   */
 
-  const media_urls = objs.filter(o => {
-    return isImageURL(o.url) && isImageDomainAllowed(o.url) || isVideoURL(o.url) && isVideoDomainAllowed(o.url) || isAudioURL(o.url) && isAudioDomainAllowed(o.url);
-  }).map(o => ({
-    'start': o.start,
-    'end': o.end
+
+  const media_urls = objs.map(o => ({
+    'end': o.end,
+    'is_audio': isAudioURL(o.url),
+    'is_image': isImageURL(o.url),
+    'is_video': isVideoURL(o.url),
+    'is_encrypted': isEncryptedFileURL(o.url),
+    'start': o.start
   }));
   return media_urls.length ? {
     media_urls
@@ -47037,7 +48048,7 @@ const ModelWithContact = Model.extend({
 });
 /* harmony default export */ const model_with_contact = (ModelWithContact);
 // EXTERNAL MODULE: ./node_modules/filesize/lib/filesize.min.js
-var filesize_min = __webpack_require__(3964);
+var filesize_min = __webpack_require__(1210);
 var filesize_min_default = /*#__PURE__*/__webpack_require__.n(filesize_min);
 ;// CONCATENATED MODULE: ./node_modules/lodash-es/isMatch.js
 
@@ -47107,6 +48118,40 @@ function pruneHistory(model) {
       }
     }
   }
+}
+/**
+ * Given an array of {@link MediaURLMetadata} objects and text, return an
+ * array of {@link MediaURL} objects.
+ * @param { Array<MediaURLMetadata> } arr
+ * @param { String } text
+ * @returns{ Array<MediaURL> }
+ */
+
+function getMediaURLs(arr, text, offset = 0) {
+  /**
+   * @typedef { Object } MediaURLData
+   * An object representing a URL found in a chat message
+   * @property { Boolean } is_audio
+   * @property { Boolean } is_image
+   * @property { Boolean } is_video
+   * @property { String } end
+   * @property { String } start
+   * @property { String } url
+   */
+  return arr.map(o => {
+    const start = o.start - offset;
+    const end = o.end - offset;
+
+    if (start < 0 || start >= text.length) {
+      return null;
+    }
+
+    return Object.assign({}, o, {
+      start,
+      end,
+      'url': text.substring(o.start - offset, o.end - offset)
+    });
+  }).filter(o => o);
 }
 const debouncedPruneHistory = lodash_es_debounce(pruneHistory, 250);
 ;// CONCATENATED MODULE: ./src/headless/plugins/chat/parsers.js
@@ -47297,9 +48342,10 @@ async function parseMessage(stanza, _converse) {
   // messages, since we need to parse the message text to determine whether
   // there are media urls.
 
-  return Object.assign(attrs, getMediaURLs(attrs.is_encrypted ? attrs.plaintext : attrs.body));
+  return Object.assign(attrs, getMediaURLsMetadata(attrs.is_encrypted ? attrs.plaintext : attrs.body));
 }
 ;// CONCATENATED MODULE: ./src/headless/plugins/chat/model.js
+
 
 
 
@@ -47332,7 +48378,7 @@ const ChatBox = model_with_contact.extend({
     return {
       'bookmarked': false,
       'chat_state': undefined,
-      'hidden': shared_converse.isUniView() && !api.settings.get('singleton'),
+      'hidden': isUniView() && !api.settings.get('singleton'),
       'message_type': 'chat',
       'nickname': undefined,
       'num_unread': 0,
@@ -47446,8 +48492,7 @@ const ChatBox = model_with_contact.extend({
     }
   },
 
-  afterMessagesFetched(messages) {
-    this.most_recent_cached_message = messages ? this.getMostRecentMessage(messages) : null;
+  afterMessagesFetched() {
     /**
      * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
      * `sessionStorage` but **NOT** from the server.
@@ -47455,7 +48500,6 @@ const ChatBox = model_with_contact.extend({
      * @type {_converse.ChatBox | _converse.ChatRoom}
      * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
      */
-
     api.trigger('afterMessagesFetched', this);
   },
 
@@ -47465,7 +48509,6 @@ const ChatBox = model_with_contact.extend({
       return;
     }
 
-    this.most_recent_cached_message = null;
     this.messages.fetched_flag = true;
     const resolve = this.messages.fetched.resolve;
     this.messages.fetch({
@@ -47789,11 +48832,9 @@ const ChatBox = model_with_contact.extend({
     }
   },
 
-  getMostRecentMessage(messages) {
-    messages = messages || this.messages;
-
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const message = messages.at(i);
+  getMostRecentMessage() {
+    for (let i = this.messages.length - 1; i >= 0; i--) {
+      const message = this.messages.at(i);
 
       if (message.get('type') === this.get('message_type')) {
         return message;
@@ -47860,9 +48901,9 @@ const ChatBox = model_with_contact.extend({
   shouldShowErrorMessage(attrs) {
     const msg = this.getMessageReferencedByError(attrs);
 
-    if (!msg && !attrs.body) {
+    if (!msg && attrs.chat_state) {
       // If the error refers to a message not included in our store,
-      // and it doesn't have a <body> tag, we assume that this was a
+      // and it has a chat state tag, we assume that this was a
       // CSI message (which we don't store).
       // See https://github.com/conversejs/converse.js/issues/1317
       return;
@@ -48290,7 +49331,7 @@ const ChatBox = model_with_contact.extend({
       body,
       is_spoiler,
       origin_id
-    }, getMediaURLs(text));
+    }, getMediaURLsMetadata(text));
   },
 
   /**
@@ -48334,7 +49375,7 @@ const ChatBox = model_with_contact.extend({
    * before the collection has been fetched.
    * @async
    * @private
-   * @method _converse.ChatBox#queueMessageCreation
+   * @method _converse.ChatBox#createMessage
    * @param { Object } attrs
    */
   async createMessage(attrs, options) {
@@ -48489,7 +49530,7 @@ const ChatBox = model_with_contact.extend({
   },
 
   maybeShow(force) {
-    if (shared_converse.isUniView()) {
+    if (isUniView()) {
       const filter = c => !c.get('hidden') && c.get('jid') !== this.get('jid') && c.get('id') !== 'controlbox';
 
       const other_chats = shared_converse.chatboxes.filter(filter);
@@ -48587,9 +49628,10 @@ const ChatBox = model_with_contact.extend({
 
 
 
-const message_u = core_converse.env.utils;
 const {
-  Strophe: message_Strophe
+  Strophe: message_Strophe,
+  sizzle: message_sizzle,
+  u: message_u
 } = core_converse.env;
 /**
  * Mixin which turns a `ModelWithContact` model into a non-MUC message. These can be either `chat` messages or `headline` messages.
@@ -48739,9 +49781,7 @@ const MessageMixin = {
   },
 
   getDisplayName() {
-    if (this.get('type') === 'groupchat') {
-      return this.get('nick');
-    } else if (this.contact) {
+    if (this.contact) {
       return this.contact.getDisplayName();
     } else if (this.vcard) {
       return this.vcard.getDisplayName();
@@ -48786,6 +49826,19 @@ const MessageMixin = {
     return api.sendIQ(iq);
   },
 
+  getUploadRequestMetadata(stanza) {
+    const headers = message_sizzle(`slot[xmlns="${message_Strophe.NS.HTTPUPLOAD}"] put header`, stanza); // https://xmpp.org/extensions/xep-0363.html#request
+    // TODO: Can't set the Cookie header in JavaScipt, instead cookies need
+    // to be manually set via document.cookie, so we're leaving it out here.
+
+    return {
+      'headers': headers.map(h => ({
+        'name': h.getAttribute('name'),
+        'value': h.textContent
+      })).filter(h => ['Authorization', 'Expires'].includes(h.name))
+    };
+  },
+
   async getRequestSlotURL() {
     const {
       __
@@ -48803,9 +49856,10 @@ const MessageMixin = {
       });
     }
 
-    const slot = stanza.querySelector('slot');
+    const slot = message_sizzle(`slot[xmlns="${message_Strophe.NS.HTTPUPLOAD}"]`, stanza).pop();
 
     if (slot) {
+      this.upload_metadata = this.getUploadRequestMetadata(stanza);
       this.save({
         'get': slot.querySelector('get').getAttribute('url'),
         'put': slot.querySelector('put').getAttribute('url')
@@ -48820,6 +49874,8 @@ const MessageMixin = {
   },
 
   uploadFile() {
+    var _this$upload_metadata;
+
     const xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = async () => {
@@ -48875,6 +49931,7 @@ const MessageMixin = {
 
     xhr.open('PUT', this.get('put'), true);
     xhr.setRequestHeader('Content-type', this.file.type);
+    (_this$upload_metadata = this.upload_metadata.headers) === null || _this$upload_metadata === void 0 ? void 0 : _this$upload_metadata.forEach(h => xhr.setRequestHeader(h.name, h.value));
     xhr.send(this.file);
   }
 
@@ -49887,7 +50944,7 @@ const {
           return shared_converse.disco_entities;
         }
 
-        if (shared_converse.disco_entities === undefined && !api.connection.connected()) {
+        if (shared_converse.disco_entities === undefined) {
           // Happens during tests when disco lookups happen asynchronously after teardown.
           const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
           headless_log.warn(msg);
@@ -50724,6 +51781,12 @@ const ChatRoomMessageMixin = {
     api.trigger('chatRoomMessageInitialized', this);
   },
 
+  getDisplayName() {
+    var _this$occupant;
+
+    return ((_this$occupant = this.occupant) === null || _this$occupant === void 0 ? void 0 : _this$occupant.getDisplayName()) || this.get('nick');
+  },
+
   /**
    * Determines whether this messsage may be moderated,
    * based on configuration settings and server support.
@@ -50733,7 +51796,13 @@ const ChatRoomMessageMixin = {
    * @returns { Boolean }
    */
   mayBeModerated() {
-    return ['all', 'moderator'].includes(api.settings.get('allow_message_retraction')) && this.collection.chatbox.canModerateMessages();
+    if (typeof this.get('from_muc') === 'undefined') {
+      // If from_muc is not defined, then this message hasn't been
+      // reflected yet, which means we won't have a XEP-0359 stanza id.
+      return;
+    }
+
+    return ['all', 'moderator'].includes(api.settings.get('allow_message_retraction')) && this.get(`stanza_id ${this.get('from_muc')}`) && this.collection.chatbox.canModerateMessages();
   },
 
   checkValidity() {
@@ -50758,20 +51827,26 @@ const ChatRoomMessageMixin = {
   },
 
   onOccupantAdded(occupant) {
-    if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-      var _this$collection2;
+    var _this$collection2;
 
-      this.occupant = occupant;
-      this.trigger('occupantAdded');
-      this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-      const chatbox = this === null || this === void 0 ? void 0 : (_this$collection2 = this.collection) === null || _this$collection2 === void 0 ? void 0 : _this$collection2.chatbox;
-
-      if (!chatbox) {
-        return headless_log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
+    if (this.get('occupant_id')) {
+      if (occupant.get('occupant_id') !== this.get('occupant_id')) {
+        return;
       }
-
-      this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
+    } else if (occupant.get('nick') !== Strophe.getResourceFromJid(this.get('from'))) {
+      return;
     }
+
+    this.occupant = occupant;
+    this.trigger('occupantAdded');
+    this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
+    const chatbox = this === null || this === void 0 ? void 0 : (_this$collection2 = this.collection) === null || _this$collection2 === void 0 ? void 0 : _this$collection2.chatbox;
+
+    if (!chatbox) {
+      return headless_log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
+    }
+
+    this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
   },
 
   setOccupant() {
@@ -50788,8 +51863,9 @@ const ChatRoomMessageMixin = {
     }
 
     const nick = Strophe.getResourceFromJid(this.get('from'));
-    this.occupant = chatbox.occupants.findWhere({
-      nick
+    this.occupant = chatbox.occupants.findOccupant({
+      nick,
+      'occupant_id': this.get('occupant_id')
     });
 
     if (!this.occupant && api.settings.get('muc_send_probes')) {
@@ -50993,12 +52069,30 @@ function getMEPActivities(stanza) {
         message,
         reason,
         references,
-        'type': 'info'
+        'type': 'mep'
       };
     }
 
     return {};
   });
+}
+/**
+ * Given a MUC stanza, check whether it has extended message information that
+ * includes the sender's real JID, as described here:
+ * https://xmpp.org/extensions/xep-0313.html#business-storeret-muc-archives
+ *
+ * If so, parse and return that data and return the user's JID
+ *
+ * Note, this function doesn't check whether this is actually a MAM archived stanza.
+ *
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @returns { Object }
+ */
+
+function getJIDFromMUCUserData(stanza) {
+  const item = muc_parsers_sizzle(`x[xmlns="${muc_parsers_Strophe.NS.MUC_USER}"] item`, stanza).pop();
+  return item === null || item === void 0 ? void 0 : item.getAttribute('jid');
 }
 /**
  * @private
@@ -51007,6 +52101,7 @@ function getMEPActivities(stanza) {
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
  * @returns { Object }
  */
+
 
 function getModerationAttributes(stanza) {
   const fastening = muc_parsers_sizzle(`apply-to[xmlns="${muc_parsers_Strophe.NS.FASTEN}"]`, stanza).pop();
@@ -51052,6 +52147,14 @@ function getModerationAttributes(stanza) {
 
   return {};
 }
+
+function getOccupantID(stanza, chatbox) {
+  if (chatbox.features.get(muc_parsers_Strophe.NS.OCCUPANTID)) {
+    var _sizzle$pop;
+
+    return (_sizzle$pop = muc_parsers_sizzle(`occupant-id[xmlns="${muc_parsers_Strophe.NS.OCCUPANTID}"]`, stanza).pop()) === null || _sizzle$pop === void 0 ? void 0 : _sizzle$pop.getAttribute('id');
+  }
+}
 /**
  * Parses a passed in message stanza and returns an object of attributes.
  * @param { XMLElement } stanza - The message stanza
@@ -51064,7 +52167,7 @@ function getModerationAttributes(stanza) {
 
 
 async function parseMUCMessage(stanza, chatbox, _converse) {
-  var _stanza, _stanza$querySelector, _stanza$querySelector2, _chatbox$occupants$fi, _stanza$querySelector3, _stanza$querySelector4;
+  var _stanza$querySelector, _stanza$querySelector2, _stanza$querySelector3, _stanza$querySelector4, _chatbox$occupants$fi;
 
   throwErrorIfInvalidForward(stanza);
   const selector = `[xmlns="${parsers_NS.MAM}"] > forwarded[xmlns="${parsers_NS.FORWARD}"] > message`;
@@ -51077,6 +52180,7 @@ async function parseMUCMessage(stanza, chatbox, _converse) {
 
   const delay = muc_parsers_sizzle(`delay[xmlns="${muc_parsers_Strophe.NS.DELAY}"]`, original_stanza).pop();
   const from = stanza.getAttribute('from');
+  const from_muc = muc_parsers_Strophe.getBareJidFromJid(from);
   const nick = muc_parsers_Strophe.unescapeNode(muc_parsers_Strophe.getResourceFromJid(from));
   const marker = getChatMarker(stanza);
   const now = new Date().toISOString();
@@ -51119,6 +52223,7 @@ async function parseMUCMessage(stanza, chatbox, _converse) {
    * @property { String } moderation_reason - The reason provided why this message moderates another
    * @property { String } msgid - The root `id` attribute of the stanza
    * @property { String } nick - The MUC nickname of the sender
+   * @property { String } occupant_id - The XEP-0421 occupant ID
    * @property { String } oob_desc - The description of the XEP-0066 out of band data
    * @property { String } oob_url - The URL of the XEP-0066 out of band data
    * @property { String } origin_id - The XEP-0359 Origin ID
@@ -51138,15 +52243,12 @@ async function parseMUCMessage(stanza, chatbox, _converse) {
 
   let attrs = Object.assign({
     from,
+    from_muc,
     nick,
-    'is_forwarded': !!((_stanza = stanza) !== null && _stanza !== void 0 && _stanza.querySelector('forwarded')),
+    'is_forwarded': !!stanza.querySelector('forwarded'),
     'activities': getMEPActivities(stanza),
     'body': (_stanza$querySelector = stanza.querySelector('body')) === null || _stanza$querySelector === void 0 ? void 0 : (_stanza$querySelector2 = _stanza$querySelector.textContent) === null || _stanza$querySelector2 === void 0 ? void 0 : _stanza$querySelector2.trim(),
     'chat_state': getChatState(stanza),
-    'from_muc': muc_parsers_Strophe.getBareJidFromJid(from),
-    'from_real_jid': (_chatbox$occupants$fi = chatbox.occupants.findOccupant({
-      nick
-    })) === null || _chatbox$occupants$fi === void 0 ? void 0 : _chatbox$occupants$fi.get('jid'),
     'is_archived': isArchived(original_stanza),
     'is_carbon': isCarbon(original_stanza),
     'is_delayed': !!delay,
@@ -51156,6 +52258,7 @@ async function parseMUCMessage(stanza, chatbox, _converse) {
     'is_unstyled': !!muc_parsers_sizzle(`unstyled[xmlns="${muc_parsers_Strophe.NS.STYLING}"]`, stanza).length,
     'marker_id': marker && marker.getAttribute('id'),
     'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+    'occupant_id': getOccupantID(stanza, chatbox),
     'receipt_id': getReceiptId(stanza),
     'received': new Date().toISOString(),
     'references': getReferences(stanza),
@@ -51166,7 +52269,9 @@ async function parseMUCMessage(stanza, chatbox, _converse) {
     'type': stanza.getAttribute('type')
   }, getErrorAttributes(stanza), getOutOfBandAttributes(stanza), getSpoilerAttributes(stanza), getCorrectionAttributes(stanza, original_stanza), getStanzaIDs(stanza, original_stanza), getOpenGraphMetadata(stanza), getRetractionAttributes(stanza, original_stanza), getModerationAttributes(stanza), getEncryptionAttributes(stanza, _converse));
   await api.emojis.initialize();
+  const from_real_jid = attrs.is_archived && getJIDFromMUCUserData(stanza, attrs) || ((_chatbox$occupants$fi = chatbox.occupants.findOccupant(attrs)) === null || _chatbox$occupants$fi === void 0 ? void 0 : _chatbox$occupants$fi.get('jid'));
   attrs = Object.assign({
+    from_real_jid,
     'is_only_emojis': attrs.body ? parsers_u.isOnlyEmojis(attrs.body) : false,
     'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
     'message': attrs.body || attrs.error,
@@ -51193,7 +52298,7 @@ async function parseMUCMessage(stanza, chatbox, _converse) {
   // messages, since we need to parse the message text to determine whether
   // there are media urls.
 
-  return Object.assign(attrs, getMediaURLs(attrs.is_encrypted ? attrs.plaintext : attrs.body));
+  return Object.assign(attrs, getMediaURLsMetadata(attrs.is_encrypted ? attrs.plaintext : attrs.body));
 }
 /**
  * Given an IQ stanza with a member list, create an array of objects containing
@@ -51245,14 +52350,27 @@ function parseMemberListIQ(iq) {
  * Parses a passed in MUC presence stanza and returns an object of attributes.
  * @method parseMUCPresence
  * @param { XMLElement } stanza - The presence stanza
- * @returns { Object }
+ * @param { _converse.ChatRoom } chatbox
+ * @returns { MUCPresenceAttributes }
  */
 
-function parseMUCPresence(stanza) {
+function parseMUCPresence(stanza, chatbox) {
+  /**
+   * @typedef { Object } MUCPresenceAttributes
+   * The object which {@link parseMUCPresence} returns
+   * @property { ("offline|online") } show
+   * @property { Array<MUCHat> } hats - An array of XEP-0317 hats
+   * @property { Array<string> } states
+   * @property { String } from - The sender JID (${muc_jid}/${nick})
+   * @property { String } nick - The nickname of the sender
+   * @property { String } occupant_id - The XEP-0421 occupant ID
+   * @property { String } type - The type of presence
+   */
   const from = stanza.getAttribute('from');
   const type = stanza.getAttribute('type');
   const data = {
     'from': from,
+    'occupant_id': getOccupantID(stanza, chatbox),
     'nick': muc_parsers_Strophe.getResourceFromJid(from),
     'type': type,
     'states': [],
@@ -51280,6 +52398,12 @@ function parseMUCPresence(stanza) {
 
       data.image_hash = (_child$querySelector = child.querySelector('photo')) === null || _child$querySelector === void 0 ? void 0 : _child$querySelector.textContent;
     } else if (child.matches('hats') && child.getAttribute('xmlns') === muc_parsers_Strophe.NS.MUC_HATS) {
+      /**
+       * @typedef { Object } MUCHat
+       * Object representing a XEP-0371 Hat
+       * @property { String } title
+       * @property { String } uri
+       */
       data['hats'] = Array.from(child.children).map(c => c.matches('hat') && {
         'title': c.getAttribute('title'),
         'uri': c.getAttribute('uri')
@@ -51351,7 +52475,7 @@ async function getAffiliationList(affiliation, muc_jid) {
 /**
  * Given an occupant model, see which affiliations may be assigned to that user.
  * @param { Model } occupant
- * @returns { ('owner', 'admin', 'member', 'outcast', 'none')[] } - An array of assignable affiliations
+ * @returns { Array<('owner'|'admin'|'member'|'outcast'|'none')> } - An array of assignable affiliations
  */
 
 function getAssignableAffiliations(occupant) {
@@ -51374,7 +52498,7 @@ shared_converse.getAssignableAffiliations = getAssignableAffiliations;
 /**
  * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
  * See: https://xmpp.org/extensions/xep-0045.html#modifymember
- * @param { Object[] } users
+ * @param { Array<Object> } users
  * @param { string } users[].jid - The JID of the user whose affiliation will change
  * @param { Array } users[].affiliation - The new affiliation for this user
  * @param { string } [users[].reason] - An optional reason for the affiliation change
@@ -51509,6 +52633,7 @@ function computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, 
 
 
 
+
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
@@ -51537,7 +52662,7 @@ const ChatRoomMixin = {
       'chat_state': undefined,
       'has_activity': false,
       // XEP-437
-      'hidden': shared_converse.isUniView() && !api.settings.get('singleton'),
+      'hidden': isUniView() && !api.settings.get('singleton'),
       'hidden_occupants': !!api.settings.get('hide_muc_participants'),
       'message_type': 'groupchat',
       'name': '',
@@ -51708,7 +52833,7 @@ const ChatRoomMixin = {
    *  message, even if it didn't include a `markable` element.
    */
   sendMarkerForMessage(msg, type = 'displayed', force = false) {
-    if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+    if (!msg || !api.settings.get('send_chat_markers').includes(type) || (msg === null || msg === void 0 ? void 0 : msg.get('type')) !== 'groupchat') {
       return;
     }
 
@@ -51751,11 +52876,12 @@ const ChatRoomMixin = {
    * @method _converse.ChatRoom#onHiddenChange
    */
   async onHiddenChange() {
+    const roomstatus = core_converse.ROOMSTATUS;
     const conn_status = this.session.get('connection_status');
 
     if (this.get('hidden')) {
-      if (conn_status === core_converse.ROOMSTATUS.ENTERED && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
-        if (conn_status !== core_converse.ROOMSTATUS.DISCONNECTED) {
+      if (conn_status === roomstatus.ENTERED && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+        if (conn_status !== roomstatus.DISCONNECTED && conn_status !== roomstatus.CLOSING) {
           this.sendMarkerForLastMessage('received', true);
           await this.leave();
         }
@@ -51763,7 +52889,7 @@ const ChatRoomMixin = {
         this.enableRAI();
       }
     } else {
-      if (conn_status === core_converse.ROOMSTATUS.DISCONNECTED) {
+      if (conn_status === roomstatus.DISCONNECTED) {
         this.rejoin();
       }
 
@@ -51826,7 +52952,12 @@ const ChatRoomMixin = {
   async onConnectionStatusChanged() {
     if (this.session.get('connection_status') === core_converse.ROOMSTATUS.ENTERED) {
       if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
-        await this.leave();
+        try {
+          await this.leave();
+        } catch (e) {
+          headless_log.error(e);
+        }
+
         this.enableRAI();
       } else {
         await this.onRoomEntered();
@@ -52057,8 +53188,8 @@ const ChatRoomMixin = {
     }
     /**
      * @typedef { Object } MUCMessageData
-     * An object containing the parsed { @link MUCMessageAttributes } and
-     * current { @link ChatRoom }.
+     * An object containing the parsed {@link MUCMessageAttributes} and
+     * current {@link ChatRoom}.
      * @property { MUCMessageAttributes } attrs
      * @property { ChatRoom } chatbox
      */
@@ -52348,18 +53479,29 @@ const ChatRoomMixin = {
   async leave(exit_msg) {
     var _converse$disco_entit;
 
-    this.features.destroy();
+    api.connection.connected() && api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg); // Delete the features model
+
+    if (this.features) {
+      await new Promise(resolve => this.features.destroy({
+        'success': resolve,
+        'error': (m, e) => {
+          headless_log.error(e);
+          resolve();
+        }
+      }));
+    } // Delete disco entity
+
+
     const disco_entity = (_converse$disco_entit = shared_converse.disco_entities) === null || _converse$disco_entit === void 0 ? void 0 : _converse$disco_entit.get(this.get('jid'));
 
     if (disco_entity) {
-      await new Promise((success, error) => disco_entity.destroy({
-        success,
-        error
+      await new Promise(resolve => disco_entity.destroy({
+        'success': resolve,
+        'error': (m, e) => {
+          headless_log.error(e);
+          resolve();
+        }
       }));
-    }
-
-    if (api.connection.connected()) {
-      api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
     }
 
     utils_form.safeSave(this.session, {
@@ -52368,12 +53510,12 @@ const ChatRoomMixin = {
   },
 
   async close(ev) {
+    utils_form.safeSave(this.session, {
+      'connection_status': core_converse.ROOMSTATUS.CLOSING
+    });
+    this.sendMarkerForLastMessage('received', true);
+    await this.unregisterNickname();
     await this.leave();
-
-    if (api.settings.get('auto_register_muc_nickname') === 'unregister' && (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))) {
-      this.unregisterNickname();
-    }
-
     this.occupants.clearStore();
 
     if ((ev === null || ev === void 0 ? void 0 : ev.name) !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
@@ -52382,14 +53524,6 @@ const ChatRoomMixin = {
 
 
     await new Promise(resolve => this.session.destroy({
-      'success': resolve,
-      'error': (m, e) => {
-        headless_log.error(e);
-        resolve();
-      }
-    })); // Delete the features model
-
-    await new Promise(resolve => this.features.destroy({
       'success': resolve,
       'error': (m, e) => {
         headless_log.error(e);
@@ -52506,7 +53640,7 @@ const ChatRoomMixin = {
       'nick': this.get('nick'),
       'sender': 'me',
       'type': 'groupchat'
-    }, getMediaURLs(text));
+    }, getMediaURLsMetadata(text));
   },
 
   /**
@@ -52679,6 +53813,8 @@ const ChatRoomMixin = {
       if (!fieldname.startsWith('muc_')) {
         if (fieldname === Strophe.NS.MAM) {
           attrs.mam_enabled = true;
+        } else {
+          attrs[fieldname] = true;
         }
 
         return;
@@ -53002,14 +54138,47 @@ const ChatRoomMixin = {
   /**
    * Get the {@link _converse.ChatRoomOccupant} instance which
    * represents the current user.
-   * @private
    * @method _converse.ChatRoom#getOwnOccupant
    * @returns { _converse.ChatRoomOccupant }
    */
   getOwnOccupant() {
-    return this.occupants.findWhere({
-      'jid': shared_converse.bare_jid
-    });
+    return this.occupants.getOwnOccupant();
+  },
+
+  async setNickname(nick) {
+    if (api.settings.get('auto_register_muc_nickname') && (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))) {
+      const old_nick = this.get('nick');
+      this.set({
+        nick
+      });
+
+      try {
+        await this.registerNickname();
+      } catch (e) {
+        const {
+          __
+        } = shared_converse;
+        headless_log.error(e);
+
+        const message = __("Error: couldn't register new nickname in members only room");
+
+        this.createMessage({
+          message,
+          'type': 'error'
+        });
+        this.set({
+          'nick': old_nick
+        });
+        return;
+      }
+    }
+
+    const jid = Strophe.getBareJidFromJid(this.get('jid'));
+    api.send($pres({
+      from: shared_converse.connection.jid,
+      to: `${jid}/${nick}`,
+      id: utils_form.getUniqueId()
+    }).tree());
   },
 
   /**
@@ -53237,14 +54406,30 @@ const ChatRoomMixin = {
   },
 
   /**
+   * Check whether we should unregister the user from this MUC, and if so,
+   * call { @link _converse.ChatRoom#sendUnregistrationIQ }
+   * @method _converse.ChatRoom#unregisterNickname
+   */
+  async unregisterNickname() {
+    if (api.settings.get('auto_register_muc_nickname') === 'unregister') {
+      try {
+        if (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
+          await this.sendUnregistrationIQ();
+        }
+      } catch (e) {
+        headless_log.error(e);
+      }
+    }
+  },
+
+  /**
    * Send an IQ stanza to the MUC to unregister this user's nickname.
    * If the user had a 'member' affiliation, it'll be removed and their
    * nickname will no longer be reserved and can instead be used (and
    * registered) by other users.
-   * @private
-   * @method _converse.ChatRoom#unregisterNickname
+   * @method _converse.ChatRoom#sendUnregistrationIQ
    */
-  unregisterNickname() {
+  sendUnregistrationIQ() {
     const iq = $iq({
       'to': this.get('jid'),
       'type': 'set'
@@ -53263,9 +54448,9 @@ const ChatRoomMixin = {
   updateOccupantsOnPresence(pres) {
     var _occupant$attributes, _occupant$attributes2;
 
-    const data = parseMUCPresence(pres);
+    const data = parseMUCPresence(pres, this);
 
-    if (data.type === 'error' || !data.jid && !data.nick) {
+    if (data.type === 'error' || !data.jid && !data.nick && !data.occupant_id) {
       return true;
     }
 
@@ -53458,6 +54643,8 @@ const ChatRoomMixin = {
   getUpdatedMessageAttributes(message, attrs) {
     const new_attrs = shared_converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs);
 
+    new_attrs['from_muc'] = attrs['from_muc'];
+
     if (this.isOwnMessage(attrs)) {
       const stanza_id_keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id'));
       Object.assign(new_attrs, lodash_es_pick(attrs, stanza_id_keys));
@@ -53521,7 +54708,14 @@ const ChatRoomMixin = {
    * @returns {Promise<boolean>}
    */
   async shouldShowErrorMessage(attrs) {
-    if (attrs['error_condition'] === 'not-acceptable' && (await this.rejoinIfNecessary())) {
+    if (attrs.error_type === 'Decryption') {
+      if (attrs.error_message === "Message key not found. The counter was repeated or the key was not filled.") {
+        // OMEMO message which we already decrypted before
+        return false;
+      } else if (attrs.error_condition === 'not-encrypted-for-this-device') {
+        return false;
+      }
+    } else if (attrs.error_condition === 'not-acceptable' && (await this.rejoinIfNecessary())) {
       return false;
     }
 
@@ -53738,10 +54932,6 @@ const ChatRoomMixin = {
   },
 
   handleMetadataFastening(attrs) {
-    if (!api.settings.get('muc_show_ogp_unfurls')) {
-      return false;
-    }
-
     if (attrs.ogp_for_id) {
       if (attrs.from !== this.get('jid')) {
         // For now we only allow metadata from the MUC itself and not
@@ -53771,7 +54961,7 @@ const ChatRoomMixin = {
   },
 
   /**
-   * Given { @link MessageAttributes } look for XEP-0316 Room Notifications and create info
+   * Given {@link MessageAttributes} look for XEP-0316 Room Notifications and create info
    * messages for them.
    * @param { XMLElement } stanza
    */
@@ -53783,10 +54973,7 @@ const ChatRoomMixin = {
     }
 
     (_attrs$activities = attrs.activities) === null || _attrs$activities === void 0 ? void 0 : _attrs$activities.forEach(activity_attrs => {
-      const data = Object.assign({
-        'msgid': attrs.msgid,
-        'from_muc': attrs.from
-      }, activity_attrs);
+      const data = Object.assign(attrs, activity_attrs);
       this.createMessage(data); // Trigger so that notifications are shown
 
       api.trigger('message', {
@@ -53802,7 +54989,7 @@ const ChatRoomMixin = {
    * passed in attributes map.
    * @method _converse.ChatRoom#getDuplicateMessage
    * @param { object } attrs - Attributes representing a received
-   *  message, as returned by { @link parseMUCMessage }
+   *  message, as returned by {@link parseMUCMessage}
    * @returns {Promise<_converse.Message>}
    */
   getDuplicateMessage(attrs) {
@@ -53810,7 +54997,7 @@ const ChatRoomMixin = {
 
     if ((_attrs$activities2 = attrs.activities) !== null && _attrs$activities2 !== void 0 && _attrs$activities2.length) {
       return this.messages.findWhere({
-        'type': 'info',
+        'type': 'mep',
         'msgid': attrs.msgid
       });
     } else {
@@ -53831,6 +55018,8 @@ const ChatRoomMixin = {
     if (utils_form.isErrorObject(attrs)) {
       attrs.stanza && headless_log.error(attrs.stanza);
       return headless_log.error(attrs.message);
+    } else if (attrs.type === 'error' && !(await this.shouldShowErrorMessage(attrs))) {
+      return;
     }
 
     const message = this.getDuplicateMessage(attrs);
@@ -54018,7 +55207,8 @@ const ChatRoomMixin = {
   createInfoMessage(code, stanza, is_self) {
     const __ = shared_converse.__;
     const data = {
-      'type': 'info'
+      'type': 'info',
+      'is_ephemeral': true
     };
 
     if (!shared_converse.isInfoVisible(code)) {
@@ -54053,9 +55243,6 @@ const ChatRoomMixin = {
 
     if (data.message) {
       if (code === '201' && this.messages.findWhere(data)) {
-        return;
-      } else if (code in shared_converse.muc.info_messages && this.messages.length && this.messages.pop().get('message') === data.message) {
-        // XXX: very naive duplication checking
         return;
       }
 
@@ -54258,7 +55445,7 @@ const ChatRoomMixin = {
     await this.occupants.fetched;
     const old_status = this.session.get('connection_status');
 
-    if (stanza.getAttribute('type') !== 'unavailable' && old_status !== core_converse.ROOMSTATUS.ENTERED) {
+    if (stanza.getAttribute('type') !== 'unavailable' && old_status !== core_converse.ROOMSTATUS.ENTERED && old_status !== core_converse.ROOMSTATUS.CLOSING) {
       // Set connection_status before creating the occupant, but
       // only trigger afterwards, so that plugins can access the
       // occupant in their event handlers.
@@ -54302,10 +55489,6 @@ const ChatRoomMixin = {
         }
       }
     }
-
-    this.session.save({
-      'connection_status': core_converse.ROOMSTATUS.ENTERED
-    });
   },
 
   /**
@@ -54419,6 +55602,13 @@ const ChatRoomOccupant = Model.extend({
 
 });
 /* harmony default export */ const occupant = (ChatRoomOccupant);
+;// CONCATENATED MODULE: ./src/headless/plugins/muc/constants.js
+const MUC_ROLE_WEIGHTS = {
+  'moderator': 1,
+  'participant': 2,
+  'visitor': 3,
+  'none': 2
+};
 ;// CONCATENATED MODULE: ./src/headless/plugins/muc/occupants.js
 
 
@@ -54426,12 +55616,7 @@ const ChatRoomOccupant = Model.extend({
 
 
 
-const MUC_ROLE_WEIGHTS = {
-  'moderator': 1,
-  'participant': 2,
-  'visitor': 3,
-  'none': 2
-};
+
 /**
  * A list of {@link _converse.ChatRoomOccupant} instances, representing participants in a MUC.
  * @class
@@ -54455,12 +55640,31 @@ const ChatRoomOccupants = Collection.extend({
     }
   },
 
+  /**
+   * Get the {@link _converse.ChatRoomOccupant} instance which
+   * represents the current user.
+   * @method _converse.ChatRoomOccupants#getOwnOccupant
+   * @returns { _converse.ChatRoomOccupant }
+   */
+  getOwnOccupant() {
+    return this.findWhere({
+      'jid': shared_converse.bare_jid
+    });
+  },
+
   getAutoFetchedAffiliationLists() {
     const affs = api.settings.get('muc_fetch_members');
     return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
   },
 
   async fetchMembers() {
+    var _this$getOwnOccupant;
+
+    if (!['member', 'admin', 'owner'].includes((_this$getOwnOccupant = this.getOwnOccupant()) === null || _this$getOwnOccupant === void 0 ? void 0 : _this$getOwnOccupant.get('affiliation'))) {
+      // https://xmpp.org/extensions/xep-0045.html#affil-priv
+      return;
+    }
+
     const affiliations = this.getAutoFetchedAffiliationLists();
 
     if (affiliations.length === 0) {
@@ -54479,26 +55683,15 @@ const ChatRoomOccupants = Collection.extend({
     removed_members.forEach(occupant => {
       if (occupant.get('jid') === shared_converse.bare_jid) {
         return;
-      }
-
-      if (occupant.get('show') === 'offline') {
+      } else if (occupant.get('show') === 'offline') {
         occupant.destroy();
       } else {
         occupant.save('affiliation', null);
       }
     });
     new_members.forEach(attrs => {
-      const occupant = attrs.jid ? this.findOccupant({
-        'jid': attrs.jid
-      }) : this.findOccupant({
-        'nick': attrs.nick
-      });
-
-      if (occupant) {
-        occupant.save(attrs);
-      } else {
-        this.create(attrs);
-      }
+      const occupant = this.findOccupant(attrs);
+      occupant ? occupant.save(attrs) : this.create(attrs);
     });
     /**
      * Triggered once the member lists for this MUC have been fetched and processed.
@@ -54513,6 +55706,7 @@ const ChatRoomOccupants = Collection.extend({
    * @typedef { Object} OccupantData
    * @property { String } [jid]
    * @property { String } [nick]
+   * @property { String } [occupant_id]
    */
 
   /**
@@ -54522,15 +55716,16 @@ const ChatRoomOccupants = Collection.extend({
    * If we have a JID, we use that as lookup variable,
    * otherwise we use the nick. We don't always have both,
    * but should have at least one or the other.
-   * @private
    * @method _converse.ChatRoomOccupants#findOccupant
    * @param { OccupantData } data
    */
   findOccupant(data) {
-    const jid = Strophe.getBareJidFromJid(data.jid);
+    const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
     return jid && this.findWhere({
       jid
-    }) || this.findWhere({
+    }) || data.occupant_id && this.findWhere({
+      'occupant_id': data.occupant_id
+    }) || data.nick && this.findWhere({
       'nick': data.nick
     });
   }
@@ -54558,6 +55753,21 @@ const ChatRoomOccupants = Collection.extend({
      * @param { String } users[].jid - The JID of the user whose affiliation will change
      * @param { ('outcast'|'member'|'admin'|'owner') } users[].affiliation - The new affiliation for this user
      * @param { String } [users[].reason] - An optional reason for the affiliation change
+     * @returns { Promise }
+     *
+     * @example
+     *  api.rooms.affiliations.set(
+     *      [
+     *          'muc1@muc.example.org',
+     *          'muc2@muc.example.org'
+     *      ], [
+     *          {
+     *              'jid': 'user@example.org',
+     *              'affiliation': 'member',
+     *              'reason': "You're one of us now!"
+     *          }
+     *      ]
+     *  )
      */
     set(muc_jids, users) {
       users = !Array.isArray(users) ? [users] : users;
@@ -54643,7 +55853,7 @@ const ChatRoomOccupants = Collection.extend({
      * @returns {Promise} Promise which resolves with the Model representing the chat.
      *
      * @example
-     * this.api.rooms.open('group@muc.example.com')
+     * api.rooms.open('group@muc.example.com')
      *
      * @example
      * // To return an array of rooms, provide an array of room JIDs:
@@ -54756,7 +55966,7 @@ const {
 /**
  * Given an occupant model, see which roles may be assigned to that user.
  * @param { Model } occupant
- * @returns { ('moderator', 'participant', 'visitor')[] } - An array of assignable roles
+ * @returns { Array<('moderator'|'participant'|'visitor')> } - An array of assignable roles
  */
 
 function getAssignableRoles(occupant) {
@@ -55067,7 +56277,8 @@ core_converse.ROOMSTATUS = {
   DISCONNECTED: 4,
   ENTERED: 5,
   DESTROYED: 6,
-  BANNED: 7
+  BANNED: 7,
+  CLOSING: 8
 };
 core_converse.plugins.add('converse-muc', {
   /* Optional dependencies are other plugins which might be
@@ -55082,7 +56293,7 @@ core_converse.plugins.add('converse-muc', {
    *
    * NB: These plugins need to have already been loaded via require.js.
    */
-  dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco', 'converse-controlbox'],
+  dependencies: ['converse-chatboxes', 'converse-chat', 'converse-disco'],
   overrides: {
     ChatBoxes: {
       model(attrs, options) {
@@ -55130,7 +56341,6 @@ core_converse.plugins.add('converse-muc', {
       'muc_send_probes': false,
       'muc_show_info_messages': [...core_converse.MUC.INFO_CODES.visibility_changes, ...core_converse.MUC.INFO_CODES.self, ...core_converse.MUC.INFO_CODES.non_privacy_changes, ...core_converse.MUC.INFO_CODES.muc_logging_changes, ...core_converse.MUC.INFO_CODES.nickname_changes, ...core_converse.MUC.INFO_CODES.disconnected, ...core_converse.MUC.INFO_CODES.affiliation_changes, ...core_converse.MUC.INFO_CODES.join_leave_events, ...core_converse.MUC.INFO_CODES.role_changes],
       'muc_show_logs_before_join': false,
-      'muc_show_ogp_unfurls': true,
       'muc_subscribe_to_rai': false
     });
     api.promises.add(['roomsAutoJoined']);
@@ -55252,7 +56462,7 @@ const Bookmark = Model.extend({
 });
 /* harmony default export */ const bookmarks_model = (Bookmark);
 // EXTERNAL MODULE: ./node_modules/jed/jed.js
-var jed = __webpack_require__(6336);
+var jed = __webpack_require__(6066);
 var jed_default = /*#__PURE__*/__webpack_require__.n(jed);
 ;// CONCATENATED MODULE: ./src/i18n/index.js
 /**
@@ -55592,7 +56802,7 @@ const {
 async function checkBookmarksSupport() {
   const identity = await api.disco.getIdentity('pubsub', 'pep', shared_converse.bare_jid);
 
-  if (shared_converse.allow_public_bookmarks) {
+  if (api.settings.get('allow_public_bookmarks')) {
     return !!identity;
   } else {
     return api.disco.supports(bookmarks_utils_Strophe.NS.PUBSUB + '#publish-options', shared_converse.bare_jid);
@@ -56494,7 +57704,7 @@ class RSM {
   }
   /**
    * Returns a `<set>` XML element that confirms to XEP-0059 Result Set Management.
-   * The element is constructed based on the { @link module:converse-rsm~RSMQueryParameters }
+   * The element is constructed based on the {@link module:converse-rsm~RSMQueryParameters}
    * that are set on this RSM instance.
    * @returns { XMLElement }
    */
@@ -56571,7 +57781,7 @@ const api_u = core_converse.env.utils;
      */
 
     /**
-     * The options that can be passed in to the { @link _converse.api.archive.query } method
+     * The options that can be passed in to the {@link _converse.api.archive.query } method
      * @typedef { module:converse-mam~MAMFilterParameters } ArchiveQueryOptions
      * @property { Boolean } [groupchat=false] - Whether the MAM archive is for a groupchat.
      */
@@ -56586,7 +57796,7 @@ const api_u = core_converse.env.utils;
      * @param { module:converse-mam~ArchiveQueryOptions } options - An object containing query parameters
      * @throws {Error} An error is thrown if the XMPP server responds with an error.
      * @returns { Promise<module:converse-mam~MAMQueryResult> } A promise which resolves
-     *     to a { @link module:converse-mam~MAMQueryResult } object.
+     *     to a {@link module:converse-mam~MAMQueryResult } object.
      *
      * @example
      * // Requesting all archived messages
@@ -56872,7 +58082,7 @@ const api_u = core_converse.env.utils;
       /**
        * @typedef { Object } MAMQueryResult
        * @property { Array } messages
-       * @property { RSM } [rsm] - An instance of { @link RSM }.
+       * @property { RSM } [rsm] - An instance of {@link RSM}.
        *  You can call `next()` or `previous()` on this instance,
        *  to get the RSM query parameters for the next or previous
        *  page in the result set.
@@ -57121,7 +58331,7 @@ function fetchNewestMessages(model) {
     return;
   }
 
-  const most_recent_msg = model.most_recent_cached_message; // if clear_messages_on_reconnection is true, than any recent messages
+  const most_recent_msg = model.getMostRecentMessage(); // if clear_messages_on_reconnection is true, than any recent messages
   // must have been received *after* connection and we instead must query
   // for earlier messages
 
@@ -57576,7 +58786,7 @@ const XMPPStatus = Model.extend({
   },
 
   getNickname() {
-    return shared_converse.nickname;
+    return api.settings.get('nickname');
   },
 
   getFullname() {
@@ -57645,7 +58855,8 @@ const XMPPStatus = Model.extend({
      */
     async send(type, to, status, child_nodes) {
       await api.waitUntil('statusInitialized');
-      const presence = await shared_converse.xmppstatus.constructPresence(type, to, status);
+      const model = shared_converse.xmppstatus;
+      const presence = await model.constructPresence(type, to, status);
 
       if (child_nodes) {
         if (!Array.isArray(child_nodes)) {
@@ -57656,6 +58867,23 @@ const XMPPStatus = Model.extend({
       }
 
       api.send(presence);
+
+      if (['away', 'chat', 'dnd', 'online', 'xa', undefined].includes(type)) {
+        const mucs = await api.rooms.get();
+        mucs.forEach(async muc => {
+          const presence = await model.constructPresence(type, muc.getRoomJIDAndNick(), status);
+
+          if (child_nodes) {
+            if (!Array.isArray(child_nodes)) {
+              child_nodes = [child_nodes];
+            }
+
+            child_nodes.map(c => (c === null || c === void 0 ? void 0 : c.tree()) ?? c).forEach(c => presence.cnode(c).up());
+          }
+
+          api.send(presence);
+        });
+      }
     }
 
   },
@@ -59497,9 +60725,385 @@ core_converse.plugins.add('converse-smacks', {
   }
 
 });
-;// CONCATENATED MODULE: ./src/headless/plugins/vcard.js
+;// CONCATENATED MODULE: ./src/headless/plugins/vcard/vcard.js
+
+
 /**
- * @module converse-vcard
+ * Represents a VCard
+ * @class
+ * @namespace _converse.VCard
+ * @memberOf _converse
+ */
+
+const VCard = Model.extend({
+  defaults: {
+    'image': shared_converse.DEFAULT_IMAGE,
+    'image_type': shared_converse.DEFAULT_IMAGE_TYPE
+  },
+
+  set(key, val, options) {
+    // Override Model.prototype.set to make sure that the
+    // default `image` and `image_type` values are maintained.
+    let attrs;
+
+    if (typeof key === 'object') {
+      attrs = key;
+      options = val;
+    } else {
+      (attrs = {})[key] = val;
+    }
+
+    if ('image' in attrs && !attrs['image']) {
+      attrs['image'] = shared_converse.DEFAULT_IMAGE;
+      attrs['image_type'] = shared_converse.DEFAULT_IMAGE_TYPE;
+      return Model.prototype.set.call(this, attrs, options);
+    } else {
+      return Model.prototype.set.apply(this, arguments);
+    }
+  },
+
+  getDisplayName() {
+    return this.get('nickname') || this.get('fullname') || this.get('jid');
+  }
+
+});
+/* harmony default export */ const vcard = (VCard);
+;// CONCATENATED MODULE: ./src/headless/plugins/vcard/utils.js
+
+
+
+const {
+  Strophe: vcard_utils_Strophe,
+  $iq: vcard_utils_$iq,
+  u: vcard_utils_u
+} = core_converse.env;
+
+async function onVCardData(jid, iq) {
+  const vcard = iq.querySelector('vCard');
+  let result = {};
+
+  if (vcard !== null) {
+    var _vcard$querySelector, _vcard$querySelector2, _vcard$querySelector3, _vcard$querySelector4, _vcard$querySelector5, _vcard$querySelector6, _vcard$querySelector7;
+
+    result = {
+      'stanza': iq,
+      'fullname': (_vcard$querySelector = vcard.querySelector('FN')) === null || _vcard$querySelector === void 0 ? void 0 : _vcard$querySelector.textContent,
+      'nickname': (_vcard$querySelector2 = vcard.querySelector('NICKNAME')) === null || _vcard$querySelector2 === void 0 ? void 0 : _vcard$querySelector2.textContent,
+      'image': (_vcard$querySelector3 = vcard.querySelector('PHOTO BINVAL')) === null || _vcard$querySelector3 === void 0 ? void 0 : _vcard$querySelector3.textContent,
+      'image_type': (_vcard$querySelector4 = vcard.querySelector('PHOTO TYPE')) === null || _vcard$querySelector4 === void 0 ? void 0 : _vcard$querySelector4.textContent,
+      'url': (_vcard$querySelector5 = vcard.querySelector('URL')) === null || _vcard$querySelector5 === void 0 ? void 0 : _vcard$querySelector5.textContent,
+      'role': (_vcard$querySelector6 = vcard.querySelector('ROLE')) === null || _vcard$querySelector6 === void 0 ? void 0 : _vcard$querySelector6.textContent,
+      'email': (_vcard$querySelector7 = vcard.querySelector('EMAIL USERID')) === null || _vcard$querySelector7 === void 0 ? void 0 : _vcard$querySelector7.textContent,
+      'vcard_updated': new Date().toISOString(),
+      'vcard_error': undefined
+    };
+  }
+
+  if (result.image) {
+    const buffer = vcard_utils_u.base64ToArrayBuffer(result['image']);
+    const ab = await crypto.subtle.digest('SHA-1', buffer);
+    result['image_hash'] = vcard_utils_u.arrayBufferToHex(ab);
+  }
+
+  return result;
+}
+
+function createStanza(type, jid, vcard_el) {
+  const iq = vcard_utils_$iq(jid ? {
+    'type': type,
+    'to': jid
+  } : {
+    'type': type
+  });
+
+  if (!vcard_el) {
+    iq.c("vCard", {
+      'xmlns': vcard_utils_Strophe.NS.VCARD
+    });
+  } else {
+    iq.cnode(vcard_el);
+  }
+
+  return iq;
+}
+async function setVCardOnModel(model) {
+  let jid;
+
+  if (model instanceof shared_converse.Message) {
+    if (model.get('type') === 'error') {
+      return;
+    }
+
+    jid = model.get('from');
+  } else {
+    jid = model.get('jid');
+  }
+
+  await api.waitUntil('VCardsInitialized');
+  model.vcard = shared_converse.vcards.findWhere({
+    'jid': jid
+  });
+
+  if (!model.vcard) {
+    model.vcard = shared_converse.vcards.create({
+      'jid': jid
+    });
+  }
+
+  model.vcard.on('change', () => model.trigger('vcard:change'));
+  model.trigger('vcard:add');
+}
+
+function getVCardForChatroomOccupant(message) {
+  var _message$collection;
+
+  const chatbox = message === null || message === void 0 ? void 0 : (_message$collection = message.collection) === null || _message$collection === void 0 ? void 0 : _message$collection.chatbox;
+  const nick = vcard_utils_Strophe.getResourceFromJid(message.get('from'));
+
+  if (chatbox && chatbox.get('nick') === nick) {
+    return shared_converse.xmppstatus.vcard;
+  } else {
+    const jid = message.occupant && message.occupant.get('jid') || message.get('from');
+
+    if (jid) {
+      return shared_converse.vcards.findWhere({
+        jid
+      }) || shared_converse.vcards.create({
+        jid
+      });
+    } else {
+      headless_log.error(`Could not assign VCard for message because no JID found! msgid: ${message.get('msgid')}`);
+      return;
+    }
+  }
+}
+
+async function setVCardOnOccupant(occupant) {
+  await api.waitUntil('VCardsInitialized');
+  occupant.vcard = getVCardForChatroomOccupant(occupant);
+
+  if (occupant.vcard) {
+    occupant.vcard.on('change', () => occupant.trigger('vcard:change'));
+    occupant.trigger('vcard:add');
+  }
+}
+async function setVCardOnMUCMessage(message) {
+  if (['error', 'info'].includes(message.get('type'))) {
+    return;
+  } else {
+    await api.waitUntil('VCardsInitialized');
+    message.vcard = getVCardForChatroomOccupant(message);
+
+    if (message.vcard) {
+      message.vcard.on('change', () => message.trigger('vcard:change'));
+      message.trigger('vcard:add');
+    }
+  }
+}
+async function initVCardCollection() {
+  shared_converse.vcards = new shared_converse.VCards();
+  const id = `${shared_converse.bare_jid}-converse.vcards`;
+  initStorage(shared_converse.vcards, id);
+  await new Promise(resolve => {
+    shared_converse.vcards.fetch({
+      'success': resolve,
+      'error': resolve
+    }, {
+      'silent': true
+    });
+  });
+  const vcards = shared_converse.vcards;
+
+  if (shared_converse.session) {
+    const jid = shared_converse.session.get('bare_jid');
+
+    const status = shared_converse.xmppstatus;
+    status.vcard = vcards.findWhere({
+      'jid': jid
+    }) || vcards.create({
+      'jid': jid
+    });
+
+    if (status.vcard) {
+      status.vcard.on('change', () => status.trigger('vcard:change'));
+      status.trigger('vcard:add');
+    }
+  }
+  /**
+      * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
+      * @event _converse#VCardsInitialized
+      */
+
+
+  api.trigger('VCardsInitialized');
+}
+function clearVCardsSession() {
+  if (shared_converse.shouldClearCache()) {
+    api.promises.add('VCardsInitialized');
+
+    if (shared_converse.vcards) {
+      shared_converse.vcards.clearStore();
+
+      delete shared_converse.vcards;
+    }
+  }
+}
+async function getVCard(_converse, jid) {
+  const to = vcard_utils_Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+  let iq;
+
+  try {
+    iq = await api.sendIQ(createStanza("get", to));
+  } catch (iq) {
+    return {
+      'stanza': iq,
+      'jid': jid,
+      'vcard_error': new Date().toISOString()
+    };
+  }
+
+  return onVCardData(jid, iq);
+}
+;// CONCATENATED MODULE: ./src/headless/plugins/vcard/api.js
+
+
+
+const {
+  dayjs: vcard_api_dayjs,
+  u: vcard_api_u
+} = core_converse.env;
+/* harmony default export */ const vcard_api = ({
+  /**
+   * The XEP-0054 VCard API
+   *
+   * This API lets you access and update user VCards
+   *
+   * @namespace _converse.api.vcard
+   * @memberOf _converse.api
+   */
+  'vcard': {
+    /**
+     * Enables setting new values for a VCard.
+     *
+     * Sends out an IQ stanza to set the user's VCard and if
+     * successful, it updates the {@link _converse.VCard}
+     * for the passed in JID.
+     *
+     * @method _converse.api.vcard.set
+     * @param {string} jid The JID for which the VCard should be set
+     * @param {object} data A map of VCard keys and values
+     * @example
+     * let jid = _converse.bare_jid;
+     * _converse.api.vcard.set( jid, {
+     *     'fn': 'John Doe',
+     *     'nickname': 'jdoe'
+     * }).then(() => {
+     *     // Succes
+     * }).catch((e) => {
+     *     // Failure, e is your error object
+     * }).
+     */
+    async set(jid, data) {
+      if (!jid) {
+        throw Error("No jid provided for the VCard data");
+      }
+
+      const div = document.createElement('div');
+      const vcard_el = vcard_api_u.toStanza(`
+                <vCard xmlns="vcard-temp">
+                    <FN>${data.fn}</FN>
+                    <NICKNAME>${data.nickname}</NICKNAME>
+                    <URL>${data.url}</URL>
+                    <ROLE>${data.role}</ROLE>
+                    <EMAIL><INTERNET/><PREF/><USERID>${data.email}</USERID></EMAIL>
+                    <PHOTO>
+                        <TYPE>${data.image_type}</TYPE>
+                        <BINVAL>${data.image}</BINVAL>
+                    </PHOTO>
+                </vCard>`, div);
+      let result;
+
+      try {
+        result = await api.sendIQ(createStanza("set", jid, vcard_el));
+      } catch (e) {
+        throw e;
+      }
+
+      await api.vcard.update(jid, true);
+      return result;
+    },
+
+    /**
+     * @method _converse.api.vcard.get
+     * @param {Model|string} model Either a `Model` instance, or a string JID.
+     *     If a `Model` instance is passed in, then it must have either a `jid`
+     *     attribute or a `muc_jid` attribute.
+     * @param {boolean} [force] A boolean indicating whether the vcard should be
+     *     fetched even if it's been fetched before.
+     * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
+     *     a `Model` instance which represents an entity with a JID (such as a roster contact,
+     *     chat or chatroom occupant).
+     *
+     * @example
+     * _converse.api.waitUntil('rosterContactsFetched').then(() => {
+     *     _converse.api.vcard.get('someone@example.org').then(
+     *         (vcard) => {
+     *             // Do something with the vcard...
+     *         }
+     *     );
+     * });
+     */
+    get(model, force) {
+      if (typeof model === 'string') {
+        return getVCard(shared_converse, model);
+      } else if (force || !model.get('vcard_updated') || !vcard_api_dayjs(model.get('vcard_error')).isSame(new Date(), "day")) {
+        const jid = model.get('jid');
+
+        if (!jid) {
+          headless_log.error("No JID to get vcard for");
+        }
+
+        return getVCard(shared_converse, jid);
+      } else {
+        return Promise.resolve({});
+      }
+    },
+
+    /**
+     * Fetches the VCard associated with a particular `Model` instance
+     * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
+     * returned VCard data.
+     *
+     * @method _converse.api.vcard.update
+     * @param {Model} model A `Model` instance
+     * @param {boolean} [force] A boolean indicating whether the vcard should be
+     *     fetched again even if it's been fetched before.
+     * @returns {promise} A promise which resolves once the update has completed.
+     * @example
+     * _converse.api.waitUntil('rosterContactsFetched').then(async () => {
+     *     const chatbox = await _converse.chatboxes.getChatBox('someone@example.org');
+     *     _converse.api.vcard.update(chatbox);
+     * });
+     */
+    async update(model, force) {
+      const data = await this.get(model, force);
+      model = typeof model === 'string' ? shared_converse.vcards.findWhere({
+        'jid': model
+      }) : model;
+
+      if (!model) {
+        headless_log.error(`Could not find a VCard model for ${model}`);
+        return;
+      }
+
+      delete data['stanza'];
+      model.save(data);
+    }
+
+  }
+});
+;// CONCATENATED MODULE: ./src/headless/plugins/vcard/index.js
+/**
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
@@ -59510,11 +61114,8 @@ core_converse.plugins.add('converse-smacks', {
 
 
 const {
-  Strophe: vcard_Strophe,
-  $iq: vcard_$iq,
-  dayjs: vcard_dayjs
+  Strophe: vcard_Strophe
 } = core_converse.env;
-const vcard_u = core_converse.env.utils;
 core_converse.plugins.add('converse-vcard', {
   dependencies: ["converse-status", "converse-roster"],
   overrides: {
@@ -59573,45 +61174,7 @@ core_converse.plugins.add('converse-vcard', {
      * loaded by converse.js's plugin machinery.
      */
     api.promises.add('VCardsInitialized');
-    /**
-     * Represents a VCard
-     * @class
-     * @namespace _converse.VCard
-     * @memberOf _converse
-     */
-
-    shared_converse.VCard = Model.extend({
-      defaults: {
-        'image': shared_converse.DEFAULT_IMAGE,
-        'image_type': shared_converse.DEFAULT_IMAGE_TYPE
-      },
-
-      set(key, val, options) {
-        // Override Model.prototype.set to make sure that the
-        // default `image` and `image_type` values are maintained.
-        let attrs;
-
-        if (typeof key === 'object') {
-          attrs = key;
-          options = val;
-        } else {
-          (attrs = {})[key] = val;
-        }
-
-        if ('image' in attrs && !attrs['image']) {
-          attrs['image'] = shared_converse.DEFAULT_IMAGE;
-          attrs['image_type'] = shared_converse.DEFAULT_IMAGE_TYPE;
-          return Model.prototype.set.call(this, attrs, options);
-        } else {
-          return Model.prototype.set.apply(this, arguments);
-        }
-      },
-
-      getDisplayName() {
-        return this.get('nickname') || this.get('fullname') || this.get('jid');
-      }
-
-    });
+    shared_converse.VCard = vcard;
     shared_converse.VCards = Collection.extend({
       model: shared_converse.VCard,
 
@@ -59620,320 +61183,19 @@ core_converse.plugins.add('converse-vcard', {
       }
 
     });
-
-    async function onVCardData(jid, iq) {
-      const vcard = iq.querySelector('vCard');
-      let result = {};
-
-      if (vcard !== null) {
-        var _vcard$querySelector, _vcard$querySelector2, _vcard$querySelector3, _vcard$querySelector4, _vcard$querySelector5, _vcard$querySelector6, _vcard$querySelector7;
-
-        result = {
-          'stanza': iq,
-          'fullname': (_vcard$querySelector = vcard.querySelector('FN')) === null || _vcard$querySelector === void 0 ? void 0 : _vcard$querySelector.textContent,
-          'nickname': (_vcard$querySelector2 = vcard.querySelector('NICKNAME')) === null || _vcard$querySelector2 === void 0 ? void 0 : _vcard$querySelector2.textContent,
-          'image': (_vcard$querySelector3 = vcard.querySelector('PHOTO BINVAL')) === null || _vcard$querySelector3 === void 0 ? void 0 : _vcard$querySelector3.textContent,
-          'image_type': (_vcard$querySelector4 = vcard.querySelector('PHOTO TYPE')) === null || _vcard$querySelector4 === void 0 ? void 0 : _vcard$querySelector4.textContent,
-          'url': (_vcard$querySelector5 = vcard.querySelector('URL')) === null || _vcard$querySelector5 === void 0 ? void 0 : _vcard$querySelector5.textContent,
-          'role': (_vcard$querySelector6 = vcard.querySelector('ROLE')) === null || _vcard$querySelector6 === void 0 ? void 0 : _vcard$querySelector6.textContent,
-          'email': (_vcard$querySelector7 = vcard.querySelector('EMAIL USERID')) === null || _vcard$querySelector7 === void 0 ? void 0 : _vcard$querySelector7.textContent,
-          'vcard_updated': new Date().toISOString(),
-          'vcard_error': undefined
-        };
-      }
-
-      if (result.image) {
-        const buffer = vcard_u.base64ToArrayBuffer(result['image']);
-        const ab = await crypto.subtle.digest('SHA-1', buffer);
-        result['image_hash'] = vcard_u.arrayBufferToHex(ab);
-      }
-
-      return result;
-    }
-
-    function createStanza(type, jid, vcard_el) {
-      const iq = vcard_$iq(jid ? {
-        'type': type,
-        'to': jid
-      } : {
-        'type': type
-      });
-
-      if (!vcard_el) {
-        iq.c("vCard", {
-          'xmlns': vcard_Strophe.NS.VCARD
-        });
-      } else {
-        iq.cnode(vcard_el);
-      }
-
-      return iq;
-    }
-
-    async function getVCard(_converse, jid) {
-      const to = vcard_Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
-      let iq;
-
-      try {
-        iq = await api.sendIQ(createStanza("get", to));
-      } catch (iq) {
-        return {
-          'stanza': iq,
-          'jid': jid,
-          'vcard_error': new Date().toISOString()
-        };
-      }
-
-      return onVCardData(jid, iq);
-    }
-
-    async function setVCardOnModel(model) {
-      let jid;
-
-      if (model instanceof shared_converse.Message) {
-        if (model.get('type') === 'error') {
-          return;
-        }
-
-        jid = model.get('from');
-      } else {
-        jid = model.get('jid');
-      }
-
-      await api.waitUntil('VCardsInitialized');
-      model.vcard = shared_converse.vcards.findWhere({
-        'jid': jid
-      });
-
-      if (!model.vcard) {
-        model.vcard = shared_converse.vcards.create({
-          'jid': jid
-        });
-      }
-
-      model.vcard.on('change', () => model.trigger('vcard:change'));
-    }
-
-    function getVCardForChatroomOccupant(message) {
-      var _message$collection;
-
-      const chatbox = message === null || message === void 0 ? void 0 : (_message$collection = message.collection) === null || _message$collection === void 0 ? void 0 : _message$collection.chatbox;
-      const nick = vcard_Strophe.getResourceFromJid(message.get('from'));
-
-      if (chatbox && chatbox.get('nick') === nick) {
-        return shared_converse.xmppstatus.vcard;
-      } else {
-        const jid = message.occupant && message.occupant.get('jid') || message.get('from');
-
-        if (jid) {
-          return shared_converse.vcards.findWhere({
-            jid
-          }) || shared_converse.vcards.create({
-            jid
-          });
-        } else {
-          headless_log.error(`Could not assign VCard for message because no JID found! msgid: ${message.get('msgid')}`);
-          return;
-        }
-      }
-    }
-
-    async function setVCardOnMUCMessage(message) {
-      await api.waitUntil('VCardsInitialized');
-
-      if (['error', 'info'].includes(message.get('type'))) {
-        return;
-      } else {
-        message.vcard = getVCardForChatroomOccupant(message);
-      }
-    }
-
-    shared_converse.initVCardCollection = async function () {
-      shared_converse.vcards = new shared_converse.VCards();
-      const id = `${shared_converse.bare_jid}-converse.vcards`;
-      initStorage(shared_converse.vcards, id);
-      await new Promise(resolve => {
-        shared_converse.vcards.fetch({
-          'success': resolve,
-          'error': resolve
-        }, {
-          'silent': true
-        });
-      });
-      const vcards = shared_converse.vcards;
-
-      if (shared_converse.session) {
-        const jid = shared_converse.session.get('bare_jid');
-
-        shared_converse.xmppstatus.vcard = vcards.findWhere({
-          'jid': jid
-        }) || vcards.create({
-          'jid': jid
-        });
-      }
-      /**
-       * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
-       * @event _converse#VCardsInitialized
-       */
-
-
-      api.trigger('VCardsInitialized');
-    };
-
-    function clearVCardsSession() {
-      if (shared_converse.shouldClearCache()) {
-        api.promises.add('VCardsInitialized');
-
-        if (shared_converse.vcards) {
-          shared_converse.vcards.clearStore();
-
-          delete shared_converse.vcards;
-        }
-      }
-    }
-    /************************ BEGIN Event Handlers ************************/
-
-
+    api.listen.on('chatRoomInitialized', m => {
+      setVCardOnModel(m);
+      m.occupants.forEach(setVCardOnOccupant);
+      m.listenTo(m.occupants, 'add', setVCardOnOccupant);
+    });
     api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
-    api.listen.on('chatRoomInitialized', m => setVCardOnModel(m));
     api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));
     api.listen.on('addClientFeatures', () => api.disco.own.features.add(vcard_Strophe.NS.VCARD));
     api.listen.on('clearSession', () => clearVCardsSession());
     api.listen.on('messageInitialized', m => setVCardOnModel(m));
     api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
-    api.listen.on('statusInitialized', shared_converse.initVCardCollection);
-    /************************ BEGIN API ************************/
-
-    Object.assign(shared_converse.api, {
-      /**
-       * The XEP-0054 VCard API
-       *
-       * This API lets you access and update user VCards
-       *
-       * @namespace _converse.api.vcard
-       * @memberOf _converse.api
-       */
-      'vcard': {
-        /**
-         * Enables setting new values for a VCard.
-         *
-         * Sends out an IQ stanza to set the user's VCard and if
-         * successful, it updates the {@link _converse.VCard}
-         * for the passed in JID.
-         *
-         * @method _converse.api.vcard.set
-         * @param {string} jid The JID for which the VCard should be set
-         * @param {object} data A map of VCard keys and values
-         * @example
-         * _converse.api.vcard.set({
-         *     'jid': _converse.bare_jid,
-         *     'fn': 'John Doe',
-         *     'nickname': 'jdoe'
-         * }).then(() => {
-         *     // Succes
-         * }).catch(() => {
-         *     // Failure
-         * }).
-         */
-        async set(jid, data) {
-          if (!jid) {
-            throw Error("No jid provided for the VCard data");
-          }
-
-          const div = document.createElement('div');
-          const vcard_el = vcard_u.toStanza(`
-                        <vCard xmlns="vcard-temp">
-                            <FN>${data.fn}</FN>
-                            <NICKNAME>${data.nickname}</NICKNAME>
-                            <URL>${data.url}</URL>
-                            <ROLE>${data.role}</ROLE>
-                            <EMAIL><INTERNET/><PREF/><USERID>${data.email}</USERID></EMAIL>
-                            <PHOTO>
-                                <TYPE>${data.image_type}</TYPE>
-                                <BINVAL>${data.image}</BINVAL>
-                            </PHOTO>
-                        </vCard>`, div);
-          let result;
-
-          try {
-            result = await api.sendIQ(createStanza("set", jid, vcard_el));
-          } catch (e) {
-            throw e;
-          }
-
-          await api.vcard.update(jid, true);
-          return result;
-        },
-
-        /**
-         * @method _converse.api.vcard.get
-         * @param {Model|string} model Either a `Model` instance, or a string JID.
-         *     If a `Model` instance is passed in, then it must have either a `jid`
-         *     attribute or a `muc_jid` attribute.
-         * @param {boolean} [force] A boolean indicating whether the vcard should be
-         *     fetched even if it's been fetched before.
-         * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
-         *     a `Model` instance which represents an entity with a JID (such as a roster contact,
-         *     chat or chatroom occupant).
-         *
-         * @example
-         * _converse.api.waitUntil('rosterContactsFetched').then(() => {
-         *     _converse.api.vcard.get('someone@example.org').then(
-         *         (vcard) => {
-         *             // Do something with the vcard...
-         *         }
-         *     );
-         * });
-         */
-        get(model, force) {
-          if (typeof model === 'string') {
-            return getVCard(shared_converse, model);
-          } else if (force || !model.get('vcard_updated') || !vcard_dayjs(model.get('vcard_error')).isSame(new Date(), "day")) {
-            const jid = model.get('jid');
-
-            if (!jid) {
-              headless_log.error("No JID to get vcard for");
-            }
-
-            return getVCard(shared_converse, jid);
-          } else {
-            return Promise.resolve({});
-          }
-        },
-
-        /**
-         * Fetches the VCard associated with a particular `Model` instance
-         * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
-         * returned VCard data.
-         *
-         * @method _converse.api.vcard.update
-         * @param {Model} model A `Model` instance
-         * @param {boolean} [force] A boolean indicating whether the vcard should be
-         *     fetched again even if it's been fetched before.
-         * @returns {promise} A promise which resolves once the update has completed.
-         * @example
-         * _converse.api.waitUntil('rosterContactsFetched').then(async () => {
-         *     const chatbox = await _converse.chatboxes.getChatBox('someone@example.org');
-         *     _converse.api.vcard.update(chatbox);
-         * });
-         */
-        async update(model, force) {
-          const data = await this.get(model, force);
-          model = typeof model === 'string' ? shared_converse.vcards.findWhere({
-            'jid': model
-          }) : model;
-
-          if (!model) {
-            headless_log.error(`Could not find a VCard model for ${model}`);
-            return;
-          }
-
-          delete data['stanza'];
-          model.save(data);
-        }
-
-      }
-    });
+    api.listen.on('statusInitialized', initVCardCollection);
+    Object.assign(shared_converse.api, vcard_api);
   }
 
 });
@@ -60013,6 +61275,13 @@ class CustomElement extends lit_element_h {
     return this;
   }
 
+  connectedCallback() {
+    var _this$initialize;
+
+    super.connectedCallback();
+    (_this$initialize = this.initialize) === null || _this$initialize === void 0 ? void 0 : _this$initialize.call(this);
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
     this.stopListening();
@@ -60042,10 +61311,10 @@ var setAttributesWithoutAttributes_default = /*#__PURE__*/__webpack_require__.n(
 var insertStyleElement = __webpack_require__(9216);
 var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleElement);
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
-var styleTagTransform = __webpack_require__(4589);
+var styleTagTransform = __webpack_require__(6655);
 var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/styles/index.scss
-var styles = __webpack_require__(4452);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/styles/index.scss
+var styles = __webpack_require__(9537);
 ;// CONCATENATED MODULE: ./src/shared/styles/index.scss
 
       
@@ -60210,7 +61479,7 @@ var invokeMap = _baseRest(function (collection, path, args) {
 
 
 function getHeadingButtons(view, buttons) {
-  if (shared_converse.allow_bookmarks && view.model.get('type') === shared_converse.CHATROOMS_TYPE) {
+  if (api.settings.get('allow_bookmarks') && view.model.get('type') === shared_converse.CHATROOMS_TYPE) {
     const bookmarked = view.model.get('bookmarked');
     const data = {
       'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
@@ -60222,7 +61491,7 @@ function getHeadingButtons(view, buttons) {
     };
     const names = buttons.map(t => t.name);
     const idx = names.indexOf('details');
-    const data_promise = checkBookmarksSupport().then(s => s ? data : '');
+    const data_promise = checkBookmarksSupport().then(s => s ? data : null);
     return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
   }
 
@@ -60639,8 +61908,8 @@ const bookmarkableChatRoomView = {
   }
 
 };
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/bookmark-views/styles/bookmarks.scss
-var bookmarks = __webpack_require__(3742);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/bookmark-views/styles/bookmarks.scss
+var bookmarks = __webpack_require__(5251);
 ;// CONCATENATED MODULE: ./src/plugins/bookmark-views/styles/bookmarks.scss
 
       
@@ -60995,7 +62264,7 @@ function shouldShowChat(c) {
                     ${view_mode === 'overlayed' ? T`<converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>` : ''}
                     <converse-controlbox
                         id="controlbox"
-                        class="chatbox ${m.get('closed') ? 'hidden' : ''} ${logged_out ? 'logged-out' : ''}"
+                        class="chatbox ${view_mode === 'overlayed' && m.get('closed') ? 'hidden' : ''} ${logged_out ? 'logged-out' : ''}"
                         style="${m.get('width') ? `width: ${m.get('width')}` : ''}"></converse-controlbox>
                 `;
     } else if (m.get('type') === CHATROOMS_TYPE) {
@@ -61021,20 +62290,24 @@ function shouldShowChat(c) {
 
 
 
-class ConverseChats extends ElementView {
+
+class ConverseChats extends CustomElement {
   initialize() {
     this.model = shared_converse.chatboxes;
-    this.listenTo(this.model, 'add', this.render);
-    this.listenTo(this.model, 'change:closed', this.render);
-    this.listenTo(this.model, 'change:hidden', this.render);
-    this.listenTo(this.model, 'change:jid', this.render);
-    this.listenTo(this.model, 'change:minimized', this.render);
-    this.listenTo(this.model, 'destroy', this.render); // Use listenTo instead of api.listen.to so that event handlers
+    this.listenTo(this.model, 'add', () => this.requestUpdate());
+    this.listenTo(this.model, 'change:closed', () => this.requestUpdate());
+    this.listenTo(this.model, 'change:hidden', () => this.requestUpdate());
+    this.listenTo(this.model, 'change:jid', () => this.requestUpdate());
+    this.listenTo(this.model, 'change:minimized', () => this.requestUpdate());
+    this.listenTo(this.model, 'destroy', () => this.requestUpdate()); // Use listenTo instead of api.listen.to so that event handlers
     // automatically get deregistered when the component is dismounted
 
-    this.listenTo(shared_converse, 'connected', this.render);
-    this.listenTo(shared_converse, 'reconnected', this.render);
-    this.listenTo(shared_converse, 'disconnected', this.render);
+    this.listenTo(shared_converse, 'connected', () => this.requestUpdate());
+    this.listenTo(shared_converse, 'reconnected', () => this.requestUpdate());
+    this.listenTo(shared_converse, 'disconnected', () => this.requestUpdate());
+    const settings = getAppSettings();
+    this.listenTo(settings, 'change:view_mode', () => this.requestUpdate());
+    this.listenTo(settings, 'change:singleton', () => this.requestUpdate());
     const bg = document.getElementById('conversejs-bg');
 
     if (bg && !bg.innerHTML.trim()) {
@@ -61043,7 +62316,6 @@ class ConverseChats extends ElementView {
 
     const body = document.querySelector('body');
     body.classList.add(`converse-${api.settings.get('view_mode')}`);
-    this.render();
     /**
      * Triggered once the _converse.ChatBoxViews view-colleciton has been initialized
      * @event _converse#chatBoxViewsInitialized
@@ -61054,7 +62326,8 @@ class ConverseChats extends ElementView {
   }
 
   render() {
-    V(chats(), this);
+    // eslint-disable-line class-methods-use-this
+    return chats();
   }
 
 }
@@ -61072,6 +62345,13 @@ class ChatBoxViews {
 
   get(key) {
     return this.views[key];
+  }
+
+  xget(id) {
+    return this.keys().filter(k => k !== id).reduce((acc, k) => {
+      acc[k] = this.views[k];
+      return acc;
+    }, {});
   }
 
   getAll() {
@@ -61107,23 +62387,114 @@ class ChatBoxViews {
 }
 
 /* harmony default export */ const container = (ChatBoxViews);
-;// CONCATENATED MODULE: ./src/shared/templates/avatar.js
+;// CONCATENATED MODULE: ./src/plugins/chatboxviews/utils.js
+function calculateViewportHeightUnit() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/chatboxviews/styles/chats.scss
+var styles_chats = __webpack_require__(6931);
+;// CONCATENATED MODULE: ./src/plugins/chatboxviews/styles/chats.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var chats_options = {};
+
+chats_options.styleTagTransform = (styleTagTransform_default());
+chats_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      chats_options.insert = insertBySelector_default().bind(null, "head");
+    
+chats_options.domAPI = (styleDomAPI_default());
+chats_options.insertStyleElement = (insertStyleElement_default());
+
+var chats_update = injectStylesIntoStyleTag_default()(styles_chats/* default */.Z, chats_options);
 
 
-const getImgHref = (image, image_type) => {
-  return image.startsWith('data:') ? image : `data:${image_type};base64,${image}`;
-};
 
-/* harmony default export */ const avatar = (o => {
-  if (o.image) {
-    return T`
-                <svg xmlns="http://www.w3.org/2000/svg" class="avatar ${o.classes}" width="${o.width}" height="${o.height}">
-                    <image width="${o.width}" height="${o.height}" preserveAspectRatio="xMidYMid meet" href="${getImgHref(o.image, o.image_type)}"/>
-                </svg>`;
-  } else {
-    return '';
+
+       /* harmony default export */ const chatboxviews_styles_chats = (styles_chats/* default */.Z && styles_chats/* default.locals */.Z.locals ? styles_chats/* default.locals */.Z.locals : undefined);
+
+;// CONCATENATED MODULE: ./src/plugins/chatboxviews/index.js
+/**
+ * @module converse-chatboxviews
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+
+
+
+
+
+
+core_converse.plugins.add('converse-chatboxviews', {
+  dependencies: ['converse-chatboxes', 'converse-vcard'],
+
+  initialize() {
+    api.promises.add(['chatBoxViewsInitialized']); // Configuration values for this plugin
+    // ====================================
+    // Refer to docs/source/configuration.rst for explanations of these
+    // configuration settings.
+
+    api.settings.extend({
+      'animate': true,
+      'theme': 'default'
+    });
+    shared_converse.chatboxviews = new container();
+    /************************ BEGIN Event Handlers ************************/
+
+    api.listen.on('chatBoxesInitialized', () => {
+      shared_converse.chatboxes.on('destroy', m => shared_converse.chatboxviews.remove(m.get('jid')));
+    });
+    api.listen.on('cleanup', () => delete shared_converse.chatboxviews);
+    api.listen.on('clearSession', () => shared_converse.chatboxviews.closeAllChatBoxes());
+    api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
+    window.addEventListener('resize', calculateViewportHeightUnit);
+    /************************ END Event Handlers ************************/
+
+    Object.assign(core_converse, {
+      /**
+       * Public API method which will ensure that the #conversejs element
+       * is inserted into a container element.
+       *
+       * This method is useful when the #conversejs element has been
+       * detached from the DOM somehow.
+       * @async
+       * @memberOf converse
+       * @method insertInto
+       * @example
+       * converse.insertInto(document.querySelector('#converse-container'));
+       */
+      insertInto(container) {
+        var _converse$chatboxview;
+
+        const el = (_converse$chatboxview = shared_converse.chatboxviews) === null || _converse$chatboxview === void 0 ? void 0 : _converse$chatboxview.el;
+
+        if (el && !container.contains(el)) {
+          container.insertAdjacentElement('afterBegin', el);
+        } else if (!el) {
+          throw new Error('Cannot insert non-existing #conversejs element into the DOM');
+        }
+      }
+
+    });
   }
+
 });
+// EXTERNAL MODULE: ./node_modules/bootstrap.native/dist/bootstrap-native.js
+var bootstrap_native = __webpack_require__(1505);
+var bootstrap_native_default = /*#__PURE__*/__webpack_require__.n(bootstrap_native);
+;// CONCATENATED MODULE: ./src/templates/alert.js
+
+/* harmony default export */ const templates_alert = (o => T`<div class="alert ${o.type}" role="alert"><p>${o.message}</p></div>`);
 ;// CONCATENATED MODULE: ./node_modules/@converse/skeletor/src/view.js
 //     Backbone.js 1.4.0
 //     (c) 2010-2019 Jeremy Ashkenas and DocumentCloud
@@ -61399,158 +62770,9 @@ Object.assign(View.prototype, Events, {
     }
   }
 });
-;// CONCATENATED MODULE: ./src/shared/avatar.js
-
-
-
-
-const avatar_u = core_converse.env.utils;
-const AvatarMixin = {
-  renderAvatar(el) {
-    el = el || ((this === null || this === void 0 ? void 0 : this.el) ?? this);
-    const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
-
-    if (avatar_el === null) {
-      return;
-    }
-
-    if (this.model.vcard) {
-      const data = {
-        'classes': avatar_el.getAttribute('class'),
-        'width': avatar_el.getAttribute('width'),
-        'height': avatar_el.getAttribute('height'),
-        'image_type': this.model.vcard.get('image_type'),
-        'image': this.model.vcard.get('image')
-      };
-      avatar_el.outerHTML = avatar_u.getElementFromTemplateResult(avatar(data)).outerHTML;
-    }
-  }
-
-};
-const ViewWithAvatar = View.extend(AvatarMixin);
-class ElementViewWithAvatar extends ElementView {
-  renderAvatar(el) {
-    AvatarMixin.renderAvatar.call(this, el);
-  }
-
-}
-;// CONCATENATED MODULE: ./src/plugins/chatboxviews/utils.js
-function calculateViewportHeightUnit() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/chatboxviews/styles/chats.scss
-var styles_chats = __webpack_require__(7904);
-;// CONCATENATED MODULE: ./src/plugins/chatboxviews/styles/chats.scss
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var chats_options = {};
-
-chats_options.styleTagTransform = (styleTagTransform_default());
-chats_options.setAttributes = (setAttributesWithoutAttributes_default());
-
-      chats_options.insert = insertBySelector_default().bind(null, "head");
-    
-chats_options.domAPI = (styleDomAPI_default());
-chats_options.insertStyleElement = (insertStyleElement_default());
-
-var chats_update = injectStylesIntoStyleTag_default()(styles_chats/* default */.Z, chats_options);
-
-
-
-
-       /* harmony default export */ const chatboxviews_styles_chats = (styles_chats/* default */.Z && styles_chats/* default.locals */.Z.locals ? styles_chats/* default.locals */.Z.locals : undefined);
-
-;// CONCATENATED MODULE: ./src/plugins/chatboxviews/index.js
-/**
- * @module converse-chatboxviews
- * @copyright 2020, the Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
-
-
-
-
-
-
-
-core_converse.plugins.add('converse-chatboxviews', {
-  dependencies: ['converse-chatboxes', 'converse-vcard'],
-
-  initialize() {
-    /* The initialize function gets called as soon as the plugin is
-     * loaded by converse.js's plugin machinery.
-     */
-    api.elements.register();
-    api.promises.add(['chatBoxViewsInitialized']); // Configuration values for this plugin
-    // ====================================
-    // Refer to docs/source/configuration.rst for explanations of these
-    // configuration settings.
-
-    api.settings.extend({
-      'animate': true,
-      'theme': 'default'
-    });
-    shared_converse.ViewWithAvatar = ViewWithAvatar;
-    shared_converse.chatboxviews = new container();
-    /************************ BEGIN Event Handlers ************************/
-
-    api.listen.on('chatBoxesInitialized', () => {
-      shared_converse.chatboxes.on('destroy', m => shared_converse.chatboxviews.remove(m.get('jid')));
-    });
-    api.listen.on('cleanup', () => delete shared_converse.chatboxviews);
-    api.listen.on('clearSession', () => shared_converse.chatboxviews.closeAllChatBoxes());
-    api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
-    window.addEventListener('resize', calculateViewportHeightUnit);
-    /************************ END Event Handlers ************************/
-
-    Object.assign(core_converse, {
-      /**
-       * Public API method which will ensure that the #conversejs element
-       * is inserted into a container element.
-       *
-       * This method is useful when the #conversejs element has been
-       * detached from the DOM somehow.
-       * @async
-       * @memberOf converse
-       * @method insertInto
-       * @example
-       * converse.insertInto(document.querySelector('#converse-container'));
-       */
-      insertInto(container) {
-        var _converse$chatboxview;
-
-        const el = (_converse$chatboxview = shared_converse.chatboxviews) === null || _converse$chatboxview === void 0 ? void 0 : _converse$chatboxview.el;
-
-        if (el && !container.contains(el)) {
-          container.insertAdjacentElement('afterBegin', el);
-        } else if (!el) {
-          throw new Error('Cannot insert non-existing #conversejs element into the DOM');
-        }
-      }
-
-    });
-  }
-
-});
-// EXTERNAL MODULE: ./node_modules/bootstrap.native/dist/bootstrap-native.js
-var bootstrap_native = __webpack_require__(6434);
-var bootstrap_native_default = /*#__PURE__*/__webpack_require__.n(bootstrap_native);
-;// CONCATENATED MODULE: ./src/templates/alert.js
-
-/* harmony default export */ const templates_alert = (o => T`<div class="alert ${o.type}" role="alert"><p>${o.message}</p></div>`);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/modals/styles/_modal.scss
-var _modal = __webpack_require__(6300);
-;// CONCATENATED MODULE: ./src/modals/styles/_modal.scss
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/modal/styles/_modal.scss
+var _modal = __webpack_require__(1638);
+;// CONCATENATED MODULE: ./src/plugins/modal/styles/_modal.scss
 
       
       
@@ -61579,7 +62801,7 @@ var _modal_update = injectStylesIntoStyleTag_default()(_modal/* default */.Z, _m
 
        /* harmony default export */ const styles_modal = (_modal/* default */.Z && _modal/* default.locals */.Z.locals ? _modal/* default.locals */.Z.locals : undefined);
 
-;// CONCATENATED MODULE: ./src/modals/base.js
+;// CONCATENATED MODULE: ./src/plugins/modal/base.js
 
 
 
@@ -61675,15 +62897,15 @@ const BaseModal = View.extend({
 
 });
 /* harmony default export */ const base = (BaseModal);
-;// CONCATENATED MODULE: ./src/modals/templates/buttons.js
+;// CONCATENATED MODULE: ./src/plugins/modal/templates/buttons.js
 
 
 const modal_close_button = T`<button type="button" class="btn btn-secondary" data-dismiss="modal">${__('Close')}</button>`;
 const modal_header_close_button = T`<button type="button" class="close" data-dismiss="modal" aria-label="${__('Close')}"><span aria-hidden="true">×</span></button>`;
-;// CONCATENATED MODULE: ./src/modals/templates/alert.js
+;// CONCATENATED MODULE: ./src/plugins/modal/templates/alert.js
 
 
-/* harmony default export */ const modals_templates_alert = (o => T`
+/* harmony default export */ const modal_templates_alert = (o => T`
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header ${o.level}">
@@ -61695,9 +62917,8 @@ const modal_header_close_button = T`<button type="button" class="close" data-dis
               ${o.messages.map(message => T`<p>${message}</p>`)}
             </div>
         </div>
-    </div>
-`);
-;// CONCATENATED MODULE: ./src/modals/alert.js
+    </div>`);
+;// CONCATENATED MODULE: ./src/plugins/modal/alert.js
 
 
 
@@ -61710,14 +62931,14 @@ const Alert = base.extend({
   },
 
   toHTML() {
-    return modals_templates_alert(Object.assign({
+    return modal_templates_alert(Object.assign({
       __: __
     }, this.model.toJSON()));
   }
 
 });
-/* harmony default export */ const modals_alert = (Alert);
-;// CONCATENATED MODULE: ./src/modals/templates/prompt.js
+/* harmony default export */ const modal_alert = (Alert);
+;// CONCATENATED MODULE: ./src/plugins/modal/templates/prompt.js
 
 
 
@@ -61759,7 +62980,7 @@ const tpl_field = f => T`
       </div>
     </div>
 `);
-;// CONCATENATED MODULE: ./src/modals/confirm.js
+;// CONCATENATED MODULE: ./src/plugins/modal/confirm.js
 
 
 
@@ -61817,19 +63038,10 @@ const Confirm = base.extend({
   }
 
 });
-/* harmony default export */ const modals_confirm = (Confirm);
-;// CONCATENATED MODULE: ./src/plugins/modal.js
-/**
- * @module converse-modal
- * @copyright The Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
+/* harmony default export */ const modal_confirm = (Confirm);
+;// CONCATENATED MODULE: ./src/plugins/modal/api.js
 
 
-
-
-
-core_converse.env.BootstrapModal = base; // expose to plugins
 
 let modals = [];
 const modal_api = {
@@ -61898,7 +63110,7 @@ const modal_api = {
    * Show a confirm modal to the user.
    * @method _converse.api.confirm
    * @param { String } title - The header text for the confirmation dialog
-   * @param { (String[]|String) } messages - The text to show to the user
+   * @param { (Array<String>|String) } messages - The text to show to the user
    * @param { Array<Field> } fields - An object representing a fields presented to the user.
    * @property { String } Field.label - The form label for the input field.
    * @property { String } Field.name - The name for the input field.
@@ -61919,7 +63131,7 @@ const modal_api = {
       fields,
       'type': 'confirm'
     });
-    const confirm = new modals_confirm({
+    const confirm = new modal_confirm({
       model
     });
     confirm.show();
@@ -61939,7 +63151,7 @@ const modal_api = {
    * Show a prompt modal to the user.
    * @method _converse.api.prompt
    * @param { String } title - The header text for the prompt
-   * @param { (String[]|String) } messages - The prompt text to show to the user
+   * @param { (Array<String>|String) } messages - The prompt text to show to the user
    * @param { String } placeholder - The placeholder text for the prompt input
    * @returns { Promise<String|false> } A promise which resolves with the text provided by the
    *  user or `false` if the user canceled the prompt.
@@ -61958,7 +63170,7 @@ const modal_api = {
       }],
       'type': 'prompt'
     });
-    const prompt = new modals_confirm({
+    const prompt = new modal_confirm({
       model
     });
     prompt.show();
@@ -61981,7 +63193,7 @@ const modal_api = {
    * @method _converse.api.alert
    * @param { ('info'|'warn'|'error') } type - The type of alert.
    * @param { String } title - The header text for the alert.
-   * @param { (String[]|String) } messages - The alert text to show to the user.
+   * @param { (Array<String>|String) } messages - The alert text to show to the user.
    */
   alert(type, title, messages) {
     if (typeof messages === 'string') {
@@ -62004,12 +63216,23 @@ const modal_api = {
       'level': level,
       'type': 'alert'
     });
-    api.modal.show(modals_alert, {
+    modal_api.modal.show(modal_alert, {
       model
     });
   }
 
 };
+/* harmony default export */ const plugins_modal_api = (modal_api);
+;// CONCATENATED MODULE: ./src/plugins/modal/index.js
+/**
+ * @copyright The Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+
+
+
+core_converse.env.BootstrapModal = base; // expose to plugins
+
 core_converse.plugins.add('converse-modal', {
   initialize() {
     api.listen.on('disconnect', () => {
@@ -62020,7 +63243,7 @@ core_converse.plugins.add('converse-modal', {
       }
     });
     api.listen.on('clearSession', () => api.modal.removeAll());
-    Object.assign(shared_converse.api, modal_api);
+    Object.assign(shared_converse.api, plugins_modal_api);
   }
 
 });
@@ -62160,7 +63383,42 @@ const until_e = t => !directive_helpers_i(t) && "function" == typeof t.then,
 
 ;// CONCATENATED MODULE: ./node_modules/lit/directives/until.js
 
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/message-actions.scss
+var message_actions = __webpack_require__(4166);
+;// CONCATENATED MODULE: ./src/shared/chat/styles/message-actions.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var message_actions_options = {};
+
+message_actions_options.styleTagTransform = (styleTagTransform_default());
+message_actions_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      message_actions_options.insert = insertBySelector_default().bind(null, "head");
+    
+message_actions_options.domAPI = (styleDomAPI_default());
+message_actions_options.insertStyleElement = (insertStyleElement_default());
+
+var message_actions_update = injectStylesIntoStyleTag_default()(message_actions/* default */.Z, message_actions_options);
+
+
+
+
+       /* harmony default export */ const styles_message_actions = (message_actions/* default */.Z && message_actions/* default.locals */.Z.locals ? message_actions/* default.locals */.Z.locals : undefined);
+
 ;// CONCATENATED MODULE: ./src/shared/chat/message-actions.js
+
+
+
+
 
 
 
@@ -62175,28 +63433,22 @@ const {
 class MessageActions extends CustomElement {
   static get properties() {
     return {
-      correcting: {
-        type: Boolean
-      },
-      editable: {
-        type: Boolean
-      },
-      hide_url_previews: {
-        type: Boolean
-      },
       is_retracted: {
         type: Boolean
       },
-      message_type: {
-        type: String
-      },
       model: {
         type: Object
-      },
-      unfurls: {
-        type: Number
       }
     };
+  }
+
+  initialize() {
+    const settings = getAppSettings();
+    this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
+    this.listenTo(this.model, 'change', () => this.requestUpdate());
   }
 
   render() {
@@ -62358,21 +63610,20 @@ class MessageActions extends CustomElement {
     }
   }
 
-  onHidePreviewsButtonClicked(ev) {
+  onMediaToggleClicked(ev) {
     var _ev$preventDefault2;
 
     ev === null || ev === void 0 ? void 0 : (_ev$preventDefault2 = ev.preventDefault) === null || _ev$preventDefault2 === void 0 ? void 0 : _ev$preventDefault2.call(ev);
 
-    if (this.hide_url_previews) {
+    if (this.hasHiddenMedia(this.getMediaURLs())) {
       this.model.save({
         'hide_url_previews': false,
         'url_preview_transition': 'fade-in'
       });
     } else {
       const ogp_metadata = this.model.get('ogp_metadata') || [];
-      const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
 
-      if (unfurls_to_show) {
+      if (ogp_metadata.length) {
         this.model.set('url_preview_transition', 'fade-out');
       } else {
         this.model.save({
@@ -62382,15 +63633,86 @@ class MessageActions extends CustomElement {
       }
     }
   }
+  /**
+   * Check whether media is hidden or shown, which is used to determine the toggle text.
+   *
+   * If `render_media` is an array, check if there are media URLs outside
+   * of that array, in which case we consider message media on the whole to be hidden (since
+   * those excluded by the whitelist will be, even if the render_media whitelisted URLs are shown).
+   * @param { Array<String> } media_urls
+   * @returns { Boolean }
+   */
+
+
+  hasHiddenMedia(media_urls) {
+    if (typeof this.model.get('hide_url_previews') === 'boolean') {
+      return this.model.get('hide_url_previews');
+    }
+
+    const render_media = api.settings.get('render_media');
+
+    if (Array.isArray(render_media)) {
+      return media_urls.reduce((acc, url) => acc || !isDomainWhitelisted(render_media, url), false);
+    } else {
+      return !render_media;
+    }
+  }
+
+  getMediaURLs() {
+    const unfurls_to_show = (this.model.get('ogp_metadata') || []).map(o => ({
+      'url': o['og:image'],
+      'is_image': true
+    })).filter(o => isMediaURLDomainAllowed(o));
+    const media_urls = getMediaURLs(this.model.get('media_urls') || [], this.model.get('body')).filter(o => isMediaURLDomainAllowed(o));
+    return [...new Set([...media_urls.map(o => o.url), ...unfurls_to_show.map(o => o.url)])];
+  }
+  /**
+   * Adds a media rendering toggle to this message's action buttons if necessary.
+   *
+   * The toggle is only added if the message contains media URLs and if the
+   * user is allowed to show or hide media for those URLs.
+   *
+   * Whether a user is allowed to show or hide domains depends on the config settings:
+   * * allowed_audio_domains
+   * * allowed_video_domains
+   * * allowed_image_domains
+   *
+   * Whether media is currently shown or hidden is determined by the { @link hasHiddenMedia } method.
+   *
+   * @param { Array<MessageActionAttributes> } buttons - An array of objects representing action buttons
+   */
+
+
+  addMediaRenderingToggle(buttons) {
+    const urls = this.getMediaURLs();
+
+    if (urls.length) {
+      const hidden = this.hasHiddenMedia(urls);
+      buttons.push({
+        'i18n_text': hidden ? __('Show media') : __('Hide media'),
+        'handler': ev => this.onMediaToggleClicked(ev),
+        'button_class': 'chat-msg__action-hide-previews',
+        'icon_class': hidden ? 'fas fa-eye' : 'fas fa-eye-slash',
+        'name': 'hide'
+      });
+    }
+  }
 
   async getActionButtons() {
-    var _this$model$get;
-
     const buttons = [];
 
-    if (this.editable) {
+    if (this.model.get('editable')) {
+      /**
+       * @typedef { Object } MessageActionAttributes
+       * An object which represents a message action (as shown in the message dropdown);
+       * @property { String } i18n_text
+       * @property { Function } handler
+       * @property { String } button_class
+       * @property { String } icon_class
+       * @property { String } name
+       */
       buttons.push({
-        'i18n_text': this.correcting ? __('Cancel Editing') : __('Edit'),
+        'i18n_text': this.model.get('correcting') ? __('Cancel Editing') : __('Edit'),
         'handler': ev => this.onMessageEditButtonClicked(ev),
         'button_class': 'chat-msg__action-edit',
         'icon_class': 'fa fa-pencil-alt',
@@ -62398,7 +63720,7 @@ class MessageActions extends CustomElement {
       });
     }
 
-    const may_be_moderated = this.model.get('type') === 'groupchat' && (await this.model.mayBeModerated());
+    const may_be_moderated = ['groupchat', 'mep'].includes(this.model.get('type')) && (await this.model.mayBeModerated());
     const retractable = !this.is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
 
     if (retractable) {
@@ -62417,30 +63739,7 @@ class MessageActions extends CustomElement {
       return [];
     }
 
-    const ogp_metadata = this.model.get('ogp_metadata') || [];
-    const unfurls_to_show = api.settings.get('muc_show_ogp_unfurls') && ogp_metadata.length;
-    const media_to_show = (_this$model$get = this.model.get('media_urls')) === null || _this$model$get === void 0 ? void 0 : _this$model$get.length;
-
-    if (unfurls_to_show || media_to_show) {
-      let title;
-      const hidden_preview = this.hide_url_previews;
-
-      if (ogp_metadata.length > 1) {
-        title = hidden_preview ? __('Show URL previews') : __('Hide URL previews');
-      } else if (ogp_metadata.length === 1) {
-        title = hidden_preview ? __('Show URL preview') : __('Hide URL preview');
-      } else {
-        title = hidden_preview ? __('Show media') : __('Hide media');
-      }
-
-      buttons.push({
-        'i18n_text': title,
-        'handler': ev => this.onHidePreviewsButtonClicked(ev),
-        'button_class': 'chat-msg__action-hide-previews',
-        'icon_class': this.hide_url_previews ? 'fas fa-eye' : 'fas fa-eye-slash',
-        'name': 'hide'
-      });
-    }
+    this.addMediaRenderingToggle(buttons);
     /**
      * *Hook* which allows plugins to add more message action buttons
      * @event _converse#getMessageActionButtons
@@ -62456,7 +63755,6 @@ class MessageActions extends CustomElement {
      *      return buttons;
      *  });
      */
-
 
     return api.hook('getMessageActionButtons', this, buttons);
   }
@@ -63567,13 +64865,21 @@ const tpl_option = o => T`<option value="${o.value}" ?selected="${o.selected}">$
 
 
 
+
 function onClickXMPPURI(ev) {
   ev.preventDefault();
   api.rooms.open(ev.target.href);
 }
 
 /* harmony default export */ const hyperlink = ((uri, url_text) => {
-  let normalized_url = uri.normalize()._string;
+  let normalized_url;
+
+  try {
+    normalized_url = uri.normalize()._string;
+  } catch (e) {
+    headless_log.error(e);
+    return url_text;
+  }
 
   const pretty_url = uri._parts.urn ? normalized_url : uri.readable();
   const visible_url = url_text || pretty_url;
@@ -63641,6 +64947,30 @@ const XFORM_TYPE_MAP = {
   'list-single': 'dropdown',
   'list-multi': 'dropdown'
 };
+const XFORM_VALIDATE_TYPE_MAP = {
+  'xs:anyURI': 'url',
+  'xs:byte': 'number',
+  'xs:date': 'date',
+  'xs:dateTime': 'datetime',
+  'xs:int': 'number',
+  'xs:integer': 'number',
+  'xs:time': 'time'
+};
+
+function getInputType(field) {
+  const type = XFORM_TYPE_MAP[field.getAttribute('type')];
+
+  if (type == 'text') {
+    const datatypes = field.getElementsByTagNameNS("http://jabber.org/protocol/xdata-validate", "validate");
+
+    if (datatypes.length === 1) {
+      const datatype = datatypes[0].getAttribute("datatype");
+      return XFORM_VALIDATE_TYPE_MAP[datatype] || type;
+    }
+  }
+
+  return type;
+}
 
 function slideOutWrapup(el) {
   /* Wrapup function for slideOut. */
@@ -64108,7 +65438,7 @@ utils_core.xForm2TemplateResult = function (field, stanza, options) {
     return form_username({
       'domain': ' @' + options.domain,
       'name': field.getAttribute('var'),
-      'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+      'type': getInputType(field),
       'label': field.getAttribute('label') || '',
       'value': (_field$querySelector5 = field.querySelector('value')) === null || _field$querySelector5 === void 0 ? void 0 : _field$querySelector5.textContent,
       'required': !!field.querySelector('required')
@@ -64136,7 +65466,7 @@ utils_core.xForm2TemplateResult = function (field, stanza, options) {
       'autocomplete': getAutoCompleteProperty(name, options),
       'placeholder': null,
       'required': !!field.querySelector('required'),
-      'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+      'type': getInputType(field),
       'value': (_field$querySelector6 = field.querySelector('value')) === null || _field$querySelector6 === void 0 ? void 0 : _field$querySelector6.textContent
     });
   }
@@ -64146,8 +65476,8 @@ Object.assign(utils_core, {
   getOOBURLMarkup
 });
 /* harmony default export */ const html = (utils_core);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/components/styles/gif.scss
-var gif = __webpack_require__(3735);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/components/styles/gif.scss
+var gif = __webpack_require__(4903);
 ;// CONCATENATED MODULE: ./src/shared/components/styles/gif.scss
 
       
@@ -64184,7 +65514,7 @@ var gif_update = injectStylesIntoStyleTag_default()(gif/* default */.Z, gif_opti
 
 
 
-class ConverseGIF extends CustomElement {
+class ConverseGIFElement extends CustomElement {
   static get properties() {
     /**
      * @typedef { Object } ConverseGIFComponentProperties
@@ -64221,7 +65551,7 @@ class ConverseGIF extends CustomElement {
     this.fallback = 'url';
   }
 
-  initialize() {
+  initGIF() {
     const options = {
       'autoplay': this.autoplay,
       'loop': !this.noloop
@@ -64236,7 +65566,7 @@ class ConverseGIF extends CustomElement {
 
   updated(changed) {
     if (!this.supergif || changed.has('src')) {
-      this.initialize();
+      this.initGIF();
       return;
     }
 
@@ -64295,7 +65625,7 @@ class ConverseGIF extends CustomElement {
   }
 
 }
-api.elements.define('converse-gif', ConverseGIF);
+api.elements.define('converse-gif', ConverseGIFElement);
 ;// CONCATENATED MODULE: ./src/templates/gif.js
 
 
@@ -64363,15 +65693,21 @@ const renderImage = directive_i(ImageDirective);
 
 
 
+
 async function transform(t) {
-  await t.addTemplates();
+  try {
+    await t.addTemplates();
+  } catch (e) {
+    headless_log.error(e);
+  }
+
   return t.payload;
 }
 
 class StylingDirective extends directive_s {
-  render(txt, offset, mentions, options) {
+  render(txt, offset, options) {
     // eslint-disable-line class-methods-use-this
-    const t = new RichText(txt, offset, mentions, Object.assign(options, {
+    const t = new RichText(txt, offset, Object.assign(options, {
       'show_images': false,
       'embed_videos': false,
       'embed_audio': false
@@ -64423,12 +65759,12 @@ const dont_escape = ['_', '>', '`', '~'];
 const styling_templates = {
   // m is the chatbox model
   // i is the offset of this directive relative to the start of the original message
-  'emphasis': (txt, i, mentions, options) => T`<span class="styling-directive">_</span><i>${renderStylingDirectiveBody(txt, i, mentions, options)}</i><span class="styling-directive">_</span>`,
+  'emphasis': (txt, i, options) => T`<span class="styling-directive">_</span><i>${renderStylingDirectiveBody(txt, i, options)}</i><span class="styling-directive">_</span>`,
   'preformatted': txt => T`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
   'preformatted_block': txt => T`<div class="styling-directive">\`\`\`</div><code class="block">${txt}</code><div class="styling-directive">\`\`\`</div>`,
-  'quote': (txt, i, mentions, options) => T`<blockquote>${renderStylingDirectiveBody(txt, i, mentions, options)}</blockquote>`,
-  'strike': (txt, i, mentions, options) => T`<span class="styling-directive">~</span><del>${renderStylingDirectiveBody(txt, i, mentions, options)}</del><span class="styling-directive">~</span>`,
-  'strong': (txt, i, mentions, options) => T`<span class="styling-directive">*</span><b>${renderStylingDirectiveBody(txt, i, mentions, options)}</b><span class="styling-directive">*</span>`
+  'quote': (txt, i, options) => T`<blockquote>${renderStylingDirectiveBody(txt, i, options)}</blockquote>`,
+  'strike': (txt, i, options) => T`<span class="styling-directive">~</span><del>${renderStylingDirectiveBody(txt, i, options)}</del><span class="styling-directive">~</span>`,
+  'strong': (txt, i, options) => T`<span class="styling-directive">*</span><b>${renderStylingDirectiveBody(txt, i, options)}</b><span class="styling-directive">*</span>`
 };
 /**
  * Checks whether a given character "d" at index "i" of "text" is a valid opening or closing directive.
@@ -64557,16 +65893,16 @@ function getDirectiveAndLength(text, i) {
   } : {};
 }
 const isQuoteDirective = d => ['>', '&gt;'].includes(d);
-function getDirectiveTemplate(d, text, offset, mentions, options) {
+function getDirectiveTemplate(d, text, offset, options) {
   const template = styling_templates[styling_map[d].name];
 
   if (isQuoteDirective(d)) {
     const newtext = text.replace(/\n>/g, '\n') // Don't show the directive itself
     .replace(/\n$/, ''); // Trim line-break at the end
 
-    return template(newtext, offset, mentions, options);
+    return template(newtext, offset, options);
   } else {
-    return template(text, offset, mentions, options);
+    return template(text, offset, options);
   }
 }
 function containsDirectives(text) {
@@ -64589,9 +65925,6 @@ function containsDirectives(text) {
 
 
 
-const {
-  URI: rich_text_URI
-} = core_converse.env;
 
 const rich_text_isString = s => typeof s === 'string'; // We don't render more than two line-breaks, replace extra line-breaks with
 // the zero-width whitespace character
@@ -64629,21 +65962,35 @@ class RichText extends String {
    *  from the start of the original message text. This is necessary because
    *  RichText instances can be nested when templates call directives
    *  which create new RichText instances (as happens with XEP-393 styling directives).
-   * @param { Array } mentions - An array of mention references
    * @param { Object } options
    * @param { String } options.nick - The current user's nickname (only relevant if the message is in a XEP-0045 MUC)
    * @param { Boolean } options.render_styling - Whether XEP-0393 message styling should be applied to the message
-   * @param { Boolean } options.show_images - Whether image URLs should be rendered as <img> tags.
-   * @param { Boolean } options.embed_videos - Whether video URLs should be rendered as <video> tags.
+   * @param { Boolean } [options.embed_audio] - Whether audio URLs should be rendered as <audio> elements.
+   *  If set to `true`, then audio files will always be rendered with an
+   *  audio player. If set to `false`, they won't, and if not defined, then the `embed_audio` setting
+   *  is used to determine whether they should be rendered as playable audio or as hyperlinks.
+   * @param { Boolean } [options.embed_videos] - Whether video URLs should be rendered as <video> elements.
+   *  If set to `true`, then videos will always be rendered with a video
+   *  player. If set to `false`, they won't, and if not defined, then the `embed_videos` setting
+   *  is used to determine whether they should be rendered as videos or as hyperlinks.
+   * @param { Array } [options.mentions] - An array of mention references
+   * @param { Array } [options.media_urls] - An array of {@link MediaURLMetadata} objects,
+   *  used to render media such as images, videos and audio. It might not be
+   *  possible to have the media metadata available, so if this value is
+   *  `undefined` then the passed-in `text` will be parsed for URLs. If you
+   *  don't want this parsing to happen, pass in an empty array for this
+   *  option.
+   * @param { Boolean } [options.show_images] - Whether image URLs should be rendered as <img> elements.
    * @param { Boolean } options.show_me_message - Whether /me messages should be rendered differently
    * @param { Function } options.onImgClick - Callback for when an inline rendered image has been clicked
    * @param { Function } options.onImgLoad - Callback for when an inline rendered image has been loaded
    */
-  constructor(text, offset = 0, mentions = [], options = {}) {
+  constructor(text, offset = 0, options = {}) {
     super(text);
     this.embed_audio = options === null || options === void 0 ? void 0 : options.embed_audio;
     this.embed_videos = options === null || options === void 0 ? void 0 : options.embed_videos;
-    this.mentions = mentions;
+    this.mentions = (options === null || options === void 0 ? void 0 : options.mentions) || [];
+    this.media_urls = options === null || options === void 0 ? void 0 : options.media_urls;
     this.nick = options === null || options === void 0 ? void 0 : options.nick;
     this.offset = offset;
     this.onImgClick = options === null || options === void 0 ? void 0 : options.onImgClick;
@@ -64655,39 +66002,45 @@ class RichText extends String {
     this.show_images = options === null || options === void 0 ? void 0 : options.show_images;
     this.hide_media_urls = options === null || options === void 0 ? void 0 : options.hide_media_urls;
   }
+
+  shouldRenderMedia(url_text, type) {
+    let override;
+
+    if (type === 'image') {
+      override = this.show_images;
+    } else if (type === 'audio') {
+      override = this.embed_audio;
+    } else if (type === 'video') {
+      override = this.embed_videos;
+    }
+
+    if (typeof override === 'boolean') {
+      return override;
+    }
+
+    return shouldRenderMediaFromURL(url_text, type);
+  }
   /**
    * Look for `http` URIs and return templates that render them as URL links
    * @param { String } text
-   * @param { Integer } offset - The index of the passed in text relative to
-   *  the start of the message body text.
+   * @param { Integer } local_offset - The index of the passed in text relative to
+   *  the start of this RichText instance (which is not necessarily the same as the
+   *  offset from the start of the original message stanza's body text).
    */
 
 
-  addHyperlinks(text, offset) {
-    const objs = [];
-
-    try {
-      rich_text_URI.withinString(text, (url, start, end) => {
-        objs.push({
-          url,
-          start,
-          end
-        });
-        return url;
-      }, URL_PARSE_OPTIONS);
-    } catch (error) {
-      headless_log.debug(error);
-      return;
-    }
-
-    objs.filter(o => !isEncryptedFileURL(text.slice(o.start, o.end))).forEach(url_obj => {
+  addHyperlinks(text, local_offset) {
+    const full_offset = local_offset + this.offset;
+    const urls_meta = this.media_urls || getMediaURLsMetadata(text).media_urls || [];
+    const media_urls = getMediaURLs(urls_meta, text, full_offset);
+    media_urls.filter(o => !o.is_encrypted).forEach(url_obj => {
       const url_text = url_obj.url;
       const filtered_url = filterQueryParamsFromURL(url_text);
       let template;
 
-      if (this.show_images && isGIFURL(url_text) && isImageDomainAllowed(url_text)) {
+      if (isGIFURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
         template = templates_gif(filtered_url, this.hide_media_urls);
-      } else if (this.show_images && isImageURL(url_text) && isImageDomainAllowed(url_text)) {
+      } else if (isImageURL(url_text) && this.shouldRenderMedia(url_text, 'image')) {
         template = src_templates_image({
           'url': filtered_url,
           // XXX: bit of an abuse of `hide_media_urls`, might want a dedicated option here
@@ -64695,15 +66048,15 @@ class RichText extends String {
           'onClick': this.onImgClick,
           'onLoad': this.onImgLoad
         });
-      } else if (this.embed_videos && isVideoURL(url_text) && isVideoDomainAllowed(url_text)) {
+      } else if (isVideoURL(url_text) && this.shouldRenderMedia(url_text, 'video')) {
         template = video(filtered_url, this.hide_media_urls);
-      } else if (this.embed_audio && isAudioURL(url_text) && isAudioDomainAllowed(url_text)) {
+      } else if (isAudioURL(url_text) && this.shouldRenderMedia(url_text, 'audio')) {
         template = audio(filtered_url, this.hide_media_urls);
       } else {
         template = getHyperlinkTemplate(filtered_url);
       }
 
-      this.addTemplateResult(url_obj.start + offset, url_obj.end + offset, template);
+      this.addTemplateResult(url_obj.start + local_offset, url_obj.end + local_offset, template);
     });
   }
   /**
@@ -64719,7 +66072,7 @@ class RichText extends String {
     const matches = text.matchAll(regex);
 
     for (const m of matches) {
-      this.addTemplateResult(m.index + offset, m.index + m[0].length + offset, getHyperlinkTemplate(m[0].replace(regex, shared_converse.geouri_replacement)));
+      this.addTemplateResult(m.index + offset, m.index + m[0].length + offset, getHyperlinkTemplate(m[0].replace(regex, api.settings.get('geouri_replacement'))));
     }
   }
   /**
@@ -64817,7 +66170,7 @@ class RichText extends String {
           const text = this.slice(slice_begin, slice_end);
           references.push({
             'begin': i,
-            'template': getDirectiveTemplate(d, text, offset, this.mentions, this.options),
+            'template': getDirectiveTemplate(d, text, offset, this.options),
             end
           });
           i = end;
@@ -64962,17 +66315,23 @@ class RichText extends String {
 
 
 
+
 class RichTextRenderer {
-  constructor(text, offset, mentions = [], options = {}) {
-    this.mentions = mentions;
+  constructor(text, offset, options = {}) {
     this.offset = offset;
     this.options = options;
     this.text = text;
   }
 
   async transform() {
-    const text = new RichText(this.text, this.offset, this.mentions, this.options);
-    await text.addTemplates();
+    const text = new RichText(this.text, this.offset, this.options);
+
+    try {
+      await text.addTemplates();
+    } catch (e) {
+      headless_log.error(e);
+    }
+
     return text.payload;
   }
 
@@ -64983,9 +66342,9 @@ class RichTextRenderer {
 }
 
 class RichTextDirective extends directive_s {
-  render(text, offset, mentions, options, callback) {
+  render(text, offset, options, callback) {
     // eslint-disable-line class-methods-use-this
-    const renderer = new RichTextRenderer(text, offset, mentions, options);
+    const renderer = new RichTextRenderer(text, offset, options);
     const result = renderer.render();
     callback === null || callback === void 0 ? void 0 : callback();
     return result;
@@ -64995,8 +66354,8 @@ class RichTextDirective extends directive_s {
 
 const renderRichText = directive_i(RichTextDirective);
 /* harmony default export */ const rich_text = (renderRichText);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/chat/styles/message-body.scss
-var message_body = __webpack_require__(5223);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/message-body.scss
+var message_body = __webpack_require__(6278);
 ;// CONCATENATED MODULE: ./src/shared/chat/styles/message-body.scss
 
       
@@ -65033,17 +66392,14 @@ var message_body_update = injectStylesIntoStyleTag_default()(message_body/* defa
 
 
 
+
 class MessageBody extends CustomElement {
   static get properties() {
     return {
-      embed_audio: {
-        type: Boolean
-      },
-      embed_videos: {
-        type: Boolean
-      },
+      // We make this a string instead of a boolean, since we want to
+      // distinguish between true, false and undefined states
       hide_url_previews: {
-        type: Boolean
+        type: String
       },
       is_me_message: {
         type: Boolean
@@ -65051,13 +66407,18 @@ class MessageBody extends CustomElement {
       model: {
         type: Object
       },
-      show_images: {
-        type: Boolean
-      },
       text: {
         type: String
       }
     };
+  }
+
+  initialize() {
+    const settings = getAppSettings();
+    this.listenTo(settings, 'change:allowed_audio_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:allowed_video_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
   }
 
   onImgClick(ev) {
@@ -65083,24 +66444,33 @@ class MessageBody extends CustomElement {
     };
 
     const offset = 0;
-    const mentions = this.model.get('references');
     const options = {
-      'embed_audio': !this.hide_url_previews && this.embed_audio,
-      'embed_videos': !this.hide_url_previews && this.embed_videos,
+      'media_urls': this.model.get('media_urls'),
+      'mentions': this.model.get('references'),
       'nick': this.model.collection.chatbox.get('nick'),
       'onImgClick': ev => this.onImgClick(ev),
       'onImgLoad': () => this.onImgLoad(),
       'render_styling': !this.model.get('is_unstyled') && api.settings.get('allow_message_styling'),
-      'show_images': !this.hide_url_previews && this.show_images,
       'show_me_message': true
     };
-    return rich_text(this.text, offset, mentions, options, callback);
+
+    if (this.hide_url_previews === "false") {
+      options.embed_audio = true;
+      options.embed_videos = true;
+      options.show_images = true;
+    } else if (this.hide_url_previews === "true") {
+      options.embed_audio = false;
+      options.embed_videos = false;
+      options.show_images = false;
+    }
+
+    return rich_text(this.text, offset, options, callback);
   }
 
 }
 api.elements.define('converse-chat-message-body', MessageBody);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/components/styles/icon.scss
-var icon = __webpack_require__(3543);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/components/styles/icon.scss
+var icon = __webpack_require__(6450);
 ;// CONCATENATED MODULE: ./src/shared/components/styles/icon.scss
 
       
@@ -65163,7 +66533,7 @@ class ConverseIcon extends CustomElement {
   }
 
   getSource() {
-    return `#icon-${this.class_name.split(" ")[1].replace("fa-", "")}`;
+    return `#icon-${this.class_name.trim().split(" ")[1].replace("fa-", "")}`;
   }
 
   getStyles() {
@@ -65707,8 +67077,8 @@ class DropdownBase extends CustomElement {
   }
 
 }
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/components/styles/dropdown.scss
-var dropdown = __webpack_require__(1065);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/components/styles/dropdown.scss
+var dropdown = __webpack_require__(7631);
 ;// CONCATENATED MODULE: ./src/shared/components/styles/dropdown.scss
 
       
@@ -65820,6 +67190,138 @@ class Dropdown extends DropdownBase {
 
 }
 api.elements.define('converse-dropdown', Dropdown);
+;// CONCATENATED MODULE: ./src/shared/avatar/templates/avatar.js
+
+
+const getImgHref = (image, image_type) => {
+  return image.startsWith('data:') ? image : `data:${image_type};base64,${image}`;
+};
+
+/* harmony default export */ const avatar = (o => {
+  if (o.image) {
+    return T`
+            <svg xmlns="http://www.w3.org/2000/svg" class="avatar ${o.classes}" width="${o.width}" height="${o.height}">
+                <image width="${o.width}" height="${o.height}" preserveAspectRatio="xMidYMid meet" href="${getImgHref(o.image, o.image_type)}"/>
+            </svg>`;
+  } else {
+    return '';
+  }
+});
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/avatar/avatar.scss
+var avatar_avatar = __webpack_require__(5222);
+;// CONCATENATED MODULE: ./src/shared/avatar/avatar.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var avatar_options = {};
+
+avatar_options.styleTagTransform = (styleTagTransform_default());
+avatar_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      avatar_options.insert = insertBySelector_default().bind(null, "head");
+    
+avatar_options.domAPI = (styleDomAPI_default());
+avatar_options.insertStyleElement = (insertStyleElement_default());
+
+var avatar_update = injectStylesIntoStyleTag_default()(avatar_avatar/* default */.Z, avatar_options);
+
+
+
+
+       /* harmony default export */ const shared_avatar_avatar = (avatar_avatar/* default */.Z && avatar_avatar/* default.locals */.Z.locals ? avatar_avatar/* default.locals */.Z.locals : undefined);
+
+;// CONCATENATED MODULE: ./src/shared/avatar/avatar.js
+
+
+
+
+class Avatar extends CustomElement {
+  static get properties() {
+    return {
+      data: {
+        type: Object
+      },
+      width: {
+        type: String
+      },
+      height: {
+        type: String
+      },
+      nonce: {
+        type: String
+      } // Used to trigger rerenders
+
+    };
+  }
+
+  constructor() {
+    super();
+    this.width = 36;
+    this.height = 36;
+  }
+
+  render() {
+    var _this$data, _this$data2;
+
+    const image_type = ((_this$data = this.data) === null || _this$data === void 0 ? void 0 : _this$data.image_type) || shared_converse.DEFAULT_IMAGE_TYPE;
+    let image;
+
+    if ((_this$data2 = this.data) !== null && _this$data2 !== void 0 && _this$data2.data_uri) {
+      var _this$data3;
+
+      image = (_this$data3 = this.data) === null || _this$data3 === void 0 ? void 0 : _this$data3.data_uri;
+    } else {
+      var _this$data4;
+
+      const image_data = ((_this$data4 = this.data) === null || _this$data4 === void 0 ? void 0 : _this$data4.image) || shared_converse.DEFAULT_IMAGE;
+      image = "data:" + image_type + ";base64," + image_data;
+    }
+
+    return avatar({
+      'classes': this.getAttribute('class'),
+      'height': this.height,
+      'width': this.width,
+      image,
+      image_type
+    });
+  }
+
+}
+api.elements.define('converse-avatar', Avatar);
+;// CONCATENATED MODULE: ./src/shared/chat/templates/file-progress.js
+
+
+
+
+/* harmony default export */ const file_progress = (el => {
+  var _el$model$vcard, _el$model$vcard2;
+
+  const i18n_uploading = __('Uploading file:');
+
+  const filename = el.model.file.name;
+  const size = filesize_min_default()(el.model.file.size);
+  return T`
+        <div class="message chat-msg">
+            ${el.shouldShowAvatar() ? T`<a class="show-msg-author-modal" @click=${el.showUserModal}>
+                    <converse-avatar class="avatar align-self-center"
+                        .data=${(_el$model$vcard = el.model.vcard) === null || _el$model$vcard === void 0 ? void 0 : _el$model$vcard.attributes}
+                        nonce=${(_el$model$vcard2 = el.model.vcard) === null || _el$model$vcard2 === void 0 ? void 0 : _el$model$vcard2.get('vcard_updated')}
+                        height="40" width="40"></converse-avatar>
+                </a>` : ''}
+            <div class="chat-msg__content">
+                <span class="chat-msg__text">${i18n_uploading} <strong>${filename}</strong>, ${size}</span>
+                <progress value="${el.model.get('progress')}"/>
+            </div>
+        </div>`;
+});
 ;// CONCATENATED MODULE: ./src/shared/components/message-versions.js
 
 
@@ -65879,31 +67381,14 @@ api.elements.define('converse-message-versions', MessageVersions);
   }
 
 }));
-;// CONCATENATED MODULE: ./src/shared/directives/avatar.js
-
-
-
-class AvatarDirective extends directive_s {
-  render(o) {
-    // eslint-disable-line class-methods-use-this
-    const data = {
-      'classes': o.classes ? `${o.classes} avatar` : 'avatar',
-      'height': o.width || 36,
-      'image': o.image,
-      'image_type': o.image_type,
-      'width': o.height || 36
-    };
-    return avatar(data);
-  }
-
-}
-
-const renderAvatar = directive_i(AvatarDirective);
 ;// CONCATENATED MODULE: ./src/modals/templates/occupant.js
 
 
 
+
 /* harmony default export */ const templates_occupant = (o => {
+  var _o$vcard, _o$vcard2;
+
   return T`
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -65911,8 +67396,38 @@ const renderAvatar = directive_i(AvatarDirective);
                     <h5 class="modal-title" id="user-details-modal-label">${o.display_name}</h5>
                     ${modal_header_close_button}
                 </div>
-                <div class="modal-body">
-                    ${renderAvatar(o.avatar_data)}
+                <div class="modal-body" class="d-flex">
+                    <div class="row">
+                        <div class="col-auto">
+                            <converse-avatar
+                                class="avatar modal-avatar"
+                                .data=${(_o$vcard = o.vcard) === null || _o$vcard === void 0 ? void 0 : _o$vcard.attributes}
+                                nonce=${(_o$vcard2 = o.vcard) === null || _o$vcard2 === void 0 ? void 0 : _o$vcard2.get('vcard_updated')}
+                                height="120" width="120"></converse-avatar>
+                        </div>
+                        <div class="col">
+                            <ul class="occupant-details">
+                                <li>
+                                    ${o.nick ? T`<div class="row"><strong>${__('Nickname')}:</strong></div><div class="row">${o.nick}</div>` : ''}
+                                </li>
+                                <li>
+                                    ${o.jid ? T`<div class="row"><strong>${__('XMPP Address')}:</strong></div><div class="row">${o.jid}</div>` : ''}
+                                </li>
+                                <li>
+                                    ${o.affiliation ? T`<div class="row"><strong>${__('Affiliation')}:</strong></div><div class="row">${o.affiliation}</div>` : ''}
+                                </li>
+                                <li>
+                                    ${o.role ? T`<div class="row"><strong>${__('Roles')}:</strong></div><div class="row">${o.role}</div>` : ''}
+                                </li>
+                                <li>
+                                    ${o.hats ? T`<div class="row"><strong>${__('Hats')}:</strong></div><div class="row">${o.hats}</div>` : ''}
+                                </li>
+                                <li>
+                                    ${o.occupant_id ? T`<div class="row"><strong>${__('Occupant Id')}:</strong></div><div class="row">${o.occupant_id}</div>` : ''}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     ${modal_close_button}
@@ -65921,45 +67436,91 @@ const renderAvatar = directive_i(AvatarDirective);
         </div>
     `;
 });
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/modals/modals.scss
+var modals_modals = __webpack_require__(1551);
+;// CONCATENATED MODULE: ./src/modals/modals.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var modals_options = {};
+
+modals_options.styleTagTransform = (styleTagTransform_default());
+modals_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      modals_options.insert = insertBySelector_default().bind(null, "head");
+    
+modals_options.domAPI = (styleDomAPI_default());
+modals_options.insertStyleElement = (insertStyleElement_default());
+
+var modals_update = injectStylesIntoStyleTag_default()(modals_modals/* default */.Z, modals_options);
+
+
+
+
+       /* harmony default export */ const src_modals_modals = (modals_modals/* default */.Z && modals_modals/* default.locals */.Z.locals ? modals_modals/* default.locals */.Z.locals : undefined);
+
 ;// CONCATENATED MODULE: ./src/modals/occupant.js
 
 
 
+
 const OccupantModal = base.extend({
+  id: "muc-occupant",
+
   initialize() {
     base.prototype.initialize.apply(this, arguments);
-    this.listenTo(this.model, 'change', this.render);
+
+    if (this.model) {
+      this.listenTo(this.model, 'change', this.render);
+    }
     /**
      * Triggered once the OccupantModal has been initialized
-     * @event _converse#userDetailsModalInitialized
-     * @type { _converse.ChatBox }
-     * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+     * @event _converse#occupantModalInitialized
+     * @type { Object }
+     * @example _converse.api.listen.on('occupantModalInitialized', data);
      */
 
-    api.trigger('occupantModalInitialized', this.model);
+
+    api.trigger('occupantModalInitialized', {
+      'model': this.model,
+      'message': this.message
+    });
   },
 
   toHTML() {
-    return templates_occupant(Object.assign(this.model.toJSON(), {
-      'avatar_data': this.getAvatarData(),
-      'display_name': this.model.getDisplayName()
-    }));
-  },
+    var _this$model, _this$model2, _this$model3, _this$model3$get;
 
-  getAvatarData() {
+    const model = this.model ?? this.message;
+    const jid = model === null || model === void 0 ? void 0 : model.get('jid');
+
     const vcard = shared_converse.vcards.findWhere({
-      'jid': this.model.get('jid')
+      jid
     });
 
-    const image_type = (vcard === null || vcard === void 0 ? void 0 : vcard.get('image_type')) || shared_converse.DEFAULT_IMAGE_TYPE;
-    const image_data = (vcard === null || vcard === void 0 ? void 0 : vcard.get('image')) || shared_converse.DEFAULT_IMAGE;
-    const image = "data:" + image_type + ";base64," + image_data;
-    return {
-      'classes': 'chat-msg__avatar',
-      'height': 120,
-      'width': 120,
-      image
-    };
+    const display_name = model === null || model === void 0 ? void 0 : model.getDisplayName();
+    const nick = model.get('nick');
+    const occupant_id = model.get('occupant_id');
+    const role = (_this$model = this.model) === null || _this$model === void 0 ? void 0 : _this$model.get('role');
+    const affiliation = (_this$model2 = this.model) === null || _this$model2 === void 0 ? void 0 : _this$model2.get('affiliation');
+    const hats = (_this$model3 = this.model) !== null && _this$model3 !== void 0 && (_this$model3$get = _this$model3.get('hats')) !== null && _this$model3$get !== void 0 && _this$model3$get.length ? this.model.get('hats') : null;
+    return templates_occupant({
+      jid,
+      vcard,
+      display_name,
+      nick,
+      occupant_id,
+      role,
+      affiliation,
+      hats
+    });
   }
 
 });
@@ -65970,49 +67531,6 @@ shared_converse.OccupantModal = OccupantModal;
 
 
 
-
-const device_fingerprint = o => {
-  const i18n_trusted = __('Trusted');
-
-  const i18n_untrusted = __('Untrusted');
-
-  if (o.device.get('bundle') && o.device.get('bundle').fingerprint) {
-    return T`
-            <li class="list-group-item">
-                <form class="fingerprint-trust">
-                <div class="btn-group btn-group-toggle">
-                    <label class="btn btn--small ${o.device.get('trusted') !== -1 ? 'btn-primary active' : 'btn-secondary'}">
-                        <input type="radio" name="${o.device.get('id')}" value="1" ?checked=${o.device.get('trusted') !== -1}>${i18n_trusted}
-                    </label>
-                    <label class="btn btn--small ${o.device.get('trusted') !== -1 ? 'btn-primary active' : 'btn-secondary'}">
-                        <input type="radio" name="${o.device.get('id')}" value="-1" ?checked=${o.device.get('trusted') === -1}>${i18n_untrusted}
-                    </label>
-                </div>
-                <code class="fingerprint">${o.utils.formatFingerprint(o.device.get('bundle').fingerprint)}</code>
-                </form>
-            </li>
-        `;
-  } else {
-    return '';
-  }
-};
-
-const fingerprints = o => {
-  const i18n_fingerprints = __('OMEMO Fingerprints');
-
-  const i18n_no_devices = __("No OMEMO-enabled devices found");
-
-  const devices = o.view.devicelist.devices;
-  return T`
-        <hr/>
-        <ul class="list-group fingerprints">
-            <li class="list-group-item active">${i18n_fingerprints}</li>
-            ${devices.length ? devices.map(device => device_fingerprint(Object.assign({
-    device
-  }, o))) : T`<li class="list-group-item"> ${i18n_no_devices} </li>`}
-        </ul>
-    `;
-};
 
 const remove_button = o => {
   const i18n_remove_contact = __('Remove as contact');
@@ -66063,7 +67581,7 @@ const remove_button = o => {
                     ${o.email ? T`<p><label>${i18n_email}:</label> <a href="mailto:${o.email}">${o.email}</a></p>` : ''}
                     ${o.role ? T`<p><label>${i18n_role}:</label> ${o.role}</p>` : ''}
 
-                    ${o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) ? fingerprints(o) : ''}
+                    <converse-omemo-fingerprints jid=${o.jid}></converse-omemo-fingerprints>
                 </div>
                 <div class="modal-footer">
                     ${modal_close_button}
@@ -66094,8 +67612,7 @@ const UserDetailsModal = base.extend({
   id: 'user-details-modal',
   persistent: true,
   events: {
-    'click button.refresh-contact': 'refreshContact',
-    'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
+    'click button.refresh-contact': 'refreshContact'
   },
 
   initialize() {
@@ -66104,11 +67621,11 @@ const UserDetailsModal = base.extend({
     this.listenTo(this.model, 'change', this.render);
     this.registerContactEventHandlers();
     /**
-        * Triggered once the UserDetailsModal has been initialized
-        * @event _converse#userDetailsModalInitialized
-        * @type { _converse.ChatBox }
-        * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
-        */
+     * Triggered once the UserDetailsModal has been initialized
+     * @event _converse#userDetailsModalInitialized
+     * @type { _converse.ChatBox }
+     * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+     */
 
     api.trigger('userDetailsModalInitialized', this.model);
   },
@@ -66211,7 +67728,79 @@ const {
             ${el.model.get('retry_event_id') ? T`<a class="retry" @click=${el.onRetryClicked}>${i18n_retry}</a>` : ''}
         </div>`;
 });
+;// CONCATENATED MODULE: ./src/plugins/muc-views/templates/mep-message.js
+
+
+const {
+  dayjs: mep_message_dayjs
+} = core_converse.env;
+/* harmony default export */ const mep_message = (el => {
+  const isodate = mep_message_dayjs(el.model.get('time')).toISOString();
+  return T`
+        <div class="message chat-info message--mep ${el.getExtraMessageClasses()}"
+            data-isodate="${isodate}"
+            data-type="${el.data_name}"
+            data-value="${el.data_value}">
+
+            <div class="chat-msg__content">
+                <div class="chat-msg__body chat-msg__body--${el.model.get('type')} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}">
+                    <div class="chat-info__message">
+                        ${el.isRetracted() ? el.renderRetraction() : T`
+                            <converse-rich-text
+                                .mentions=${el.model.get('references')}
+                                render_styling
+                                text=${el.model.getMessageText()}>
+                            </converse-rich-text>
+                            ${el.model.get('reason') ? T`<q class="reason"><converse-rich-text text=${el.model.get('reason')}></converse-rich-text></q>` : ``}
+                        `}
+                    </div>
+                    <converse-message-actions
+                        ?is_retracted=${el.isRetracted()}
+                        .model=${el.model}></converse-message-actions>
+                </div>
+            </div>
+        </div>`;
+});
+;// CONCATENATED MODULE: ./src/shared/components/image.js
+
+
+
+
+
+class Image extends CustomElement {
+  static get properties() {
+    return {
+      'href': {
+        type: String
+      },
+      'onImgLoad': {
+        type: Function
+      },
+      'text': {
+        type: String
+      }
+    };
+  }
+
+  render() {
+    const filtered_url = filterQueryParamsFromURL(this.href);
+
+    if (isGIFURL(this.text) && this.shouldRenderMedia(this.text, 'image')) {
+      return templates_gif(filtered_url);
+    } else {
+      return src_templates_image({
+        'url': this.text,
+        'href': filtered_url,
+        'onClick': this.onImgClick,
+        'onLoad': this.onImgLoad
+      });
+    }
+  }
+
+}
+api.elements.define('converse-image', Image);
 ;// CONCATENATED MODULE: ./src/shared/chat/templates/unfurl.js
+
 
 
 
@@ -66221,37 +67810,36 @@ function isValidURL(url) {
 }
 
 function isValidImage(image) {
-  return image && isImageDomainAllowed(image) && isValidURL(image);
+  return image && isDomainAllowed(image, 'allowed_image_domains') && isValidURL(image);
 }
 
-function shouldHideMediaURL(o) {
-  return isGIFURL(o.url) || isVideoURL(o.url) || isAudioURL(o.url);
-}
+const tpl_url_wrapper = (o, wrapped_template) => o.url && isValidURL(o.url) && !isGIFURL(o.image) ? T`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>` : wrapped_template(o);
 
-const tpl_url_wrapper = (o, wrapped_template) => o.url && isValidURL(o.url) && !isGIFURL(o.url) ? T`<a href="${o.url}" target="_blank" rel="noopener">${wrapped_template(o)}</a>` : wrapped_template(o);
-
-const tpl_image = o => T`<converse-rich-text class="card-img-top" text="${o.image}" show_images ?hide_media_urls=${shouldHideMediaURL(o.url)} .onImgLoad=${o.onload}></converse-rich-text>`;
+const tpl_image = o => T`<converse-image class="card-img-top" text="${o.image}" href="${o.url}" .onImgLoad=${o.onload}></converse-image>`;
 
 /* harmony default export */ const unfurl = (o => {
-  const valid_image = isValidImage(o.image);
+  const show_image = isValidImage(o.image);
   const has_body_info = o.title || o.description || o.url;
 
-  if (valid_image || has_body_info) {
+  if (show_image || has_body_info) {
     return T`<div class="card card--unfurl">
-            ${valid_image ? tpl_url_wrapper(o, tpl_image) : ''}
-            ${has_body_info ? T`
-                <div class="card-body">
-                ${o.title ? tpl_url_wrapper(o, o => T`<h5 class="card-title">${o.title}</h5>`) : ''}
-                ${o.description ? T`<p class="card-text"><converse-rich-text text=${o.description}></converse-rich-text></p>` : ''}
-                ${o.url ? T`<p class="card-text"><a href="${o.url}" target="_blank" rel="noopener">${getURI(o.url).domain()}</a></p>` : ''}
-                </div>` : ''}
+            ${show_image ? tpl_url_wrapper(o, tpl_image) : ''}
+            ${has_body_info ? T` <div class="card-body">
+                      ${o.title ? tpl_url_wrapper(o, o => T`<h5 class="card-title">${o.title}</h5>`) : ''}
+                      ${o.description ? T`<p class="card-text">
+                                <converse-rich-text text=${o.description}></converse-rich-text>
+                            </p>` : ''}
+                      ${o.url ? T`<p class="card-text">
+                                <a href="${o.url}" target="_blank" rel="noopener">${getURI(o.url).domain()}</a>
+                            </p>` : ''}
+                  </div>` : ''}
         </div>`;
   } else {
     return '';
   }
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/chat/styles/unfurl.scss
-var styles_unfurl = __webpack_require__(7415);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/unfurl.scss
+var styles_unfurl = __webpack_require__(5046);
 ;// CONCATENATED MODULE: ./src/shared/chat/styles/unfurl.scss
 
       
@@ -66286,6 +67874,7 @@ var unfurl_update = injectStylesIntoStyleTag_default()(styles_unfurl/* default *
 
 
 
+
 class MessageUnfurl extends CustomElement {
   static get properties() {
     return {
@@ -66305,6 +67894,12 @@ class MessageUnfurl extends CustomElement {
         type: String
       }
     };
+  }
+
+  initialize() {
+    const settings = getAppSettings();
+    this.listenTo(settings, 'change:allowed_image_domains', () => this.requestUpdate());
+    this.listenTo(settings, 'change:render_media', () => this.requestUpdate());
   }
 
   render() {
@@ -66332,11 +67927,13 @@ api.elements.define('converse-message-unfurl', MessageUnfurl);
 
 
 
+
 /* harmony default export */ const templates_message = ((el, o) => {
-  var _el$model$get, _el$model$get2;
+  var _el$model$vcard, _el$model$vcard2, _el$model$get;
 
   const i18n_new_messages = __('New messages');
 
+  const is_followup = el.model.isFollowup();
   return T`
         ${o.is_first_unread ? T`<div class="message separator"><hr class="separator"><span class="separator-text">${i18n_new_messages}</span></div>` : ''}
         <div class="message chat-msg ${el.getExtraMessageClasses()}"
@@ -66348,16 +67945,23 @@ api.elements.define('converse-message-unfurl', MessageUnfurl);
             <!-- Anchor to allow us to scroll the message into view -->
             <a id="${o.msgid}"></a>
 
-            <a class="show-msg-author-modal" @click=${el.showUserModal}>${o.should_show_avatar ? renderAvatar(el.getAvatarData()) : ''}</a>
-            <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
+            ${o.should_show_avatar && !is_followup ? T`<a class="show-msg-author-modal" @click=${el.showUserModal}>
+                    <converse-avatar
+                        class="avatar align-self-center"
+                        .data=${(_el$model$vcard = el.model.vcard) === null || _el$model$vcard === void 0 ? void 0 : _el$model$vcard.attributes}
+                        nonce=${(_el$model$vcard2 = el.model.vcard) === null || _el$model$vcard2 === void 0 ? void 0 : _el$model$vcard2.get('vcard_updated')}
+                        height="40" width="40"></converse-avatar>
+                </a>` : ''}
 
-                ${!o.is_me_message ? T`
+            <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
+                ${!o.is_me_message && !is_followup ? T`
                     <span class="chat-msg__heading">
                         <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${el.showUserModal}>${o.username}</a></span>
                         ${o.hats.map(h => T`<span class="badge badge-secondary">${h.title}</span>`)}
                         <time timestamp="${el.model.get('edited') || el.model.get('time')}" class="chat-msg__time">${o.pretty_time}</time>
                         ${o.is_encrypted ? T`<span class="fa fa-lock"></span>` : ''}
                     </span>` : ''}
+
                 <div class="chat-msg__body chat-msg__body--${o.message_type} ${o.received ? 'chat-msg__body--received' : ''} ${o.is_delayed ? 'chat-msg__body--delayed' : ''}">
                     <div class="chat-msg__message">
                         ${o.is_me_message ? T`
@@ -66367,16 +67971,19 @@ api.elements.define('converse-message-unfurl', MessageUnfurl);
                     </div>
                     <converse-message-actions
                         .model=${el.model}
-                        ?correcting=${o.correcting}
-                        ?editable=${o.editable}
-                        ?hide_url_previews=${el.model.get('hide_url_previews')}
-                        ?is_retracted=${o.is_retracted}
-                        unfurls="${(_el$model$get = el.model.get('ogp_metadata')) === null || _el$model$get === void 0 ? void 0 : _el$model$get.length}"
-                        message_type="${o.message_type}"></converse-message-actions>
+                        ?is_retracted=${o.is_retracted}></converse-message-actions>
                 </div>
 
-                ${!el.model.get('hide_url_previews') ? (_el$model$get2 = el.model.get('ogp_metadata')) === null || _el$model$get2 === void 0 ? void 0 : _el$model$get2.map(m => {
+                ${(_el$model$get = el.model.get('ogp_metadata')) === null || _el$model$get === void 0 ? void 0 : _el$model$get.map(m => {
     var _el$chatbox;
+
+    if (el.model.get('hide_url_previews') === true) {
+      return '';
+    }
+
+    if (!shouldRenderMediaFromURL(m['og:image'], 'image')) {
+      return '';
+    }
 
     return T`<converse-message-unfurl
                         @animationend="${el.onUnfurlAnimationEnd}"
@@ -66386,12 +67993,11 @@ api.elements.define('converse-message-unfurl', MessageUnfurl);
                         title="${m['og:title'] || ''}"
                         image="${m['og:image'] || ''}"
                         url="${m['og:url'] || ''}"></converse-message-unfurl>`;
-  }) : ''}
+  })}
             </div>
         </div>`;
 });
 ;// CONCATENATED MODULE: ./src/shared/chat/templates/message-text.js
-
 
 
 
@@ -66428,11 +68034,8 @@ const tpl_edited_icon = el => {
             <converse-chat-message-body
                 class="chat-msg__text ${el.model.get('is_only_emojis') ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                 .model="${el.model}"
-                ?hide_url_previews=${el.model.get('hide_url_previews')}
+                hide_url_previews=${el.model.get('hide_url_previews')}
                 ?is_me_message=${el.model.isMeCommand()}
-                ?show_images=${api.settings.get('show_images_inline')}
-                ?embed_videos=${api.settings.get('embed_videos')}
-                ?embed_audio=${api.settings.get('embed_audio')}
                 text="${text}"></converse-chat-message-body>
             ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? T`<span class="fa fa-check chat-msg__receipt"></span>` : ''}
             ${el.model.get('edited') ? tpl_edited_icon(el) : ''}
@@ -66440,6 +68043,46 @@ const tpl_edited_icon = el => {
         ${show_oob ? T`<div class="chat-msg__media">${getOOBURLMarkup(el.model.get('oob_url'))}</div>` : ''}
         <div class="chat-msg__error">${el.model.get('error_text') || el.model.get('error')}</div>
     `;
+});
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/retraction.scss
+var retraction = __webpack_require__(9523);
+;// CONCATENATED MODULE: ./src/shared/chat/styles/retraction.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var retraction_options = {};
+
+retraction_options.styleTagTransform = (styleTagTransform_default());
+retraction_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      retraction_options.insert = insertBySelector_default().bind(null, "head");
+    
+retraction_options.domAPI = (styleDomAPI_default());
+retraction_options.insertStyleElement = (insertStyleElement_default());
+
+var retraction_update = injectStylesIntoStyleTag_default()(retraction/* default */.Z, retraction_options);
+
+
+
+
+       /* harmony default export */ const styles_retraction = (retraction/* default */.Z && retraction/* default.locals */.Z.locals ? retraction/* default.locals */.Z.locals : undefined);
+
+;// CONCATENATED MODULE: ./src/shared/chat/templates/retraction.js
+
+
+/* harmony default export */ const templates_retraction = (el => {
+  const retraction_text = el.isRetracted() ? el.getRetractionText() : null;
+  return T`
+        <div class="retraction">${retraction_text}</div>
+        ${el.model.get('moderation_reason') ? T`<q class="chat-msg--retracted__reason">${el.model.get('moderation_reason')}</q>` : ''}`;
 });
 ;// CONCATENATED MODULE: ./src/templates/spinner.js
 
@@ -66453,7 +68096,7 @@ const tpl_edited_icon = el => {
   }
 });
 // EXTERNAL MODULE: ./node_modules/lodash/debounce.js
-var lodash_debounce = __webpack_require__(4971);
+var lodash_debounce = __webpack_require__(7272);
 var debounce_default = /*#__PURE__*/__webpack_require__.n(lodash_debounce);
 ;// CONCATENATED MODULE: ./src/shared/chat/templates/new-day.js
 
@@ -66593,6 +68236,7 @@ function getHats(message) {
 
 
 
+
 const {
   Strophe: chat_message_Strophe,
   dayjs: message_dayjs
@@ -66609,11 +68253,6 @@ class Message extends CustomElement {
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   async initialize() {
     await this.setModels();
 
@@ -66623,16 +68262,23 @@ class Message extends CustomElement {
       return;
     }
 
-    this.listenTo(this.chatbox, 'change:first_unread_id', this.requestUpdate);
-    this.listenTo(this.model, 'change', this.requestUpdate);
-    this.model.vcard && this.listenTo(this.model.vcard, 'change', this.requestUpdate);
+    const settings = getAppSettings();
+    this.listenTo(settings, 'change:render_media', () => {
+      // Reset individual show/hide state of media
+      this.model.save('hide_url_previews', undefined);
+      this.requestUpdate();
+    });
+    this.listenTo(this.chatbox, 'change:first_unread_id', () => this.requestUpdate());
+    this.listenTo(this.model, 'change', () => this.requestUpdate());
+    this.model.vcard && this.listenTo(this.model.vcard, 'change', () => this.requestUpdate());
 
     if (this.model.get('type') === 'groupchat') {
       if (this.model.occupant) {
-        this.listenTo(this.model.occupant, 'change', this.requestUpdate);
+        this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());
       } else {
         this.listenTo(this.model, 'occupantAdded', () => {
-          this.listenTo(this.model.occupant, 'change', this.requestUpdate);
+          this.requestUpdate();
+          this.listenTo(this.model.occupant, 'change', () => this.requestUpdate());
         });
       }
     }
@@ -66653,6 +68299,8 @@ class Message extends CustomElement {
       return spinner();
     } else if (this.model.get('file') && this.model.get('upload') !== shared_converse.SUCCESS) {
       return this.renderFileProgress();
+    } else if (['mep'].includes(this.model.get('type'))) {
+      return this.renderMEPMessage();
     } else if (['error', 'info'].includes(this.model.get('type'))) {
       return this.renderInfoMessage();
     } else {
@@ -66662,6 +68310,18 @@ class Message extends CustomElement {
 
   getProps() {
     return Object.assign(this.model.toJSON(), this.getDerivedMessageProps());
+  }
+
+  renderRetraction() {
+    return templates_retraction(this);
+  }
+
+  renderMessageText() {
+    return message_text(this);
+  }
+
+  renderMEPMessage() {
+    return mep_message(this);
   }
 
   renderInfoMessage() {
@@ -66674,18 +68334,7 @@ class Message extends CustomElement {
       return '';
     }
 
-    const i18n_uploading = __('Uploading file:');
-
-    const filename = this.model.file.name;
-    const size = filesize_min_default()(this.model.file.size);
-    return T`
-            <div class="message chat-msg">
-                ${renderAvatar(this.getAvatarData())}
-                <div class="chat-msg__content">
-                    <span class="chat-msg__text">${i18n_uploading} <strong>${filename}</strong>, ${size}</span>
-                    <progress value="${this.model.get('progress')}"/>
-                </div>
-            </div>`;
+    return file_progress(this);
   }
 
   renderChatMessage() {
@@ -66693,27 +68342,13 @@ class Message extends CustomElement {
   }
 
   shouldShowAvatar() {
-    return api.settings.get('show_message_avatar') && !this.model.isMeCommand() && this.type !== 'headline';
-  }
-
-  getAvatarData() {
-    var _this$model$vcard, _this$model$vcard2;
-
-    const image_type = ((_this$model$vcard = this.model.vcard) === null || _this$model$vcard === void 0 ? void 0 : _this$model$vcard.get('image_type')) || shared_converse.DEFAULT_IMAGE_TYPE;
-    const image_data = ((_this$model$vcard2 = this.model.vcard) === null || _this$model$vcard2 === void 0 ? void 0 : _this$model$vcard2.get('image')) || shared_converse.DEFAULT_IMAGE;
-    const image = "data:" + image_type + ";base64," + image_data;
-    return {
-      'classes': 'chat-msg__avatar',
-      'height': 36,
-      'width': 36,
-      image
-    };
+    return api.settings.get('show_message_avatar') && !this.model.isMeCommand() && ['chat', 'groupchat'].includes(this.model.get('type'));
   }
 
   onUnfurlAnimationEnd() {
     if (this.model.get('url_preview_transition') === 'fade-out') {
       this.model.save({
-        'hide_url_previews': !this.model.get('hide_url_previews'),
+        'hide_url_previews': true,
         'url_preview_transition': 'fade-in'
       });
     }
@@ -66781,7 +68416,7 @@ class Message extends CustomElement {
   }
 
   getRetractionText() {
-    if (this.model.get('type') === 'groupchat' && this.model.get('moderated_by')) {
+    if (['groupchat', 'mep'].includes(this.model.get('type')) && this.model.get('moderated_by')) {
       const retracted_by_mod = this.model.get('moderated_by');
       const chatbox = this.model.collection.chatbox;
 
@@ -66800,18 +68435,6 @@ class Message extends CustomElement {
     }
   }
 
-  renderRetraction() {
-    const retraction_text = this.isRetracted() ? this.getRetractionText() : null;
-    return T`
-            <div>${retraction_text}</div>
-            ${this.model.get('moderation_reason') ? T`<q class="chat-msg--retracted__reason">${this.model.get('moderation_reason')}</q>` : ''}
-        `;
-  }
-
-  renderMessageText() {
-    return message_text(this);
-  }
-
   showUserModal(ev) {
     if (this.model.get('sender') === 'me') {
       api.modal.show(shared_converse.ProfileModal, {
@@ -66820,7 +68443,8 @@ class Message extends CustomElement {
     } else if (this.model.get('type') === 'groupchat') {
       ev.preventDefault();
       api.modal.show(modals_occupant, {
-        'model': this.model.occupant
+        'model': this.model.occupant,
+        'message': this.model
       }, ev);
     } else {
       ev.preventDefault();
@@ -66898,8 +68522,8 @@ class MessageHistory extends CustomElement {
 
 }
 api.elements.define('converse-message-history', MessageHistory);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/chat/styles/chat-content.scss
-var chat_content = __webpack_require__(8269);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/chat-content.scss
+var chat_content = __webpack_require__(8054);
 ;// CONCATENATED MODULE: ./src/shared/chat/styles/chat-content.scss
 
       
@@ -66943,11 +68567,6 @@ class ChatContent extends CustomElement {
         type: String
       }
     };
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
   }
 
   disconnectedCallback() {
@@ -67457,8 +69076,8 @@ class EmojiDropdown extends Dropdown {
 
 }
 api.elements.define('converse-emoji-dropdown', EmojiDropdown);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/chat/styles/emoji.scss
-var emoji = __webpack_require__(9796);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/emoji.scss
+var emoji = __webpack_require__(8125);
 ;// CONCATENATED MODULE: ./src/shared/chat/styles/emoji.scss
 
       
@@ -67831,8 +69450,27 @@ class MessageLimitIndicator extends CustomElement {
 
 }
 api.elements.define('converse-message-limit-indicator', MessageLimitIndicator);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/chat/styles/toolbar.scss
-var toolbar = __webpack_require__(7991);
+;// CONCATENATED MODULE: ./src/shared/chat/templates/toolbar.js
+
+
+
+
+function tpl_send_button() {
+  const i18n_send_message = __('Send the message');
+
+  return T`<button type="submit" class="btn send-button" title="${i18n_send_message}">
+        <converse-icon color="var(--toolbar-btn-text-color)" class="fa fa-paper-plane" size="1em"></converse-icon>
+    </button>`;
+}
+
+/* harmony default export */ const toolbar = (el => {
+  return T`
+        <span class="toolbar-buttons">${until_o(el.getButtons(), '')}</span>
+        ${el.show_send_button ? tpl_send_button() : ''}
+    `;
+});
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/chat/styles/toolbar.scss
+var styles_toolbar = __webpack_require__(6176);
 ;// CONCATENATED MODULE: ./src/shared/chat/styles/toolbar.scss
 
       
@@ -67855,14 +69493,15 @@ toolbar_options.setAttributes = (setAttributesWithoutAttributes_default());
 toolbar_options.domAPI = (styleDomAPI_default());
 toolbar_options.insertStyleElement = (insertStyleElement_default());
 
-var toolbar_update = injectStylesIntoStyleTag_default()(toolbar/* default */.Z, toolbar_options);
+var toolbar_update = injectStylesIntoStyleTag_default()(styles_toolbar/* default */.Z, toolbar_options);
 
 
 
 
-       /* harmony default export */ const styles_toolbar = (toolbar/* default */.Z && toolbar/* default.locals */.Z.locals ? toolbar/* default.locals */.Z.locals : undefined);
+       /* harmony default export */ const chat_styles_toolbar = (styles_toolbar/* default */.Z && styles_toolbar/* default.locals */.Z.locals ? styles_toolbar/* default.locals */.Z.locals : undefined);
 
 ;// CONCATENATED MODULE: ./src/shared/chat/toolbar.js
+
 
 
 
@@ -67911,12 +69550,7 @@ class ChatToolbar extends CustomElement {
   }
 
   render() {
-    const i18n_send_message = __('Send the message');
-
-    return T`
-            <span class="toolbar-buttons">${until_o(this.getButtons(), '')}</span>
-            ${this.show_send_button ? T`<button type="submit" class="btn send-button fa fa-paper-plane" title="${i18n_send_message}"></button>` : ''}
-        `;
+    return toolbar(this);
   }
 
   firstUpdated() {
@@ -68107,12 +69741,12 @@ function clearHistory(jid) {
 }
 async function getHeadingDropdownItem(promise_or_data) {
   const data = await promise_or_data;
-  return T`
+  return data ? T`
         <a href="#" class="dropdown-item ${data.a_class}" @click=${data.handler} title="${data.i18n_title}">
             <converse-icon size="1em" color="var(--text-color-lighten-15-percent)" class="fa ${data.icon_class}"></converse-icon>
             ${data.i18n_text}
         </a>
-    `;
+    ` : '';
 }
 async function getHeadingStandaloneButton(promise_or_data) {
   const data = await promise_or_data;
@@ -68176,7 +69810,6 @@ function resetElementHeight(ev) {
 
 
 
-
 async function getStandaloneButtons(promise) {
   const heading_btns = await promise;
   const standalone_btns = heading_btns.filter(b => b.standalone);
@@ -68190,20 +69823,16 @@ async function getDropdownButtons(promise) {
 }
 
 /* harmony default export */ const chat_head = (o => {
-  var _o$model;
-
-  const vcard = (_o$model = o.model) === null || _o$model === void 0 ? void 0 : _o$model.vcard;
-  const vcard_json = vcard ? vcard.toJSON() : {};
+  var _o$model$vcard, _o$model$vcard2;
 
   const i18n_profile = __("The User's Profile Image");
 
-  const avatar_data = Object.assign({
-    'alt_text': i18n_profile,
-    'extra_classes': '',
-    'height': 40,
-    'width': 40
-  }, vcard_json);
-  const avatar = T`<span class="mr-2">${renderAvatar(avatar_data)}</span>`;
+  const avatar = T`<span title="${i18n_profile}">
+        <converse-avatar
+            class="avatar chat-msg__avatar"
+            .data=${(_o$model$vcard = o.model.vcard) === null || _o$model$vcard === void 0 ? void 0 : _o$model$vcard.attributes}
+            nonce=${(_o$model$vcard2 = o.model.vcard) === null || _o$model$vcard2 === void 0 ? void 0 : _o$model$vcard2.get('vcard_updated')}
+            height="40" width="40"></converse-avatar></span>`;
   const display_name = o.model.getDisplayName();
 
   const tpl_dropdown_btns = () => getDropdownButtons(o.heading_buttons_promise).then(btns => btns.length ? T`<converse-dropdown class="dropleft" color="var(--chat-head-text-color)" .items=${btns}></converse-dropdown>` : '');
@@ -68227,8 +69856,8 @@ async function getDropdownButtons(promise) {
         ${o.status ? T`<p class="chat-head__desc">${o.status}</p>` : ''}
     `;
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/chatview/styles/chat-head.scss
-var styles_chat_head = __webpack_require__(6220);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/chatview/styles/chat-head.scss
+var styles_chat_head = __webpack_require__(7802);
 ;// CONCATENATED MODULE: ./src/plugins/chatview/styles/chat-head.scss
 
       
@@ -68266,16 +69895,12 @@ var chat_head_update = injectStylesIntoStyleTag_default()(styles_chat_head/* def
 
 
 class ChatHeading extends CustomElement {
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   initialize() {
     var _this$model$rosterCon;
 
     this.model = shared_converse.chatboxes.get(this.getAttribute('jid'));
     this.listenTo(this.model, 'change:status', this.requestUpdate);
+    this.listenTo(this.model, 'vcard:add', this.requestUpdate);
     this.listenTo(this.model, 'vcard:change', this.requestUpdate);
 
     if (this.model.contact) {
@@ -68675,8 +70300,8 @@ api.elements.define('converse-message-form', MessageForm);
         <converse-message-form jid="${o.model.get('jid')}"></converse-message-form>
     `;
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/chatview/styles/chat-bottom-panel.scss
-var chat_bottom_panel = __webpack_require__(4639);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/chatview/styles/chat-bottom-panel.scss
+var chat_bottom_panel = __webpack_require__(352);
 ;// CONCATENATED MODULE: ./src/plugins/chatview/styles/chat-bottom-panel.scss
 
       
@@ -69007,11 +70632,6 @@ class ChatView extends BaseChatView {
     chat_defineProperty(this, "length", 200);
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   async initialize() {
     shared_converse.chatboxviews.add(this.jid, this);
 
@@ -69060,8 +70680,8 @@ class ChatView extends BaseChatView {
 
 }
 api.elements.define('converse-chat', ChatView);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/chatview/styles/index.scss
-var chatview_styles = __webpack_require__(9107);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/chatview/styles/index.scss
+var chatview_styles = __webpack_require__(5599);
 ;// CONCATENATED MODULE: ./src/plugins/chatview/styles/index.scss
 
       
@@ -69126,15 +70746,16 @@ core_converse.plugins.add('converse-chatview', {
      * loaded by converse.js's plugin machinery.
      */
     api.settings.extend({
+      'allowed_audio_domains': null,
+      'allowed_image_domains': null,
+      'allowed_video_domains': null,
       'auto_focus': true,
       'debounced_content_rendering': true,
-      'embed_videos': true,
-      'embed_audio': true,
       'filter_url_query_params': null,
       'image_urls_regex': null,
       'message_limit': 0,
       'muc_hats': ['xep317'],
-      'show_images_inline': true,
+      'render_media': true,
       'show_message_avatar': true,
       'show_retraction_warning': true,
       'show_send_button': true,
@@ -69228,6 +70849,8 @@ class ConverseBrandLogo extends CustomElement {
 
 }
 api.elements.define('converse-brand-logo', ConverseBrandLogo);
+;// CONCATENATED MODULE: ./node_modules/lit/html.js
+
 ;// CONCATENATED MODULE: ./src/shared/components/brand-heading.js
 
 
@@ -69293,7 +70916,7 @@ const register_link = () => {
 };
 
 const show_register_link = () => {
-  return shared_converse.allow_registration && !api.settings.get("auto_login") && shared_converse.pluggable.plugins["converse-register"].enabled(shared_converse);
+  return api.settings.get('allow_registration') && !api.settings.get("auto_login") && shared_converse.pluggable.plugins["converse-register"].enabled(shared_converse);
 };
 
 const auth_fields = o => {
@@ -69875,8 +71498,8 @@ const {
 
   }
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/controlbox/styles/_controlbox.scss
-var _controlbox = __webpack_require__(7581);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/controlbox/styles/_controlbox.scss
+var _controlbox = __webpack_require__(1875);
 ;// CONCATENATED MODULE: ./src/plugins/controlbox/styles/_controlbox.scss
 
       
@@ -69972,10 +71595,7 @@ core_converse.plugins.add('converse-controlbox', {
     shared_converse.ControlBoxView = controlbox_controlbox;
     shared_converse.ControlBox = controlbox_model;
     shared_converse.ControlBoxToggle = controlbox_toggle;
-    /******************** Event Handlers ********************/
-
     api.listen.on('chatBoxesFetched', onChatBoxesFetched);
-    api.listen.on('cleanup', () => delete shared_converse.controlboxtoggle);
     api.listen.on('clearSession', controlbox_utils_clearSession);
     api.listen.on('will-reconnect', disconnect);
     api.waitUntil('chatBoxViewsInitialized').then(addControlBox).catch(e => headless_log.fatal(e));
@@ -70332,13 +71952,44 @@ core_converse.plugins.add('converse-dragresize', {
   }
 
 });
-;// CONCATENATED MODULE: ./src/plugins/singleton.js
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/singleton/singleton.scss
+var singleton = __webpack_require__(1833);
+;// CONCATENATED MODULE: ./src/plugins/singleton/singleton.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var singleton_options = {};
+
+singleton_options.styleTagTransform = (styleTagTransform_default());
+singleton_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      singleton_options.insert = insertBySelector_default().bind(null, "head");
+    
+singleton_options.domAPI = (styleDomAPI_default());
+singleton_options.insertStyleElement = (insertStyleElement_default());
+
+var singleton_update = injectStylesIntoStyleTag_default()(singleton/* default */.Z, singleton_options);
+
+
+
+
+       /* harmony default export */ const singleton_singleton = (singleton/* default */.Z && singleton/* default.locals */.Z.locals ? singleton/* default.locals */.Z.locals : undefined);
+
+;// CONCATENATED MODULE: ./src/plugins/singleton/index.js
 /**
- * @module converse-singleton
  * @copyright JC Brand
  * @license Mozilla Public License (MPLv2)
  * @description A plugin which restricts Converse to only one chat.
  */
+
 
 core_converse.plugins.add('converse-singleton', {
   enabled(_converse) {
@@ -70368,8 +72019,8 @@ core_converse.plugins.add('converse-singleton', {
   }
 
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/fullscreen/styles/fullscreen.scss
-var fullscreen = __webpack_require__(6752);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/fullscreen/styles/fullscreen.scss
+var fullscreen = __webpack_require__(8041);
 ;// CONCATENATED MODULE: ./src/plugins/fullscreen/styles/fullscreen.scss
 
       
@@ -70411,9 +72062,10 @@ var fullscreen_update = injectStylesIntoStyleTag_default()(fullscreen/* default 
 
 
 
+
 core_converse.plugins.add('converse-fullscreen', {
-  enabled(_converse) {
-    return _converse.isUniView();
+  enabled() {
+    return isUniView();
   },
 
   initialize() {
@@ -70535,11 +72187,6 @@ api.elements.define('converse-headlines-heading', HeadlinesHeading);
 
 
 class HeadlinesView extends BaseChatView {
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   async initialize() {
     shared_converse.chatboxviews.add(this.jid, this);
 
@@ -70682,8 +72329,8 @@ class HeadlinesPanel extends ElementView {
 
 }
 api.elements.define('converse-headlines-panel', HeadlinesPanel);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/headlines-view/styles/headlines.scss
-var styles_headlines = __webpack_require__(115);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/headlines-view/styles/headlines.scss
+var styles_headlines = __webpack_require__(5956);
 ;// CONCATENATED MODULE: ./src/plugins/headlines-view/styles/headlines.scss
 
       
@@ -70753,8 +72400,8 @@ core_converse.plugins.add('converse-headlines-view', {
             <div class="message mam-placeholder"></div>
         </a>`;
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/mam-views/styles/placeholder.scss
-var styles_placeholder = __webpack_require__(8859);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/mam-views/styles/placeholder.scss
+var styles_placeholder = __webpack_require__(9679);
 ;// CONCATENATED MODULE: ./src/plugins/mam-views/styles/placeholder.scss
 
       
@@ -70890,6 +72537,93 @@ core_converse.plugins.add('converse-mam-views', {
   }
 
 });
+;// CONCATENATED MODULE: ./src/plugins/minimize/toggle.js
+
+const MinimizedChatsToggle = Model.extend({
+  defaults: {
+    'collapsed': false
+  }
+});
+/* harmony default export */ const minimize_toggle = (MinimizedChatsToggle);
+;// CONCATENATED MODULE: ./src/plugins/minimize/templates/chats-panel.js
+
+
+/* harmony default export */ const chats_panel = (o => T`<div id="minimized-chats" class="${o.chats.length ? '' : 'hidden'}">
+        <a id="toggle-minimized-chats" class="row no-gutters" @click=${o.toggle}>
+            ${o.num_minimized} ${__('Minimized')}
+            <span class="unread-message-count ${!o.num_unread ? 'unread-message-count-hidden' : ''}" href="#">${o.num_unread}</span>
+        </a>
+        <div class="flyout minimized-chats-flyout row no-gutters ${o.collapsed ? 'hidden' : ''}">
+            ${o.chats.map(chat => T`<converse-minimized-chat
+                        .model=${chat}
+                        title=${chat.getDisplayName()}
+                        type=${chat.get('type')}
+                        num_unread=${chat.get('num_unread')}></converse-minimized-chat>`)}
+        </div>
+    </div>`);
+;// CONCATENATED MODULE: ./src/plugins/minimize/view.js
+
+
+
+
+
+class MinimizedChats extends CustomElement {
+  async initialize() {
+    this.model = shared_converse.chatboxes;
+    await this.initToggle();
+    this.listenTo(this.minchats, 'change:collapsed', this.requestUpdate);
+    this.listenTo(this.model, 'add', this.requestUpdate);
+    this.listenTo(this.model, 'change:fullname', this.requestUpdate);
+    this.listenTo(this.model, 'change:jid', this.requestUpdate);
+    this.listenTo(this.model, 'change:minimized', this.requestUpdate);
+    this.listenTo(this.model, 'change:name', this.requestUpdate);
+    this.listenTo(this.model, 'change:num_unread', this.requestUpdate);
+    this.listenTo(this.model, 'remove', this.requestUpdate);
+    this.listenTo(shared_converse, 'connected', this.requestUpdate);
+    this.listenTo(shared_converse, 'reconnected', this.requestUpdate);
+    this.listenTo(shared_converse, 'disconnected', this.requestUpdate);
+  }
+
+  render() {
+    const chats = this.model.where({
+      'minimized': true
+    });
+    const num_unread = chats.reduce((acc, chat) => acc + chat.get('num_unread'), 0);
+    const num_minimized = chats.reduce((acc, chat) => acc + (chat.get('minimized') ? 1 : 0), 0);
+    const collapsed = this.minchats.get('collapsed');
+    const data = {
+      chats,
+      num_unread,
+      num_minimized,
+      collapsed
+    };
+
+    data.toggle = ev => this.toggle(ev);
+
+    return chats_panel(data);
+  }
+
+  async initToggle() {
+    const id = `converse.minchatstoggle-${shared_converse.bare_jid}`;
+    this.minchats = new minimize_toggle({
+      id
+    });
+    initStorage(this.minchats, id, 'session');
+    await new Promise(resolve => this.minchats.fetch({
+      'success': resolve,
+      'error': resolve
+    }));
+  }
+
+  toggle(ev) {
+    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
+    this.minchats.save({
+      'collapsed': !this.minchats.get('collapsed')
+    });
+  }
+
+}
+api.elements.define('converse-minimized-chats', MinimizedChats);
 ;// CONCATENATED MODULE: ./src/plugins/minimize/templates/trimmed_chat.js
 
 
@@ -70920,7 +72654,8 @@ function getChatBoxWidth(view) {
     if (minimize_utils_u.isVisible(view)) {
       return minimize_utils_u.getOuterWidth(view, true);
     } else {
-      return minimize_utils_u.getOuterWidth(shared_converse.controlboxtoggle.el, true);
+      const toggle = document.querySelector('converse-controlbox-toggle');
+      return toggle ? minimize_utils_u.getOuterWidth(toggle, true) : 0;
     }
   } else if (!view.model.get('minimized') && minimize_utils_u.isVisible(view)) {
     return minimize_utils_u.getOuterWidth(view, true);
@@ -70936,15 +72671,13 @@ function getShownChats() {
 }
 
 function getMinimizedWidth() {
-  var _converse$minimized_c;
-
-  const minimized_el = (_converse$minimized_c = shared_converse.minimized_chats) === null || _converse$minimized_c === void 0 ? void 0 : _converse$minimized_c.el;
+  const minimized_el = document.querySelector('converse-minimized-chats');
   return shared_converse.chatboxes.pluck('minimized').includes(true) ? minimize_utils_u.getOuterWidth(minimized_el, true) : 0;
 }
 
 function getBoxesWidth(newchat) {
   const new_id = newchat ? newchat.model.get('id') : null;
-  const newchat_width = newchat ? minimize_utils_u.getOuterWidth(newchat.el, true) : 0;
+  const newchat_width = newchat ? minimize_utils_u.getOuterWidth(newchat, true) : 0;
   return Object.values(shared_converse.chatboxviews.xget(new_id)).reduce((memo, view) => memo + getChatBoxWidth(view), newchat_width);
 }
 /**
@@ -70958,10 +72691,8 @@ function getBoxesWidth(newchat) {
  */
 
 
-async function trimChats(newchat) {
-  var _converse$minimized_c2;
-
-  if (shared_converse.isTestEnv() || api.settings.get('no_trimming') || !api.connection.connected() || api.settings.get("view_mode") !== 'overlayed') {
+function trimChats(newchat) {
+  if (shared_converse.isTestEnv() || api.settings.get('no_trimming') || api.settings.get("view_mode") !== 'overlayed') {
     return;
   }
 
@@ -70980,8 +72711,7 @@ async function trimChats(newchat) {
     return;
   }
 
-  await api.waitUntil('minimizedChatsInitialized');
-  const minimized_el = (_converse$minimized_c2 = shared_converse.minimized_chats) === null || _converse$minimized_c2 === void 0 ? void 0 : _converse$minimized_c2.el;
+  const minimized_el = document.querySelector('converse-minimized-chats');
 
   if (minimized_el) {
     while (getMinimizedWidth() + getBoxesWidth(newchat) > body_width) {
@@ -70989,16 +72719,9 @@ async function trimChats(newchat) {
       const oldest_chat = getOldestMaximizedChat([new_id]);
 
       if (oldest_chat) {
-        // We hide the chat immediately, because waiting
-        // for the event to fire (and letting the
-        // ChatBoxView hide it then) causes race
-        // conditions.
-        const view = shared_converse.chatboxviews.get(oldest_chat.get('id'));
+        const model = shared_converse.chatboxes.get(oldest_chat.get('id'));
 
-        if (view) {
-          view.hide();
-        }
-
+        model === null || model === void 0 ? void 0 : model.save('hidden', true);
         minimize(oldest_chat);
       } else {
         break;
@@ -71176,100 +72899,8 @@ class MinimizedChat extends CustomElement {
 
 }
 api.elements.define('converse-minimized-chat', MinimizedChat);
-;// CONCATENATED MODULE: ./src/plugins/minimize/toggle.js
-
-const MinimizedChatsToggle = Model.extend({
-  defaults: {
-    'collapsed': false
-  }
-});
-/* harmony default export */ const minimize_toggle = (MinimizedChatsToggle);
-;// CONCATENATED MODULE: ./src/plugins/minimize/templates/chats-panel.js
-
-
-/* harmony default export */ const chats_panel = (o => T`<div id="minimized-chats" class="${o.chats.length ? '' : 'hidden'}">
-        <a id="toggle-minimized-chats" class="row no-gutters" @click=${o.toggle}>
-            ${o.num_minimized} ${__('Minimized')}
-            <span class="unread-message-count ${!o.num_unread ? 'unread-message-count-hidden' : ''}" href="#">${o.num_unread}</span>
-        </a>
-        <div class="flyout minimized-chats-flyout row no-gutters ${o.collapsed ? 'hidden' : ''}">
-            ${o.chats.map(chat => T`<converse-minimized-chat
-                        .model=${chat}
-                        title=${chat.getDisplayName()}
-                        type=${chat.get('type')}
-                        num_unread=${chat.get('num_unread')}></converse-minimized-chat>`)}
-        </div>
-    </div>`);
-;// CONCATENATED MODULE: ./src/plugins/minimize/view.js
-
-
-
-
-
-class MinimizedChats extends CustomElement {
-  constructor() {
-    super();
-    this.initialize();
-  }
-
-  async initialize() {
-    this.model = shared_converse.chatboxes;
-    await this.initToggle();
-    this.listenTo(this.minchats, 'change:collapsed', this.requestUpdate);
-    this.listenTo(this.model, 'add', this.requestUpdate);
-    this.listenTo(this.model, 'change:fullname', this.requestUpdate);
-    this.listenTo(this.model, 'change:jid', this.requestUpdate);
-    this.listenTo(this.model, 'change:minimized', this.requestUpdate);
-    this.listenTo(this.model, 'change:name', this.requestUpdate);
-    this.listenTo(this.model, 'change:num_unread', this.requestUpdate);
-    this.listenTo(this.model, 'remove', this.requestUpdate);
-    this.listenTo(shared_converse, 'connected', this.requestUpdate);
-    this.listenTo(shared_converse, 'reconnected', this.requestUpdate);
-    this.listenTo(shared_converse, 'disconnected', this.requestUpdate);
-  }
-
-  render() {
-    const chats = this.model.where({
-      'minimized': true
-    });
-    const num_unread = chats.reduce((acc, chat) => acc + chat.get('num_unread'), 0);
-    const num_minimized = chats.reduce((acc, chat) => acc + (chat.get('minimized') ? 1 : 0), 0);
-    const collapsed = this.minchats.get('collapsed');
-    const data = {
-      chats,
-      num_unread,
-      num_minimized,
-      collapsed
-    };
-
-    data.toggle = ev => this.toggle(ev);
-
-    return chats_panel(data);
-  }
-
-  async initToggle() {
-    const id = `converse.minchatstoggle-${shared_converse.bare_jid}`;
-    this.minchats = new minimize_toggle({
-      id
-    });
-    initStorage(this.minchats, id, 'session');
-    await new Promise(resolve => this.minchats.fetch({
-      'success': resolve,
-      'error': resolve
-    }));
-  }
-
-  toggle(ev) {
-    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
-    this.minchats.save({
-      'collapsed': !this.minchats.get('collapsed')
-    });
-  }
-
-}
-api.elements.define('converse-minimized-chats', MinimizedChats);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/minimize/styles/minimize.scss
-var styles_minimize = __webpack_require__(7926);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/minimize/styles/minimize.scss
+var styles_minimize = __webpack_require__(4915);
 ;// CONCATENATED MODULE: ./src/plugins/minimize/styles/minimize.scss
 
       
@@ -71392,29 +73023,23 @@ core_converse.plugins.add('converse-minimize', {
   },
 
   initialize() {
-    /* The initialize function gets called as soon as the plugin is
-     * loaded by Converse.js's plugin machinery.
-     */
     api.settings.extend({
       'no_trimming': false
     });
     api.promises.add('minimizedChatsInitialized');
     shared_converse.MinimizedChatsToggle = minimize_toggle;
-    shared_converse.MinimizedChats = MinimizedChats;
-    shared_converse.minimize = {};
-    shared_converse.minimize.trimChats = trimChats;
-    shared_converse.minimize.minimize = minimize;
-    shared_converse.minimize.maximize = maximize;
+    shared_converse.minimize = {
+      trimChats: trimChats,
+      minimize: minimize,
+      maximize: maximize
+    };
 
     function onChatInitialized(model) {
       model.on('change:minimized', () => onMinimizedChanged(model));
     }
-    /************************ BEGIN Event Handlers ************************/
-
 
     api.listen.on('chatBoxViewInitialized', view => shared_converse.minimize.trimChats(view));
     api.listen.on('chatRoomViewInitialized', view => shared_converse.minimize.trimChats(view));
-    api.listen.on('chatBoxMaximized', view => shared_converse.minimize.trimChats(view));
     api.listen.on('controlBoxOpened', view => shared_converse.minimize.trimChats(view));
     api.listen.on('chatBoxInitialized', onChatInitialized);
     api.listen.on('chatRoomInitialized', onChatInitialized);
@@ -71993,8 +73618,8 @@ class AutoCompleteComponent extends CustomElement {
 
 }
 api.elements.define('converse-autocomplete', AutoCompleteComponent);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/shared/autocomplete/styles/_autocomplete.scss
-var _autocomplete = __webpack_require__(8481);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/autocomplete/styles/_autocomplete.scss
+var _autocomplete = __webpack_require__(4921);
 ;// CONCATENATED MODULE: ./src/shared/autocomplete/styles/_autocomplete.scss
 
       
@@ -72401,11 +74026,6 @@ class ModeratorTools extends CustomElement {
     this.roles_filter = '';
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   updated(changed) {
     changed.has('role') && this.onSearchRoleChange();
     changed.has('affiliation') && this.onSearchAffiliationChange();
@@ -72669,9 +74289,9 @@ const ModeratorToolsModal = base.extend({
 
 
 
+
 const {
   Strophe: muc_views_utils_Strophe,
-  $pres: muc_views_utils_$pres,
   $iq: muc_views_utils_$iq,
   sizzle: muc_views_utils_sizzle,
   u: muc_views_utils_u
@@ -72973,6 +74593,11 @@ function showModeratorToolsModal(muc, affiliation) {
 
   modal.show();
 }
+function showOccupantModal(ev, occupant) {
+  api.modal.show(modals_occupant, {
+    'model': occupant
+  }, ev);
+}
 function parseMessageForMUCCommands(muc, text) {
   if (api.settings.get('muc_disable_slash_commands') && !Array.isArray(api.settings.get('muc_disable_slash_commands'))) {
     return parseMessageForCommands(muc, text);
@@ -73076,12 +74701,7 @@ function parseMessageForMUCCommands(muc, text) {
             'type': 'error'
           });
         } else {
-          const jid = muc_views_utils_Strophe.getBareJidFromJid(muc.get('jid'));
-          api.send(muc_views_utils_$pres({
-            from: shared_converse.connection.jid,
-            to: `${jid}/${args}`,
-            id: muc_views_utils_u.getUniqueId()
-          }).tree());
+          muc.setNickname(args);
         }
 
         break;
@@ -73535,8 +75155,8 @@ const tpl_can_edit = o => {
     return '';
   }
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/muc-views/styles/muc-bottom-panel.scss
-var styles_muc_bottom_panel = __webpack_require__(2490);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/muc-views/styles/muc-bottom-panel.scss
+var styles_muc_bottom_panel = __webpack_require__(5655);
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/styles/muc-bottom-panel.scss
 
       
@@ -73614,7 +75234,7 @@ class MUCBottomPanel extends ChatBottomPanel {
   sendButtonClicked(ev) {
     var _this$querySelector;
 
-    (_this$querySelector = this.querySelector('converse-message-form')) === null || _this$querySelector === void 0 ? void 0 : _this$querySelector.onFormSubmitted(ev);
+    (_this$querySelector = this.querySelector('converse-muc-message-form')) === null || _this$querySelector === void 0 ? void 0 : _this$querySelector.onFormSubmitted(ev);
   }
 
   hideOccupants(ev) {
@@ -73629,32 +75249,52 @@ class MUCBottomPanel extends ChatBottomPanel {
 
 }
 api.elements.define('converse-muc-bottom-panel', MUCBottomPanel);
+;// CONCATENATED MODULE: ./src/plugins/muc-views/constants.js
+const PRETTY_CHAT_STATUS = {
+  'offline': 'Offline',
+  'unavailable': 'Unavailable',
+  'xa': 'Extended Away',
+  'away': 'Away',
+  'dnd': 'Do not disturb',
+  'chat': 'Chattty',
+  'online': 'Online'
+};
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/templates/occupant.js
 
 
 
+
+
+const i18n_occupant_hint = o => __('Click to mention %1$s in your message.', o.get('nick'));
+
 const occupant_title = o => {
+  const role = o.get('role');
+  const hint_occupant = i18n_occupant_hint(o);
+
   const i18n_moderator_hint = __('This user is a moderator.');
 
   const i18n_participant_hint = __('This user can send messages in this groupchat.');
 
   const i18n_visitor_hint = __('This user can NOT send messages in this groupchat.');
 
-  const spaced_jid = `${o.jid} ` || '';
+  const spaced_jid = o.get('jid') ? `${o.get('jid')} ` : '';
 
-  if (o.role === "moderator") {
-    return `${spaced_jid}${i18n_moderator_hint} ${o.hint_occupant}`;
-  } else if (o.role === "participant") {
-    return `${spaced_jid}${i18n_participant_hint} ${o.hint_occupant}`;
-  } else if (o.role === "visitor") {
-    return `${spaced_jid}${i18n_visitor_hint} ${o.hint_occupant}`;
-  } else if (!["visitor", "participant", "moderator"].includes(o.role)) {
-    return `${spaced_jid}${o.hint_occupant}`;
+  if (role === "moderator") {
+    return `${spaced_jid}${i18n_moderator_hint} ${hint_occupant}`;
+  } else if (role === "participant") {
+    return `${spaced_jid}${i18n_participant_hint} ${hint_occupant}`;
+  } else if (role === "visitor") {
+    return `${spaced_jid}${i18n_visitor_hint} ${hint_occupant}`;
+  } else if (!["visitor", "participant", "moderator"].includes(role)) {
+    return `${spaced_jid}${hint_occupant}`;
   }
 };
 
-/* harmony default export */ const muc_views_templates_occupant = (o => {
-  const i18n_owner = __('Owner');
+/* harmony default export */ const muc_views_templates_occupant = ((o, chat) => {
+  var _o$vcard, _o$vcard2;
+
+  const affiliation = o.get('affiliation');
+  const hint_show = PRETTY_CHAT_STATUS[o.get('show')];
 
   const i18n_admin = __('Admin');
 
@@ -73662,22 +75302,50 @@ const occupant_title = o => {
 
   const i18n_moderator = __('Moderator');
 
+  const i18n_owner = __('Owner');
+
   const i18n_visitor = __('Visitor');
+
+  const role = o.get('role');
+  const show = o.get('show');
+  let classes, color;
+
+  if (show === 'online') {
+    [classes, color] = ['fa fa-circle', 'chat-status-online'];
+  } else if (show === 'dnd') {
+    [classes, color] = ['fa fa-minus-circle', 'chat-status-busy'];
+  } else if (show === 'away') {
+    [classes, color] = ['fa fa-circle', 'chat-status-away'];
+  } else {
+    [classes, color] = ['fa fa-circle', 'subdued-color'];
+  }
 
   return T`
         <li class="occupant" id="${o.id}" title="${occupant_title(o)}">
             <div class="row no-gutters">
                 <div class="col-auto">
-                    <div class="occupant-status occupant-${o.show} circle" title="${o.hint_show}"></div>
+                    <a class="show-msg-author-modal" @click=${ev => showOccupantModal(ev, o)}>
+                        <converse-avatar
+                            class="avatar chat-msg__avatar"
+                            .data=${(_o$vcard = o.vcard) === null || _o$vcard === void 0 ? void 0 : _o$vcard.attributes}
+                            nonce=${(_o$vcard2 = o.vcard) === null || _o$vcard2 === void 0 ? void 0 : _o$vcard2.get('vcard_updated')}
+                            height="30" width="30"></converse-avatar>
+                        <converse-icon
+                           title="${hint_show}"
+                           color="var(--${color})"
+                           style="margin-top: -0.1em"
+                           size="0.82em"
+                           class="${classes} chat-status chat-status--avatar"></converse-icon>
+                    </a>
                 </div>
                 <div class="col occupant-nick-badge">
-                    <span class="occupant-nick" @click=${o.onOccupantClicked}>${o.nick || o.jid}</span>
+                    <span class="occupant-nick" @click=${chat.onOccupantClicked}>${o.getDisplayName()}</span>
                     <span class="occupant-badges">
-                        ${o.affiliation === "owner" ? T`<span class="badge badge-groupchat">${i18n_owner}</span>` : ''}
-                        ${o.affiliation === "admin" ? T`<span class="badge badge-info">${i18n_admin}</span>` : ''}
-                        ${o.affiliation === "member" ? T`<span class="badge badge-info">${i18n_member}</span>` : ''}
-                        ${o.role === "moderator" ? T`<span class="badge badge-info">${i18n_moderator}</span>` : ''}
-                        ${o.role === "visitor" ? T`<span class="badge badge-secondary">${i18n_visitor}</span>` : ''}
+                        ${affiliation === "owner" ? T`<span class="badge badge-groupchat">${i18n_owner}</span>` : ''}
+                        ${affiliation === "admin" ? T`<span class="badge badge-info">${i18n_admin}</span>` : ''}
+                        ${affiliation === "member" ? T`<span class="badge badge-info">${i18n_member}</span>` : ''}
+                        ${role === "moderator" ? T`<span class="badge badge-info">${i18n_moderator}</span>` : ''}
+                        ${role === "visitor" ? T`<span class="badge badge-secondary">${i18n_visitor}</span>` : ''}
                     </span>
                 </div>
             </div>
@@ -73688,41 +75356,55 @@ const occupant_title = o => {
 
 
 
-const PRETTY_CHAT_STATUS = {
-  'offline': 'Offline',
-  'unavailable': 'Unavailable',
-  'xa': 'Extended Away',
-  'away': 'Away',
-  'dnd': 'Do not disturb',
-  'chat': 'Chattty',
-  'online': 'Online'
-};
 /* harmony default export */ const muc_sidebar = (o => {
-  const i18n_occupant_hint = occupant => __('Click to mention %1$s in your message.', occupant.get('nick'));
-
   const i18n_participants = __('Participants');
 
-  const occupant_tpls = o.occupants.map(occupant => {
-    return muc_views_templates_occupant(Object.assign({
-      'jid': '',
-      'hint_show': PRETTY_CHAT_STATUS[occupant.get('show')],
-      'hint_occupant': i18n_occupant_hint(occupant),
-      'onOccupantClicked': o.onOccupantClicked
-    }, occupant.toJSON()));
-  });
   return T`
         <div class="occupants-header">
-            <i class="hide-occupants fa fa-times" @click=${o.closeSidebar}></i>
+            <i class="hide-occupants" @click=${o.closeSidebar}>
+                <converse-icon color="var(--text-color)" class="fa fa-times" size="1em"></converse-icon>
+            </i>
             <div class="occupants-header--title">
                 <span class="occupants-heading">${i18n_participants}</span>
             </div>
         </div>
         <div class="dragresize dragresize-occupants-left"></div>
-        <ul class="occupant-list">${occupant_tpls}</ul>
+        <ul class="occupant-list">${o.occupants.map(occ => muc_views_templates_occupant(occ, o))}</ul>
     `;
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/muc-views/styles/muc-occupants.scss
-var muc_occupants = __webpack_require__(1107);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/styles/status.scss
+var styles_status = __webpack_require__(9959);
+;// CONCATENATED MODULE: ./src/shared/styles/status.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var status_options = {};
+
+status_options.styleTagTransform = (styleTagTransform_default());
+status_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      status_options.insert = insertBySelector_default().bind(null, "head");
+    
+status_options.domAPI = (styleDomAPI_default());
+status_options.insertStyleElement = (insertStyleElement_default());
+
+var status_update = injectStylesIntoStyleTag_default()(styles_status/* default */.Z, status_options);
+
+
+
+
+       /* harmony default export */ const shared_styles_status = (styles_status/* default */.Z && styles_status/* default.locals */.Z.locals ? styles_status/* default.locals */.Z.locals : undefined);
+
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/muc-views/styles/muc-occupants.scss
+var muc_occupants = __webpack_require__(902);
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/styles/muc-occupants.scss
 
       
@@ -73758,6 +75440,7 @@ var muc_occupants_update = injectStylesIntoStyleTag_default()(muc_occupants/* de
 
 
 
+
 const {
   u: sidebar_u
 } = core_converse.env;
@@ -73776,6 +75459,8 @@ class MUCSidebar extends CustomElement {
     this.listenTo(this.model.occupants, 'add', this.requestUpdate);
     this.listenTo(this.model.occupants, 'remove', this.requestUpdate);
     this.listenTo(this.model.occupants, 'change', this.requestUpdate);
+    this.listenTo(this.model.occupants, 'vcard:change', this.requestUpdate);
+    this.listenTo(this.model.occupants, 'vcard:add', this.requestUpdate);
     this.model.initialized.then(() => this.requestUpdate());
   }
 
@@ -73803,9 +75488,9 @@ class MUCSidebar extends CustomElement {
 
     ev === null || ev === void 0 ? void 0 : (_ev$preventDefault2 = ev.preventDefault) === null || _ev$preventDefault2 === void 0 ? void 0 : _ev$preventDefault2.call(ev);
 
-    const chatview = shared_converse.chatboxviews.get(this.getAttribute('jid'));
+    const view = shared_converse.chatboxviews.get(this.getAttribute('jid'));
 
-    chatview === null || chatview === void 0 ? void 0 : chatview.getBottomPanel().insertIntoTextArea(`@${ev.target.textContent}`);
+    view === null || view === void 0 ? void 0 : view.getMessageForm().insertIntoTextArea(`@${ev.target.textContent}`);
   }
 
 }
@@ -73869,11 +75554,6 @@ class MUCChatArea extends CustomElement {
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   async initialize() {
     this.model = await api.rooms.get(this.jid);
     this.listenTo(this.model, 'change:show_help_messages', () => this.requestUpdate());
@@ -73891,7 +75571,7 @@ class MUCChatArea extends CustomElement {
       'jid': this.jid,
       'model': this.model,
       'onMousedown': ev => this.onMousedown(ev),
-      'show_send_button': shared_converse.show_send_button,
+      'show_send_button': api.settings.get('show_send_button'),
       'shouldShowSidebar': () => this.shouldShowSidebar(),
       'type': this.type
     });
@@ -74358,7 +76038,6 @@ const muc_invite_u = core_converse.env.utils;
 
 
 
-
 const subject = o => {
   const i18n_topic = __('Topic');
 
@@ -74497,7 +76176,39 @@ const subject = o => {
   }
 
 }));
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/shared/components/styles/rich-text.scss
+var styles_rich_text = __webpack_require__(307);
+;// CONCATENATED MODULE: ./src/shared/components/styles/rich-text.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var rich_text_options = {};
+
+rich_text_options.styleTagTransform = (styleTagTransform_default());
+rich_text_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      rich_text_options.insert = insertBySelector_default().bind(null, "head");
+    
+rich_text_options.domAPI = (styleDomAPI_default());
+rich_text_options.insertStyleElement = (insertStyleElement_default());
+
+var rich_text_update = injectStylesIntoStyleTag_default()(styles_rich_text/* default */.Z, rich_text_options);
+
+
+
+
+       /* harmony default export */ const components_styles_rich_text = (styles_rich_text/* default */.Z && styles_rich_text/* default.locals */.Z.locals ? styles_rich_text/* default.locals */.Z.locals : undefined);
+
 ;// CONCATENATED MODULE: ./src/shared/components/rich-text.js
+
 
 
 
@@ -74588,15 +76299,16 @@ class rich_text_RichText extends CustomElement {
     const options = {
       embed_audio: this.embed_audio,
       embed_videos: this.embed_videos,
+      hide_media_urls: this.hide_media_urls,
+      mentions: this.mentions,
       nick: this.nick,
       onImgClick: this.onImgClick,
       onImgLoad: this.onImgLoad,
       render_styling: this.render_styling,
       show_images: this.show_images,
-      show_me_message: this.show_me_message,
-      hide_media_urls: this.hide_media_urls
+      show_me_message: this.show_me_message
     };
-    return rich_text(this.text, this.offset, this.mentions, options);
+    return rich_text(this.text, this.offset, options);
   }
 
 }
@@ -74621,7 +76333,7 @@ const tpl_standalone_btns = o => o.standalone_btns.reverse().map(b => until_o(b,
   return T`
         <div class="chatbox-title ${show_subject ? '' : "chatbox-title--no-desc"}">
             ${!shared_converse.api.settings.get("singleton") ? T`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>` : ''}
-            <div class="chatbox-title__text" title="${shared_converse.locked_muc_domain !== 'hidden' ? o.jid : ''}">${o.title}
+            <div class="chatbox-title__text" title="${api.settings.get('locked_muc_domain') !== 'hidden' ? o.jid : ''}">${o.title}
                 ${o.bookmarked ? T`<i class="fa fa-bookmark chatbox-title__text--bookmarked" title="${i18n_bookmarked}"></i>` : ''}
             </div>
             <div class="chatbox-title__buttons row no-gutters">
@@ -74634,8 +76346,8 @@ const tpl_standalone_btns = o => o.standalone_btns.reverse().map(b => until_o(b,
           </p>` : ''}
     `;
 });
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/muc-views/styles/muc-head.scss
-var styles_muc_head = __webpack_require__(679);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/muc-views/styles/muc-head.scss
+var styles_muc_head = __webpack_require__(3288);
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/styles/muc-head.scss
 
       
@@ -74872,7 +76584,39 @@ class MUCHeading extends ElementView {
 
 }
 api.elements.define('converse-muc-heading', MUCHeading);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/muc-views/styles/nickname-form.scss
+var nickname_form = __webpack_require__(6233);
+;// CONCATENATED MODULE: ./src/plugins/muc-views/styles/nickname-form.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var nickname_form_options = {};
+
+nickname_form_options.styleTagTransform = (styleTagTransform_default());
+nickname_form_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      nickname_form_options.insert = insertBySelector_default().bind(null, "head");
+    
+nickname_form_options.domAPI = (styleDomAPI_default());
+nickname_form_options.insertStyleElement = (insertStyleElement_default());
+
+var nickname_form_update = injectStylesIntoStyleTag_default()(nickname_form/* default */.Z, nickname_form_options);
+
+
+
+
+       /* harmony default export */ const styles_nickname_form = (nickname_form/* default */.Z && nickname_form/* default.locals */.Z.locals ? nickname_form/* default.locals */.Z.locals : undefined);
+
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/nickname-form.js
+
 
 
 
@@ -74898,7 +76642,7 @@ class MUCNicknameForm extends CustomElement {
 }
 
 api.elements.define('converse-muc-nickname-form', MUCNicknameForm);
-/* harmony default export */ const nickname_form = ((/* unused pure expression or super */ null && (MUCNicknameForm)));
+/* harmony default export */ const muc_views_nickname_form = ((/* unused pure expression or super */ null && (MUCNicknameForm)));
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/templates/muc-password-form.js
 
 
@@ -75003,11 +76747,6 @@ class MUCView extends BaseChatView {
     muc_defineProperty(this, "is_chatroom", true);
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.initialize();
-  }
-
   async initialize() {
     this.model = await api.rooms.get(this.jid);
 
@@ -75021,7 +76760,7 @@ class MUCView extends BaseChatView {
     this.onConnectionStatusChanged();
     this.model.maybeShow();
     /**
-     * Triggered once a { @link _converse.ChatRoomView } has been opened
+     * Triggered once a {@link _converse.ChatRoomView} has been opened
      * @event _converse#chatRoomViewInitialized
      * @type { _converse.ChatRoomView }
      * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });
@@ -75057,8 +76796,8 @@ class MUCView extends BaseChatView {
 
 }
 api.elements.define('converse-muc', MUCView);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/muc-views/styles/index.scss
-var muc_views_styles = __webpack_require__(1557);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/muc-views/styles/index.scss
+var muc_views_styles = __webpack_require__(3076);
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/styles/index.scss
 
       
@@ -75090,7 +76829,7 @@ var muc_views_styles_update = injectStylesIntoStyleTag_default()(muc_views_style
 
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/index.js
 /**
- * @copyright 2020, the Converse.js contributors
+ * @copyright The Converse.js developers
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
@@ -75172,7 +76911,7 @@ core_converse.plugins.add('converse-muc-views', {
 
 });
 // EXTERNAL MODULE: ./node_modules/favico.js-slevomat/favico.js
-var favico = __webpack_require__(2329);
+var favico = __webpack_require__(5402);
 var favico_default = /*#__PURE__*/__webpack_require__.n(favico);
 ;// CONCATENATED MODULE: ./src/plugins/notifications/utils.js
 
@@ -75320,7 +77059,7 @@ function showFeedbackNotification(data) {
     const n = new Notification(data.subject, {
       body: data.message,
       lang: shared_converse.locale,
-      icon: shared_converse.notification_icon
+      icon: api.settings.get('notification_icon')
     });
     setTimeout(n.close.bind(n), 5000);
   }
@@ -75331,7 +77070,9 @@ function showFeedbackNotification(data) {
  */
 
 function showChatStateNotification(contact) {
-  if (shared_converse.chatstate_notification_blacklist.includes(contact.jid)) {
+  var _api$settings$get;
+
+  if ((_api$settings$get = api.settings.get('chatstate_notification_blacklist')) !== null && _api$settings$get !== void 0 && _api$settings$get.includes(contact.jid)) {
     // Don't notify if the user is being ignored.
     return;
   }
@@ -75356,7 +77097,7 @@ function showChatStateNotification(contact) {
   const n = new Notification(contact.getDisplayName(), {
     body: message,
     lang: shared_converse.locale,
-    icon: shared_converse.notification_icon
+    icon: api.settings.get('notification_icon')
   });
   setTimeout(() => n.close(), 5000);
 }
@@ -75432,7 +77173,7 @@ function showMessageNotification(data) {
     'body': body,
     'lang': shared_converse.locale,
     'icon': api.settings.get('notification_icon'),
-    'requireInteraction': !shared_converse.notification_delay
+    'requireInteraction': !api.settings.get('notification_delay')
   });
 
   if (api.settings.get('notification_delay')) {
@@ -75513,7 +77254,7 @@ function showContactRequestNotification(contact) {
   const n = new Notification(contact.getDisplayName(), {
     body: __('wants to be your contact'),
     lang: shared_converse.locale,
-    icon: shared_converse.notification_icon
+    icon: api.settings.get('notification_icon')
   });
   setTimeout(() => n.close(), 5000);
 }
@@ -75568,687 +77309,6 @@ core_converse.plugins.add('converse-notification', {
       api.listen.on('message', handleMessageNotification);
       api.listen.on('feedback', handleFeedback);
       api.listen.on('connected', requestPermission);
-    });
-  }
-
-});
-;// CONCATENATED MODULE: ./src/modals/templates/user-settings.js
-
-
-
-
-
-
-
-const user_settings_tpl_navigation = o => {
-  const i18n_about = __('About');
-
-  const i18n_commands = __('Commands');
-
-  return T`
-        <ul class="nav nav-pills justify-content-center">
-            <li role="presentation" class="nav-item">
-                <a class="nav-link active" id="about-tab" href="#about-tabpanel" aria-controls="about-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_about}</a>
-            </li>
-            <li role="presentation" class="nav-item">
-                <a class="nav-link" id="commands-tab" href="#commands-tabpanel" aria-controls="commands-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_commands}</a>
-            </li>
-        </ul>
-    `;
-};
-
-/* harmony default export */ const templates_user_settings = (o => {
-  const i18n_modal_title = __('Settings');
-
-  const first_subtitle = __('%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s', '<a target="_blank" rel="nofollow" href="https://conversejs.org">', '</a>', '<a target="_blank" rel="nofollow" href="https://opkode.com">');
-
-  const second_subtitle = __('%1$s Translate %2$s it into your own language', '<a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">', '</a>');
-
-  const show_client_info = api.settings.get('show_client_info');
-  const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
-  const show_both_tabs = show_client_info && allow_adhoc_commands;
-  return T`
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="converse-modtools-modal-label">${i18n_modal_title}</h5>
-                ${modal_header_close_button}
-            </div>
-            <div class="modal-body">
-                ${show_both_tabs ? user_settings_tpl_navigation(o) : ''}
-
-                <div class="tab-content">
-                    <div class="tab-pane tab-pane--columns ${show_client_info ? 'active' : ''}"
-                         id="about-tabpanel" role="tabpanel" aria-labelledby="about-tab">
-
-                        <span class="modal-alert"></span>
-                        <br/>
-                        <div class="container">
-                            <h6 class="brand-heading">Converse</h6>
-                            <p class="brand-subtitle">${o.version_name}</p>
-                            <p class="brand-subtitle">${unsafe_html_o(purify_default().sanitize(first_subtitle))}</p>
-                            <p class="brand-subtitle">${unsafe_html_o(purify_default().sanitize(second_subtitle))}</p>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane tab-pane--columns ${!show_client_info && allow_adhoc_commands ? 'active' : ''}"
-                         id="commands-tabpanel"
-                         role="tabpanel"
-                         aria-labelledby="commands-tab">
-                        <converse-adhoc-commands/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-`;
-});
-;// CONCATENATED MODULE: ./src/modals/user-settings.js
-
-
-
-let user_settings_converse;
-
-/* harmony default export */ const modals_user_settings = (base.extend({
-  id: "converse-client-info-modal",
-
-  initialize(settings) {
-    user_settings_converse = settings._converse;
-    base.prototype.initialize.apply(this, arguments);
-  },
-
-  toHTML() {
-    return templates_user_settings(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), {
-      'version_name': user_settings_converse.VERSION_NAME
-    }));
-  }
-
-}));
-;// CONCATENATED MODULE: ./src/plugins/profile/templates/profile.js
-
-
-
-/* harmony default export */ const profile = (o => {
-  const i18n_logout = __('Log out');
-
-  const i18n_change_status = __('Click to change your chat status');
-
-  const i18n_details = __('Show details about this chat client');
-
-  const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
-  return T`
-    <div class="userinfo controlbox-padded">
-        <div class="controlbox-section profile d-flex">
-            <a class="show-profile" href="#" @click=${o.showProfileModal}>
-                <canvas class="avatar align-self-center" height="40" width="40"></canvas>
-            </a>
-            <span class="username w-100 align-self-center">${o.fullname}</span>
-            ${show_settings_button ? T`<a class="controlbox-heading__btn show-client-info fa fa-cog align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}></a>` : ''}
-            ${api.settings.get('allow_logout') ? T`<a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="${i18n_logout}" @click=${o.logout}></a>` : ''}
-        </div>
-        <div class="d-flex xmpp-status">
-            <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${o.showStatusChangeModal}>
-                <span class="${o.chat_status} w-100 align-self-center" data-value="${o.chat_status}">
-                    <span class="
-                        ${o.chat_status === 'online' && 'fa fa-circle chat-status chat-status--online'}
-                        ${o.chat_status === 'dnd' && 'fa fa-minus-circle chat-status chat-status--busy'}
-                        ${o.chat_status === 'away' && 'fa fa-circle chat-status chat-status--away'}
-                        ${o.chat_status === 'xa' && 'far fa-circle chat-status chat-status--xa '}
-                        ${o.chat_status === 'offline' && 'fa fa-circle chat-status chat-status--offline'}"></span> ${o.status_message}</span>
-            </a>
-        </div>
-    </div>
-`;
-});
-;// CONCATENATED MODULE: ./src/plugins/profile/statusview.js
-
-
-
-
-
-
-
-function getPrettyStatus(stat) {
-  if (stat === 'chat') {
-    return __('online');
-  } else if (stat === 'dnd') {
-    return __('busy');
-  } else if (stat === 'xa') {
-    return __('away for long');
-  } else if (stat === 'away') {
-    return __('away');
-  } else if (stat === 'offline') {
-    return __('offline');
-  } else {
-    return __(stat) || __('online');
-  }
-}
-
-class ProfileView extends ElementViewWithAvatar {
-  async initialize() {
-    this.model = shared_converse.xmppstatus;
-    this.listenTo(this.model, "change", this.render);
-    await api.waitUntil('VCardsInitialized');
-    this.listenTo(this.model.vcard, "change", this.render);
-    this.render();
-  }
-
-  render() {
-    const chat_status = this.model.get('status') || 'offline';
-    V(profile(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), {
-      chat_status,
-      'fullname': this.model.vcard.get('fullname') || shared_converse.bare_jid,
-      "showUserSettingsModal": ev => this.showUserSettingsModal(ev),
-      'status_message': this.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status)),
-      'logout': this.logout,
-      'showStatusChangeModal': () => this.showStatusChangeModal(),
-      'showProfileModal': () => this.showProfileModal()
-    })), this);
-    this.renderAvatar();
-  }
-
-  showProfileModal(ev) {
-    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
-    api.modal.show(shared_converse.ProfileModal, {
-      model: this.model
-    }, ev);
-  }
-
-  showStatusChangeModal(ev) {
-    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
-    api.modal.show(shared_converse.ChatStatusModal, {
-      model: this.model
-    }, ev);
-  }
-
-  showUserSettingsModal(ev) {
-    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
-    api.modal.show(modals_user_settings, {
-      model: this.model,
-      _converse: shared_converse
-    }, ev);
-  }
-
-  logout(ev) {
-    // eslint-disable-line class-methods-use-this
-    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
-    const result = confirm(__("Are you sure you want to log out?"));
-
-    if (result === true) {
-      api.user.logout();
-    }
-  }
-
-}
-
-api.elements.define('converse-user-profile', ProfileView);
-;// CONCATENATED MODULE: ./src/modals/templates/chat-status.js
-
-
-/* harmony default export */ const chat_status = (o => T`
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="changeStatusModalLabel">${o.modal_title}</h5>
-                ${modal_header_close_button}
-            </div>
-            <div class="modal-body">
-                <span class="modal-alert"></span>
-                <form class="converse-form set-xmpp-status" id="set-xmpp-status">
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input ?checked=${o.status === 'online'}
-                                type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input"/>
-                            <label class="custom-control-label" for="radio-online">
-                                <span class="fa fa-circle chat-status chat-status--online"></span>${o.label_online}</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input ?checked=${o.status === 'busy'}
-                                type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input"/>
-                            <label class="custom-control-label" for="radio-busy">
-                                <span class="fa fa-minus-circle  chat-status chat-status--busy"></span>${o.label_busy}</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input ?checked=${o.status === 'away'}
-                                type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input"/>
-                            <label class="custom-control-label" for="radio-away">
-                                <span class="fa fa-circle chat-status chat-status--away"></span>${o.label_away}</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input ?checked=${o.status === 'xa'}
-                                type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input"/>
-                            <label class="custom-control-label" for="radio-xa">
-                                <span class="far fa-circle chat-status chat-status--xa"></span>${o.label_xa}</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="btn-group w-100">
-                            <input name="status_message" type="text" class="form-control"
-                                value="${o.status_message || ''}" placeholder="${o.placeholder_status_message}"/>
-                            <span class="clear-input fa fa-times ${o.status_message ? '' : 'hidden'}"></span>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">${o.label_save}</button>
-                </form>
-            </div>
-        </div>
-    </div>
-`);
-;// CONCATENATED MODULE: ./src/modals/chat-status.js
-
-
-
-
-const chat_status_u = core_converse.env.utils;
-const ChatStatusModal = base.extend({
-  id: "modal-status-change",
-  events: {
-    "submit form#set-xmpp-status": "onFormSubmitted",
-    "click .clear-input": "clearStatusMessage"
-  },
-
-  toHTML() {
-    return chat_status(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), {
-      'label_away': __('Away'),
-      'label_busy': __('Busy'),
-      'label_cancel': __('Cancel'),
-      'label_close': __('Close'),
-      'label_custom_status': __('Custom status'),
-      'label_offline': __('Offline'),
-      'label_online': __('Online'),
-      'label_save': __('Save'),
-      'label_xa': __('Away for long'),
-      'modal_title': __('Change chat status'),
-      'placeholder_status_message': __('Personal status message')
-    }));
-  },
-
-  afterRender() {
-    this.el.addEventListener('shown.bs.modal', () => {
-      this.el.querySelector('input[name="status_message"]').focus();
-    }, false);
-  },
-
-  clearStatusMessage(ev) {
-    if (ev && ev.preventDefault) {
-      ev.preventDefault();
-      chat_status_u.hideElement(this.el.querySelector('.clear-input'));
-    }
-
-    const roster_filter = this.el.querySelector('input[name="status_message"]');
-    roster_filter.value = '';
-  },
-
-  onFormSubmitted(ev) {
-    ev.preventDefault();
-    const data = new FormData(ev.target);
-    this.model.save({
-      'status_message': data.get('status_message'),
-      'status': data.get('chat_status')
-    });
-    this.modal.hide();
-  }
-
-});
-shared_converse.ChatStatusModal = ChatStatusModal;
-/* harmony default export */ const modals_chat_status = ((/* unused pure expression or super */ null && (ChatStatusModal)));
-;// CONCATENATED MODULE: ./src/shared/components/image-picker.js
-
-
-
-
-
-
-const i18n_profile_picture = __('Your profile picture');
-
-class ImagePicker extends CustomElement {
-  static get properties() {
-    return {
-      'height': {
-        type: Number
-      },
-      'image': {
-        type: String
-      },
-      'width': {
-        type: Number
-      }
-    };
-  }
-
-  render() {
-    const avatar_data = {
-      'height': this.height,
-      'image': this.image,
-      'width': this.width
-    };
-    return T`
-            <a class="change-avatar" @click=${this.openFileSelection} title="${i18n_profile_picture}">
-                ${renderAvatar(avatar_data)}
-            </a>
-            <input @change=${this.updateFilePreview} class="hidden" name="image" type="file"/>
-        `;
-  }
-
-  openFileSelection(ev) {
-    ev.preventDefault();
-    this.querySelector('input[type="file"]').click();
-  }
-
-  updateFilePreview(ev) {
-    const file = ev.target.files[0];
-    const reader = new FileReader();
-
-    reader.onloadend = () => this.image = reader.result;
-
-    reader.readAsDataURL(file);
-  }
-
-}
-api.elements.define('converse-image-picker', ImagePicker);
-;// CONCATENATED MODULE: ./src/modals/templates/profile.js
-
-
-
-
-
-
-const profile_u = core_converse.env.utils;
-
-const fingerprint = o => T`
-    <span class="fingerprint">${profile_u.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}</span>`;
-
-const device_with_fingerprint = o => {
-  const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
-
-  return T`
-        <li class="fingerprint-removal-item list-group-item nopadding">
-            <label>
-            <input type="checkbox" value="${o.device.get('id')}"
-                aria-label="${i18n_fingerprint_checkbox_label}"/>
-            <span class="fingerprint">${profile_u.formatFingerprint(o.device.get('bundle').fingerprint)}</span>
-            </label>
-        </li>
-    `;
-};
-
-const device_without_fingerprint = o => {
-  const i18n_device_without_fingerprint = __('Device without a fingerprint');
-
-  const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following device');
-
-  return T`
-        <li class="fingerprint-removal-item list-group-item nopadding">
-            <label>
-            <input type="checkbox" value="${o.device.get('id')}"
-                aria-label="${i18n_fingerprint_checkbox_label}"/>
-            <span>${i18n_device_without_fingerprint}</span>
-            </label>
-        </li>
-    `;
-};
-
-const device_item = o => T`
-    ${o.device.get('bundle') && o.device.get('bundle').fingerprint ? device_with_fingerprint(o) : device_without_fingerprint(o)}
-`;
-
-const device_list = o => {
-  var _o$view$other_devices;
-
-  const i18n_other_devices = __('Other OMEMO-enabled devices');
-
-  const i18n_other_devices_label = __('Checkbox to select fingerprints of all other OMEMO devices');
-
-  const i18n_remove_devices = __('Remove checked devices and close');
-
-  const i18n_select_all = __('Select all');
-
-  return T`
-        <ul class="list-group fingerprints">
-            <li class="list-group-item nopadding active">
-                <label>
-                    <input type="checkbox" class="select-all" title="${i18n_select_all}" aria-label="${i18n_other_devices_label}"/>
-                    ${i18n_other_devices}
-                </label>
-            </li>
-            ${(_o$view$other_devices = o.view.other_devices) === null || _o$view$other_devices === void 0 ? void 0 : _o$view$other_devices.map(device => device_item(Object.assign({
-    device
-  }, o)))}
-        </ul>
-        <div class="form-group"><button type="submit" class="save-form btn btn-primary">${i18n_remove_devices}</button></div>
-    `;
-}; // TODO: this needs to go as a component into the OMEMO plugin folder
-
-
-const omemo_page = o => {
-  var _o$view$other_devices2;
-
-  const i18n_fingerprint = __("This device's OMEMO fingerprint");
-
-  const i18n_generate = __('Generate new keys and fingerprint');
-
-  return T`
-        <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
-            <form class="converse-form fingerprint-removal">
-                <ul class="list-group fingerprints">
-                    <li class="list-group-item active">${i18n_fingerprint}</li>
-                    <li class="list-group-item">
-                        ${o.view.current_device && o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint ? fingerprint(o) : spinner()}
-                    </li>
-                </ul>
-                <div class="form-group">
-                    <button type="button" class="generate-bundle btn btn-danger">${i18n_generate}</button>
-                </div>
-                ${(_o$view$other_devices2 = o.view.other_devices) !== null && _o$view$other_devices2 !== void 0 && _o$view$other_devices2.length ? device_list(o) : ''}
-            </form>
-        </div>`;
-};
-
-/* harmony default export */ const templates_profile = (o => {
-  const heading_profile = __('Your Profile');
-
-  const i18n_email = __('Email');
-
-  const i18n_fullname = __('Full Name');
-
-  const i18n_jid = __('XMPP Address');
-
-  const i18n_nickname = __('Nickname');
-
-  const i18n_role = __('Role');
-
-  const i18n_save = __('Save and close');
-
-  const i18n_role_help = __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.');
-
-  const i18n_url = __('URL');
-
-  const i18n_omemo = __('OMEMO');
-
-  const i18n_profile = __('Profile');
-
-  const navigation = o.view.current_device ? T`<ul class="nav nav-pills justify-content-center">
-            <li role="presentation" class="nav-item">
-                <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">${i18n_profile}</a>
-            </li>
-            <li role="presentation" class="nav-item">
-                <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">${i18n_omemo}</a>
-            </li>
-        </ul>` : '';
-  return T`
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="user-profile-modal-label">${heading_profile}</h5>
-                    ${modal_header_close_button}
-                </div>
-                <div class="modal-body">
-                    <span class="modal-alert"></span>
-                    ${shared_converse.pluggable.plugins["converse-omemo"].enabled(shared_converse) && navigation || ''}
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
-                            <form class="converse-form converse-form--modal profile-form" action="#">
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <converse-image-picker image="${o.image}" width="${o.width}" height="${o.height}"></converse-image-picker>
-                                    </div>
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <label class="col-form-label">${i18n_jid}:</label>
-                                            <div>${o.jid}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="vcard-fullname" class="col-form-label">${i18n_fullname}:</label>
-                                    <input id="vcard-fullname" type="text" class="form-control" name="fn" value="${o.fullname || ''}"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="vcard-nickname" class="col-form-label">${i18n_nickname}:</label>
-                                    <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="${o.nickname || ''}"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="vcard-url" class="col-form-label">${i18n_url}:</label>
-                                    <input id="vcard-url" type="url" class="form-control" name="url" value="${o.url || ''}"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="vcard-email" class="col-form-label">${i18n_email}:</label>
-                                    <input id="vcard-email" type="email" class="form-control" name="email" value="${o.email || ''}"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="vcard-role" class="col-form-label">${i18n_role}:</label>
-                                    <input id="vcard-role" type="text" class="form-control" name="role" value="${o.role || ''}" aria-describedby="vcard-role-help"/>
-                                    <small id="vcard-role-help" class="form-text text-muted">${i18n_role_help}</small>
-                                </div>
-                                <hr/>
-                                <div class="form-group">
-                                    <button type="submit" class="save-form btn btn-primary">${i18n_save}</button>
-                                </div>
-                            </form>
-                        </div>
-                        ${shared_converse.pluggable.plugins["converse-omemo"].enabled(shared_converse) && omemo_page(o) || ''}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-});
-;// CONCATENATED MODULE: ./src/modals/profile.js
-
-
-
-
-
-
-const {
-  sizzle: profile_sizzle
-} = converse.env;
-const ProfileModal = base.extend({
-  id: "user-profile-modal",
-  events: {
-    'submit .profile-form': 'onFormSubmitted'
-  },
-
-  initialize() {
-    this.listenTo(this.model, 'change', this.render);
-    base.prototype.initialize.apply(this, arguments);
-    /**
-        * Triggered when the _converse.ProfileModal has been created and initialized.
-        * @event _converse#profileModalInitialized
-        * @type { _converse.XMPPStatus }
-        * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
-        */
-
-    api.trigger('profileModalInitialized', this.model);
-  },
-
-  toHTML() {
-    return templates_profile(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), this.getAvatarData(), {
-      'view': this
-    }));
-  },
-
-  getAvatarData() {
-    const image_type = this.model.vcard.get('image_type');
-    const image_data = this.model.vcard.get('image');
-    const image = "data:" + image_type + ";base64," + image_data;
-    return {
-      'height': 128,
-      'width': 128,
-      image
-    };
-  },
-
-  afterRender() {
-    this.tabs = profile_sizzle('.nav-item .nav-link', this.el).map(e => new (bootstrap_native_default()).Tab(e));
-  },
-
-  async setVCard(data) {
-    try {
-      await api.vcard.set(shared_converse.bare_jid, data);
-    } catch (err) {
-      headless_log.fatal(err);
-      this.alert([__("Sorry, an error happened while trying to save your profile data."), __("You can check your browser's developer console for any error output.")].join(" "));
-      return;
-    }
-
-    this.modal.hide();
-  },
-
-  onFormSubmitted(ev) {
-    ev.preventDefault();
-    const reader = new FileReader();
-    const form_data = new FormData(ev.target);
-    const image_file = form_data.get('image');
-    const data = {
-      'fn': form_data.get('fn'),
-      'nickname': form_data.get('nickname'),
-      'role': form_data.get('role'),
-      'email': form_data.get('email'),
-      'url': form_data.get('url')
-    };
-
-    if (!image_file.size) {
-      Object.assign(data, {
-        'image': this.model.vcard.get('image'),
-        'image_type': this.model.vcard.get('image_type')
-      });
-      this.setVCard(data);
-    } else {
-      reader.onloadend = () => {
-        Object.assign(data, {
-          'image': btoa(reader.result),
-          'image_type': image_file.type
-        });
-        this.setVCard(data);
-      };
-
-      reader.readAsBinaryString(image_file);
-    }
-  }
-
-});
-shared_converse.ProfileModal = ProfileModal;
-/* harmony default export */ const modals_profile = ((/* unused pure expression or super */ null && (ProfileModal)));
-;// CONCATENATED MODULE: ./src/plugins/profile/index.js
-/**
- * @copyright The Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
-
-
-
-
-
-
-
-core_converse.plugins.add('converse-profile', {
-  dependencies: ["converse-status", "converse-modal", "converse-vcard", "converse-chatboxviews"],
-
-  initialize() {
-    api.settings.extend({
-      'allow_adhoc_commands': true,
-      'show_client_info': true
     });
   }
 
@@ -76461,6 +77521,16 @@ const {
   sizzle: omemo_utils_sizzle,
   u: omemo_utils_u
 } = core_converse.env;
+function formatFingerprint(fp) {
+  fp = fp.replace(/^05/, '');
+
+  for (let i = 1; i < 8; i++) {
+    const idx = i * 8 + i - 1;
+    fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
+  }
+
+  return fp;
+}
 
 async function encryptMessage(plaintext) {
   // The client MUST use fresh, randomly generated key/IV pairs
@@ -76504,10 +77574,6 @@ async function decryptMessage(obj) {
   return arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
 }
 
-const omemo = {
-  decryptMessage,
-  encryptMessage
-};
 async function encryptFile(file) {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const key = await crypto.subtle.generateKey({
@@ -76658,16 +77724,54 @@ function handleEncryptedFiles(richtext) {
 
   richtext.addAnnotations((text, offset) => addEncryptedFiles(text, offset, richtext));
 }
-function parseEncryptedMessage(stanza, attrs) {
-  if (attrs.is_encrypted && attrs.encrypted.key) {
-    // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-    if (attrs.encrypted.prekey === true) {
-      return decryptPrekeyWhisperMessage(attrs);
-    } else {
-      return decryptWhisperMessage(attrs);
-    }
-  } else {
+/**
+ * Hook handler for { @link parseMessage } and { @link parseMUCMessage }, which
+ * parses the passed in `message` stanza for OMEMO attributes and then sets
+ * them on the attrs object.
+ * @param { XMLElement } stanza - The message stanza
+ * @param { (MUCMessageAttributes|MessageAttributes) } attrs
+ * @returns (MUCMessageAttributes|MessageAttributes)
+ */
+
+async function parseEncryptedMessage(stanza, attrs) {
+  var _api$omemo;
+
+  if (api.settings.get('clear_cache_on_logout') || !attrs.is_encrypted || attrs.encryption_namespace !== omemo_utils_Strophe.NS.OMEMO) {
     return attrs;
+  }
+
+  const encrypted_el = omemo_utils_sizzle(`encrypted[xmlns="${omemo_utils_Strophe.NS.OMEMO}"]`, stanza).pop();
+  const header = encrypted_el.querySelector('header');
+  attrs.encrypted = {
+    'device_id': header.getAttribute('sid')
+  };
+  const device_id = await ((_api$omemo = api.omemo) === null || _api$omemo === void 0 ? void 0 : _api$omemo.getDeviceID());
+  const key = device_id && omemo_utils_sizzle(`key[rid="${device_id}"]`, encrypted_el).pop();
+
+  if (key) {
+    var _encrypted_el$querySe;
+
+    Object.assign(attrs.encrypted, {
+      'iv': header.querySelector('iv').textContent,
+      'key': key.textContent,
+      'payload': ((_encrypted_el$querySe = encrypted_el.querySelector('payload')) === null || _encrypted_el$querySe === void 0 ? void 0 : _encrypted_el$querySe.textContent) || null,
+      'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+    });
+  } else {
+    return Object.assign(attrs, {
+      'error_condition': 'not-encrypted-for-this-device',
+      'error_type': 'Decryption',
+      'is_ephemeral': true,
+      'is_error': true,
+      'type': 'error'
+    });
+  } // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+
+
+  if (attrs.encrypted.prekey === true) {
+    return decryptPrekeyWhisperMessage(attrs);
+  } else {
+    return decryptWhisperMessage(attrs);
   }
 }
 function utils_onChatBoxesInitialized() {
@@ -76706,18 +77810,33 @@ function getSessionCipher(jid, id) {
   return new window.libsignal.SessionCipher(shared_converse.omemo_store, address);
 }
 
+function getJIDForDecryption(attrs) {
+  const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
+
+  if (!from_jid) {
+    Object.assign(attrs, {
+      'error_text': __("Sorry, could not decrypt a received OMEMO " + "message because we don't have the XMPP address for that user."),
+      'error_type': 'Decryption',
+      'is_ephemeral': true,
+      'is_error': true,
+      'type': 'error'
+    });
+    throw new Error("Could not find JID to decrypt OMEMO message for");
+  }
+
+  return from_jid;
+}
+
 async function handleDecryptedWhisperMessage(attrs, key_and_tag) {
+  const from_jid = getJIDForDecryption(attrs);
+  const devicelist = await shared_converse.devicelists.getDeviceList(from_jid);
   const encrypted = attrs.encrypted;
-
-  const devicelist = shared_converse.devicelists.getDeviceList(attrs.from);
-
-  await devicelist._devices_promise;
   let device = devicelist.get(encrypted.device_id);
 
   if (!device) {
     device = await devicelist.devices.create({
       'id': encrypted.device_id,
-      'jid': attrs.from
+      'jid': from_jid
     }, {
       'promise': true
     });
@@ -76736,21 +77855,20 @@ async function handleDecryptedWhisperMessage(attrs, key_and_tag) {
 }
 
 function getDecryptionErrorAttributes(e) {
-  if (api.settings.get('loglevel') === 'debug') {
-    return {
-      'error_text': __('Sorry, could not decrypt a received OMEMO message due to an error.') + ` ${e.name} ${e.message}`,
-      'error_type': 'Decryption',
-      'is_ephemeral': true,
-      'is_error': true,
-      'type': 'error'
-    };
-  } else {
-    return {};
-  }
+  return {
+    'error_text': __('Sorry, could not decrypt a received OMEMO message due to an error.') + ` ${e.name} ${e.message}`,
+    'error_condition': e.name,
+    'error_message': e.message,
+    'error_type': 'Decryption',
+    'is_ephemeral': true,
+    'is_error': true,
+    'type': 'error'
+  };
 }
 
 async function decryptPrekeyWhisperMessage(attrs) {
-  const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+  const from_jid = getJIDForDecryption(attrs);
+  const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
   const key = base64ToArrayBuffer(attrs.encrypted.key);
   let key_and_tag;
 
@@ -76804,18 +77922,7 @@ async function decryptPrekeyWhisperMessage(attrs) {
 }
 
 async function decryptWhisperMessage(attrs) {
-  const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
-
-  if (!from_jid) {
-    Object.assign(attrs, {
-      'error_text': __("Sorry, could not decrypt a received OMEMO message because we don't have the XMPP address for that user."),
-      'error_type': 'Decryption',
-      'is_ephemeral': false,
-      'is_error': true,
-      'type': 'error'
-    });
-  }
-
+  const from_jid = getJIDForDecryption(attrs);
   const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
   const key = base64ToArrayBuffer(attrs.encrypted.key);
 
@@ -76923,9 +78030,6 @@ function generateDeviceID() {
 }
 
 async function buildSession(device) {
-  // TODO: check device-get('jid') versus the 'from' attribute which is used
-  // to build a session when receiving an encrypted message in a MUC.
-  // https://github.com/conversejs/converse.js/issues/1481#issuecomment-509183431
   const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
   const sessionBuilder = new libsignal.SessionBuilder(shared_converse.omemo_store, address);
   const prekey = device.getRandomPreKey();
@@ -76970,7 +78074,7 @@ async function getSession(device) {
   }
 }
 
-function updateBundleFromStanza(stanza) {
+async function updateBundleFromStanza(stanza) {
   const items_el = omemo_utils_sizzle(`items`, stanza).pop();
 
   if (!items_el || !items_el.getAttribute('node').startsWith(omemo_utils_Strophe.NS.OMEMO_BUNDLES)) {
@@ -76980,19 +78084,17 @@ function updateBundleFromStanza(stanza) {
   const device_id = items_el.getAttribute('node').split(':')[1];
   const jid = stanza.getAttribute('from');
   const bundle_el = omemo_utils_sizzle(`item > bundle`, items_el).pop();
-
-  const devicelist = shared_converse.devicelists.getDeviceList(jid);
-
+  const devicelist = await shared_converse.devicelists.getDeviceList(jid);
   const device = devicelist.devices.get(device_id) || devicelist.devices.create({
     'id': device_id,
-    'jid': jid
+    jid
   });
   device.save({
     'bundle': parseBundle(bundle_el)
   });
 }
 
-function updateDevicesFromStanza(stanza) {
+async function updateDevicesFromStanza(stanza) {
   const items_el = omemo_utils_sizzle(`items[node="${omemo_utils_Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
 
   if (!items_el) {
@@ -77002,9 +78104,7 @@ function updateDevicesFromStanza(stanza) {
   const device_selector = `item list[xmlns="${omemo_utils_Strophe.NS.OMEMO}"] device`;
   const device_ids = omemo_utils_sizzle(device_selector, items_el).map(d => d.getAttribute('id'));
   const jid = stanza.getAttribute('from');
-
-  const devicelist = shared_converse.devicelists.getDeviceList(jid);
-
+  const devicelist = await shared_converse.devicelists.getDeviceList(jid);
   const devices = devicelist.devices;
   const removed_ids = lodash_es_difference(devices.pluck('id'), device_ids);
   removed_ids.forEach(id => {
@@ -77036,11 +78136,12 @@ function updateDevicesFromStanza(stanza) {
 
 function registerPEPPushHandler() {
   // Add a handler for devices pushed from other connected clients
-  shared_converse.connection.addHandler(message => {
+  shared_converse.connection.addHandler(async message => {
     try {
       if (omemo_utils_sizzle(`event[xmlns="${omemo_utils_Strophe.NS.PUBSUB}#event"]`, message).length) {
-        updateDevicesFromStanza(message);
-        updateBundleFromStanza(message);
+        await api.waitUntil('OMEMOInitialized');
+        await updateDevicesFromStanza(message);
+        await updateBundleFromStanza(message);
       }
     } catch (e) {
       headless_log.error(e.message);
@@ -77061,29 +78162,33 @@ function restoreOMEMOSession() {
   return shared_converse.omemo_store.fetchSession();
 }
 
-function fetchDeviceLists() {
-  return new Promise((success, error) => shared_converse.devicelists.fetch({
-    success,
-    'error': (m, e) => error(e)
-  }));
-}
+async function fetchDeviceLists() {
+  shared_converse.devicelists = new shared_converse.DeviceLists();
+  const id = `converse.devicelists-${shared_converse.bare_jid}`;
+  initStorage(shared_converse.devicelists, id);
+  await new Promise(resolve => {
+    shared_converse.devicelists.fetch({
+      'success': resolve,
+      'error': (m, e) => {
+        headless_log.error(e);
+        resolve();
+      }
+    });
+  });
 
-async function fetchOwnDevices() {
-  await fetchDeviceLists();
+  const promises = shared_converse.devicelists.map(l => l.initialized);
 
-  let own_devicelist = shared_converse.devicelists.get(shared_converse.bare_jid);
-
-  if (own_devicelist) {
-    own_devicelist.fetchDevices();
-  } else {
-    own_devicelist = await shared_converse.devicelists.create({
+  if (!shared_converse.devicelists.get(shared_converse.bare_jid)) {
+    // Create own device list if we none was restored
+    const own_list = await shared_converse.devicelists.create({
       'jid': shared_converse.bare_jid
     }, {
       'promise': true
     });
+    return Promise.all([...promises, own_list.initialized]);
   }
 
-  return own_devicelist._devices_promise;
+  return Promise.all(promises);
 }
 
 async function initOMEMO() {
@@ -77092,12 +78197,8 @@ async function initOMEMO() {
     return;
   }
 
-  shared_converse.devicelists = new shared_converse.DeviceLists();
-  const id = `converse.devicelists-${shared_converse.bare_jid}`;
-  initStorage(shared_converse.devicelists, id);
-
   try {
-    await fetchOwnDevices();
+    await fetchDeviceLists();
     await restoreOMEMOSession();
     await shared_converse.omemo_store.publishBundle();
   } catch (e) {
@@ -77108,7 +78209,8 @@ async function initOMEMO() {
   /**
    * Triggered once OMEMO support has been initialized
    * @event _converse#OMEMOInitialized
-   * @example _converse.api.listen.on('OMEMOInitialized', () => { ... }); */
+   * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
+   */
 
 
   api.trigger('OMEMOInitialized');
@@ -77309,6 +78411,885 @@ function createOMEMOMessageStanza(chatbox, message, devices) {
     });
   });
 }
+const omemo = {
+  decryptMessage,
+  encryptMessage,
+  formatFingerprint
+};
+;// CONCATENATED MODULE: ./src/plugins/omemo/templates/fingerprints.js
+
+
+
+
+const device_fingerprint = (el, device) => {
+  const i18n_trusted = __('Trusted');
+
+  const i18n_untrusted = __('Untrusted');
+
+  if (device.get('bundle') && device.get('bundle').fingerprint) {
+    return T`
+            <li class="list-group-item">
+                <form class="fingerprint-trust">
+                    <div class="btn-group btn-group-toggle">
+                        <label class="btn btn--small ${device.get('trusted') === 1 ? 'btn-primary active' : 'btn-secondary'}"
+                                @click=${el.toggleDeviceTrust}>
+                            <input type="radio" name="${device.get('id')}" value="1"
+                                ?checked=${device.get('trusted') !== -1}>${i18n_trusted}
+                        </label>
+                        <label class="btn btn--small ${device.get('trusted') === -1 ? 'btn-primary active' : 'btn-secondary'}"
+                                @click=${el.toggleDeviceTrust}>
+                            <input type="radio" name="${device.get('id')}" value="-1"
+                                ?checked=${device.get('trusted') === -1}>${i18n_untrusted}
+                        </label>
+                    </div>
+                    <code class="fingerprint">${formatFingerprint(device.get('bundle').fingerprint)}</code>
+                </form>
+            </li>
+        `;
+  } else {
+    return '';
+  }
+};
+
+/* harmony default export */ const fingerprints = (el => {
+  const i18n_fingerprints = __('OMEMO Fingerprints');
+
+  const i18n_no_devices = __("No OMEMO-enabled devices found");
+
+  const devices = el.devicelist.devices;
+  return T`
+        <hr/>
+        <ul class="list-group fingerprints">
+            <li class="list-group-item active">${i18n_fingerprints}</li>
+            ${devices.length ? devices.map(device => device_fingerprint(el, device)) : T`<li class="list-group-item"> ${i18n_no_devices} </li>`}
+        </ul>
+    `;
+});
+;// CONCATENATED MODULE: ./src/plugins/omemo/fingerprints.js
+
+
+
+class Fingerprints extends CustomElement {
+  static get properties() {
+    return {
+      'jid': {
+        type: String
+      }
+    };
+  }
+
+  async initialize() {
+    this.devicelist = await shared_converse.devicelists.getDeviceList(this.jid);
+    this.listenTo(this.devicelist.devices, 'change:bundle', this.requestUpdate);
+    this.listenTo(this.devicelist.devices, 'change:trusted', this.requestUpdate);
+    this.listenTo(this.devicelist.devices, 'remove', this.requestUpdate);
+    this.listenTo(this.devicelist.devices, 'add', this.requestUpdate);
+    this.listenTo(this.devicelist.devices, 'reset', this.requestUpdate);
+    this.requestUpdate();
+  }
+
+  render() {
+    return this.devicelist ? fingerprints(this) : '';
+  }
+
+  toggleDeviceTrust(ev) {
+    const radio = ev.target;
+    const device = this.devicelist.devices.get(radio.getAttribute('name'));
+    device.save('trusted', parseInt(radio.value, 10));
+  }
+
+}
+api.elements.define('converse-omemo-fingerprints', Fingerprints);
+;// CONCATENATED MODULE: ./src/plugins/omemo/templates/profile.js
+
+
+
+
+
+const fingerprint = el => T`
+    <span class="fingerprint">${formatFingerprint(el.current_device.get('bundle').fingerprint)}</span>`;
+
+const device_with_fingerprint = el => {
+  const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
+
+  return T`
+        <li class="fingerprint-removal-item list-group-item nopadding">
+            <label>
+            <input type="checkbox" value="${el.device.get('id')}"
+                aria-label="${i18n_fingerprint_checkbox_label}"/>
+            <span class="fingerprint">${formatFingerprint(el.device.get('bundle').fingerprint)}</span>
+            </label>
+        </li>
+    `;
+};
+
+const device_without_fingerprint = el => {
+  const i18n_device_without_fingerprint = __('Device without a fingerprint');
+
+  const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following device');
+
+  return T`
+        <li class="fingerprint-removal-item list-group-item nopadding">
+            <label>
+            <input type="checkbox" value="${el.device.get('id')}"
+                aria-label="${i18n_fingerprint_checkbox_label}"/>
+            <span>${i18n_device_without_fingerprint}</span>
+            </label>
+        </li>
+    `;
+};
+
+const device_item = el => T`
+    ${el.device.get('bundle') && el.device.get('bundle').fingerprint ? device_with_fingerprint(el) : device_without_fingerprint(el)}
+`;
+
+const device_list = el => {
+  var _el$other_devices;
+
+  const i18n_other_devices = __('Other OMEMO-enabled devices');
+
+  const i18n_other_devices_label = __('Checkbox to select fingerprints of all other OMEMO devices');
+
+  const i18n_remove_devices = __('Remove checked devices and close');
+
+  const i18n_select_all = __('Select all');
+
+  return T`
+        <ul class="list-group fingerprints">
+            <li class="list-group-item nopadding active">
+                <label>
+                    <input type="checkbox" class="select-all" @change=${el.selectAll} title="${i18n_select_all}" aria-label="${i18n_other_devices_label}"/>
+                    ${i18n_other_devices}
+                </label>
+            </li>
+            ${(_el$other_devices = el.other_devices) === null || _el$other_devices === void 0 ? void 0 : _el$other_devices.map(device => device_item(Object.assign({
+    device
+  }, el)))}
+        </ul>
+        <div class="form-group"><button type="submit" class="save-form btn btn-primary">${i18n_remove_devices}</button></div>
+    `;
+};
+
+/* harmony default export */ const profile = (el => {
+  var _el$other_devices2;
+
+  const i18n_fingerprint = __("This device's OMEMO fingerprint");
+
+  const i18n_generate = __('Generate new keys and fingerprint');
+
+  return T`
+        <form class="converse-form fingerprint-removal" @submit=${el.removeSelectedFingerprints}>
+            <ul class="list-group fingerprints">
+                <li class="list-group-item active">${i18n_fingerprint}</li>
+                <li class="list-group-item">
+                    ${el.current_device && el.current_device.get('bundle') && el.current_device.get('bundle').fingerprint ? fingerprint(el) : spinner()}
+                </li>
+            </ul>
+            <div class="form-group">
+                <button type="button" class="generate-bundle btn btn-danger" @click=${el.generateOMEMODeviceBundle}>${i18n_generate}</button>
+            </div>
+            ${(_el$other_devices2 = el.other_devices) !== null && _el$other_devices2 !== void 0 && _el$other_devices2.length ? device_list(el) : ''}
+        </form>`;
+});
+;// CONCATENATED MODULE: ./src/plugins/omemo/profile.js
+
+
+
+
+
+const {
+  Strophe: profile_Strophe,
+  sizzle: profile_sizzle,
+  u: profile_u
+} = core_converse.env;
+class Profile extends CustomElement {
+  async initialize() {
+    this.devicelist = await shared_converse.devicelists.getDeviceList(shared_converse.bare_jid);
+    await this.setAttributes();
+    this.listenTo(this.devicelist.devices, 'change:bundle', () => this.requestUpdate());
+    this.listenTo(this.devicelist.devices, 'reset', () => this.requestUpdate());
+    this.listenTo(this.devicelist.devices, 'reset', () => this.requestUpdate());
+    this.listenTo(this.devicelist.devices, 'remove', () => this.requestUpdate());
+    this.listenTo(this.devicelist.devices, 'add', () => this.requestUpdate());
+    this.requestUpdate();
+  }
+
+  async setAttributes() {
+    this.device_id = await api.omemo.getDeviceID();
+    this.current_device = this.devicelist.devices.get(this.device_id);
+    this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== this.device_id);
+  }
+
+  render() {
+    return this.devicelist ? profile(this) : '';
+  }
+
+  selectAll(ev) {
+    // eslint-disable-line class-methods-use-this
+    let sibling = profile_u.ancestor(ev.target, 'li');
+
+    while (sibling) {
+      sibling.querySelector('input[type="checkbox"]').checked = ev.target.checked;
+      sibling = sibling.nextElementSibling;
+    }
+  }
+
+  async removeSelectedFingerprints(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.target.querySelector('.select-all').checked = false;
+    const device_ids = profile_sizzle('.fingerprint-removal-item input[type="checkbox"]:checked', ev.target).map(c => c.value);
+
+    try {
+      await this.devicelist.removeOwnDevices(device_ids);
+    } catch (err) {
+      headless_log.error(err);
+
+      shared_converse.api.alert(profile_Strophe.LogLevel.ERROR, __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]);
+    }
+
+    await this.setAttributes();
+    this.requestUpdate();
+  }
+
+  async generateOMEMODeviceBundle(ev) {
+    ev.preventDefault();
+
+    if (confirm(__('Are you sure you want to generate new OMEMO keys? ' + 'This will remove your old keys and all previously encrypted messages will no longer be decryptable on this device.'))) {
+      await api.omemo.bundle.generate();
+      await this.setAttributes();
+      this.requestUpdate();
+    }
+  }
+
+}
+api.elements.define('converse-omemo-profile', Profile);
+;// CONCATENATED MODULE: ./src/modals/templates/user-settings.js
+
+
+
+
+
+
+
+const user_settings_tpl_navigation = o => {
+  const i18n_about = __('About');
+
+  const i18n_commands = __('Commands');
+
+  return T`
+        <ul class="nav nav-pills justify-content-center">
+            <li role="presentation" class="nav-item">
+                <a class="nav-link active" id="about-tab" href="#about-tabpanel" aria-controls="about-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_about}</a>
+            </li>
+            <li role="presentation" class="nav-item">
+                <a class="nav-link" id="commands-tab" href="#commands-tabpanel" aria-controls="commands-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_commands}</a>
+            </li>
+        </ul>
+    `;
+};
+
+/* harmony default export */ const templates_user_settings = (o => {
+  const i18n_modal_title = __('Settings');
+
+  const first_subtitle = __('%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s', '<a target="_blank" rel="nofollow" href="https://conversejs.org">', '</a>', '<a target="_blank" rel="nofollow" href="https://opkode.com">');
+
+  const second_subtitle = __('%1$s Translate %2$s it into your own language', '<a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">', '</a>');
+
+  const show_client_info = api.settings.get('show_client_info');
+  const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
+  const show_both_tabs = show_client_info && allow_adhoc_commands;
+  return T`
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="converse-modtools-modal-label">${i18n_modal_title}</h5>
+                ${modal_header_close_button}
+            </div>
+            <div class="modal-body">
+                ${show_both_tabs ? user_settings_tpl_navigation(o) : ''}
+
+                <div class="tab-content">
+                    <div class="tab-pane tab-pane--columns ${show_client_info ? 'active' : ''}"
+                         id="about-tabpanel" role="tabpanel" aria-labelledby="about-tab">
+
+                        <span class="modal-alert"></span>
+                        <br/>
+                        <div class="container">
+                            <h6 class="brand-heading">Converse</h6>
+                            <p class="brand-subtitle">${o.version_name}</p>
+                            <p class="brand-subtitle">${unsafe_html_o(purify_default().sanitize(first_subtitle))}</p>
+                            <p class="brand-subtitle">${unsafe_html_o(purify_default().sanitize(second_subtitle))}</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane tab-pane--columns ${!show_client_info && allow_adhoc_commands ? 'active' : ''}"
+                         id="commands-tabpanel"
+                         role="tabpanel"
+                         aria-labelledby="commands-tab">
+                        <converse-adhoc-commands/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+});
+;// CONCATENATED MODULE: ./src/modals/user-settings.js
+
+
+
+let user_settings_converse;
+
+/* harmony default export */ const modals_user_settings = (base.extend({
+  id: "converse-client-info-modal",
+
+  initialize(settings) {
+    user_settings_converse = settings._converse;
+    base.prototype.initialize.apply(this, arguments);
+  },
+
+  toHTML() {
+    return templates_user_settings(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), {
+      'version_name': user_settings_converse.VERSION_NAME
+    }));
+  }
+
+}));
+;// CONCATENATED MODULE: ./src/plugins/profile/utils.js
+
+function getPrettyStatus(stat) {
+  if (stat === 'chat') {
+    return __('online');
+  } else if (stat === 'dnd') {
+    return __('busy');
+  } else if (stat === 'xa') {
+    return __('away for long');
+  } else if (stat === 'away') {
+    return __('away');
+  } else if (stat === 'offline') {
+    return __('offline');
+  } else {
+    return __(stat) || __('online');
+  }
+}
+;// CONCATENATED MODULE: ./src/plugins/profile/templates/profile.js
+
+
+
+
+
+
+function tpl_signout(o) {
+  const i18n_logout = __('Log out');
+
+  return T`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${o.logout}>
+        <converse-icon color="var(--subdued-color)" class="fa fa-sign-out-alt" size="1em"></converse-icon>
+    </a>`;
+}
+
+function tpl_user_settings_button(o) {
+  const i18n_details = __('Show details about this chat client');
+
+  return T`<a class="controlbox-heading__btn show-client-info align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}>
+        <converse-icon color="var(--subdued-color)" class="fa fa-cog" size="1em"></converse-icon>
+    </a>`;
+}
+
+/* harmony default export */ const templates_profile = (el => {
+  var _el$model$vcard, _el$model$vcard2, _el$model$vcard3;
+
+  const chat_status = el.model.get('status') || 'offline';
+  const fullname = ((_el$model$vcard = el.model.vcard) === null || _el$model$vcard === void 0 ? void 0 : _el$model$vcard.get('fullname')) || shared_converse.bare_jid;
+
+  const status_message = el.model.get('status_message') || __("I am %1$s", getPrettyStatus(chat_status));
+
+  const i18n_change_status = __('Click to change your chat status');
+
+  const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
+  let classes, color;
+
+  if (chat_status === 'online') {
+    [classes, color] = ['fa fa-circle chat-status', 'chat-status-online'];
+  } else if (chat_status === 'dnd') {
+    [classes, color] = ['fa fa-minus-circle chat-status', 'chat-status-busy'];
+  } else if (chat_status === 'away') {
+    [classes, color] = ['fa fa-circle chat-status', 'chat-status-away'];
+  } else {
+    [classes, color] = ['fa fa-circle chat-status', 'subdued-color'];
+  }
+
+  return T`
+        <div class="userinfo controlbox-padded">
+            <div class="controlbox-section profile d-flex">
+                <a class="show-profile" href="#" @click=${el.showProfileModal}>
+                    <converse-avatar class="avatar align-self-center"
+                        .data=${(_el$model$vcard2 = el.model.vcard) === null || _el$model$vcard2 === void 0 ? void 0 : _el$model$vcard2.attributes}
+                        nonce=${(_el$model$vcard3 = el.model.vcard) === null || _el$model$vcard3 === void 0 ? void 0 : _el$model$vcard3.get('vcard_updated')}
+                        height="40" width="40"></converse-avatar>
+                </a>
+                <span class="username w-100 align-self-center">${fullname}</span>
+                ${show_settings_button ? tpl_user_settings_button(el) : ''}
+                ${api.settings.get('allow_logout') ? tpl_signout(el) : ''}
+            </div>
+            <div class="d-flex xmpp-status">
+                <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${el.showStatusChangeModal}>
+                    <span class="${chat_status} w-100 align-self-center" data-value="${chat_status}">
+                    <converse-icon color="var(--${color})" style="margin-top: -0.1em" size="0.82em" class="${classes}"></converse-icon> ${status_message}</span>
+                </a>
+            </div>
+        </div>`;
+});
+;// CONCATENATED MODULE: ./src/plugins/profile/statusview.js
+
+
+
+
+
+
+class statusview_Profile extends CustomElement {
+  initialize() {
+    this.model = shared_converse.xmppstatus;
+    this.listenTo(this.model, "vcard:add", this.requestUpdate);
+    this.listenTo(this.model, "change", this.requestUpdate);
+    this.listenTo(this.model, "vcard:change", this.requestUpdate);
+  }
+
+  render() {
+    return templates_profile(this);
+  }
+
+  showProfileModal(ev) {
+    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
+    api.modal.show(shared_converse.ProfileModal, {
+      model: this.model
+    }, ev);
+  }
+
+  showStatusChangeModal(ev) {
+    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
+    api.modal.show(shared_converse.ChatStatusModal, {
+      model: this.model
+    }, ev);
+  }
+
+  showUserSettingsModal(ev) {
+    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
+    api.modal.show(modals_user_settings, {
+      model: this.model,
+      _converse: shared_converse
+    }, ev);
+  }
+
+  logout(ev) {
+    // eslint-disable-line class-methods-use-this
+    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
+    const result = confirm(__("Are you sure you want to log out?"));
+
+    if (result === true) {
+      api.user.logout();
+    }
+  }
+
+}
+
+api.elements.define('converse-user-profile', statusview_Profile);
+;// CONCATENATED MODULE: ./src/plugins/profile/templates/chat-status-modal.js
+
+
+/* harmony default export */ const chat_status_modal = (o => T`
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeStatusModalLabel">${o.modal_title}</h5>
+                ${modal_header_close_button}
+            </div>
+            <div class="modal-body">
+                <span class="modal-alert"></span>
+                <form class="converse-form set-xmpp-status" id="set-xmpp-status">
+                    <div class="form-group">
+                        <div class="custom-control custom-radio">
+                            <input ?checked=${o.status === 'online'}
+                                type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input"/>
+                            <label class="custom-control-label" for="radio-online">
+                                <span class="fa fa-circle chat-status chat-status--online"></span>${o.label_online}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input ?checked=${o.status === 'busy'}
+                                type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input"/>
+                            <label class="custom-control-label" for="radio-busy">
+                                <span class="fa fa-minus-circle  chat-status chat-status--busy"></span>${o.label_busy}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input ?checked=${o.status === 'away'}
+                                type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input"/>
+                            <label class="custom-control-label" for="radio-away">
+                                <span class="fa fa-circle chat-status chat-status--away"></span>${o.label_away}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input ?checked=${o.status === 'xa'}
+                                type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input"/>
+                            <label class="custom-control-label" for="radio-xa">
+                                <span class="far fa-circle chat-status chat-status--xa"></span>${o.label_xa}</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group w-100">
+                            <input name="status_message" type="text" class="form-control"
+                                value="${o.status_message || ''}" placeholder="${o.placeholder_status_message}"/>
+                            <span class="clear-input fa fa-times ${o.status_message ? '' : 'hidden'}"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">${o.label_save}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+`);
+;// CONCATENATED MODULE: ./src/plugins/profile/modals/chat-status.js
+
+
+
+
+const chat_status_u = core_converse.env.utils;
+const ChatStatusModal = base.extend({
+  id: "modal-status-change",
+  events: {
+    "submit form#set-xmpp-status": "onFormSubmitted",
+    "click .clear-input": "clearStatusMessage"
+  },
+
+  toHTML() {
+    return chat_status_modal(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), {
+      'label_away': __('Away'),
+      'label_busy': __('Busy'),
+      'label_cancel': __('Cancel'),
+      'label_close': __('Close'),
+      'label_custom_status': __('Custom status'),
+      'label_offline': __('Offline'),
+      'label_online': __('Online'),
+      'label_save': __('Save'),
+      'label_xa': __('Away for long'),
+      'modal_title': __('Change chat status'),
+      'placeholder_status_message': __('Personal status message')
+    }));
+  },
+
+  afterRender() {
+    this.el.addEventListener('shown.bs.modal', () => {
+      this.el.querySelector('input[name="status_message"]').focus();
+    }, false);
+  },
+
+  clearStatusMessage(ev) {
+    if (ev && ev.preventDefault) {
+      ev.preventDefault();
+      chat_status_u.hideElement(this.el.querySelector('.clear-input'));
+    }
+
+    const roster_filter = this.el.querySelector('input[name="status_message"]');
+    roster_filter.value = '';
+  },
+
+  onFormSubmitted(ev) {
+    ev.preventDefault();
+    const data = new FormData(ev.target);
+    this.model.save({
+      'status_message': data.get('status_message'),
+      'status': data.get('chat_status')
+    });
+    this.modal.hide();
+  }
+
+});
+shared_converse.ChatStatusModal = ChatStatusModal;
+/* harmony default export */ const chat_status = ((/* unused pure expression or super */ null && (ChatStatusModal)));
+;// CONCATENATED MODULE: ./src/shared/components/image-picker.js
+
+
+
+
+
+const i18n_profile_picture = __('Your profile picture');
+
+class ImagePicker extends CustomElement {
+  static get properties() {
+    return {
+      'height': {
+        type: Number
+      },
+      'data': {
+        type: Object
+      },
+      'width': {
+        type: Number
+      }
+    };
+  }
+
+  render() {
+    return T`
+            <a class="change-avatar" @click=${this.openFileSelection} title="${i18n_profile_picture}">
+                <converse-avatar class="avatar" .data=${this.data} height="${this.height}" width="${this.width}"></converse-avatar>
+            </a>
+            <input @change=${this.updateFilePreview} class="hidden" name="image" type="file"/>
+        `;
+  }
+
+  openFileSelection(ev) {
+    ev.preventDefault();
+    this.querySelector('input[type="file"]').click();
+  }
+
+  updateFilePreview(ev) {
+    const file = ev.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      this.data = {
+        'data_uri': reader.result,
+        'image_type': file.type
+      };
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+}
+api.elements.define('converse-image-picker', ImagePicker);
+;// CONCATENATED MODULE: ./src/plugins/profile/templates/profile_modal.js
+
+
+
+
+
+
+const omemo_page = () => T`
+    <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
+        <converse-omemo-profile></converse-omemo-profile>
+    </div>`;
+
+/* harmony default export */ const profile_modal = (o => {
+  var _converse$pluggable$p, _converse$pluggable$p2;
+
+  const heading_profile = __('Your Profile');
+
+  const i18n_email = __('Email');
+
+  const i18n_fullname = __('Full Name');
+
+  const i18n_jid = __('XMPP Address');
+
+  const i18n_nickname = __('Nickname');
+
+  const i18n_role = __('Role');
+
+  const i18n_save = __('Save and close');
+
+  const i18n_role_help = __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.');
+
+  const i18n_url = __('URL');
+
+  const i18n_omemo = __('OMEMO');
+
+  const i18n_profile = __('Profile');
+
+  const navigation = T`<ul class="nav nav-pills justify-content-center">
+            <li role="presentation" class="nav-item">
+                <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">${i18n_profile}</a>
+            </li>
+            <li role="presentation" class="nav-item">
+                <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">${i18n_omemo}</a>
+            </li>
+        </ul>`;
+  return T`
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="user-profile-modal-label">${heading_profile}</h5>
+                    ${modal_header_close_button}
+                </div>
+                <div class="modal-body">
+                    <span class="modal-alert"></span>
+                    ${(_converse$pluggable$p = shared_converse.pluggable.plugins["converse-omemo"]) !== null && _converse$pluggable$p !== void 0 && _converse$pluggable$p.enabled(shared_converse) ? navigation : ''}
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
+                            <form class="converse-form converse-form--modal profile-form" action="#">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <converse-image-picker .data="${{
+    image: o.image,
+    image_type: o.image_type
+  }}" width="128" height="128"></converse-image-picker>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="col-form-label">${i18n_jid}:</label>
+                                            <div>${o.jid}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-fullname" class="col-form-label">${i18n_fullname}:</label>
+                                    <input id="vcard-fullname" type="text" class="form-control" name="fn" value="${o.fullname || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-nickname" class="col-form-label">${i18n_nickname}:</label>
+                                    <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="${o.nickname || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-url" class="col-form-label">${i18n_url}:</label>
+                                    <input id="vcard-url" type="url" class="form-control" name="url" value="${o.url || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-email" class="col-form-label">${i18n_email}:</label>
+                                    <input id="vcard-email" type="email" class="form-control" name="email" value="${o.email || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-role" class="col-form-label">${i18n_role}:</label>
+                                    <input id="vcard-role" type="text" class="form-control" name="role" value="${o.role || ''}" aria-describedby="vcard-role-help"/>
+                                    <small id="vcard-role-help" class="form-text text-muted">${i18n_role_help}</small>
+                                </div>
+                                <hr/>
+                                <div class="form-group">
+                                    <button type="submit" class="save-form btn btn-primary">${i18n_save}</button>
+                                </div>
+                            </form>
+                        </div>
+                        ${(_converse$pluggable$p2 = shared_converse.pluggable.plugins["converse-omemo"]) !== null && _converse$pluggable$p2 !== void 0 && _converse$pluggable$p2.enabled(shared_converse) ? omemo_page() : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+});
+// EXTERNAL MODULE: ./node_modules/client-compress/dist/index.js
+var dist = __webpack_require__(2234);
+var dist_default = /*#__PURE__*/__webpack_require__.n(dist);
+;// CONCATENATED MODULE: ./src/plugins/profile/modals/profile.js
+
+
+
+
+
+
+
+const {
+  sizzle: modals_profile_sizzle
+} = core_converse.env;
+const profile_options = {
+  targetSize: 0.1,
+  quality: 0.75,
+  maxWidth: 256,
+  maxHeight: 256
+};
+const compress = new (dist_default())(profile_options);
+const ProfileModal = base.extend({
+  id: "user-profile-modal",
+  events: {
+    'submit .profile-form': 'onFormSubmitted'
+  },
+
+  initialize() {
+    this.listenTo(this.model, 'change', this.render);
+    base.prototype.initialize.apply(this, arguments);
+    /**
+        * Triggered when the _converse.ProfileModal has been created and initialized.
+        * @event _converse#profileModalInitialized
+        * @type { _converse.XMPPStatus }
+        * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
+        */
+
+    api.trigger('profileModalInitialized', this.model);
+  },
+
+  toHTML() {
+    return profile_modal(Object.assign(this.model.toJSON(), this.model.vcard.toJSON(), {
+      'view': this
+    }));
+  },
+
+  afterRender() {
+    this.tabs = modals_profile_sizzle('.nav-item .nav-link', this.el).map(e => new (bootstrap_native_default()).Tab(e));
+  },
+
+  async setVCard(data) {
+    try {
+      await api.vcard.set(shared_converse.bare_jid, data);
+    } catch (err) {
+      headless_log.fatal(err);
+      this.alert([__("Sorry, an error happened while trying to save your profile data."), __("You can check your browser's developer console for any error output.")].join(" "));
+      return;
+    }
+
+    this.modal.hide();
+  },
+
+  onFormSubmitted(ev) {
+    ev.preventDefault();
+    const reader = new FileReader();
+    const form_data = new FormData(ev.target);
+    const image_file = form_data.get('image');
+    const data = {
+      'fn': form_data.get('fn'),
+      'nickname': form_data.get('nickname'),
+      'role': form_data.get('role'),
+      'email': form_data.get('email'),
+      'url': form_data.get('url')
+    };
+
+    if (!image_file.size) {
+      Object.assign(data, {
+        'image': this.model.vcard.get('image'),
+        'image_type': this.model.vcard.get('image_type')
+      });
+      this.setVCard(data);
+    } else {
+      const files = [image_file];
+      compress.compress(files).then(conversions => {
+        const {
+          photo
+        } = conversions[0];
+
+        reader.onloadend = () => {
+          Object.assign(data, {
+            'image': btoa(reader.result),
+            'image_type': image_file.type
+          });
+          this.setVCard(data);
+        };
+
+        reader.readAsBinaryString(photo.data);
+      });
+    }
+  }
+
+});
+shared_converse.ProfileModal = ProfileModal;
+/* harmony default export */ const modals_profile = ((/* unused pure expression or super */ null && (ProfileModal)));
+;// CONCATENATED MODULE: ./src/plugins/profile/index.js
+/**
+ * @copyright The Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+
+
+
+
+
+
+
+core_converse.plugins.add('converse-profile', {
+  dependencies: ["converse-status", "converse-modal", "converse-vcard", "converse-chatboxviews"],
+
+  initialize() {
+    api.settings.extend({
+      'allow_adhoc_commands': true,
+      'show_client_info': true
+    });
+  }
+
+});
 ;// CONCATENATED MODULE: ./src/plugins/omemo/overrides/chatbox.js
 
 
@@ -77453,6 +79434,7 @@ const Device = Model.extend({
 
 
 
+
 const {
   Strophe: devicelist_Strophe,
   $build: devicelist_$build,
@@ -77468,15 +79450,17 @@ const {
 const DeviceList = Model.extend({
   idAttribute: 'jid',
 
-  initialize() {
-    this.initDevices();
+  async initialize() {
+    this.initialized = getOpenPromise();
+    await this.initDevices();
+    this.initialized.resolve();
   },
 
   initDevices() {
     this.devices = new shared_converse.Devices();
     const id = `converse.devicelist-${shared_converse.bare_jid}-${this.get('jid')}`;
     initStorage(this.devices, id);
-    this.fetchDevices();
+    return this.fetchDevices();
   },
 
   async onDevicesFound(collection) {
@@ -77601,12 +79585,18 @@ const DeviceList = Model.extend({
     return api.pubsub.publish(null, devicelist_Strophe.NS.OMEMO_DEVICELIST, item, options, false);
   },
 
-  removeOwnDevices(device_ids) {
+  async removeOwnDevices(device_ids) {
     if (this.get('jid') !== shared_converse.bare_jid) {
       throw new Error("Cannot remove devices from someone else's device list");
     }
 
-    device_ids.forEach(device_id => this.devices.get(device_id).destroy());
+    await Promise.all(device_ids.map(id => this.devices.get(id)).map(d => new Promise(resolve => d.destroy({
+      'success': resolve,
+      'error': (m, e) => {
+        headless_log.error(e);
+        resolve();
+      }
+    }))));
     return this.publishDevices();
   }
 
@@ -77627,14 +79617,15 @@ const DeviceLists = Collection.extend({
   /**
    * Returns the {@link _converse.DeviceList} for a particular JID.
    * The device list will be created if it doesn't exist already.
-   * @private
    * @method _converse.DeviceLists#getDeviceList
    * @param { String } jid - The Jabber ID for which the device list will be returned.
    */
-  getDeviceList(jid) {
-    return this.get(jid) || this.create({
+  async getDeviceList(jid) {
+    const list = this.get(jid) || this.create({
       'jid': jid
     });
+    await list.initialized;
+    return list;
   }
 
 });
@@ -77974,7 +79965,7 @@ const OMEMOStore = Model.extend({
   },
 
   /**
-   * Generate a the data used by the X3DH key agreement protocol
+   * Generate the data used by the X3DH key agreement protocol
    * that can be used to build a session with a device.
    */
   async generateBundle() {
@@ -77998,16 +79989,14 @@ const OMEMOStore = Model.extend({
       'identity_key': identity_key
     });
     const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
-
-    shared_converse.omemo_store.storeSignedPreKey(signed_prekey);
-
+    this.storeSignedPreKey(signed_prekey);
     bundle['signed_prekey'] = {
       'id': signed_prekey.keyId,
       'public_key': store_u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
       'signature': store_u.arrayBufferToBase64(signed_prekey.signature)
     };
     const keys = await Promise.all(lodash_es_range(0, shared_converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));
-    keys.forEach(k => shared_converse.omemo_store.storePreKey(k.keyId, k.keyPair));
+    keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
 
     const devicelist = shared_converse.devicelists.get(shared_converse.bare_jid);
 
@@ -78030,7 +80019,7 @@ const OMEMOStore = Model.extend({
       this._setup_promise = new Promise((resolve, reject) => {
         this.fetch({
           'success': () => {
-            if (!shared_converse.omemo_store.get('device_id')) {
+            if (!this.get('device_id')) {
               this.generateBundle().then(resolve).catch(reject);
             } else {
               resolve();
@@ -78050,104 +80039,6 @@ const OMEMOStore = Model.extend({
 
 });
 /* harmony default export */ const store = (OMEMOStore);
-;// CONCATENATED MODULE: ./src/plugins/omemo/overrides/profile-modal.js
-
-
-
-
-const {
-  Strophe: profile_modal_Strophe,
-  sizzle: profile_modal_sizzle,
-  u: profile_modal_u
-} = core_converse.env;
-const profile_modal_ProfileModal = {
-  events: {
-    'change input.select-all': 'selectAll',
-    'click .generate-bundle': 'generateOMEMODeviceBundle',
-    'submit .fingerprint-removal': 'removeSelectedFingerprints'
-  },
-
-  initialize() {
-    this.debouncedRender = lodash_es_debounce(this.render, 50);
-    this.devicelist = shared_converse.devicelists.get(shared_converse.bare_jid);
-    this.listenTo(this.devicelist.devices, 'change:bundle', this.debouncedRender);
-    this.listenTo(this.devicelist.devices, 'reset', this.debouncedRender);
-    this.listenTo(this.devicelist.devices, 'reset', this.debouncedRender);
-    this.listenTo(this.devicelist.devices, 'remove', this.debouncedRender);
-    this.listenTo(this.devicelist.devices, 'add', this.debouncedRender);
-    return this.__super__.initialize.apply(this, arguments);
-  },
-
-  beforeRender() {
-    var _converse$omemo_store, _this$__super__$befor;
-
-    const device_id = (_converse$omemo_store = shared_converse.omemo_store) === null || _converse$omemo_store === void 0 ? void 0 : _converse$omemo_store.get('device_id');
-
-    if (device_id) {
-      this.current_device = this.devicelist.devices.get(device_id);
-      this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
-    }
-
-    return (_this$__super__$befor = this.__super__.beforeRender) === null || _this$__super__$befor === void 0 ? void 0 : _this$__super__$befor.apply(this, arguments);
-  },
-
-  selectAll(ev) {
-    let sibling = profile_modal_u.ancestor(ev.target, 'li');
-
-    while (sibling) {
-      sibling.querySelector('input[type="checkbox"]').checked = ev.target.checked;
-      sibling = sibling.nextElementSibling;
-    }
-  },
-
-  removeSelectedFingerprints(ev) {
-    ev.preventDefault();
-    ev.stopPropagation();
-    ev.target.querySelector('.select-all').checked = false;
-    const device_ids = profile_modal_sizzle('.fingerprint-removal-item input[type="checkbox"]:checked', ev.target).map(c => c.value);
-    this.devicelist.removeOwnDevices(device_ids).then(this.modal.hide).catch(err => {
-      headless_log.error(err);
-
-      shared_converse.api.alert(profile_modal_Strophe.LogLevel.ERROR, __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]);
-    });
-  },
-
-  generateOMEMODeviceBundle(ev) {
-    ev.preventDefault();
-
-    if (confirm(__('Are you sure you want to generate new OMEMO keys? ' + 'This will remove your old keys and all previously encrypted messages will no longer be decryptable on this device.'))) {
-      api.omemo.bundle.generate();
-    }
-  }
-
-};
-/* harmony default export */ const profile_modal = (profile_modal_ProfileModal);
-;// CONCATENATED MODULE: ./src/plugins/omemo/overrides/user-details-modal.js
-
-const user_details_modal_UserDetailsModal = {
-  events: {
-    'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
-  },
-
-  initialize() {
-    const jid = this.model.get('jid');
-    this.devicelist = shared_converse.devicelists.getDeviceList(jid);
-    this.listenTo(this.devicelist.devices, 'change:bundle', this.render);
-    this.listenTo(this.devicelist.devices, 'change:trusted', this.render);
-    this.listenTo(this.devicelist.devices, 'remove', this.render);
-    this.listenTo(this.devicelist.devices, 'add', this.render);
-    this.listenTo(this.devicelist.devices, 'reset', this.render);
-    return this.__super__.initialize.apply(this, arguments);
-  },
-
-  toggleDeviceTrust(ev) {
-    const radio = ev.target;
-    const device = this.devicelist.devices.get(radio.getAttribute('name'));
-    device.save('trusted', parseInt(radio.value, 10));
-  }
-
-};
-/* harmony default export */ const user_details_modal = (user_details_modal_UserDetailsModal);
 ;// CONCATENATED MODULE: ./src/plugins/omemo/api.js
 
 
@@ -78160,6 +80051,14 @@ const user_details_modal_UserDetailsModal = {
    * @memberOf _converse.api
    */
   'omemo': {
+    /**
+     * Returns the device ID of the current device.
+     */
+    async getDeviceID() {
+      await api.waitUntil('OMEMOInitialized');
+      return shared_converse.omemo_store.get('device_id');
+    },
+
     /**
      * The "bundle" namespace groups methods relevant to the user's
      * OMEMO bundle.
@@ -78175,7 +80074,8 @@ const user_details_modal_UserDetailsModal = {
        * @returns {promise} Promise which resolves once we have a result from the server.
        */
       'generate': async () => {
-        // Remove current device
+        await api.waitUntil('OMEMOInitialized'); // Remove current device
+
         const devicelist = shared_converse.devicelists.get(shared_converse.bare_jid);
 
         const device_id = shared_converse.omemo_store.get('device_id');
@@ -78258,7 +80158,6 @@ const OMEMOEnabledChatBox = {
 };
 ;// CONCATENATED MODULE: ./src/plugins/omemo/index.js
 /**
- * @module converse-omemo
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
@@ -78291,10 +80190,8 @@ core_converse.plugins.add('converse-omemo', {
     return window.libsignal && _converse.config.get('trusted') && !api.settings.get('clear_cache_on_logout') && !_converse.api.settings.get('blacklisted_plugins').includes('converse-omemo');
   },
 
-  dependencies: ['converse-chatview', 'converse-pubsub', 'converse-profile'],
+  dependencies: ['converse-chatview', 'converse-pubsub'],
   overrides: {
-    ProfileModal: profile_modal,
-    UserDetailsModal: user_details_modal,
     ChatBox: chatbox
   },
 
@@ -79288,7 +81185,31 @@ core_converse.plugins.add('converse-register', {
   }
 
 });
+;// CONCATENATED MODULE: ./src/plugins/roomslist/model.js
+
+
+const {
+  Strophe: roomslist_model_Strophe
+} = core_converse.env;
+const RoomsListModel = Model.extend({
+  defaults: function () {
+    return {
+      'muc_domain': api.settings.get('muc_domain'),
+      'nick': shared_converse.getDefaultMUCNickname(),
+      'toggle-state': shared_converse.OPENED
+    };
+  },
+
+  setDomain(jid) {
+    if (!api.settings.get('locked_muc_domain')) {
+      this.save('muc_domain', roomslist_model_Strophe.getDomainFromJid(jid));
+    }
+  }
+
+});
+/* harmony default export */ const roomslist_model = (RoomsListModel);
 ;// CONCATENATED MODULE: ./src/plugins/muc-views/templates/add-muc.js
+
 
 
 
@@ -79331,7 +81252,7 @@ const nickname_input = o => {
                         ${o.muc_roomid_policy_hint ? T`<div class="form-group">${unsafe_html_o(purify_default().sanitize(o.muc_roomid_policy_hint, {
     'ALLOWED_TAGS': ['b', 'br', 'em']
   }))}</div>` : ''}
-                        ${!o._converse.locked_muc_nickname ? nickname_input(o) : ''}
+                        ${!api.settings.get('locked_muc_nickname') ? nickname_input(o) : ''}
                         <input type="submit" class="btn btn-primary" name="join" value="${i18n_join || ''}" ?disabled=${o.muc_roomid_policy_error_msg}>
                     </form>
                 </div>
@@ -79436,7 +81357,7 @@ const {
     if (api.settings.get('muc_roomid_policy') && api.settings.get('muc_domain')) {
       let jid = this.el.querySelector('.roomjid-input').value;
 
-      if (core_converse.locked_muc_domain || !add_muc_u.isValidJID(jid)) {
+      if (api.settings.get('locked_muc_domain') || !add_muc_u.isValidJID(jid)) {
         jid = `${add_muc_Strophe.escapeNode(jid)}@${api.settings.get('muc_domain')}`;
       }
 
@@ -79843,7 +81764,7 @@ const room_item = o => {
                 title="${__('Click to open this groupchat')}"
                 @click=${o.openRoom}>${o.room.getDisplayName()}</a>
 
-            ${o.allow_bookmarks ? bookmark(o) : ''}
+            ${api.settings.get('allow_bookmarks') ? bookmark(o) : ''}
 
             <a class="list-item-action room-info fa fa-info-circle"
                 data-room-jid="${o.room.get('jid')}"
@@ -79896,30 +81817,8 @@ const room_item = o => {
             </div>
         </div>`;
 });
-;// CONCATENATED MODULE: ./src/plugins/roomslist/model.js
-
-
-const {
-  Strophe: roomslist_model_Strophe
-} = core_converse.env;
-const RoomsListModel = Model.extend({
-  defaults: function () {
-    return {
-      'muc_domain': api.settings.get('muc_domain'),
-      'nick': shared_converse.getDefaultMUCNickname(),
-      'toggle-state': shared_converse.OPENED
-    };
-  },
-
-  setDomain(jid) {
-    if (!api.settings.get('locked_muc_domain')) {
-      this.save('muc_domain', roomslist_model_Strophe.getDomainFromJid(jid));
-    }
-  }
-
-});
-/* harmony default export */ const roomslist_model = (RoomsListModel);
 ;// CONCATENATED MODULE: ./src/plugins/roomslist/view.js
+
 
 
 
@@ -79963,10 +81862,10 @@ class RoomsList extends ElementView {
   render() {
     V(roomslist({
       'addBookmark': ev => this.addBookmark(ev),
-      'allow_bookmarks': shared_converse.allow_bookmarks && shared_converse.bookmarks,
+      'allow_bookmarks': api.settings.get('allow_bookmarks') && shared_converse.bookmarks,
       'closeRoom': ev => this.closeRoom(ev),
       'collapsed': this.model.get('toggle-state') !== shared_converse.OPENED,
-      'currently_open': room => shared_converse.isUniView() && !room.get('hidden'),
+      'currently_open': room => isUniView() && !room.get('hidden'),
       'model': this.model,
       'openRoom': ev => this.openRoom(ev),
       'removeBookmark': ev => this.removeBookmark(ev),
@@ -80066,7 +81965,7 @@ core_converse.plugins.add('converse-roomslist', {
   initialize() {
     // Event handlers
     api.listen.on('connected', async () => {
-      if (shared_converse.allow_bookmarks) {
+      if (api.settings.get('allow_bookmarks')) {
         await api.waitUntil('bookmarksInitialized');
       } else {
         await Promise.all([api.waitUntil('chatBoxesFetched')]);
@@ -80315,15 +82214,48 @@ window.customElements.define('converse-fontawesome', FontAwesome);
 
 
 /* harmony default export */ const templates_root = (() => {
-  let extra_classes = api.settings.get('singleton') ? 'converse-singleton' : '';
-  extra_classes += `converse-${api.settings.get('view_mode')}`;
+  const extra_classes = api.settings.get('singleton') ? ['converse-singleton'] : [];
+  extra_classes.push(`converse-${api.settings.get('view_mode')}`);
   return T`
-        <converse-chats class="converse-chatboxes row no-gutters ${extra_classes}"></converse-chats>
+        <converse-chats class="converse-chatboxes row no-gutters ${extra_classes.join(' ')}"></converse-chats>
         <div id="converse-modals" class="modals"></div>
         <converse-fontawesome></converse-fontawesome>
     `;
 });
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/rootview/styles/root.scss
+var styles_root = __webpack_require__(1513);
+;// CONCATENATED MODULE: ./src/plugins/rootview/styles/root.scss
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var root_options = {};
+
+root_options.styleTagTransform = (styleTagTransform_default());
+root_options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      root_options.insert = insertBySelector_default().bind(null, "head");
+    
+root_options.domAPI = (styleDomAPI_default());
+root_options.insertStyleElement = (insertStyleElement_default());
+
+var root_update = injectStylesIntoStyleTag_default()(styles_root/* default */.Z, root_options);
+
+
+
+
+       /* harmony default export */ const rootview_styles_root = (styles_root/* default */.Z && styles_root/* default.locals */.Z.locals ? styles_root/* default.locals */.Z.locals : undefined);
+
 ;// CONCATENATED MODULE: ./src/plugins/rootview/root.js
+
+
 
 
 
@@ -80341,17 +82273,23 @@ class ConverseRoot extends CustomElement {
     return templates_root();
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  initialize() {
+    this.setAttribute('id', 'conversejs');
+    this.setClasses();
+    const settings = getAppSettings();
+    this.listenTo(settings, 'change:view_mode', () => this.setClasses());
+    this.listenTo(settings, 'change:singleton', () => this.setClasses());
+  }
+
+  setClasses() {
+    this.className = "";
     this.classList.add('conversejs');
     this.classList.add(`converse-${api.settings.get('view_mode')}`);
     this.classList.add(`theme-${api.settings.get('theme')}`);
-    this.setAttribute('id', 'conversejs');
+    this.requestUpdate();
   }
 
 }
-
-customElements.define('converse-root', ConverseRoot);
 ;// CONCATENATED MODULE: ./src/plugins/rootview/utils.js
 
 function ensureElement() {
@@ -80361,7 +82299,7 @@ function ensureElement() {
 
   const root = api.settings.get('root');
 
-  if (!root.querySelector('converse-root#conversejs')) {
+  if (!root.querySelector('converse-root')) {
     const el = document.createElement('converse-root');
     const body = root.querySelector('body');
 
@@ -80381,11 +82319,16 @@ core_converse.plugins.add('converse-rootview', {
     api.settings.extend({
       'auto_insert': true
     });
-    api.listen.on('chatBoxesInitialized', ensureElement);
+    api.listen.on('chatBoxesInitialized', ensureElement); // Only define the element now, otherwise it it's already in the DOM
+    // before `converse.initialized` has been called it will render too
+    // early.
+
+    api.elements.define('converse-root', ConverseRoot);
   }
 
 });
 ;// CONCATENATED MODULE: ./src/modals/templates/add-contact.js
+
 
 
 
@@ -80416,7 +82359,7 @@ core_converse.plugins.add('converse-rootview', {
                             <label class="clearfix" for="jid">${i18n_xmpp_address}:</label>
                             <div class="suggestion-box suggestion-box__jid">
                                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
-                                <input type="text" name="jid" ?required=${!o._converse.xhr_user_search_url}
+                                <input type="text" name="jid" ?required=${!api.settings.get('xhr_user_search_url')}
                                     value="${o.jid || ''}"
                                     class="form-control suggestion-box__input"
                                     placeholder="${i18n_contact_placeholder}"/>
@@ -80694,6 +82637,7 @@ function shouldShowGroup(group) {
 
 
 
+
 const {
   u: group_u
 } = core_converse.env;
@@ -80702,7 +82646,7 @@ function renderContact(contact) {
   const jid = contact.get('jid');
   const extra_classes = [];
 
-  if (shared_converse.isUniView()) {
+  if (isUniView()) {
     const chatbox = shared_converse.chatboxes.get(jid);
 
     if (chatbox && !chatbox.get('hidden')) {
@@ -80851,11 +82795,6 @@ function populateContactsMap(contacts_map, contact) {
  */
 
 class RosterView extends CustomElement {
-  constructor() {
-    super();
-    this.initialize();
-  }
-
   async initialize() {
     await api.waitUntil('rosterInitialized');
     this.listenTo(shared_converse, 'rosterContactsFetched', this.requestUpdate);
@@ -80938,24 +82877,63 @@ const tpl_requesting_contact = o => T`<span class="req-contact-name w-100" title
    <a class="decline-xmpp-request list-item-action list-item-action--visible  fa fa-times"
       @click=${o.declineRequest}
       aria-label="${o.desc_decline}" title="${o.desc_decline}" href="#"></a>`);
+;// CONCATENATED MODULE: ./src/plugins/rosterview/constants.js
+
+const STATUSES = {
+  'dnd': __('This contact is busy'),
+  'online': __('This contact is online'),
+  'offline': __('This contact is offline'),
+  'unavailable': __('This contact is unavailable'),
+  'xa': __('This contact is away for an extended period'),
+  'away': __('This contact is away')
+};
 ;// CONCATENATED MODULE: ./src/plugins/rosterview/templates/roster_item.js
 
 
 
 
-/* harmony default export */ const roster_item = (o => {
-  const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', o.display_name, o.jid);
+/* harmony default export */ const roster_item = ((el, item) => {
+  var _el$model$vcard, _el$model$vcard2;
 
-  const i18n_remove = __('Click to remove %1$s as a contact', o.display_name);
+  const show = item.presence.get('show') || 'offline';
+  let classes, color;
+
+  if (show === 'online') {
+    [classes, color] = ['fa fa-circle', 'chat-status-online'];
+  } else if (show === 'dnd') {
+    [classes, color] = ['fa fa-minus-circle', 'chat-status-busy'];
+  } else if (show === 'away') {
+    [classes, color] = ['fa fa-circle', 'chat-status-away'];
+  } else {
+    [classes, color] = ['fa fa-circle', 'subdued-color'];
+  }
+
+  const display_name = item.getDisplayName();
+  const desc_status = STATUSES[show];
+  const num_unread = item.get('num_unread') || 0;
+
+  const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, el.model.get('jid'));
+
+  const i18n_remove = __('Click to remove %1$s as a contact', display_name);
 
   return T`
-   <a class="list-item-link cbox-list-item open-chat ${o.num_unread ? 'unread-msgs' : ''}" title="${i18n_chat}" href="#" @click=${o.openChat}>
-      ${renderAvatar(o.getAvatarData())}
-      <span class="${o.status_icon}" title="${o.desc_status}"></span>
-      ${o.num_unread ? T`<span class="msgs-indicator">${o.num_unread}</span>` : ''}
-      <span class="contact-name contact-name--${o.show} ${o.num_unread ? 'unread-msgs' : ''}">${o.display_name}</span>
+   <a class="list-item-link cbox-list-item open-chat ${num_unread ? 'unread-msgs' : ''}" title="${i18n_chat}" href="#" @click=${el.openChat}>
+      <span>
+         <converse-avatar
+            class="avatar"
+            .data=${(_el$model$vcard = el.model.vcard) === null || _el$model$vcard === void 0 ? void 0 : _el$model$vcard.attributes}
+            nonce=${(_el$model$vcard2 = el.model.vcard) === null || _el$model$vcard2 === void 0 ? void 0 : _el$model$vcard2.get('vcard_updated')}
+            height="30" width="30"></converse-avatar>
+         <converse-icon
+            title="${desc_status}"
+            color="var(--${color})"
+            size="1em"
+            class="${classes} chat-status chat-status--avatar"></converse-icon>
+      </span>
+      ${num_unread ? T`<span class="msgs-indicator">${num_unread}</span>` : ''}
+      <span class="contact-name contact-name--${el.show} ${num_unread ? 'unread-msgs' : ''}">${display_name}</span>
    </a>
-   ${api.settings.get('allow_contact_removal') ? T`<a class="list-item-action remove-xmpp-contact far fa-trash-alt" @click=${o.removeContact} title="${i18n_remove}" href="#"></a>` : ''}`;
+   ${api.settings.get('allow_contact_removal') ? T`<a class="list-item-action remove-xmpp-contact far fa-trash-alt" @click=${el.removeContact} title="${i18n_remove}" href="#"></a>` : ''}`;
 });
 ;// CONCATENATED MODULE: ./src/plugins/rosterview/contactview.js
 
@@ -81023,54 +83001,7 @@ class contactview_RosterContact extends CustomElement {
   }
 
   renderRosterItem(item) {
-    const STATUSES = {
-      'dnd': __('This contact is busy'),
-      'online': __('This contact is online'),
-      'offline': __('This contact is offline'),
-      'unavailable': __('This contact is unavailable'),
-      'xa': __('This contact is away for an extended period'),
-      'away': __('This contact is away')
-    };
-    const show = item.presence.get('show') || 'offline';
-    let status_icon;
-
-    if (show === 'online') {
-      status_icon = 'fa fa-circle chat-status chat-status--online';
-    } else if (show === 'away') {
-      status_icon = 'fa fa-circle chat-status chat-status--away';
-    } else if (show === 'xa') {
-      status_icon = 'far fa-circle chat-status chat-status-xa';
-    } else if (show === 'dnd') {
-      status_icon = 'fa fa-minus-circle chat-status chat-status--busy';
-    } else {
-      status_icon = 'fa fa-times-circle chat-status chat-status--offline';
-    }
-
-    const display_name = item.getDisplayName();
-    return roster_item(Object.assign(item.toJSON(), {
-      show,
-      display_name,
-      status_icon,
-      'openChat': ev => this.openChat(ev),
-      'removeContact': ev => this.removeContact(ev),
-      'getAvatarData': () => this.getAvatarData(),
-      'desc_status': STATUSES[show],
-      'num_unread': item.get('num_unread') || 0
-    }));
-  }
-
-  getAvatarData() {
-    var _this$model$vcard, _this$model$vcard2;
-
-    const image_type = ((_this$model$vcard = this.model.vcard) === null || _this$model$vcard === void 0 ? void 0 : _this$model$vcard.get('image_type')) || shared_converse.DEFAULT_IMAGE_TYPE;
-    const image_data = ((_this$model$vcard2 = this.model.vcard) === null || _this$model$vcard2 === void 0 ? void 0 : _this$model$vcard2.get('image')) || shared_converse.DEFAULT_IMAGE;
-    const image = "data:" + image_type + ";base64," + image_data;
-    return {
-      'classes': 'avatar',
-      'height': 30,
-      'width': 30,
-      image
-    };
+    return roster_item(this, item);
   }
 
   openChat(ev) {
@@ -81209,11 +83140,6 @@ const RosterFilter = Model.extend({
 
 });
 class RosterFilterView extends CustomElement {
-  constructor() {
-    super();
-    this.initialize();
-  }
-
   initialize() {
     const model = new shared_converse.RosterFilter();
     model.id = `_converse.rosterfilter-${shared_converse.bare_jid}`;
@@ -81307,8 +83233,8 @@ class RosterFilterView extends CustomElement {
 
 }
 api.elements.define('converse-roster-filter', RosterFilterView);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[6].use[3]!./src/plugins/rosterview/styles/roster.scss
-var styles_roster = __webpack_require__(74);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/rosterview/styles/roster.scss
+var styles_roster = __webpack_require__(1984);
 ;// CONCATENATED MODULE: ./src/plugins/rosterview/styles/roster.scss
 
       
@@ -81343,6 +83269,7 @@ var roster_update = injectStylesIntoStyleTag_default()(styles_roster/* default *
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+
 
 
 
@@ -81448,16 +83375,16 @@ core_converse.initialize = function (settings, callback) {
 
 /***/ }),
 
-/***/ 6300:
+/***/ 1551:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81471,16 +83398,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 3742:
+/***/ 5251:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81494,16 +83421,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 7904:
+/***/ 6931:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81517,16 +83444,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 4639:
+/***/ 352:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81540,16 +83467,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 6220:
+/***/ 7802:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81563,16 +83490,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 9107:
+/***/ 5599:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81586,16 +83513,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 7581:
+/***/ 1875:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81609,16 +83536,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 6752:
+/***/ 8041:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81632,16 +83559,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 115:
+/***/ 5956:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81655,16 +83582,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 8859:
+/***/ 9679:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81678,16 +83605,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 7926:
+/***/ 4915:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81701,16 +83628,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 1557:
+/***/ 1638:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81724,16 +83651,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 2490:
+/***/ 3076:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81747,16 +83674,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 679:
+/***/ 5655:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81770,16 +83697,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 1107:
+/***/ 3288:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81793,16 +83720,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 74:
+/***/ 902:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81816,16 +83743,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 8481:
+/***/ 6233:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81839,16 +83766,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 8269:
+/***/ 1513:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81862,16 +83789,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 9796:
+/***/ 1984:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81885,16 +83812,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 5223:
+/***/ 1833:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81908,16 +83835,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 7991:
+/***/ 4921:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81931,16 +83858,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 7415:
+/***/ 5222:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81954,16 +83881,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 1065:
+/***/ 8054:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -81977,16 +83904,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 3735:
+/***/ 8125:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -82000,16 +83927,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 3543:
+/***/ 4166:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -82023,16 +83950,223 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 /***/ }),
 
-/***/ 4452:
+/***/ 6278:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7620);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1246);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 9523:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 6176:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 5046:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 7631:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 4903:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 6450:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 307:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 9537:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 9959:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8531);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7180);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -82051,559 +84185,559 @@ ___CSS_LOADER_EXPORT___.push([module.id, "", "",{"version":3,"sources":[],"names
 
 var map = {
 	"./af.js": [
-		7905,
+		4862,
 		9210
 	],
 	"./am.js": [
-		2067,
+		2469,
 		5073
 	],
 	"./ar-dz.js": [
-		7171,
+		7966,
 		9406
 	],
 	"./ar-kw.js": [
-		6712,
+		1781,
 		9897
 	],
 	"./ar-ly.js": [
-		4198,
+		7909,
 		3521
 	],
 	"./ar-ma.js": [
-		5390,
+		1917,
 		5313
 	],
 	"./ar-sa.js": [
-		8916,
+		140,
 		485
 	],
 	"./ar-tn.js": [
-		5507,
+		22,
 		8040
 	],
 	"./ar.js": [
-		8817,
+		5992,
 		6755
 	],
 	"./az.js": [
-		978,
+		145,
 		4963
 	],
 	"./be.js": [
-		8413,
+		9811,
 		9478
 	],
 	"./bg.js": [
-		7575,
+		3604,
 		578
 	],
 	"./bi.js": [
-		7186,
+		1434,
 		2984
 	],
 	"./bm.js": [
-		7646,
+		6694,
 		2263
 	],
 	"./bn.js": [
-		2760,
+		6209,
 		280
 	],
 	"./bo.js": [
-		10,
+		750,
 		9950
 	],
 	"./br.js": [
-		5476,
+		2766,
 		760
 	],
 	"./bs.js": [
-		8581,
+		3827,
 		9833
 	],
 	"./ca.js": [
-		545,
+		2914,
 		102
 	],
 	"./cs.js": [
-		7831,
+		9280,
 		7400
 	],
 	"./cv.js": [
-		4598,
+		1093,
 		4481
 	],
 	"./cy.js": [
-		5401,
+		8132,
 		6740
 	],
 	"./da.js": [
-		3499,
+		2817,
 		2548
 	],
 	"./de-at.js": [
-		4026,
+		7197,
 		7175
 	],
 	"./de-ch.js": [
-		7423,
+		5151,
 		1679
 	],
 	"./de.js": [
-		1857,
+		7360,
 		52
 	],
 	"./dv.js": [
-		8027,
+		6164,
 		5569
 	],
 	"./el.js": [
-		4542,
+		8916,
 		1606
 	],
 	"./en-au.js": [
-		8781,
+		8989,
 		5485
 	],
 	"./en-ca.js": [
-		7867,
+		9451,
 		4035
 	],
 	"./en-gb.js": [
-		4147,
+		8876,
 		6031
 	],
 	"./en-ie.js": [
-		5454,
+		1690,
 		8129
 	],
 	"./en-il.js": [
-		7199,
+		5022,
 		3463
 	],
 	"./en-in.js": [
-		8109,
+		5917,
 		6898
 	],
 	"./en-nz.js": [
-		9102,
+		2156,
 		8547
 	],
 	"./en-sg.js": [
-		8113,
+		9405,
 		1735
 	],
 	"./en-tt.js": [
-		5859,
+		1811,
 		6105
 	],
 	"./en.js": [
-		1606,
+		7774,
 		535
 	],
 	"./eo.js": [
-		5545,
+		9541,
 		5121
 	],
 	"./es-do.js": [
-		5839,
+		1156,
 		8758
 	],
 	"./es-pr.js": [
-		3979,
+		7483,
 		911
 	],
 	"./es-us.js": [
-		8624,
+		4664,
 		3208
 	],
 	"./es.js": [
-		4153,
+		9130,
 		3411
 	],
 	"./et.js": [
-		7754,
+		4533,
 		4153
 	],
 	"./eu.js": [
-		2697,
+		4713,
 		1396
 	],
 	"./fa.js": [
-		9068,
+		5087,
 		5544
 	],
 	"./fi.js": [
-		6587,
+		1302,
 		2130
 	],
 	"./fo.js": [
-		26,
+		1036,
 		8745
 	],
 	"./fr-ca.js": [
-		3026,
+		2104,
 		7363
 	],
 	"./fr-ch.js": [
-		2246,
+		7378,
 		7952
 	],
 	"./fr.js": [
-		8278,
+		3981,
 		1910
 	],
 	"./fy.js": [
-		4172,
+		6372,
 		6376
 	],
 	"./ga.js": [
-		9691,
+		9517,
 		688
 	],
 	"./gd.js": [
-		2713,
+		5808,
 		5050
 	],
 	"./gl.js": [
-		6212,
+		9219,
 		5818
 	],
 	"./gom-latn.js": [
-		5516,
+		3683,
 		825
 	],
 	"./gu.js": [
-		945,
+		9299,
 		3623
 	],
 	"./he.js": [
-		7346,
+		6626,
 		9372
 	],
 	"./hi.js": [
-		802,
+		4215,
 		8010
 	],
 	"./hr.js": [
-		1804,
+		9320,
 		7419
 	],
 	"./ht.js": [
-		8259,
+		7608,
 		5822
 	],
 	"./hu.js": [
-		3650,
+		3461,
 		8214
 	],
 	"./hy-am.js": [
-		4800,
+		2045,
 		5407
 	],
 	"./id.js": [
-		5275,
+		8516,
 		9513
 	],
 	"./is.js": [
-		4039,
+		9099,
 		1194
 	],
 	"./it-ch.js": [
-		8846,
+		5447,
 		6010
 	],
 	"./it.js": [
-		6792,
+		2869,
 		1880
 	],
 	"./ja.js": [
-		4679,
+		2754,
 		1107
 	],
 	"./jv.js": [
-		4770,
+		6615,
 		4305
 	],
 	"./ka.js": [
-		7564,
+		7830,
 		5186
 	],
 	"./kk.js": [
-		7316,
+		4723,
 		5206
 	],
 	"./km.js": [
-		1209,
+		4532,
 		2475
 	],
 	"./kn.js": [
-		6713,
+		1170,
 		7523
 	],
 	"./ko.js": [
-		9735,
+		3898,
 		3446
 	],
 	"./ku.js": [
-		5121,
+		7922,
 		7024
 	],
 	"./ky.js": [
-		5901,
+		8031,
 		5055
 	],
 	"./lb.js": [
-		4565,
+		3454,
 		5215
 	],
 	"./lo.js": [
-		8525,
+		9813,
 		1204
 	],
 	"./lt.js": [
-		1305,
+		8831,
 		7899
 	],
 	"./lv.js": [
-		9629,
+		7281,
 		631
 	],
 	"./me.js": [
-		913,
+		6080,
 		145
 	],
 	"./mi.js": [
-		3389,
+		2626,
 		7454
 	],
 	"./mk.js": [
-		5524,
+		9025,
 		4951
 	],
 	"./ml.js": [
-		5321,
+		7145,
 		7679
 	],
 	"./mn.js": [
-		8082,
+		9778,
 		8618
 	],
 	"./mr.js": [
-		3838,
+		5587,
 		5600
 	],
 	"./ms-my.js": [
-		5435,
+		4208,
 		882
 	],
 	"./ms.js": [
-		1525,
+		1504,
 		9095
 	],
 	"./mt.js": [
-		2680,
+		8591,
 		9665
 	],
 	"./my.js": [
-		1390,
+		5839,
 		5166
 	],
 	"./nb.js": [
-		192,
+		98,
 		646
 	],
 	"./ne.js": [
-		9534,
+		3553,
 		9030
 	],
 	"./nl-be.js": [
-		307,
+		4757,
 		3155
 	],
 	"./nl.js": [
-		808,
+		587,
 		1520
 	],
 	"./nn.js": [
-		4644,
+		9583,
 		7050
 	],
 	"./oc-lnc.js": [
-		9099,
+		6247,
 		7203
 	],
 	"./pa-in.js": [
-		7117,
+		2561,
 		5850
 	],
 	"./pl.js": [
-		5406,
+		545,
 		1211
 	],
 	"./pt-br.js": [
-		1291,
+		9326,
 		5274
 	],
 	"./pt.js": [
-		402,
+		7216,
 		265
 	],
 	"./ro.js": [
-		4491,
+		3041,
 		8022
 	],
 	"./ru.js": [
-		1187,
+		7068,
 		559
 	],
 	"./rw.js": [
-		8978,
+		2574,
 		3221
 	],
 	"./sd.js": [
-		454,
+		1160,
 		1298
 	],
 	"./se.js": [
-		1708,
+		7344,
 		1942
 	],
 	"./si.js": [
-		5334,
+		5791,
 		9333
 	],
 	"./sk.js": [
-		7506,
+		3727,
 		6783
 	],
 	"./sl.js": [
-		7608,
+		330,
 		9625
 	],
 	"./sq.js": [
-		2402,
+		2749,
 		8603
 	],
 	"./sr-cyrl.js": [
-		7786,
+		487,
 		3435
 	],
 	"./sr.js": [
-		8407,
+		5883,
 		7390
 	],
 	"./ss.js": [
-		2068,
+		2868,
 		9238
 	],
 	"./sv-fi.js": [
-		1057,
+		5520,
 		9997
 	],
 	"./sv.js": [
-		4316,
+		3403,
 		9652
 	],
 	"./sw.js": [
-		9716,
+		2950,
 		9733
 	],
 	"./ta.js": [
-		1541,
+		7265,
 		7645
 	],
 	"./te.js": [
-		5649,
+		4342,
 		7714
 	],
 	"./tet.js": [
-		6539,
+		3849,
 		555
 	],
 	"./tg.js": [
-		222,
+		4727,
 		2446
 	],
 	"./th.js": [
-		4805,
+		8114,
 		1729
 	],
 	"./tk.js": [
-		2679,
+		7139,
 		5256
 	],
 	"./tl-ph.js": [
-		821,
+		9307,
 		9443
 	],
 	"./tlh.js": [
-		9201,
+		769,
 		2814
 	],
 	"./tr.js": [
-		8273,
+		5538,
 		8665
 	],
 	"./tzl.js": [
-		4837,
+		5857,
 		2843
 	],
 	"./tzm-latn.js": [
-		7003,
+		6170,
 		3933
 	],
 	"./tzm.js": [
-		2165,
+		1353,
 		4342
 	],
 	"./ug-cn.js": [
-		810,
+		6028,
 		6890
 	],
 	"./uk.js": [
-		6638,
+		9642,
 		1619
 	],
 	"./ur.js": [
-		9542,
+		6814,
 		9568
 	],
 	"./uz-latn.js": [
-		3089,
+		6810,
 		1110
 	],
 	"./uz.js": [
-		3380,
+		9505,
 		3153
 	],
 	"./vi.js": [
-		2718,
+		4667,
 		8073
 	],
 	"./x-pseudo.js": [
-		6316,
+		3936,
 		4423
 	],
 	"./yo.js": [
-		2863,
+		51,
 		8692
 	],
 	"./zh-cn.js": [
-		4385,
+		7983,
 		9630
 	],
 	"./zh-hk.js": [
-		4338,
+		7839,
 		3755
 	],
 	"./zh-tw.js": [
-		1208,
+		9176,
 		6776
 	],
 	"./zh.js": [
-		8383,
+		3333,
 		8458
 	]
 };
@@ -82869,7 +85003,7 @@ module.exports = domAPI;
 
 /***/ }),
 
-/***/ 4589:
+/***/ 6655:
 /***/ ((module) => {
 
 "use strict";
@@ -82897,159 +85031,159 @@ module.exports = styleTagTransform;
 
 var map = {
 	"./af/LC_MESSAGES/converse.po": [
-		2866,
+		4328,
 		5830
 	],
 	"./ar/LC_MESSAGES/converse.po": [
-		7693,
+		4136,
 		4469
 	],
 	"./bg/LC_MESSAGES/converse.po": [
-		5638,
+		1988,
 		2551
 	],
 	"./ca/LC_MESSAGES/converse.po": [
-		6124,
+		4391,
 		1553
 	],
 	"./cs/LC_MESSAGES/converse.po": [
-		4283,
+		4602,
 		5301
 	],
 	"./da/LC_MESSAGES/converse.po": [
-		8135,
+		2669,
 		1163
 	],
 	"./de/LC_MESSAGES/converse.po": [
-		254,
+		4319,
 		2895
 	],
 	"./el/LC_MESSAGES/converse.po": [
-		8778,
+		4422,
 		5524
 	],
 	"./eo/LC_MESSAGES/converse.po": [
-		4111,
+		8144,
 		2433
 	],
 	"./es/LC_MESSAGES/converse.po": [
-		3516,
+		106,
 		8269
 	],
 	"./eu/LC_MESSAGES/converse.po": [
-		6160,
+		4773,
 		3103
 	],
 	"./fa/LC_MESSAGES/converse.po": [
-		7167,
+		6427,
 		321
 	],
 	"./fi/LC_MESSAGES/converse.po": [
-		5819,
+		3901,
 		7618
 	],
 	"./fr/LC_MESSAGES/converse.po": [
-		7500,
+		2548,
 		5129
 	],
 	"./gl/LC_MESSAGES/converse.po": [
-		8429,
+		2313,
 		777
 	],
 	"./he/LC_MESSAGES/converse.po": [
-		2233,
+		2412,
 		4363
 	],
 	"./hi/LC_MESSAGES/converse.po": [
-		7785,
+		3561,
 		4468
 	],
 	"./hu/LC_MESSAGES/converse.po": [
-		2325,
+		9342,
 		6239
 	],
 	"./id/LC_MESSAGES/converse.po": [
-		4938,
+		5748,
 		6678
 	],
 	"./it/LC_MESSAGES/converse.po": [
-		2755,
+		812,
 		3719
 	],
 	"./ja/LC_MESSAGES/converse.po": [
-		2693,
+		9867,
 		6249
 	],
 	"./lt/LC_MESSAGES/converse.po": [
-		3547,
+		3976,
 		513
 	],
 	"./mr/LC_MESSAGES/converse.po": [
-		2260,
+		8388,
 		1784
 	],
 	"./nb/LC_MESSAGES/converse.po": [
-		9701,
+		5403,
 		473
 	],
 	"./nl/LC_MESSAGES/converse.po": [
-		3175,
+		9862,
 		2473
 	],
 	"./nl_BE/LC_MESSAGES/converse.po": [
-		658,
+		1995,
 		8131
 	],
 	"./oc/LC_MESSAGES/converse.po": [
-		506,
+		670,
 		5500
 	],
 	"./pl/LC_MESSAGES/converse.po": [
-		275,
+		6838,
 		3606
 	],
 	"./pt/LC_MESSAGES/converse.po": [
-		8300,
+		1415,
 		6227
 	],
 	"./pt_BR/LC_MESSAGES/converse.po": [
-		7606,
+		4754,
 		1455
 	],
 	"./ro/LC_MESSAGES/converse.po": [
-		6899,
+		1175,
 		3539
 	],
 	"./ru/LC_MESSAGES/converse.po": [
-		499,
+		4228,
 		7917
 	],
 	"./sv/LC_MESSAGES/converse.po": [
-		164,
+		3147,
 		8859
 	],
 	"./th/LC_MESSAGES/converse.po": [
-		4307,
+		5414,
 		457
 	],
 	"./tr/LC_MESSAGES/converse.po": [
-		5882,
+		1092,
 		4195
 	],
 	"./uk/LC_MESSAGES/converse.po": [
-		6264,
+		4,
 		7979
 	],
 	"./vi/LC_MESSAGES/converse.po": [
-		1937,
+		8335,
 		2110
 	],
 	"./zh_CN/LC_MESSAGES/converse.po": [
-		6592,
+		8926,
 		3325
 	],
 	"./zh_TW/LC_MESSAGES/converse.po": [
-		1288,
+		7034,
 		1458
 	]
 };
@@ -83439,7 +85573,7 @@ const converse = {
       __webpack_require__.p = settings.assets_path; // eslint-disable-line no-undef
     }
 
-    __webpack_require__(6387);
+    __webpack_require__(5703);
 
     Object.keys(plugins).forEach(name => converse.plugins.add(name, plugins[name]));
     return converse;
