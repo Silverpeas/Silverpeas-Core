@@ -23,13 +23,11 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PRAcroForm;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.SimpleBookmark;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfCopy;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.SimpleBookmark;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -103,6 +101,7 @@ import java.util.StringTokenizer;
 
 import static java.io.File.separator;
 import static org.silverpeas.core.util.Charsets.UTF_8;
+import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
 /**
  * Import/export of resources managed in Silverpeas
@@ -524,85 +523,67 @@ public class ImportExport extends AbstractExportProcess {
       }
     }
 
+    Document document = null;
+    PdfCopy writer = null;
+    List<PdfReader> readers = new ArrayList<>();
     File pdfFileName = new File(tempDir + fileExportName + ".pdf");
     try {
       // création des répertoires avec le nom des thèmes et des publications
-      List<AttachmentDetail> pdfList = pubTypeManager
+      final List<AttachmentDetail> pdfList = pubTypeManager
           .processPDFExport(report, userDetail, itemsToExport, fileExportDir.getPath(), true,
               rootPK);
-
-      try {
+      final List<HashMap<String, Object>> master = new ArrayList<>();
+      if (!pdfList.isEmpty()) {
         int pageOffset = 0;
-        List master = new ArrayList();
-        Document document = null;
-        PdfCopy writer = null;
-
-        if (!pdfList.isEmpty()) {
-          boolean firstPage = true;
-          for (AttachmentDetail attDetail : pdfList) {
-            PdfReader reader = null;
-            try {
-              reader = new PdfReader(
-                  fileExportDir.getPath() + File.separatorChar + attDetail.getLogicalName());
-            } catch (IOException ioe) {
-              // Attached file is not physically present on disk, ignore it and log event
-              SilverLogger.getLogger(this)
-                  .error("Cannot find PDF {0}", new String[]{attDetail.getLogicalName()}, ioe);
+        for (AttachmentDetail attDetail : pdfList) {
+          final PdfReader reader = getPdfReader(fileExportDir, attDetail);
+          if (reader != null) {
+            readers.add(reader);
+            reader.consolidateNamedDestinations();
+            int nbPages = reader.getNumberOfPages();
+            final List<HashMap<String, Object>> bookmarks = SimpleBookmark.getBookmark(reader);
+            if (writer == null) {
+              document = new Document(reader.getPageSizeWithRotation(1));
+              writer = new PdfCopy(document, new FileOutputStream(pdfFileName));
+              writer.setMergeFields();
+              document.open();
             }
-            if (reader != null) {
-              reader.consolidateNamedDestinations();
-              int nbPages = reader.getNumberOfPages();
-              List bookmarks = SimpleBookmark.getBookmark(reader);
-              if (bookmarks != null) {
+            if (mergeDocument(attDetail, reader, writer)) {
+              if (isNotEmpty(bookmarks)) {
                 if (pageOffset != 0) {
                   SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
                 }
                 master.addAll(bookmarks);
               }
               pageOffset += nbPages;
-
-              if (firstPage) {
-                document = new Document(reader.getPageSizeWithRotation(1));
-                writer = new PdfCopy(document, new FileOutputStream(pdfFileName));
-                document.open();
-                firstPage = false;
-              }
-
-              for (int i = 1; i <= nbPages; i++) {
-                try {
-                  PdfImportedPage page = writer.getImportedPage(reader, i);
-                  writer.addPage(page);
-                } catch (Exception e) {
-                  // Can't import PDF file, ignore it and log event
-                  SilverLogger.getLogger(this)
-                      .error("Cannot merge PDF {0}", new String[]{attDetail.getLogicalName()}, e);
-                }
-              }
-
-              PRAcroForm form = reader.getAcroForm();
-              if (form != null) {
-                writer.copyAcroForm(reader);
-              }
             }
           }
-
-          if (!master.isEmpty()) {
-            writer.setOutlines(master);
-          }
-          writer.flush();
-          document.close();
-        } else {
-          return null;
         }
 
-      } catch (DocumentException e) {
-        // Impossible de copier le document
-        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
+        if (!master.isEmpty()) {
+          writer.setOutlines(master);
+        }
+      } else {
+        return null;
       }
-
-    } catch (IOException e) {
+    } catch (DocumentException | IOException e) {
       // Pb avec le répertoire de destination
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
+    } finally {
+      if (writer != null) {
+        writer.flush();
+        writer.close();
+      }
+      if (document != null) {
+        document.close();
+      }
+      for (PdfReader reader : readers) {
+        try {
+          reader.close();
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).warn(e);
+        }
+      }
     }
 
     report.setPdfFileName(pdfFileName.getName());
@@ -612,6 +593,32 @@ public class ImportExport extends AbstractExportProcess {
     report.setDateFin(new Date());
 
     return report;
+  }
+
+  private PdfReader getPdfReader(final File fileExportDir,
+      final AttachmentDetail attDetail) {
+    try {
+      return new PdfReader(
+          fileExportDir.getPath() + File.separatorChar + attDetail.getLogicalName());
+    } catch (IOException ioe) {
+      // Attached file is not physically present on disk, ignore it and log event
+      SilverLogger.getLogger(this)
+          .error("Cannot find PDF {0}", new String[]{attDetail.getLogicalName()}, ioe);
+    }
+    return null;
+  }
+
+  private boolean mergeDocument(final AttachmentDetail attDetail, final PdfReader reader,
+      final PdfCopy writer) {
+    try {
+      writer.addDocument(reader);
+      return true;
+    } catch (Exception e) {
+      // Can't import PDF file, ignore it and log event
+      SilverLogger.getLogger(this)
+          .error("Cannot merge PDF {0}", new String[]{attDetail.getLogicalName()}, e);
+    }
+    return false;
   }
 
   /**
