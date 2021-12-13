@@ -70,6 +70,7 @@ public class SearchResource extends RESTWebService {
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUser().getId());
     queryDescription.setTaxonomyPosition(position);
+    queryDescription.setRequestedLanguage("*");
 
     setCreationDateInterval(queryDescription, startDate, endDate);
 
