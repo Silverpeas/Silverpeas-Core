@@ -65,7 +65,7 @@
           typeOfItemValue = typeof itemValue;
         }
         if ((typeOfItemValue === 'string' && itemValue === componentInstanceId) ||
-          (typeOfItemValue === 'function' && itemValue() === componentInstanceId)) {
+          (typeOfItemValue === 'function' && itemValue.call(item) === componentInstanceId)) {
           filteredItems.push(item);
         }
       });
