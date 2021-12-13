@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar.ical4j;
 
-import net.fortuna.ical4j.model.Escapable;
+import net.fortuna.ical4j.model.Encodable;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyFactory;
@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 
-public class HtmlProperty extends Property implements Escapable {
+public class HtmlProperty extends Property implements Encodable {
 
   public static final String X_ALT_DESC = "X-ALT-DESC";
   public static final String PROPERTY_NAME = X_ALT_DESC + ";FMTTYPE=text/html";
