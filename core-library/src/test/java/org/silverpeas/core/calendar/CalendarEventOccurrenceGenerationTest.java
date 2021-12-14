@@ -54,26 +54,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TimeUnit.MONTH;
 import static org.silverpeas.core.date.TimeUnit.WEEK;
 
 /**
- * Unit tests on the generation of event occurrences between two given datetimes.
+ * Unit tests on the generation of event occurrences between two given date times.
  * @author mmoquillon
  */
 @EnableSilverTestEnv
 @TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
-public class CalendarEventOccurrenceGenerationTest {
+class CalendarEventOccurrenceGenerationTest {
 
   private static final String EVENT_TITLE = "an event title";
   private static final String EVENT_DESCRIPTION = "a short event description";
@@ -81,7 +80,7 @@ public class CalendarEventOccurrenceGenerationTest {
   private static final ZoneId PARIS_ZONE_ID = ZoneId.of("Europe/Paris");
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
-  private CalendarEventOccurrenceGenerator generator =
+  private final CalendarEventOccurrenceGenerator generator =
       new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
           new ICal4JRecurrenceCodec(new ICal4JDateCodec()));
 
@@ -101,21 +100,21 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nothingDoneWithAnEmptyListOfEvents() {
+  void nothingDoneWithAnEmptyListOfEvents() {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(Collections.emptyList(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(true));
   }
 
   @Test
-  public void noOccurrencesIfNoEventInTheGivenPeriod() {
+  void noOccurrencesIfNoEventInTheGivenPeriod() {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(calendarEventsForTest(), in(YearMonth.of(2016, 1)));
     assertThat(occurrences.isEmpty(), is(true));
   }
 
   @Test
-  public void countEventOccurrencesInYear() {
+  void countEventOccurrencesInYear() {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(calendarEventsForTest(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
@@ -153,7 +152,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void countEventOccurrencesInMay() {
+  void countEventOccurrencesInMay() {
     List<CalendarEventOccurrence> occurrences = generator
         .generateOccurrencesOf(calendarEventsForTest(), in(YearMonth.of(2016, Month.MAY)));
     assertThat(occurrences.isEmpty(), is(false));
@@ -170,7 +169,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void countEventOccurrencesInJuly() {
+  void countEventOccurrencesInJuly() {
     List<CalendarEventOccurrence> occurrences = generator
         .generateOccurrencesOf(calendarEventsForTest(), in(YearMonth.of(2016, Month.JULY)));
     assertThat(occurrences.isEmpty(), is(false));
@@ -185,7 +184,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void countEventOccurrencesInAGivenPeriod() {
+  void countEventOccurrencesInAGivenPeriod() {
     List<CalendarEventOccurrence> occurrences = generator
         .generateOccurrencesOf(calendarEventsForTest(),
             Period.between(date(2016, 8, 8), date(2016, 8, 14)));
@@ -202,7 +201,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void dateOfEventOccurrencesInJuly() {
+  void dateOfEventOccurrencesInJuly() {
     List<CalendarEventOccurrence> occurrences = generator
         .generateOccurrencesOf(calendarEventsForTest(), in(YearMonth.of(2016, Month.JULY)));
     assertThat(occurrences.size(), is(4));
@@ -230,7 +229,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutNonRecurrentOneDayEventShouldWork() {
+  void nextOccurrenceAboutNonRecurrentOneDayEventShouldWork() {
     CalendarEvent event =
         calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 12)));
     ZonedDateTime from = ZonedDateTime.parse("2017-12-12T00:00:00+01:00");
@@ -259,7 +258,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutNonRecurrentSeveralDayEventShouldWork() {
+  void nextOccurrenceAboutNonRecurrentSeveralDayEventShouldWork() {
     CalendarEvent event =
         calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 15)));
     ZonedDateTime from = ZonedDateTime.parse("2017-12-12T00:00:00+01:00");
@@ -288,7 +287,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutNonRecurrentHourEventOnOneDayShouldWork() {
+  void nextOccurrenceAboutNonRecurrentHourEventOnOneDayShouldWork() {
     CalendarEvent event =
         calendarEventForTest(Period.between(
             dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 12, 14, 45)));
@@ -310,7 +309,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutNonRecurrentHugeHourEventOnOneDayShouldWork() {
+  void nextOccurrenceAboutNonRecurrentHugeHourEventOnOneDayShouldWork() {
     CalendarEvent event =
         calendarEventForTest(Period.between(
             dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 15, 14, 45)));
@@ -332,7 +331,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentOneDayEventShouldWork() {
+  void nextOccurrenceAboutRecurrentOneDayEventShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 12)))
             .recur(Recurrence
@@ -368,7 +367,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentOneDayEventWithExceptionShouldWork() {
+  void nextOccurrenceAboutRecurrentOneDayEventWithExceptionShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 12)))
             .recur(Recurrence
@@ -387,7 +386,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentSeveralDayEventShouldWork() {
+  void nextOccurrenceAboutRecurrentSeveralDayEventShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 15)))
             .recur(Recurrence
@@ -423,7 +422,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentSeveralDayEventWithExceptionShouldWork() {
+  void nextOccurrenceAboutRecurrentSeveralDayEventWithExceptionShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 15)))
             .recur(Recurrence
@@ -442,7 +441,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentHourEventShouldWork() {
+  void nextOccurrenceAboutRecurrentHourEventShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(
             dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 12, 14, 45)))
@@ -479,7 +478,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentHourEventStartingOnSummerShouldWork() {
+  void nextOccurrenceAboutRecurrentHourEventStartingOnSummerShouldWork() {
     final OffsetDateTime startDateTimeOnParis = dateTimeOnParis(2017, 7, 11, 23, 0);
     final OffsetDateTime endDateTimeOnParis = dateTimeOnParis(2017, 7, 12, 0, 45);
     assertThat(startDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(
@@ -533,8 +532,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void
-  nextOccurrenceAboutRecurrentHourEventStartingOnSummerAndNowAboutHourChangingShouldWork() {
+  void nextOccurrenceAboutRecurrentHourEventStartingOnSummerAndNowAboutHourChangingShouldWork() {
     final OffsetDateTime startDateTimeOnParis = dateTimeOnParis(2017, 7, 29, 3, 0);
     final OffsetDateTime endDateTimeOnParis = dateTimeOnParis(2017, 7, 29, 4, 30);
     assertThat(startDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(
@@ -634,7 +632,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentHourEventWithExceptionShouldWork() {
+  void nextOccurrenceAboutRecurrentHourEventWithExceptionShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(
             dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 12, 14, 45)))
@@ -666,7 +664,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentHugeHourEventShouldWork() {
+  void nextOccurrenceAboutRecurrentHugeHourEventShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(
             dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 15, 14, 45)))
@@ -703,7 +701,7 @@ public class CalendarEventOccurrenceGenerationTest {
   }
 
   @Test
-  public void nextOccurrenceAboutRecurrentHugeHourEventWithExceptionShouldWork() {
+  void nextOccurrenceAboutRecurrentHugeHourEventWithExceptionShouldWork() {
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(
             dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 15, 14, 45)))

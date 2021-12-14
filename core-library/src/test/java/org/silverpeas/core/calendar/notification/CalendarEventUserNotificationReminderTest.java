@@ -72,6 +72,7 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -88,7 +89,7 @@ import static org.mockito.Mockito.when;
 @EnableSilverTestEnv
 @TestManagedBeans({JpaUpdateOperation.class, JpaPersistOperation.class,
     CalendarEventUserNotificationReminder.class})
-public class CalendarEventUserNotificationReminderTest {
+class CalendarEventUserNotificationReminderTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
   private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
 
@@ -109,17 +110,23 @@ public class CalendarEventUserNotificationReminderTest {
   @RegisterExtension
   public FieldMocker reflectionRule = new FieldMocker();
 
+  @SuppressWarnings("unused")
   @TestManagedMock
   private PublicationService publicationService;
+  @SuppressWarnings("unused")
   @TestManagedMock
   private ComponentAccessControl componentAccessControl;
+  @SuppressWarnings("unused")
   @TestManagedMock
   private Administration administration;
+  @SuppressWarnings("unused")
   @TestManagedMock
   private ContributionManager contributionManager;
+  @SuppressWarnings("unused")
   @TestManagedMock
   private CalendarEventOccurrenceRepository calendarEventOccurrenceRepository;
   private User receiver;
+  @SuppressWarnings("unused")
   @TestManagedMock
   private ComponentInstanceRoutingMap componentInstanceRoutingMap;
 
@@ -135,7 +142,6 @@ public class CalendarEventUserNotificationReminderTest {
     TimeZone.setDefault(DEFAULT_TIMEZONE);
   }
 
-  @SuppressWarnings({"unchecked", "serial"})
   @BeforeEach
   public void setup(@TestManagedMock UserProvider userProvider, @TestManagedMock
       ComponentInstanceRoutingMapProviderByInstance componentInstanceRoutingMapProviderByInstance,
@@ -167,7 +173,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOf0MinuteOnCalendarContributionShouldWork() throws Exception {
+  void durationReminderOf0MinuteOnCalendarContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
@@ -175,7 +181,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOf1MinuteOnCalendarContributionShouldWork() throws Exception {
+  void durationReminderOf1MinuteOnCalendarContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
         .triggerBefore(1, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
@@ -183,7 +189,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOf5MinutesOnCalendarContributionShouldWork() throws Exception {
+  void durationReminderOf5MinutesOnCalendarContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
         .triggerBefore(5, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
@@ -191,7 +197,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOf0HourAndWithAnotherUserZoneIdOnCalendarContributionShouldWork()
+  void durationReminderOf0HourAndWithAnotherUserZoneIdOnCalendarContributionShouldWork()
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
@@ -219,7 +225,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
+  void durationReminderOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOnAllDay())
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
@@ -234,7 +240,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherUserZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
+  void durationReminderWithAnotherUserZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOnAllDay())
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
@@ -250,7 +256,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherBeforeCalendarZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
+  void durationReminderWithAnotherBeforeCalendarZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOnAllDay();
     when(calendarEvent.getCalendar().getZoneId()).thenReturn(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
@@ -267,7 +273,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherAfterCalendarZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
+  void durationReminderWithAnotherAfterCalendarZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOnAllDay();
     when(calendarEvent.getCalendar().getZoneId()).thenReturn(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
@@ -284,7 +290,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOnSimpleEventOf2HoursShouldWork() throws Exception {
+  void durationReminderOnSimpleEventOf2HoursShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOn2Hours(ZoneId.systemDefault()))
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
@@ -299,7 +305,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherUserZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
+  void durationReminderWithAnotherUserZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOn2Hours(ZoneId.systemDefault()))
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
@@ -315,7 +321,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherBeforeCalendarZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
+  void durationReminderWithAnotherBeforeCalendarZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSimpleEventOn2Hours(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
@@ -331,7 +337,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherAfterCalendarZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
+  void durationReminderWithAnotherAfterCalendarZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSimpleEventOn2Hours(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
@@ -347,7 +353,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
+  void durationReminderOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOn2Hours(ZoneId.systemDefault()))
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
@@ -362,7 +368,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherBeforeUserZoneIdOnSeveralDaysEventOf2HoursShouldWork()
+  void durationReminderWithAnotherBeforeUserZoneIdOnSeveralDaysEventOf2HoursShouldWork()
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOn2Hours(ZoneId.systemDefault()))
@@ -379,7 +385,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherAfterUserZoneIdOnSeveralDaysEventOf2HoursShouldWork()
+  void durationReminderWithAnotherAfterUserZoneIdOnSeveralDaysEventOf2HoursShouldWork()
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOn2Hours(ZoneId.systemDefault()))
@@ -396,7 +402,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherBeforeCalendarZoneIdOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
+  void durationReminderWithAnotherBeforeCalendarZoneIdOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOn2Hours(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
@@ -412,7 +418,7 @@ public class CalendarEventUserNotificationReminderTest {
   }
 
   @Test
-  public void durationReminderWithAnotherAfterCalendarZoneIdOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
+  void durationReminderWithAnotherAfterCalendarZoneIdOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOn2Hours(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
         .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
@@ -491,7 +497,8 @@ public class CalendarEventUserNotificationReminderTest {
         occStartDate = (OffsetDateTime) currentPeriod.getStartDate();
       }
       final OffsetDateTime finalDateTime = occStartDate
-          .minus(reminder.getDuration(), reminder.getTimeUnit().toChronoUnit())
+          .minus(reminder.getDuration(), Objects.requireNonNull(reminder.getTimeUnit()
+              .toChronoUnit()))
           .toZonedDateTime()
           .withZoneSameInstant(ZoneId.systemDefault())
           .toOffsetDateTime();

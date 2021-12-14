@@ -65,15 +65,16 @@ import static org.silverpeas.core.date.TimeUnit.WEEK;
  */
 @EnableSilverTestEnv
 @TestManagedBeans({Transaction.class, JpaPersistOperation.class, JpaUpdateOperation.class})
-public class RecurrentCalendarEventTest {
+class RecurrentCalendarEventTest {
 
   private static final String CALENDAR_ID = "CAL_ID_1";
   private static final String EVENT_TITLE = "an event";
   private static final String EVENT_DESCRIPTION = "a description";
   private static final String USER_ID = "0";
 
+  @SuppressWarnings("unused")
   @TestManagedBean
-  private CalendarEventOccurrenceGenerator generator =
+  private final CalendarEventOccurrenceGenerator generator =
       new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
           new ICal4JRecurrenceCodec(new ICal4JDateCodec()));
 
@@ -108,7 +109,7 @@ public class RecurrentCalendarEventTest {
   }
 
   @Test
-  public void planAWeeklyTimelyEventOnFirstSpecificDays() {
+  void planAWeeklyTimelyEventOnFirstSpecificDays() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = aTimelyEvent()
         .recur(Recurrence.every(2, WEEK).on(MONDAY, FRIDAY))
@@ -118,7 +119,7 @@ public class RecurrentCalendarEventTest {
   }
 
   @Test
-  public void planAMonthlyTimelyEventOnSomeSpecificDays() {
+  void planAMonthlyTimelyEventOnSomeSpecificDays() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = aTimelyEvent()
         .recur(Recurrence.every(1, MONTH)
@@ -129,7 +130,7 @@ public class RecurrentCalendarEventTest {
   }
 
   @Test
-  public void planAWeeklyAllDayEventOnFirstSpecificDays() {
+  void planAWeeklyAllDayEventOnFirstSpecificDays() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = anAllDayEvent()
         .recur(Recurrence.every(2, WEEK).on(MONDAY, FRIDAY))
@@ -139,7 +140,7 @@ public class RecurrentCalendarEventTest {
   }
 
   @Test
-  public void planAMonthlyAllDayEventOnSomeSpecificDays() {
+  void planAMonthlyAllDayEventOnSomeSpecificDays() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = anAllDayEvent()
         .recur(Recurrence.every(1, MONTH)

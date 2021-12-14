@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
  */
 public class CalendarMockBuilder {
 
-  private Calendar calendar = mock(Calendar.class);
+  private final Calendar calendar = mock(Calendar.class);
 
   public static CalendarMockBuilder from(String componentInstanceId) {
     CalendarMockBuilder builder = new CalendarMockBuilder();
@@ -61,8 +61,7 @@ public class CalendarMockBuilder {
     return calendar;
   }
 
-  private CalendarMockBuilder withComponentInstanceId(final String componentInstanceId) {
+  private void withComponentInstanceId(final String componentInstanceId) {
     when(calendar.getComponentInstanceId()).thenReturn(componentInstanceId);
-    return this;
   }
 }

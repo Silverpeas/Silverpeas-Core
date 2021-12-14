@@ -27,8 +27,6 @@ package org.silverpeas.core.calendar.icalendar;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
@@ -56,6 +54,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.ByteArrayInputStream;
@@ -64,10 +63,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -87,17 +85,19 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  */
 @EnableSilverTestEnv
 @TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
-public class ICal4JExchangeImportTest {
+class ICal4JExchangeImportTest {
 
   @TestManagedBean
-  private ICal4JDateCodec dateCodec = new ICal4JDateCodec();
+  private final ICal4JDateCodec dateCodec = new ICal4JDateCodec();
+  @SuppressWarnings("unused")
   @TestManagedBean
-  private ICal4JRecurrenceCodec recurrenceCodec = new ICal4JRecurrenceCodec(dateCodec);
+  private final ICal4JRecurrenceCodec recurrenceCodec = new ICal4JRecurrenceCodec(dateCodec);
+  @SuppressWarnings("unused")
   @TestedBean
   private ICal4JImporter iCalendarImporter;
   private User creator;
 
-  private BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
+  private final BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
       List<CalendarEventOccurrence>>>
       defaultAssert = (actual, expected) -> {
     CalendarEvent actualEvent = actual.getLeft();
@@ -119,25 +119,24 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void undefinedListOfEvents() {
+  void undefinedListOfEvents() {
     assertThrows(IllegalArgumentException.class, () ->
-    iCalendarImporter.imports(ImportDescriptor.withInputStream(null),
-        events -> Function.identity()));
+        ImportDescriptor.withInputStream(null));
   }
 
   @Test
-  public void emptyFile() {
+  void emptyFile() {
     assertThrows(ImportException.class,
         () -> importAndVerifyResult("ical4j_import_empty_file.txt", emptyList(), defaultAssert));
   }
 
   @Test
-  public void fileWithoutEvent() throws ImportException {
+  void fileWithoutEvent() throws ImportException {
     importAndVerifyResult("ical4j_import_no_event.txt", emptyList(), defaultAssert);
   }
 
   @Test
-  public void verifyDateConversions() throws ImportException {
+  void verifyDateConversions() throws ImportException {
     CalendarEvent event1 = CalendarEventStubBuilder
         .from(Period.between(date("2016-12-14"), date("2016-12-16")))
         .withExternalId("EVENT-UUID-LOCAL-DATE")
@@ -198,7 +197,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void simpleOneOfTwoDaysDuration() throws ImportException {
+  void simpleOneOfTwoDaysDuration() throws ImportException {
     CalendarEvent event = CalendarEventStubBuilder
         .from(Period.between(date("2016-12-14"), date("2016-12-16")))
         .withExternalId("EVENT-UUID").withTitle("EVENT-TITLE")
@@ -213,7 +212,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void categorizedOneOfOneDayDuration() throws ImportException {
+  void categorizedOneOfOneDayDuration() throws ImportException {
     CalendarEvent event = CalendarEventStubBuilder
         .from(Period.between(date("2016-12-25"), date("2016-12-25")))
         .withExternalId("EVENT-UUID").withTitle("EVENT-TITLE-CATEGORIZED")
@@ -226,7 +225,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void severalOfOneHourDurationAndDailyRecurrence() throws ImportException {
+  void severalOfOneHourDurationAndDailyRecurrence() throws ImportException {
     CalendarEvent event1 = CalendarEventStubBuilder.from(Period.between(
             datetime("2016-12-15T12:32:00Z"),
             datetime("2016-12-15T13:32:00Z")))
@@ -312,7 +311,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void severalOnAllDaysAndDailyRecurrence() throws ImportException {
+  void severalOnAllDaysAndDailyRecurrence() throws ImportException {
     CalendarEvent event1 = CalendarEventStubBuilder
         .from(Period.between(date("2016-12-15"), date("2016-12-15")))
         .withExternalId("EXT-EVENT-UUID-1")
@@ -379,7 +378,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void simpleOneOfTwoDayDurationWithAttendees() throws ImportException {
+  void simpleOneOfTwoDayDurationWithAttendees() throws ImportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -412,7 +411,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void oneWithRecurrenceAndWithAttendees() throws ImportException {
+  void oneWithRecurrenceAndWithAttendees() throws ImportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -446,7 +445,7 @@ public class ICal4JExchangeImportTest {
   }
 
   @Test
-  public void oneWithRecurrenceAndWithAttendeesWhichAnsweredOnDate() throws ImportException {
+  void oneWithRecurrenceAndWithAttendeesWhichAnsweredOnDate() throws ImportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -503,7 +502,7 @@ public class ICal4JExchangeImportTest {
    * </p>
    * @param fileNameOfImport the name of the file that contains events to import.
    */
-  @SuppressWarnings({"unchecked", "Duplicates"})
+  @SuppressWarnings("Duplicates")
   private void importAndVerifyResult(String fileNameOfImport, List<CalendarEvent> expectedEvents,
       BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
           List<CalendarEventOccurrence>>> assertConsumer) throws ImportException {
@@ -602,7 +601,8 @@ public class ICal4JExchangeImportTest {
 
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
-      return StringUtil.join(IOUtils.readLines(fileStream), '\n');
+      return StringUtil.join(IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8),
+          '\n');
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

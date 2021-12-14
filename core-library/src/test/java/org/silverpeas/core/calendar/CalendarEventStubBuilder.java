@@ -44,9 +44,9 @@ import static org.mockito.Mockito.when;
 public class CalendarEventStubBuilder {
 
   private Period period;
-  private CalendarComponentTest component = new CalendarComponentTest();
-  private CalendarEvent event = mock(CalendarEvent.class);
-  private List<CalendarEventOccurrence> occurrences = new ArrayList<>();
+  private final CalendarComponentTest component = new CalendarComponentTest();
+  private final CalendarEvent event = mock(CalendarEvent.class);
+  private final List<CalendarEventOccurrence> occurrences = new ArrayList<>();
 
   private CalendarEventStubBuilder() {
     withVisibilityLevel(VisibilityLevel.PUBLIC);
@@ -68,13 +68,12 @@ public class CalendarEventStubBuilder {
     return event;
   }
 
-  private CalendarEventStubBuilder withPeriod(final Period period) {
+  private void withPeriod(final Period period) {
     this.period = period;
     when(event.getStartDate()).thenReturn(period.getStartDate());
     when(event.getEndDate()).thenReturn(period.getEndDate());
     when(event.isOnAllDay()).thenReturn(period.isInDays());
     component.setPeriod(period);
-    return this;
   }
 
   public CalendarEventStubBuilder withExternalId(final String externalId) {
