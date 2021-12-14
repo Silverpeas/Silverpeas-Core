@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.util;
 
-import com.lowagie.text.Image;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.silverpeas.core.SilverpeasRuntimeException;
@@ -178,19 +177,12 @@ public class PdfUtil {
     } else if (pdfDestination == null) {
       throw new SilverpeasRuntimeException(PDF_DESTINATION_ERROR_MSG);
     }
-
-    FileInputStream pdfSourceIS = null;
-    FileOutputStream pdfDestinationIS = null;
-    try {
-      pdfSourceIS = FileUtils.openInputStream(pdfSource);
-      pdfDestinationIS = FileUtils.openOutputStream(pdfDestination);
+    try (FileInputStream pdfSourceIS = FileUtils.openInputStream(pdfSource);
+         FileOutputStream pdfDestinationIS = FileUtils.openOutputStream(pdfDestination)) {
       addImageOnEachPage(pdfSourceIS, image, pdfDestinationIS, isBackground);
     } catch (IOException e) {
       throw new SilverpeasRuntimeException(
           "Pdf source file cannot be opened or pdf destination file cannot be created", e);
-    } finally {
-      IOUtils.closeQuietly(pdfSourceIS);
-      IOUtils.closeQuietly(pdfDestinationIS);
     }
   }
 
