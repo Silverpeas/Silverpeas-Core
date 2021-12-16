@@ -56,6 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.silverpeas.core.node.model.NodeDetail.NO_RIGHTS_DEPENDENCY;
+
 /**
  * This is the default implementation of NodeService. A node is composed by some another nodes
  * (children) and have got one and only one father. It describes a tree.
@@ -273,6 +275,12 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   @Override
   @Transactional
   public void moveNode(NodePK nodePK, NodePK toNode) {
+    moveNode(nodePK, toNode, false);
+  }
+
+  @Override
+  @Transactional
+  public void moveNode(NodePK nodePK, NodePK toNode, boolean preserveRights) {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + '/';
     String oldRootPath = null;
@@ -295,7 +303,13 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         node.setPath(newPath);
         node.setLevel(StringUtils.countMatches(newPath, "/"));
         node.getNodePK().setComponentName(toNode.getInstanceId());
-        node.setRightsDependsOn(root.getRightsDependsOn());
+        if (preserveRights) {
+          if (t == 0 && !node.haveLocalRights()) {
+            node.setRightsDependsOn(root.getRightsDependsOn());
+          }
+        } else {
+          node.setRightsDependsOn(NO_RIGHTS_DEPENDENCY);
+        }
         node.setUseId(true);
         NodePK newNodePK = save(node);
         NodeDetail newNode = getDetail(newNodePK);
