@@ -237,6 +237,14 @@ public interface NodeService {
   void moveNode(NodePK nodePK, NodePK toNode);
 
   /**
+   * Moves the specified node to the given another one that then will become its new father.
+   * @param nodePK the unique identifier of the node to move.
+   * @param toNode the unique identifier of the new father of the node.
+   * @param preserveRights indicates if specific rights must be maintained or not
+   */
+  void moveNode(NodePK nodePK, NodePK toNode, boolean preserveRights);
+
+  /**
    * On node creation, check if another node have got the same name with same father
    *
    * @return true if there is already a node with same name with same father false else
