@@ -3660,13 +3660,12 @@ table.pdcPositionsField {
 }
 
 .simple-button {
-  background-color: #F4F4F4;
   border-radius: 5px;
   border: 1px solid #CCC;
   color: #4C4C4C;
   font-size: 100%;
   padding: 7px 10px;
-  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  background: #F4F4F4 linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   display:inline-block;
 }
 
@@ -3913,8 +3912,7 @@ ul.applicationsTypeList {
   width:206px;
   height:100%;
   border-left: 1px solid #333;
-  background-color:#333;
-  background: linear-gradient(to bottom, #CCCCCC 0%, #333333 100%);
+  background: #333 linear-gradient(to bottom, #CCCCCC 0%, #333333 100%);
 }
 
 li.applicationsType{
@@ -3970,8 +3968,7 @@ li.application {
   overflow:hidden;
   border:1px solid #dfdfdf;
   border-radius:20px;
-  background-color:#eaeaea;
-  background: linear-gradient(to bottom, #ffffff 0%, #eaeaea 100%);
+  background: #eaeaea linear-gradient(to bottom, #ffffff 0%, #eaeaea 100%);
 }
 
 li.application {
@@ -4260,8 +4257,7 @@ li.application  .applicationName {
   width:24%;
   height:100%;
   float:left;
-  background-color:#333;
-  background: linear-gradient(to bottom, #6f6f6f 0%, #333333 100%);
+  background: #333 linear-gradient(to bottom, #6f6f6f 0%, #333333 100%);
   color:#FFF;
 }
 .userPanel .users_results_userPanel,
@@ -4325,8 +4321,7 @@ li.application  .applicationName {
 #filter_userPanel .listing_filter ul {
   overflow:auto;
   border-top:1px solid #868686;
-  background-color:#444;
-  background: linear-gradient(to bottom, #6f6f6f 0%, #444444 100%);
+  background: #444 linear-gradient(to bottom, #6f6f6f 0%, #444444 100%);
 }
 
 #filter_userPanel .filter.select a,
@@ -5818,8 +5813,7 @@ span.sp-variable.cke_widget_element {
 }
 
 .forms .ignoreForm {
-  background-color: #f4f4f4;
-  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  background: #f4f4f4 linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #4c4c4c;
@@ -6609,8 +6603,7 @@ iframe.embed {
   margin:0 0 1em 0;
 }
 a.navigation-button {
-  background-color: #f4f4f4;
-  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  background: #f4f4f4 linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   border: 1px solid #CCC;
   border-radius: 5px;
   color: #4c4c4c;
@@ -6710,8 +6703,7 @@ a.navigation-button {
 }
 
 .fields .explorePanel, .fields .emptyList {
-  background-color: #f4f4f4;
-  background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
+  background: #f4f4f4 linear-gradient(to bottom, #fff 0%, #e5e5e5 100%);
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #4c4c4c;
