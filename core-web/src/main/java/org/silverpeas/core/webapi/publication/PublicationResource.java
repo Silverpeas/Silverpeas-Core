@@ -23,8 +23,15 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
@@ -32,12 +39,14 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.NodeAccessController;
 import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -45,7 +54,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -114,6 +126,97 @@ public class PublicationResource extends AbstractPublicationResource {
     }
 
     throw new WebApplicationException(Response.Status.NOT_FOUND);
+  }
+
+  @GET
+  @Path("{pubId}/locations")
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<LocationEntity> getLocations(@PathParam("pubId") String pubId,
+      @QueryParam("lang") String language) {
+
+    PublicationPK pk = new PublicationPK(pubId, componentId);
+
+    String uri = getUri().getAbsolutePath().toString();
+    uri = uri.replace("/locations", "");
+
+    List<LocationEntity> entities = new ArrayList<>();
+    List<Location> locations = getPublicationService().getAllLocations(pk);
+
+    //Sorting according to spaces sort
+    List<SilverpeasComponentInstance> compos = null;
+    List<Location> sortedLocations = new ArrayList<>();
+    try {
+      SpaceWithSubSpacesAndComponents treeview = OrganizationController.get()
+          .getFullTreeview(getUser().getId());
+      compos = treeview.componentInstanceSelector().fromAllSpaces().select();
+      for (SilverpeasComponentInstance compo : compos) {
+        sortedLocations.addAll(getComponentLocations(locations, compo.getId()));
+      }
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e);
+      sortedLocations = locations;
+    }
+
+    for (Location location : sortedLocations) {
+      entities.add(LocationEntity.fromLocation(location, UriBuilder.fromUri(uri).build(), language));
+    }
+    return entities;
+  }
+
+  private List<Location> getComponentLocations(List<Location> allLocations, String componentId) {
+    List<Location> componentLocations = new ArrayList<>();
+    for (Location location : allLocations) {
+      if (location.getInstanceId().equals(componentId)) {
+        componentLocations.add(location);
+      }
+    }
+    return componentLocations;
+  }
+
+  @PUT
+  @Path("{pubId}/locations/{nodeId}-{aliasComponentId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response addAlias(@PathParam("pubId") String pubId,
+      @PathParam("nodeId") String nodeId, @PathParam("aliasComponentId") String aliasComponentId) {
+
+    PublicationPK pk = new PublicationPK(pubId, componentId);
+
+    //Checking publication is modified by user
+    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
+        .init().onOperationsOf(AccessControlOperation.modification))) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+
+    Location location = new Location(nodeId, aliasComponentId);
+    location.setAsAlias(User.getCurrentRequester().getId());
+
+    getPublicationService().addAliases(pk, Collections.singletonList(location));
+
+    return Response.ok().build();
+  }
+
+  @DELETE
+  @Path("{pubId}/locations/{nodeId}-{aliasComponentId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteAlias(@PathParam("pubId") String pubId,
+      @PathParam("nodeId") String nodeId, @PathParam("aliasComponentId") String aliasComponentId) {
+
+    PublicationPK pk = new PublicationPK(pubId, componentId);
+
+    //Checking publication is modified by user
+    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
+        .init().onOperationsOf(AccessControlOperation.modification))) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+
+    List<Location> aliases = getPublicationService().getAllAliases(pk);
+    for (Location alias : aliases) {
+      if (alias.getId().equals(nodeId) && alias.getInstanceId().equals(aliasComponentId)) {
+        getPublicationService().removeAliases(pk, Collections.singletonList(alias));
+      }
+    }
+
+    return Response.ok().build();
   }
 
   private void setURIToAttachments(List<PublicationEntity> publications) {
