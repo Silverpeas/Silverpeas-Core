@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -79,7 +80,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.xml.DateAdapter;
 
@@ -662,7 +662,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
             WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().getId(),
                 xmlField.getName(), language);
       } else {
-        fieldValue = WebEncodeHelper.javaStringToHtmlParagraphe(fieldValue);
+        fieldValue = Encode.forHtml(fieldValue);
       }
     }
     return fieldValue;

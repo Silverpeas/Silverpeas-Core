@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.variables;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.annotation.constraint.DateRange;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.util.WebEncodeHelper;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -135,7 +135,7 @@ public class VariableScheduledValue
    * @return the HTML-formatted value.
    */
   public String getValueForHTML() {
-    return WebEncodeHelper.javaStringToHtmlParagraphe(getValue());
+    return Encode.forHtml(getValue());
   }
 
   /**

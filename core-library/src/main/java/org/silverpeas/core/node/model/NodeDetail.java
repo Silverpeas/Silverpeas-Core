@@ -219,7 +219,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
    *   <li>the node isn't a bin,</li>
    *   <li>the node isn't unclassified (orphaned).</li>
    * </ul>
-   * @return
+   * @return true if this node is a child of another node. False otherwise.
    */
   public boolean isChild() {
     return getLocalId() > 2;

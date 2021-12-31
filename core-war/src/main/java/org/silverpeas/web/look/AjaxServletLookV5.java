@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.look;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -45,7 +46,6 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
@@ -277,7 +277,6 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
    * @param userId
    * @param language
    * @param defaultLook
-   * @param displayPDC
    * @param displayTransverse
    * @param helper
    * @param writer
@@ -402,8 +401,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     }
 
     return "id=\"" + space.getId() + NAME +
-        WebEncodeHelper.escapeXml(space.getName(language)) + "\" description=\"" +
-        WebEncodeHelper.escapeXml(space.getDescription()) + "\" type=\"" + attributeType +
+        Encode.forXml(space.getName(language)) + "\" description=\"" +
+        Encode.forXml(space.getDescription()) + "\" type=\"" + attributeType +
         "\" kind=\"space\" level=\"" + space.getLevel() + "\" look=\"" + spaceLook +
         "\" wallpaper=\"" + spaceWallpaper + "\"" + " css=\"" + spaceCSS + "\"";
   }
@@ -562,7 +561,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         axis = primaryAxi;
         if (axis != null && axis.getNbObjects() > 0) {
           out.write("<axis id=\"" + axis.getAxisId() + NAME +
-              WebEncodeHelper.escapeXml(axis.getAxisName()) +
+              Encode.forXml(axis.getAxisName()) +
               "\" description=\"\" level=\"0\" open=\"false\" nbObjects=\"" + axis.getNbObjects() +
               "\"/>");
         }
@@ -626,7 +625,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         value = daughter;
         if (value != null && value.getMotherId().equals(valueId)) {
           out.write("<value id=\"" + value.getFullPath() + NAME +
-              WebEncodeHelper.escapeXml(value.getName()) + "\" description=\"\" level=\"" +
+              Encode.forXml(value.getName()) + "\" description=\"\" level=\"" +
               value.getLevelNumber() + "\" open=\"false\" nbObjects=\"" + value.getNbObjects() +
               "\"/>");
         }
@@ -852,8 +851,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
     void write(Writer writer) throws IOException {
       writer.write(
-          "<item id=\"" + id + NAME + WebEncodeHelper.escapeXml(label) + "\" description=\"" +
-              WebEncodeHelper.escapeXml(description) + "\" type=\"" + component + "\" kind=\"" + kind +
+          "<item id=\"" + id + NAME + Encode.forXml(label) + "\" description=\"" +
+              Encode.forXml(description) + "\" type=\"" + component + "\" kind=\"" + kind +
               "\" level=\"" + level + "\" open=\"" + open + "\" " + "url=\"" + componentUrl + "\"/>");
     }
 

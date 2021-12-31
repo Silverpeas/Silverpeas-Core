@@ -110,9 +110,6 @@ public class Location extends NodePK {
 
   @Override
   public boolean equals(Object other) {
-    if (!(other instanceof Location)) {
-      return false;
-    }
     return super.equals(other);
   }
 
