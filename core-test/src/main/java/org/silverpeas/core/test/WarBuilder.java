@@ -70,10 +70,12 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    */
   private static final ArchivePath PATH_CLASSES = ArchivePaths.create(PATH_WEB_INF, "classes");
 
-  protected Collection<String> mavenDependencies = new HashSet<>(Arrays
-      .asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
+  protected Collection<String> mavenDependencies = new HashSet<>(
+      Arrays.asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
           "commons-codec:commons-codec", "commons-io:commons-io",
           "org.silverpeas.core:silverpeas-core-test"));
+
+  protected Collection<String> mavenDependenciesWithoutTransitivity = new HashSet<>();
 
   protected Collection<String> jarLibForPersistence = new HashSet<>();
 
@@ -95,7 +97,9 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     this.classOfTest = classOfTest;
     logInfo("Building archive for " + classOfTest.getSimpleName());
     testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
-    String resourcePath = classOfTest.getPackage().getName().replace('.', '/');
+    String resourcePath = classOfTest.getPackage()
+        .getName()
+        .replace('.', '/');
     logInfo("Adding resources from path: " + resourcePath);
     war.addAsResource(resourcePath);
     war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
@@ -145,8 +149,9 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   }
 
   /**
-   * Adds the specified maven dependencies that are defined in the pom.xml of the project. Each of
-   * the specified dependencies must be expressed in the canonical form
+   * Adds the specified maven dependencies with their transitive dependencies that are defined in
+   * the pom.xml of the project. Each of the specified dependencies must be expressed in the
+   * canonical form
    * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
@@ -157,14 +162,15 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   }
 
   /**
-   * Adds the specified maven dependencies that are defined in the pom.xml of the project. Each of
-   * the specified dependencies must be expressed in the canonical form
-   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>. The artifacts are
-   * then referenced in the persistence descriptor so that the entities and repositories are taken
-   * in charge by the persistence layer. For doing, in the case the version isn't
-   * specified in the canonical form of the dependency, it is figured out from the
-   * <code>maven.properties</code> file. A property <code>&lt;artifactId&gt;.version</code> is first
-   * looked for and if not found, the silverpeas version is then used.
+   * Adds the specified maven dependencies with their transitive dependencies that are defined in
+   * the pom.xml of the project. Each of the specified dependencies must be expressed in the
+   * canonical form
+   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>. The artifacts
+   * are then referenced in the persistence descriptor so that the entities and repositories are
+   * taken in charge by the persistence layer. For doing, in the case the version isn't specified in
+   * the canonical form of the dependency, it is figured out from the
+   * <code>maven.properties</code> file. A property <code>&lt;artifactId&gt;.version</code> is
+   * first looked for and if not found, the silverpeas version is then used.
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
@@ -177,6 +183,19 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       logInfo("Adding persistence reference for: " + jarLib);
       jarLibForPersistence.add("<jar-file>" + jarLib + "</jar-file>");
     }
+    return this;
+  }
+
+  /**
+   * Adds the specified maven dependencies without their transitive dependencies that are defined in
+   * the pom.xml of the project. Each of the specified dependencies must be expressed in the
+   * canonical form
+   * <pre><code>&lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;]</code></pre>
+   * @param mavenDependencies the canonical maven dependencies to add.
+   * @return the instance of the configurator.
+   */
+  public WarBuilder<T> addMavenDependenciesWithoutTransitivity(String... mavenDependencies) {
+    Collections.addAll(this.mavenDependenciesWithoutTransitivity, mavenDependencies);
     return this;
   }
 
@@ -289,9 +308,10 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
           Objects.requireNonNull(is);
           persistenceXmlContent = IOUtils.toString(is, Charsets.UTF_8);
         }
-        File persistenceXml = FileUtils.getFile(
-            classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(), "META-INF",
-            "dynamic-test-persistence.xml");
+        File persistenceXml = FileUtils.getFile(classOfTest.getProtectionDomain()
+            .getCodeSource()
+            .getLocation()
+            .getFile(), "META-INF", "dynamic-test-persistence.xml");
         logInfo("Setting persistence xml descriptor: " + persistenceXml.getPath());
         persistenceXmlContent = persistenceXmlContent.replace("<!-- @JAR_FILES@ -->",
             String.join("\n", jarLibForPersistence));
@@ -309,9 +329,10 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
           Objects.requireNonNull(is);
           webXmlContent = IOUtils.toString(is, Charsets.UTF_8);
         }
-        File webXml = FileUtils
-            .getFile(classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(),
-                "META-INF", "dynamic-test-web.xml");
+        File webXml = FileUtils.getFile(classOfTest.getProtectionDomain()
+            .getCodeSource()
+            .getLocation()
+            .getFile(), "META-INF", "dynamic-test-web.xml");
         logInfo("Setting web xml descriptor: " + webXml.getPath());
         webXmlContent = webXmlContent.replace("<!-- @WEB_PARTS@ -->", String.join("\n", webParts));
         FileUtils.writeStringToFile(webXml, webXmlContent, Charsets.UTF_8);
@@ -319,9 +340,26 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
         logInfo("Adding completed web.xml");
         war.setWebXML(webXml);
       }
-      File[] libs = Stream.of(Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
-              .asFile()).filter(onLibsToInclude()).toArray(File[]::new);
-      war.addAsLibraries(libs);
+      if (!mavenDependencies.isEmpty()) {
+        File[] libs1 = Stream.of(Maven.resolver()
+                .loadPomFromFile("pom.xml")
+                .resolve(mavenDependencies)
+                .withTransitivity()
+                .asFile())
+            .filter(onLibsToInclude())
+            .toArray(File[]::new);
+        war.addAsLibraries(libs1);
+      }
+      if (!mavenDependenciesWithoutTransitivity.isEmpty()) {
+        File[] libs2 = Stream.of(Maven.resolver()
+                .loadPomFromFile("pom.xml")
+                .resolve(mavenDependenciesWithoutTransitivity)
+                .withoutTransitivity()
+                .asFile())
+            .filter(onLibsToInclude())
+            .toArray(File[]::new);
+        war.addAsLibraries(libs2);
+      }
       war.addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
           "META-INF/services/org.silverpeas.core.util.BeanContainer");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -335,18 +373,21 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   }
 
   /**
-   * Gets a predicate on libraries (represented each of them by a file) to indicate if a library
-   * is accepted or not to be included among the dependencies of a WAR to build for integration
-   * tests ran by Arquillian.
+   * Gets a predicate on libraries (represented each of them by a file) to indicate if a library is
+   * accepted or not to be included among the dependencies of a WAR to build for integration tests
+   * ran by Arquillian.
    * @return a predicate on a file (a given library)
    */
   protected Predicate<File> onLibsToInclude() {
-    return f -> !f.getName().startsWith("resteasy") && !f.getName().startsWith("javax") &&
-        !f.getName().contains("hibernate");
+    return f -> !f.getName()
+        .startsWith("resteasy") && !f.getName()
+        .startsWith("javax") && !f.getName()
+        .contains("hibernate");
   }
 
   private void logInfo(String info) {
-    Logger.getLogger(WarBuilder.class.getName()).info(info);
+    Logger.getLogger(WarBuilder.class.getName())
+        .info(info);
   }
 
   /**

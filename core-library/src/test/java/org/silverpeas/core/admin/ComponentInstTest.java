@@ -34,13 +34,13 @@ import static org.hamcrest.Matchers.is;
  * @author ebonnet
  */
 @UnitTest
-public class ComponentInstTest {
+class ComponentInstTest {
 
   public ComponentInstTest() {
   }
 
   @Test
-  public void testGetLocalId() throws Exception {
+  void testGetLocalId() throws Exception {
     ComponentInst componentInst = new ComponentInst();
     MatcherAssert.assertThat(componentInst.getLocalId(), is(-1));
   }

@@ -38,7 +38,7 @@ import org.silverpeas.core.test.extention.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
  */
 @EnableSilverTestEnv
 @TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
-public class PersistentResourceDateReminderTest {
+class PersistentResourceDateReminderTest {
 
   @BeforeEach
   public void prepareInjection(@TestManagedMock UserProvider userProvider) {
@@ -60,7 +60,7 @@ public class PersistentResourceDateReminderTest {
   }
 
   @Test
-  public void testValidate() {
+  void testValidate() {
     PersistentResourceDateReminder dateReminder = initializeDateReminder();
     assertValidate(dateReminder, true);
 

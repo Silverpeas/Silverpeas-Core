@@ -44,17 +44,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/integration-test/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>maven.properties</include>
-          <include>org/silverpeas/general.properties</include>
-        </includes>
-      </testResource>
-    </testResources>
-  </build>
-
 </project>

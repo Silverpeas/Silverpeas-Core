@@ -31,10 +31,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.*;
 
 @UnitTest
-public class SpaceInstTest {
+class SpaceInstTest {
 
   @Test
-  public void
+  void
   testGetLocalId() throws Exception {
     SpaceInst spaceInst = new SpaceInst();
     assertThat(spaceInst.getLocalId(), is(-1));

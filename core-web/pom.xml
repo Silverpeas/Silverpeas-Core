@@ -218,12 +218,8 @@
       <artifactId>encoder-jsp</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
+      <artifactId>resteasy-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -242,4 +238,36 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>integration-test</id>
+      <activation>
+        <property>
+          <name>context</name>
+          <value>ci</value>
+        </property>
+      </activation>
+      <build>
+        <testResources>
+          <testResource>
+            <directory>src/integration-test/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>maven.properties</include>
+              <include>org/silverpeas/util/stringtemplate.properties</include>
+            </includes>
+          </testResource>
+          <testResource>
+            <directory>src/integration-test/resources</directory>
+            <filtering>false</filtering>
+            <excludes>
+              <exclude>maven.properties</exclude>
+              <exclude>org/silverpeas/util/stringtemplate.properties</exclude>
+            </excludes>
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+  </profiles>
 </project>

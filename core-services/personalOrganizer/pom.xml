@@ -37,12 +37,4 @@
   <packaging>jar</packaging>
   <name>Silverpeas Calendar Service ${project.version}</name>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-  </build>
 </project>

@@ -95,8 +95,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    * @return the instance of the war archive builder.
    */
   public WarBuilder4WebCore addRESTWebServiceEnvironment() {
-    addMavenDependencies("org.apache.httpcomponents:httpclient");
-    addMavenDependencies("org.silverpeas.core:silverpeas-core-rs");
+    addMavenDependencies("edu.psu.swe.commons:commons-jaxrs");
+    addMavenDependenciesWithoutTransitivity("org.silverpeas.core:silverpeas-core-rs");
     return this;
   }
 

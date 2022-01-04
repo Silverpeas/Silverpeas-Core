@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.webapi.password;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 
@@ -30,6 +32,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -38,7 +41,7 @@ import java.util.Collection;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PasswordCheckEntity {
+public class PasswordCheckEntity implements Serializable {
 
   /* Indicates if it exists at least one error */
   @XmlElement
@@ -50,11 +53,11 @@ public class PasswordCheckEntity {
 
   /* List of password required rule ids that are not verified */
   @XmlElement
-  private Collection<String> requiredRuleIdsInError = new ArrayList<String>();
+  private Collection<String> requiredRuleIdsInError = new ArrayList<>();
 
   /* List of password combined rule ids that are not verified */
   @XmlElement
-  private Collection<String> combinedRuleIdsInError = new ArrayList<String>();
+  private Collection<String> combinedRuleIdsInError = new ArrayList<>();
 
   /**
    * Creates a new password check entity
@@ -65,8 +68,8 @@ public class PasswordCheckEntity {
   }
 
   /**
-   * Defulat hidden constructor
-   * @param passwordCheck
+   * Default hidden constructor
+   * @param passwordCheck the password check to wrap
    */
   private PasswordCheckEntity(final PasswordCheck passwordCheck) {
     isCorrect = passwordCheck.isCorrect();

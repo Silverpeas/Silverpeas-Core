@@ -215,12 +215,6 @@
         <filtering>true</filtering>
       </resource>
     </resources>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <groupId>org.silverpeas.maven</groupId>
@@ -270,30 +264,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>integration-test</id>
-      <activation>
-        <property>
-          <name>context</name>
-          <value>ci</value>
-        </property>
-      </activation>
-      <build>
-        <testResources>
-          <testResource>
-            <directory>src/integration-test/resources</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>**/*.properties</include>
-            </includes>
-          </testResource>
-          <testResource>
-            <directory>src/test/resources</directory>
-            <filtering>false</filtering>
-          </testResource>
-        </testResources>
-      </build>
-    </profile>
-  </profiles>
 </project>

@@ -37,17 +37,4 @@
   <packaging>jar</packaging>
   <name>Silverpeas Comment Service ${project.version}</name>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-    <!--
-    <filters>
-      <filter>src/test/filters/filters.properties</filter>
-    </filters>
-    -->
-  </build>
 </project>

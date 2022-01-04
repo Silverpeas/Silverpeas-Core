@@ -24,6 +24,8 @@
 package org.silverpeas.core.util.lang;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -39,6 +41,8 @@ import java.util.Properties;
  * Default implementation that is nothing more than a delegate of {@link System} class.
  * @author Yohann Chastagnier
  */
+@Technical
+@Bean
 @Singleton
 public class DefaultSystemWrapper implements SystemWrapper {
 

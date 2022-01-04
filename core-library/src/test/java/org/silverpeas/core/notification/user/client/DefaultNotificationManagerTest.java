@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
  * Unit tests on the manager of notifications.
  */
 @EnableSilverTestEnv
-public class DefaultNotificationManagerTest {
+class DefaultNotificationManagerTest {
 
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
@@ -60,7 +60,7 @@ public class DefaultNotificationManagerTest {
    * Useful for checking the setting up of the resources required by tests is ok.
    */
   @Test
-  public void emptyTest() {
+  void emptyTest() {
     assertTrue(true);
   }
 
@@ -69,7 +69,7 @@ public class DefaultNotificationManagerTest {
    * default. Any unknow channel is not taken into account.
    */
   @Test
-  public void loadOfDefaultChannelSettingsSetsTheSpecifiedKnownChannelsAsDefault() {
+  void loadOfDefaultChannelSettingsSetsTheSpecifiedKnownChannelsAsDefault() {
     when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(true);
     when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn(
         "BASIC_SMTP_MAIL   BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    BASIC_SILVERMAIL");
@@ -87,7 +87,7 @@ public class DefaultNotificationManagerTest {
    * default channels is taken into account as default channel.
    */
   @Test
-  public void noMultiSupportChannelSettingSetsOnlyOneSpecifiedDefaultChannel() {
+  void noMultiSupportChannelSettingSetsOnlyOneSpecifiedDefaultChannel() {
     when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(false);
     when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn(
         "TOTO BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    BASIC_SILVERMAIL");
@@ -103,7 +103,7 @@ public class DefaultNotificationManagerTest {
    * set as default channel.
    */
   @Test
-  public void emptyDefaultChannelsSetsSMTPChannelAsDefault() {
+  void emptyDefaultChannelsSetsSMTPChannelAsDefault() {
     when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(true);
     when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn("");
 

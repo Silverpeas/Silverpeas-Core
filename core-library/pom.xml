@@ -54,8 +54,8 @@
       <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -267,24 +267,6 @@
   </dependencies>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <includes>
-          <include>maven.properties</include>
-          <include>**/*.properties</include>
-        </includes>
-        <filtering>true</filtering>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <excludes>
-          <exclude>maven.properties</exclude>
-          <exclude>**/*.properties</exclude>
-        </excludes>
-        <filtering>false</filtering>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -331,10 +313,17 @@
             <includes>
               <include>**/*.properties</include>
             </includes>
+            <excludes>
+              <exclude>**/StopWords*.properties</exclude>
+              <exclude>**/multilang/*.properties</exclude>
+            </excludes>
           </testResource>
           <testResource>
-            <directory>src/test/resources</directory>
+            <directory>src/integration-test/resources</directory>
             <filtering>false</filtering>
+            <excludes>
+              <exclude>**/*.properties</exclude>
+            </excludes>
           </testResource>
         </testResources>
       </build>

@@ -40,8 +40,8 @@ import java.io.File;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.io.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 

@@ -169,7 +169,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(document.getDescription(), is("How smalltak has been created"));
     assertThat(document.getCreator(), is(User.getCurrentRequester()
         .getDisplayedName()));
-    assertThat(document.getSize(), is(1629872L));
+    assertThat(document.getSize(), is(889449L));
   }
 
   @Test
@@ -204,7 +204,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(updatedDocument.getSize(), not(is(previousSize)));
-    assertThat(updatedDocument.getSize(), is(1390098L));
+    assertThat(updatedDocument.getSize(), is(795247L));
   }
 
   @Test
@@ -218,7 +218,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     contentStream.setStream(content);
     contentStream.setMimeType(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT);
     contentStream.setFileName("computer_programming_using_gnu_smalltalk.odt");
-    contentStream.setLength(BigInteger.valueOf(1390098L));
+    contentStream.setLength(BigInteger.valueOf(795247L));
 
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
 
@@ -300,7 +300,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     contentStream.setStream(content);
     contentStream.setMimeType(MimeTypes.PDF_MIME_TYPE);
     contentStream.setFileName("HistoryOfSmalltalk.pdf");
-    contentStream.setLength(BigInteger.valueOf(1390098L));
+    contentStream.setLength(BigInteger.valueOf(795247L));
 
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
     CmisObject object =
@@ -320,7 +320,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(updatedDocument.getSize(), not(is(previousSize)));
-    assertThat(updatedDocument.getSize(), is(1390098L));
+    assertThat(updatedDocument.getSize(), is(795247L));
   }
 
   @Test
@@ -363,7 +363,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(updatedDocument.getSize(), not(is(previousSize)));
-    assertThat(updatedDocument.getSize(), is(1390098L));
+    assertThat(updatedDocument.getSize(), is(795247L));
   }
 
   private CmisObject createDocument() {

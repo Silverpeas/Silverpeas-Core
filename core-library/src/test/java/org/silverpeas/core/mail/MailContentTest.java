@@ -25,7 +25,7 @@ package org.silverpeas.core.mail;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.Charsets;
 
@@ -123,7 +123,7 @@ public class MailContentTest {
     MimeMessage mimeMessageMock = mock(MimeMessage.class);
     mailContent.applyOn(mimeMessageMock);
     verify(mimeMessageMock, times(1)).setContent(expectedContent, OTHER_TYPE);
-    verify(mimeMessageMock, times(0)).setContent(Matchers.any(Multipart.class));
+    verify(mimeMessageMock, times(0)).setContent(Mockito.any(Multipart.class));
     verify(mimeMessageMock, times(0)).setText(anyString(), anyString());
   }
 
@@ -136,7 +136,7 @@ public class MailContentTest {
     MimeMessage mimeMessageMock = mock(MimeMessage.class);
     mailContent.applyOn(mimeMessageMock);
     verify(mimeMessageMock, times(0)).setContent(expectedContent, HTML_TYPE);
-    verify(mimeMessageMock, times(1)).setContent(Matchers.any(Multipart.class));
+    verify(mimeMessageMock, times(1)).setContent(Mockito.any(Multipart.class));
     verify(mimeMessageMock, times(0)).setText(anyString(), anyString());
     ArgumentCaptor<Multipart> multiPart = ArgumentCaptor.forClass(Multipart.class);
     verify(mimeMessageMock).setContent(multiPart.capture());
@@ -162,8 +162,8 @@ public class MailContentTest {
       throws Exception {
     MimeMessage mimeMessageMock = mock(MimeMessage.class);
     mailContent.applyOn(mimeMessageMock);
-    verify(mimeMessageMock, times(0)).setContent(anyObject(), anyString());
-    verify(mimeMessageMock, times(0)).setContent(Matchers.any(Multipart.class));
+    verify(mimeMessageMock, times(0)).setContent(Mockito.any(), anyString());
+    verify(mimeMessageMock, times(0)).setContent(Mockito.any(Multipart.class));
     verify(mimeMessageMock, times(1)).setText(expectedContent, Charsets.UTF_8.name());
   }
 
@@ -171,7 +171,7 @@ public class MailContentTest {
       throws Exception {
     MimeMessage mimeMessageMock = mock(MimeMessage.class);
     mailContent.applyOn(mimeMessageMock);
-    verify(mimeMessageMock, times(0)).setContent(anyObject(), anyString());
+    verify(mimeMessageMock, times(0)).setContent(Mockito.any(), anyString());
     verify(mimeMessageMock, times(1)).setContent(expectedMultipart);
     verify(mimeMessageMock, times(0)).setText(anyString(), anyString());
   }

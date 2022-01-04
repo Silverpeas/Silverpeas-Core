@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv
-public class NotificationManagerSettingsTest {
+class NotificationManagerSettingsTest {
 
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
@@ -60,20 +60,20 @@ public class NotificationManagerSettingsTest {
    */
 
   @Test
-  public void getDefaultDelayedNotificationFrequencyButNoValue() {
+  void getDefaultDelayedNotificationFrequencyButNoValue() {
     assertThat(NotificationManagerSettings.getDefaultDelayedNotificationFrequency(),
         is(DelayedNotificationFrequency.NONE));
   }
 
   @Test
-  public void getDefaultDelayedNotificationFrequencyButBadValue() {
+  void getDefaultDelayedNotificationFrequencyButBadValue() {
     setDefaultDelayedNotificationFrequencyChoiceList("D W");
     assertThat(NotificationManagerSettings.getDefaultDelayedNotificationFrequency(),
         is(DelayedNotificationFrequency.NONE));
   }
 
   @Test
-  public void getDefaultDelayedNotificationFrequencyWithRightValue() {
+  void getDefaultDelayedNotificationFrequencyWithRightValue() {
     setDefaultDelayedNotificationFrequencyChoiceList("W");
     assertThat(NotificationManagerSettings.getDefaultDelayedNotificationFrequency(),
         is(DelayedNotificationFrequency.WEEKLY));
@@ -85,32 +85,32 @@ public class NotificationManagerSettingsTest {
    */
 
   @Test
-  public void getDelayedNotificationFrequencyChoiceListButNoValue() {
+  void getDelayedNotificationFrequencyChoiceListButNoValue() {
     assertThat(NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList(), empty());
   }
 
   @Test
-  public void getDelayedNotificationFrequencyChoiceListButBadValue() {
+  void getDelayedNotificationFrequencyChoiceListButBadValue() {
     setDelayedNotificationFrequencyChoiceList("   BAD_VALUE   ");
     assertThat(NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList(), empty());
   }
 
   @Test
-  public void getDelayedNotificationFrequencyChoiceListWithOneValidValue() {
+  void getDelayedNotificationFrequencyChoiceListWithOneValidValue() {
     setDelayedNotificationFrequencyChoiceList("   BAD_VALUE  D ");
     assertThat(NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList(),
         contains(DelayedNotificationFrequency.DAILY));
   }
 
   @Test
-  public void getDelayedNotificationFrequencyChoiceListWithTwoValidValue() {
+  void getDelayedNotificationFrequencyChoiceListWithTwoValidValue() {
     setDelayedNotificationFrequencyChoiceList(" W  BAD_VALUE  D");
     assertThat(NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList(),
         contains(DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.WEEKLY));
   }
 
   @Test
-  public void getDelayedNotificationFrequencyChoiceListWithAllFrequencies() {
+  void getDelayedNotificationFrequencyChoiceListWithAllFrequencies() {
     setDelayedNotificationFrequencyChoiceList(" W  BAD_VALUE  D *     ");
     assertThat(NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList(),
         contains(DelayedNotificationFrequency.values()));
@@ -122,34 +122,34 @@ public class NotificationManagerSettingsTest {
    */
 
   @Test
-  public void getDefaultChannelsWithNoValueDefinedAndMultiChannelIsNotEnabled() {
+  void getDefaultChannelsWithNoValueDefinedAndMultiChannelIsNotEnabled() {
     assertThat(NotificationManagerSettings.getDefaultChannels(),
         contains(NotifChannel.SMTP));
   }
 
   @Test
-  public void getDefaultChannelsWithBadValueDefinedAndMultiChannelIsNotEnabled() {
+  void getDefaultChannelsWithBadValueDefinedAndMultiChannelIsNotEnabled() {
     setDefaultChannels("BAD_VALUE");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
         contains(NotifChannel.SMTP));
   }
 
   @Test
-  public void getDefaultChannelsWithBasicServerDefinedAndMultiChannelIsNotEnabled() {
+  void getDefaultChannelsWithBasicServerDefinedAndMultiChannelIsNotEnabled() {
     setDefaultChannels("BASIC_SERVER");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
         contains(NotifChannel.SERVER));
   }
 
   @Test
-  public void getDefaultChannelsWithSeveralDefinedAndMultiChannelIsNotEnabled() {
+  void getDefaultChannelsWithSeveralDefinedAndMultiChannelIsNotEnabled() {
     setDefaultChannels("  , hijez ,  BASIC_SERVER   BAD_VALUE    BASIC_SERVER   ");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
         contains(NotifChannel.SERVER));
   }
 
   @Test
-  public void getDefaultChannelsWithSeveralDefinedAndMultiChannelIsEnabled() {
+  void getDefaultChannelsWithSeveralDefinedAndMultiChannelIsEnabled() {
     enableMultiChannel();
     setDefaultChannels("  , hijez ,  BASIC_SMTP_MAIL   BAD_VALUE    BASIC_SERVER   ");
     assertThat(NotificationManagerSettings.getDefaultChannels(),

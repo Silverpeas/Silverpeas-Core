@@ -41,13 +41,4 @@
     a Silverpeas component instance, to classify a content, etc.
   </description>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-  </build>
-
 </project>

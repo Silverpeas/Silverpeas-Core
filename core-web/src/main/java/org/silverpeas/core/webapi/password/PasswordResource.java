@@ -64,7 +64,7 @@ public class PasswordResource extends AbstractPasswordResource {
    * User authentication is not necessary for this WEB Service. The authentication processing is
    * used here to identify the user behind the call if possible.
    * @param validation the validation instance to use.
-   * @throws WebApplicationException
+   * @throws WebApplicationException if an error occurs
    */
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation)

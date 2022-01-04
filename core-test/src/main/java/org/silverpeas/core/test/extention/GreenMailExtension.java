@@ -106,7 +106,7 @@ public class GreenMailExtension
     return context.getStore(storeNs);
   }
 
-  private class GreenMailServer extends GreenMailProxy {
+  private static class GreenMailServer extends GreenMailProxy {
 
     private final GreenMail greenMail;
 
@@ -119,6 +119,10 @@ public class GreenMailExtension
       return this.greenMail;
     }
 
+    @Override
+    public boolean isRunning() {
+      return this.greenMail.isRunning();
+    }
   }
 }
   

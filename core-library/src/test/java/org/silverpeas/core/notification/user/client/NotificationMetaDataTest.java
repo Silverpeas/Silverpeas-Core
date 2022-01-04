@@ -43,11 +43,11 @@ import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv
-public class NotificationMetaDataTest {
+class NotificationMetaDataTest {
 
   private static final String USER_SENDER = "2406";
 
@@ -99,30 +99,30 @@ public class NotificationMetaDataTest {
    */
 
   @Test
-  public void displayGroupWithDisplayGroupNotEnabledAndThresholdNotSet() {
+  void displayGroupWithDisplayGroupNotEnabledAndThresholdNotSet() {
     assertThat(current.displayGroup("1"), is(false));
   }
 
   @Test
-  public void displayGroupWithDisplayGroupEnabledAndThresholdNotSet() {
+  void displayGroupWithDisplayGroupEnabledAndThresholdNotSet() {
     enableDisplayGroup();
     assertThat(current.displayGroup("1"), is(true));
   }
 
   @Test
-  public void displayGroupWithDisplayGroupNotEnabledAndHighThresholdSet() {
+  void displayGroupWithDisplayGroupNotEnabledAndHighThresholdSet() {
     setThresholdTo(50);
     assertThat(current.displayGroup("1"), is(false));
   }
 
   @Test
-  public void displayGroupWithDisplayGroupNotEnabledAndNbUserInGroupEqualsThresholdSet() {
+  void displayGroupWithDisplayGroupNotEnabledAndNbUserInGroupEqualsThresholdSet() {
     setThresholdTo(5);
     assertThat(current.displayGroup("1"), is(false));
   }
 
   @Test
-  public void displayGroupWithDisplayGroupNotEnabledAndNbUserInGroupGreaterThanThresholdSet() {
+  void displayGroupWithDisplayGroupNotEnabledAndNbUserInGroupGreaterThanThresholdSet() {
     setThresholdTo(4);
     assertThat(current.displayGroup("1"), is(true));
   }
@@ -133,13 +133,13 @@ public class NotificationMetaDataTest {
    */
 
   @Test
-  public void getAllUserRecipientsButNoSenderAndNoRecipient() throws Exception {
+  void getAllUserRecipientsButNoSenderAndNoRecipient() throws Exception {
     assertThat(current.getAllUserRecipients(), empty());
     assertThat(current.getUserRecipientsToExclude(), empty());
   }
 
   @Test
-  public void getAllUserRecipientsWithUserSenderAndNoRecipient() throws Exception {
+  void getAllUserRecipientsWithUserSenderAndNoRecipient() throws Exception {
     current.setSender(USER_SENDER);
 
     assertThat(current.getAllUserRecipients(), empty());
@@ -147,7 +147,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsButNoSenderAndTwoUserRecipients() throws Exception {
+  void getAllUserRecipientsButNoSenderAndTwoUserRecipients() throws Exception {
     current.addUserRecipient(new UserRecipient("26"));
     current.addUserRecipient(new UserRecipient("38"));
 
@@ -157,7 +157,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsWithUserSenderAndTwoUserRecipients() throws Exception {
+  void getAllUserRecipientsWithUserSenderAndTwoUserRecipients() throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipient(new UserRecipient("26"));
     current.addUserRecipient(new UserRecipient("38"));
@@ -168,7 +168,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsButNoSenderAndTwoGroupRecipients() throws Exception {
+  void getAllUserRecipientsButNoSenderAndTwoGroupRecipients() throws Exception {
     current.addGroupRecipient(new GroupRecipient("26"));
     current.addGroupRecipient(new GroupRecipient("38"));
 
@@ -180,7 +180,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsWithUserSenderAndTwoGroupRecipients() throws Exception {
+  void getAllUserRecipientsWithUserSenderAndTwoGroupRecipients() throws Exception {
     current.setSender(USER_SENDER);
     current.addGroupRecipient(new GroupRecipient("26"));
     current.addGroupRecipient(new GroupRecipient("38"));
@@ -193,7 +193,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsButNoSenderAndThreeUserRecipientsAndOneGroupRecipients()
+  void getAllUserRecipientsButNoSenderAndThreeUserRecipientsAndOneGroupRecipients()
       throws Exception {
     current.addUserRecipient(new UserRecipient(USER_SENDER));
     current.addUserRecipient(new UserRecipient("26"));
@@ -208,7 +208,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsWithUserSenderAndThreeUserRecipientsAndOneGroupRecipient()
+  void getAllUserRecipientsWithUserSenderAndThreeUserRecipientsAndOneGroupRecipient()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipient(new UserRecipient(USER_SENDER));
@@ -224,7 +224,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void
+  void
   getAllUserRecipientsWithUserSenderAndThreeUserRecipientsAndOneGroupRecipientAndModifyingInternalContainer()
       throws Exception {
     current.setSender(USER_SENDER);
@@ -241,7 +241,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsWithUserSenderAndThreeUserRecipientsAndOneUserRecipientExcluded()
+  void getAllUserRecipientsWithUserSenderAndThreeUserRecipientsAndOneUserRecipientExcluded()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipientToExclude(new UserRecipient("Excluded"));
@@ -258,7 +258,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void
+  void
   getAllUserRecipientsWithUserSenderAndThreeUserRecipientsAndOneUserRecipientExcludedAndModifyingInternalContainer()
       throws Exception {
     current.setSender(USER_SENDER);
@@ -277,7 +277,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsInSendContextForVerifyingExclusionWithDefaultSettings()
+  void getAllUserRecipientsInSendContextForVerifyingExclusionWithDefaultSettings()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipientToExclude(new UserRecipient("Excluded"));
@@ -291,7 +291,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsInSendContextForVerifyingSenderExclusion()
+  void getAllUserRecipientsInSendContextForVerifyingSenderExclusion()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipientToExclude(new UserRecipient("Excluded"));
@@ -305,7 +305,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithForceKeepingSender()
+  void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithForceKeepingSender()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipientToExclude(new UserRecipient("Excluded"));
@@ -319,7 +319,7 @@ public class NotificationMetaDataTest {
   }
 
   @Test
-  public void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithManualNotification()
+  void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithManualNotification()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipientToExclude(new UserRecipient("Excluded"));
@@ -339,26 +339,26 @@ public class NotificationMetaDataTest {
    */
 
   @Test
-  public void isManualUserOneWithNoSenderAndNotManualOne() throws Exception {
+  void isManualUserOneWithNoSenderAndNotManualOne() throws Exception {
     assertThat(current.isManualUserOne(), is(false));
   }
 
   @Test
-  public void isManualUserOneWithSenderAndNotManualOne() throws Exception {
+  void isManualUserOneWithSenderAndNotManualOne() throws Exception {
     current.setSender(USER_SENDER);
 
     assertThat(current.isManualUserOne(), is(false));
   }
 
   @Test
-  public void isManualUserOneWithNoSender() throws Exception {
+  void isManualUserOneWithNoSender() throws Exception {
     current.manualUserNotification();
 
     assertThat(current.isManualUserOne(), is(true));
   }
 
   @Test
-  public void isManualUserOneWithSender() throws Exception {
+  void isManualUserOneWithSender() throws Exception {
     current.manualUserNotification();
     current.setSender(USER_SENDER);
 

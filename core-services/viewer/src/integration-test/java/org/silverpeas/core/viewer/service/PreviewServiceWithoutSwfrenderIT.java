@@ -41,8 +41,7 @@ import javax.inject.Inject;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(Arquillian.class)
 public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
@@ -55,6 +54,7 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
   @Before
   public void setup() {
     FileUtils.deleteQuietly(getTemporaryPath());
+    //noinspection ResultOfMethodCallIgnored
     getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");

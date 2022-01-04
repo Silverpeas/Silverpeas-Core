@@ -42,12 +42,12 @@ import org.silverpeas.core.util.SettingBundle;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.notification.user.client.CurrentUserNotificationContext.getCurrentUserNotificationContext;
 
 @EnableSilverTestEnv
-public class CurrentUserNotificationContextTest {
+class CurrentUserNotificationContextTest {
 
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
@@ -80,14 +80,14 @@ public class CurrentUserNotificationContextTest {
    */
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     getCurrentUserNotificationContext().checkManualUserNotification(null);
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       CacheServiceProvider.getRequestCacheService().clearAllCaches();
       enableLimitationAt(1);
@@ -96,14 +96,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationEnabled()
       throws Exception {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(1);
@@ -111,20 +111,20 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNoCurrentUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithNoCurrentUserAndLimitationNotEnabled() throws Exception {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabled() throws Exception {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(2);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(2));
   }
 
   @Test
-  public void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
+  void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
     assertThrows(NotificationException.class, () -> {
       CacheServiceProvider.getRequestCacheService().clearAllCaches();
       enableLimitationAt(3);
@@ -133,7 +133,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
+  void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(3);
@@ -143,7 +143,7 @@ public class CurrentUserNotificationContextTest {
   // Admin
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
@@ -151,7 +151,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAdminUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAdminUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
       assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
@@ -161,7 +161,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
@@ -169,7 +169,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAdminUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAdminUserAndLimitationEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
@@ -178,14 +178,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAdminUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentAdminUserAndLimitationNotEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAdminUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentAdminUserAndLimitationEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
     enableLimitationAt(2);
@@ -193,7 +193,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
+  void checkManualUserNotificationWithCurrentAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessAdmin(), is(true));
@@ -204,7 +204,7 @@ public class CurrentUserNotificationContextTest {
   // Domain administrator
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentDomainAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentDomainAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
@@ -212,7 +212,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentDomainAdminUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentDomainAdminUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
       assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
@@ -222,7 +222,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentDomainAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentDomainAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
@@ -230,7 +230,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentDomainAdminUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentDomainAdminUserAndLimitationEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
@@ -239,14 +239,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentDomainAdminUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentDomainAdminUserAndLimitationNotEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentDomainAdminUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentDomainAdminUserAndLimitationEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
     enableLimitationAt(2);
@@ -254,7 +254,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentDomainAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
+  void checkManualUserNotificationWithCurrentDomainAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
@@ -265,7 +265,7 @@ public class CurrentUserNotificationContextTest {
   // Space administrator
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
@@ -273,7 +273,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
       assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
@@ -283,7 +283,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
@@ -291,7 +291,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
@@ -300,14 +300,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationNotEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
     enableLimitationAt(2);
@@ -315,7 +315,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
+  void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
@@ -326,7 +326,7 @@ public class CurrentUserNotificationContextTest {
   // PDC manager
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentPdcAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentPdcAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
@@ -334,7 +334,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentPdcAdminUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentPdcAdminUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
       assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
@@ -344,7 +344,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentPdcAdminUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentPdcAdminUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
@@ -352,7 +352,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentPdcAdminUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentPdcAdminUserAndLimitationEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
@@ -361,14 +361,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentPdcAdminUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentPdcAdminUserAndLimitationNotEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentPdcAdminUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentPdcAdminUserAndLimitationEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     assertThat(UserDetail.getCurrentRequester().isAccessPdcManager(), is(true));
     enableLimitationAt(2);
@@ -376,7 +376,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentPdcAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
+  void checkManualUserNotificationWithCurrentPdcAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
 
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -388,7 +388,7 @@ public class CurrentUserNotificationContextTest {
   // User
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
@@ -396,7 +396,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.USER);
       assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
@@ -406,7 +406,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
@@ -414,7 +414,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentUserAndLimitationEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
@@ -423,14 +423,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentUserAndLimitationNotEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentUserAndLimitationEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
     enableLimitationAt(2);
@@ -438,7 +438,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
+  void checkManualUserNotificationWithCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
     assertThrows(NotificationException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.USER);
       assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
@@ -448,7 +448,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
+  void checkManualUserNotificationWithCurrentUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
@@ -459,7 +459,7 @@ public class CurrentUserNotificationContextTest {
   // Guest
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentGuestUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentGuestUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
@@ -467,7 +467,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentGuestUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentGuestUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.GUEST);
       assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
@@ -477,7 +477,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentGuestUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentGuestUserAndLimitationNotEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
@@ -485,7 +485,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentGuestUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentGuestUserAndLimitationEnabled()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
@@ -494,14 +494,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentGuestUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentGuestUserAndLimitationNotEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabled() throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
     enableLimitationAt(2);
@@ -509,7 +509,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabledAndNbReceiversOverLimit() {
+  void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabledAndNbReceiversOverLimit() {
     assertThrows(NotificationException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.GUEST);
       assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
@@ -519,7 +519,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
+  void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
@@ -530,7 +530,7 @@ public class CurrentUserNotificationContextTest {
   // Anonymous
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationNotEnabled()
       throws Exception {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
@@ -538,7 +538,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled() {
+  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled() {
     assertThrows(NullPointerException.class, () -> {
       doReturn(true).when(currentUser).isAnonymous();
       assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
@@ -548,7 +548,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAnonymousUserAndLimitationNotEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAnonymousUserAndLimitationNotEnabled()
       throws Exception {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
@@ -556,7 +556,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled()
+  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled()
       throws Exception {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
@@ -565,14 +565,14 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationNotEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationNotEnabled() throws Exception {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabled() throws Exception {
+  void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabled() throws Exception {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     enableLimitationAt(2);
@@ -580,7 +580,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimit() {
+  void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimit() {
     assertThrows(NotificationException.class, () -> {
       doReturn(true).when(currentUser).isAnonymous();
       assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
@@ -590,7 +590,7 @@ public class CurrentUserNotificationContextTest {
   }
 
   @Test
-  public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
+  void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));

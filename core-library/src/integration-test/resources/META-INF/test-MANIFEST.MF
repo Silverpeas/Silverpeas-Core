@@ -3,7 +3,6 @@ Created-By: Silverpeas
 Dependencies: org.jboss.as.naming,
   org.slf4j,
   org.apache.xerces,
-  com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider,
   org.antlr,
   org.apache.lucene-7,
   deployment.jackrabbit-jca.rar,

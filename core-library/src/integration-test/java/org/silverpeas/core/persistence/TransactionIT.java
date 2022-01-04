@@ -48,7 +48,7 @@ import java.sql.Connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;

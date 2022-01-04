@@ -45,7 +45,7 @@ import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv

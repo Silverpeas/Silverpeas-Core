@@ -40,7 +40,7 @@ import javax.inject.Inject;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.endsWith;
-import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(Arquillian.class)

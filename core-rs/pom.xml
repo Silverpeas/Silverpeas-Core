@@ -37,7 +37,7 @@
   <groupId>org.silverpeas.core</groupId>
   <artifactId>silverpeas-core-rs</artifactId>
   <packaging>jar</packaging>
-  <name>Silverpeas Core Web ${project.version}</name>
+  <name>Silverpeas Core JAX-RS API ${project.version}</name>
   <description>Providing web foundation bases of Web REST-based services.</description>
 
   <dependencies>
@@ -67,7 +67,7 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
+      <artifactId>resteasy-client</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

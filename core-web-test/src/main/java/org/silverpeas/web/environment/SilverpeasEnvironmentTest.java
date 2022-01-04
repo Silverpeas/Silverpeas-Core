@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.environment;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -32,6 +33,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;
@@ -47,6 +49,7 @@ import javax.inject.Singleton;
  * <li>etc.</li>
  * </ul>
  */
+@Technical
 @Bean
 @Singleton
 public class SilverpeasEnvironmentTest {
@@ -84,7 +87,7 @@ public class SilverpeasEnvironmentTest {
     try {
       Administration.get().addUser(userDetail);
     } catch (AdminException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
     return this;
   }
@@ -100,7 +103,7 @@ public class SilverpeasEnvironmentTest {
       return PersistentResourceToken.getOrCreateToken(UserReference.fromUser(userDetail))
           .getValue();
     } catch (TokenException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -112,7 +115,7 @@ public class SilverpeasEnvironmentTest {
     try {
       return Administration.get().getComponentInst("dummyComponent0");
     } catch (AdminException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -125,7 +128,7 @@ public class SilverpeasEnvironmentTest {
     try {
       Administration.get().updateComponentInst(componentInst);
     } catch (AdminException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
     return this;
   }

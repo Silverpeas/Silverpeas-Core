@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv
-public class UserManualNotificationUserReceiverLimitUserDetailTest {
+class UserManualNotificationUserReceiverLimitUserDetailTest {
 
   private static final int NOT_LIMITED = 0;
   private static final int LIMITED = 5;
@@ -60,12 +60,12 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void newUserDetailInstanceAndLimitationNotEnabled() {
+  void newUserDetailInstanceAndLimitationNotEnabled() {
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void newUserDetailInstanceAndLimitationEnabled() {
+  void newUserDetailInstanceAndLimitationEnabled() {
     enableLimitation();
     assertThatUserIsLimitedByDefault();
   }
@@ -76,28 +76,28 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
    */
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForUnknownUserAndLimitationNotEnabled() {
     currentUser.setUserManualNotificationUserReceiverLimit(null);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForUnknownUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToNullForUnknownUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setUserManualNotificationUserReceiverLimit(null);
     assertThatUserIsLimitedByDefault();
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForUnknownUserAndLimitationNotEnabled() {
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForUnknownUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -105,42 +105,42 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForUnknownUserAndLimitationNotEnabled() {
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForUnknownUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToZeroForUnknownUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
     assertThatUserIsLimitedByDefault();
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForUnknownUserAndLimitationNotEnabled() {
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForUnknownUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForUnknownUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsLimitedByDefault();
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForUnknownUserAndLimitationNotEnabled() {
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForUnknownUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -148,7 +148,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForUnknownUserAndLimitationNotEnabled() {
     currentUser.setNotifManualReceiverLimit(3);
     currentUser.setUserManualNotificationUserReceiverLimit(2);
@@ -156,7 +156,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForUnknownUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setNotifManualReceiverLimit(3);
@@ -168,15 +168,14 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // Admin
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForAdminUserAndLimitationNotEnabled
-      () {
+  void setUserManualNotificationUserReceiverLimitToNullForAdminUserAndLimitationNotEnabled () {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForAdminUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToNullForAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -184,7 +183,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -192,7 +191,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
@@ -201,7 +200,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForAdminUserAndLimitationNotEnabled
+  void setUserManualNotificationUserReceiverLimitToZeroForAdminUserAndLimitationNotEnabled
       () {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -209,7 +208,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForAdminUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToZeroForAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -217,14 +216,14 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForAdminUserAndLimitationNotEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForAdminUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
@@ -232,7 +231,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -240,7 +239,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
@@ -249,7 +248,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     currentUser.setNotifManualReceiverLimit(3);
@@ -258,7 +257,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
@@ -271,7 +270,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // Domain administrator
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForDomainAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -279,7 +278,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForDomainAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
@@ -288,7 +287,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForDomainAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -296,7 +295,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForDomainAdminUserAndLimitationEnabled
       () {
     enableLimitation();
@@ -306,7 +305,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForDomainAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -314,7 +313,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForDomainAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
@@ -323,7 +322,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForDomainAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
@@ -331,7 +330,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForDomainAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
@@ -340,7 +339,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForDomainAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -348,7 +347,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForDomainAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
@@ -357,7 +356,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForDomainAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     currentUser.setNotifManualReceiverLimit(3);
@@ -366,7 +365,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForDomainAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
@@ -379,7 +378,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // Space administrator
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForSpaceAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -387,7 +386,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForSpaceAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
@@ -396,7 +395,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForSpaceAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -404,7 +403,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForSpaceAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
@@ -413,7 +412,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForSpaceAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -421,7 +420,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForSpaceAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
@@ -430,7 +429,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForSpaceAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
@@ -438,7 +437,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForSpaceAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
@@ -447,7 +446,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForSpaceAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -455,7 +454,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForSpaceAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
@@ -464,7 +463,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForSpaceAdminUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
     currentUser.setNotifManualReceiverLimit(3);
@@ -473,7 +472,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForSpaceAdminUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
@@ -486,7 +485,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // Pdc Manager
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForPdcManagerUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -494,7 +493,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForPdcManagerUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -503,7 +502,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForPdcManagerUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -511,7 +510,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForPdcManagerUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -520,7 +519,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForPdcManagerUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -528,7 +527,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForPdcManagerUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -537,7 +536,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForPdcManagerUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
@@ -545,7 +544,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForPdcManagerUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -554,7 +553,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForPdcManagerUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -562,7 +561,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForPdcManagerUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -571,7 +570,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForPdcManagerUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     currentUser.setNotifManualReceiverLimit(3);
@@ -580,7 +579,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForPdcManagerUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.PDC_MANAGER);
@@ -593,14 +592,14 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // User
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForUserAndLimitationNotEnabled() {
+  void setUserManualNotificationUserReceiverLimitToNullForUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToNullForUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -608,7 +607,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -616,7 +615,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.USER);
@@ -625,14 +624,14 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForUserAndLimitationNotEnabled() {
+  void setUserManualNotificationUserReceiverLimitToZeroForUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToZeroForUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -640,14 +639,14 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForUserAndLimitationNotEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
@@ -655,7 +654,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.USER);
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -663,7 +662,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToDefaultLimitForUserAndLimitationEnabled
+  void setUserManualNotificationUserReceiverLimitToDefaultLimitForUserAndLimitationEnabled
       () {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.USER);
@@ -672,7 +671,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForUserAndLimitationNotEnabled
       () {
     currentUser.setAccessLevel(UserAccessLevel.USER);
@@ -682,7 +681,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.USER);
@@ -694,7 +693,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // Guest
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForGuestUserAndLimitationNotEnabled
+  void setUserManualNotificationUserReceiverLimitToNullForGuestUserAndLimitationNotEnabled
       () {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -702,7 +701,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToNullForGuestUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToNullForGuestUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(null);
@@ -710,7 +709,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForGuestUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
@@ -718,7 +717,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForGuestUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
@@ -727,7 +726,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForGuestUserAndLimitationNotEnabled
+  void setUserManualNotificationUserReceiverLimitToZeroForGuestUserAndLimitationNotEnabled
       () {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -735,7 +734,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToZeroForGuestUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToZeroForGuestUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
@@ -743,14 +742,14 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForGuestUserAndLimitationNotEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForGuestUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForGuestUserAndLimitationEnabled() {
+  void setUserManualNotificationUserReceiverLimitToOneForGuestUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(1);
@@ -758,7 +757,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForGuestUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
@@ -766,7 +765,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForGuestUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
@@ -775,7 +774,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForGuestUserAndLimitationNotEnabled() {
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
     currentUser.setNotifManualReceiverLimit(3);
@@ -784,7 +783,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForGuestUserAndLimitationEnabled() {
     enableLimitation();
     currentUser.setAccessLevel(UserAccessLevel.GUEST);
@@ -796,7 +795,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   // Anonymous
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForAnonymousUserAndLimitationNotEnabled() {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
@@ -805,7 +804,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNullForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
     doReturn(true).when(currentUser).isAnonymous();
@@ -815,7 +814,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForAnonymousUserAndLimitationNotEnabled() {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
@@ -824,7 +823,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToNegativeValueForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
     doReturn(true).when(currentUser).isAnonymous();
@@ -834,7 +833,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForAnonymousUserAndLimitationNotEnabled() {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
@@ -843,7 +842,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToZeroForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
     doReturn(true).when(currentUser).isAnonymous();
@@ -853,7 +852,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToOneForAnonymousUserAndLimitationNotEnabled() {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
@@ -862,7 +861,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void setUserManualNotificationUserReceiverLimitToOneForAnonymousUserAndLimitationEnabled
+  void setUserManualNotificationUserReceiverLimitToOneForAnonymousUserAndLimitationEnabled
       () {
     enableLimitation();
     doReturn(true).when(currentUser).isAnonymous();
@@ -872,7 +871,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForAnonymousUserAndLimitationNotEnabled
       () {
     doReturn(true).when(currentUser).isAnonymous();
@@ -882,7 +881,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
     doReturn(true).when(currentUser).isAnonymous();
@@ -892,7 +891,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForAnonymousUserAndLimitationNotEnabled() {
     doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
@@ -902,7 +901,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   }
 
   @Test
-  public void
+  void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
     doReturn(true).when(currentUser).isAnonymous();

@@ -76,7 +76,6 @@ public class PasswordPolicyCheckingIT extends ResourceCreationTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void checkingWithErrors() {
     final Response response = post(PasswordEntity.createFrom("AA0ç123"), aResourceURI());
     final PasswordCheckEntity passwordCheck = response.readEntity(PasswordCheckEntity.class);

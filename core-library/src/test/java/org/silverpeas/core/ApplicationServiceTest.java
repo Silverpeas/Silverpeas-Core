@@ -47,12 +47,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * This Unit test shows a simple method to fetch all implementations of an interface which is
- * dealing with typed types
+ * dealing with typed objects
  * @author Yohann Chastagnier
  */
 @UnitTest
 @EnableWeld
-public class ApplicationServiceTest {
+class ApplicationServiceTest {
 
   @WeldSetup
   public WeldInitiator weld =
@@ -75,7 +75,7 @@ public class ApplicationServiceTest {
   private Provider<ApplicationService<TestResource2>> res2ApplicationServiceProvider;
 
   @Test
-  public void gettingAllImplementationsOfTypedInterface() {
+  void gettingAllImplementationsOfTypedInterface() {
     final int nbForEachInstances = 10;
     final Set<ApplicationService> instances = new HashSet<>();
     for (int i = 0; i < nbForEachInstances; i++) {
@@ -94,7 +94,7 @@ public class ApplicationServiceTest {
   }
 
   @Test
-  public void
+  void
   getInstanceOfTypedInterfaceWithoutPrecisingTheTypeWhereasSeveralImplementationAreProvided() {
     assertThrows(AmbiguousResolutionException.class, () -> {
       assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
@@ -103,7 +103,7 @@ public class ApplicationServiceTest {
   }
 
   @Test
-  public void getInstanceOfTypedInterfaceByQualifier() {
+  void getInstanceOfTypedInterfaceByQualifier() {
     assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
     Instance<ApplicationService<?>> precised = anyApplicationServiceInstanceGetter.select(
         new AnnotationLiteral<ApplicationServiceTestQualifier>() {});
@@ -111,24 +111,24 @@ public class ApplicationServiceTest {
   }
 
   @Test
-  public void
+  void
   provideInstanceOfTypedInterfaceWithoutPrecisingTheTypeWhereasSeveralImplementationAreProvided() {
     assertThrows(AmbiguousResolutionException.class, () -> anyApplicationServiceProvider.get());
   }
 
   @Test
-  public void getInstanceOfTypedInterfaceByPrecisingTheType() {
+  void getInstanceOfTypedInterfaceByPrecisingTheType() {
     assertThat(res2ApplicationServiceInstanceGetter.get(),
         instanceOf(TestApplicationServiceImpl2.class));
   }
 
   @Test
-  public void provideInstanceOfTypedInterfaceByPrecisingTheType() {
+  void provideInstanceOfTypedInterfaceByPrecisingTheType() {
     assertThat(res2ApplicationServiceProvider.get(), instanceOf(TestApplicationServiceImpl2.class));
   }
 
   @Test
-  public void gettingAllImplementationsOfTypedInterfaceWhichItIsPrecised() {
+  void gettingAllImplementationsOfTypedInterfaceWhichItIsPrecised() {
     final int nbForEachInstances = 10;
     final Set<ApplicationService> instances = new HashSet<>();
     for (int i = 0; i < nbForEachInstances; i++) {
