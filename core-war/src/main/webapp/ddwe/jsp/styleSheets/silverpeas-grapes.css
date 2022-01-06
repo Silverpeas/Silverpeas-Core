@@ -145,6 +145,12 @@ body div.hautFrame {
   content: '\f1ea'
 }
 
+.fa-sp-event::before {
+  content: '\f073';
+  font-family: FontAwesome, Verdana, Arial, sans-serif;
+  font-size: 24px;
+}
+
 .fa-sp-image-link::before {
   content: '\f1c5'
 }
@@ -189,4 +195,16 @@ body div.hautFrame {
   line-height: 16px;
   text-transform: uppercase;
   font: inherit;
+}
+
+.calendar-event.gjs-highlighter,
+.contribution-header.gjs-highlighter {
+  outline: 1px solid #EC9C01;
+}
+
+.calendar-event.gjs-badge,
+.calendar-event.gjs-toolbar,
+.contribution-header.gjs-badge,
+.contribution-header.gjs-toolbar {
+  background-color: #EC9C01;
 }

@@ -409,8 +409,8 @@ silverpeas-calendar-event-occurrence-tip .occurrence-description {
 }
 
 silverpeas-calendar-event-occurrence-tip .occurrence-extra {
-  display: inline-block;
-  width: 100%;
+  display: block;
+  padding-right: calc(1em + 28px);
 }
 
 silverpeas-calendar-event-occurrence-tip .occurrence-date,

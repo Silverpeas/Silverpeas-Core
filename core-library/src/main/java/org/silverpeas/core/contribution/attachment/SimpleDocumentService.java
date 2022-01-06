@@ -55,6 +55,7 @@ import org.silverpeas.core.persistence.jcr.JcrDatastoreManager;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -83,6 +84,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
@@ -576,14 +578,15 @@ public class SimpleDocumentService
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
-  public List<SimpleDocumentPK> copyAllDocuments(@SourcePK ResourceReference resourceSourcePk,
+  public List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(
+      @SourcePK ResourceReference resourceSourcePk,
       @TargetPK ResourceReference targetDestinationPk) {
-    List<SimpleDocumentPK> copiedDocumentKeys = new ArrayList<>();
-    List<SimpleDocument> documentsToCopy = listAllDocumentsByForeignKey(resourceSourcePk, null);
-    for (SimpleDocument documentToCopy : documentsToCopy) {
-      copiedDocumentKeys.add(copyDocument(documentToCopy, new ResourceReference(targetDestinationPk)));
-    }
-    return copiedDocumentKeys;
+    return listAllDocumentsByForeignKey(resourceSourcePk, null)
+        .stream()
+        .map(s -> {
+          final SimpleDocumentPK copyPK = copyDocument(s, new ResourceReference(targetDestinationPk));
+          return Pair.of(s.getPk(), copyPK);
+        }).collect(Collectors.toList());
   }
 
   /**

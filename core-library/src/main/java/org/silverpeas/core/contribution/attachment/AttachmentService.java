@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.index.indexing.model.DocumentIndexing;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
@@ -129,7 +130,7 @@ public interface AttachmentService extends DocumentIndexing {
    * that will get the copied attachments.
    * @return le list of copied attachments, empty if nothing is copied.
    */
-  List<SimpleDocumentPK> copyAllDocuments(ResourceReference resourceSourcePk,
+  List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(ResourceReference resourceSourcePk,
       ResourceReference targetDestinationPk);
 
   /**

@@ -63,6 +63,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 @EnableSilverTestEnv
 @ExtendWith(LoggerExtension.class)
@@ -77,7 +78,13 @@ class SmtpMailSendingTest {
   private final static String MALFORMED_FROM = "fromATtiti.org";
   private final static String COMMON_TO = "to@toto.org";
   private final static String MALFORMED_TO = "toATtoto.org";
-  private static final String EMPTY_HTML_CONTENT = "<html><body></body></html>";
+  private static final String HTML_PATTERN =
+      "<!DOCTYPE html><html lang='fr' xml:lang='fr'><head>" + "<meta charset=\"utf-8\">" +
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, " +
+          "maximum-scale=1\">" +
+          "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">" +
+          "</head><body>%s</body></html>";
+  private static final String EMPTY_HTML_CONTENT = String.format(HTML_PATTERN, EMPTY);
 
   private MailSender oldMailSender;
 
@@ -231,7 +238,7 @@ class SmtpMailSendingTest {
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
     assertThat(mailToSend.getSubject(), is(emptyString()));
     assertThat(mailToSend.getContent().isHtml(), is(true));
-    assertThatContentIsHtmlComputed(mailToSend, "<html><body>" + content + "</body></html>");
+    assertThatContentIsHtmlComputed(mailToSend, String.format(HTML_PATTERN, content));
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
     assertMailSent(mailToSend, mail);

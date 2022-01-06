@@ -80,6 +80,22 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   }
 
   @Test
+  public void manageImageResizingWithImageMinimalWidth() {
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getAllBeansByType(ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class)).thenReturn(
+        asSet(new SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator(),
+            new GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test()));
+
+    ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective(400);
+    String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralImages.txt");
+
+    String result = directive.execute(wysiwygContentSource);
+
+    assertThat(result, is(getContentOfDocumentNamed(
+        "wysiwygWithSeveralImagesTransformedForImageResizingResultWithImageMinimalWidth.txt")));
+  }
+
+  @Test
   public void manageImageResizingOnEmptyContent() {
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String result = directive.execute("");

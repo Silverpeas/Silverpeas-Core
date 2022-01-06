@@ -28,21 +28,28 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
+import org.silverpeas.core.util.StringUtil;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.Character.isDigit;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * Transforms all URL of images to take into account theirs display size.
@@ -61,6 +68,16 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
       regexp(Pattern.compile("(?i)" + HEIGHT_ATTR + "Attr[ ]*([0-9]+.?)"), 1),
       regexp(Pattern.compile("(?i)[ ;]" + HEIGHT_ATTR + "[ ]*:[ ]*([0-9]+.?)"), 1));
 
+  private final int minWidth;
+
+  public ImageUrlAccordingToHtmlSizeDirective() {
+    this(null);
+  }
+
+  public ImageUrlAccordingToHtmlSizeDirective(final Integer minWidth) {
+    this.minWidth = minWidth != null ? minWidth : 0;
+  }
+
   @Override
   public String execute(final String wysiwygContent) {
     final String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
@@ -75,12 +92,13 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
         if (srcAtt != null && srcAtt.getValueSegment() != null) {
           final String src = srcAtt.getValueSegment().toString();
           if (!replacements.containsKey(imgTagContent)) {
-            final String width = getWidth(currentImg);
-            final String height = getHeight(currentImg);
+            final Mutable<String> width = Mutable.of(getWidth(currentImg));
+            final Mutable<String> height = Mutable.of(getHeight(currentImg));
+            applyMinWidthIfNecessary(width, height);
             translators.stream()
                 .filter(s -> s.isCompliantUrl(src))
                 .findFirst()
-                .map(s -> s.translateUrl(src, width, height))
+                .map(s -> s.translateUrl(src, width.get(), height.get()))
                 .filter(t -> !src.equals(t))
                 .ifPresent(t -> replacements.put(imgTagContent, imgTagContent.replace(src, t)));
           }
@@ -95,6 +113,27 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
 
     // Returning the transformed WYSIWYG.
     return transformedWysiwygContent;
+  }
+
+  private void applyMinWidthIfNecessary(final Mutable<String> width, final Mutable<String> height) {
+    Optional.of(minWidth)
+        .filter(w -> w > 0)
+        .map(o -> width.get())
+        .filter(StringUtil::isDefined)
+        .map(Integer::parseInt)
+        .ifPresent(w -> {
+          final BigDecimal ratio = new BigDecimal(w)
+              .divide(new BigDecimal(minWidth), 10, RoundingMode.HALF_UP);
+          if (ratio.floatValue() < 1f) {
+            width.set(String.valueOf(minWidth));
+            height.set(height
+                .filter(StringUtil::isDefined)
+                .map(BigDecimal::new)
+                .map(h -> h.divide(ratio, 0, RoundingMode.HALF_UP))
+                .map(BigDecimal::toString)
+                .orElse(EMPTY));
+          }
+        });
   }
 
   /**
@@ -176,13 +215,16 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
    */
   public abstract static class SrcWithSizeParametersTranslator implements SrcTranslator {
 
+    private static final Pattern PATTERN = Pattern.compile("(?i)(&|&amp;)size[ ]*=[ ]*[0-9 x]+");
     private static final String AMP = "&amp;";
 
     @Override
     public String translateUrl(final String url, final String width, final String height) {
       // Computing the new src URL
       // at first, removing the size from the URL
-      String newUrl = url.replaceFirst("(?i)(&|&amp;)size[ ]*=[ ]*[0-9 x]+", "");
+      final Matcher matcher = PATTERN.matcher(url);
+      final String existingPart = matcher.find() ? matcher.group() : EMPTY;
+      String newUrl = url.replace(existingPart, EMPTY);
       // then guessing the new src URL
       StringBuilder sizeUrlPart = new StringBuilder().append(width).append("x").append(height);
       if (sizeUrlPart.length() > 1) {

@@ -74,6 +74,7 @@ boolean outilDisplayed = false;
 
 <view:includePlugin name="userSession"/>
 <view:includePlugin name="userNotification"/>
+<view:includePlugin name="basketSelection"/>
 <view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {

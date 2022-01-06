@@ -262,6 +262,15 @@ if (!String.prototype.truncateRight) {
   };
 }
 
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    const args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] !== 'undefined' ? args[number] : match;
+    });
+  };
+}
+
 if (!Number.prototype.roundDown) {
   Number.prototype.roundDown = function(digit) {
     if (digit || digit === 0) {
@@ -1090,6 +1099,118 @@ if (!window.SilverpeasContributionIdentifier) {
     }
   });
 }
+if (!window.SilverpeasPeriod) {
+  (function() {
+    const FORMATS = {};
+    const __endDateForFormat = function(context) {
+      if (context.inDays) {
+        return sp.moment.make(context.endDate).add(-1, 'days');
+      }
+      return context.endDate;
+    };
+    const Context = function(startDate, endDate, isInDays) {
+      if (!FORMATS.inDaysSingleDay) {
+        const theLabel = sp.i18n.get('GML.date.the');
+        const dateFromLabel = sp.i18n.get('GML.date.from');
+        const hourFromLabel = sp.i18n.get('GML.date.hour.from');
+        const dateToLabel = sp.i18n.get('GML.date.to');
+        const hourToLabel = sp.i18n.get('GML.date.hour.to');
+        FORMATS.inDaysSingleDay = theLabel + ' {0}';
+        FORMATS.inDaysSeveralDays = dateFromLabel + ' {0} ' + dateToLabel + ' {1}';
+        FORMATS.inDaysSeveralDaysStartDate = dateFromLabel + ' {0}';
+        FORMATS.inDaysSeveralDaysEndDate = dateToLabel + ' {0}';
+        FORMATS.singleDay = theLabel + ' {0} ' + hourFromLabel + ' {1} ' + hourToLabel + ' {2}';
+        FORMATS.singleDayStartDate = theLabel + ' {0} ' + hourFromLabel + ' {1}';
+        FORMATS.singleDayEndDate = hourToLabel + ' {0}';
+        FORMATS.severalDays = dateFromLabel + ' {0} ' + hourToLabel + ' {1} ' + dateToLabel + ' {2}' + hourToLabel + ' {3}';
+        FORMATS.severalDaysStartDate = dateFromLabel + ' {0} ' + hourToLabel + ' {1}';
+        FORMATS.severalDaysEndDate = dateToLabel + ' {0} ' + hourToLabel + ' {1}';
+      }
+      const zoneId = currentUser ? currentUser.zoneId : moment.tz.guess();
+      this.startDate = sp.moment.atZoneIdSameInstant(startDate, zoneId);
+      this.endDate = sp.moment.atZoneIdSameInstant(endDate, zoneId);
+      this.inDays = isInDays;
+      this.onSeveralDays = sp.moment.displayAsDate(this.startDate) !== sp.moment.displayAsDate(__endDateForFormat(this));
+      this.asDateFct = 'displayAsDate';
+    }
+    window.SilverpeasPeriod = SilverpeasClass.extend({
+      initialize : function(startDate, endDate, inDays) {
+        this.context = new Context(startDate, endDate, inDays);
+      },
+      isInDays : function() {
+        return this.context.inDays;
+      },
+      onSeveralDays : function() {
+        return this.context.onSeveralDays;
+      },
+      getStartDate : function() {
+        return this.context.startDate;
+      },
+      getEndDate : function() {
+        return this.context.endDate;
+      },
+      getEndDateForUI : function() {
+        return __endDateForFormat(this.context);
+      },
+      format : function() {
+        const asDateFct = this.context.asDateFct;
+        if (this.context.inDays) {
+          return this.context.onSeveralDays
+              ? FORMATS.inDaysSeveralDays.format(
+                  sp.moment[asDateFct](this.context.startDate),
+                  sp.moment[asDateFct](__endDateForFormat(this.context)))
+              : FORMATS.inDaysSingleDay.format(
+                  sp.moment[asDateFct](this.context.startDate));
+        } else {
+          return this.context.onSeveralDays
+              ? FORMATS.severalDays.format(
+                  sp.moment[asDateFct](this.context.startDate),
+                  sp.moment.displayAsTime(this.context.startDate),
+                  sp.moment[asDateFct](__endDateForFormat(this.context)),
+                  sp.moment.displayAsTime(__endDateForFormat(this.context)))
+              : FORMATS.singleDay.format(
+                  sp.moment[asDateFct](this.context.startDate),
+                  sp.moment.displayAsTime(this.context.startDate),
+                  sp.moment.displayAsTime(__endDateForFormat(this.context)));
+        }
+      },
+      formatStartDate : function() {
+        const asDateFct = this.context.asDateFct;
+        if (this.context.inDays) {
+          return this.context.onSeveralDays
+              ? FORMATS.inDaysSeveralDaysStartDate.format(
+                  sp.moment[asDateFct](this.context.startDate))
+              : FORMATS.inDaysSingleDay.format(
+                  sp.moment[asDateFct](this.context.startDate));
+        } else {
+          return this.context.onSeveralDays
+              ? FORMATS.severalDaysStartDate.format(
+                  sp.moment[asDateFct](this.context.startDate),
+                  sp.moment.displayAsTime(this.context.startDate))
+              : FORMATS.singleDayStartDate.format(
+                  sp.moment[asDateFct](this.context.startDate),
+                  sp.moment.displayAsTime(this.context.startDate));
+        }
+      },
+      formatEndDate : function() {
+        const asDateFct = this.context.asDateFct;
+        if (this.context.inDays) {
+          return this.context.onSeveralDays
+              ? FORMATS.inDaysSeveralDaysEndDate.format(
+                  sp.moment[asDateFct](__endDateForFormat(this.context)))
+              : '';
+        } else {
+          return this.context.onSeveralDays
+              ? FORMATS.severalDaysEndDate.format(
+                  sp.moment[asDateFct](__endDateForFormat(this.context)),
+                  sp.moment.displayAsTime(__endDateForFormat(this.context)))
+              : FORMATS.singleDayEndDate.format(
+                  sp.moment.displayAsTime(__endDateForFormat(this.context)));
+        }
+      }
+    });
+  })();
+}
 
 if(typeof window.whenSilverpeasReady === 'undefined') {
 
@@ -1540,6 +1661,13 @@ if (typeof window.sp === 'undefined') {
       }
     },
     moment : {
+      /**
+       * Creates a new UTC moment.
+       * @param date
+       */
+      makeUtc : function(date) {
+        return moment.utc.apply(undefined, arguments);
+      },
       /**
        * Creates a new moment by taking of offset if any.
        * @param date

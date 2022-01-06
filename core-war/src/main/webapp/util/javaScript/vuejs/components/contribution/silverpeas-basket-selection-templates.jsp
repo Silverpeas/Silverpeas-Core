@@ -100,6 +100,8 @@
   <div class="basket-element"
        v-on:click="$emit('select', basketElement)"
        v-on:dblclick="$emit('selectAndValidate', basketElement)">
+    <silverpeas-event-period v-if="basketElement.isEventOccurrence()"
+                             v-bind:period="basketElement.getPeriod()"></silverpeas-event-period>
     <div class="image" v-if="basketElement.getImageSrc()">
       <img v-bind:src="basketElement.getImageSrc()" alt="">
     </div>

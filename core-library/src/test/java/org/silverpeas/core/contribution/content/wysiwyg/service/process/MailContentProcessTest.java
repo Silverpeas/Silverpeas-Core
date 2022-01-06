@@ -28,6 +28,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlToDataSourceScanner;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -40,6 +41,7 @@ import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.SettingBundleStub;
 import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -64,6 +66,9 @@ import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv
 class MailContentProcessTest {
+
+  @RegisterExtension
+  protected SettingBundleStub urlSettings = new SettingBundleStub("org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -208,7 +213,7 @@ class MailContentProcessTest {
     assertThat(attachmentLinks.stream()
                               .map(LinkUrlDataSource::getDataSource)
                               .filter(d -> d instanceof URLDataSource)
-                              .allMatch(d -> ((URLDataSource)d).getURL().toString().startsWith("http://localhost:8000")), is(true));
+                              .allMatch(d -> ((URLDataSource)d).getURL().toString().startsWith("http://www.unit-test-silverpeas.org")), is(true));
 
   }
 

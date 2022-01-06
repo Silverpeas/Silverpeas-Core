@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.Pair;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -107,7 +108,7 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocumentPK> copyAllDocuments(final ResourceReference resourceSourcePk,
+  public List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(final ResourceReference resourceSourcePk,
       final ResourceReference targetDestinationPk) {
     return mock.copyAllDocuments(resourceSourcePk, targetDestinationPk);
   }

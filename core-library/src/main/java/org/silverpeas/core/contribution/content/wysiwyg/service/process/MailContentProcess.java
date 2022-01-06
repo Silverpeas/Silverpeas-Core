@@ -25,12 +25,20 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttachedFile;
 import org.silverpeas.core.contribution.content.AbstractLocalhostLinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
+import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailContent;
+import org.silverpeas.core.mail.MailContent.AttachedFile;
+import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringDataExtractor;
 import org.silverpeas.core.util.StringUtil;
 
@@ -40,14 +48,20 @@ import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.singletonList;
+import static org.silverpeas.core.mail.MailContent.extractTextBodyPartFromHtmlContent;
+import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.file.FileUtil.isImage;
 
@@ -88,7 +102,10 @@ public class MailContentProcess
             });
             return Optional.ofNullable(cid.orElse(null));
           })));
-      return new MailResult(transformedWysiwygContent.get(), bodyParts);
+      final String finalContent = WysiwygContentTransformer.on(transformedWysiwygContent.get())
+          .applyMailLinkCssDirective()
+          .transform();
+      return new MailResult(finalContent, bodyParts);
     } catch (Exception e) {
       throw new SilverpeasException(e);
     }
@@ -124,14 +141,23 @@ public class MailContentProcess
    * Container of Mail transformation resulting.
    */
   public static class MailResult {
+    private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.wysiwyg.settings.wysiwygSettings");
     private final String wysiwygContent;
     private final List<MimeBodyPart> bodyParts;
+    private String mimeMultipart;
+    private final Set<AttachedFile> attachments = new HashSet<>();
 
-    public MailResult(final String wysiwygContent, final List<MimeBodyPart> bodyParts) {
+    private MailResult(final String wysiwygContent, final List<MimeBodyPart> bodyParts) {
       this.wysiwygContent = wysiwygContent;
       this.bodyParts = bodyParts;
+      this.mimeMultipart = settings.getString("mail.mime.multipart", "related");
     }
 
+    /**
+     * Gets the WYSIWYG content.
+     * @return string WYSIWYG.
+     */
     public String getWysiwygContent() {
       return wysiwygContent;
     }
@@ -140,7 +166,95 @@ public class MailContentProcess
       return bodyParts;
     }
 
-    public void applyOn(Multipart multipart) throws SilverpeasException {
+    /**
+     * Sets the MIME multipart to apply.
+     * @param mimeMultipart mime multipart to set.
+     * @return itself.
+     */
+    public MailResult withMimeMultipart(final String mimeMultipart) {
+      this.mimeMultipart = mimeMultipart;
+      return this;
+    }
+
+    /**
+     * Adds attachments of contribution aimed by given identifier.
+     * @param attachments collection of {@link AttachedFile} instance.
+     * @return itself.
+     */
+    public MailResult addAttachments(final Collection<SimpleDocument> attachments) {
+      attachments.stream().map(SimpleDocumentMailAttachedFile::new).forEach(this::addAttachedFile);
+      return this;
+    }
+
+    /**
+     * Adds attachments of contribution aimed by given identifier.
+     * @param attachments collection of {@link AttachedFile} instance.
+     * @return itself.
+     */
+    public MailResult addAttachedFiles(final Collection<AttachedFile> attachments) {
+      attachments.forEach(this::addAttachedFile);
+      return this;
+    }
+
+    /**
+     * Adds given attached file.
+     * @param attachedFile instance of {@link AttachedFile}.
+     * @return itself.
+     */
+    public MailResult addAttachedFile(final AttachedFile attachedFile) {
+      this.attachments.add(attachedFile);
+      return this;
+    }
+
+    /**
+     * Prepares a {@link MailSending} instance with the mail result from a source email.
+     * <p>
+     *   Result content is automatically applied.
+     * </p>
+     * @param email the mail of sender.
+     * @return a {@link MailSending} instance.
+     * @throw MailContentProcessException when it is not possible to create mail sending.
+     */
+    public MailSending prepareMailSendingFrom(final MailAddress email)
+        throws MailContentProcessException {
+      final MailSending mailSending = MailSending.from(email);
+      try {
+        mailSending.withContent(createContentMessageMail(this));
+      } catch (MessagingException | SilverpeasException e) {
+        throw new MailContentProcessException(e);
+      }
+      return mailSending;
+    }
+
+    private Multipart createContentMessageMail(MailResult mailResult)
+        throws MessagingException, SilverpeasException {
+      final Multipart multipart = new MimeMultipart(mimeMultipart);
+      // Prepare Mail parts
+      final String htmlContent = mailResult.getWysiwygContent();
+      if ("alternative".equals(mimeMultipart)) {
+        // First the WYSIWYG as brut text
+        multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
+        // Then all the referenced media content
+        mailResult.applyOn(multipart);
+        // Finally the WYSIWYG (the preferred one)
+        multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(htmlContent));
+      } else {
+        // First the WYSIWYG (the main one)
+        multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(htmlContent));
+        // Then all the referenced media content
+        mailResult.applyOn(multipart);
+        // Finally the WYSIWYG as brut text
+        multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
+      }
+      // Finally, explicit attached files
+      for (final AttachedFile attachment : attachments) {
+        multipart.addBodyPart(attachment.toBodyPart());
+      }
+      // The completed multipart mail to send
+      return multipart;
+    }
+
+    private void applyOn(Multipart multipart) throws SilverpeasException {
       try {
         for (MimeBodyPart mimeBodyPart : getBodyParts()) {
           multipart.addBodyPart(mimeBodyPart);

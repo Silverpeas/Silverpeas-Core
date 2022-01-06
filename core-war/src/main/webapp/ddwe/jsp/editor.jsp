@@ -22,6 +22,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ include file="head.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -38,8 +40,11 @@
 <c:set var="defaultEditorImage" value="${resources.getSetting('ddwe.editor.img.src.default')}" />
 <c:set var="specificJsPath" value="${resources.getSetting('ddwe.editor.specific.js.path', '')}" />
 <c:set var="specificCssPath" value="${resources.getSetting('ddwe.editor.specific.css.path', '')}" />
+<c:set var="componentCssUrl" value='<%=JavascriptPluginInclusion.normalizeWebResourceUrl(URLUtil.getApplicationURL() + "/ddwe/jsp/styleSheets/silverpeas-grapes-canvas.css")%>'/>
+<c:set var="componentAddonCssUrl" value='<%=JavascriptPluginInclusion.normalizeWebResourceUrl(URLUtil.getApplicationURL() + "/ddwe/jsp/styleSheets/silverpeas-ddwe-canvas-addon.css")%>'/>
 
 <fmt:message key="ddwe.webBrowser.seeInto" var="seeIntoWebBrowserLabel" />
+<fmt:message key="ddwe.mail.sendToMe" var="sendToMeLabel" />
 <fmt:message key="ddwe.grapes.cmtTglImagesLabel" var="cmtTglImagesLabel" />
 <fmt:message key="ddwe.grapes.cmdBtnUndoLabel" var="cmdBtnUndoLabel" />
 <fmt:message key="ddwe.grapes.cmdBtnRedoLabel" var="cmdBtnRedoLabel" />
@@ -56,6 +61,13 @@
 <fmt:message key="ddwe.editor.component.contribution.content.title" var="contributionBlockContentTitle" />
 <fmt:message key="ddwe.editor.component.contribution.content" var="contributionBlockContent" />
 <fmt:message key="ddwe.editor.component.contribution.content.readMore" var="contributionBlockContentReadMore" />
+<fmt:message key="ddwe.editor.component.event.title" var="eventBlockTitle" />
+<fmt:message key="ddwe.editor.component.event.content.title" var="eventBlockContentTitle" />
+<fmt:message key="GML.date.the" var="eventBlockContentAt" />
+<fmt:message key="GML.date.from" var="eventBlockContentFrom" />
+<fmt:message key="GML.date.to" var="eventBlockContentTo" />
+<fmt:message key="ddwe.editor.component.event.content" var="eventBlockDescription" />
+<fmt:message key="ddwe.editor.component.event.content.open" var="eventBlockOpen" />
 <fmt:message key="ddwe.editor.component.imageWithLink.title" var="imageWithLinkBlockTitle" />
 <fmt:message key="ddwe.editor.component.toolbar.fa-arrow-up" var="fa_arrow_up_Label" />
 <fmt:message key="ddwe.editor.component.toolbar.fa-arrows" var="fa_arrows_Label" />
@@ -65,6 +77,7 @@
 
 <fmt:message key="ddwe.menu.action" var="editionLabel" />
 
+<c:set var="mailMode" value="${silfn:booleanValue(requestScope.mode.mail)}"/>
 <c:set var="validateUrl" value="${requestScope.validateUrl}"/>
 <c:set var="cancelUrl" value="${requestScope.cancelUrl}"/>
 <c:set var="browseBarPath" value="${requestScope.browseBarPath}"/>
@@ -121,6 +134,13 @@
         'contributionBlockContentTitle' : '${silfn:escapeJs(contributionBlockContentTitle)}',
         'contributionBlockContent' : '${silfn:escapeJs(contributionBlockContent)}',
         'contributionBlockContentReadMore' : '${silfn:escapeJs(contributionBlockContentReadMore)}',
+        'eventBlockTitle' : '${silfn:escapeJs(eventBlockTitle)}',
+        'eventBlockContentTitle' : '${silfn:escapeJs(eventBlockContentTitle)}',
+        'eventBlockContentAt' : '${silfn:escapeJs(eventBlockContentAt)}',
+        'eventBlockContentFrom' : '${silfn:escapeJs(eventBlockContentFrom)}',
+        'eventBlockContentTo' : '${silfn:escapeJs(eventBlockContentTo)}',
+        'eventBlockDescription' : '${silfn:escapeJs(eventBlockDescription)}',
+        'eventBlockOpen' : '${silfn:escapeJs(eventBlockOpen)}',
         'imageWithLinkBlockTitle' : '${silfn:escapeJs(imageWithLinkBlockTitle)}',
         'fa_arrow_up_Label' : '${silfn:escapeJs(fa_arrow_up_Label)}',
         'fa_arrows_Label' : '${silfn:escapeJs(fa_arrows_Label)}',
@@ -132,6 +152,11 @@
         return request.withParam("access_token", '${user.accessToken}')
                       .withParam("file_id", '${file.id()}');
       }
+      <c:if test="${mailMode}">
+      function sendToMe() {
+        __applyRequestCommonParams(sp.ajaxRequest(webContext + '/Rddwe/jsp/sendToMe')).send();
+      }
+      </c:if>
       function renderIntoBrowser() {
         __applyRequestCommonParams(sp.navRequest(webContext + '/Rddwe/jsp/result'))
             .toTarget("_blank")
@@ -188,6 +213,9 @@
       <view:browseBarElt label="${editionLabel}"/>
     </view:browseBar>
     <view:operationPane>
+      <c:if test="${mailMode}">
+        <view:operation action="javascript:sendToMe()" altText="${sendToMeLabel}"/>
+      </c:if>
       <view:operation action="javascript:renderIntoBrowser()" altText="${seeIntoWebBrowserLabel}"/>
     </view:operationPane>
     <view:window>
@@ -235,6 +263,7 @@
             }
             whenSilverpeasReady(function() {
               const editorManager = new DragAndDropWebEditorManager({
+                componentCssUrl : ['${componentCssUrl}', '${componentAddonCssUrl}'],
                 defaultEditorImageSrc : '${defaultEditorImage}',
                 imageSelectorApi : this.imageSelectorApi,
                 basketSelectionApi : this.basketSelectionApi,

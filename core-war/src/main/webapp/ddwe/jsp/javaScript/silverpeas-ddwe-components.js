@@ -39,13 +39,30 @@
     const params = event.detail;
     params.plugins.push(function(editor) {
       __setupContributionComponent(editor, params.options, params.gI18n);
+      __setupEventComponent(editor, params.options, params.gI18n);
       __setupImageLinkComponent(editor, params.options, params.gI18n);
       __setupSimpleBlockComponent(editor, params.options, params.gI18n);
     })
-  })
+  });
+
+  const __addPickupBasketElementMenu = function(commandToAdd) {
+    const commandIcon = 'fa fa-sp-basket-selector';
+    const defaultToolbar = this.get('toolbar');
+    const commandExists = defaultToolbar.some(function(item) {
+      return item.command === commandToAdd;
+    });
+    if (!commandExists) {
+      defaultToolbar.push({
+        attributes : {
+          'class' : commandIcon
+        },
+        command : commandToAdd
+      });
+    }
+  };
 
   /**
-   * Setup the Contribution component.
+   * Setups the Contribution component.
    * @param editor grapes instance.
    * @param initOptions the options given at initialization of DragAndDropWebEditorManager instance.
    * @param gI18n the i18n stuffs.
@@ -76,12 +93,18 @@
             'class': componentType
           },
           components : [{
-            type : 'image',
-            tagName : 'img',
+            tagName : 'div',
             attributes : {
-              'src' : initOptions.defaultEditorImageSrc,
-              'class': 'imageContribution'
-            }
+              'class': 'blocImageContribution'
+            },
+            components : [{
+              type : 'image',
+              tagName : 'img',
+              attributes : {
+                'src' : initOptions.defaultEditorImageSrc,
+                'class': 'imageContribution'
+              }
+            }]
           }, {
             tagName : 'div',
             attributes: {
@@ -114,49 +137,65 @@
           }]
         },
         init : function() {
-          const commandToAdd = 'tlb-sp-basket-selector';
-          const commandIcon = 'fa fa-sp-basket-selector';
-          const defaultToolbar = this.get('toolbar');
-          const commandExists = defaultToolbar.some(function(item) {
-            return item.command === commandToAdd;
-          });
-          if (!commandExists) {
-            defaultToolbar.push({
-              attributes : {
-                'class' : commandIcon
-              },
-              command : commandToAdd
-            });
-          }
+          __addPickupBasketElementMenu.call(this, 'tlb-sp-basket-selector-contribution');
         }
       },
       view : {
         events: {
           dblclick: function() {
-            editor.runCommand('tlb-sp-basket-selector');
+            // editor.runCommand('tlb-sp-basket-selector-contribution');
           }
         },
         onRender : function() {
           const nonCopyable = {
             copyable : false
           };
-          this.model.find('.imageContribution, .editorialContribution, .titreContribution, .textContribution, .lienContribution').forEach(function(model) {
+          this.model.find('.blocImageContribution, .imageContribution, .editorialContribution, .titreContribution, .textContribution, .lienContribution').forEach(function(model) {
             model.set(nonCopyable);
             initOptions.tools.updateToolbar(model);
           }.bind(this.model));
         }
       }
     });
+    const __isTheComponent = function(model) {
+      return model.get('type') === componentType;
+    }
+    editor.on('component:hovered', function(model) {
+      const $highlighterEl = editor.Canvas.getHighlighter(model.view);
+      const $badgeEl = editor.Canvas.getBadgeEl(model.view);
+      if (__isTheComponent(model)) {
+        $highlighterEl.classList.add('contribution-header');
+        $badgeEl.classList.add('contribution-header');
+      } else {
+        $highlighterEl.classList.remove('contribution-header');
+        $badgeEl.classList.remove('contribution-header');
+      }
+    });
+    editor.on('component:selected', function(model) {
+      if (__isTheComponent(model)) {
+        const $toolbar = editor.Canvas.getToolbarEl();
+        $toolbar.classList.add('contribution-header');
+      }
+    });
+    editor.on('component:deselected', function(model) {
+      if (__isTheComponent(model)) {
+        const $toolbar = editor.Canvas.getToolbarEl();
+        $toolbar.classList.remove('contribution-header');
+      }
+    });
     editor.on('block:drag:stop', function(model) {
       if (model && model.get('type') === componentType) {
         editor.select(model);
-        editor.runCommand('tlb-sp-basket-selector');
+        editor.runCommand('tlb-sp-basket-selector-contribution');
       }
     });
-    editor.Commands.add('tlb-sp-basket-selector', {
+    editor.Commands.add('tlb-sp-basket-selector-contribution', {
       run : function(ed, sender, opts) {
         if (opts) {
           initOptions.basketSelectionApi.open({
+            filter : function(element) {
+              return !BasketService.Filters.eventItems(element);
+            },
             select : function(basketElement) {
               const selectedModel = ed.getSelected();
               [{
@@ -199,6 +238,193 @@
       label : sp.i18n.get('contributionBlockTitle'),
       attributes : {
         'class' : 'fa fa-sp-contribution'
+      },
+      category: sp.i18n.get('silverpeasCategoryLabel'),
+      content: {
+        type : componentType
+      }
+    });
+  }
+
+  /**
+   * Setups the Event component.
+   * @param editor grapes instance.
+   * @param initOptions the options given at initialization of DragAndDropWebEditorManager instance.
+   * @param gI18n the i18n stuffs.
+   * @private
+   */
+  function __setupEventComponent(editor, initOptions, gI18n) {
+    const componentType = 'calendar-event';
+    gI18n.domComponents.names[componentType] = sp.i18n.get('eventBlockTitle');
+    editor.DomComponents.addType(componentType, {
+      /**
+       * This method permits to identify a component when code is added manually.
+       * @param el an HTML element.
+       * @returns {{type: string}}
+       */
+      isComponent : function(el) {
+        if (el && el.tagName && el.tagName.toLowerCase() === 'div' && el.classList.contains(componentType)) {
+          return {
+            tagName: 'div',
+            type : componentType
+          };
+        }
+      },
+      model : {
+        defaults : {
+          tagName: 'div',
+          className: componentType,
+          attributes: {
+            'class': componentType
+          },
+          components : [{
+            type : 'text',
+            tagName : 'h3',
+            attributes: {
+              'class': 'event-title'
+            },
+            components : sp.i18n.get('eventBlockContentTitle')
+          }, {
+            tagName : 'div',
+            attributes: {
+              'class': 'event-date'
+            },
+            components : [{
+              type : 'text',
+              tagName : 'span',
+              attributes: {
+                'class': 'event-start-date'
+              },
+              components : sp.i18n.get('eventBlockContentFrom') + ' ...'
+            }, {
+              type : 'text',
+              tagName : 'span',
+              attributes: {
+                'class': 'event-end-date'
+              },
+              components : sp.i18n.get('eventBlockContentTo') + ' ...'
+            }]
+          }, {
+            type : 'text',
+            tagName : 'div',
+            attributes: {
+              'class': 'event-description'
+            },
+            components : sp.i18n.get('eventBlockDescription')
+          }, {
+            type : 'link',
+            tagName : 'a',
+            attributes: {
+              'class': 'event-link',
+              'target': '_blank',
+              'rel': 'noopener noreferrer'
+            },
+            components : sp.i18n.get('eventBlockOpen')
+          }]
+        },
+        init : function() {
+          __addPickupBasketElementMenu.call(this, 'tlb-sp-basket-selector-event');
+        }
+      },
+      view : {
+        events: {
+          dblclick: function() {
+            // editor.runCommand('tlb-sp-basket-selector-event');
+          }
+        },
+        onRender : function() {
+          const nonCopyable = {
+            copyable : false
+          };
+          this.model.find('.event-title, .event-date, .event-start-date, .event-end-date, .event-description, .event-link').forEach(function(model) {
+            model.set(nonCopyable);
+            initOptions.tools.updateToolbar(model);
+          }.bind(this.model));
+        }
+      }
+    });
+    const __isTheComponent = function(model) {
+      return model.get('type') === componentType;
+    }
+    editor.on('component:hovered', function(model) {
+      const $highlighterEl = editor.Canvas.getHighlighter(model.view);
+      const $badgeEl = editor.Canvas.getBadgeEl(model.view);
+      if (__isTheComponent(model)) {
+        $highlighterEl.classList.add('calendar-event');
+        $badgeEl.classList.add('calendar-event');
+      } else {
+        $highlighterEl.classList.remove('calendar-event');
+        $badgeEl.classList.remove('calendar-event');
+      }
+    });
+    editor.on('component:selected', function(model) {
+      if (__isTheComponent(model)) {
+        const $toolbar = editor.Canvas.getToolbarEl();
+        $toolbar.classList.add('calendar-event');
+      }
+    });
+    editor.on('component:deselected', function(model) {
+      if (__isTheComponent(model)) {
+        const $toolbar = editor.Canvas.getToolbarEl();
+        $toolbar.classList.remove('calendar-event');
+      }
+    });
+    editor.on('block:drag:stop', function(model) {
+      if (model && model.get('type') === componentType) {
+        editor.select(model);
+        editor.runCommand('tlb-sp-basket-selector-event');
+      }
+    });
+    editor.Commands.add('tlb-sp-basket-selector-event', {
+      run : function(ed, sender, opts) {
+        if (opts) {
+          initOptions.basketSelectionApi.open({
+            filter : function(element) {
+              return BasketService.Filters.eventItems(element);
+            },
+            select : function(basketElement) {
+              const selectedModel = ed.getSelected();
+              [{
+                cssSelector : '.event-title',
+                updateWith : function(model) {
+                  model.components(basketElement.getTitle().noHTML().convertNewLineAsHtml());
+                }
+              }, {
+                cssSelector : '.event-start-date',
+                updateWith : function(model) {
+                  model.components(basketElement.getPeriod().formatStartDate().noHTML().convertNewLineAsHtml());
+                }
+              }, {
+                cssSelector : '.event-end-date',
+                updateWith : function(model) {
+                  model.components(basketElement.getPeriod().formatEndDate().noHTML().convertNewLineAsHtml());
+                }
+              }, {
+                cssSelector : '.event-description',
+                updateWith : function(model) {
+                  model.components(basketElement.getDescription().noHTML().convertNewLineAsHtml());
+                }
+              }, {
+                cssSelector : '.event-link',
+                updateWith : function(model) {
+                  model.addAttributes({
+                    'href' : basketElement.getLink()
+                  });
+                }
+              }].forEach(function(target) {
+                selectedModel.find(target.cssSelector).forEach(function(model) {
+                  target.updateWith(model);
+                });
+              });
+            }
+          });
+        }
+      }
+    });
+    editor.BlockManager.add(componentType, {
+      label : sp.i18n.get('eventBlockTitle'),
+      attributes : {
+        'class' : 'fa fa-sp-event'
       },
       category: sp.i18n.get('silverpeasCategoryLabel'),
       content: {
@@ -340,7 +566,6 @@
        * @returns {{type: string}}
        */
       isComponent : function(el) {
-        console.log(el)
         if (el && el.tagName && el.tagName.toLowerCase() === 'div' &&
             StringUtil.defaultStringIfNotDefined(el.getAttribute('sp-behavior')).indexOf(componentType) >= 0) {
           return {

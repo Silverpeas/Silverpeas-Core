@@ -1,28 +1,28 @@
-<!DOCTYPE html><html lang='fr' xml:lang='fr'><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta http-equiv="X-UA-Compatible" content="IE=edge"></head><body><p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
+<p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
 
 <p><u>Soulign&eacute;</u></p>
 
 <p><strong>Gras</strong></p>
 
-<p><strong><img alt="kiss" height="23" src="cid:mail-content-attachment-4" title="kiss" width="23" /></strong></p>
+<p><strong><img alt="kiss" height="23" src="/silverpeas/wysiwyg/jsp/ckeditor/plugins/smiley/images/kiss.png" title="kiss" width="23" /></strong></p>
 
 <p>Photot&egrave;que :</p>
 
-<p><img alt="" border="0" src="cid:mail-content-attachment-0" /></p>
+<p><img alt="" border="0" src="/silverpeas/GalleryInWysiwyg/dummy?ImageId=187&amp;ComponentId=gallery4&amp;UseOriginal=false" /></p>
 
 <p>Upload image :</p>
 
-<p><img alt="" src="cid:mail-content-attachment-1" style="width: 100px; height: 100px;" /></p>
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/name/Aikido16.jpg" style="width: 100px; height: 100px;" /></p>
 
-<p><img alt="" src="cid:mail-content-attachment-1" style="width: 100px; height: 100px;" /></p>
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg" style="width: 100px; height: 100px;" /></p>
 
-<p><img alt="" src="cid:mail-content-attachment-3" style="width: 100px; height: 100px;" /></p>
+<p><img alt="" src="http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis" style="width: 100px; height: 100px;" /></p>
 
 <p><img alt="" src="/silverpeas/File_bad_link/d07411cc-19af-49f8-af57-16fc9fabf318-bis" style="width: 100px; height: 100px;" /></p>
 
-<p><a href="cid:mail-content-attachment-1">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg</a></p>
+<p><a href="http://www.unit-test-silverpeas.org/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg</a></p>
 
-<p><a href="cid:mail-content-attachment-2">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg</a></p>
+<p><a href="http://www.unit-test-silverpeas.org/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg</a></p>
 
 <p><a href="https://www.toto.fr/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259-bis/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
 
@@ -56,4 +56,3 @@
 <p><a class="toto" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346" target="_blank">  Publication 346  </a></p>
 
 <p><a class="toto" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346" target="_self">  Publication 346  </a></p>
-</body></html>

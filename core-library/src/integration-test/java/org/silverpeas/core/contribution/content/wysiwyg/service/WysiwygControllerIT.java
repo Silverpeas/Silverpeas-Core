@@ -41,7 +41,9 @@ import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
@@ -51,7 +53,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -207,6 +211,40 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
     result = getWysiwygController().suppressFinalSlash("");
     assertThat(result, is(""));
+  }
+
+  /**
+   * Test of copy method, of class WysiwygController.
+   */
+  @Test
+  public void testCopyDocumentsBetweenTwoResourcesWithSourceContent() throws Exception {
+    String componentId = "blog974";
+    String messageId = "18";
+    SimpleDocument image = createImageContent(componentId, messageId);
+    final String sourceContent = JSONCodec.encode(Map.of(
+        "property1", "<mark><b>EN_Content_FileServer_ComponentId=blog974</b>",
+        "property2", format("<a href='/componentId/blog974/attachmentId/%s/'></a>", image.getId())));
+    final ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
+    String destComponentId = "kmelia26";
+    String destMessageId = "38";
+    final ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
+    assertThat(listImages(resourceSrcTestPK), hasSize(1));
+    assertThat(listImages(resourceDestTestPK), hasSize(0));
+    final Pair<String, Map<String, String>> updatedContent =
+        WysiwygController.copyDocumentsBetweenTwoResourcesWithSourceContent(
+            resourceSrcTestPK, resourceDestTestPK, sourceContent);
+    final SimpleDocumentList<SimpleDocument> sourceImages = listImages(resourceSrcTestPK);
+    assertThat(sourceImages, hasSize(1));
+    SimpleDocumentList<SimpleDocument> copiedImages = listImages(resourceDestTestPK);
+    assertThat(copiedImages, hasSize(1));
+    assertThat(copiedImages.get(0).getId(), not(is(sourceImages.get(0).getId())));
+    final Map.Entry<String, String> imageMapping = updatedContent.getSecond().entrySet().iterator().next();
+    assertThat(imageMapping.getKey(), is(sourceImages.get(0).getId()));
+    assertThat(imageMapping.getValue(), is(copiedImages.get(0).getId()));
+    final String expectedUpdatedContent = JSONCodec.encode(Map.of(
+        "property1", "<mark><b>EN_Content_FileServer_ComponentId=kmelia26</b>",
+        "property2", format("<a href='/componentId/kmelia26/attachmentId/%s/'></a>", copiedImages.get(0).getId())));
+    assertThat(updatedContent.getFirst(), is(expectedUpdatedContent));
   }
 
   /**

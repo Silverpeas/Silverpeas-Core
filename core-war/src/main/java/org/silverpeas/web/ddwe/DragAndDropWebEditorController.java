@@ -26,10 +26,13 @@ package org.silverpeas.web.ddwe;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
+import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
@@ -62,6 +65,7 @@ import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.function.Predicate.not;
+import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.wbe.WbeLogger.logger;
 
@@ -97,6 +101,7 @@ public class DragAndDropWebEditorController extends
     process(context, e -> {
       context.getRequest().setAttribute("DdweUser", e.getUser());
       context.getRequest().setAttribute("DdweFile", e.getFile());
+      prepareMode(context);
       prepareConnectorButtons(context);
       prepareBrowseBarPath(context);
       getTemporaryContent(e).getSimpleContent()
@@ -162,12 +167,42 @@ public class DragAndDropWebEditorController extends
   @RedirectToInternalJsp("result.jsp")
   public void result(final DragAndDropWebEditorRequestContext context) {
     process(context, e -> {
-      final String currentFileContent = getTemporaryContent(e).getSimpleContent()
-          .orElseGet(() -> getTemporaryContent(e).getInlinedHtml());
+      final String currentFileContent = getTemporaryContent(e).getInlinedHtml();
       final WysiwygContent wysiwygContent = new WysiwygContent(null, currentFileContent);
       context.getRequest().setAttribute("result", wysiwygContent.getRenderer().renderView(true));
       return null;
     });
+  }
+
+  @GET
+  @Path("sendToMe")
+  @Produces(MediaType.APPLICATION_JSON)
+  public void sendToMe(final DragAndDropWebEditorRequestContext context) {
+    process(context, e -> {
+      final String currentFileContent = getTemporaryContent(e).getInlinedHtml();
+      final LocalizationBundle multilang = context.getMultilang();
+      try {
+        final MailAddress me = eMail(context.getUser().geteMail());
+        WysiwygContentTransformer.on(currentFileContent)
+            .toMailContent()
+            .prepareMailSendingFrom(me)
+            .to(me)
+            .withSubject(multilang.getStringWithParams("ddwe.mail.subject", e.getFile().name()))
+            .send();
+        context.getMessager().addSuccess(multilang.getString("ddwe.mail.sentToMe"));
+      } catch (Exception ex) {
+        context.getMessager().addError(multilang.getString("ddwe.mail.sentToMe.error"));
+        throw new WebApplicationException(ex);
+      }
+      return EMPTY;
+    });
+  }
+
+  private void prepareMode(final DragAndDropWebEditorRequestContext context) {
+    context.getWbeEdition()
+        .map(WbeEdition::getConfiguration)
+        .flatMap(DragAndDropEditorConfig::getFrom)
+        .ifPresent(c -> context.getRequest().setAttribute("mode", c.getMode()));
   }
 
   private void prepareConnectorButtons(final DragAndDropWebEditorRequestContext context) {

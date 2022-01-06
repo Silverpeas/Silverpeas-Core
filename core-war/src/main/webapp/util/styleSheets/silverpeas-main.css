@@ -7477,4 +7477,11 @@ input.dateToPick,
   margin-right: 10px;
 }
 
-
+/************ Basket Selection ******************/
+.add-to-basket-selection {
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  width: 28px;
+  height: 18px;
+}

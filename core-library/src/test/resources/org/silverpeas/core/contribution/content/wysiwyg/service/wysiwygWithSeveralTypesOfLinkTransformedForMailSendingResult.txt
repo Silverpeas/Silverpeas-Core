@@ -1,4 +1,4 @@
-<html><body><p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
+<!DOCTYPE html><html lang='fr' xml:lang='fr'><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta http-equiv="X-UA-Compatible" content="IE=edge"></head><body><p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
 
 <p><u>Soulign&eacute;</u></p>
 
@@ -26,34 +26,34 @@
 
 <p><a href="https://www.toto.fr/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259-bis/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
 
-<p><a href="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
+<p><a href="http://www.unit-test-silverpeas.org/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
 
-<p><a href="/silverpeas/attached_file/componentId/infoLetter175/attachmentId_bad_link/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
+<p><a href="http://www.unit-test-silverpeas.org/silverpeas/attached_file/componentId/infoLetter175/attachmentId_bad_link/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
 
-<p><a href="/silverpeas/Publication/345" >  A publication!!  </a></p>
+<p><a href="http://www.unit-test-silverpeas.org/silverpeas/Publication/345" >  A publication!!  </a></p>
 
-<p><a href="/silverpeas/Publication/346"
+<p><a href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346"
  >  An other publication!!  </a></p>
 
-<p><a class="" href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class="" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
-<p><a class="" href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class="" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
-<p><a class=' ' href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class=' ' href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
-<p><a class="sp-link" href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class="sp-link" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
-<p><a class=" sp-permalink " href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class=" sp-permalink " href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
-<p><a class="toto" href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class="toto" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
-<p><a class="sp-permalink toto" href="/silverpeas/Publication/346">  Publication 346  </a></p>
+<p><a class="sp-permalink toto" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346">  Publication 346  </a></p>
 
 <p><a class
   =
-  "toto sp-link" href="/silverpeas/Publication/346?x=1&amp;y=2" >  Publication 346  </a></p>
+  "toto sp-link" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346?x=1&amp;y=2" >  Publication 346  </a></p>
 
-<p><a class="toto" href="/silverpeas/Publication/346" target="_blank">  Publication 346  </a></p>
+<p><a class="toto" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346" target="_blank">  Publication 346  </a></p>
 
-<p><a class="toto" href="/silverpeas/Publication/346" target="_self">  Publication 346  </a></p>
+<p><a class="toto" href="http://www.unit-test-silverpeas.org/silverpeas/Publication/346" target="_self">  Publication 346  </a></p>
 </body></html>

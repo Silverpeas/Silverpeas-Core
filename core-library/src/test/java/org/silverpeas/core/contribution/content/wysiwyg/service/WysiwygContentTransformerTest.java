@@ -28,6 +28,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlToDataSourceScanner;
@@ -43,6 +44,7 @@ import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.SettingBundleStub;
 import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -61,10 +63,7 @@ import java.util.regex.Pattern;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -77,10 +76,15 @@ public class WysiwygContentTransformerTest {
 
   private File originalOdt;
   private File originalImage;
-  private File originalImageWithResize100x;
-  private File originalImageWithResize100x100;
+  private List<File> filesWithResize;
 
   private static final String ODT_ATTACHMENT_ID = "72f56ba9-b089-40c4-b16c-255e93658259";
+
+  @RegisterExtension
+  protected SettingBundleStub urlSettings = new SettingBundleStub("org.silverpeas.wysiwyg.settings.wysiwygSettings");
+
+  @RegisterExtension
+  static SettingBundleStub mailSettings = new SettingBundleStub("org.silverpeas.mail.mail");
 
   @TestManagedBean
   private MailContentProcess.WysiwygCkeditorMediaLinkUrlToDataSourceScanner ckScanner;
@@ -103,17 +107,14 @@ public class WysiwygContentTransformerTest {
   @SuppressWarnings("unchecked")
   @BeforeEach
   void setup() throws Exception {
+    urlSettings.put("mail.mime.multipart", "relative");
+    filesWithResize = new ArrayList<>();
+    mailSettings.put("image.resize.min-width", "0");
     originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
     assertThat(originalOdt.exists(), is(true));
     originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
     assertThat(originalImage.exists(), is(true));
-    originalImageWithResize100x = new File(originalImage.getParentFile(), "100x/" + IMAGE_NAME);
-    FileUtils.touch(originalImageWithResize100x);
-    assertThat(originalImageWithResize100x.exists(), is(true));
-    originalImageWithResize100x100 =
-        new File(originalImage.getParentFile(), "100x100/" + IMAGE_NAME);
-    FileUtils.touch(originalImageWithResize100x100);
-    assertThat(originalImageWithResize100x100.exists(), is(true));
+    addFileIntoContextWithWidth(100);
 
     // SilverpeasFile
     List<SilverpeasFileProcessor> processors = (List<SilverpeasFileProcessor>) FieldUtils
@@ -155,11 +156,23 @@ public class WysiwygContentTransformerTest {
     URLUtil.setCurrentServerUrl(mockHttpServletRequest);
   }
 
+  private void addFileIntoContextWithWidth(int width) throws IOException {
+    File originalImageWithWidthResizing = new File(originalImage.getParentFile(),
+        width + "x/" + IMAGE_NAME);
+    filesWithResize.add(originalImageWithWidthResizing);
+    FileUtils.touch(originalImageWithWidthResizing);
+    assertThat(originalImageWithWidthResizing.exists(), is(true));
+    File originalImageWithResizeWidthAndHeightResizing = new File(originalImage.getParentFile(),
+        width + "x" + width + "/" + IMAGE_NAME);
+    filesWithResize.add(originalImageWithResizeWidthAndHeightResizing);
+    FileUtils.touch(originalImageWithResizeWidthAndHeightResizing);
+    assertThat(originalImageWithResizeWidthAndHeightResizing.exists(), is(true));
+  }
+
   @SuppressWarnings("unchecked")
   @AfterEach
   void destroy() throws Exception {
-    FileUtils.deleteQuietly(originalImageWithResize100x.getParentFile());
-    FileUtils.deleteQuietly(originalImageWithResize100x100.getParentFile());
+    filesWithResize.forEach(FileUtils::deleteQuietly);
 
     // SilverpeasFile
     List<SilverpeasFileProcessor> processors = (List<SilverpeasFileProcessor>) FieldUtils
@@ -175,8 +188,20 @@ public class WysiwygContentTransformerTest {
     MailContentProcess.MailResult mailResult = transformer.toMailContent();
 
     assertThat(mailResult.getWysiwygContent(), is(getContentOfDocumentNamed(
-        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResultWithImageResizePreProcessing" +
-            ".txt")));
+        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResultWithImageResizePreProcessing.txt")));
+  }
+
+  @Test
+  void toMailContentWithMinimalWidthForImages() throws Exception {
+    addFileIntoContextWithWidth(400);
+    mailSettings.put("image.resize.min-width", "400");
+    WysiwygContentTransformer transformer = WysiwygContentTransformer
+        .on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
+
+    MailContentProcess.MailResult mailResult = transformer.toMailContent();
+
+    assertThat(mailResult.getWysiwygContent(), is(getContentOfDocumentNamed(
+        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResultWithImageResizePreProcessingWithImageMinimalWidth.txt")));
   }
 
   @Test
@@ -191,7 +216,7 @@ public class WysiwygContentTransformerTest {
   }
 
   @Test
-  public void applyingSilverpeasLinkCss() throws Exception {
+  void applyingSilverpeasLinkCss() throws Exception {
     WysiwygContentTransformer transformer =
         WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
 
@@ -199,6 +224,17 @@ public class WysiwygContentTransformerTest {
 
     assertThat(result, is(getContentOfDocumentNamed(
         "wysiwygWithSeveralTypesOfLinkTransformedForCssLinkApplierResult.txt")));
+  }
+
+  @Test
+  void applyingMailLinkCss() throws Exception {
+    WysiwygContentTransformer transformer =
+        WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
+
+    String result = transformer.applyMailLinkCssDirective().transform();
+
+    assertThat(result, is(getContentOfDocumentNamed(
+        "wysiwygWithSeveralTypesOfLinkTransformedForMailCssLinkResult.txt")));
   }
 
   /*

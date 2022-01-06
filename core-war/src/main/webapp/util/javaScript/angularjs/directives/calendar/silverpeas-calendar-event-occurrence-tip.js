@@ -59,6 +59,11 @@
           return this.occurrence.endDate;
         }
 
+        this.putIntoBasket = function() {
+          const basketManager = new BasketManager();
+          basketManager.putContributionInBasket(this.occurrence.id);
+        }
+
         this.$onInit = function() {
           this.occurrence = {
             startDate : '',

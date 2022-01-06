@@ -25,7 +25,12 @@ package org.silverpeas.core.mail;
 
 import net.htmlparser.jericho.Renderer;
 import net.htmlparser.jericho.Source;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.body;
+import org.apache.ecs.xhtml.head;
+import org.apache.ecs.xhtml.html;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
@@ -47,6 +52,11 @@ public class MailContent {
   private static final String DEFAULT_CONTENT_TYPE = "text/html; charset=\"UTF-8\"";
   private static final String TEXT_CONTENT_TYPE = "text/plain; charset=\"UTF-8\"";
   private static final String ALTERNATIVE_SUBTYPE = "alternative";
+  private static final String META_CHARSET = "<meta charset=\"utf-8\">";
+  private static final String META_VIEWPORT = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">";
+  private static final String META_HTTP_EQUIV = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">";
+  private static final String START_STYLE_PATTERN = "<style";
+  private static final String END_STYLE_PATTERN = "</style>";
 
   private Object content = "";
   private String contentType = DEFAULT_CONTENT_TYPE;
@@ -98,12 +108,43 @@ public class MailContent {
 
   /**
    * Normalizes the given HTML content in order to be sent safely by mail infrastructure.
+   * <p>
+   *   If HTML TAG container does not exists, then the normalization is performed.
+   *   HTML, HEAD and BODY are created and all declared styles in BODY are moved to HEAD part in
+   *   order to get as most as possible compatibility email reader.
+   * </p>
    * @param htmlContent an HTML content.
    * @return a string representing the normalized HTML content.
    */
   public static String normalizeHtmlContent(final String htmlContent) {
     if (!htmlContent.toLowerCase().contains("<html>")) {
-      return "<html><body>" + htmlContent + "</body></html>";
+      final String DOCTYPE = "<!DOCTYPE html>";
+      final html html = new html(StringUtil.EMPTY);
+      html.setLang(DisplayI18NHelper.getDefaultLanguage());
+      final head head = new head();
+      head.addElement(META_CHARSET);
+      head.addElement(META_VIEWPORT);
+      head.addElement(META_HTTP_EQUIV);
+      final body body = new body();
+      String finalHtmlContent = htmlContent;
+      int styleStartIndex = htmlContent.indexOf(START_STYLE_PATTERN);
+      int styleEndIndex = htmlContent.indexOf(END_STYLE_PATTERN) + END_STYLE_PATTERN.length();
+      while (styleStartIndex >= 0 && styleStartIndex < styleEndIndex) {
+        String before = finalHtmlContent.substring(0, styleStartIndex);
+        String style = finalHtmlContent.substring(styleStartIndex, styleEndIndex);
+        String end = finalHtmlContent.substring(styleEndIndex);
+        head.addElement(style);
+        finalHtmlContent = before + end;
+        styleStartIndex = finalHtmlContent.indexOf(START_STYLE_PATTERN);
+        styleEndIndex = finalHtmlContent.indexOf(END_STYLE_PATTERN) + END_STYLE_PATTERN.length();
+      }
+      body.addElement(finalHtmlContent);
+      final ElementContainer elements = new ElementContainer();
+      elements.addElement(DOCTYPE);
+      html.addElement(head);
+      html.addElement(body);
+      elements.addElement(html);
+      return elements.toString();
     }
     return htmlContent;
   }

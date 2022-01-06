@@ -29,9 +29,9 @@ import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -164,9 +164,9 @@ public class SessionSynchronizerTokenValidator implements Filter {
   private boolean isProtectedResource(HttpServletRequest request) {
     return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request) &&
         !isCredentialManagement(request) && !isSsoAuthentication(request) &&
-        !(isWebServiceRequested(request) &&
-            StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY))) &&
-        !isWebBrowserEditionResource(request) && !isCMISResource(request);
+        !isWebServiceRequested(request) &&
+        !isWebBrowserEditionResource(request) && !isCMISResource(request) &&
+        !isDragAndDropWebEditionResource(request);
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
@@ -192,6 +192,10 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isWebBrowserEditionResource(HttpServletRequest request) {
     return request.getRequestURI().contains(getApplicationURL() + "/services/wbe/");
+  }
+
+  private boolean isDragAndDropWebEditionResource(HttpServletRequest request) {
+    return request.getRequestURI().contains(getApplicationURL() + "/Rddwe/");
   }
 
   private String pathOf(ServletRequest request) {

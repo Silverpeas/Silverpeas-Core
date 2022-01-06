@@ -24,7 +24,6 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -47,6 +46,7 @@ import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.Pair;
 
 import javax.inject.Inject;
 import javax.jcr.LoginException;
@@ -648,12 +648,13 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(getJcrNode(foreignInstanceId), nullValue());
 
     ResourceReference newResourcePK = new ResourceReference("newResourcePK", foreignInstanceId);
-    List<SimpleDocumentPK> copiedDocumentPks = instance
+    List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copiedDocumentPks = instance
         .copyAllDocuments(new ResourceReference(documentFr.getForeignId(), documentFr.getInstanceId()),
             newResourcePK);
 
     assertThat(copiedDocumentPks, hasSize(2));
-    for (SimpleDocumentPK copiedDocumentPK : copiedDocumentPks) {
+    for (Pair<SimpleDocumentPK, SimpleDocumentPK> copy : copiedDocumentPks) {
+      SimpleDocumentPK copiedDocumentPK = copy.getSecond();
       SimpleDocument copiedDocument = instance.searchDocumentById(copiedDocumentPK, "de");
       assertThat(copiedDocument, notNullValue());
       assertThat(copiedDocument.getInstanceId(), is(foreignInstanceId));

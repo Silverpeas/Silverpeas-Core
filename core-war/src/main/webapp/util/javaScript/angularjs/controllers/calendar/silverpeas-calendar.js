@@ -94,16 +94,8 @@
             $scope.goToPage(uri);
           };
           $scope.putEventOccurrenceInBasket = function(occurrence) {
-            const basket = new BasketService();
-            // noinspection JSUnresolvedVariable
-            basket.putNewEntry({
-              context : {
-                reason : BasketService.Context.transfert
-              }, item : {
-                id : occurrence.id,
-                type : occurrence.contributionType
-              }
-            });
+            const basketManager = new BasketManager();
+            basketManager.putContributionInBasket(occurrence.id);
           };
           $scope.getVisibleCalendars = function(calendars) {
             let visibleCalendars = visibleFilter(calendars, true);

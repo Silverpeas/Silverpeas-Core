@@ -849,4 +849,36 @@
           });
         }
       }));
+
+  /**
+   * silverpeas-link is an HTML element which display an HTML link.
+   *
+   * @param iconUrl (Optional) can be used to override the default icon url.
+   *
+   * The following example illustrates a possible use of the component:
+   * @example <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
+   */
+  Vue.component('silverpeas-event-period',
+      commonAsyncComponentRepository.get('event-period', {
+        props : {
+          period : {
+            'type': Object,
+            'required' : true
+          }
+        },
+        methods : {
+          startDate : function() {
+            return this.period.getStartDate();
+          },
+          endDate : function() {
+            return this.period.getEndDateForUI();
+          },
+          isInDays : function() {
+            return this.period.isInDays();
+          },
+          onSameDay : function() {
+            return !this.period.onSeveralDays();
+          }
+        }
+      }));
 })();

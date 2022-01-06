@@ -31,6 +31,91 @@
     async : true
   });
 
+  /**
+   * Manager that permits to centralize some common code about the add of elements into basket
+   * selection.
+   */
+  window.BasketManager = function() {
+
+    /**
+     * Puts a contribution into basket from its full identifier.
+     * @param contributionId a contribution identifier.
+     * @param reason an optional reason.
+     */
+    this.putContributionInBasket = function(contributionId, reason) {
+      const r = reason ? reason : BasketService.Context.transfert;
+      const cId = sp.contribution.id.from(contributionId);
+      const basket = new BasketService();
+      basket.putNewEntry({
+        context: {
+          reason: r
+        },
+        item: {
+          id: cId.asString(),
+          type : cId.getType()
+        }
+      });
+    }
+
+    /**
+     * Handled selected and unselected contributions.
+     * @param selectedContributionIds a list of selected contribution identifier.
+     * @param unselectedContributionIds a list of unselected contribution identifier.
+     * @param reason an optional reason.
+     */
+    this.putContributionsInBasket = function(selectedContributionIds, unselectedContributionIds, reason) {
+      const r = reason ? reason : BasketService.Context.transfert;
+      const filter = function(cId) {
+        return cId && (typeof cId !== 'string' || StringUtil.isDefined(cId));
+      };
+      const selectedCId = selectedContributionIds.filter(filter).map(function(cId) {
+        return sp.contribution.id.from(cId);
+      });
+      const unselectedCId = unselectedContributionIds.filter(filter).map(function(cId) {
+        return sp.contribution.id.from(cId);
+      });
+      const basket = new BasketService();
+      const isContributionToAdd = selectedCId.length > 0;
+      let deletePromises = [];
+      // remove from the basket the unselected contributions
+      if (unselectedCId.length > 0) {
+        deletePromises.push(basket.getBasketSelectionElements(r).then(function(elts) {
+          const entriesToDelete = elts
+              .filter(function(elt) {
+                return unselectedCId.filter(function(id) {
+                  return elt.getId() === id.asString();
+                }).length > 0;
+              })
+              .map(function(elt) {
+                return {
+                  item : {
+                    id : elt.getId()
+                  }
+                }
+              });
+          return basket.deleteEntries(entriesToDelete, isContributionToAdd);
+        }));
+      }
+
+      // put into the basket the selected contributions
+      if(isContributionToAdd) {
+        const entriesToAdd = selectedCId.map(function(cId) {
+          return {
+            context : {
+              reason : r
+            }, item : {
+              id : cId.asString(),
+              type : cId.getType()
+            }
+          };
+        });
+        sp.promise.whenAllResolved(deletePromises).then(function() {
+          basket.putNewEntries(entriesToAdd);
+        })
+      }
+    }
+  };
+
   window.BasketService = function() {
     const basketRepository = new BasketRepository();
 
@@ -163,31 +248,53 @@
      */
     dataTransfer : function(element) {
       return element.isDataTransfer();
+    },
+    /**
+     * Filters on event element.
+     * @param element an element of a basket selection.
+     * @returns {*}
+     */
+    eventItems : function(element) {
+      return element.isEventOccurrence();
     }
   }
 
   const BasketElement = function() {
     this.type = 'BasketElement';
-    this.isDataTransfer = function() {
-      return this.context.reason === BasketService.Context.transfert;
-    };
-    this.getResourceType = function() {
-      return sp.contribution.id.fromString(this.item.id).getType();
-    };
-    this.getId = function() {
-      return this.item.id;
-    };
-    this.getImageSrc = function() {
-      return this.item.thumbnailURI;
-    };
-    this.getTitle = function() {
-      return StringUtil.defaultStringIfNotDefined(this.item.name);
-    };
-    this.getDescription = function() {
-      return StringUtil.defaultStringIfNotDefined(this.item.description);
-    };
-    this.getLink = function() {
-      return StringUtil.defaultStringIfNotDefined(this.item.permalink);
+    this.$onInit = function() {
+      this.isDataTransfer = function() {
+        return this.context.reason === BasketService.Context.transfert;
+      };
+      this.isEventOccurrence = function() {
+        return this.item.type === 'CalendarEventOccurrence';
+      };
+      this.getResourceType = function() {
+        return sp.contribution.id.fromString(this.item.id).getType();
+      };
+      this.getId = function() {
+        return this.item.id;
+      };
+      this.getImageSrc = function() {
+        return this.item.thumbnailURI;
+      };
+      this.getTitle = function() {
+        return StringUtil.defaultStringIfNotDefined(this.item.name);
+      };
+      this.getDescription = function() {
+        return StringUtil.defaultStringIfNotDefined(this.item.description);
+      };
+      this.getLink = function() {
+        return StringUtil.defaultStringIfNotDefined(this.item.permalink);
+      };
+      if (this.isEventOccurrence()) {
+        const spPeriod = new SilverpeasPeriod(
+            sp.moment.makeUtc(this.item.period.startDate),
+            sp.moment.makeUtc(this.item.period.endDate),
+            this.item.period.isInDays);
+        this.getPeriod = function() {
+          return spPeriod;
+        }
+      }
     };
   };
 

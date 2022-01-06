@@ -95,7 +95,11 @@
           },
           deleteBasketElement : function(basketElement) {
             this.loadQueue.push(function() {
-              this.service.deleteEntry(basketElement);
+              this.service.deleteEntry(basketElement).then(function(elements) {
+                if (elements.length === 0) {
+                  this.close();
+                }
+              }.bind(this));
             }.bind(this));
           },
           goTo : function(basketElement) {
@@ -161,7 +165,7 @@
             this.options = options;
             this.currentBasketElement = undefined;
             this.basketElements = [];
-            this.service.getBasketSelectionElements().then(function(basketElements) {
+            this.service.getBasketSelectionElements(options.filter).then(function(basketElements) {
               this.basketElements = basketElements;
               this.popinApi.open({
                 callback : this.validate

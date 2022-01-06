@@ -28,6 +28,7 @@
     applyReadyBehaviorOn(this);
     applyEventDispatchingBehaviorOn(this);
     const __options = extendsObject({
+      componentCssUrl : '',
       defaultEditorImageSrc : '',
       imageSelectorApi : undefined,
       basketSelectionApi : undefined,
@@ -152,6 +153,11 @@
                 currentImageSrc : props.options.target.get('src'),
                 select : function(src) {
                   props.options.select({
+                    get : function(key) {
+                      if (key === 'src') {
+                        return src;
+                      }
+                    },
                     getSrc : function() {
                       return src;
                     }
@@ -186,6 +192,13 @@
       const tkn = $form.querySelector('input');
       if (tkn) {
         initOptions.storageManager.headers[tkn.name] = tkn.value;
+      }
+      if (__options.componentCssUrl) {
+        initOptions.canvas = {
+          styles : Array.isArray(__options.componentCssUrl)
+              ? __options.componentCssUrl
+              : [__options.componentCssUrl]
+        };
       }
       const gEditor = grapesjs.init(initOptions);
       gEditor.on('storage:start:store', function(data) {
@@ -406,11 +419,13 @@
     const manager = new HtmlCodePopupManager(instance);
     instance.Commands.add('html-edit', {
       run : function(editor, sender) {
-        const InnerHtml = editor.getHtml();
-        const Css = editor.getCss();
-        manager.setModal(InnerHtml + "<style>" + Css + '</style>', {
+        const innerHtml = editor.getHtml();
+        const css = editor.getCss();
+        manager.setModal(innerHtml + "<style>" + css + '</style>', {
           title : sp.i18n.get('htmlSource'),
           callback : function(code) {
+            instance.setComponents("");
+            instance.CssComposer.clear();
             instance.setComponents(code.trim());
           }
         });

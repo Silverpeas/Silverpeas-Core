@@ -699,6 +699,7 @@ public class JavascriptPluginInclusion {
     includeDragAndDropUpload(xhtml, language);
     includeWysiwygEditor(xhtml, language);
     includeContributionReminder(xhtml, language);
+    includeBasketSelection(xhtml, language);
 
     SettingBundle calendarSettings = ResourceLocator
         .getSettingBundle("org.silverpeas.calendar.settings.calendar");

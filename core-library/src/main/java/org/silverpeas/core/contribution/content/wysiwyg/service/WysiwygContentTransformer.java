@@ -25,9 +25,12 @@ package org.silverpeas.core.contribution.content.wysiwyg.service;
 
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.MailLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SilverpeasLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +71,21 @@ public class WysiwygContentTransformer {
   }
 
   /**
+   * Transforms all URL of images to take into account theirs display size with a minimal width
+   * if any.
+   * <p>
+   *   If parameter 'image.resize.min-width' is filled and greater than 0, then a min-width is
+   *   applied for images. This allow for example to display better images on phone devices.
+   * </p>
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  private WysiwygContentTransformer modifyImageUrlAccordingToHtmlSizeDirectiveWithImageMinWidthIfAny() {
+    final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.mail.mail");
+    directives.add(new ImageUrlAccordingToHtmlSizeDirective(settings.getInteger("image.resize.min-width", 0)));
+    return this;
+  }
+
+  /**
    * Replaces all variables element by theirs corresponding values.
    * @return the instance of the current {@link WysiwygContentTransformer}.
    */
@@ -82,6 +100,15 @@ public class WysiwygContentTransformer {
    */
   public WysiwygContentTransformer applySilverpeasLinkCssDirective() {
     directives.add(new SilverpeasLinkCssApplierDirective());
+    return this;
+  }
+
+  /**
+   * Applies the Silverpeas's link completion into context of a mail content.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  public WysiwygContentTransformer applyMailLinkCssDirective() {
+    directives.add(new MailLinkCssApplierDirective());
     return this;
   }
 
@@ -112,12 +139,13 @@ public class WysiwygContentTransformer {
   /**
    * Transforms all referenced content links in order to be handled in mail sending. A content
    * can be for example an attachment.<br>
-   * The directive set by method {@link #modifyImageUrlAccordingToHtmlSizeDirective()} is applied.
+   * The directive set by method
+   * {@link #modifyImageUrlAccordingToHtmlSizeDirectiveWithImageMinWidthIfAny()} is applied.
    * @return the wysiwyg content transformed to be sent by mail.
    * @throws SilverpeasException on technical error.
    */
   public MailContentProcess.MailResult toMailContent() throws SilverpeasException {
-    return modifyImageUrlAccordingToHtmlSizeDirective()
+    return modifyImageUrlAccordingToHtmlSizeDirectiveWithImageMinWidthIfAny()
         .resolveVariablesDirective()
         .transform(new MailContentProcess());
   }

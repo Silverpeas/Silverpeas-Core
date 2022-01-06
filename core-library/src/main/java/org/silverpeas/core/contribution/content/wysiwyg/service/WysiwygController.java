@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
@@ -340,6 +341,22 @@ public class WysiwygController {
   public static Map<String, String> copy(String oldComponentId, String oldObjectId,
       String componentId, String objectId, String userId) {
     return getManager().copy(oldComponentId, oldObjectId, componentId, objectId, userId);
+  }
+
+  /**
+   * Copies WYSIWYG resources from a source to a target and updating given content with the news
+   * resource references.
+   * @param sourceRef the reference of the source.
+   * @param targetRef the reference of the target.
+   * @param sourceContent the content to update
+   * @return a pair containing on left the updated content and on right a map containing the
+   * correspondance between old images and the new ones.
+   */
+  public static Pair<String, Map<String, String>> copyDocumentsBetweenTwoResourcesWithSourceContent(
+      final ResourceReference sourceRef, final ResourceReference targetRef,
+      final String sourceContent) {
+    return getManager().copyDocumentsBetweenTwoResourcesWithSourceContent(sourceRef, targetRef,
+        sourceContent);
   }
 
   public static void move(String fromComponentId, String fromObjectId, String componentId,

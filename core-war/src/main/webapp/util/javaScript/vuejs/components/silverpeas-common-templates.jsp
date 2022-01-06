@@ -222,3 +222,24 @@
     <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<fmt:message var="fromDateLabel" key='GML.date.from'/>
+<fmt:message var="atLabel" key='GML.date.hour.to'/>
+<fmt:message var="toLabel" key='GML.date.to'/>
+<silverpeas-component-template name="event-period">
+  <div class="event-period">
+    <div v-if="isInDays()">
+      <span v-if="onSameDay()">{{startDate() | displayAsDate}}</span>
+      <span v-if="!onSameDay()">${fromDateLabel} {{startDate() | displayAsDate}}</span>
+      <span v-if="!onSameDay()">${toLabel} {{endDate() | displayAsDate}}</span>
+    </div>
+    <div v-if="!isInDays() && onSameDay()">
+      <span>{{startDate() | displayAsDate}} - {{startDate() | displayAsTime}} ${atLabel} {{endDate() | displayAsTime}}</span>
+    </div>
+    <div v-if="!isInDays() && !onSameDay()">
+      <span>${fromDateLabel} {{startDate() | displayAsDate}} ${atLabel} {{startDate() | displayAsTime}}</span>
+      <span>${toLabel} {{endDate() | displayAsDate}} ${atLabel} {{endDate() | displayAsTime}}</span>
+    </div>
+  </div>
+</silverpeas-component-template>

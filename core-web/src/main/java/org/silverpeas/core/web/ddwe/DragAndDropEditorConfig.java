@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.silverpeas.core.web.ddwe.DragAndDropMode.MAIL;
+import static org.silverpeas.core.web.ddwe.DragAndDropMode.WEB;
+
 /**
  * Permits to set a specific configuration.
  * @author silveryocha
@@ -42,6 +45,7 @@ public class DragAndDropEditorConfig {
   private final String validateUrl;
   private final String cancelUrl;
   private final List<BrowseBarElement> manualBrowseBarElements = new ArrayList<>();
+  private DragAndDropMode mode = WEB;
 
   private DragAndDropEditorConfig(final String validateUrl, final String cancelUrl) {
     this.validateUrl = validateUrl;
@@ -82,6 +86,10 @@ public class DragAndDropEditorConfig {
     return manualBrowseBarElements;
   }
 
+  public DragAndDropMode getMode() {
+    return mode;
+  }
+
   /**
    * Registers into {@link WbeEdition.Configuration} the {@link DragAndDropEditorConfig}.
    * @param wbeConfiguration a {@link WbeEdition.Configuration} instance.
@@ -109,6 +117,15 @@ public class DragAndDropEditorConfig {
      */
     public Builder addBrowseBarElement(final BrowseBarElement element) {
       config.manualBrowseBarElements.add(element);
+      return this;
+    }
+
+    /**
+     * Sets the editing into a mode which facilitates mail content creation.
+     * @return the builder instance itself.
+     */
+    public Builder setMailMode() {
+      config.mode = MAIL;
       return this;
     }
 

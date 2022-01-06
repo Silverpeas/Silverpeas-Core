@@ -89,7 +89,7 @@ public class DragAndDropEditorContent {
    * @return an inlined HTML content.
    */
   public String getInlinedHtml() {
-    return json.getOrDefault("gjs-inlinedHtml", EMPTY);
+    return getSimpleContent().orElseGet(() -> json.getOrDefault("gjs-inlinedHtml", EMPTY));
   }
 
   /**

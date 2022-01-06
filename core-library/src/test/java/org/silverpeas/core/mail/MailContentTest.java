@@ -39,6 +39,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 @UnitTest
 public class MailContentTest {
@@ -46,6 +47,12 @@ public class MailContentTest {
   private static final String HTML_TYPE = "text/html; charset=\"UTF-8\"";
   private static final String TEXT_TYPE = "text/plain; charset=\"UTF-8\"";
   private static final String OTHER_TYPE = "other type";
+  private static final String HTML_PATTERN =
+      "<!DOCTYPE html><html lang='fr' xml:lang='fr'><head>" + "<meta charset=\"utf-8\">" +
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, " +
+          "maximum-scale=1\">" +
+          "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">" +
+          "</head><body>%s</body></html>";
 
   @Test
   public void emptyContent() throws Exception {
@@ -74,7 +81,7 @@ public class MailContentTest {
   public void stringContentHtmlIndicated() throws Exception {
     MailContent mailContent = MailContent.of("mail content");
     assertThat(mailContent.isHtml(), is(true));
-    assertContentAsHtml(mailContent, "<html><body>mail content</body></html>");
+    assertContentAsHtml(mailContent, String.format(HTML_PATTERN, "mail content"));
   }
 
   @Test
@@ -128,7 +135,7 @@ public class MailContentTest {
   }
 
   private void assertEmptyContentAsHtml(final MailContent mailContent) throws Exception {
-    assertContentAsHtml(mailContent, "<html><body></body></html>");
+    assertContentAsHtml(mailContent, String.format(HTML_PATTERN, EMPTY));
   }
 
   private void assertContentAsHtml(final MailContent mailContent, String expectedContent)

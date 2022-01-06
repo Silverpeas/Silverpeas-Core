@@ -133,6 +133,28 @@
   width: 228px;
 }
 
+.basket-element-list .event-period span:first-child::before {
+  content: ' ';
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  display: inline-block;
+  background: transparent url(../../../../../util/icons/component/almanachSmall.gif) 0 0 no-repeat;
+  vertical-align: top;
+}
+
+.basket-element-list .event-period {
+  width: 106px;
+  padding: 5px 10px;
+}
+
+
+.basket-element-list .event-period span {
+  display: block;
+  font-weight: 600;
+  color: #888;
+}
+
 .silverpeas-attached-popin-content .basket-element-list .link {
   display: none;
 }

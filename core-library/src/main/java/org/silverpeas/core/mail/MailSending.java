@@ -27,6 +27,7 @@ import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.util.MailUtil;
 
 import javax.mail.Multipart;
+import java.util.stream.Stream;
 
 /**
  * Handles easily the send of an email.
@@ -37,6 +38,7 @@ import javax.mail.Multipart;
 public class MailSending {
 
   private MailToSend mailToSend;
+  private boolean separately = false;
 
   /**
    * Gets a new instance of {@link MailSending} by specifying the email of the sender.
@@ -140,6 +142,15 @@ public class MailSending {
   }
 
   /**
+   * One email sent by receiver instead of one email for all receivers.
+   * @return the completed instance of {@link MailSending}.
+   */
+  public MailSending oneMailPerReceiver() {
+    this.separately = true;
+    return this;
+  }
+
+  /**
    * Gets the mail to send.
    * @return the mail to send.
    */
@@ -148,19 +159,36 @@ public class MailSending {
   }
 
   /**
-   * Performs the send of the mail.
+   * Performs sending of the mail.
    * This will be executed into a Threaded mechanism.
    */
   public void send() {
-    MailSenderTask.addMailToSend(mailToSend);
+    (separately ? byReceivers() : Stream.of(mailToSend)).forEach(MailSenderTask::addMailToSend);
   }
 
   /**
-   * Performs the send of the mail synchronously.
+   * Performs sending of the mail synchronously.
    * So the caller wait for the end of the sending treatment before to continue its processing.
    */
   public void sendSynchronously() {
     mailToSend.sendSynchronously();
     send();
+  }
+
+  private Stream<MailToSend> byReceivers() {
+    return mailToSend.getTo().stream().map(r -> {
+      final MailToSend copy = new MailToSend();
+      copy.setFrom(mailToSend.getFrom());
+      copy.setTo(ReceiverMailAddressSet.with(r));
+      copy.setSubject(mailToSend.getSubject());
+      copy.setContent(mailToSend.getContent());
+      if (mailToSend.isReplyToRequired()) {
+        copy.setReplyToRequired();
+      }
+      if (!mailToSend.isAsynchronous()) {
+        copy.sendSynchronously();
+      }
+      return copy;
+    });
   }
 }
