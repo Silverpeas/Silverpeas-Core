@@ -368,6 +368,9 @@
       if (window.spWindow) {
         __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
       }
+      if (__settings.replyToEnabled || __settings.reactionToEnabled) {
+        __settings.whitelisted_plugins.push('actions');
+      }
       if (__settings.visioEnabled) {
         __settings.whitelisted_plugins.push('jitsimeet');
       }
@@ -388,7 +391,7 @@
         bundle : 'org.silverpeas.chat.multilang.chat',
         async : true
       }).then(function() {
-        converse.initialize({
+        const initOptions = {
           'prune_messages_above' : __settings.nbMsgMaxCachedPerRoom,
           'view_mode' : __settings.viewMode,
           'loglevel' : __settings.debug ? 'debug' : 'error',
@@ -423,7 +426,14 @@
           'discover_connection_methods' : false,
           'jitsimeet_start_option' : "into_new_tab",
           'whitelisted_plugins' : __settings.whitelisted_plugins
-        });
+        }
+        if (__settings.replyToEnabled || __settings.reactionToEnabled) {
+          initOptions['actions_reply'] = __settings.replyToEnabled;
+          if (!__settings.reactionToEnabled) {
+            initOptions['actions_reactions'] = [];
+          }
+        }
+        converse.initialize(initOptions);
       });
     };
     this.stop = function() {

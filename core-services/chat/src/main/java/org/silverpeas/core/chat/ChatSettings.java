@@ -94,6 +94,22 @@ public class ChatSettings {
   }
 
   /**
+   * Indicates if the 'reply to' message is enabled.
+   * @return true of enabled, false otherwise.
+   */
+  public boolean isReplyToEnabled() {
+    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".replyTo.enabled", true);
+  }
+
+  /**
+   * Indicates if the 'reaction to' message is enabled.
+   * @return true of enabled, false otherwise.
+   */
+  public boolean isReactionToEnabled() {
+    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".reactionTo.enabled", true);
+  }
+
+  /**
    * Indicates if the visio conference is enabled.
    * @return true of enabled, false otherwise.
    */

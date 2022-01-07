@@ -911,6 +911,9 @@ public class JavascriptPluginInclusion {
         final String converseDir = chatDir + "converse/";
         xhtml.addElement(script(converseDir + "converse.min.js"));
         xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
+        if (chatSettings.isReplyToEnabled() || chatSettings.isReactionToEnabled()) {
+          xhtml.addElement(script(chatDir + "converse-plugins/actions.min.js"));
+        }
         if (chatSettings.isVisioEnabled()) {
           settingBundle.add("v.u", chatSettings.getVisioUrl());
           xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
