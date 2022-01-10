@@ -75,7 +75,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
 /**
  * An event planned in a calendar.
  *
- * An event in a calendar is a possibly {@link Recurrent} and a {@link Plannable} general business
+ * An event in a calendar is a possibly {@link Recurrent} and a {@link PlannableOnCalendar} general business
  * component that can be planned on one and only one given existing {@link Calendar};
  * we ensure an event is unique in a per-calendar basis.
  * It occurs on a {@link Period} and as a such it must be well limited in the time (id est it must
@@ -242,7 +242,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
       "           ) " +
       "ORDER BY ob_1, ob_2, ob_3")
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
-    implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable,
+    implements PlannableOnCalendar, Recurrent, Categorized, Prioritized, Contribution, Securable,
     WithAttachment, WithReminder, WithPermanentLink {
 
   public static final String TYPE = "CalendarEvent";
@@ -1227,7 +1227,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     });
   }
 
-  private Period getPeriod() {
+  /**
+   * Gets the planning of this event in the calendar.
+   * @return the period of time this event is spanning in the calendar.
+   */
+  @Override
+  public Period getPeriod() {
     return this.component.getPeriod();
   }
 
@@ -1236,6 +1241,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * The change will be effective only once the {@code update} method invoked.
    * @param newPeriod a new period of time on which this event will occur or has actually occurred.
    */
+  @Override
   public void setPeriod(final Period newPeriod) {
     this.component.setPeriod(newPeriod);
     if (this.recurrence != null) {

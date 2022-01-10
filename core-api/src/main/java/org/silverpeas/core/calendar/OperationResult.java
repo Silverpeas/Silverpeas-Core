@@ -30,10 +30,10 @@ import java.util.Optional;
  * Result of an operation that was performed against an object in the calendar business model like
  * a calendar event and its occurrences for example.
  *
- * A result is a container of {@link Plannable} objects and/or of one of its {@link Occurrence}
+ * A result is a container of {@link PlannableOnCalendar} objects and/or of one of its {@link Occurrence}
  * object that have been either spawned or updated by a given business operation.
  */
-public class OperationResult<T extends Plannable, U extends Occurrence> {
+public class OperationResult<T extends PlannableOnCalendar, U extends Occurrence> {
   private T updated;
   private T created;
   private U instance;

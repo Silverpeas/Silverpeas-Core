@@ -38,8 +38,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * The categories in which a {@link Plannable} planned in a calendar is classified. The categories
- * are expected to be managed by the {@link Plannable} itself.
+ * The categories in which a {@link PlannableOnCalendar} planned in a calendar is classified. The categories
+ * are expected to be managed by the {@link PlannableOnCalendar} itself.
  */
 @Embeddable
 public class CategorySet implements Serializable {
@@ -57,7 +57,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Adds a category to a {@link Plannable}. The category is specified by its unique
+   * Adds a category to a {@link PlannableOnCalendar}. The category is specified by its unique
    * identifier (its title for example). If the category is already added, then nothing is done.
    * @param categoryId the identifier of the category to add.
    */
@@ -66,7 +66,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Adds several categories to a {@link Plannable}. The categories are specified by
+   * Adds several categories to a {@link PlannableOnCalendar}. The categories are specified by
    * their unique identifier (their title for example). If some of the categories to add are already
    * present, then they are not added.
    * @param categoryIds the identifiers of the categories to add.
@@ -76,7 +76,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Adds one or several categories to a {@link Plannable}. The categories are
+   * Adds one or several categories to a {@link PlannableOnCalendar}. The categories are
    * specified by their unique identifier (their title for example). If some of the categories to
    * add are already present, then they are not added.
    * @param categoryIds the identifiers of the categories to add.
@@ -86,7 +86,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Removes a category from the categories of a {@link Plannable}. The category is
+   * Removes a category from the categories of a {@link PlannableOnCalendar}. The category is
    * specified by its unique identifier (its title for example). If the category isn't present, then
    * nothing is done.
    * @param categoryId the identifier of the category to remove.
@@ -96,7 +96,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Removes several categories from the categories of a {@link Plannable}. The
+   * Removes several categories from the categories of a {@link PlannableOnCalendar}. The
    * categories are specified by their unique identifier (their title for example). If some of the
    * categories to remove aren't present, then nothing is done with them.
    * @param categoryIds the identifiers of the categories to remove.
@@ -106,7 +106,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Removes one or several categories from the categories of a {@link Plannable}. The
+   * Removes one or several categories from the categories of a {@link PlannableOnCalendar}. The
    * categories are specified by their unique identifier (their title for example). If some of the
    * categories to remove aren't present, then nothing is done with them.
    * @param categoryIds the identifiers of the categories to remove.
@@ -133,9 +133,9 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Is the specified category is in the categories of a {@link Plannable}.
+   * Is the specified category is in the categories of a {@link PlannableOnCalendar}.
    * @param category a category identifier.
-   * @return true if the specified category is among the categories of a {@link Plannable}, false
+   * @return true if the specified category is among the categories of a {@link PlannableOnCalendar}, false
    * otherwise.
    */
   public boolean contains(final String category) {
@@ -143,7 +143,7 @@ public class CategorySet implements Serializable {
   }
 
   /**
-   * Is there is no any categories set for a {@link Plannable}?
+   * Is there is no any categories set for a {@link PlannableOnCalendar}?
    * @return true if no categories are set, false otherwise.
    */
   public boolean isEmpty() {

@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * A period of a recurrence. It defines the recurrence of a {@link Plannable} object in a calendar
+ * A period of a recurrence. It defines the recurrence of a {@link PlannableOnCalendar} object in a calendar
  * as a regular interval in a given unit of time. For example, in <i>every 2 weeks</i>, week is the
  * unit * of time whereas 2 is the interval in this unit of time. The unit of time of the recurrence
  * period cannot be less that the day.

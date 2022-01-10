@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.contribution.model.Plannable;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 
 /**
- * A plannable object is a object that can be planned in a calendar and that can be serialized
+ * A plannable object is an object that can be planned in a calendar and that can be serialized
  * on a data source. A plannable object is defined in the timeline by a start datetime and
  * by an end datetime with split-minute accuracy. According to the type of the plannable
  * object, the end datetime can be undefined. When a plannable object is created, the temporal
@@ -38,7 +40,7 @@ import java.time.temporal.Temporal;
  * accessing them.
  * @author mmoquillon
  */
-public interface Plannable extends Serializable {
+public interface PlannableOnCalendar extends Plannable, Serializable {
 
   /**
    * Gets the unique identifier of this plannable object.
@@ -56,7 +58,7 @@ public interface Plannable extends Serializable {
    * The start date or datetime of the plannable object. It is the inclusive lower bound of the
    * period into which this object occurs in a calendar.
    *
-   * If this plannable object is on all days, then gets a date. Otherwise gets a datetime in
+   * If this plannable object is on all days, then gets a date. Otherwise, gets a datetime in
    * UTC/Greenwich.
    * @return a temporal instance of {@link LocalDate} if the object is on all the day or a temporal
    * instance of {@link OffsetDateTime}) otherwise.
@@ -67,20 +69,20 @@ public interface Plannable extends Serializable {
    * The end date or datetime of the plannable object. It is the exclusive upper bound of the period
    * into which this object occurs in a calendar.
    *
-   * If this plannable object is on all days, then gets a date. Otherwise gets a datetime
+   * If this plannable object is on all days, then gets a date. Otherwise, gets a datetime
    * in UTC/Greenwich.
    *
    * According to the type of the plannable object, the end datetime can be undefined; in this case,
    * it must be indicated as such in the implemented method's documentation.
    * @return a temporal instance of {@link LocalDate} if the object is on all the day or a temporal
-   * instalce of {@link OffsetDateTime}) otherwise.
+   * instance of {@link OffsetDateTime}) otherwise.
    */
   Temporal getEndDate();
 
   /**
    * Does this plannable object extend over all the day(s)? In the case it is on all the day(s)
    * from the start date to the end date, the time in the datetime returned by the methods
-   * {@link Plannable#getStartDate()} and {@link Plannable#getEndDate()} is meaningless and
+   * {@link PlannableOnCalendar#getStartDate()} and {@link PlannableOnCalendar#getEndDate()} is meaningless and
    * shouldn't be taken into account.
    * @return true if this plannable object extend over all the day(s) between its start date and
    * its end date.
@@ -103,13 +105,13 @@ public interface Plannable extends Serializable {
 
   /**
    * Saves this plannable object into the specified calendar. This will add this plannable object
-   * into the given calendar and it will have hence an unique identifier that will uniquely
+   * into the given calendar, and it will have hence a unique identifier that will uniquely
    * identify it among all others plannable objects in the calendar. If this was already
-   * planned in a calender, nothing is done.
+   * planned in a calendar, nothing is done.
    * @param aCalendar a calendar on which this object has to be planned.
    * @return itself.
    */
-  Plannable planOn(final Calendar aCalendar);
+  PlannableOnCalendar planOn(final Calendar aCalendar);
 
   /**
    * Is this planned in a given calendar?
@@ -121,11 +123,11 @@ public interface Plannable extends Serializable {
    * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)
    * in a given calendar, then nothing is done.
    */
-  OperationResult delete();
+  OperationResult<CalendarEvent, CalendarEventOccurrence> delete();
 
   /**
    * Updates this planned object in the underlying calendar it belongs to. If it was not planned
    * (aka saved) in a given calendar, then nothing is done.
    */
-  OperationResult update();
+  OperationResult<CalendarEvent, CalendarEventOccurrence> update();
 }

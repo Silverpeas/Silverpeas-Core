@@ -43,7 +43,7 @@ import static org.silverpeas.core.date.TemporalConverter.asInstant;
 
 /**
  * <p>
- * A period is a laps of time starting at a given date or datetime and ending at another given date
+ * A period is a lapse of time starting at a given date or datetime and ending at another given date
  * or datetime. When the period takes care of the time, it is always set in UTC/Greenwich in order
  * to avoid any bugs by comparing two periods in different time zones or offset zones. A period
  * is indefinite when it spans over a very large of time that cannot be reached; in this case the
@@ -169,7 +169,7 @@ public class Period implements Serializable {
   }
 
   /**
-   * Creates a new period of time between the two non null specified instant. The period starts at
+   * Creates a new period of time between the two non-null specified instant. The period starts at
    * the specified inclusive instant and it ends at the specified other exclusive instant. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
@@ -382,7 +382,7 @@ public class Period implements Serializable {
   /**
    * Is this period in days?
    *
-   * @return true if the laps of time defining this period is expressed in days. False otherwise.
+   * @return true if the lapse of time defining this period is expressed in days. False otherwise.
    */
   public boolean isInDays() {
     return inDays;

@@ -34,7 +34,7 @@ public class ICalendarImportResult {
   private int deleted = 0;
 
   /**
-   * Gets the number of {@link Plannable} objects added in the calendar after an import a calendar
+   * Gets the number of {@link PlannableOnCalendar} objects added in the calendar after an import a calendar
    * content.
    * @return the number of added calendar components.
    */
@@ -43,7 +43,7 @@ public class ICalendarImportResult {
   }
 
   /**
-   * Gets the number of {@link Plannable} objects updated in the calendar after an import a calendar
+   * Gets the number of {@link PlannableOnCalendar} objects updated in the calendar after an import a calendar
    * content.
    * @return the number of updated calendar components.
    */
@@ -52,7 +52,7 @@ public class ICalendarImportResult {
   }
 
   /**
-   * Gets the number of {@link Plannable} objects deleted in the calendar after an import a calendar
+   * Gets the number of {@link PlannableOnCalendar} objects deleted in the calendar after an import a calendar
    * content.
    * @return the number of deleted calendar components.
    */
@@ -62,7 +62,7 @@ public class ICalendarImportResult {
 
   /**
    * Is there any result about the import process?
-   * @return false if the result is empty, that is to say there is no {@link Plannable} objects
+   * @return false if the result is empty, that is to say there is no {@link PlannableOnCalendar} objects
    * added, updated or deleted in the concerned calendar.
    */
   public boolean isEmpty() {
@@ -70,21 +70,21 @@ public class ICalendarImportResult {
   }
 
   /**
-   * Increment the counter of added {@link Plannable} object of 1.
+   * Increment the counter of added {@link PlannableOnCalendar} object of 1.
    */
   void incAdded() {
     added += 1;
   }
 
   /**
-   * Increment the counter of updated {@link Plannable} object of 1.
+   * Increment the counter of updated {@link PlannableOnCalendar} object of 1.
    */
   void incUpdated() {
     updated += 1;
   }
 
   /**
-   * Increment the counter of deleted {@link Plannable} object of 1.
+   * Increment the counter of deleted {@link PlannableOnCalendar} object of 1.
    */
   void incDeleted() {
     deleted += 1;

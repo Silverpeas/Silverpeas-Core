@@ -60,6 +60,7 @@ public abstract class SelectionBasketItemITContext {
   public static Archive<?> createTestArchiveForTest(Class<? extends RESTWebServiceTest> test) {
     return WarBuilder4WebCore.onWarForTestClass(test)
         .addRESTWebServiceEnvironment()
+        .addMVCFeatures()
         .addClasses(UserEntity.class, UserProfileEntity.class, AuthenticationResource.class,
             ProfileResourceBaseURIs.class)
         .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.selection"))

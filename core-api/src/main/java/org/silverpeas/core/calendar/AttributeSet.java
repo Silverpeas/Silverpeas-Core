@@ -42,9 +42,9 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * A set of attributes of a {@link Plannable} object. An attribute is an additional information
- * carried by a {@link Plannable} object. This is a way to users to specify additional attributes
- * that weren't defined into a {@link Plannable} implementation. For example, for an event, the
+ * A set of attributes of a {@link PlannableOnCalendar} object. An attribute is an additional information
+ * carried by a {@link PlannableOnCalendar} object. This is a way to users to specify additional attributes
+ * that weren't defined into a {@link PlannableOnCalendar} implementation. For example, for an event, the
  * location of the event can be set as an attribute.
  * @author mmoquillon
  */

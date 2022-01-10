@@ -53,13 +53,13 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
- * It defines the rules of the recurrence of a {@link Plannable} in its planning in a calendar.
- * A {@link Plannable} recurrence is defined by a recurrence period, id est a frequency (hourly,
+ * It defines the rules of the recurrence of a {@link PlannableOnCalendar} in its planning in a calendar.
+ * A {@link PlannableOnCalendar} recurrence is defined by a recurrence period, id est a frequency (hourly,
  * daily, weekly, monthly, or yearly), and optionally by some of the following properties:
  *
  * <ul>
- *   <li>some days of week on which the {@link Plannable} should regularly occur</li>
- *   <li>some exceptions in the recurrence period of the {@link Plannable}</li>
+ *   <li>some days of week on which the {@link PlannableOnCalendar} should regularly occur</li>
+ *   <li>some exceptions in the recurrence period of the {@link PlannableOnCalendar}</li>
  *   <li>a termination condition.</li>
  * </ul>
  */
@@ -136,7 +136,7 @@ public class Recurrence implements Serializable {
   /**
    * Creates a new recurrence from the specified frequency. For example every(2, MONTH) means
    * every 2 month.
-   * @param frequencyValue a positive number indicating how many times the {@link Plannable} occurs.
+   * @param frequencyValue a positive number indicating how many times the {@link PlannableOnCalendar} occurs.
    * @param frequencyUnit the frequency unit: DAY, WEEK, MONTH, or YEAR.
    * @return the event recurrence instance.
    */
@@ -145,7 +145,7 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Creates a new recurrence by specifying the recurrence period at which a {@link Plannable}
+   * Creates a new recurrence by specifying the recurrence period at which a {@link PlannableOnCalendar}
    * should recur.
    * @param period the recurrence period of the event.
    * @return the event recurrence instance.
@@ -177,14 +177,14 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Sets some specific days of week at which a {@link Plannable} should periodically occur.
+   * Sets some specific days of week at which a {@link PlannableOnCalendar} should periodically occur.
    * For a weekly recurrence, the specified days of week are the first one in the week. For other
    * frequency, the specified days of week will be all the occurrences of those days of week in the
    * recurrence period. For example, recur every weeks on monday and on tuesday or recur every month
    * on all saturdays and on all tuesdays.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
-   * @param days the days of week at which a {@link Plannable} should occur. Theses days replace the
+   * @param days the days of week at which a {@link PlannableOnCalendar} should occur. Theses days replace the
    * ones already set in the recurrence.
    * @return itself.
    */
@@ -201,7 +201,7 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically
+   * Sets some specific occurrences of day of week at which a {@link PlannableOnCalendar} should periodically
    * occur within a monthly or a yearly period. For example, recur every month on the third monday
    * and on the first tuesday. The days of week for a weekly recurrence can also be indicated if,
    * and only if, the nth occurrence of the day is the first one or all occurrences (as there is
@@ -218,7 +218,7 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically
+   * Sets some specific occurrences of day of week at which a {@link PlannableOnCalendar} should periodically
    * occur within monthly or yearly period. For example, recur every month on the third monday and
    * on the first tuesday. The days of week for a weekly recurrence can also be indicated if, and
    * only if, the nth occurrence of the day is the first one or all occurrences (as there is
@@ -226,7 +226,7 @@ public class Recurrence implements Serializable {
    * {@code ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
-   * @param days a list of days of week at which a {@link Plannable} should occur. Theses days
+   * @param days a list of days of week at which a {@link PlannableOnCalendar} should occur. Theses days
    * replace
    * the ones already set in the recurrence.
    * @return itself.
@@ -258,10 +258,10 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Sets a termination to this recurrence by specifying the count of time a {@link Plannable}
+   * Sets a termination to this recurrence by specifying the count of time a {@link PlannableOnCalendar}
    * should occur.
    * Settings this termination unset the recurrence end date/datetime.
-   * @param recurrenceCount the number of time a {@link Plannable} should occur.
+   * @param recurrenceCount the number of time a {@link PlannableOnCalendar} should occur.
    * @return itself.
    */
   public Recurrence until(int recurrenceCount) {
@@ -282,7 +282,7 @@ public class Recurrence implements Serializable {
    * of the start date time of the calendar component concerned by this recurrence. In the case
    * the calendar component is on all day(s), then the specified datetime is converted into a date.
    *
-   * Settings this termination unset the number of time a {@link Plannable} should occur.
+   * Settings this termination unset the number of time a {@link PlannableOnCalendar} should occur.
    * @param endDate the inclusive date or datetime at which the recurrence ends.
    * @return itself.
    */
@@ -327,7 +327,7 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Gets the frequency at which the {@link Plannable} should recur.
+   * Gets the frequency at which the {@link PlannableOnCalendar} should recur.
    * @return the frequency as a RecurrencePeriod instance.
    */
   public RecurrencePeriod getFrequency() {
@@ -335,7 +335,7 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Gets the number of time the {@link Plannable} should occur. If NO_RECURRENCE_COUNT is
+   * Gets the number of time the {@link PlannableOnCalendar} should occur. If NO_RECURRENCE_COUNT is
    * returned,
    * then no termination by recurrence count is defined.
    * @return the recurrence count or NO_RECURRENCE_COUNT if no such termination is defined.
@@ -361,9 +361,9 @@ public class Recurrence implements Serializable {
 
   /**
    * Gets the end date of the period over which this recurrence is played by taking into account
-   * either the number of time he recurrent {@link Plannable} occurs or the end date of its
+   * either the number of time he recurrent {@link PlannableOnCalendar} occurs or the end date of its
    * recurrence. The computed date can match the date of the last occurrence of the recurrent
-   * {@link Plannable} for a finite recurrence without an end date explicitly set. It can be also
+   * {@link PlannableOnCalendar} for a finite recurrence without an end date explicitly set. It can be also
    * a date after the last occurrence. The exception dates in the recurrence rule aren't taken
    * into account.
    *
@@ -381,7 +381,7 @@ public class Recurrence implements Serializable {
 
   /**
    * Gets the start date of the period over which this recurrence is played. It is the date of the
-   * first occurrence of the recurrent {@link Plannable} on which this recurrence is applied.
+   * first occurrence of the recurrent {@link PlannableOnCalendar} on which this recurrence is applied.
    * <p>
    * If this recurrence isn't yet applied to any recurrence calendar component, then an
    * {@link IllegalStateException} exception is thrown.
@@ -396,7 +396,7 @@ public class Recurrence implements Serializable {
   }
 
   /**
-   * Gets the days of week on which the {@link Plannable} should recur each time.
+   * Gets the days of week on which the {@link PlannableOnCalendar} should recur each time.
    * @return an unmodifiable set of days of week or an empty set if no days of week are set to this
    * recurrence.
    */

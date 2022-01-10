@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,20 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar;
+
+package org.silverpeas.core.contribution.model;
+
+import org.silverpeas.core.date.Period;
 
 /**
- * It defines the property of an object of being potentially classified in some categories. By
- * default a {@link PlannableOnCalendar} object isn't categorized.
+ * An interface that indicates a resource or a contribution is plannable in the time like an event
+ * or a task for example.
  * @author mmoquillon
  */
-public interface Categorized {
+public interface Plannable {
 
   /**
-   * Gets the categories in which this object is categorized. The object can be categorized by
-   * adding explicitly one or more categories to the returned collection of categories.
-   * @return a collection of categories. If the object isn't categorized, then the returned
-   * collection is empty.
+   * Gets the lapse of time on which this object is spanning.
+   * @return the period of time during which this object takes place.
    */
-  CategorySet getCategories();
+  Period getPeriod();
+
+  /**
+   * Sets the lapse of time on which this object is spanning.
+   * @param period the period of time during which this object takes place.
+   */
+  void setPeriod(final Period period);
 }

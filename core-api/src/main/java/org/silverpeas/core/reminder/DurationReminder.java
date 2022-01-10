@@ -24,7 +24,7 @@
 package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.Plannable;
+import org.silverpeas.core.calendar.PlannableOnCalendar;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.NoSuchPropertyException;
@@ -124,7 +124,7 @@ public class DurationReminder extends Reminder {
   }
 
   /**
-   * Gets the duration before the start date of a {@link Plannable} object this remainder has to be
+   * Gets the duration before the start date of a {@link PlannableOnCalendar} object this remainder has to be
    * triggered.
    * @return a duration value.
    */

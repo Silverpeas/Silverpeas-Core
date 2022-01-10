@@ -35,7 +35,7 @@ import java.time.DayOfWeek;
 
 /**
  * The occurrence of a day of week represents the nth occurrence of a day of week in a month or
- * in a year within a recurrence rule of a {@link Plannable} object. For example, the third tuesday
+ * in a year within a recurrence rule of a {@link PlannableOnCalendar} object. For example, the third tuesday
  * in the month.
  */
 @Embeddable

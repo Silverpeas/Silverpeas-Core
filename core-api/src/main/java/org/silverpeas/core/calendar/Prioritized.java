@@ -25,7 +25,7 @@ package org.silverpeas.core.calendar;
 
 /**
  * It defines the property of an object of being potentially prioritized. By default,
- * a {@link Plannable} object isn't a priority; in such a case, it has a normal priority.
+ * a {@link PlannableOnCalendar} object isn't a priority; in such a case, it has a normal priority.
  * @author mmoquillon
  */
 public interface Prioritized {

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,20 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar;
+
+package org.silverpeas.core.webapi.selection;
+
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.calendar.AbstractCalendarService;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
+
+import javax.inject.Named;
 
 /**
- * It defines the property of an object of being potentially classified in some categories. By
- * default a {@link PlannableOnCalendar} object isn't categorized.
+ * The service provided by the application Calendar. For tests.
  * @author mmoquillon
  */
-public interface Categorized {
+@Service
+@Named("calendarService")
+public class CalendarApplicationService extends AbstractCalendarService {
 
-  /**
-   * Gets the categories in which this object is categorized. The object can be categorized by
-   * adding explicitly one or more categories to the returned collection of categories.
-   * @return a collection of categories. If the object isn't categorized, then the returned
-   * collection is empty.
-   */
-  CategorySet getCategories();
+  @Override
+  public SettingBundle getComponentSettings() {
+    return null;
+  }
+
+  @Override
+  public LocalizationBundle getComponentMessages(final String language) {
+    return null;
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("calendar");
+  }
 }

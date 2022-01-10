@@ -24,7 +24,7 @@
 package org.silverpeas.core.calendar;
 
 /**
- * Priority of a {@link Plannable}. A priority is a set value from NORMAL (meaning no further
+ * Priority of a {@link PlannableOnCalendar}. A priority is a set value from NORMAL (meaning no further
  * priority) to different level of prioritisation.
  * <p>
  * ICAL specifications : A CUA with a three-level priority scheme of "HIGH", "MEDIUM" and
@@ -39,14 +39,14 @@ package org.silverpeas.core.calendar;
 public enum Priority {
 
   /**
-   * A normal priority means in fact no priority. By default, all {@link Plannable} have a normal
+   * A normal priority means in fact no priority. By default, all {@link PlannableOnCalendar} have a normal
    * priority.
    */
   NORMAL,
 
   /**
-   * A high priority means the {@link Plannable} is a priority. High priority is the lowest
-   * priority of a priority {@link Plannable}.
+   * A high priority means the {@link PlannableOnCalendar} is a priority. High priority is the lowest
+   * priority of a priority {@link PlannableOnCalendar}.
    */
   HIGH;
 

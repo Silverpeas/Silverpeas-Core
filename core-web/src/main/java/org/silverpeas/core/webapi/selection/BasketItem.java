@@ -38,6 +38,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.Plannable;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
@@ -78,6 +79,7 @@ public class BasketItem implements SilverpeasResource, Serializable {
   private UserEntity lastUpdater;
   private String thumbnailURI;
   private String permalink;
+  private PeriodOfTime period;
 
   private BasketItem() {
   }
@@ -87,8 +89,10 @@ public class BasketItem implements SilverpeasResource, Serializable {
       return (BasketItem) resource;
     }
     BasketItem item = new BasketItem();
-    item.id = resource.getIdentifier().asString();
-    item.type = resource.getClass().getSimpleName();
+    item.id = resource.getIdentifier()
+        .asString();
+    item.type = resource.getClass()
+        .getSimpleName();
     item.creationDate = resource.getCreationDate();
     item.creator = new UserEntity(resource.getCreator());
     item.lastUpdateDate = resource.getLastUpdateDate();
@@ -109,6 +113,9 @@ public class BasketItem implements SilverpeasResource, Serializable {
     }
     if (contribution instanceof WithPermanentLink) {
       item.permalink = ((WithPermanentLink) contribution).getPermalink();
+    }
+    if (contribution instanceof Plannable) {
+      item.period = PeriodOfTime.from(((Plannable) contribution).getPeriod());
     }
   }
 
@@ -152,14 +159,28 @@ public class BasketItem implements SilverpeasResource, Serializable {
     return User.getById(lastUpdater.getId());
   }
 
+  /**
+   * Gets the URI of the thumbnail of this item.
+   * @return either the URI of a thumbnail or null if the item has no thumbnail or doesn't support
+   * thumbnails.
+   */
   public String getThumbnailURI() {
     return thumbnailURI;
   }
 
+  /**
+   * Gets the URI at which the resource referred by this item can be always found in Silverpeas.
+   * @return the permalink of this item in Silverpeas or null if the item doesn't support
+   * permalinks.
+   */
   public String getPermalink() {
     return permalink;
   }
 
+  /**
+   * Gets the type of the item in Silverpeas.
+   * @return the item type.
+   */
   public String getType() {
     return type;
   }
@@ -191,14 +212,23 @@ public class BasketItem implements SilverpeasResource, Serializable {
   }
 
   /**
+   * Is this {@link BasketItem} instance represents a bean in Silverpeas planned in a period of
+   * time?
+   * @return true if this object is planned in a period of time. False otherwise.
+   */
+  public boolean isPlanned() {
+    return period != null;
+  }
+
+  /**
    * Is the data of the Silverpeas resource represented by this {@link BasketItem} complete? The
    * data are considered completed if and only if the name, the creation data and the last update
    * data of the represented resource are set.
    * @return true if this item represents completely the Silverpeas resource.
    */
   public boolean isComplete() {
-    return StringUtil.isDefined(this.name) && this.creator != null && this.creationDate != null
-        && this.lastUpdateDate != null && this.lastUpdater != null;
+    return StringUtil.isDefined(this.name) && this.creator != null && this.creationDate != null &&
+        this.lastUpdateDate != null && this.lastUpdater != null;
   }
 
   /**
@@ -215,8 +245,8 @@ public class BasketItem implements SilverpeasResource, Serializable {
       ApplicationService service = maybeService.orElseThrow(() -> new NotFoundException(
           "No application service available for id " + identifier.getComponentInstanceId()));
       Optional<T> contribution = service.getContributionById(identifier);
-      return contribution
-          .orElseThrow(() -> new NotFoundException("No such contribution with id " + id));
+      return contribution.orElseThrow(
+          () -> new NotFoundException("No such contribution with id " + id));
     }
     throw new NotFoundException(String.format("Resource %s isn't a contribution", id));
   }
@@ -259,7 +289,8 @@ public class BasketItem implements SilverpeasResource, Serializable {
       return false;
     }
     final SilverpeasResource that = (SilverpeasResource) o;
-    return id.equals(that.getIdentifier().asString());
+    return id.equals(that.getIdentifier()
+        .asString());
   }
 
   @Override

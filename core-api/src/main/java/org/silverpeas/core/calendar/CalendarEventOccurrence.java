@@ -345,6 +345,7 @@ public class CalendarEventOccurrence
    * @param newPeriod a new period of time on which this occurrence will occur or has actually
    * occurred.
    */
+  @Override
   public void setPeriod(final Period newPeriod) {
     this.component.setPeriod(newPeriod);
   }
@@ -353,6 +354,7 @@ public class CalendarEventOccurrence
    * Gets the period of this occurrence in the calendar.
    * @return a period.
    */
+  @Override
   public Period getPeriod() {
     return this.component.getPeriod();
   }

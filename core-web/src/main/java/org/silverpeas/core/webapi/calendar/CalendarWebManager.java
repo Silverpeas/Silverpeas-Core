@@ -42,7 +42,7 @@ import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;
 import org.silverpeas.core.calendar.ICalendarImportResult;
-import org.silverpeas.core.calendar.Plannable;
+import org.silverpeas.core.calendar.PlannableOnCalendar;
 import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -108,7 +108,7 @@ public class CalendarWebManager {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.calendar.settings.calendar");
-  private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
+  private final SilverLogger silverLogger = SilverLogger.getLogger(PlannableOnCalendar.class);
 
   private static final int END_YEAR_OFFSET = 3;
   private static final int DEFAULT_NB_MAX_NEXT_OCC = 10;

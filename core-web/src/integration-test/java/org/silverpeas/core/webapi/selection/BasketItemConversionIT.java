@@ -31,17 +31,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.web.RESTWebServiceTest;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.in;
 
 /**
  * Integration tests on the conversion of a {@link BasketItem} instance to its counterpart
@@ -73,6 +80,15 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
   }
 
   @Test
+  public void aBasketItemMapsAPlannedContribution() {
+    CalendarEvent event = getCalendarEvent(1);
+    BasketItem basketItem = BasketItem.from(event);
+    assertThat(basketItem.isContribution(), is(true));
+    assertThat(basketItem.isPlanned(), is(true));
+    assertThat(basketItem, is(event));
+  }
+
+  @Test
   public void aContributionCanBeObtainedByItsMappedBasketItem() {
     PublicationDetail publication = getPublication(1);
 
@@ -94,6 +110,19 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
     ComponentInst resource = basketItem.toResource();
     assertThat(resource, notNullValue());
     assertThat(resource, is(app));
+  }
+
+  @Test
+  public void aPlannedContributionCanBeObtainedByItsMappedBasketItem() {
+    CalendarEvent event = getCalendarEvent(1);
+
+    BasketItem basketItem = BasketItem.from(event);
+    assertThat(basketItem.isContribution(), is(true));
+
+    CalendarEvent plannable = basketItem.toContribution();
+    assertThat(plannable, notNullValue());
+    assertThat(plannable.isPlanned(), is(true));
+    assertThat(plannable, is(event));
   }
 
   @Test
@@ -133,5 +162,13 @@ public class BasketItemConversionIT extends RESTWebServiceTest {
       iterator.next();
     }
     return iterator.next();
+  }
+
+  private CalendarEvent getCalendarEvent(int index) {
+    List<CalendarEvent> events =  Calendar.getById("CAL_ID_1")
+        .in(YearMonth.of(2011, Month.JULY))
+        .getEvents();
+    assertThat(events.size(), greaterThanOrEqualTo(index + 1));
+    return events.get(index);
   }
 }

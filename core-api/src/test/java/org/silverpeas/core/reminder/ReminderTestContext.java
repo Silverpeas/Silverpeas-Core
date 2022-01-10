@@ -27,7 +27,7 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.calendar.Plannable;
+import org.silverpeas.core.calendar.PlannableOnCalendar;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
@@ -63,7 +63,7 @@ public class ReminderTestContext {
   static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
 
   private final ContributionIdentifier plannable =
-      ContributionIdentifier.from("calendar23", "event12", Plannable.class.getSimpleName());
+      ContributionIdentifier.from("calendar23", "event12", PlannableOnCalendar.class.getSimpleName());
   private final ContributionIdentifier contribution =
       ContributionIdentifier.from("kmelia12", "12", Contribution.class.getSimpleName());
   private final User user = mock(User.class);
@@ -111,7 +111,7 @@ public class ReminderTestContext {
         invocation -> {
           ContributionIdentifier id = invocation.getArgument(0);
           Contribution contribution;
-          if (Plannable.class.getSimpleName()
+          if (PlannableOnCalendar.class.getSimpleName()
               .equals(id.getType())) {
             contribution = new MyPlannableContribution(id).startingAt(OffsetDateTime.now()
                 .plusMonths(1));

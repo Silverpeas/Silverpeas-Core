@@ -26,9 +26,9 @@ package org.silverpeas.core.calendar;
 import javax.persistence.Transient;
 
 /**
- * This interface is dedicated to be applied on {@link Plannable} implementations. It qualifies
- * a {@link Plannable} can be recurrent, periodic, over the timeline. By default, a recurrent
- * {@link Plannable} has no defined recurrence rules; hence it is no recurrent.
+ * This interface is dedicated to be applied on {@link PlannableOnCalendar} implementations. It qualifies
+ * a {@link PlannableOnCalendar} can be recurrent, periodic, over the timeline. By default, a recurrent
+ * {@link PlannableOnCalendar} has no defined recurrence rules; hence it is no recurrent.
  * @author mmoquillon
  */
 public interface Recurrent {
@@ -36,14 +36,14 @@ public interface Recurrent {
   /**
    * Recurs this recurrent object with the specified recurrence rules.
    * @param recurrence the recurrence defining the recurring rules to apply in the planning of this
-   * {@link Plannable}.
+   * {@link PlannableOnCalendar}.
    * @return itself.
    */
   Recurrent recur(final Recurrence recurrence);
 
   /**
    * Gets the actual recurrence rules. If no recurrence has been set, then returns NO_RECURRENCE.
-   * @return the actual recurrence of this {@link Plannable} or NO_RECURRENCE.
+   * @return the actual recurrence of this {@link PlannableOnCalendar} or NO_RECURRENCE.
    */
   Recurrence getRecurrence();
 
@@ -53,7 +53,7 @@ public interface Recurrent {
   void unsetRecurrence();
 
   /**
-   * Is this {@link Plannable} recurrent?
+   * Is this {@link PlannableOnCalendar} recurrent?
    * @return true if a recurrence has been set for this object, false otherwise.
    */
   @Transient

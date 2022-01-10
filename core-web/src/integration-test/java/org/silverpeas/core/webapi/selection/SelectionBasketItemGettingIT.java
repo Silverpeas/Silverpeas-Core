@@ -32,6 +32,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.selection.SelectionBasket;
@@ -41,6 +44,9 @@ import org.silverpeas.web.ResourceGettingTest;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.time.Month;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -130,6 +136,36 @@ public class SelectionBasketItemGettingIT extends ResourceGettingTest {
       BasketItem item = BasketItem.from(p);
       var expected = new SelectionBasketEntry(item);
       assertThat(content.get(counter.get()).getURI(), is(uriOf(p)));
+      assertThat(content.get(counter.get()), is(expected));
+      counter.set(counter.get() - 1);
+    });
+  }
+
+  @Test
+  public void gettingBasketContentWithDifferentTypesOfItem() {
+    String sessionKey = authenticate(user);
+
+    List<Contribution> contributions = new ArrayList<>();
+    contributions.addAll(PublicationService.get()
+        .getAllPublications("toto1"));
+    contributions.addAll(Calendar.getById("CAL_ID_1")
+        .in(YearMonth.of(2011, Month.JULY))
+        .getEvents());
+    assertThat(contributions.isEmpty(), is(false));
+    contributions.forEach(e -> SelectionBasket.get().put(e));
+
+    Response response =
+        getAt(aResourceURI(), withAsAuthId(AuthId.sessionKey(sessionKey)), Response.class);
+    assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+
+    GenericType<List<SelectionBasketEntry>> contentType = new GenericType<>() {};
+    List<SelectionBasketEntry> content = response.readEntity(contentType);
+    assertThat(content.size(), is(contributions.size()));
+    Mutable<Integer> counter = Mutable.of(content.size() - 1);
+    contributions.forEach(c -> {
+      BasketItem item = BasketItem.from(c);
+      var expected = new SelectionBasketEntry(item);
+      assertThat(content.get(counter.get()).getURI(), is(uriOf(c)));
       assertThat(content.get(counter.get()), is(expected));
       counter.set(counter.get() - 1);
     });
