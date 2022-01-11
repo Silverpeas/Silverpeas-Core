@@ -38,17 +38,15 @@
   <version position="right" />
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans" href="https://netbeans.apache.org/download/index.html" img="images/logos/logo_netBeans.gif" />
-    <logo name="Eclipse"  href="https://www.eclipse.org" img="images/logos/logo_eclipse.png" />
-    <logo name="Maven" href="https://maven.apache.org/" img="images/logos/logo_maven.png" />
-    <logo name="Izpack" href="https://izpack.org/" img="images/logos/logo_izPack.png" />
-    <logo name="Subshell Toromiro" href="https://www.subshell.com/en/toromiro/" img="images/logos/toromiro-logo.png" />
-    <logo name="Yourkit" href="https://www.yourkit.com" img="images/logos/yourkit-logo.png" />
+    <logo name="IDEA IntelliJ" href="https://netbeans.apache.org/download/index.html" img="/images/logos/intellij-idea-logo.png" />
+    <logo name="Eclipse"  href="https://www.eclipse.org" img="/images/logos/logo_eclipse.png" />
+    <logo name="Maven" href="https://maven.apache.org/" img="/images/logos/logo_maven.png" />
+    <logo name="Izpack" href="https://izpack.org/" img="/images/logos/logo_izPack.png" />
   </poweredBy>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.7</version>
+    <version>1.10.0</version>
   </skin>
   <body>
     <breadcrumbs>
@@ -58,7 +56,7 @@
       <item name="About" href="/intro.html" collapse="false"/>
       <item name="Key Features" href="/product/features.html" collapse="true"/>
       <item name="Applications" href="/product/applications.html" collapse="true">
-        <item name="Social Network" href="product/social_network.html" collapse="true"/>
+        <item name="Social Network" href="/product/social_network.html" collapse="true"/>
         <item name="Electronic Documentation Management" href="/product/documentation_management.html" collapse="true"/>
         <item name="Content Management" href="/product/content_management.html" collapse="true"/>
         <item name="Data Collection" href="/product/data_collection.html" collapse="true"/>
@@ -78,7 +76,7 @@
         <item name="Changelog" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
         <item name="Release Notes" href="/releasenotes.html" collapse="false"/>
       </item>
-      <item name="Source Code" href="/source-repository.html" collapse="true"/>
+      <item name="Source Code" href="/scm.html" collapse="true"/>
       <item name="Some Configuration Tips" href="#" collapse="true">
         <item name="LDAP Synchronization" href="/configuration/ldap.html" collapse="false"/>
         <item name="Configuring a reverse-proxy" href="/configuration/proxy.html"  collapse="true"/>
@@ -88,11 +86,11 @@
     <menu name="Silverpeas Projects" inherit="top">
       <item name="Global information" href="#" collapse="true">
         <item name="About Silverpeas" href="/intro.html"/>
-        <item name="Team" href="/team-list.html"/>
-        <item name="Mailing List" href="/mail-lists.html"/>
-        <item name="Issue Tracking" href="/issue-tracking.html"/>
+        <item name="Team" href="/team.html"/>
+        <item name="Mailing List" href="/mailing-lists.html"/>
+        <item name="Issue Tracking" href="/issue-management.html"/>
         <item name="Source Repository" href="/source-repository.html"/>
-        <item name="Continuous Integration" href="/integration.html"/>
+        <item name="Continuous Integration" href="/ci-management.html"/>
       </item>
       <item name="Sivlerpeas Core" href="/docs/core/index.html"/>
       <item name="Silverpeas Applications" href="/docs/components/index.html"/>
