@@ -5729,6 +5729,10 @@ ul.tagit li.tagit-choice a.tagit-close {
   width:180px;
 }
 
+.rich-content a {
+  text-decoration: underline;
+}
+
 h2.wysiwyg-title1 {
   border-left:3px solid #2a2a2a ;
   color:#2a2a2a;
@@ -7472,3 +7476,5 @@ input.dateToPick,
 .variable_admin .edit-value {
   margin-right: 10px;
 }
+
+
