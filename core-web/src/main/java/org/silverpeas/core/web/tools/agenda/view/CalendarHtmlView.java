@@ -252,8 +252,7 @@ public class CalendarHtmlView {
               .append(getContext()).append("icons/cal_fle-gon.gif',1)\"");
 
         result.append("><img name=\"fle-2\" border=\"0\" src=\"").append(
-            getContext()).append(
-            "icons/cal_fle-goff.gif\" width=\"8\" height=\"14\" alt=\"\"/></a></td> \n");
+            "../../util/icons/arrow/arrowLeftWhite.png\" width=\"8\" height=\"14\" alt=\"\"/></a></td> \n");
       }
       result.append(
           "<td class=\"intfdcolor3\" align=\"center\"><span class=\"txtNav4\">")
@@ -268,8 +267,8 @@ public class CalendarHtmlView {
               " onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('fle-1','','")
               .append(getContext()).append("icons/cal_fle-don.gif',1)\"");
         result.append("><img name=\"fle-1\" border=\"0\" src=\"").append(
-            getContext()).append(
-            "icons/cal_fle-doff.gif\" width=\"8\" height=\"14\" alt=\"\"/></a></td>\n");
+            "../..//util/icons/arrow/arrowRightWhite.png\" width=\"8\" height=\"14\" alt=\"\"/></a></td> \n");
+
       }
       result.append("</tr></table>\n");
       result.append("</td></tr>");
