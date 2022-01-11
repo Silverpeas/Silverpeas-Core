@@ -101,7 +101,7 @@
       <c:if test="${!empty popupMsgUrl}">
         <div class="link"> <a href="javaScript:goTo();"><fmt:message key="popup.link.text" /></a> </div>
       </c:if>
-      <div class="content-notification">
+      <div class="content-notification rich-content">
         ${popupMsgBody}
       </div>
      </div>

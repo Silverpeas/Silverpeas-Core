@@ -83,7 +83,7 @@
       <div class="link"><a href="javaScript:goTo();"><fmt:message key="silvermail.link.text"/> </a>
       </div>
     </c:if>
-    <div class="content-notification">
+    <div class="content-notification rich-content">
         ${notif.body}
     </div>
     <view:buttonPane>

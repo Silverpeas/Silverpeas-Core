@@ -68,7 +68,7 @@ public class ComponentInstanceIntroTag extends TagSupport {
       if (StringUtil.isNotDefined(intro)) {
         return EVAL_PAGE;
       }
-      pageContext.getOut().println("<div silverpeas-toggle originalClass=\"componentInstanceIntro\">"+intro+"</div>");
+      pageContext.getOut().println("<div silverpeas-toggle originalClass=\"componentInstanceIntro rich-content\">"+intro+"</div>");
     } catch (IOException e) {
       throw new JspException("ComponentInstanceIntro tag", e);
     }
