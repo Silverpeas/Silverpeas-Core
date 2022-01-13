@@ -339,6 +339,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     try {
       if (destination.startsWith(MANUAL_JSON_RESPONSE_PREFIX)) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON + "; charset=UTF-8");
+        response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", -1);
         response.getWriter().append(destination.substring(MANUAL_JSON_RESPONSE_PREFIX.length()));
         response.flushBuffer();
       }
