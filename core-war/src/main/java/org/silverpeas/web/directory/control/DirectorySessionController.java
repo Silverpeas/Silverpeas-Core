@@ -1260,14 +1260,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private void setFromIndexDomainDataToCSVRow(final int fromIndex, final CSVRow csvRow,
       final UserItem userItem) {
     final UserFull userFull = userItem.getUserFull();
-    final List<String> excludedFields = getDomainNotExportableFields(userItem.getDomainId());
-    final String[] propertyNames = userFull.getPropertiesNames();
-    int index = fromIndex;
-    for (final String propertyName : propertyNames) {
-      if (!propertyName.startsWith("password") && !excludedFields.contains(propertyName)) {
-        csvRow.setCell(index++, getValueToExport(userFull, propertyName));
+    if (userFull != null) {
+      final List<String> excludedFields = getDomainNotExportableFields(userItem.getDomainId());
+      final String[] propertyNames = userFull.getPropertiesNames();
+      int index = fromIndex;
+      for (final String propertyName : propertyNames) {
+        if (!propertyName.startsWith("password") && !excludedFields.contains(propertyName)) {
+          csvRow.setCell(index++, getValueToExport(userFull, propertyName));
+        }
       }
     }
+    else
+      SilverLogger.getLogger(this).warn("Unable to get userFull of {0}",userItem.getLastName()+" "+userItem.getFirstName());
   }
 
   private String getValueToExport(UserFull userFull, String propertyName) {
