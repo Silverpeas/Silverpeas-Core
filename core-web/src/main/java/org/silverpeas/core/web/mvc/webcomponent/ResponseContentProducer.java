@@ -27,6 +27,7 @@ package org.silverpeas.core.web.mvc.webcomponent;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -45,8 +46,12 @@ public class ResponseContentProducer {
   }
 
   static void produce(WebComponentRequestContext context, Path pathToPerform) {
-    String contentType = pathToPerform.getProduces().value()[0];
-    context.getResponse().setHeader("Content-Type", contentType + "; charset=UTF-8");
+    final String contentType = pathToPerform.getProduces().value()[0];
+    final HttpServletResponse response = context.getResponse();
+    response.setHeader("Content-Type", contentType + "; charset=UTF-8");
+    response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", -1);
     if (contentType.equals(MediaType.APPLICATION_JSON)) {
       handleJson(context, pathToPerform);
     } else {
