@@ -38,7 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * A listener of events about a given user account in Silverpeas.
@@ -79,16 +79,12 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
     if (StringUtil.isNotDefined(user.geteMail())) {
       int silverMailChannelId = BuiltInNotifAddress.BASIC_SILVERMAIL.getId();
       var userId = Integer.parseInt(user.getId());
-      var silverMailChannelUsed = false;
-      // check if silvermail channel used by platform default settings
-      List<NotifChannel> channels = NotificationManagerSettings.getDefaultChannels();
-      for (NotifChannel channel : channels) {
-        if (channel.getMediaType().getId() == silverMailChannelId) {
-          silverMailChannelUsed = true;
-          break;
-        }
-      }
-      if (!silverMailChannelUsed) {
+      // check if silvermail channel is used by default in the platform settings
+      Optional<NotifChannel> silverMailChannelAsDefault =
+          NotificationManagerSettings.getDefaultChannels().stream()
+              .filter(c -> c.getMediaType().getId() == silverMailChannelId)
+              .findFirst();
+      if (silverMailChannelAsDefault.isEmpty()) {
         NotifDefaultAddressTable ndat = notificationSchema.notifDefaultAddress();
         var newRow = new NotifDefaultAddressRow(-1, userId, silverMailChannelId);
         ndat.create(newRow);
