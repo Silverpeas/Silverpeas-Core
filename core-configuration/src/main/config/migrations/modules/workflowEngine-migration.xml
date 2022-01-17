@@ -38,4 +38,8 @@
     <script name="alter_table.sql" type="sql"/>
   </upgrade>
 
+  <upgrade fromVersion="007">
+    <script name="create_table.sql" type="sql"/>
+  </upgrade>
+
 </migration>
