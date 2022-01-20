@@ -55,6 +55,12 @@
               type="java.lang.String"
               description="Indicates the type of attachment (attachment, wysiwyg, image, ...)" %>
 
+<%@ attribute name="simpleMode" required="false"
+              type="java.lang.Boolean"
+              description="Must specific behaviors be enabled? False (default value) enable specific behaviors (like I18n content, versionning, etc.)" %>
+<c:if test="${simpleMode == null}">
+  <c:set var="simpleMode" value="${false}"/>
+</c:if>
 <%@ attribute name="highestUserRole" required="false"
               type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The highest role the user has" %>
@@ -93,12 +99,12 @@
 
   <c:set var="domIdSuffix" value="${fn:replace(fn:replace(resourceId, '=', '_'), '-', '_')}"/>
 
-  <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
+  <c:set var="_ddIsI18n" value="${not simpleMode and silfn:isI18n() and silfn:isDefined(contentLanguage)}"/>
 
   <view:componentParam var="publicationAlwaysVisiblePramValue" componentId="${componentInstanceId}" parameter="publicationAlwaysVisible"/>
   <view:componentParam var="isComponentVersioned" componentId="${componentInstanceId}" parameter="versionControl"/>
   <c:set var="isPublicationAlwaysVisible" value="${silfn:booleanValue(publicationAlwaysVisiblePramValue)}"/>
-  <c:set var="isVersionActive" value="${not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}"/>
+  <c:set var="isVersionActive" value="${not simpleMode and not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}"/>
 
   <view:componentParam var="commentActivated" componentId="${componentInstanceId}" parameter="tabComments"/>
   <c:if test="${not silfn:booleanValue(commentActivated)}">
