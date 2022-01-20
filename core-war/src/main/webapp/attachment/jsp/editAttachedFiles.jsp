@@ -570,5 +570,6 @@
                                   contentLanguage="${contentLanguage}"
                                   hasToBeIndexed="${indexIt}"
                                   documentType="${context}"
+                                  simpleMode="${true}"
                                   helpCoverClass="droparea-cover-help-attachment-edit"/>
 </c:if>
