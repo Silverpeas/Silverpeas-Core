@@ -365,6 +365,8 @@
     };
     this.init = function(chatOptions) {
       __settings = extendsObject(__settings, chatOptions);
+      __settings.whitelisted_plugins.push('silverpeas-commons');
+      __settings.whitelisted_plugins.push('silverpeas-muc-invitations');
       if (window.spWindow) {
         __settings.whitelisted_plugins.push('silverpeas-sp-permalink');
       }

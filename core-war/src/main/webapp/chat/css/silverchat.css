@@ -777,3 +777,64 @@ Converse.js
 .conversejs .toggle-compose-spoiler {
   display: none;
 }
+
+.conversejs .suggestion-box > ul > li[aria-basket="true"] {
+  background: var(--chatroom-head-bg-color-dark);
+  color: var(--inverse-link-color);
+  opacity: 0.5;
+}
+
+.conversejs .suggestion-box > ul > li[aria-basket="true"][aria-selected="true"] {
+  opacity: 0.75;
+}
+
+
+.conversejs #muc-invite-modal .modal-body {
+  overflow: hidden !important;
+}
+
+.conversejs #muc-invite-modal .single-line {
+  display: inline-flex;
+  width: 100%;
+}
+
+.conversejs #muc-invite-modal .suggestion-box__input{
+  width: calc(100% - 40px);
+}
+
+.conversejs #muc-invite-modal .caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.conversejs #muc-invite-modal .suggestion-box__results--below{
+  top: 50px;
+  max-height: 140px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+.conversejs #muc-invite-modal .plus{
+  margin-left: 5px;
+}
+
+.conversejs #muc-invite-modal .selected-jids {
+  width: 100%;
+  display: inline-block;
+}
+
+.conversejs #muc-invite-modal .selected-jids li {
+  float: left;
+  margin-right: 5px;
+}
+
+.conversejs #muc-invite-modal .delete-button {
+  vertical-align: -4px;
+}
