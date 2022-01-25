@@ -272,7 +272,7 @@ public class QuestionResultDAO {
 
     String selectStatement =
         SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + " where questionId in (" +
-            StringUtils.join(ids, ',') + ")";
+            StringUtils.join(ids, ',') + ") order by answerId asc";
 
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement);
          ResultSet rs = prepStmt.executeQuery()) {
