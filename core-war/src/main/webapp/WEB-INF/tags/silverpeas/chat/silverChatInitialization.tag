@@ -43,6 +43,7 @@
 <jsp:useBean id="chatBundle" type="org.silverpeas.core.util.LocalizationBundle"/>
 
 <c:set var="chatUrl" value="${chatSettings.BOSHServiceUrl}"/>
+<c:set var="chatWsUrl" value="${chatSettings.websocketServiceUrl}"/>
 <c:set var="chatIceServer" value="${chatSettings.ICEServer}"/>
 <c:set var="chatACL" value="${chatSettings.ACL}"/>
 <c:set var="aclGroupsAllowedToCreate" value="${chatACL.aclOnGroupChat.groupsAllowedToCreate}"/>
@@ -57,6 +58,7 @@
           const chatOptions = {
             viewMode : 'overlayed',
             url : '${chatUrl}',
+            wsUrl : '${chatWsUrl}',
             jid : '${chatUser.chatLogin}@${chatUser.chatDomain}',
             vcard : {
               'fn' : '${silfn:escapeJs(chatUser.displayedName)}'

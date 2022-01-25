@@ -401,7 +401,6 @@
           'assets_path' : '/silverpeas/chat/converse/',
           'sounds_path' : '/silverpeas/chat/converse/',
           'play_sounds' : false,
-          'bosh_service_url' : __settings.url,
           'allow_logout' : false,
           'auto_login' : true,
           'auto_reconnect' : true,
@@ -428,6 +427,11 @@
           'discover_connection_methods' : false,
           'jitsimeet_start_option' : "into_new_tab",
           'whitelisted_plugins' : __settings.whitelisted_plugins
+        }
+        if (StringUtil.isDefined(__settings.wsUrl)) {
+          initOptions['websocket_url'] = __settings.wsUrl;
+        } else {
+          initOptions['bosh_service_url'] = __settings.url;
         }
         if (__settings.replyToEnabled || __settings.reactionToEnabled) {
           initOptions['actions_reply'] = __settings.replyToEnabled;

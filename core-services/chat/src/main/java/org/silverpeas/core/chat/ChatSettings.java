@@ -225,6 +225,24 @@ public class ChatSettings {
   }
 
   /**
+   * Gets the fully qualified URL of the websocket service of the XMPP server which wich Silverpeas
+   * can use to establish XMPP communications through the web.
+   * @return the URL of the websocket service provided by the remote XMPP server.
+   */
+  public String getWebsocketServiceUrl() {
+    final String ws = settings.getString("chat.xmpp.wsBind", "").trim();
+    if (!ws.isEmpty()) {
+      final String xmppBaseWsUrl = xmppBaseUrl.replaceFirst("http", "ws");
+      if (ws.startsWith("/")) {
+        return xmppBaseWsUrl + ws;
+      } else {
+        return xmppBaseWsUrl + "/" + ws;
+      }
+    }
+    return "";
+  }
+
+  /**
    * Gets the base URL of the HTTP file transfer service of the XMPP server.
    * @return the URL of the file transfer service used by the XMPP server to transfer files between
    * users.
@@ -314,7 +332,8 @@ public class ChatSettings {
     boolean enabled = settings.getBoolean("chat.enable");
     final String rest = settings.getString("chat.xmpp.rest", "");
     final String bosh = settings.getString("chat.xmpp.httpBind", "");
-    return enabled && !rest.isEmpty() && !bosh.isEmpty();
+    final String ws = settings.getString("chat.xmpp.wsBind", "");
+    return enabled && !rest.isEmpty() && (!bosh.isEmpty() || !ws.isEmpty());
   }
 
   private List<String> getListProperty(final String property) {
