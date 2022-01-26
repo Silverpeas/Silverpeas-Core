@@ -8,7 +8,12 @@ pipeline {
   agent {
     docker {
       image 'silverpeas/silverbuild'
-      args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
+      args '''
+        -v $HOME/.m2:/home/silverbuild/.m2 
+        -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
+        -v $HOME/.ssh:/home/silverbuild/.ssh 
+        -v $HOME/.gnupg:/home/silverbuild/.gnupg
+        '''
     }
   }
   stages {
@@ -21,35 +26,44 @@ pipeline {
           waitForDependencyRunningBuildIfAny(version, 'core')
           lockFilePath = createLockFile(version, 'core')
           sh """
-mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
-mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
-/opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
-"""
+            mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
+            mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+            /opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
+            """
           deleteLockFile(lockFilePath)
         }
       }
     }
     stage('Quality Analysis') {
+      // quality analyse with our SonarQube service is performed only for PR against our main
+      // repository and for master branch
+      when {
+        expression {
+          env.BRANCH_NAME.startsWith('PR') &&
+              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas') &&
+              !version.startsWith(env.STABLE_BRANCH.replace('.x', ''))
+        }
+      }
       steps {
         script {
-          // quality analyse with our SonarQube service is performed only for PR against our main
-          // repository
-          if (env.BRANCH_NAME.startsWith('PR') &&
-              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')) {
-            withSonarQubeEnv {
-              sh """
-mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core \\
-    -Dsonar.organization=silverpeas \\
-    -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
-    -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
-    -Dsonar.pullrequest.base=master \\
-    -Dsonar.pullrequest.provider=github \\
-    -Dsonar.host.url=${SONAR_HOST_URL} \\
-    -Dsonar.login=${SONAR_AUTH_TOKEN}
-"""
+          withSonarQubeEnv {
+            sh """
+                mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core \\
+                  -Dsonar.organization=silverpeas \\
+                  -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
+                  -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
+                  -Dsonar.pullrequest.base=master \\
+                  -Dsonar.pullrequest.provider=github \\
+                  -Dsonar.host.url=${SONAR_HOST_URL} \\
+                  -Dsonar.login=${SONAR_AUTH_TOKEN}
+                """
+          }
+          timeout(time: 30, unit: 'MINUTES') {
+            // Just in case something goes wrong, pipeline will be killed after a timeout
+            def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+            if (qg.status != 'OK' && qg.status != 'WARNING') {
+              error "Pipeline aborted due to quality gate failure: ${qg.status}"
             }
-          } else {
-            echo "It isn't a PR validation for the Silverpeas organization. Nothing to analyse."
           }
         }
       }
@@ -129,7 +143,7 @@ def checkParentPOMVersion(version) {
     String parentVersion = pom.parent.version.substring(0, idx) + '-' + snapshot[snapshot.length - 1]
     echo "Update parent POM to ${parentVersion}"
     sh """
-mvn versions:update-parent -DgenerateBackupPoms=false -DparentVersion="[${parentVersion}]"
-"""
+      mvn versions:update-parent -DgenerateBackupPoms=false -DparentVersion="[${parentVersion}]"
+      """
   }
 }
