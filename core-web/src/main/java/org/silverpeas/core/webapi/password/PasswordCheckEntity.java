@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.password;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 

@@ -33,7 +33,9 @@ import javax.xml.bind.DatatypeConverter;
  *
  * @author lloiseau
  * @version 1.0
+ * @deprecated please use instead {@link org.owasp.encoder.Encode}
  */
+@Deprecated
 public class WebEncodeHelper {
 
   /**
