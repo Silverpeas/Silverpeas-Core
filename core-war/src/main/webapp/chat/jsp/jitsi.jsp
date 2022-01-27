@@ -25,6 +25,7 @@
   --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -35,8 +36,12 @@
 <c:set var="roomId" value="${requestScope.roomId}"/>
 <c:set var="userName" value="${requestScope.userName}"/>
 <c:set var="userAvatarUrl" value="${requestScope.userAvatarUrl}"/>
+<c:set var="isMobile" value="${fn:contains(header['User-Agent'], 'Android') or fn:contains(header['User-Agent'], 'iPhone')}"/>
 <view:sp-page>
   <view:sp-head-part noLookAndFeel="true">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="text/javascript" src="https://${domain}/external_api.js"></script>
     <style>
       html,
@@ -60,7 +65,8 @@
       const options = {
         configOverwrite : {
           requireDisplayName : true,
-          prejoinPageEnabled : true
+          prejoinPageEnabled : true,
+          disableDeepLinking : true
         },
         roomName: '${roomId}',
         jwt: '${jwt}',
@@ -70,6 +76,9 @@
         onload : function() {
           if (!firstLoad) {
             window.postMessage(JSON.stringify({'jitsimeet_event' : 'close'}), "${origin}");
+            <c:if test="${isMobile}">
+            window.close();
+            </c:if>
           }
           firstLoad = false;
         }
