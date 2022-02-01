@@ -621,7 +621,7 @@ public interface Administration {
   boolean isEmailExisting(String email) throws AdminException;
 
   /**
-   * Get the user Id corresponding to Domain/Login
+   * Get the user Id corresponding to Domain/Login (ignoring the login case)
    * @param sLogin
    * @param sDomainId
    * @return
