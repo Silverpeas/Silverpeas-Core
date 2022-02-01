@@ -471,8 +471,8 @@ public class UserManager {
   }
 
   /**
-   * Gets the unique identifier of the user in Silverpeas that is qualified by the given login and
-   * that belongs to the specified domain.
+   * Gets the unique identifier of the user in Silverpeas that is qualified by the given login
+   * (ignoring the case) and that belongs to the specified domain.
    * <p>If the user does not exists, null is returned.</p>
    * @param sLogin the login of the searched user in the specified domain.
    * @param sDomainId the identifier of the domain the user belongs to.
