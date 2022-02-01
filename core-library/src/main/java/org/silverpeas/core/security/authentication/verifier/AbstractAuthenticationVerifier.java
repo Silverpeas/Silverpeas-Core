@@ -32,6 +32,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.MissingResourceException;
+import java.util.Optional;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
@@ -84,8 +85,12 @@ class AbstractAuthenticationVerifier {
     final String cacheKey = cacheKey(credential.getLogin(), credential.getDomainId());
     return getRequestCacheService().getCache().computeIfAbsent(cacheKey, UserDetail.class, () -> {
       try {
-        return UserDetail.getById(getAdminService()
-            .getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
+        final String userId = getAdminService().getUserIdByLoginAndDomain(credential.getLogin(),
+            credential.getDomainId());
+        return Optional.ofNullable(userId)
+            .map(UserDetail::getById)
+            .filter(u -> u.getLogin().equals(credential.getLogin()))
+            .orElse(null);
       } catch (AdminException ignore) {
         return null;
       }
