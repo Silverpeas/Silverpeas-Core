@@ -96,7 +96,7 @@
           <div class="clear"></div>
         </div>
         <p><label><span><%=userDetail.getLoginQuestion()%></span>
-          <input type="password" autocomplete="off" name="answer" id="answer"/></label></p>
+          <input type="password" autocomplete="new-password" name="answer" id="answer"/></label></p>
 
         <div class="submit">
           <p>

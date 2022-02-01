@@ -81,15 +81,15 @@
           <div class="clear"></div>
         </div>
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.old") %></span><input type="password" autocomplete="off" name="oldPassword" id="oldPassword"/></label>
+            "authentication.password.old") %></span><input type="password" autocomplete="new-password" name="oldPassword" id="oldPassword"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.new") %></span><input type="password" autocomplete="off" name="newPassword" id="newPassword"/></label>
+            "authentication.password.new") %></span><input type="password" autocomplete="new-password" name="newPassword" id="newPassword"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.confirm") %></span><input type="password" autocomplete="off" name="confirmPassword" id="confirmPassword"/></label>
+            "authentication.password.confirm") %></span><input type="password" autocomplete="new-password" name="confirmPassword" id="confirmPassword"/></label>
         </p>
         <input type="hidden" name="login" value="${param.login}"/>
         <input type="hidden" name="domainId" value="${param.domainId}"/>
