@@ -29,14 +29,11 @@ package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -141,14 +138,15 @@ class StringUtilTest {
 
   /**
    * Test of convertToEncoding method, of class StringUtil.
-   * @throws UnsupportedEncodingException
    */
   @Test
-  void testConvertToEncoding() throws UnsupportedEncodingException {
-    assertEquals("élève", StringUtil.convertToEncoding(new String("élève".getBytes("UTF-8")),
-        "UTF-8"));
-    assertNotSame("élève", StringUtil.convertToEncoding(new String("élève".getBytes("ISO-8859-1")),
-        "UTF-8"));
+  void testConvertToEncoding() {
+    assertEquals("élève",
+        StringUtil.convertToEncoding(new String("élève".getBytes(StandardCharsets.UTF_8)),
+            "UTF-8"));
+    assertNotSame("élève",
+        StringUtil.convertToEncoding(new String("élève".getBytes(StandardCharsets.ISO_8859_1)),
+            "UTF-8"));
   }
 
   /**
@@ -241,7 +239,7 @@ class StringUtilTest {
   }
 
   @Test
-  void likeIgnoreCase() {
+  void likeIgnoreCaseWithWildcardAny() {
     assertThat(StringUtil.likeIgnoreCase(null, null), is(true));
     assertThat(StringUtil.likeIgnoreCase("", ""), is(true));
     assertThat(StringUtil.likeIgnoreCase("", null), is(true));
@@ -298,4 +296,67 @@ class StringUtilTest {
     assertThat(StringUtil.like("la petite maison", "La petite maison"), is(false));
     assertThat(StringUtil.like("La petite maison", "La petite maison"), is(true));
   }
+
+  @Test
+  void likeIgnoreCaseWithWildcardOneCharacter() {
+    assertThat(StringUtil.likeIgnoreCase("toTo", "_Ot_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "_Oto_\\_"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo_", "_Ot_\\_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo_", "_Oto\\_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo\\_", "_Oto_\\_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo\\_", "_Oto\\_"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo\\_", "_Oto\\\\_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("to_To_", "_O\\_to_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("to__To_", "_O\\_\\_to_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("to_To_", "_O\\_to\\_x"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("to_To_", "_O\\_to_x"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("to_To_", "_O\\_tox"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toToBool_", "_Oto____\\_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toToX", "_OtoX"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toToY", "_Oto_Y"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "_Oto_i"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "_Oto"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "_Ot_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("___toTo", "\\_\\_\\__Ot_"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("___La petite maison", "\\_\\_\\_LA PETITE MAISON"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite \\maison", "L__pet_____MAIson"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite \\maison", "L__pet____\\MAIson"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("/SIEGE/EXCLUSION", "/_____/exclusion"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("&é\"\\m\\p\\a'(-è_ç^à@)°]+=}$£¤^¨*µù\\_!§:/;.,?<>", "&é\"\\m\\p\\a'(-è_ç^à@)°]+=}$£¤^¨*µù\\\\_!§:/;.,?<>"), is(true));
+  }
+
+  @Test
+  void likeWithWildcards() {
+    assertThat(StringUtil.like("La petite maison", "La%petite%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "% petite%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "%_petit_%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "La % mais%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "La _etite maison"), is(true));
+    assertThat(StringUtil.like("La petite maison", "_a _etite ma_so_"), is(true));
+    assertThat(StringUtil.like("La petite maison", "__ petite %"), is(true));
+    assertThat(StringUtil.like("La petite maison", "__ %"), is(true));
+    assertThat(StringUtil.like("La petite maison", "La _etit maison"), is(false));
+    assertThat(StringUtil.like("La petite maison", "_ petite maison"), is(false));
+    assertThat(StringUtil.like("La petite maison", "_ petite %"), is(false));
+    assertThat(StringUtil.like("La petite maison", "_a pet_te ma__o%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "__ ______ ______"), is(true));
+    assertThat(StringUtil.like("La petite maison", "________________"), is(true));
+    assertThat(StringUtil.like("La petite maison", "____%___________"), is(true));
+    assertThat(StringUtil.like("La petite maison", "___%%%______%_______"), is(true));
+    assertThat(StringUtil.like("La petite maison", "____%_____%%___%___"), is(true));
+    assertThat(StringUtil.like("La petite maison", "%___%_____%%___%___"), is(true));
+    assertThat(StringUtil.like("La petite maison", "%__%_petit_%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "%____petit_%"), is(false));
+    assertThat(StringUtil.like("La petite maison", "%"), is(true));
+    assertThat(StringUtil.like("La petite maison", "%_%"), is(true));
+    assertThat(StringUtil.like("La", "%_%"), is(true));
+    assertThat(StringUtil.like("La", "%___%"), is(false));
+    assertThat(StringUtil.like("La", "%_%_%"), is(true));
+  }
+
+  @Test
+  void debug() {
+    assertThat(StringUtil.like("La%", "%_%_\\%"), is(true));
+  }
+
 }
