@@ -491,10 +491,10 @@ public class StringUtil extends StringUtils {
         patternKey = label.substring(startIndex + 1, endIndex);
         if (values.containsKey(patternKey)) {
           value = values.get(patternKey);
-          sb.append(label.substring(0, startIndex)).append(
+          sb.append(label, 0, startIndex).append(
               value != null ? value.toString() : "");
         } else {
-          sb.append(label.substring(0, endIndex + 1));
+          sb.append(label, 0, endIndex + 1);
         }
         label = label.substring(endIndex + 1);
         startIndex = label.indexOf(PATTERN_START);
@@ -710,8 +710,6 @@ public class StringUtil extends StringUtils {
   private static class Like {
     private final String actual;
     private final String expected;
-    private String currentActual;
-    private int tokenIndex;
 
     private Like(final String actual, final String expected, final boolean ignoreCase) {
       if (ignoreCase) {
@@ -724,54 +722,225 @@ public class StringUtil extends StringUtils {
     }
 
     boolean test() {
-      currentActual = actual;
-      tokenIndex = 0;
-      boolean like = true;
-      boolean mustStart = true;
-      String currentToken = nextExpectedToken();
-      while(like && currentToken != null) {
-        if (currentToken.isEmpty()) {
-          mustStart = false;
-          tokenIndex++;
-        } else {
-          like = verifyToken(currentToken, mustStart);
-          mustStart = true;
-        }
-        currentToken = nextExpectedToken();
-      }
-      return like && (!mustStart || currentActual.isEmpty());
-    }
+      final ScanContext ctx = new ScanContext();
+      while (ctx.canConsumeAnotherToken()) {
+        char current = ctx.currentToken();
+        switch (current) {
 
-    private boolean verifyToken(final String token, final boolean mustStart) {
-      final String escapedToken = token.replace("\\%", "%");
-      final int currentIndex = currentActual.indexOf(escapedToken);
-      final int nextActualIndex = currentIndex + escapedToken.length();
-      currentActual = nextActualIndex < currentActual.length()
-          ? currentActual.substring(nextActualIndex)
-          : "";
-      tokenIndex += token.length();
-      return mustStart ? currentIndex == 0 : currentIndex >= 0;
-    }
+          case '\\':
+            processEscapeCard(ctx, current);
+            break;
 
-    private String nextExpectedToken() {
-      if (tokenIndex >= expected.length()) {
-        return null;
-      }
-      int index = expected.indexOf('%', tokenIndex);
-      boolean found = false;
-      while(!found) {
-        if (index < 0) {
-          index = expected.length();
-          found = true;
-        } else if (index > 0 && expected.charAt(index - 1) != '\\') {
-          found = true;
-        } else if (index == 0) {
-          found = true;
-        } else {
-          index = expected.indexOf('%', index + 1);
+          case '_':
+            ctx.next();
+            ctx.matches = ctx.actualIdx <= actual.length();
+            break;
+
+          case '%':
+            processWildcardAny(ctx);
+            break;
+
+          default:
+            ctx.matches = ctx.actualMatches(current);
+            ctx.next();
+            break;
         }
       }
-      return expected.substring(tokenIndex, index);
+
+      return ctx.matches && ctx.isActualFullyChecked();
+    }
+
+    private void processEscapeCard(final ScanContext ctx, final char current) {
+      char next = ctx.nextToken();
+      boolean escape = next == '%' || next == '_';
+      if (escape) {
+        ctx.matches = actual.charAt(ctx.actualIdx) == next;
+        ctx.expectedIdx++;
+      } else {
+        ctx.matches = actual.charAt(ctx.actualIdx) == current;
+      }
+      ctx.actualIdx++;
+    }
+
+    private void processWildcardAny(final ScanContext ctx) {
+      if (!goToNextNonWildcardToken(ctx)) {
+        return;
+      }
+
+      // checks any wildcard '_' matches the expected number of characters in the actual text
+      // for doing we first count all of them
+      int underscoreCount = 0;
+      while (ctx.hasSomeToken() && ctx.currentToken() == '_') {
+        underscoreCount++;
+        ctx.expectedIdx++;
+      }
+
+      // if the consuming is done, the treatment ends here
+      if (!ctx.hasSomeToken()) {
+        // in the case of wildcard '_', the number of them should match at least the rest of the
+        // actual text characters (the first others are taken by the '%' wildcard)
+        if (underscoreCount > 0) {
+          ctx.matches = actual.length() - ctx.actualIdx >= underscoreCount;
+        }
+        ctx.actualIdx = actual.length();
+        return;
+      }
+
+      StringBuilder exp = new StringBuilder();
+      subtractExpectedTextToNextWildcard(ctx, exp);
+
+      // finally, checks either the number of wildcard '_' matches at least the number of the
+      // tokens in the expression figuring out from the expected text between two wildcards, or the
+      // expression is well contained in the actual text at an expected position.
+      if (underscoreCount > 0) {
+        if (exp.length() > 0) {
+          ctx.actualIdx =
+              actual.indexOf(exp.toString(), ctx.actualIdx + underscoreCount) + exp.length();
+          ctx.matches = ctx.actualIdx >= exp.length();
+        } else {
+          ctx.actualIdx = ctx.actualIdx + underscoreCount;
+          ctx.matches = ctx.actualIdx <= actual.length();
+        }
+      } else {
+        ctx.actualIdx = actual.indexOf(exp.toString(), ctx.actualIdx) + exp.length();
+        ctx.matches = ctx.actualIdx >= exp.length();
+      }
+    }
+
+    /**
+     * Moves the cursor on a token in the expected text to the next token that is not a '%'
+     * wildcard.
+     * @param ctx the current expected text scanning context.
+     * @return true if a non-wildcard token has been found, false if the expected text has been
+     * fully consumed without finding any non '%' wildcard token.
+     */
+    private boolean goToNextNonWildcardToken(final ScanContext ctx) {
+      // skips all additional wildcard '%'
+      do {
+        ctx.expectedIdx++;
+      } while (ctx.hasSomeToken() && ctx.currentToken() == '%');
+
+      // if the consuming is done, the treatment ends here
+      if (!ctx.hasSomeToken()) {
+        ctx.actualIdx = actual.length();
+        return false;
+      }
+
+      return true;
+    }
+
+    private void subtractExpectedTextToNextWildcard(final ScanContext ctx,
+        StringBuilder expression) {
+      char endChar = ctx.currentToken();
+      while (ctx.hasSomeToken() && endChar != '_' && endChar != '%') {
+        if (endChar == '\\' && ++ctx.expectedIdx < expected.length()) {
+          char nextChar = ctx.currentToken();
+          if (nextChar == '_' || nextChar == '%') {
+            expression.append(nextChar);
+            endChar = ctx.safeNextToken();
+          } else if (nextChar != '\\') {
+            expression.append(endChar).append(nextChar);
+            endChar = ctx.safeNextToken();
+          } else {
+            expression.append(endChar);
+            //noinspection ConstantConditions
+            endChar = nextChar;
+          }
+        } else {
+          expression.append(endChar);
+          endChar = ctx.safeNextToken();
+        }
+      }
+    }
+
+    /**
+     * Context on the scanning of the expected text against the actual one.
+     */
+    private class ScanContext {
+      /**
+       * The current character index in the actual text.
+       */
+      protected int actualIdx = 0;
+      /**
+       * The current character index in the expected text.
+       */
+      protected int expectedIdx = 0;
+      /**
+       * Is the matching between the expected and the actual texts is ok at the current state of
+       * the scanning.
+       */
+      protected boolean matches = true;
+
+      /**
+       * Can another token in the expected text be consumed?
+       * @return true if there is another token in the expected text and the matching between the
+       * expected and the actual texts is always ok. False otherwise.
+       */
+      public boolean canConsumeAnotherToken() {
+        return hasSomeToken() && matches;
+      }
+
+      /**
+       * Is there again one token to consume in the expected text?
+       * @return true if the expected text isn't fully consumed. False otherwise.
+       */
+      public boolean hasSomeToken() {
+        return expectedIdx < expected.length();
+      }
+
+      /**
+       * Is the specified character is at the expected position in the actual text.
+       * @param token a token to check.
+       * @return true if the token is at actualIdx position in the actual text.
+       */
+      public boolean actualMatches(final char token) {
+        return actualIdx < actual.length() && actual.charAt(actualIdx) == token;
+      }
+
+      /**
+       * Is the actual text fully checked with the expected text?
+       * @return true if the matching of the expected text against the actual one has been complete.
+       * False otherwise.
+       */
+      public boolean isActualFullyChecked() {
+        return actualIdx == actual.length();
+      }
+
+      /**
+       * Gets the current token in the expected text.
+       * @return the token at the expectedIdx position in the expected text.
+       */
+      public char currentToken() {
+        return expected.charAt(expectedIdx);
+      }
+
+      /**
+       * Gets the next token in the expected text. The cursor expectedIdx of the expected text is
+       * incremented before reading the token.
+       * @return the token at the expectedIdx+1 position in the expected text.
+       */
+      public char nextToken() {
+        return expected.charAt(++expectedIdx);
+      }
+
+      /**
+       * Gets the next token in the expected text if there is another token to consume. The cursor
+       * expectedIdx of the expected text is incremented to read the next token.
+       * @return the token at the expectedIdx+1 position in the expected text if this text hasn't
+       * been fully consumed. Returns '\0' otherwise.
+       */
+      public char safeNextToken() {
+        expectedIdx++;
+        return hasSomeToken() ? currentToken() : '\0';
+      }
+
+      /**
+       * Increments both actualIdx and expectedIdx cursors.
+       */
+      public void next() {
+        expectedIdx++;
+        actualIdx++;
+      }
     }
   }
 
