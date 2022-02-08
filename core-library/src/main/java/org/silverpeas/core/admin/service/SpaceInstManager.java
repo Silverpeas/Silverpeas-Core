@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
@@ -106,17 +107,16 @@ public class SpaceInstManager {
     spaceInst.setLook(spaceInstToCopy.getLook());
 
     // Create a copy of array of subspaces ids
-    spaceInst.setSubSpaces(spaceInstToCopy.getSubSpaces());
-
+    final List<SpaceInst> subSpacesToCopy = spaceInstToCopy.getSubSpaces();
     // Create a copy of components
-    for (int nI = 0; nI < spaceInstToCopy.getNumComponentInst(); nI++) {
-      spaceInst.addComponentInst(componentInstManager.copy(spaceInstToCopy.getComponentInst(nI)));
-    }
-
+    final List<ComponentInst> componentInstToCopy = spaceInstToCopy.getAllComponentsInst()
+        .stream()
+        .map(i -> componentInstManager.copy(i))
+        .collect(Collectors.toList());
     // Create a copy of space profiles
-    for (int nI = 0; nI < spaceInstToCopy.getNumSpaceProfileInst(); nI++) {
-      spaceInst.addSpaceProfileInst(spaceInstToCopy.getSpaceProfileInst(nI));
-    }
+    final List<SpaceProfileInst> spaceProfilesToCopy = spaceInstToCopy.getAllSpaceProfilesInst();
+    // Copy above data
+    spaceInst.setData(spaceProfilesToCopy, subSpacesToCopy, componentInstToCopy);
 
     spaceInst.setLanguage(spaceInstToCopy.getLanguage());
 
@@ -188,47 +188,11 @@ public class SpaceInstManager {
 
       // Set the attributes of the space Inst
       SpaceInst spaceInst = spaceRow2SpaceInst(space);
-      // Get the sub spaces
-      List<SpaceRow> asSubSpaces = organizationSchema.space().getDirectSubSpaces(
-          spaceInstLocalId);
-      List<SpaceInst> spaceInsts = new ArrayList<>(asSubSpaces.size());
-      for (SpaceRow spaceRow: asSubSpaces) {
-        spaceInsts.add(spaceRow2SpaceInst(spaceRow));
-      }
-      spaceInst.setSubSpaces(spaceInsts);
-
-      // Get the components
-      String[] asCompoIds = organizationSchema.instance().getAllComponentInstanceIdsInSpace(
-              spaceInstLocalId);
-
-      // Insert the componentsInst in the spaceInst
-      if (asCompoIds != null) {
-        for (String componentId : asCompoIds) {
-          ComponentInst componentInst =
-              componentInstManager.getComponentInst(idAsInt(componentId), spaceInstLocalId);
-          WAComponent.getByName(componentInst.getName())
-              .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
-        }
-      }
-
-      // Get the space profiles
-      String[] asProfIds = organizationSchema.spaceUserRole().getAllSpaceUserRoleIdsOfSpace(
-              spaceInstLocalId);
-
-      // Insert the spaceProfilesInst in the spaceInst
-      if (asProfIds != null) {
-        for (String profileId : asProfIds) {
-          SpaceProfileInst spaceProfileInst =
-              spaceProfileInstManager.getSpaceProfileInst(profileId);
-          spaceInst.addSpaceProfileInst(spaceProfileInst);
-        }
-      }
 
       spaceInst.setLanguage(space.lang);
 
       // Add default translation
-      SpaceI18N translation = new SpaceI18N(space.lang, space.name,
-          space.description);
+      SpaceI18N translation = new SpaceI18N(space.lang, space.name, space.description);
       spaceInst.addTranslation(translation);
 
       List<SpaceI18NRow> translations =
@@ -244,28 +208,52 @@ public class SpaceInstManager {
     }
   }
 
+  /**
+   * Loads lazy data of given space instance.
+   * @param spaceInst loaded {@link SpaceInst} instance.
+   */
+  public void loadSpaceInstData(final SpaceInst spaceInst)
+      throws AdminException {
+    final int spaceInstLocalId = spaceInst.getLocalId();
+    try {
+      // Get the sub spaces
+      final List<SpaceInst> subSpaces = organizationSchema.space()
+          .getDirectSubSpaces(spaceInstLocalId)
+          .stream()
+          .map(this::spaceRow2SpaceInst)
+          .collect(Collectors.toList());
+      // Get the components
+      final String[] asCompoIds = organizationSchema.instance().getAllComponentInstanceIdsInSpace(
+          spaceInstLocalId);
+      final List<ComponentInst> components = new ArrayList<>(asCompoIds.length);
+      for (String componentId : asCompoIds) {
+        ComponentInst componentInst =
+            componentInstManager.getComponentInst(idAsInt(componentId), spaceInstLocalId);
+        WAComponent.getByName(componentInst.getName())
+            .ifPresent(waComponent -> components.add(componentInst));
+      }
+      // Get the space profiles
+      String[] asProfIds = organizationSchema.spaceUserRole().getAllSpaceUserRoleIdsOfSpace(
+          spaceInstLocalId);
+      final List<SpaceProfileInst> spaceProfiles = new ArrayList<>(asProfIds.length);
+      for (String profileId : asProfIds) {
+        SpaceProfileInst spaceProfileInst =
+            spaceProfileInstManager.getSpaceProfileInst(profileId);
+        spaceProfiles.add(spaceProfileInst);
+      }
+      spaceInst.setData(spaceProfiles, subSpaces, components);
+    } catch (SQLException e) {
+      throw new AdminException(failureOnGetting(SPACE, String.valueOf(spaceInstLocalId)), e);
+    }
+  }
+
   public SpaceInst getPersonalSpace(String userId)
       throws AdminException {
     try {
       // Load the space detail
-      SpaceRow space = organizationSchema.space().getPersonalSpace(userId);
-
+      final SpaceRow space = organizationSchema.space().getPersonalSpace(userId);
       if (space != null) {
-        SpaceInst spaceInst = spaceRow2SpaceInst(space);
-
-        // Get the components
-        String[] asCompoIds = organizationSchema.instance()
-            .getAllComponentInstanceIdsInSpace(spaceInst.getLocalId());
-
-        // Insert the componentsInst in the spaceInst
-        for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
-          ComponentInst componentInst =
-              componentInstManager.getComponentInst(idAsInt(asCompoIds[nI]),
-                  spaceInst.getLocalId());
-          WAComponent.getByName(componentInst.getName())
-              .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
-        }
-
+        final SpaceInst spaceInst = spaceRow2SpaceInst(space);
         spaceInst.setLanguage(space.lang);
         return spaceInst;
       }
