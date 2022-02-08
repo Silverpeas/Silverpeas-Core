@@ -267,7 +267,7 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space,
-      final boolean persist, final boolean startNewTransaction) {
+      final boolean persist) throws AdminException {
 
   }
 

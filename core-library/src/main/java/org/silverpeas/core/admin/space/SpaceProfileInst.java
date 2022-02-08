@@ -59,7 +59,6 @@ public class SpaceProfileInst extends BaseRightProfile {
     return SPACE_MANAGER.equalsIgnoreCase(getName());
   }
 
-  @SuppressWarnings("unchecked")
   protected SpaceProfileInst copy() {
     SpaceProfileInst copy = new SpaceProfileInst();
     copy.setDescription(getDescription());

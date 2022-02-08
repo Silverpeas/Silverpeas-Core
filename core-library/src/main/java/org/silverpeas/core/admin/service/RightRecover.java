@@ -73,7 +73,7 @@ public class RightRecover {
         }
       } else {
         // recover space rights (those inherited from parent)
-        admin.setSpaceProfilesToSubSpace(space, null, true, true);
+        admin.setSpaceProfilesToSubSpace(space, null, true);
       }
     }
 

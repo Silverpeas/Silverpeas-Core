@@ -128,7 +128,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public String[] getAllSpaceUserRoleIdsOfSpace(int spaceId) throws SQLException {
     List<String> ids = getIds(SELECT_ALL_SPACE_USERROLE_IDS, spaceId);
-    return ids.toArray(new String[ids.size()]);
+    return ids.toArray(new String[0]);
   }
 
   private static final String SELECT_ALL_SPACE_USERROLE_IDS =
