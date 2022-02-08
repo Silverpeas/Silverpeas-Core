@@ -523,7 +523,8 @@ class DefaultAdministration implements Administration {
 
       // force caches to be refreshed
       cache.removeSpaceInst(driverSpaceId);
-      treeCache.removeSpace(driverSpaceId);
+      // restore space in global tree
+      addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
 
       // Get the space and put it in the cache
       SpaceInst spaceInst = getSpaceInstById(driverSpaceId);
@@ -535,7 +536,6 @@ class DefaultAdministration implements Administration {
       createSpaceIndex(driverSpaceId);
       // reset space and eventually subspace
       cache.opAddSpace(spaceInst);
-      addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
     } catch (Exception e) {
       throw new AdminException(failureOnRestoring(SPACE, spaceId), e);
     }
@@ -676,12 +676,15 @@ class DefaultAdministration implements Administration {
   private void updateSpaceInheritance(SpaceInst space, boolean inheritanceBlocked)
       throws AdminException {
     try {
+      final SpaceInst parentSpace;
       if (inheritanceBlocked) {
-        // suppression des droits hérités de l'espace
+        // 1 - suppression des droits hérités de l'espace
         List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
         for (SpaceProfileInst profile : inheritedProfiles) {
           deleteSpaceProfileInst(profile.getId());
         }
+        // Parent space is itself
+        parentSpace = getSpaceInstById(space.getId());
       } else {
         // Héritage des droits de l'espace
         // 1 - suppression des droits spécifiques du sous espace
@@ -691,10 +694,12 @@ class DefaultAdministration implements Administration {
             deleteSpaceProfileInst(profile.getId());
           }
         }
-        if (!space.isRoot()) {
-          // 2 - affectation des droits de l'espace au sous espace
-          setSpaceProfilesToSubSpace(space, null, true, false);
-        }
+        // Parent space will be retrieved automatically
+        parentSpace = null;
+      }
+      if (!space.isRoot()) {
+        // 2 - affectation des droits de l'espace au sous espace
+        setSpaceProfilesToSubSpace(space, parentSpace, true);
       }
     } catch (AdminException e) {
       throw new AdminException(failureOnUpdate(SPACE, space.getId()), e);
@@ -1274,12 +1279,12 @@ class DefaultAdministration implements Administration {
   @Override
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space)
       throws AdminException {
-    setSpaceProfilesToSubSpace(subSpace, space, false, false);
+    setSpaceProfilesToSubSpace(subSpace, space, false);
   }
 
   @Override
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space,
-      boolean persist, boolean startNewTransaction) throws AdminException {
+      boolean persist) throws AdminException {
     SpaceInst currentSpace = space;
     if (currentSpace == null) {
       currentSpace = getSpaceInstById(subSpace.getDomainFatherId());
@@ -1529,7 +1534,7 @@ class DefaultAdministration implements Administration {
       if (!space.isInheritanceBlocked()) {
         // space inherits rights from parent
         SpaceInst father = getSpaceInstById(shortFatherId);
-        setSpaceProfilesToSubSpace(space, father, true, false);
+        setSpaceProfilesToSubSpace(space, father, true);
       } else {
         // space uses only local rights
         // let it as it is
@@ -1968,9 +1973,27 @@ class DefaultAdministration implements Administration {
   public String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId)
       throws AdminException {
     try {
+      final int spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
       SpaceProfileInst oldSpaceProfile =
           spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId());
       if (oldSpaceProfile == null) {
+        // Potential case of space that is switching inheritance blocking status
+        // Avoiding the cache repository in order to get the new data of the space
+        final SpaceInst spaceInstFather = spaceManager.getSpaceInstById(spaceId);
+        if (spaceInstFather.isInheritanceBlocked()) {
+          // Spreading the specific rights
+          final SpaceProfileInst spaceSpecificProfile =
+              spaceProfileManager.getSpaceProfileInstByName(
+              spaceId, newSpaceProfile.getName());
+          if (spaceSpecificProfile != null) {
+            final SpaceProfileInst profileToSpread = new SpaceProfileInst();
+            profileToSpread.setName(newSpaceProfile.getName());
+            profileToSpread.setInherited(true);
+            profileToSpread.addGroups(spaceSpecificProfile.getAllGroups());
+            profileToSpread.addUsers(spaceSpecificProfile.getAllUsers());
+            spreadSpaceProfile(spaceId, profileToSpread);
+          }
+        }
         return null;
       }
       String spaceProfileNewId =
@@ -1978,9 +2001,8 @@ class DefaultAdministration implements Administration {
 
       // profile 'Manager' does not need to be spread
       if (!oldSpaceProfile.isManager()) {
-        int spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
         if (StringUtil.isDefined(userId)) {
-          SpaceInst spaceInstFather = getSpaceInstById(spaceId);
+          final SpaceInst spaceInstFather = getSpaceInstById(spaceId);
           spaceInstFather.setUpdaterUserId(userId);
           updateSpaceInst(spaceInstFather);
         }
@@ -2042,14 +2064,14 @@ class DefaultAdministration implements Administration {
       throws AdminException {
     // update profile in components
     List<ComponentInstLight> components = treeCache.getComponents(spaceId);
-    updateProfilesInComponents(spaceId, spaceProfile, components);
+    spreadSpaceProfilesInComponents(spaceId, spaceProfile, components);
 
     // update profile in subspaces
     List<SpaceInstLight> subSpaces = treeCache.getSubSpaces(spaceId);
-    updateProfilesInSubspaces(spaceProfile, subSpaces);
+    spreadSpaceProfilesInSubspaces(spaceProfile, subSpaces);
   }
 
-  private void updateProfilesInSubspaces(final SpaceProfileInst spaceProfile,
+  private void spreadSpaceProfilesInSubspaces(final SpaceProfileInst spaceProfile,
       final List<SpaceInstLight> subSpaces) throws AdminException {
     for (SpaceInstLight subSpace : subSpaces) {
       if (!subSpace.isInheritanceBlocked()) {
@@ -2076,8 +2098,9 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  private void updateProfilesInComponents(final int spaceId, final SpaceProfileInst spaceProfile,
-      final List<ComponentInstLight> components) throws AdminException {
+  private void spreadSpaceProfilesInComponents(final int spaceId,
+      final SpaceProfileInst spaceProfile, final List<ComponentInstLight> components)
+      throws AdminException {
     for (ComponentInstLight component : components) {
       if (component != null && !component.isInheritanceBlocked()) {
         String componentRole = spaceRole2ComponentRole(spaceProfile.getName(), component.getName());
@@ -2121,11 +2144,13 @@ class DefaultAdministration implements Administration {
     List<String> profilesToCheck = componentRole2SpaceRoles(componentRole, component.getName());
     profilesToCheck.remove(spaceProfile.getName()); // exclude current space profile
     for (String profileToCheck : profilesToCheck) {
-      SpaceProfileInst spi = spaceProfileManager.getSpaceProfileInstByName(spaceId, profileToCheck);
-      if (spi != null) {
-        inheritedProfile.addGroups(spi.getAllGroups());
-        inheritedProfile.addUsers(spi.getAllUsers());
-      }
+      Stream.of(spaceProfileManager.getInheritedSpaceProfileInstByName(spaceId, profileToCheck),
+              spaceProfileManager.getSpaceProfileInstByName(spaceId, profileToCheck))
+          .filter(Objects::nonNull)
+          .forEach(p -> {
+            inheritedProfile.addGroups(p.getAllGroups());
+            inheritedProfile.addUsers(p.getAllUsers());
+          });
     }
     updateProfileInst(inheritedProfile);
   }
@@ -4082,19 +4107,11 @@ class DefaultAdministration implements Administration {
 
   @Override
   public String[] getAllComponentIds(String sSpaceId) throws AdminException {
-    List<String> alCompoIds = new ArrayList<>();
-
-    // Get the compo of this space
-    SpaceInst spaceInst = getSpaceInstById(sSpaceId);
-    List<SilverpeasComponentInstance> alCompoInst = spaceInst.getAllComponentInstances();
-
-    if (alCompoInst != null) {
-      for (SilverpeasComponentInstance anAlCompoInst : alCompoInst) {
-        alCompoIds.add(anAlCompoInst.getId());
-      }
-    }
-
-    return alCompoIds.toArray(new String[0]);
+    return Optional.of(getSpaceInstById(sSpaceId))
+        .stream()
+        .flatMap(s -> s.getAllComponentInstances().stream())
+        .map(SilverpeasComponentInstance::getId)
+        .toArray(String[]::new);
   }
 
   @Override

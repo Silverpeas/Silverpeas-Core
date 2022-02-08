@@ -328,8 +328,8 @@ public interface Administration {
   void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space)
       throws AdminException;
 
-  void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space, boolean persist,
-      boolean startNewTransaction) throws AdminException;
+  void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space, boolean persist)
+      throws AdminException;
 
   void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws AdminException;
 
