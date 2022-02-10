@@ -92,6 +92,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     String tmpFromString = (String) keyValue.get(NotificationParameterNames.FROM);
     String tmpSubjectString = WebEncodeHelper.htmlStringToJavaString((String) keyValue.get(NotificationParameterNames.SUBJECT));
     String serverUrl = (String) keyValue.get(NotificationParameterNames.SERVERURL);
+    String baseServerUrl = (String) keyValue.get(NotificationParameterNames.SERVER_BASEURL);
     String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL);
     String linkLabel = (String) keyValue.get(NotificationParameterNames.LINKLABEL);
     String tmpLanguageString = (String) keyValue.get(NotificationParameterNames.LANGUAGE);
@@ -117,6 +118,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     SilverpeasTemplate templateHeaderFooter =
         SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
 
+    templateHeaderFooter.setAttribute(NOTIFICATION_BASE_SERVER_URL.toString(), baseServerUrl);
     templateHeaderFooter.setAttribute(NOTIFICATION_SERVER_URL.toString(), serverUrl);
     templateHeaderFooter.setAttribute(NOTIFICATION_SENDER_NAME.toString(),
         notification.getSenderName());
@@ -185,7 +187,6 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     afterFooterMessage.append(smtpMessageAfterFooter);
   }
 
-  @SuppressWarnings("unchecked")
   private List<AttachmentLink> getAttachmentLinks(final Map<String, Object> keyValues,
       final String language) {
     final String componentId = (String) keyValues.get(NotificationParameterNames.COMPONENTID);
@@ -209,7 +210,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
    * @param to : the email target destination.
    * @param subject : the subject of the email.
    * @param content : the message or payload of the email.
-   * @see {@link InternetAddress}
+   * @see InternetAddress
    */
   private void sendEmail(String from, String fromName, String to, String subject,
       String content, boolean isHtml) throws NotificationServerException {

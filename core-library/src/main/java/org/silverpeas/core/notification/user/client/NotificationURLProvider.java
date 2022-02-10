@@ -28,26 +28,21 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
-public abstract class AbstractNotification {
+public interface NotificationURLProvider {
 
-  public String getApplicationURL() {
+  default String getApplicationURL() {
     return URLUtil.getApplicationURL();
   }
 
-  public String computeURL(final Integer userId, final String urlBase) {
+  default String computeURL(final Integer userId, final String urlBase) {
     return computeURL(Integer.toString(userId), urlBase);
   }
 
-  public String computeURL(final String userId, final String urlBase) {
+  default String computeURL(final String userId, final String urlBase) {
     return (urlBase.startsWith("http") ? urlBase : getUserAutoRedirectURL(userId, urlBase));
   }
 
-  public String getUserAutoRedirectURL(final String userId, final String target) {
+  default String getUserAutoRedirectURL(final String userId, final String target) {
     String encodedTarget = URLUtil.encodeURL(target);
     try {
       final UserDetail ud = UserDetail.getById(userId);
@@ -67,14 +62,18 @@ public abstract class AbstractNotification {
     }
   }
 
-  public String getUserAutoRedirectURL(final Domain dom) {
+  default String getUserAutoRedirectURL(final Domain dom) {
       return dom.getSilverpeasServerURL() + getApplicationURL()
           + "/autoRedirect.jsp?domainId=" + dom.getId() + "&goto=";
   }
 
-  public String getUserAutoRedirectSilverpeasServerURL(final String userId) {
+  default String getUserAutoRedirectSilverpeasServerURL(final String userId) {
+    return getUserAutoRedirectServerURL(userId) + getApplicationURL();
+  }
+
+  default String getUserAutoRedirectServerURL(final String userId) {
     final UserDetail ud = UserDetail.getById(userId);
     final Domain dom = ud.getDomain();
-    return dom.getSilverpeasServerURL() + getApplicationURL();
+    return dom.getSilverpeasServerURL();
   }
 }

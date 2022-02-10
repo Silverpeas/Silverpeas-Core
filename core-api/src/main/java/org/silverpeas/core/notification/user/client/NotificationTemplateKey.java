@@ -23,14 +23,46 @@
  */
 package org.silverpeas.core.notification.user.client;
 
+/**
+ * Keys of the predefined fields injected by default in the text templates used in the notifications
+ * to users.
+ */
 public enum NotificationTemplateKey {
+  /**
+   * The name of the user at the origin of the notification.
+   */
   NOTIFICATION_SENDER_NAME("notification_sendername"),
+  /**
+   * The email address of the user at the origin of the notification.
+   */
   NOTIFICATION_SENDER_EMAIL("notification_senderemail"),
+  /**
+   * The identifiers of the users targeted by the notification.
+   */
   NOTIFICATION_RECEIVER_USERS("notification_receiver_users"),
+  /**
+   * The identifiers of the user groups targeted by the notification.
+   */
   NOTIFICATION_RECEIVER_GROUPS("notification_receiver_groups"),
+  /**
+   * The base URL of the server (the port number included if other than 80)
+   */
+  NOTIFICATION_BASE_SERVER_URL("notification_base_serverurl"),
+  /**
+   * The URL of the server including the application context if any (the URL of Silverpeas).
+   */
   NOTIFICATION_SERVER_URL("notification_serverurl"),
+  /**
+   * Link to the resource in Silverpeas for which the notification has been sent.
+   */
   NOTIFICATION_LINK("notification_link"),
+  /**
+   * Label associated with the notification link above.
+   */
   NOTIFICATION_LINK_LABEL("notification_linkLabel"),
+  /**
+   * Links to the attachments concerned by the notification.
+   */
   NOTIFICATION_ATTACHMENTS("notification_attachments");
 
   private final String name;

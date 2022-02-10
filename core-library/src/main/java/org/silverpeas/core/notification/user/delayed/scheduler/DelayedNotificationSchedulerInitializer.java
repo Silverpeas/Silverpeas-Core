@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.user.delayed.scheduler;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.notification.user.client.AbstractNotification;
+import org.silverpeas.core.notification.user.client.NotificationURLProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.initialization.Initialization;
 
@@ -39,8 +39,8 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
  * @author Yohann Chastagnier
  */
 @Service
-public class DelayedNotificationSchedulerInitializer extends AbstractNotification
-    implements Initialization {
+public class DelayedNotificationSchedulerInitializer implements NotificationURLProvider,
+    Initialization {
 
   public static final String JOB_NAME = "DelayedNotificationJob";
 
