@@ -30,9 +30,9 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.AttachmentLink;
-import org.silverpeas.core.notification.user.client.AbstractNotification;
 import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationURLProvider;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.DelayedNotificationProvider;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
@@ -57,6 +57,7 @@ import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_BASE_SERVER_URL;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_SERVER_URL;
 import static org.silverpeas.core.notification.user.delayed.DelayedNotificationProvider.getDelayedNotification;
 import static org.silverpeas.core.util.MapUtil.putAddList;
@@ -66,7 +67,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * @author Yohann Chastagnier
  */
-public class DelayedNotificationDelegate extends AbstractNotification {
+public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   private static final String LOCATION_SEPARATOR = " &gt; ";
 
@@ -101,8 +102,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Deleting all delayed notification data of a user
-   * @param userId
-   * @throws Exception
+   * @param userId the identifier of a user in Silverpeas.
+   * @throws NotificationServerException if an error occurs
    */
   public static void executeUserDeleting(final int userId)
       throws NotificationServerException {
@@ -127,10 +128,10 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   /**
    * When user settings change, if the new frequency is NONE then the delayed notifications saved
    * have to be sent
-   * @param userId
-   * @param channel
-   * @param frequency
-   * @throws Exception
+   * @param userId the unique identifier of a user
+   * @param channel the channel through which the notifications will be sent.
+   * @param frequency the frequency of the notification sending.
+   * @throws NotificationServerException if an error occurs
    */
   public static DelayedNotificationUserSetting executeUserSettingsUpdating(final int userId,
       final NotifChannel channel, final DelayedNotificationFrequency frequency)
@@ -163,8 +164,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Easy call of new notification process
-   * @param delayedNotificationData
-   * @throws NotificationServerException
+   * @param delayedNotificationData the data about the notification to send.
+   * @throws NotificationServerException if an error occurs.
    */
   public static void executeNewNotification(final DelayedNotificationData delayedNotificationData)
       throws NotificationServerException {
@@ -173,8 +174,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Handling a new notification
-   * @param delayedNotificationData
-   * @throws Exception
+   * @param delayedNotificationData the data about the notification to send.
+   * @throws NotificationServerException if an error occurs.
    */
   protected void performNewNotificationSending(
       final DelayedNotificationData delayedNotificationData) throws NotificationServerException {
@@ -188,8 +189,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Checks if the notification has to be delayed or not
-   * @param delayedNotificationData
-   * @return
+   * @param delayedNotificationData the data about the notification to send.
+   * @return true if the notification can be delayed in the time.
    */
   private boolean isThatToBeDelayed(final DelayedNotificationData delayedNotificationData) {
 
@@ -228,8 +229,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Easy call of delayed notifications process
-   * @param date
-   * @throws Exception
+   * @param date the date at which the sending of the notification will be delayed.
+   * @throws NotificationServerException if an error occurs
    */
   public static void executeDelayedNotificationsSending(final Date date)
       throws NotificationServerException {
@@ -240,7 +241,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   /**
    * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
    * saved for all users
-   * @throws Exception
+   * @throws NotificationServerException if an error occurs
    */
   public static void executeForceDelayedNotificationsSending()
       throws NotificationServerException {
@@ -251,9 +252,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
    * saved for a given
    * user
-   * @param userId
-   * @param channels
-   * @throws Exception
+   * @param userId the unique identifier of a user targeted by the notification.
+   * @param channels the channels through which the notifications will be sent.
+   * @throws NotificationServerException if an error occurs
    */
   public static void executeForceDelayedNotificationsSending(final int userId,
       final Set<NotifChannel> channels) throws NotificationServerException {
@@ -264,9 +265,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
    * saved for given
    * users and channels
-   * @param userIds
-   * @param channels
-   * @throws Exception
+   * @param userIds the identifiers of the users targeted by the notifications.
+   * @param channels the channels through which the notifications will be sent.
+   * @throws NotificationServerException if an error occurs
    */
   public static void executeForceDelayedNotificationsSending(final List<Integer> userIds,
       final Set<NotifChannel> channels) throws NotificationServerException {
@@ -275,7 +276,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Forces the sending of all the delayed notifications saved for all users
-   * @throws Exception
+   * @throws NotificationServerException if an error occurs
    */
   protected void forceDelayedNotificationsSending()
       throws NotificationServerException {
@@ -292,9 +293,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Forces the sending of all the delayed notifications saved for given users and channels
-   * @param userIds
-   * @param channels
-   * @throws Exception
+   * @param userIds the unique identifier of the users targeted by the notifications.
+   * @param channels the channels through which the notifications will be sent.
+   * @throws NotificationServerException if an error occurs
    */
   void forceDelayedNotificationsSending(final List<Integer> userIds,
       final Set<NotifChannel> channels) throws NotificationServerException {
@@ -351,16 +352,16 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   private Collection<Long> performUserDelayedNotificationsOnChannel(final NotifChannel channel,
       final List<DelayedNotificationData> delayedNotifications)
       throws NotificationServerException {
-    final DelayedNotificationSyntheseData synthese = buildSynthese(delayedNotifications);
-    sendNotification(createNotificationData(channel, synthese));
-    return synthese.getDelayedNotificationIdProceeded();
+    final DelayedNotificationSyntheseData synthesis = buildSynthesis(delayedNotifications);
+    sendNotification(createNotificationData(channel, synthesis));
+    return synthesis.getDelayedNotificationIdProceeded();
   }
 
-  private DelayedNotificationSyntheseData buildSynthese(
+  private DelayedNotificationSyntheseData buildSynthesis(
       final List<DelayedNotificationData> delayedNotifications) {
 
     // Result
-    final DelayedNotificationSyntheseData synthese = initializeSynthese(delayedNotifications);
+    final DelayedNotificationSyntheseData synthesis = initializeSynthese(delayedNotifications);
 
     // Indexing
     final Map<NotificationResourceData, List<DelayedNotificationData>> resourcesAndNotifications =
@@ -375,47 +376,46 @@ public class DelayedNotificationDelegate extends AbstractNotification {
         new ArrayList<>(resourcesAndNotifications.keySet());
     orderedResources.sort(getResourceComparator());
 
-    // Browsing all the delayed notifications to build the synthese
+    // Browsing all the delayed notifications to build the synthesis
     for (final NotificationResourceData resource : orderedResources) {
 
       // Performing a resource and her associated notifications
-      prepareSyntheseResourceAndNotifications(synthese, resource,
+      prepareSynthesisResourceAndNotifications(synthesis, resource,
           resourcesAndNotifications.get(resource));
     }
 
     // Building the final message
-    synthese.setMessage(buildMessage(synthese));
+    synthesis.setMessage(buildMessage(synthesis));
 
-    // Returning the initialized synthese
-    return synthese;
+    // Returning the initialized synthesis
+    return synthesis;
   }
 
-  private void prepareSyntheseResourceAndNotifications(
-      final DelayedNotificationSyntheseData syntheses, final NotificationResourceData resource,
+  private void prepareSynthesisResourceAndNotifications(
+      final DelayedNotificationSyntheseData synthesis, final NotificationResourceData resource,
       final List<DelayedNotificationData> notifications) {
-    final String language = syntheses.getLanguage();
+    final String language = synthesis.getLanguage();
     resource.setCurrentLanguage(language);
 
     // Sorting delayed notifications
-    Collections.sort(notifications, getDelayedNotificationComparator());
+    notifications.sort(getDelayedNotificationComparator());
 
-    // Initializing the synthese resource
+    // Initializing the synthesis resource
     final SyntheseResource syntheseResource = new SyntheseResource();
-    syntheses.addResource(syntheseResource);
-    syntheses.addNbNotifications(notifications.size());
+    synthesis.addResource(syntheseResource);
+    synthesis.addNbNotifications(notifications.size());
 
-    // Filling the synthese resource data
+    // Filling the synthesis resource data
     syntheseResource.setName(resource.getResourceName());
     syntheseResource.setDescription(resource.getResourceDescription());
     if (syntheseResource.getDescription() != null) {
-      syntheseResource.setDescription(
-          WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseResource.getDescription()));
+      syntheseResource.setDescription(forHtml(syntheseResource.getDescription()));
     }
     syntheseResource.setLocation(resource.getResourceLocation()
         .replace(NotificationResourceData.LOCATION_SEPARATOR, LOCATION_SEPARATOR));
     syntheseResource.setUrl(resource.getResourceUrl());
     if (syntheseResource.getUrl() != null) {
-      syntheseResource.setUrl(computeURL(syntheses.getUserId(), syntheseResource.getUrl()));
+      syntheseResource.setUrl(computeURL(synthesis.getUserId(), syntheseResource.getUrl()));
     }
     syntheseResource.setLinkLabel(getResourceLinkLabel(resource));
 
@@ -455,14 +455,13 @@ public class DelayedNotificationDelegate extends AbstractNotification {
       syntheseNotification.setPreviousHasMessage(isPreviousHasMessage);
       if (syntheseNotification.getMessage() != null) {
         isPreviousHasMessage = true;
-        syntheseNotification.setMessage(
-            WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseNotification.getMessage()));
+        syntheseNotification.setMessage(forHtml(syntheseNotification.getMessage()));
       } else {
         isPreviousHasMessage = false;
       }
 
       // Indicates that the notification has been treated
-      syntheses.getDelayedNotificationIdProceeded()
+      synthesis.getDelayedNotificationIdProceeded()
           .add(Long.parseLong(delayedNotificationData.getId()));
     }
   }
@@ -485,10 +484,6 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return defaultStringIfNotDefined(resource.getLinkLabel(), defaultLinkLabel);
   }
 
-  /**
-   * Just a little tool
-   * @return
-   */
   private static String nullIfBlank(final String string) {
     return StringUtils.isBlank(string) ? null : string;
   }
@@ -496,6 +491,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   private String buildMessage(final DelayedNotificationSyntheseData syntheses) {
     clearTemplate();
     final User user = getUserDetail(syntheses.getUserId());
+    getTemplate().setAttribute(NOTIFICATION_BASE_SERVER_URL.toString(),
+        getUserAutoRedirectServerURL(user.getId()));
     getTemplate().setAttribute(NOTIFICATION_SERVER_URL.toString(),
         getUserAutoRedirectSilverpeasServerURL(user.getId()));
     getTemplate().setAttribute("delay",
@@ -516,18 +513,10 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return getTemplate().applyFileTemplate("subject_" + synthese.getLanguage());
   }
 
-  /**
-   * Clears silverpeas template
-   * @return
-   */
   private void clearTemplate() {
     getTemplate().getAttributes().clear();
   }
 
-  /**
-   * Gets a Silverpeas template
-   * @return
-   */
   private SilverpeasTemplate getTemplate() {
     if (template == null) {
       template = SilverpeasTemplateFactory
@@ -538,9 +527,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   }
 
   /**
-   * Initializing common data of the notification synthese from the first delayed notification
-   * @param delayedNotifications
-   * @return
+   * Initializing common data of the notification synthesis from the first delayed notification
+   * @param delayedNotifications a list of data about the notifications to send
    */
   private DelayedNotificationSyntheseData initializeSynthese(
       final List<DelayedNotificationData> delayedNotifications) {
@@ -558,9 +546,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * Creating the notification data from a given channel, a given delayed notification and with the
    * final message.
    * Currently, only the SMTP channel is managed
-   * @param channel notification channel
-   * @param syntheses syntheses data
-   * @return data about the notification to send.
+   * @param channel the channel through which the notification will be sent.
+   * @param syntheses a synthesis on the notifications to send.
+   * @return a data about the delayed notification to send.
    */
   private NotificationData createNotificationData(final NotifChannel channel,
       final DelayedNotificationSyntheseData syntheses) {
@@ -586,23 +574,25 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     notificationData.setTargetParam(new HashMap<>());
 
     // Set sender in parameters
-    notificationData.getTargetParam().put(NotificationParameterNames.FROM,
-        NotifChannel.SMTP.equals(channel) ? sender.geteMail() : sender.getId());
+    notificationData.getTargetParam()
+        .put(NotificationParameterNames.FROM.toString(),
+            NotifChannel.SMTP.equals(channel) ? sender.geteMail() : sender.getId());
 
     // Set subject parameter
     notificationData.getTargetParam()
-        .put(NotificationParameterNames.SUBJECT, syntheses.getSubject());
+        .put(NotificationParameterNames.SUBJECT.toString(), syntheses.getSubject());
 
     // Set date parameter
-    notificationData.getTargetParam().put(NotificationParameterNames.DATE, new Date());
+    notificationData.getTargetParam()
+        .put(NotificationParameterNames.DATE.toString(), new Date());
 
     // Set the language
     notificationData.getTargetParam()
-        .put(NotificationParameterNames.LANGUAGE, syntheses.getLanguage());
+        .put(NotificationParameterNames.LANGUAGE.toString(), syntheses.getLanguage());
 
     // Hide Header and Footer in SMTP message
-    notificationData.getTargetParam().put(NotificationParameterNames.HIDESMTPHEADERFOOTER,
-        true);
+    notificationData.getTargetParam()
+        .put(NotificationParameterNames.HIDESMTPHEADERFOOTER.toString(), true);
 
 
     // Set the message
@@ -619,12 +609,6 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * Commons
    */
 
-  /**
-   * Gets the translation of an element
-   * @param key
-   * @param language
-   * @return
-   */
   private String getStringTranslation(final String key, final String language) {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationManager.multilang.notificationManagerBundle",
@@ -632,13 +616,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return messages.getString(key);
   }
 
-  /**
-   * Gets the comprator of resource data
-   * @return
-   */
   private Comparator<NotificationResourceData> getResourceComparator() {
     if (resourceComparator == null) {
-      resourceComparator = new AbstractComplexComparator<NotificationResourceData>() {
+      resourceComparator = new AbstractComplexComparator<>() {
         @Override
         protected ValueBuffer getValuesToCompare(final NotificationResourceData object) {
           return new ValueBuffer().append(object.getResourceLocation())
@@ -650,13 +630,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return resourceComparator;
   }
 
-  /**
-   * Gets the comparator of delayed notification data
-   * @return
-   */
   private Comparator<DelayedNotificationData> getDelayedNotificationComparator() {
     if (delayedNotificationComparator == null) {
-      delayedNotificationComparator = new AbstractComplexComparator<DelayedNotificationData>() {
+      delayedNotificationComparator = new AbstractComplexComparator<>() {
         @Override
         protected ValueBuffer getValuesToCompare(final DelayedNotificationData object) {
           return new ValueBuffer().append(object.getCreationDate())
@@ -694,17 +670,28 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Centralizes notification sending
-   * @param notificationData
-   * @throws NotificationServerException
+   * @param notificationData data about the notification to send.
+   * @throws NotificationServerException if an error occurs.
    */
   protected void sendNotification(final NotificationData notificationData)
       throws NotificationServerException {
 
     // Removing Java Strings of the computed message
-    notificationData.setMessage(notificationData.getMessage().replaceAll("[\r\n\t]", ""));
+    notificationData.setMessage(notificationData.getMessage()
+        .replaceAll("[\r\n\t]", ""));
 
     // Adding the notification
     NotificationServer notificationServer = NotificationServer.get();
     notificationServer.addNotification(notificationData);
+  }
+
+  /**
+   * Converts in the specified HTML content any line-feeds and tabulations by their counterpart in
+   * HTML.
+   * @param content a content in HTML.
+   * @return the converted content.
+   */
+  private String forHtml(final String content) {
+    return WebEncodeHelper.convertBlanksForHtml(content);
   }
 }

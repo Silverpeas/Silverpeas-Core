@@ -107,26 +107,26 @@ public class WebEncodeHelperTest {
   }
 
   @Test
-  public void convertWhiteSpacesForHTMLDisplayWhenNullOrEmpty() {
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(null), isEmptyString());
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(""), isEmptyString());
+  public void convertBlanksForHtmlWhenNullOrEmpty() {
+    assertThat(WebEncodeHelper.convertBlanksForHtml(null), isEmptyString());
+    assertThat(WebEncodeHelper.convertBlanksForHtml(""), isEmptyString());
   }
 
   @Test
-  public void convertWhiteSpacesForHTMLDisplayWithRealWhiteCharacters() {
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("\r"), is(""));
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("\r\r"), is(""));
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("\n"), is("<br/>"));
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("\n\n"), is("<br/><br/>"));
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("\t"), is("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("\t\t"), is("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
-    assertThat(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay("a"), is("a"));
+  public void convertBlanksForHtmlWithRealWhiteCharacters() {
+    assertThat(WebEncodeHelper.convertBlanksForHtml("\r"), is(""));
+    assertThat(WebEncodeHelper.convertBlanksForHtml("\r\r"), is(""));
+    assertThat(WebEncodeHelper.convertBlanksForHtml("\n"), is("<br/>"));
+    assertThat(WebEncodeHelper.convertBlanksForHtml("\n\n"), is("<br/><br/>"));
+    assertThat(WebEncodeHelper.convertBlanksForHtml("\t"), is("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
+    assertThat(WebEncodeHelper.convertBlanksForHtml("\t\t"), is("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
+    assertThat(WebEncodeHelper.convertBlanksForHtml("a"), is("a"));
   }
 
   @Property(trials = 1000)
-  public void convertWhiteSpacesForHTMLDisplayQuickCheck(
+  public void convertBlanksForHtmlQuickCheck(
       @When(seed = 0) @SpSimpleString(includes = "5..2000") String string) {
-    final String actual = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(string);
+    final String actual = WebEncodeHelper.convertBlanksForHtml(string);
     final int rCount = (int) string.chars().filter(c -> c == '\r').count();
     final int nCount = (int) string.chars().filter(c -> c == '\n').count();
     final int tCount = (int) string.chars().filter(c -> c == '\t').count();

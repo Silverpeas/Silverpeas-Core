@@ -60,14 +60,10 @@ public class SERVERListener extends AbstractListener implements MessageListener 
     }
   }
 
-  /**
-   * @param notification
-   * @throws NotificationServerException
-   */
   @Override
   public void send(NotificationData notification) {
     Map<String, Object> params = notification.getTargetParam();
-    String sessionId = (String) params.get(NotificationParameterNames.SESSIONID);
+    String sessionId = (String) params.get(NotificationParameterNames.SESSIONID.toString());
     ServerMessageService.get()
         .push(notification.getTargetReceipt(), notification.getMessage(), sessionId);
   }

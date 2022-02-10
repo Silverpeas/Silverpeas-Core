@@ -68,7 +68,7 @@ for (PublicationDetail pub : publications) {
     <% } %>
     <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil
         .isDefined(pub.getDescription(language))) { %>
-      <br/><%=WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(WebEncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
+      <br/><%=WebEncodeHelper.convertBlanksForHtml(WebEncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
     <% } %>
 <% } %>
 <br/>

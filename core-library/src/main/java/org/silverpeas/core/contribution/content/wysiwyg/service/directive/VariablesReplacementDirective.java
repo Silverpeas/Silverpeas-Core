@@ -59,7 +59,7 @@ public class VariablesReplacementDirective implements WysiwygContentTransformerD
           if (variable != null) {
             variable.getVariableValues().getCurrent().ifPresent(v -> {
               String newSpanTag = currentSpan.getStartTag().toString() +
-                  WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(v.getValue()) +
+                  WebEncodeHelper.convertBlanksForHtml(v.getValue()) +
                   currentSpan.getEndTag().toString();
               replacements.put(spanTag, newSpanTag);
             });
