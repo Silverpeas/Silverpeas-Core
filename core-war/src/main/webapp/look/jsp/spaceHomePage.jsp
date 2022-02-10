@@ -326,7 +326,7 @@
     </h1>
 
     <% if (StringUtil.isDefined(space.getDescription(helper.getLanguage()))) { %>
-    <p class="spaceDescription"><%=WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(
+    <p class="spaceDescription"><%=WebEncodeHelper.convertBlanksForHtml(
         Encode.forHtml(space.getDescription(helper.getLanguage()))) %>
     </p>
     <% } else { %>

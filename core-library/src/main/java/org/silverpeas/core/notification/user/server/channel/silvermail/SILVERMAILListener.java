@@ -49,10 +49,6 @@ import java.util.Map;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SILVERMAILListener extends AbstractListener implements MessageListener {
 
-  /**
-   * listener of NotificationServer JMS message
-   * @param msg
-   */
   @Override
   public void onMessage(Message msg) {
     try {
@@ -67,13 +63,13 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
     try {
       Map<String, Object> keyValue = data.getTargetParam();
       // retrieves the SUBJECT key value.
-      String tmpSubjectString = (String) keyValue.get(NotificationParameterNames.SUBJECT);
+      String tmpSubjectString = (String) keyValue.get(NotificationParameterNames.SUBJECT.toString());
       // retrieves the SOURCE key value.
-      String tmpSourceString = (String) keyValue.get(NotificationParameterNames.SOURCE);
+      String tmpSourceString = (String) keyValue.get(NotificationParameterNames.SOURCE.toString());
       // retrieves the URL key value.
-      String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL);
+      String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL.toString());
       // retrieves the DATE key value.
-      Date tmpDate = (Date) keyValue.get(NotificationParameterNames.DATE);
+      Date tmpDate = (Date) keyValue.get(NotificationParameterNames.DATE.toString());
       SILVERMAILMessage sm = new SILVERMAILMessage();
       sm.setUserId(Integer.parseInt(data.getTargetReceipt()));
       sm.setSenderName(data.getSenderName());

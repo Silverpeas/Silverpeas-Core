@@ -23,11 +23,9 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
-import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
@@ -36,7 +34,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import java.util.Date;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -52,10 +49,6 @@ public class POPUPListener extends AbstractListener implements MessageListener {
     // Nothing to initialize
   }
 
-  /**
-   * listener of NotificationServer JMS message
-   * @param msg
-   */
   @Override
   public void onMessage(Message msg) {
     try {
@@ -65,28 +58,10 @@ public class POPUPListener extends AbstractListener implements MessageListener {
     }
   }
 
-  /**
-   * @param message
-   * @throws NotificationServerException
-   */
   @Override
   public void send(NotificationData message) throws NotificationServerException {
     try {
-      final StringBuilder content = new StringBuilder(500);
-      final String source =
-          (String) message.getTargetParam().get(NotificationParameterNames.SOURCE);
-      final Date date = (Date) message.getTargetParam().get(NotificationParameterNames.DATE);
-      if (source != null) {
-        content.append("Source : ").append(source).append("\n");
-      }
-      if (date != null) {
-        content.append("Date : ")
-            .append(DateUtil.dateToString(date, ""))
-            .append("\n");
-      }
-      content.append(message.getMessage());
       PopupMessageService.get().push(message.getTargetReceipt(), message);
-
     } catch (Exception e) {
       throw new NotificationServerException(e);
     }

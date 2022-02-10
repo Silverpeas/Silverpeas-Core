@@ -117,7 +117,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
           value = doc.getFilename();
         }
       } else {
-        value = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(field.getValue(language));
+        value = WebEncodeHelper.convertBlanksForHtml(field.getValue(language));
       }
     }
 

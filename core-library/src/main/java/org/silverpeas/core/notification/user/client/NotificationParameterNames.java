@@ -20,26 +20,30 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package org.silverpeas.core.notification.user.client;
 
-public class NotificationParameterNames {
-  public static final String SOURCE = "SOURCE";
-  public static final String SERVERURL = "SERVERURL";
-  public static final String URL = "URL";
-  public static final String LINKLABEL = "LINKLABEL";
-  public static final String FROM = "FROM";
-  public static final String SUBJECT = "SUBJECT";
-  public static final String SESSIONID = "SESSIONID";
-  public static final String DATE = "DATE";
-  public static final String LANGUAGE = "LANGUAGE";
-  public static final String COMMUNICATION = "COMMUNICATION";
-  public static final String ATTACHMENTID = "ATTACHMENTID";
-  public static final String HIDESMTPHEADERFOOTER = "HIDESMTPHEADERFOOTER";
-  public static final String COMPONENTID = "COMPONENTID";
-  public static final String ATTACHMENT_TARGETID = "ATTACHMENT_TARGETID";
+public enum NotificationParameterNames {
 
-  private NotificationParameterNames() {
+  SOURCE,
+  SERVER_BASEURL,
+  SERVERURL,
+  URL,
+  LINKLABEL,
+  FROM,
+  SUBJECT,
+  SESSIONID,
+  DATE,
+  LANGUAGE,
+  COMMUNICATION,
+  ATTACHMENTID,
+  HIDESMTPHEADERFOOTER,
+  COMPONENTID,
+  ATTACHMENT_TARGETID;
 
+  @Override
+  public String toString() {
+    return name();
   }
 }

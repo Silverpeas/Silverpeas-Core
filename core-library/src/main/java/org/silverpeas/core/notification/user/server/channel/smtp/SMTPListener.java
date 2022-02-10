@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.smtp;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -72,8 +73,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
 
   /**
    * listener of NotificationServer JMS message
-   *
-   * @param msg the message recieved
+   * @param msg the message received
    */
   @Override
   public void onMessage(javax.jms.Message msg) {
@@ -89,15 +89,21 @@ public class SMTPListener extends AbstractListener implements MessageListener {
   public void send(NotificationData notification) throws NotificationServerException {
     // process the target param string, containing the FROM and the SUBJECT email fields.
     Map<String, Object> keyValue = notification.getTargetParam();
-    String tmpFromString = (String) keyValue.get(NotificationParameterNames.FROM);
-    String tmpSubjectString = WebEncodeHelper.htmlStringToJavaString((String) keyValue.get(NotificationParameterNames.SUBJECT));
-    String serverUrl = (String) keyValue.get(NotificationParameterNames.SERVERURL);
-    String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL);
-    String linkLabel = (String) keyValue.get(NotificationParameterNames.LINKLABEL);
-    String tmpLanguageString = (String) keyValue.get(NotificationParameterNames.LANGUAGE);
-    String tmpAttachmentIdString = (String) keyValue.get(NotificationParameterNames.ATTACHMENTID);
-    String tmpSourceString = (String) keyValue.get(NotificationParameterNames.SOURCE);
-    Boolean hideSmtpHeaderFooter = (Boolean) keyValue.get(NotificationParameterNames.HIDESMTPHEADERFOOTER);
+    String tmpFromString = (String) keyValue.get(NotificationParameterNames.FROM.toString());
+    String tmpSubjectString = StringEscapeUtils.unescapeHtml4(
+        (String) keyValue.getOrDefault(NotificationParameterNames.SUBJECT.toString(), ""));
+    String serverUrl = (String) keyValue.get(NotificationParameterNames.SERVERURL.toString());
+    String baseServerUrl =
+        (String) keyValue.get(NotificationParameterNames.SERVER_BASEURL.toString());
+    String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL.toString());
+    String linkLabel = (String) keyValue.get(NotificationParameterNames.LINKLABEL.toString());
+    String tmpLanguageString =
+        (String) keyValue.get(NotificationParameterNames.LANGUAGE.toString());
+    String tmpAttachmentIdString =
+        (String) keyValue.get(NotificationParameterNames.ATTACHMENTID.toString());
+    String tmpSourceString = (String) keyValue.get(NotificationParameterNames.SOURCE.toString());
+    Boolean hideSmtpHeaderFooter =
+        (Boolean) keyValue.get(NotificationParameterNames.HIDESMTPHEADERFOOTER.toString());
 
     if (StringUtil.isDefined(tmpSourceString)) {
       tmpSubjectString = tmpSourceString + " : " + tmpSubjectString;
@@ -117,6 +123,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     SilverpeasTemplate templateHeaderFooter =
         SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
 
+    templateHeaderFooter.setAttribute(NOTIFICATION_BASE_SERVER_URL.toString(), baseServerUrl);
     templateHeaderFooter.setAttribute(NOTIFICATION_SERVER_URL.toString(), serverUrl);
     templateHeaderFooter.setAttribute(NOTIFICATION_SENDER_NAME.toString(),
         notification.getSenderName());
@@ -132,7 +139,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     // Body Message
     String messageBody = notification.getMessage();
     // Transform text to html format
-    messageBody = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(messageBody + "\n\n");
+    messageBody = WebEncodeHelper.convertBlanksForHtml(messageBody + "\n\n");
     body.append(messageBody);
 
     if (tmpUrlString != null) {
@@ -185,12 +192,12 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     afterFooterMessage.append(smtpMessageAfterFooter);
   }
 
-  @SuppressWarnings("unchecked")
   private List<AttachmentLink> getAttachmentLinks(final Map<String, Object> keyValues,
       final String language) {
-    final String componentId = (String) keyValues.get(NotificationParameterNames.COMPONENTID);
+    final String componentId =
+        (String) keyValues.get(NotificationParameterNames.COMPONENTID.toString());
     final String contributionId =
-        (String) keyValues.get(NotificationParameterNames.ATTACHMENT_TARGETID);
+        (String) keyValues.get(NotificationParameterNames.ATTACHMENT_TARGETID.toString());
     final List<AttachmentLink> links;
     if (StringUtil.isDefined(componentId) && StringUtil.isDefined(contributionId)) {
       final ResourceReference ref = new ResourceReference(contributionId, componentId);
@@ -209,7 +216,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
    * @param to : the email target destination.
    * @param subject : the subject of the email.
    * @param content : the message or payload of the email.
-   * @see {@link InternetAddress}
+   * @see InternetAddress
    */
   private void sendEmail(String from, String fromName, String to, String subject,
       String content, boolean isHtml) throws NotificationServerException {

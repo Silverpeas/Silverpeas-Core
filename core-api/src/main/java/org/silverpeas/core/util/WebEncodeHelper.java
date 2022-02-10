@@ -23,68 +23,69 @@
  */
 package org.silverpeas.core.util;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.xml.bind.DatatypeConverter;
 
 /**
  * Utility class to encode special string or characters to be compliant with the web (HTML and
- * Javascript). Useful to format text in HTML.
+ * Javascript). Useful to format text in HTML but not to encode unsafe text in HTML or Javascript.
+ * To encode unsafe text, please use instead {@link org.owasp.encoder.Encode}.
  *
  * @author lloiseau
  * @version 1.0
- * @deprecated please use instead {@link org.owasp.encoder.Encode}
  */
-@Deprecated
 public class WebEncodeHelper {
 
   /**
-   * Convert a java string to a javascript string Replace \,\n,\r and "
+   * Convert a java string to a javascript string. Replace \,\n,\r and "
    *
-   * @param javastring Java string to encode
+   * @param input Java string to encode
    * @return javascript string encoded
    */
-  public static String javaStringToJsString(String javastring) {
-    if (!isDefined(javastring)) {
+  public static String javaStringToJsString(String input) {
+    if (!isDefined(input)) {
       return "";
     }
-    return StringEscapeUtils.escapeEcmaScript(javastring);
+    return StringEscapeUtils.escapeEcmaScript(input);
   }
 
   /**
-   * Convert a java string to a html string for textArea Replace ", &gt;, &lt;, &amp; and \n
+   * Convert a java string to a html text for textArea value. Replace ", &gt;, &lt;, &amp; and \n
    *
-   * @param javastring Java string to encode
+   * @param input Java string to encode
    * @return html string encoded
    */
-  public static String javaStringToHtmlString(String javastring) {
-    if (!isDefined(javastring)) {
+  public static String javaStringToHtmlString(String input) {
+    if (!isDefined(input)) {
       return "";
     }
-    return StringEscapeUtils.escapeHtml4(javastring).replace("œ", "&oelig;");
+    return StringEscapeUtils.escapeHtml4(input).replace("œ", "&oelig;");
   }
 
-  public static String escapeXml(String javastring) {
-    if (isDefined(javastring)) {
-      return StringEscapeUtils.escapeXml11(javastring);
+  public static String escapeXml(String input) {
+    if (isDefined(input)) {
+      return StringEscapeUtils.escapeXml11(input);
     } else {
       return "";
     }
   }
 
   /**
-   * Convert a java string to a html string for textfield... Replace ", &gt;, &lt;, &amp; and \n
+   * Convert a text, possibly an HTML one, by replacing any blank tokens (tab and line-feeds) by
+   * their counterpart in HTML.
    *
-   * @param javastring Java string to encode
-   * @return html string encoded
+   * @param input a text in which blank tokens are converted in HTML.
+   * @return an HTML text
    */
-  public static String convertWhiteSpacesForHTMLDisplay(String javastring) {
-    if (!isDefined(javastring)) {
+  public static String convertBlanksForHtml(String input) {
+    if (!isDefined(input)) {
       return "";
     }
-    StringBuilder resSB = new StringBuilder(javastring.length() + 10);
-    for (int i = 0; i < javastring.length(); i++) {
-      switch (javastring.charAt(i)) {
+    StringBuilder resSB = new StringBuilder(input.length() + 10);
+    for (int i = 0; i < input.length(); i++) {
+      switch (input.charAt(i)) {
         case '\n':
           resSB.append("<br/>");
           break;
@@ -94,34 +95,34 @@ public class WebEncodeHelper {
           resSB.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
           break;
         default:
-          resSB.append(javastring.charAt(i));
+          resSB.append(input.charAt(i));
       }
     }
     return resSB.toString();
   }
 
   /**
-   * Convert a java string to a html string for textfield... Replace ", &gt;, &lt;, &amp; and \n
+   * Convert a java string to a html string for HTML paragraph. Replace ", &gt;, &lt;, &amp; and \n
    *
-   * @param javastring Java string to encode
+   * @param input Java string to encode
    * @return html string encoded
    */
-  public static String javaStringToHtmlParagraphe(String javastring) {
-    String escapedString = javaStringToHtmlString(javastring);
-    return convertWhiteSpacesForHTMLDisplay(escapedString);
+  public static String javaStringToHtmlParagraphe(String input) {
+    String escapedString = javaStringToHtmlString(input);
+    return convertBlanksForHtml(escapedString);
   }
 
   /**
    * Convert a html string to a java string. Replace &quot;
    *
-   * @param htmlstring HTML string to encode
+   * @param input HTML text to encode
    * @return html string JAVA encoded
    */
-  public static String htmlStringToJavaString(String htmlstring) {
-    if (!isDefined(htmlstring)) {
+  public static String htmlStringToJavaString(String input) {
+    if (!isDefined(input)) {
       return "";
     }
-    return StringEscapeUtils.unescapeHtml4(htmlstring);
+    return StringEscapeUtils.unescapeHtml4(input);
   }
 
   public static String convertHTMLEntities(String text) {
@@ -129,7 +130,7 @@ public class WebEncodeHelper {
   }
 
   /**
-   * Encode an UTF-8 filename in Base64 for the content-disposition header according to
+   * Encode a UTF-8 filename in Base64 for the content-disposition header according to
    * <a href="http://www.ietf.org/rfc/rfc2047.txt">RFC2047</a>.
    *
    * @param filename the UTF-8 filename to be encoded.

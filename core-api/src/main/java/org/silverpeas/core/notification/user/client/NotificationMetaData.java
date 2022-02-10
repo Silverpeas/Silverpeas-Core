@@ -267,7 +267,7 @@ public class NotificationMetaData implements java.io.Serializable {
     result.append(AFTER_MESSAGE_FOOTER_TAG);
 
 
-    return WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(result.toString());
+    return WebEncodeHelper.convertBlanksForHtml(result.toString());
   }
 
   private void appendMessageContent(final StringBuilder result, final String language) {
