@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.client;
 
 public class NotificationParameterNames {
   public static final String SOURCE = "SOURCE";
+  public static final String SERVER_BASEURL = "SERVER_BASEURL";
   public static final String SERVERURL = "SERVERURL";
   public static final String URL = "URL";
   public static final String LINKLABEL = "LINKLABEL";
@@ -40,6 +41,5 @@ public class NotificationParameterNames {
   public static final String ATTACHMENT_TARGETID = "ATTACHMENT_TARGETID";
 
   private NotificationParameterNames() {
-
   }
 }
