@@ -792,17 +792,10 @@ public class JavascriptPluginInclusion {
     final boolean minifiedVersion = getApplicationCacheService().getCache()
         .computeIfAbsent(spJQueryScriptName, Boolean.class,
             () -> !spJQueryScript.toString().contains(spJQueryScriptName));
-    if (isAuthenticatedPage) {
-      xhtml.addElement(script(JQUERY_PATH + "jquery-2.2.4.min.js"));
-      xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
-      xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
-      xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-1.4.1.min.js"));
-    } else {
-      xhtml.addElement(script(JQUERY_PATH + "jquery-3.3.1.min.js"));
-      xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
-      xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
-      xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-3.0.1.min.js"));
-    }
+    xhtml.addElement(script(JQUERY_PATH + "jquery-3.3.1.min.js"));
+    xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
+    xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
+    xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-3.0.1.min.js"));
     xhtml.addElement(script(JQUERY_PATH + "jquery-ui.min.js"));
     xhtml.addElement(script(JQUERY_PATH + "jquery.json-2.3.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "i18n.properties.js"));
