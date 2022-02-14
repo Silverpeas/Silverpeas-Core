@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
-import com.google.api.services.admin.directory.model.User;
+import com.google.api.services.directory.model.User;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.AttributePathDecoder;
 import org.silverpeas.core.admin.domain.model.DomainProperty;

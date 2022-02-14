@@ -786,7 +786,6 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeJQuery(final ElementContainer xhtml) {
     includeJQueryCss(xhtml);
-    final boolean isAuthenticatedPage = User.getCurrentRequester() != null && !User.getCurrentRequester().isAnonymous();
     final String spJQueryScriptName = "silverpeas-jquery.js";
     final Element spJQueryScript = script(JAVASCRIPT_PATH + spJQueryScriptName);
     final boolean minifiedVersion = getApplicationCacheService().getCache()

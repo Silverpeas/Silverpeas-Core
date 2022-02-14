@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
-import com.google.api.services.admin.directory.model.User;
+import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.AttributePathDecoder;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.SimpleAttributePathDecoder;

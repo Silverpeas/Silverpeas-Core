@@ -25,8 +25,8 @@
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
 import com.google.api.client.util.ArrayMap;
-import com.google.api.services.admin.directory.model.User;
-import com.google.api.services.admin.directory.model.UserName;
+import com.google.api.services.directory.model.User;
+import com.google.api.services.directory.model.UserName;
 
 import java.util.ArrayList;
 import java.util.HashMap;

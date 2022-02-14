@@ -25,10 +25,11 @@
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
 import com.google.api.client.json.GenericJson;
-import com.google.api.services.admin.directory.model.User;
+import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -42,6 +43,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author silveryocha
  */
+@EnableSilverTestEnv
 @Disabled
 class GoogleDirectoryRequesterTest {
 

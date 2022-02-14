@@ -24,17 +24,18 @@
 
 package org.silverpeas.core.admin.domain.driver.googledriver;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.DirectoryScopes;
-import com.google.api.services.admin.directory.model.User;
-import com.google.api.services.admin.directory.model.Users;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.directory.Directory;
+import com.google.api.services.directory.DirectoryScopes;
+import com.google.api.services.directory.model.User;
+import com.google.api.services.directory.model.Users;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -52,7 +53,7 @@ import java.util.List;
  * @author silveryocha
  */
 public class GoogleDirectoryRequester {
-  private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+  private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final int QUERY_MAX_RESULTS = 500;
   private static final String MY_CUSTOMER = "my_customer";
   private final String serviceAccountUser;
@@ -76,33 +77,28 @@ public class GoogleDirectoryRequester {
 
   /**
    * Creates an authorized Credential object.
-   * @param httpTransport the HTTP transport.
    * @return An authorized Credential object.
    * @throws IOException If the credentials.json file cannot be found.
    */
-  private Credential getServiceAccountCredentials(final HttpTransport httpTransport)
+  private GoogleCredentials getGoogleCredentials()
       throws IOException {
-    final GoogleCredential credential;
+    final ServiceAccountCredentials credentials;
     try (InputStream is = new FileInputStream(jsonKeyPath)) {
-      credential = GoogleCredential.fromStream(is);
+      credentials = ServiceAccountCredentials.fromStream(is);
     }
-    return new GoogleCredential.Builder()
-        .setTransport(httpTransport)
-        .setJsonFactory(JSON_FACTORY)
+    return credentials.toBuilder()
+        .setScopes(SCOPES)
         .setServiceAccountUser(serviceAccountUser)
-        .setServiceAccountId(credential.getServiceAccountId())
-        .setServiceAccountScopes(SCOPES)
-        .setServiceAccountPrivateKey(credential.getServiceAccountPrivateKey())
-        .setServiceAccountPrivateKeyId(credential.getServiceAccountPrivateKeyId())
-        .setTokenServerEncodedUrl(credential.getTokenServerEncodedUrl())
         .build();
   }
 
   private Directory getDirectoryService() throws AdminException {
     try {
       final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-      return new Directory.Builder(httpTransport, JSON_FACTORY,
-          getServiceAccountCredentials(httpTransport)).setApplicationName(APPLICATION_NAME).build();
+      final HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(getGoogleCredentials());
+      return new Directory.Builder(httpTransport, JSON_FACTORY, requestInitializer)
+          .setApplicationName(APPLICATION_NAME)
+          .build();
     } catch (Exception e) {
       throw new AdminException(e);
     }

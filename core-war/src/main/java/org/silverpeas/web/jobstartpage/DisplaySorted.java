@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.jobstartpage;
 
-import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -46,7 +45,7 @@ public class DisplaySorted implements Comparable<DisplaySorted> {
   private boolean visible = true;
 
   @Override
-  public int compareTo(@Nonnull DisplaySorted other) {
+  public int compareTo(DisplaySorted other) {
     return COMPARATOR.compare(this, other);
   }
 
