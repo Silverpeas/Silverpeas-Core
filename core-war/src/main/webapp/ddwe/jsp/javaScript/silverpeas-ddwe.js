@@ -149,12 +149,31 @@
         assetManager: {
           custom: {
             open : function(props) {
+              let currentImageSrc;
+              let isBackgroundImg = false;
+              if (props.options.target) {
+                currentImageSrc = props.options.target.get('src');
+              } else {
+                // Maybe a background image
+                const sm = gEditor.StyleManager;
+                let backgroundImage = sm.getSelected() && sm.getSelected().getStyle() && sm.getSelected().getStyle()['background-image'];
+                if (backgroundImage) {
+                  currentImageSrc = backgroundImage.replace(/^.*[(]+[']+(.*)[']+[)]+.*/, '$1');
+                  isBackgroundImg = true;
+                  if (currentImageSrc === 'none') {
+                    currentImageSrc = undefined;
+                  }
+                }
+              }
               __options.imageSelectorApi.open({
-                currentImageSrc : props.options.target.get('src'),
+                currentImageSrc : currentImageSrc,
                 select : function(src) {
                   props.options.select({
                     get : function(key) {
                       if (key === 'src') {
+                        if (isBackgroundImg) {
+                          return StringUtil.isDefined(src) ? src : 'none';
+                        }
                         return src;
                       }
                     },

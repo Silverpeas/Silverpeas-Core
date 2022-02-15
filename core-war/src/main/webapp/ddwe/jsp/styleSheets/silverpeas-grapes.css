@@ -128,8 +128,8 @@ body div.hautFrame {
 }
 
 /*masquage des elmts de présentation des container*/
-#gjs-sm-extra,
-#gjs-sm-position {
+.gjs-sm-sector__extra,
+.gjs-sm-property__position {
   display: none;
 }
 
