@@ -34,8 +34,7 @@ import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import javax.inject.Inject;
 import java.util.List;
 
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.getAsyncContextSnapshot;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterAsyncContext;
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.getContextSnapshot;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseAsyncJobTrigger;
 
 /**
@@ -74,28 +73,11 @@ class ServerEventJobInitializer implements Initialization {
 
     @Override
     public void execute(final JobExecutionContext context) {
-      List<SilverpeasAsyncContext> asyncContexts = getAsyncContextSnapshot();
+      List<SilverpeasServerEventContext> asyncContexts = getContextSnapshot();
       SseLogger.get()
           .debug("doing quietly some stuffs over {0} {0,choice, 1#async context| 1<async contexts}",
               asyncContexts.size());
-      asyncContexts.forEach(c -> {
-        if (!c.isSendPossible()) {
-          // Sending is no more possible, unregistering the context
-          unregisterAsyncContext(c);
-        } else if (c.isHeartbeat()) {
-          // Heartbeat is requested
-          c.safeWrite(() -> {
-            try {
-              SseLogger.get().debug("send heartbeat to {0}", c);
-              HeartbeatServerEvent.createFor(c.getSessionId())
-                  .send(c.getRequest(), c.getResponse(), c.getSessionId(), c.getUser());
-            } catch (Exception e) {
-              SseLogger.get().error(e);
-              unregisterAsyncContext(c);
-            }
-          });
-        }
-      });
+      asyncContexts.forEach(SilverpeasServerEventContext::sendHeartbeatIfEnabled);
     }
   }
 }

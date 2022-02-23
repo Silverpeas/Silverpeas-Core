@@ -25,8 +25,8 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.ServiceProvider;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,62 +38,45 @@ import java.util.function.Supplier;
 
 import static java.text.MessageFormat.format;
 
-/**
- * @author silveryocha
- */
 @Service
-public class SilverpeasAsyncContextManager {
+@Singleton
+public class DefaultServerEventContextManager implements SilverpeasServerEventContextManager {
 
-  private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
-  private final Set<SilverpeasAsyncContext> contexts = new HashSet<>(2000);
+  final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+  final Set<SilverpeasServerEventContext> contexts = new HashSet<>(2000);
 
-  SilverpeasAsyncContextManager() {
-  }
-
-  public static SilverpeasAsyncContextManager get() {
-    return ServiceProvider.getSingleton(SilverpeasAsyncContextManager.class);
-  }
-
-  /**
-   * Register safely the given {@link SilverpeasAsyncContext} instance.
-   * @param context the {@link SilverpeasAsyncContext} instance to register.
-   */
-  public void register(final SilverpeasAsyncContext context) {
+  @Override
+  public void register(final SilverpeasServerEventContext context) {
     if (add(context)) {
       SseLogger.get()
           .debug(() -> format(
-              "Registering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}",
+              "Registering {0}, handling now {1} {1,choice, 1#server event context| 1<server " +
+                  "event contexts}",
               context, getContextSize()));
     }
   }
 
-  /**
-   * Unregister safely the given {@link SilverpeasAsyncContext} instance.
-   * @param context the {@link SilverpeasAsyncContext} instance to unregister.
-   */
-  public void unregister(final SilverpeasAsyncContext context) {
+  @Override
+  public void unregister(final SilverpeasServerEventContext context) {
     if (remove(context)) {
       SseLogger.get()
           .debug(() -> format(
               "Unregistering {0}, handling now {1} {1,choice, 1#async context| 1<async contexts}",
               context, getContextSize()));
-      context.markAsComplete(true);
+      context.close();
     }
   }
 
-  /**
-   * Gets safely a snapshot of the current registered asynchronous contexts.
-   * @return a list of {@link SilverpeasAsyncContext} instances.
-   */
-  public List<SilverpeasAsyncContext> getAsyncContextSnapshot() {
+  @Override
+  public List<SilverpeasServerEventContext> getContextSnapshot() {
     return safeRead(() -> new ArrayList<>(contexts));
   }
 
-  private boolean add(final SilverpeasAsyncContext context) {
+  private boolean add(final SilverpeasServerEventContext context) {
     return safeWrite(context, contexts::add);
   }
 
-  private boolean remove(final SilverpeasAsyncContext context) {
+  private boolean remove(final SilverpeasServerEventContext context) {
     return safeWrite(context, contexts::remove);
   }
 
@@ -101,7 +84,7 @@ public class SilverpeasAsyncContextManager {
     return safeRead(contexts::size);
   }
 
-  private <T> T safeRead(final Supplier<T> supplier) {
+  private <R> R safeRead(final Supplier<R> supplier) {
     lock.readLock().lock();
     try {
       return supplier.get();
@@ -110,8 +93,8 @@ public class SilverpeasAsyncContextManager {
     }
   }
 
-  private <T> T safeWrite(SilverpeasAsyncContext context,
-      final Function<SilverpeasAsyncContext, T> function) {
+  private <R> R safeWrite(SilverpeasServerEventContext context,
+      final Function<SilverpeasServerEventContext, R> function) {
     lock.writeLock().lock();
     try {
       return function.apply(context);

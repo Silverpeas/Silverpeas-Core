@@ -27,8 +27,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +59,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
   }
 
   @Override
-  public Long getId() {
+  public long getId() {
     if (id == -1) {
       id = nextId();
     }
@@ -74,20 +72,19 @@ public abstract class AbstractServerEvent implements ServerEvent {
   }
 
   @Override
-  public boolean send(final HttpServletRequest request, final HttpServletResponse response,
+  public boolean send(final SilverpeasServerEventContext context,
       final String receiverSessionId, final User receiver) throws IOException {
     List<String> eventSourceURIs = getEventSourceURIs();
     boolean aimedEventSource = eventSourceURIs.isEmpty();
     if (!aimedEventSource) {
       for (String eventSourceURI : eventSourceURIs) {
-        if (request.getRequestURI().endsWith(eventSourceURI)) {
+        if (context.getRequestURI().endsWith(eventSourceURI)) {
           aimedEventSource = true;
           break;
         }
       }
     }
-    return aimedEventSource &&
-        ServerEvent.super.send(request, response, receiverSessionId, receiver);
+    return aimedEventSource && ServerEvent.super.send(context, receiverSessionId, receiver);
   }
 
   @Override
@@ -117,7 +114,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
    * Sets a functional interface which will produced the data as string by taking into account a
    * given {@link User} which is the current user for which the server event will be send. @param
    * dynamicData functional interface which will be played at each call of {@link
-   * ServerEvent#send(HttpServletRequest, HttpServletResponse, String, User)} method. The functional
+   * ServerEvent#send(SilverpeasServerEventContext, String, User)} method. The functional
    * interface provides one
    * parameter: {@link User}, the user for which the server event will be sent. It produces the
    * data to send.<br>

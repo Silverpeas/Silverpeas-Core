@@ -21,40 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.webapi.notification.sse;
+package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.AbstractServerEvent;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 
 /**
  * @author Yohann Chastagnier
  */
-class RetryServerEvent extends AbstractServerEvent implements IgnoreStoring {
+class SessionPreviousCheckServerEvent extends AbstractServerEvent implements IgnoreStoring {
 
-  private static final ServerEventName EVENT_NAME = () -> "RETRY_EVENT_SOURCE";
+  private static final ServerEventName EVENT_NAME = () -> "PREVIOUS_CHECK_EVENT_SOURCE";
 
   private final String emitterSessionId;
-  private final long lastServerEventId;
 
   /**
    * Hidden constructor.
    * @param emitterSessionId the emitter session id of the event.
-   * @param lastServerEventId the server event identifier the WEB client has performed.
    */
-  private RetryServerEvent(final String emitterSessionId, final long lastServerEventId) {
+  private SessionPreviousCheckServerEvent(final String emitterSessionId) {
     this.emitterSessionId = emitterSessionId;
-    this.lastServerEventId = lastServerEventId;
-    withData("Event source retry a new connection successfully.");
+    withData("Event source check.");
   }
 
-  static RetryServerEvent createFor(final String emitterSessionId, final long lastServerEventId) {
-    return new RetryServerEvent(emitterSessionId, lastServerEventId);
-  }
-
-  @Override
-  public long getId() {
-    return lastServerEventId;
+  static SessionPreviousCheckServerEvent createFor(final String emitterSessionId) {
+    return new SessionPreviousCheckServerEvent(emitterSessionId);
   }
 
   @Override

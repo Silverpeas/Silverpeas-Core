@@ -191,7 +191,7 @@ class ServerEventDispatcherTaskLoadTest extends AbstractServerEventDispatcherTas
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
     }
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     return mockedAsyncContext;
   }
 

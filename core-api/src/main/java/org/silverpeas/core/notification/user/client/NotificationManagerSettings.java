@@ -265,6 +265,24 @@ public class NotificationManagerSettings {
 
 
   /**
+   * Indicates if WebSocket protocol MUST be used for server event feature.
+   * @return true in order to enable, false otherwise.
+   */
+  public static boolean usingWebSocket() {
+    return settings.getBoolean("notification.sse.usingWebSocket", false);
+  }
+
+
+  /**
+   * Gets the send timeout of WebSocket.
+   * @return timeout in ms, 0 means no timeout.
+   */
+  public static int getWebSocketSendTimeout() {
+    return settings.getInteger("notification.sse.websocket.send.timeout", 180000);
+  }
+
+
+  /**
    * Indicates if the server event has to be handled.
    * @return true in order to handle, false otherwise.
    */

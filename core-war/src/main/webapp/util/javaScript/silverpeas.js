@@ -1336,23 +1336,23 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * @param options
    */
   window.applyEventDispatchingBehaviorOn = function(instance, options) {
-    var $document = window.document;
-    var __id = $document['__sp_event_uuid'];
+    const $document = window.document;
+    let __id = $document['__sp_event_uuid'];
     if (typeof __id === 'undefined') {
       __id = 0;
     } else {
       __id = __id + 1;
     }
     $document['__sp_event_uuid'] = __id;
-    var __normalizeEventName = function(eventName) {
+    const __normalizeEventName = function(eventName) {
       return "__sp_event_" + __id + "_" + eventName;
     };
 
-    var __listeners = {};
-    var __options = extendsObject({onAdd : false, onRemove : false}, options);
+    const __listeners = {};
+    const __options = extendsObject({onAdd : false, onRemove : false}, options);
 
     instance.dispatchEvent = function(eventName, data) {
-      var normalizedEventName = __normalizeEventName(eventName);
+      const normalizedEventName = __normalizeEventName(eventName);
       $document.body.dispatchEvent(new CustomEvent(normalizedEventName, {
         detail : {
           from : this,
@@ -1370,15 +1370,15 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
         instance.removeEventListener(eventName, listener);
       }
 
-      var normalizedEventName = __normalizeEventName(eventName);
+      const normalizedEventName = __normalizeEventName(eventName);
       $document.addEventListener(normalizedEventName, listener);
       if (typeof __options.onAdd === 'function') {
         __options.onAdd.call(instance, eventName, listener);
       }
     };
     instance.removeEventListener = function(eventName, listenerOrListenerId) {
-      var oldListener;
-      var listenerType = typeof listenerOrListenerId;
+      let oldListener;
+      const listenerType = typeof listenerOrListenerId;
       if (listenerType === 'function') {
         oldListener = listenerOrListenerId;
       } else if (listenerType === 'string') {
@@ -1386,7 +1386,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
         delete __listeners[listenerOrListenerId];
       }
       if (oldListener) {
-        var normalizedEventName = __normalizeEventName(eventName);
+        const normalizedEventName = __normalizeEventName(eventName);
         $document.removeEventListener(normalizedEventName, oldListener);
         if (typeof __options.onRemove === 'function') {
           __options.onRemove.call(instance, eventName, oldListener);
@@ -1445,6 +1445,23 @@ if (typeof window.sp === 'undefined') {
           console &&
           console.log(sp.log.formatMessage('SP - DEBUG', arguments));
         }
+      }
+    },
+    cookies : {
+      get : function(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
       }
     },
     param : {
