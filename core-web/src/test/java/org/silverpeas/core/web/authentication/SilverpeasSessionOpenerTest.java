@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
-import org.silverpeas.core.notification.sse.SilverpeasAsyncContextManager;
+import org.silverpeas.core.notification.sse.SilverpeasServerEventContextManager;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -62,7 +62,7 @@ import static org.mockito.Mockito.*;
  */
 @EnableSilverTestEnv
 @TestManagedMocks({Scheduler.class, SilverStatistics.class, DefaultServerEventNotifier.class,
-    ServerMessageService.class, PopupMessageService.class, SilverpeasAsyncContextManager.class})
+    ServerMessageService.class, PopupMessageService.class, SilverpeasServerEventContextManager.class})
 class SilverpeasSessionOpenerTest {
 
   @TestedBean

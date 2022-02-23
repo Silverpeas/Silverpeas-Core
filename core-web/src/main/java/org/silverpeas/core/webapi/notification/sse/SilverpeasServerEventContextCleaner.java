@@ -21,41 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.webapi.notification.sse;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.AbstractServerEvent;
-import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.core.web.session.UserSessionEvent;
+
+import javax.enterprise.event.Observes;
+
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterBySessionId;
 
 /**
- * @author Yohann Chastagnier
+ * Listener in charge of server event context cleaning.
+ * @author silveryocha
  */
-class SessionPreviousCheckServerEvent extends AbstractServerEvent implements IgnoreStoring {
-
-  private static final ServerEventName EVENT_NAME = () -> "PREVIOUS_CHECK_EVENT_SOURCE";
-
-  private final String emitterSessionId;
+@Technical
+@Bean
+public class SilverpeasServerEventContextCleaner {
 
   /**
-   * Hidden constructor.
-   * @param emitterSessionId the emitter session id of the event.
+   * On user session ending, cleaning linked contexts.
+   * @param userSessionEvent the user session event.
    */
-  private SessionPreviousCheckServerEvent(final String emitterSessionId) {
-    this.emitterSessionId = emitterSessionId;
-    withData("Event source check.");
-  }
-
-  static SessionPreviousCheckServerEvent createFor(final String emitterSessionId) {
-    return new SessionPreviousCheckServerEvent(emitterSessionId);
-  }
-
-  @Override
-  public ServerEventName getName() {
-    return EVENT_NAME;
-  }
-
-  @Override
-  public boolean isConcerned(final String receiverSessionId, final User receiver) {
-    return emitterSessionId.equals(receiverSessionId);
+  public void onEvent(@Observes final UserSessionEvent userSessionEvent) {
+    if (userSessionEvent.isClosing()) {
+      unregisterBySessionId(userSessionEvent.getSessionInfo().getSessionId());
+    }
   }
 }

@@ -811,7 +811,8 @@
    * @constructor
    */
   $mainWindow.SilverpeasEventSource = function(url) {
-    var __isEnabled = $mainWindow.LayoutSettings.get("sse.enabled");
+    const __isEnabled = $mainWindow.LayoutSettings.get("sse.enabled");
+    const __usingWebSocket = $mainWindow.LayoutSettings.get("sse.usingWebSocket");
     this.isEnabled = function() {
       return __isEnabled;
     };
@@ -821,12 +822,13 @@
       }
       __context.sse.close();
     };
-    var finalUrl = url;
-    if (window.EVENT_SOURCE_POLYFILL_ACTIVATED) {
+    let finalUrl = url;
+    if ((!__usingWebSocket || !window.WebSocket) && window.EVENT_SOURCE_POLYFILL_ACTIVATED) {
       finalUrl += '?heartbeat=true';
     }
-    var __initContextError = function() {
+    const __initContextError = function() {
       return {
+        lastEventId : -1,
         nbRetry : 0,
         nbRetryThreshold : 20,
         retryTimeout : 5000,
@@ -834,7 +836,7 @@
         retryTimeoutReconnectInstance : undefined
       }
     };
-    var __context = {
+    const __context = {
       sse : undefined,
       listeners : {},
       error : __initContextError()
@@ -858,19 +860,79 @@
         __context.sse.removeEventListener(serverEventName, listener);
       }.bind(this)
     });
-    var initCommonEventSource = function() {
-      var serverEventSource = new EventSource(finalUrl);
-      for (var serverEventName in __context.listeners) {
+    const WebSocketEventSource = function(sseUri) {
+      let __closedManually = false;
+      let __socket;
+      const __protocole = location.href.startsWith('https') ? 'wss' : 'ws';
+      const __performListeners = function(name, e) {
+        const listeners = __context.listeners[name];
+        if (listeners) {
+          listeners.forEach(function(listener) {
+            listener(e);
+          });
+        }
+      };
+      this.addEventListener = function(e) {
+        // this method is ignored, but needed
+      };
+      this.close = function() {
+        __closedManually = true;
+        if (__socket) {
+          __socket.close();
+        }
+      };
+      this.connect = function(token) {
+        let wsUrl = __protocole + "://" + location.host + webContext + "/ws/" + token + sseUri;
+        if (__context.error.lastEventId >= 0) {
+          wsUrl += '?Last-Event-ID=' + __context.error.lastEventId;
+        }
+        __socket = new WebSocket(wsUrl);
+        __socket.addEventListener('error', function(e) {
+          sp.log.error(e);
+          __context.sse.__spErrorHandler(e);
+        }, false);
+        __socket.addEventListener('open', function(e) {
+          sp.log.debug(e);
+          __context.sse.__spOpenHandler(e);
+        }, false);
+        __socket.addEventListener('close', function(e) {
+          if (!__closedManually) {
+            sp.log.warning(e);
+            __context.sse.__spErrorHandler(e);
+          } else {
+            sp.log.debug(e);
+          }
+        }, false);
+        __socket.addEventListener('message', function(event) {
+          sp.log.debug('SSE WebSocket, receiving message', event.data);
+          const message = JSON.parse(event.data);
+          __context.error.lastEventId = message.id;
+          __performListeners(message.name, {data : message.data});
+        }, false);
+      };
+      sp.ajaxRequest(webContext + "/services/session/token").sendAndPromiseJsonResponse().then(function(data) {
+        this.connect(data.token);
+      }.bind(this), function(e) {
+        if (__context.sse.__spErrorHandler) {
+          __context.sse.__spErrorHandler(e);
+        }
+      });
+    };
+    const initCommonEventSource = function() {
+      const serverEventSource = __usingWebSocket && window.WebSocket ?
+          new WebSocketEventSource(finalUrl) :
+          new EventSource(webContext + finalUrl);
+      for (let serverEventName in __context.listeners) {
         __context.listeners[serverEventName].forEach(function(listener) {
           serverEventSource.addEventListener(serverEventName, listener);
         });
       }
-      var __errorListener = function(e) {
+      serverEventSource.__spErrorHandler = function(e) {
         clearTimeout(__context.error.retryTimeoutReconnectInstance);
         __context.error.retryTimeoutReconnectInstance = setTimeout(function() {
           sp.log.warning("SSE - EventSource API does not observe specified behaviour");
           __context.error.nbRetryThreshold = 1;
-          __errorListener(e);
+          serverEventSource.__spErrorHandler(e);
         }, 10000);
         __context.error.nbRetry += 1;
         if (__context.error.nbRetry >= __context.error.nbRetryThreshold && !__context.error.retryTimeoutInstance) {
@@ -891,14 +953,13 @@
           }, __context.error.retryTimeout);
         }
       };
-      serverEventSource.addEventListener('error', function(e) {
-        __errorListener(e);
-      }, false);
-      serverEventSource.addEventListener('open', function(e) {
+      serverEventSource.__spOpenHandler = function(e) {
         clearTimeout(__context.error.retryTimeoutInstance);
         clearTimeout(__context.error.retryTimeoutReconnectInstance);
         __context.error = __initContextError();
-      }, false);
+      };
+      serverEventSource.addEventListener('error', serverEventSource.__spErrorHandler, false);
+      serverEventSource.addEventListener('open', serverEventSource.__spOpenHandler, false);
       return serverEventSource;
     }.bind(this);
     if (this.isEnabled()) {
@@ -957,7 +1018,7 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
       "bodyContent" : "#sp-layout-body-part-layout-content-part",
       "footer" : "#sp-layout-footer-part"
     };
-    window.spServerEventSource = new SilverpeasEventSource(webContext + '/sse/common');
+    window.spServerEventSource = new SilverpeasEventSource('/sse/common');
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();
     const options = extendsObject({

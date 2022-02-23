@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.sse;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.AsyncContext;
@@ -37,24 +38,24 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Supplier;
+import java.io.PrintWriter;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterContext;
 
 /**
  * This is a wrap of a {@link AsyncContext} instance.
+ * <p>
+ *   All Server Event requests performed from a HTTP Server Sent Event WEB API MUST be wrapped by
+ *   this implementation and registered by {@link SilverpeasServerEventContextManager}.
+ * </p>
  * @author Yohann Chastagnier
  */
-public class SilverpeasAsyncContext implements AsyncContext {
+public class SilverpeasAsyncContext extends AbstractServerEventContext<AsyncContext>
+    implements AsyncContext {
 
-  private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
-  private final SilverpeasAsyncContextManager manager;
-  private final AsyncContext wrappedInstance;
-  private final String sessionId;
-  private final User user;
-  private Long lastServerEventId;
+  private static final int CLIENT_RETRY = 5000;
+
   private boolean heartbeat = false;
   private boolean complete = false;
   private boolean timeout = false;
@@ -63,12 +64,9 @@ public class SilverpeasAsyncContext implements AsyncContext {
   /**
    * Hidden constructor.
    */
-  SilverpeasAsyncContext(final SilverpeasAsyncContextManager manager,
+  SilverpeasAsyncContext(final SilverpeasServerEventContextManager manager,
       final AsyncContext wrappedInstance, final String sessionId, final User user) {
-    this.manager = manager;
-    this.wrappedInstance = wrappedInstance;
-    this.sessionId = sessionId;
-    this.user = user;
+    super(manager, wrappedInstance, sessionId, user);
   }
 
   /**
@@ -86,34 +84,76 @@ public class SilverpeasAsyncContext implements AsyncContext {
     }
 
     final SilverpeasAsyncContext context = new SilverpeasAsyncContext(
-        SilverpeasAsyncContextManager.get(), asyncContext, userSessionId, user);
-    final AsyncListener listener = context.createListener(SilverpeasAsyncListener.class).init(silverLogger, context);
+        SilverpeasServerEventContextManager.get(), asyncContext, userSessionId, user);
+    final AsyncListener listener = context.createListener(SilverpeasAsyncListener.class)
+        .init(silverLogger, context);
     context.addListener(listener);
     return context;
   }
 
-  <T> T safeRead(final Supplier<T> process) {
-    lock.readLock().lock();
-    try {
-      return process.get();
-    } finally {
-      lock.readLock().unlock();
+  @Override
+  public void closeOnPreviousCheckFailure() {
+    if (isSendPossible()) {
+      safeWrite(() -> {
+        try {
+          SseLogger.get().debug("send check to {0}", this);
+          SessionPreviousCheckServerEvent.createFor(getSessionId())
+              .send(this, getSessionId(), getUser());
+        } catch (Exception e) {
+          complete();
+        }
+      });
     }
   }
 
-  public void safeWrite(final Runnable process) {
-    lock.writeLock().lock();
-    try {
-      process.run();
-    } finally {
-      lock.writeLock().unlock();
+  @Override
+  public void sendHeartbeatIfEnabled() {
+    if (isHeartbeatBehavior()) {
+      safeWrite(() -> {
+        try {
+          SseLogger.get().debug("send heartbeat to {0}", this);
+          HeartbeatServerEvent.createFor(getSessionId())
+              .send(this, getSessionId(), getUser());
+        } catch (Exception e) {
+          SseLogger.get().error(e);
+          unregisterContext(this);
+        }
+      });
     }
+  }
+
+  @Override
+  public void performEventSend(final String name, final long id, final String data)
+      throws IOException {
+    final int capacity = 100 + name.length() + data.length();
+    StringBuilder sb = new StringBuilder(capacity);
+    sb.append("retry: ").append(CLIENT_RETRY);
+    sb.append("\nid: ").append(id);
+    if (StringUtil.isDefined(name)) {
+      sb.append("\nevent: ").append(name);
+    }
+    sb.append("\ndata: ");
+    if (StringUtil.isDefined(data)) {
+      for (int i = 0; i < data.length(); i++) {
+        char currentChar = data.charAt(i);
+        if (currentChar == '\n') {
+          sb.append("\ndata: ");
+        } else {
+          sb.append(currentChar);
+        }
+      }
+    }
+    sb.append("\n\n");
+    final PrintWriter writer = getResponse().getWriter();
+    writer.append(sb.toString());
+    writer.flush();
   }
 
   /**
-   * Indicates if the send is possible according to the state of the context.
+   * Indicates if sending is possible according to the state of the context.
    * @return true if send is possible, false otherwise.
    */
+  @Override
   public boolean isSendPossible() {
     return !isComplete() && !isTimeoutReached() && !hasErrorOccurred();
   }
@@ -122,70 +162,39 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * Gets the request URI behind the async context.
    * @return a request URI as string.
    */
+  @Override
   public String getRequestURI() {
     return getRequest().getRequestURI();
   }
 
-  /**
-   * Gets the session if linked to this async request.
-   * @return a session identifier as string.
-   */
-  public String getSessionId() {
-    return sessionId;
-  }
-
-  /**
-   * Gets the user identifier linked to this async request.
-   * @return a user identifier as string.
-   */
-  public User getUser() {
-    return user;
-  }
-
-  /**
-   * Gets the last server event identifier known before a network breakdown.
-   * @return an identifier as string.
-   */
-  Long getLastServerEventId() {
-    return safeRead(() -> lastServerEventId);
-  }
-
-  /**
-   * Sets the last server event identifier.
-   * @param lastServerEventId a last event identifier as long, can be null.
-   */
-  public void setLastServerEventId(final Long lastServerEventId) {
-    safeWrite(() -> this.lastServerEventId = lastServerEventId);
-  }
-
   @Override
   public HttpServletRequest getRequest() {
-    return (HttpServletRequest) wrappedInstance.getRequest();
+    return (HttpServletRequest) getWrappedInstance().getRequest();
   }
 
   @Override
   public HttpServletResponse getResponse() {
-    return (HttpServletResponse) wrappedInstance.getResponse();
+    return (HttpServletResponse) getWrappedInstance().getResponse();
   }
 
   @Override
   public boolean hasOriginalRequestAndResponse() {
-    return wrappedInstance.hasOriginalRequestAndResponse();
+    return getWrappedInstance().hasOriginalRequestAndResponse();
   }
 
   @Override
   public void dispatch() {
-    wrappedInstance.dispatch();
+    getWrappedInstance().dispatch();
   }
 
   @Override
   public void dispatch(String path) {
-    wrappedInstance.dispatch(path);
+    getWrappedInstance().dispatch(path);
   }
 
   @Override
   public void dispatch(ServletContext context, String path) {
-    wrappedInstance.dispatch(context, path);
+    getWrappedInstance().dispatch(context, path);
   }
 
   @Override
@@ -193,7 +202,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
     markAsComplete(true);
   }
 
-  boolean isHeartbeat() {
+  private boolean isHeartbeatBehavior() {
     return safeRead(() -> heartbeat);
   }
 
@@ -210,11 +219,16 @@ public class SilverpeasAsyncContext implements AsyncContext {
       if (!this.complete) {
         this.complete = true;
         if (performRealComplete) {
-          wrappedInstance.complete();
+          getWrappedInstance().complete();
         }
-        manager.unregister(this);
+        getManager().unregister(this);
       }
     });
+  }
+
+  @Override
+  public void close() {
+    complete();
   }
 
   boolean isTimeoutReached() {
@@ -235,33 +249,33 @@ public class SilverpeasAsyncContext implements AsyncContext {
 
   @Override
   public void start(Runnable run) {
-    wrappedInstance.start(run);
+    getWrappedInstance().start(run);
   }
 
   @Override
   public void addListener(AsyncListener listener) {
-    wrappedInstance.addListener(listener);
+    getWrappedInstance().addListener(listener);
   }
 
   @Override
   public void addListener(AsyncListener listener, ServletRequest servletRequest,
       ServletResponse servletResponse) {
-    wrappedInstance.addListener(listener, servletRequest, servletResponse);
+    getWrappedInstance().addListener(listener, servletRequest, servletResponse);
   }
 
   @Override
   public <T extends AsyncListener> T createListener(Class<T> clazz) throws ServletException {
-    return wrappedInstance.createListener(clazz);
+    return getWrappedInstance().createListener(clazz);
   }
 
   @Override
   public long getTimeout() {
-    return wrappedInstance.getTimeout();
+    return getWrappedInstance().getTimeout();
   }
 
   @Override
   public void setTimeout(long timeout) {
-    wrappedInstance.setTimeout(timeout);
+    getWrappedInstance().setTimeout(timeout);
   }
 
   @Override
@@ -277,13 +291,8 @@ public class SilverpeasAsyncContext implements AsyncContext {
   @Override
   public String toString() {
     ToStringBuilder tsb = new ToStringBuilder(this, SHORT_PREFIX_STYLE);
-    tsb.append("on", getRequestURI());
-    tsb.append("sessionId", getSessionId());
-    tsb.append("userId", getUser().getId());
+    tsb.append(super.toString());
     tsb.append("timeout", getTimeout());
-    if (getLastServerEventId() != null) {
-      tsb.append("lastServerEventId", getLastServerEventId());
-    }
     return tsb.toString();
   }
 

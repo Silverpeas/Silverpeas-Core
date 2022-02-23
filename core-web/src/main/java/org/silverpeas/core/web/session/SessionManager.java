@@ -35,7 +35,6 @@ import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
-import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -219,7 +218,6 @@ public class SessionManager implements SessionManagement, Initialization {
 
   @Override
   public void closeSession(String sessionId) {
-    ServerEventDispatcherTask.unregisterBySessionId(sessionId);
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
       removeSession(si);

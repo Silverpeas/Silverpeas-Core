@@ -38,8 +38,6 @@ import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,8 +58,8 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defau
 /**
  * This task is in charge of dispatching server events without blocking the thread of the emitter.
  * <br>
- * {@link javax.servlet.Servlet} implementation must call
- * {@link #registerAsyncContext(SilverpeasAsyncContext)} to be taken into account.
+ * Network implementation must call {@link #registerContext(SilverpeasServerEventContext)} to be
+ * taken into account.
  */
 @Technical
 @Bean
@@ -82,39 +80,39 @@ public class ServerEventDispatcherTask
   private static final ServerEventStore serverEventStore = new ServerEventStore();
 
   /**
-   * Unregister an {@link SilverpeasAsyncContext} instance.
+   * Unregister an {@link SilverpeasServerEventContext} instance.
    * @param context the instance to unregister.
    */
-  static void unregisterAsyncContext(SilverpeasAsyncContext context) {
-    SilverpeasAsyncContextManager.get().unregister(context);
+  static void unregisterContext(SilverpeasServerEventContext context) {
+    SilverpeasServerEventContextManager.get().unregister(context);
   }
 
   /**
-   * Gets a snapshot of handled asynchronous contexts.
-   * @return a list of asynchronous context.
+   * Gets a snapshot of handled contexts.
+   * @return a list of context.
    */
-  static List<SilverpeasAsyncContext> getAsyncContextSnapshot() {
-    return SilverpeasAsyncContextManager.get().getAsyncContextSnapshot();
+  static List<SilverpeasServerEventContext> getContextSnapshot() {
+    return SilverpeasServerEventContextManager.get().getContextSnapshot();
   }
 
   /**
-   * Unregister an {@link SilverpeasAsyncContext} instance.
+   * Unregister an {@link SilverpeasServerEventContext} instance.
    * @param sessionId an identifier od a session.
    */
   public static void unregisterBySessionId(String sessionId) {
-    getAsyncContextSnapshot().stream()
+    getContextSnapshot().stream()
         .filter(c -> sessionId.equals(c.getSessionId()))
-        .forEach(ServerEventDispatcherTask::unregisterAsyncContext);
+        .forEach(ServerEventDispatcherTask::unregisterContext);
   }
 
   /**
-   * Register an {@link SilverpeasAsyncContext} instance.<br> If the instance is already registered,
+   * Register an {@link SilverpeasServerEventContext} instance.<br> If the instance is already registered,
    * nothing is again registered.
    * @param context the instance to register.
    */
-  public static void registerAsyncContext(SilverpeasAsyncContext context) {
+  public static void registerContext(SilverpeasServerEventContext context) {
     serverEventStore.cleanExpired();
-    SilverpeasAsyncContextManager.get().register(context);
+    SilverpeasServerEventContextManager.get().register(context);
   }
 
   /**
@@ -171,7 +169,7 @@ public class ServerEventDispatcherTask
 
     @Override
     public void process(AbstractRequestTask.ProcessContext context) {
-      final List<SilverpeasAsyncContext> safeContexts = getSafeContexts();
+      final List<SilverpeasServerEventContext> safeContexts = getSafeContexts();
       if (!safeContexts.isEmpty()) {
         sendTo(safeContexts);
       }
@@ -179,65 +177,54 @@ public class ServerEventDispatcherTask
     }
 
     private void push(final ServerEvent serverEventToDispatch,
-        final SilverpeasAsyncContext asyncContext, final boolean completeAfterSend) {
+        final SilverpeasServerEventContext context, final boolean completeAfterSend) {
       final SilverLogger logger = SseLogger.get();
-        asyncContext.safeWrite(() -> {
+      ((AbstractServerEventContext<?>) context).safeWrite(() -> {
           try {
-            if (!asyncContext.isSendPossible()) {
-              // This asynchronous context is no more usable
-              logger.debug(() -> format("No more usable {0}", asyncContext));
-              // Removing from handled contexts (just in case)
-              unregisterAsyncContext(asyncContext);
-              return;
-            }
-            final HttpServletRequest request = asyncContext.getRequest();
-            final HttpServletResponse response = asyncContext.getResponse();
-            sendNotConsumed(serverEventToDispatch, asyncContext, logger, request, response);
+            sendNotConsumed(serverEventToDispatch, context, logger);
             boolean sendPerformed =
-                serverEventToDispatch.send(request, response, asyncContext.getSessionId(),
-                    asyncContext.getUser());
+                serverEventToDispatch.send(context, context.getSessionId(),
+                    context.getUser());
             if (sendPerformed) {
-              logger.debug(() -> format("Send done on {0}", asyncContext));
+              logger.debug(() -> format("Send done on {0}", context));
             }
             if (completeAfterSend && sendPerformed) {
-              asyncContext.complete();
-              logger
-                  .debug(() -> format("Complete requested after send on {0}", asyncContext));
+              context.close();
+              logger.debug(() -> format("Complete requested after send on {0}", context));
             }
           } catch (Exception e) {
             logger.error("Can not send SSE", e);
-            unregisterAsyncContext(asyncContext);
+            unregisterContext(context);
           }
         });
     }
 
     private void sendNotConsumed(final ServerEvent serverEventToDispatch,
-        final SilverpeasAsyncContext asyncContext, final SilverLogger logger,
-        final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-      final Long lastServerEventId = asyncContext.getLastServerEventId();
-      final Long serverEventId = serverEventToDispatch.getId();
-      if (lastServerEventId != null && serverEventId != null) {
+        final SilverpeasServerEventContext context, final SilverLogger logger) throws IOException {
+      final Long lastServerEventId = context.getLastServerEventId();
+      if (lastServerEventId != null && serverEventToDispatch.isValidId()) {
+        final long serverEventId = serverEventToDispatch.getId();
         if (lastServerEventId < (serverEventId - 1)) {
-          final String sessionId = asyncContext.getSessionId();
-          final User user = asyncContext.getUser();
+          final String sessionId = context.getSessionId();
+          final User user = context.getUser();
           for (ServerEvent notConsumedEvent : getLastServerEventsFromId(lastServerEventId).getSecond()) {
-            boolean sent = notConsumedEvent.send(request, response, sessionId, user);
+            boolean sent = notConsumedEvent.send(context, sessionId, user);
             if (sent) {
               logger.debug(() -> format("Send of not consumed {0}", notConsumedEvent));
             }
           }
         }
-        asyncContext.setLastServerEventId(null);
+        context.setLastServerEventId(null);
       }
     }
 
-    private void sendTo(final List<SilverpeasAsyncContext> safeContexts) {
+    private void sendTo(final List<SilverpeasServerEventContext> safeContexts) {
       SseLogger.get().debug(() -> format("Sending {0}", serverEventToDispatch));
-      final Map<Boolean, List<SilverpeasAsyncContext>> sorted = safeContexts.stream()
-          .collect(groupingBy(SilverpeasAsyncContext::isSendPossible, mapping(c -> c, toList())));
+      final Map<Boolean, List<SilverpeasServerEventContext>> sorted = safeContexts.stream()
+          .collect(groupingBy(SilverpeasServerEventContext::isSendPossible, mapping(c -> c, toList())));
       sorted.getOrDefault(Boolean.FALSE, emptyList())
-          .forEach(ServerEventDispatcherTask::unregisterAsyncContext);
-      Stream<SilverpeasAsyncContext> stream = sorted.getOrDefault(Boolean.TRUE, emptyList())
+          .forEach(ServerEventDispatcherTask::unregisterContext);
+      Stream<SilverpeasServerEventContext> stream = sorted.getOrDefault(Boolean.TRUE, emptyList())
           .stream()
           .filter(c -> serverEventToDispatch.isConcerned(c.getSessionId(), c.getUser()));
       final int sseSendMaxThreadPool = getSseSendMaxThreadPool();
@@ -267,8 +254,8 @@ public class ServerEventDispatcherTask
      * problems.
      * @return the list of context.
      */
-    List<SilverpeasAsyncContext> getSafeContexts() {
-      return getAsyncContextSnapshot();
+    List<SilverpeasServerEventContext> getSafeContexts() {
+      return getContextSnapshot();
     }
 
     /**
@@ -326,7 +313,7 @@ public class ServerEventDispatcherTask
      */
     List<ServerEvent> getFromId(long lastServerEventId) {
       return safeRead(() -> synchronizedStore.stream()
-          .filter(i -> i.getServerEvent().getId().compareTo(lastServerEventId) > 0)
+          .filter(i -> i.getServerEvent().getId() > lastServerEventId)
           .map(StoredServerEvent::getServerEvent)
           .collect(Collectors.toList()));
     }
@@ -336,7 +323,7 @@ public class ServerEventDispatcherTask
      * @param serverEvent the server event to store.
      */
     void add(final ServerEvent serverEvent) {
-      if (serverEvent.getId() != null && !(serverEvent instanceof IgnoreStoring)) {
+      if (serverEvent.isValidId() && !(serverEvent instanceof IgnoreStoring)) {
         safeWrite(() -> {
           if (serverEvent instanceof StoreLastOnly) {
             removeAll((StoreLastOnly) serverEvent);

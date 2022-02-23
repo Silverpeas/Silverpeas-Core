@@ -24,12 +24,9 @@
 package org.silverpeas.core.webapi.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.ServerEvent;
 import org.silverpeas.core.notification.sse.SilverpeasAsyncContext;
-import org.silverpeas.core.notification.sse.SilverpeasAsyncContextManager;
 import org.silverpeas.core.notification.sse.SseLogger;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -41,20 +38,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.Math.min;
-import static java.text.MessageFormat.format;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.getLastServerEventsFromId;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.registerAsyncContext;
 import static org.silverpeas.core.notification.sse.SilverpeasAsyncContext.wrap;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseAsyncTimeout;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isCheckPreviousAsyncContextEnabled;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
@@ -64,7 +54,8 @@ import static org.silverpeas.core.security.session.SessionManagementProvider.get
  * the mapping! (see {@link CommonServerSentEventServlet} as an example)
  * @author Yohann Chastagnier
  */
-public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthenticatedHttpServlet {
+public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthenticatedHttpServlet
+    implements SilverpeasServerEventWebAccess {
   private static final long serialVersionUID = -4766652077117461779L;
 
   private static final Set<String> sseUri = Collections.synchronizedSet(new LinkedHashSet<>());
@@ -134,22 +125,13 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
         heartbeat = true;
       }
     }
-    final ServerEvent serverEvent;
-    final List<ServerEvent> notConsumedServerEvent = new ArrayList<>();
-    if (lastServerEventId != null) {
-      silverLogger.debug(
-          () -> format("Sending emitted events since disconnection for sessionId {0} on URI {1}",
-              request.getSession(false).getId(), requestURI));
-      serverEvent = RetryServerEvent.createFor(userSessionId, lastServerEventId);
-      final Pair<Long, List<ServerEvent>> result = getLastServerEventsFromId(lastServerEventId);
-      lastServerEventId = result.getFirst();
-      notConsumedServerEvent.addAll(result.getSecond());
-    } else {
-      serverEvent = InitializationServerEvent.createFor(userSessionId);
-    }
 
     try {
       if (!request.isAsyncStarted()) {
+        // Preparing initial response
+        final WebAccessContext wac = new WebAccessContext(requestURI,
+            request.getSession(false).getId(), userSessionId, sessionUser);
+        prepareEventsOnOpening(wac, lastServerEventId);
         // Start Async processing
         final AsyncContext startedAsyncContext = request.startAsync();
         final SilverpeasAsyncContext asyncContext = wrap(silverLogger, startedAsyncContext, userSessionId, sessionUser);
@@ -158,7 +140,7 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
         asyncContext.setTimeout(asyncTimeout);
         asyncContext.setLastServerEventId(lastServerEventId);
         asyncContext.setHeartbeat(heartbeat);
-        send(asyncContext, serverEvent, notConsumedServerEvent);
+        send(wac, asyncContext);
       } else {
         silverLogger.warn("Strange that the asynchronous context is already started {0}", request.getAsyncContext());
         response.setStatus(HttpServletResponse.SC_CONFLICT);
@@ -167,40 +149,5 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-  }
-
-  private void send(final SilverpeasAsyncContext asyncContext,
-      final ServerEvent serverEvent, final List<ServerEvent> notConsumedServerEvent)
-      throws IOException {
-    final HttpServletRequest httpRequest = asyncContext.getRequest();
-    final HttpServletResponse httpResponse = asyncContext.getResponse();
-    final String sessionId = asyncContext.getSessionId();
-    final User user = asyncContext.getUser();
-    serverEvent.send(httpRequest, httpResponse, sessionId, user);
-    for (ServerEvent toSendAgain : notConsumedServerEvent) {
-      boolean sent = toSendAgain.send(httpRequest, httpResponse, sessionId, user);
-      if (sent) {
-        SseLogger.get().debug(() -> format("Send of not consumed {0}", toSendAgain));
-      }
-    }
-    if (isCheckPreviousAsyncContextEnabled()) {
-      // trying to close previous opened SSE connexion
-      Optional.of(serverEvent)
-          .filter(InitializationServerEvent.class::isInstance)
-          .stream()
-          .flatMap(s -> SilverpeasAsyncContextManager.get().getAsyncContextSnapshot().stream())
-          .filter(c -> sessionId.equals(c.getSessionId()))
-          .filter(SilverpeasAsyncContext::isSendPossible)
-          .forEach(c -> c.safeWrite(() -> {
-            try {
-              SseLogger.get().debug("send check to {0}", c);
-              SessionPreviousCheckServerEvent.createFor(c.getSessionId())
-                  .send(c.getRequest(), c.getResponse(), c.getSessionId(), c.getUser());
-            } catch (Exception e) {
-              c.complete();
-            }
-          }));
-    }
-    registerAsyncContext(asyncContext);
   }
 }

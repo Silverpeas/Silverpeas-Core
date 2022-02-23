@@ -24,12 +24,8 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -56,7 +52,16 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  */
 public interface ServerEvent {
 
-  int CLIENT_RETRY = 5000;
+  /**
+   * Indicates if identifier is a valid one.
+   * <p>
+   * BE CAREFUL, this method calls {@link #getId()} method and it could so generates the identifier.
+   * </p>
+   * @return true if valid, false otherwise.
+   */
+  default boolean isValidId() {
+    return getId() != -1;
+  }
 
   /**
    * Gets the identifier of the server event.<br>
@@ -64,7 +69,7 @@ public interface ServerEvent {
    * counter starts again to zero.
    * @return the name as unique {@link ServerEventName} instance.
    */
-  Long getId();
+  long getId();
 
   /**
    * Gets the name of the server event.
@@ -104,44 +109,20 @@ public interface ServerEvent {
    * <br>
    * If {@link #isConcerned(String, User)} indicates that the given receiver is not concerned, nothing is
    * sent.
-   * @param request the request from which the communication has been opened.
-   * @param response the response on which the event will be pushed.
+   * @param context the context from which the communication has been opened.
    * @param receiverSessionId the identifier of the receiver session.
    * @param receiver the receiver instance.
    * @return true if send has been performed, false otherwise.
    * @throws IOException if the sending fails.
    */
-  default boolean send(final HttpServletRequest request, HttpServletResponse response,
+  default boolean send(final SilverpeasServerEventContext context,
       final String receiverSessionId, final User receiver) throws IOException {
     if (!isConcerned(receiverSessionId, receiver)) {
       return false;
     }
-
     final String eventName = defaultStringIfNotDefined(getName().asString());
     final String eventData = defaultStringIfNotDefined(getData(receiverSessionId, receiver));
-    final int capacity = 100 + eventName.length() + eventData.length();
-    StringBuilder sb = new StringBuilder(capacity);
-    sb.append("retry: ").append(CLIENT_RETRY);
-    sb.append("\nid: ").append(getId());
-    if (StringUtil.isDefined(eventName)) {
-      sb.append("\nevent: ").append(eventName);
-    }
-    sb.append("\ndata: ");
-    if (StringUtil.isDefined(eventData)) {
-      for (int i = 0; i < eventData.length(); i++) {
-        char currentChar = eventData.charAt(i);
-        if (currentChar == '\n') {
-          sb.append("\ndata: ");
-        } else {
-          sb.append(currentChar);
-        }
-      }
-    }
-    sb.append("\n\n");
-    final PrintWriter writer = response.getWriter();
-    writer.append(sb.toString());
-    writer.flush();
-    return true;
+    return context.sendEvent(eventName, getId(), eventData);
   }
 
   @FunctionalInterface

@@ -21,31 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+package org.silverpeas.core.webapi.notification.sse;
 
-import java.util.List;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.web.token.SilverpeasWebTokenService;
 
-import static org.silverpeas.core.notification.sse.AbstractServerEventDispatcherTaskTest.EVENT_SOURCE_REQUEST_URI;
-import static org.silverpeas.core.util.CollectionUtil.asList;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-class TestServerEventDEventSourceURI extends AbstractServerEventTest implements IgnoreStoring {
-
-  private static final List<String> EVENT_SOURCE_URIS =
-      asList(EVENT_SOURCE_REQUEST_URI, "/other/uri");
-  private static final ServerEventName EVENT_NAME = () -> "EVENT_D";
+@ServerEndpoint("/ws/{token}/sse/common")
+public class CommonServerEventWebSocket extends SilverpeasServerEventWebSocket {
 
   @Override
-  public ServerEventName getName() {
-    return EVENT_NAME;
-  }
-
-  @Override
-  public List<String> getEventSourceURIs() {
-    return EVENT_SOURCE_URIS;
+  protected SessionInfo getSessionInfo(final Session session) {
+    return ofNullable(session.getPathParameters().get("token"))
+        .flatMap(SilverpeasWebTokenService.get()::consumeIdentifierBy)
+        .map(getSessionManagement()::getSessionInfo)
+        .orElse(SessionInfo.NoneSession);
   }
 }

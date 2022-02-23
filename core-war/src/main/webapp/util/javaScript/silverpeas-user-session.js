@@ -27,6 +27,8 @@
 Silverpeas plugin which handles the behaviour about the connected users information.
  */
 
+//# sourceURL=/util/javaScript/silverpeas-user-session.js
+
 (function($mainWindow) {
   $mainWindow = $mainWindow.spLayout ? $mainWindow : window;
 

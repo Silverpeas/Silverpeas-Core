@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.text.MessageFormat.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -47,7 +46,7 @@ import static org.hamcrest.Matchers.*;
 @EnableAutoWeld
 @AddBeanClasses(DefaultServerEventNotifier.class)
 @AddPackages({AbstractServerEventDispatcherTaskTest.class, RequestTaskManager.class})
-class ServerEventListenerPushingServerEventDispatcherTaskTest
+class ServerEventListenerPushingServerEventOnWebSocketContextDispatcherTaskTest
     extends AbstractServerEventDispatcherTaskTest {
 
   @Inject
@@ -66,24 +65,24 @@ class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  void notifyOneServerEventAFromAWhenOneAsyncContext() throws Exception {
-    final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext("SESSION_ID");
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+  void notifyOneServerEventAFromAWhenOneWebSocketContext() {
+    final SilverpeasWebSocketContext mockedWebSocketContext = newMockedWebSocketContext("SESSION_ID");
+    ServerEventDispatcherTask.registerContext(mockedWebSocketContext);
     TestServerEventA serverEventA = new TestServerEventA();
     SilverLogger.getLogger(this).info("'A' NOTIFY - EVENT 'A'");
     testServerEventNotifier.notify(serverEventA);
     afterSomeTimesCheck(() -> {
       assertThat(getStoredServerEvents(), contains(serverEventA));
-      String eventStream = getSentServerEventStream(mockedAsyncContext);
-      assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: \n\n"));
+      String eventStream = getSentServerMessage(mockedWebSocketContext);
+      assertThat(eventStream, is("{\"name\":\"EVENT_A\",\"id\":0,\"data\":\"\"}"));
       assertThat(bucket.getServerEvents(), contains(serverEventA, serverEventA));
     });
   }
 
   @Test
-  void notifyTwoATwoBTwoCTwoDFromAWhenOneAsyncContext() throws Exception {
-    final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext("SESSION_ID");
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+  void notifyTwoATwoBTwoCTwoDFromAWhenOneWebSocketContext() {
+    final SilverpeasWebSocketContext mockedWebSocketContext = newMockedWebSocketContext("SESSION_ID");
+    ServerEventDispatcherTask.registerContext(mockedWebSocketContext);
     TestServerEventA serverEventA = new TestServerEventA();
     TestServerEventB serverEventB = new TestServerEventB();
     TestServerEventCNotHandled serverEventC = new TestServerEventCNotHandled();
@@ -106,11 +105,12 @@ class ServerEventListenerPushingServerEventDispatcherTaskTest
     defaultServerEventNotifier.notify(serverEventD);
     afterSomeTimesCheck(() -> {
       assertThat(getStoredServerEvents(), contains(serverEventA, serverEventA, serverEventC));
-      String eventStream = getSentServerEventStream(mockedAsyncContext);
+      String eventStream = getSentServerMessage(mockedWebSocketContext, 4);
       assertThat(eventStream,
-          is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: \n\nretry: 5000\nid: 0\nevent: " +
-              "EVENT_A\ndata: \n\nretry: 5000\nid: 2\nevent: EVENT_D\ndata: \n\nretry: 5000\nid: " +
-              "2\nevent: EVENT_D\ndata: \n\n"));
+          is("{\"name\":\"EVENT_A\",\"id\":0,\"data\":\"\"}" +
+              "{\"name\":\"EVENT_A\",\"id\":0,\"data\":\"\"}" +
+              "{\"name\":\"EVENT_D\",\"id\":2,\"data\":\"\"}" +
+              "{\"name\":\"EVENT_D\",\"id\":2,\"data\":\"\"}"));
       assertThat(bucket.getServerEvents(),
           contains(serverEventA, serverEventA, serverEventA, serverEventA, serverEventB, serverEventB,
               serverEventC, serverEventC, serverEventC, serverEventC, serverEventD, serverEventD,
@@ -119,12 +119,12 @@ class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  void notifyOneServerEventBAndOneAFromAWhenSeveralAsyncContext() throws Exception {
-    SilverpeasAsyncContext[] mockedAsyncContexts =
-        {newMockedAsyncContext("SESSION_ID"), newMockedAsyncContext("SESSION_ID"),
-            newMockedAsyncContext("SESSION_ID")};
-    for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
-      ServerEventDispatcherTask.registerAsyncContext(asyncContext);
+  void notifyOneServerEventBAndOneAFromAWhenSeveralWebSocketContext() {
+    SilverpeasWebSocketContext[] mockedWebSocketContexts =
+        {newMockedWebSocketContext("SESSION_ID"), newMockedWebSocketContext("SESSION_ID"),
+            newMockedWebSocketContext("SESSION_ID")};
+    for (SilverpeasWebSocketContext websocketContext : mockedWebSocketContexts) {
+      ServerEventDispatcherTask.registerContext(websocketContext);
     }
     TestServerEventA serverEventA = new TestServerEventA().withData("Some data!");
     TestServerEventB serverEventB = new TestServerEventB();
@@ -134,30 +134,30 @@ class ServerEventListenerPushingServerEventDispatcherTaskTest
     testServerEventNotifier.notify(serverEventA);
     afterSomeTimesCheck(() -> {
       assertThat(getStoredServerEvents(), contains(serverEventA));
-      for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
-        String eventStream = getSentServerEventStream(asyncContext);
-        assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: Some data!\n\n"));
+      for (SilverpeasWebSocketContext websocketContext : mockedWebSocketContexts) {
+        String eventStream = getSentServerMessage(websocketContext);
+        assertThat(eventStream, is("{\"name\":\"EVENT_A\",\"id\":0,\"data\":\"Some data!\"}"));
       }
       assertThat(bucket.getServerEvents(), contains(serverEventB, serverEventA, serverEventA));
     });
   }
 
   @Test
-  void notifySeveralServerEventsBAndSeveralAFromAWhenSeveralAsyncContext() throws Exception {
-    SilverpeasAsyncContext[] mockedAsyncContexts =
-        {newMockedAsyncContext("SESSION_ID"), newMockedAsyncContext("SESSION_ID"),
-            newMockedAsyncContext("SESSION_ID")};
-    for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
-      ServerEventDispatcherTask.registerAsyncContext(asyncContext);
+  void notifySeveralServerEventsBAndSeveralAFromAWhenSeveralWebSocketContext() {
+    SilverpeasWebSocketContext[] mockedWebSocketContexts =
+        {newMockedWebSocketContext("SESSION_ID"), newMockedWebSocketContext("SESSION_ID"),
+            newMockedWebSocketContext("SESSION_ID")};
+    for (SilverpeasWebSocketContext websocketContext : mockedWebSocketContexts) {
+      ServerEventDispatcherTask.registerContext(websocketContext);
     }
     TestServerEventA serverEventA = new TestServerEventA().withData("Some data!");
     TestServerEventB serverEventB = new TestServerEventB();
 
     List<ServerEvent> expectedBucketContent = new ArrayList<>();
     List<ServerEvent> expectedLastServerEvents = new ArrayList<>();
-    StringBuilder expectedEventStreamForOneAsyncContext = new StringBuilder();
+    StringBuilder expectedEventStreamForOneWebSocketContext = new StringBuilder();
     final String HTTP_REQUEST_RESPONSE_SEND_TEMPLATE =
-        "retry: 5000\nid: 0\nevent: EVENT_A\ndata: Some data!\n\n";
+        "{\"name\":\"EVENT_A\",\"id\":0,\"data\":\"Some data!\"}";
     final int nbSend = 10;
     for (int i = 0; i < nbSend; i++) {
       SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'B'");
@@ -168,35 +168,35 @@ class ServerEventListenerPushingServerEventDispatcherTaskTest
       expectedBucketContent.add(serverEventA);
       expectedBucketContent.add(serverEventA);
       expectedLastServerEvents.add(serverEventA);
-      expectedEventStreamForOneAsyncContext.append(HTTP_REQUEST_RESPONSE_SEND_TEMPLATE);
+      expectedEventStreamForOneWebSocketContext.append(HTTP_REQUEST_RESPONSE_SEND_TEMPLATE);
     }
     assertThat(expectedBucketContent, hasSize(nbSend * 3));
     afterSomeTimesCheck(() -> {
       assertThat(getStoredServerEvents(), contains(
-          expectedLastServerEvents.toArray(new ServerEvent[expectedLastServerEvents.size()])));
-      for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
-        String eventStream = getSentServerEventStream(asyncContext, nbSend);
-        assertThat(eventStream, is(expectedEventStreamForOneAsyncContext.toString()));
+          expectedLastServerEvents.toArray(new ServerEvent[0])));
+      for (SilverpeasWebSocketContext websocketContext : mockedWebSocketContexts) {
+        String eventStream = getSentServerMessage(websocketContext, nbSend);
+        assertThat(eventStream, is(expectedEventStreamForOneWebSocketContext.toString()));
       }
       assertThat(bucket.getServerEvents(),
-          contains(expectedBucketContent.toArray(new ServerEvent[expectedBucketContent.size()])));
+          contains(expectedBucketContent.toArray(new ServerEvent[0])));
     });
   }
 
   @Test
-  void notifySeveralServerEventsOnCommonNotifierWhenSeveralAsyncContext() throws Exception {
-    SilverpeasAsyncContext[] mockedAsyncContexts =
-        {newMockedAsyncContext("SESSION_ID"), newMockedAsyncContext("SESSION_ID"),
-            newMockedAsyncContext("SESSION_ID")};
-    for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
-      ServerEventDispatcherTask.registerAsyncContext(asyncContext);
+  void notifySeveralServerEventsOnCommonNotifierWhenSeveralWebSocketContext() {
+    SilverpeasWebSocketContext[] mockedWebSocketContexts =
+        {newMockedWebSocketContext("SESSION_ID"), newMockedWebSocketContext("SESSION_ID"),
+            newMockedWebSocketContext("SESSION_ID")};
+    for (SilverpeasWebSocketContext websocketContext : mockedWebSocketContexts) {
+      ServerEventDispatcherTask.registerContext(websocketContext);
     }
 
     List<ServerEvent> expectedBucketContent = new ArrayList<>();
     List<ServerEvent> expectedLastServerEvents = new ArrayList<>();
-    StringBuilder expectedEventStreamForOneAsyncContext = new StringBuilder();
+    StringBuilder expectedEventStreamForOneWebSocketContext = new StringBuilder();
     final String HTTP_REQUEST_RESPONSE_SEND_TEMPLATE =
-        "retry: 5000\nid: {0}\nevent: EVENT_A\ndata: Data \ndata:  A {0}\n\n";
+        "{\"name\":\"EVENT_A\",\"id\":%d,\"data\":\"Data \\n A %d\"}";
     final int nbSend = 10;
     for (int i = 0; i < nbSend; i++) {
       TestServerEventA serverEventA = new TestServerEventA().withData("Data \n A " + i);
@@ -209,18 +209,18 @@ class ServerEventListenerPushingServerEventDispatcherTaskTest
       expectedBucketContent.add(serverEventA);
       expectedBucketContent.add(serverEventA);
       expectedLastServerEvents.add(serverEventA);
-      expectedEventStreamForOneAsyncContext.append(format(HTTP_REQUEST_RESPONSE_SEND_TEMPLATE, i));
+      expectedEventStreamForOneWebSocketContext.append(HTTP_REQUEST_RESPONSE_SEND_TEMPLATE.replace("%d", String.valueOf(i)));
     }
     assertThat(expectedBucketContent, hasSize(nbSend * 3));
     afterSomeTimesCheck(() -> {
       assertThat(getStoredServerEvents(), contains(
-          expectedLastServerEvents.toArray(new ServerEvent[expectedLastServerEvents.size()])));
-      for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
-        String eventStream = getSentServerEventStream(asyncContext, nbSend);
-        assertThat(eventStream, is(expectedEventStreamForOneAsyncContext.toString()));
+          expectedLastServerEvents.toArray(new ServerEvent[0])));
+      for (SilverpeasWebSocketContext websocketContext : mockedWebSocketContexts) {
+        String eventStream = getSentServerMessage(websocketContext, nbSend);
+        assertThat(eventStream, is(expectedEventStreamForOneWebSocketContext.toString()));
       }
       assertThat(bucket.getServerEvents(),
-          contains(expectedBucketContent.toArray(new ServerEvent[expectedBucketContent.size()])));
+          contains(expectedBucketContent.toArray(new ServerEvent[0])));
     });
   }
 }

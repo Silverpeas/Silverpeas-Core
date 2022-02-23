@@ -21,31 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+package org.silverpeas.core.webapi.session;
 
-import java.util.List;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.core.web.session.UserSessionEvent;
+import org.silverpeas.core.web.token.SilverpeasWebTokenService;
 
-import static org.silverpeas.core.notification.sse.AbstractServerEventDispatcherTaskTest.EVENT_SOURCE_REQUEST_URI;
-import static org.silverpeas.core.util.CollectionUtil.asList;
+import javax.enterprise.event.Observes;
+
+import static java.util.Optional.of;
 
 /**
- * @author Yohann Chastagnier
+ * Listener in charge of session token cleaning.
+ * @author silveryocha
  */
-class TestServerEventDEventSourceURI extends AbstractServerEventTest implements IgnoreStoring {
+@Technical
+@Bean
+public class SilverpeasUserSessionTokenCleaner {
 
-  private static final List<String> EVENT_SOURCE_URIS =
-      asList(EVENT_SOURCE_REQUEST_URI, "/other/uri");
-  private static final ServerEventName EVENT_NAME = () -> "EVENT_D";
-
-  @Override
-  public ServerEventName getName() {
-    return EVENT_NAME;
-  }
-
-  @Override
-  public List<String> getEventSourceURIs() {
-    return EVENT_SOURCE_URIS;
+  /**
+   * On user session ending, revoking all linked tokens generated from
+   * {@link SilverpeasUserSessionTokenResource}.
+   * @param userSessionEvent the user session event.
+   */
+  public void onEvent(@Observes final UserSessionEvent userSessionEvent) {
+    if (userSessionEvent.isClosing()) {
+      of(userSessionEvent.getSessionInfo().getSessionId())
+          .ifPresent(SilverpeasWebTokenService.get()::revokeById);
+    }
   }
 }

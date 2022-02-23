@@ -126,7 +126,7 @@ public class SilverListener
       } else {
         // shouldn't be executed
         SilverLogger.getLogger(this)
-            .warn("No identified user session attached to request ''{0}'' ",
+            .debug("No identified user session attached to request ''{0}'' ",
                 httpRequest.getRequestURI());
         return;
       }

@@ -23,39 +23,36 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.JSONCodec;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Yohann Chastagnier
  */
-class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTest {
+class ServerEventWithAsyncContextDispatcherTaskTest extends AbstractServerEventDispatcherTaskTest {
 
   private final String SESSION_ID = "SESSION_ID";
 
   @Test
-  void handleEventWithEmptyDataWhenNoAsyncContext() throws Exception {
+  void handleEventWithEmptyDataWhenNoAsyncContext() {
     ServerEvent mockedServerEvent = newMockedServerEvent("EVENT_NAME", "");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     afterSomeTimesCheck(() -> {
-      assertThat(asyncContextMap.size(), is(0));
+      assertThat(serverEventContextMap.size(), is(0));
       assertThat(getStoredServerEvents(), hasSize(1));
       verify(mockedServerEvent, atLeast(1)).getId();
     });
   }
 
   @Test
-  void handleEventWithNullDataAndNullEventNameWhenOneAsyncContext() throws Exception {
+  void handleEventWithNullDataAndNullEventNameWhenOneAsyncContext() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent = newMockedServerEvent(null, null);
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     afterSomeTimesCheck(() -> {
@@ -66,9 +63,9 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
   }
 
   @Test
-  void handleEventWithNullDataWhenOneAsyncContext() throws Exception {
+  void handleEventWithNullDataWhenOneAsyncContext() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent = newMockedServerEvent("EVENT_NAME", null);
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     afterSomeTimesCheck(() -> {
@@ -79,9 +76,9 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
   }
 
   @Test
-  void handleEventWithEmptyDataAndEmptyEventNameWhenOneAsyncContext() throws Exception {
+  void handleEventWithEmptyDataAndEmptyEventNameWhenOneAsyncContext() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent = newMockedServerEvent("", "");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     afterSomeTimesCheck(() -> {
@@ -92,26 +89,26 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
   }
 
   @Test
-  void unregisterBySessionIdShouldWork() throws Exception {
+  void unregisterBySessionIdShouldWork() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
-    assertThat(asyncContextMap.size(), is(1));
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
-    assertThat(asyncContextMap.size(), is(1));
-    ServerEventDispatcherTask.registerAsyncContext(newMockedAsyncContext(SESSION_ID));
-    assertThat(asyncContextMap.size(), is(2));
-    ServerEventDispatcherTask.registerAsyncContext(newMockedAsyncContext("OTHER_SESSION_ID"));
-    assertThat(asyncContextMap.size(), is(3));
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
+    assertThat(serverEventContextMap.size(), is(1));
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
+    assertThat(serverEventContextMap.size(), is(1));
+    ServerEventDispatcherTask.registerContext(newMockedAsyncContext(SESSION_ID));
+    assertThat(serverEventContextMap.size(), is(2));
+    ServerEventDispatcherTask.registerContext(newMockedAsyncContext("OTHER_SESSION_ID"));
+    assertThat(serverEventContextMap.size(), is(3));
     ServerEventDispatcherTask.unregisterBySessionId(SESSION_ID);
-    assertThat(asyncContextMap.size(), is(1));
+    assertThat(serverEventContextMap.size(), is(1));
     ServerEventDispatcherTask.unregisterBySessionId("OTHER_SESSION_ID");
-    assertThat(asyncContextMap.size(), is(0));
+    assertThat(serverEventContextMap.size(), is(0));
   }
 
   @Test
-  void handleEventWithDataOnOneLineWhenOneAsyncContext() throws Exception {
+  void handleEventWithDataOnOneLineWhenOneAsyncContext() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent =
         newMockedServerEvent("EVENT_ONE_LINE", "This is a line of data");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
@@ -124,10 +121,10 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
   }
 
   @Test
-  void handleEventWithDataOnOneLineWhenOneAsyncContextButClosed() throws Exception {
+  void handleEventWithDataOnOneLineWhenOneAsyncContextButClosed() {
     final SilverpeasAsyncContext4Test mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
     mockedAsyncContext.markSendIsNotPossible();
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent =
         newMockedServerEvent("EVENT_ONE_LINE", "This is a line of data");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
@@ -138,9 +135,9 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
   }
 
   @Test
-  void handleEventWithDataOnSeveralLinesWhenOneAsyncContext() throws Exception {
+  void handleEventWithDataOnSeveralLinesWhenOneAsyncContext() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent =
         newMockedServerEvent("EVENT_ONE_LINE", "Line 1\nLine 2\n\n\nLine 3");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
@@ -153,9 +150,9 @@ class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcherTaskTes
   }
 
   @Test
-  void handleEventWithJsonDataOnOneLineWhenOneAsyncContext() throws Exception {
+  void handleEventWithJsonDataOnOneLineWhenOneAsyncContext() {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
-    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEventDispatcherTask.registerContext(mockedAsyncContext);
     ServerEvent mockedServerEvent = newMockedServerEvent("EVENT_ONE_LINE", JSONCodec.encodeObject(
         jsonObject -> jsonObject.put("unitTest", true)
             .putJSONArray("array", jsonArray -> jsonArray.add("unit").add("test"))));
