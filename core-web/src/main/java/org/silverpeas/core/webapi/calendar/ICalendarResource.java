@@ -30,19 +30,25 @@ import org.silverpeas.core.calendar.CalendarReference;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
+import static javax.ws.rs.core.HttpHeaders.*;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static org.apache.http.HttpHeaders.PRAGMA;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.HIDE_PRIVATE_DATA;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
@@ -64,6 +70,22 @@ public class ICalendarResource extends RESTWebService {
   }
 
   /**
+   * Gets HEAD data of a calendar represented by the given identifier.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @param calendarId the identifier of the aimed calendar
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * calendar.
+   * @see WebProcess#execute()
+   */
+  @HEAD
+  @Path("public/{calendarId}")
+  public Response getCalendarHead(@PathParam("calendarId") String calendarId) {
+    final Calendar calendar = Calendar.getById(calendarId);
+    assertEntityIsDefined(calendar);
+    return exportHeadOnly(calendar, true);
+  }
+
+  /**
    * Gets the JSON representation of a calendar represented by the given identifier.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param calendarId the identifier of the aimed calendar
@@ -73,7 +95,6 @@ public class ICalendarResource extends RESTWebService {
    */
   @GET
   @Path("public/{calendarId}")
-  @Produces("text/calendar")
   public Response getCalendar(@PathParam("calendarId") String calendarId) {
     final Calendar calendar = Calendar.getById(calendarId);
     assertEntityIsDefined(calendar);
@@ -81,7 +102,27 @@ public class ICalendarResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of a list of calendar.
+   * Gets private HEAD data of a calendar represented by a given token.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * calendars.
+   * @see WebProcess#execute()
+   */
+  @HEAD
+  @Path("private/{token}")
+  public Response privateExportHead(@PathParam("token") String token) {
+    final PersistentResourceToken calendarToken = PersistentResourceToken.getToken(token);
+    CalendarReference calendarRef = calendarToken.getResource(CalendarReference.class);
+    if (calendarRef == null) {
+      throw new WebApplicationException(NOT_FOUND);
+    }
+    final Calendar calendar = calendarRef.getEntity();
+    assertEntityIsDefined(calendar);
+    return exportHeadOnly(calendar, false);
+  }
+
+  /**
+   * Gets the JSON representation of a calendar represented by a given token.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * calendars.
@@ -89,7 +130,6 @@ public class ICalendarResource extends RESTWebService {
    */
   @GET
   @Path("private/{token}")
-  @Produces("text/calendar")
   public Response privateExport(@PathParam("token") String token) {
     final PersistentResourceToken calendarToken = PersistentResourceToken.getToken(token);
     CalendarReference calendarRef = calendarToken.getResource(CalendarReference.class);
@@ -108,21 +148,58 @@ public class ICalendarResource extends RESTWebService {
    * @return the configured response.
    */
   private Response export(final Calendar calendar, final boolean hidePrivateData) {
-    return Response.ok((StreamingOutput) output -> {
-      try {
-        final ExportDescriptor descriptor = ExportDescriptor
-            .withOutputStream(output)
-            .withParameter(CALENDAR, calendar)
-            .withParameter(HIDE_PRIVATE_DATA, hidePrivateData);
-        getCalendarWebManager().exportCalendarAsICalendarFormat(calendar, descriptor);
-      } catch (ExportException e) {
-        SilverLogger.getLogger(this).error(e);
-        throw new WebApplicationException(INTERNAL_SERVER_ERROR);
-      }
-    })
-    .header("Content-Disposition",
-        String.format("inline;filename=\"%s\"", calendar.getTitle() + ".ics"))
-    .build();
+    final Response.ResponseBuilder response =
+        Response.ok((StreamingOutput) output -> write(calendar, hidePrivateData, output));
+    return applyCommonHeaders(response, calendar).build();
+  }
+
+  /**
+   * Exports the given calendar into the body of the response.
+   * @param calendar the calendar to export.
+   * @param hidePrivateData indicates if private data must be hidden.
+   * @return the configured response.
+   */
+  private Response exportHeadOnly(final Calendar calendar, final boolean hidePrivateData) {
+    try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+      write(calendar, hidePrivateData, output);
+      return applyCommonHeaders(Response.ok(), calendar)
+          .header(CONTENT_LENGTH, output.size())
+          .build();
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private Response.ResponseBuilder applyCommonHeaders(Response.ResponseBuilder response,
+      final Calendar calendar) {
+    final String name = calendar.getTitle() + ".ics";
+    response.encoding(Charsets.UTF_8.name());
+    response.header(CACHE_CONTROL, "no-store"); //HTTP 1.1
+    response.header(PRAGMA, "no-cache");
+    response.header(EXPIRES, -1);
+    response.header(CONTENT_TYPE, "text/calendar");
+    response.header(CONTENT_DISPOSITION, String.format("inline;filename=\"%s\"", name));
+    return response;
+  }
+
+  /**
+   * Writes the given calendar into the given output stream.
+   * @param calendar the calendar to export.
+   * @param hidePrivateData indicates if private data must be hidden.
+   * @param output the output to write out.
+   */
+  private void write(final Calendar calendar, final boolean hidePrivateData, final OutputStream output) {
+    try {
+      final ExportDescriptor descriptor = ExportDescriptor
+          .withOutputStream(output)
+          .withParameter(CALENDAR, calendar)
+          .withParameter(HIDE_PRIVATE_DATA, hidePrivateData);
+      getCalendarWebManager().exportCalendarAsICalendarFormat(calendar, descriptor);
+    } catch (ExportException e) {
+      SilverLogger.getLogger(this).error(e);
+      throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Override

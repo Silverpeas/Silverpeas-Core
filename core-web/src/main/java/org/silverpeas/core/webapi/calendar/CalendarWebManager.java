@@ -339,8 +339,10 @@ public class CalendarWebManager {
           .ifPresent(i -> currentUser.set(i.getUser()));
     }
     if (currentUser.isPresent() && calendar.isMainPersonalOf(currentUser.get())) {
-      iCalendarExporter.exports(descriptor,
-          () -> Calendar.getEvents().filter(f -> f.onParticipants(currentUser.get())).stream());
+      iCalendarExporter.exports(descriptor, () -> Stream.concat(
+              Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream(),
+              Calendar.getEvents().filter(f -> f.onParticipants(currentUser.get())).stream())
+          .distinct());
     } else {
       iCalendarExporter.exports(descriptor,
           () -> Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream());
