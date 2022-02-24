@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.web.look.LookHelper" %><%--
+<%--
   ~ Copyright (C) 2000 - 2022 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -24,10 +24,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="check.jsp" %>
-<%
-  LookHelper helper = LookHelper.getLookHelper(session);
-  String navigationWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
-%>
 
 <style type="text/css">
   #sp-admin-layout-body-part-layout {
@@ -40,7 +36,6 @@
   #sp-admin-layout-body-part-layout-navigation-part {
     position: relative;
     overflow: auto;
-    width: <%=navigationWidth%>;
   }
 
   #sp-admin-layout-body-part-layout-content-part {
