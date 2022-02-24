@@ -272,9 +272,8 @@ function isDate (year, month, day)
     // catch invalid days, except for February
     if (intDay > daysInMonth[intMonth]) return false;
 
-    if ((intMonth == 2) && (intDay > daysInFebruary(intYear))) return false;
+  return (intMonth == 2) && (intDay > daysInFebruary(intYear)) ? false : true;
 
-    return true;
 }
 
 // Check whether string s is empty.
