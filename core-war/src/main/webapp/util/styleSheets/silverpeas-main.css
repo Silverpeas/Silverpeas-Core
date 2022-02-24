@@ -583,6 +583,10 @@ Definition des class de style Silverpeas
   border-left: 1px solid #ccc;
 }
 
+#sp-admin-layout-body-part-layout-navigation-part {
+  width: 270px;
+}
+
 #sp-admin-layout-body-part-layout-navigation-part,
 #sp-admin-layout-body-part-layout-navigation-part {
   padding: 1em 0 1em 0.5em;
