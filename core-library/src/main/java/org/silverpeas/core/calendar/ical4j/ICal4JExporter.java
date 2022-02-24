@@ -101,10 +101,15 @@ public class ICal4JExporter implements ICalendarExporter {
       iCalCalendar.getProperties().add(Version.VERSION_2_0);
       iCalCalendar.getProperties().add(CalScale.GREGORIAN);
       iCalCalendar.getProperties().add(Method.PUBLISH);
+      iCalCalendar.getProperties().add(new Name(calendar.getTitle()));
 
       // Adding VTimeZone component (mandatory with Outlook)
       TimeZone tz = iCal4JDateCodec.getTimeZone(calendar.getZoneId());
       iCalCalendar.getComponents().add(tz.getVTimeZone());
+
+      // X Properties
+      iCalCalendar.getProperties().add(new XProperty("X-WR-CALNAME", calendar.getTitle()));
+      iCalCalendar.getProperties().add(new XProperty("X-WR-TIMEZONE", tz.getID()));
 
       try (Stream<CalendarEvent> events = supplier.get()) {
         events.forEach(event -> {
@@ -305,10 +310,11 @@ public class ICal4JExporter implements ICalendarExporter {
     try {
       if (attendee instanceof InternalAttendee) {
         InternalAttendee internalAttendee = (InternalAttendee) attendee;
+        final String displayedName = internalAttendee.getUser().getDisplayedName();
         iCalEventAttendee = isDefined(internalAttendee.getUser().geteMail()) ?
-            new Attendee(MAIL_TO + internalAttendee.getUser().geteMail()) : new Attendee();
-        iCalEventAttendee.getParameters()
-            .add(new Cn(internalAttendee.getUser().getDisplayedName()));
+            new Attendee(MAIL_TO + internalAttendee.getUser().geteMail()) :
+            new Attendee(MAIL_TO + displayedName);
+        iCalEventAttendee.getParameters().add(new Cn(displayedName));
       } else {
         iCalEventAttendee = new Attendee(MAIL_TO + attendee.getId());
         iCalEventAttendee.getParameters().add(new Cn(attendee.getId()));
