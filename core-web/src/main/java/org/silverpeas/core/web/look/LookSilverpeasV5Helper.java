@@ -947,6 +947,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
     news.sort(PublicationUpdateDateComparator.comparator);
 
+    int nbNews = getSettings("space.homepage.news.nb", 10);
+    if (news.size() > nbNews) {
+      return news.subList(0, nbNews);
+    }
     return news;
   }
 
