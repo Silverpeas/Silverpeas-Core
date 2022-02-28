@@ -686,6 +686,15 @@
     <servlet-class>org.silverpeas.web.variables.VariablesRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <display-name>JcrMonitorRequestRouter</display-name>
+    <servlet-name>JcrMonitorRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.web.jcrmonitor.JcrMonitorWebController</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
     <display-name>WbeRequestRouter</display-name>
     <servlet-name>WbeRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
@@ -1151,6 +1160,10 @@
   <servlet-mapping>
     <servlet-name>VariablesRequestRouter</servlet-name>
     <url-pattern>/Rvariables/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JcrMonitorRequestRouter</servlet-name>
+    <url-pattern>/RjcrMonitor/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>WbeRequestRouter</servlet-name>

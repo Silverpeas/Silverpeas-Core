@@ -123,7 +123,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + "/silverpeasinfos.jsp", null, false);
     JobManagerService variables = new JobManagerService("51", "JDV", LEVEL_OPERATION, webContext
         + "/Rvariables/jsp/Main", null, false);
-    JobManagerService wbe = new JobManagerService("52", "JWBE", LEVEL_OPERATION, webContext
+    JobManagerService jcrMonitor = new JobManagerService("52", "JCRMONITOR", LEVEL_OPERATION, webContext
+        + "/RjcrMonitor/jsp/Main", null, false);
+    JobManagerService wbe = new JobManagerService("53", "JWBE", LEVEL_OPERATION, webContext
         + "/Rwbe/jsp/Main", null, false);
 
     // initialisation des opérations du service jKM
@@ -187,6 +189,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           ids.add(portletDeployer.getId());
           services.put(portletDeployer.getId(), portletDeployer);
         }
+        ids.add(jcrMonitor.getId());
+        services.put(jcrMonitor.getId(), jcrMonitor);
         if (WbeSettings.isEnabled()) {
           ids.add(wbe.getId());
           services.put(wbe.getId(), wbe);
