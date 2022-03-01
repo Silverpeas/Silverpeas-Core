@@ -188,6 +188,7 @@
               });
             },
             close : function(props) {
+              // Nothing to do here
             }
           },
         },

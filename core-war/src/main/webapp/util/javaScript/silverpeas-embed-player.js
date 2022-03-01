@@ -75,7 +75,10 @@
         width : '600px',
         height : '400px',
         playerParameters : undefined,
-        messageEventHandler : undefined
+        messageEventHandlerConfig : {
+          origin : undefined,
+          handler : undefined
+        }
       };
       const config = $.extend({}, defaultParams);
       $.extend(config, options);
@@ -117,11 +120,21 @@
       $iframe.setAttribute('mozallowfullscreen', 'true');
       $iframe.setAttribute('allowfullscreen', 'true');
       $container.append(jQuery($iframe));
-      if (typeof config.messageEventHandler === 'function') {
-        $iframe.contentWindow.addEventListener("message", function (event) {
-          event.$iframe = $iframe;
-          config.messageEventHandler(event);
-        }, false);
+      const messageEventHandlerConfig = config.messageEventHandlerConfig;
+      if (typeof messageEventHandlerConfig === 'object') {
+        if (StringUtil.isNotDefined(messageEventHandlerConfig.origin)) {
+          const errorMsg = "silverpeas-embed-player - config.messageEventHandlerConfig.origin MUST be defined";
+          sp.log.error(errorMsg);
+          throw new Error(errorMsg);
+        }
+        if (typeof messageEventHandlerConfig.handler === 'function') {
+          $iframe.contentWindow.addEventListener("message", function(event) {
+            if (event.origin === messageEventHandlerConfig.origin) {
+              event.$iframe = $iframe;
+              messageEventHandlerConfig.handler(event);
+            }
+          }, false);
+        }
       }
     }, 0)
   }

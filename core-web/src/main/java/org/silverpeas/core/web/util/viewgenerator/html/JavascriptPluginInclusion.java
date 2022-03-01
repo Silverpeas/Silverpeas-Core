@@ -699,7 +699,7 @@ public class JavascriptPluginInclusion {
     includeDragAndDropUpload(xhtml, language);
     includeWysiwygEditor(xhtml, language);
     includeContributionReminder(xhtml, language);
-    includeBasketSelection(xhtml, language);
+    includeBasketSelection(xhtml);
 
     SettingBundle calendarSettings = ResourceLocator
         .getSettingBundle("org.silverpeas.calendar.settings.calendar");
@@ -1018,8 +1018,7 @@ public class JavascriptPluginInclusion {
    * Includes the Silverpeas basket selection VueJS Plugins.
    * @return the completed parent container.
    */
-  static ElementContainer includeBasketSelection(final ElementContainer xhtml,
-      final String language) {
+  static ElementContainer includeBasketSelection(final ElementContainer xhtml) {
     xhtml.addElement(script(SERVICE_PATH + "contribution/silverpeas-basket-service.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "contribution/silverpeas-basket-selection.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "contribution/silverpeas-basket-selection.js"));

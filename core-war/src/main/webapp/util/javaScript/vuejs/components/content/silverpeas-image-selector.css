@@ -26,10 +26,6 @@
   width: 60px;
 }
 
-.image-selector-container .thumbnail {
-  width: 60px;
-}
-
 .image-url {
   display: flex;
   gap: 10px;

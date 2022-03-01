@@ -55,7 +55,6 @@ import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.model.WysiwygContent;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
