@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2022 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.user.client;
 import org.silverpeas.core.admin.user.model.Group;
 
 /*
- * Copyright (C) 2000 - 2020 Silverpeas This program is free software: you can redistribute it
+ * Copyright (C) 2000 - 2022 Silverpeas This program is free software: you can redistribute it
  * and/or modify it under the terms of the GNU Affero General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
