@@ -54,6 +54,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
+
 /**
  * Massive Web Security Protection.
  * <p>
@@ -175,10 +177,11 @@ public class MassiveWebSecurityFilter implements Filter {
       final String secure = " https: " + (httpRequest.isSecure() ?
           WebDavProtocol.SECURED_WEBDAV_SCHEME + ": " :
           WebDavProtocol.WEBDAV_SCHEME + ": ");
+      final String ws = " " + getCurrentServerURL().replaceFirst("^http", "ws") + " ";
       final String font = currentUser == null ? "" : "; font-src * data:";
       final String img = currentUser == null ? "" : "; img-src * data: blob:";
       httpResponse.setHeader("Content-Security-Policy",
-          "default-src 'self' blob: mailto: " + secure +
+          "default-src 'self' blob: mailto: " + secure + ws +
               SecuritySettings.getAllowedDefaultSourcesInCSP() + font + img +
               "; script-src 'self' blob: 'unsafe-inline' 'unsafe-eval' " + secure +
               SecuritySettings.getAllowedScriptSourcesInCSP() +
