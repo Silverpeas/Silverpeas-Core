@@ -163,8 +163,7 @@ public class WbeCache {
       logger().debug(() ->
           format("releasing user with sessionId {0} (user {1})", sessionId, wbeUser));
     } else {
-      logger().warn("releasing user with sessionId {0} which was altered into context (user {1})",
-          sessionId, user);
+      logger().debug("releasing user with sessionId {0} which was not into context", sessionId);
     }
   }
 
