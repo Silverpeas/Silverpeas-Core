@@ -42,13 +42,12 @@ import javax.inject.Inject;
 import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(Arquillian.class)
-public class ViewServiceNoCacheDemonstrationAfter extends AbstractViewerIT {
+public class ViewServiceNoCacheDemonstrationBeforeIT extends AbstractViewerIT {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -58,6 +57,8 @@ public class ViewServiceNoCacheDemonstrationAfter extends AbstractViewerIT {
 
   @Before
   public void setup() {
+    FileUtils.deleteQuietly(getTemporaryPath());
+    getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
@@ -70,47 +71,31 @@ public class ViewServiceNoCacheDemonstrationAfter extends AbstractViewerIT {
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
     FileUtils.deleteQuietly(getTemporaryPath());
   }
 
   @Test
   public void demonstrateNoCache() throws Exception {
     if (canPerformViewConversionTest()) {
-      long conversionDurationFromBefore =
-          readAndRemoveFromTemporaryPathAsLong(
-              ViewServiceNoCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME);
-      DocumentView documentViewFromBefore = SerializationUtil
-          .deserializeFromString(readAndRemoveFromTemporaryPath(
-              ViewServiceNoCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME));
-      Thread.sleep(1001);
       SimpleDocument document = getSimpleDocumentNamed("file.odt");
       long start = System.currentTimeMillis();
-      final DocumentView view = viewService.getDocumentView(ViewerContext.from(document));
-      assertDocumentView(view);
+      DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
+      assertDocumentView(documentView);
       long end = System.currentTimeMillis();
-      long fromCacheDuration = end - start;
-      Logger.getAnonymousLogger().info("(Again) Conversion duration without cache in " +
-          DurationFormatUtils.formatDurationHMS(fromCacheDuration));
-      assertThat(fromCacheDuration, greaterThan(250l));
-      assertThat((fromCacheDuration * 2), greaterThan(conversionDurationFromBefore));
-
-      assertThat(view, not(sameInstance(documentViewFromBefore)));
-
-      assertThat(view.getPhysicalFile().getParentFile().getName(),
-          not(is(documentViewFromBefore.getPhysicalFile().getParentFile().getName())));
-
-      assertThat(view.getPhysicalFile().getParentFile().lastModified(),
-          greaterThan(documentViewFromBefore.getPhysicalFile().getParentFile().lastModified()));
-
-      assertThat(view.getPhysicalFile().lastModified(),
-          greaterThan(documentViewFromBefore.getPhysicalFile().lastModified()));
+      long conversionDuration = end - start;
+      Logger.getAnonymousLogger().info("Conversion duration without cache in " +
+          DurationFormatUtils.formatDurationHMS(conversionDuration));
+      assertThat(conversionDuration, greaterThan(250L));
+      saveInTemporaryPath(ViewServiceNoCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME, String.valueOf(conversionDuration));
+      saveInTemporaryPath(ViewServiceNoCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME,
+          SerializationUtil.serializeAsString(documentView));
     }
   }
 
   private void assertDocumentView(DocumentView view) {
     assertThat(view, notNullValue());
-    assertThat(getTemporaryPath().listFiles(), arrayWithSize(2));
+    assertThat(getTemporaryPath().listFiles(), arrayWithSize(1));
     assertThat(view.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
     assertThat(view.getPhysicalFile().getName(), endsWith("file.swf"));
     assertThat(view.getWidth(), is("595"));

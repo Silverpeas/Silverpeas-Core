@@ -51,6 +51,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -113,7 +115,11 @@ public abstract class AbstractViewerIT {
     }
   }
 
-  @SuppressWarnings("ConstantConditions")
+  protected void clearTemporaryPath() {
+    FileUtils.deleteQuietly(getTemporaryPath());
+    await().pollDelay(250, MILLISECONDS).until(() -> true);
+  }
+
   File getDocumentNamed(final String name) {
     return FileUtils.getFile(getResourceTestDirFile(), "org/silverpeas/viewer", name);
   }

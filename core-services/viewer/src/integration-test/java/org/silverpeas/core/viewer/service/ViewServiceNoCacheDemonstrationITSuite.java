@@ -32,8 +32,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ViewServiceNoCacheDemonstrationBefore.class,
-    ViewServiceNoCacheDemonstrationAfter.class
+    ViewServiceNoCacheDemonstrationBeforeIT.class,
+    ViewServiceNoCacheDemonstrationAfterIT.class
 })
 public class ViewServiceNoCacheDemonstrationITSuite {
 

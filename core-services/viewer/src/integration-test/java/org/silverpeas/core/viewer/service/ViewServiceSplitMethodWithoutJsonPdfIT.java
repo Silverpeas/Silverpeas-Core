@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -38,10 +37,9 @@ import org.silverpeas.core.viewer.model.ViewerSettings;
 import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(Arquillian.class)
 public class ViewServiceSplitMethodWithoutJsonPdfIT extends AbstractViewerIT {
@@ -54,7 +52,7 @@ public class ViewServiceSplitMethodWithoutJsonPdfIT extends AbstractViewerIT {
 
   @Before
   public void setup() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
     getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
@@ -70,7 +68,7 @@ public class ViewServiceSplitMethodWithoutJsonPdfIT extends AbstractViewerIT {
 
   @After
   public void tearDown() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
   }
 
   @Test
@@ -198,7 +196,6 @@ public class ViewServiceSplitMethodWithoutJsonPdfIT extends AbstractViewerIT {
     assertDocumentView(view, 595, 842, true);
   }
 
-  @SuppressWarnings("ConstantConditions")
   private void assertDocumentView(DocumentView view, int width, int height,
       final boolean cacheUsed) {
     assertThat(view, notNullValue());

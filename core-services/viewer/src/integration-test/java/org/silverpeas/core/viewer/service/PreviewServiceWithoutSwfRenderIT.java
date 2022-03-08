@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -44,7 +43,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(Arquillian.class)
-public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
+public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
@@ -53,7 +52,7 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
 
   @Before
   public void setup() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
     //noinspection ResultOfMethodCallIgnored
     getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
@@ -69,7 +68,7 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
 
   @After
   public void tearDown() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
   }
 
   @Test

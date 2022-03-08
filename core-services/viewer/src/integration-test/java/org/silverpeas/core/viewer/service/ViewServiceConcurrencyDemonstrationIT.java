@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
@@ -47,7 +46,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
@@ -64,7 +62,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
 
   @Before
   public void setup() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
     getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
@@ -79,9 +77,10 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
 
   @After
   public void tearDown() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
   }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void demonstrateConcurrencyManagement() throws Exception {
     if (canPerformViewConversionTest()) {
@@ -160,7 +159,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
         minEndTime = Math.min(minEndTime, endTime);
         maxEndTime = Math.max(maxEndTime, endTime);
       }
-      assertThat((maxEndTime - minEndTime), lessThan(250l));
+      assertThat((maxEndTime - minEndTime), lessThan(250L));
       for (DocumentView documentView : results) {
         assertThat(documentView, notNullValue());
       }
@@ -182,6 +181,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void demonstrateConcurrencyManagementWithTwoDifferentConversionsAtSameTime()
       throws Exception {
@@ -234,6 +234,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void demonstrateConcurrencyManagementWithThreeDifferentConversionsAtSameTime()
       throws Exception {

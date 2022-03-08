@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +53,7 @@ public class PreviewServiceIT extends AbstractViewerIT {
 
   @Before
   public void setup() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
     //noinspection ResultOfMethodCallIgnored
     getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
@@ -70,7 +69,7 @@ public class PreviewServiceIT extends AbstractViewerIT {
 
   @After
   public void tearDown() {
-    FileUtils.deleteQuietly(getTemporaryPath());
+    clearTemporaryPath();
   }
 
   @Test
