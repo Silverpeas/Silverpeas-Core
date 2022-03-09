@@ -23,7 +23,8 @@ INSERT INTO domainsp_user (id, lastName, login) VALUES (2, 'SimpleUser', 'Simple
 /**
  * user groups
  */
-INSERT INTO st_group (id, domainId, specificId, name) VALUES (1, 0, '1', 'Groupe 1');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (1, 0, '1', 'Groupe 1', 'VALID', '2012-01-01 00:00:00.000');
 INSERT INTO domainsp_group (id, name) VALUES (1, 'Groupe 1');
 INSERT INTO st_group_user_rel(groupid, userid) VALUES (1, 1);
 

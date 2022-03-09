@@ -222,17 +222,19 @@ public class UserManager {
     }
   }
 
-  public List<String> getDirectUserIdsInRole(final String roleId) throws AdminException {
+  public List<String> getDirectUserIdsInRole(final String roleId, final boolean includeRemoved)
+      throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserIdsByUserRole(connection, roleId);
+      return userDAO.getUserIdsByUserRole(connection, roleId, includeRemoved);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in role", roleId), e);
     }
   }
 
-  public List<String> getDirectUserIdsInSpaceRole(final String spaceRoleId) throws AdminException {
+  public List<String> getDirectUserIdsInSpaceRole(final String spaceRoleId,
+      final boolean includeRemoved) throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserIdsBySpaceUserRole(connection, spaceRoleId);
+      return userDAO.getUserIdsBySpaceUserRole(connection, spaceRoleId, includeRemoved);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in space role", spaceRoleId), e);
     }
@@ -574,7 +576,7 @@ public class UserManager {
         userDetail.setSpecificId(specificId);
       }
 
-      final String userId = userDAO.saveUser(connection, userDetail);
+      final String userId = userDAO.addUser(connection, userDetail);
       userDetail.setId(userId);
 
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, userDetail);
@@ -743,7 +745,7 @@ public class UserManager {
     SynchroDomainReport.debug(USER_TABLE_REMOVE_USER,
         REMOVING_MESSAGE + userLogin + " des groupes dans la base");
     final String userId = user.getId();
-    List<GroupDetail> groups = groupDAO.getDirectGroupsOfUser(connection, userId);
+    List<GroupDetail> groups = groupDAO.getDirectGroupsOfUser(connection, userId, true);
     for (GroupDetail group : groups) {
       groupDAO.deleteUserInGroup(connection, userId, group.getId());
     }

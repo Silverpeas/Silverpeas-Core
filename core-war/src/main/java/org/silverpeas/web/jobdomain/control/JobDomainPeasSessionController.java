@@ -105,11 +105,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.text.MessageFormat.format;
 import static java.util.Collections.synchronizedList;
 import static java.util.stream.Collectors.toList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
@@ -188,8 +188,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean isAccessGranted() {
-    return !getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin()
-        || getUserDetail().isAccessDomainManager() || isOnlySpaceManager();
+    return getUserDetail().isAccessAdmin() || getUserDetail().isAccessDomainManager() ||
+        isOnlySpaceManager() || !getUserManageableGroupIds().isEmpty();
   }
 
   public void setRefreshDomain(boolean refreshDomain) {
@@ -1343,12 +1343,41 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return true;
   }
 
-  public boolean deleteGroup(String idGroup) throws JobDomainPeasException {
-    String idRet = adminCtrl.deleteGroupById(idGroup);
-    if (!isDefined(idRet)) {
-      throw new JobDomainPeasException(failureOnDeleting("group", idGroup));
+  public List<GroupDetail> getRemovedGroups() throws AdminException {
+    final List<GroupDetail> removedGroups = adminCtrl.getRemovedGroupsInDomain(this.targetDomainId);
+    removedGroups.sort(Comparator
+        .comparing(GroupDetail::getStateSaveDate)
+        .thenComparing(GroupDetail::getName)
+        .thenComparing(GroupDetail::getId));
+    return removedGroups;
+  }
+
+  public boolean restoreGroup(String groupId) throws JobDomainPeasException {
+    if (adminCtrl.restoreGroupById(groupId).isEmpty()) {
+      SilverLogger.getLogger(this).warn(format("Group {0} is already restored", groupId));
     }
-    removeGroupFromPath(idGroup);
+    refresh();
+    return true;
+  }
+
+  public boolean removeGroup(String groupId) throws JobDomainPeasException {
+    if (adminCtrl.removeGroupById(groupId).isEmpty()) {
+      SilverLogger.getLogger(this).warn(format("Group {0} is already removed", groupId));
+    }
+    removeGroupFromPath(groupId);
+    refresh();
+    return true;
+  }
+
+  public boolean deleteGroup(String groupId) {
+    boolean deleted = false;
+    if (adminCtrl.getGroupById(groupId) != null) {
+      deleted = !adminCtrl.deleteGroupById(groupId).isEmpty();
+    }
+    if (!deleted) {
+      SilverLogger.getLogger(this).warn(format("Group {0} is already deleted", groupId));
+    }
+    removeGroupFromPath(groupId);
     refresh();
     return true;
   }
@@ -1368,7 +1397,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         String msgKey = keyRule[0];
         String groundRule = "<b>" + keyRule[1] + "</b>";
         MessageNotifier.addError(
-            MessageFormat.format(getString("JDP.groupSynchroRule." + msgKey), groundRule));
+            format(getString("JDP.groupSynchroRule." + msgKey), groundRule));
       } else {
         MessageNotifier.addError(getString("JDP.groupSynchroRule." + synchronizationResult));
       }
@@ -1758,7 +1787,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (targetDomain != null) {
       targetDomain.refresh();
     }
-    for (GroupNavigationStock aM_GroupsPath : groupsPath) {
+    for (GroupNavigationStock aM_GroupsPath : new ArrayList<>(groupsPath)) {
       aM_GroupsPath.refresh();
     }
     setTargetUser(null);

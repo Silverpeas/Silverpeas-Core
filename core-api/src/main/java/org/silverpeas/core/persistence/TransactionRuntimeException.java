@@ -27,6 +27,8 @@ package org.silverpeas.core.persistence;
  * @author Yohann Chastagnier
  */
 public class TransactionRuntimeException extends RuntimeException {
+  private static final long serialVersionUID = -8278411655057689182L;
+
   public TransactionRuntimeException() {
     super();
   }

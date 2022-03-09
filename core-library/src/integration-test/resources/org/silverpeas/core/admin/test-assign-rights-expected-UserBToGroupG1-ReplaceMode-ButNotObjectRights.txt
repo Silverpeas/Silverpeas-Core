@@ -1,5 +1,7 @@
 0	(G) - G1-2_D0            	* SPACE            - admin@Space-B_Level-1
+0	(G) - G1-3_D0            	* SPACE            - admin@Space-B_Level-1
 0	(G) - G1-2_D0            	^ COMPONENT        - admin@almanach-Space-B_Level-1
+0	(G) - G1-3_D0            	^ COMPONENT        - admin@almanach-Space-B_Level-1
 [REMOVED]0	(G) - G1_D0              	* SPACE            - admin@Space-A_Level-1
 [REMOVED]0	(G) - G1_D0              	^ COMPONENT        - admin@blog-Space-A_Level-2
 [REMOVED]0	(G) - G1_D0              	^ COMPONENT        - admin@kmelia-Space-A_Level-1

@@ -162,13 +162,13 @@ abstract class AbstractTransactionTestService implements TransactionTestService 
       throws Exception {
     UserDetail newUser = new UserDetail();
     newUser.setDomainId("0");
-    newUser.setSpecificId("4");
+    newUser.setSpecificId("5");
     newUser.setLastName("NewUser");
     newUser.setLogin("newuser");
     newUser.setAccessLevel(UserAccessLevel.USER);
     newUser.setState(UserState.VALID);
     try (Connection connection = DBUtil.openConnection()) {
-      userDAO.saveUser(connection, newUser);
+      userDAO.addUser(connection, newUser);
     }
     if (exceptionAtEnd != null) {
       throw exceptionAtEnd;

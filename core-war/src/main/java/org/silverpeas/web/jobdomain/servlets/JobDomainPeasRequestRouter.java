@@ -76,6 +76,7 @@ import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
+import static org.silverpeas.web.jobdomain.servlets.RemovedGroupUIEntity.convertRemovedGroupList;
 import static org.silverpeas.web.jobdomain.servlets.RemovedUserUIEntity.convertRemovedUserList;
 
 public class JobDomainPeasRequestRouter extends
@@ -123,6 +124,7 @@ public class JobDomainPeasRequestRouter extends
   private static final String DOMAIN_CONTENT_DEST = "domainContent.jsp";
   private static final String GROUP_CONTENT_DEST = "groupContent.jsp";
   private static final String GO_BACK_DEST = "goBack.jsp";
+  private static final String DISPLAY_REMOVED_GROUPS_DEST = "displayRemovedGroups";
   private static final String DISPLAY_REMOVED_USERS_DEST = "displayRemovedUsers";
   private static final String DOMAIN_USER_FILTER_MANAGEMENT_DEST = "domainUserFilterManagement.jsp";
   private static final String IS_ONLY_SPACE_MANAGER_ATTR = "isOnlySpaceManager";
@@ -216,6 +218,24 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.deleteUser(u);
         }
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
+      } else if ("restoreGroups".equals(function)) {
+        final List<String> groupIds = new ArrayList<>();
+        request.mergeSelectedItemsInto(groupIds);
+        boolean refreshDomainNav = false;
+        for (final String group : groupIds) {
+          refreshDomainNav |= jobDomainSC.restoreGroup(group);
+        }
+        if (refreshDomainNav) {
+          reloadDomainNavigation(request);
+        }
+        destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
+      } else if ("deleteGroups".equals(function)) {
+        final List<String> groupIds = new ArrayList<>();
+        request.mergeSelectedItemsInto(groupIds);
+        for (final String group : groupIds) {
+          jobDomainSC.deleteGroup(group);
+        }
+        destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
       } else if (function.startsWith("user")) {
         // USER Actions --------------------------------------------
         String userId = request.getParameter("Iduser");
@@ -426,6 +446,8 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupAddRemoveUsers")) {
           bHaveToRefreshDomain = jobDomainSC
               .updateGroupSubUsers(jobDomainSC.getTargetGroup().getId(), jobDomainSC.getSelectedUsersIds());
+        } else if (function.startsWith("groupRemove")) {
+          bHaveToRefreshDomain = jobDomainSC.removeGroup(request.getParameter(IDGROUP_PARAM));
         } else if (function.startsWith("groupDelete")) {
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter(IDGROUP_PARAM));
         } else if (function.startsWith("groupSynchro")) {
@@ -742,6 +764,13 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
           request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
           destination = "deletedUsers.jsp";
+        } else if (function.startsWith(DISPLAY_REMOVED_GROUPS_DEST)) {
+          final List<GroupDetail> allRemovedGroups = jobDomainSC.getRemovedGroups();
+          final SilverpeasList<GroupDetail> removedGroups = SilverpeasList.wrap(allRemovedGroups);
+          request.setAttribute("removedGroups", convertRemovedGroupList(removedGroups, emptySet()));
+          request.setAttribute(DOMAIN_ATTR, jobDomainSC.getTargetDomain());
+          request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
+          destination = "removedGroups.jsp";
         }
       } else if (function.startsWith("welcome")) {
         jobDomainSC.returnIntoGroup(null);

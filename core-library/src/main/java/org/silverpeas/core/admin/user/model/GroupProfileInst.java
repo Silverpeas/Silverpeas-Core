@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * @author  neysseri
- * @version 1.0
- */
 
 package org.silverpeas.core.admin.user.model;
 
@@ -35,99 +31,95 @@ import java.util.List;
 public class GroupProfileInst implements Serializable {
 
   private static final long serialVersionUID = -9158575581807428715L;
-  private String m_sId;
-  private String m_sName;
-  private String m_sGroupId;
-  private ArrayList<String> m_alGroups;
-  private ArrayList<String> m_alUsers;
+  private String id = "";
+  private String name = "";
+  private String groupId = "";
+  private final List<String> groups = new ArrayList<>();
+  private final List<String> users = new ArrayList<>();
 
   /** Creates new GroupProfileInst */
   public GroupProfileInst() {
-    m_sId = "";
-    m_sName = "";
-    m_sGroupId = "";
-    m_alGroups = new ArrayList<String>();
-    m_alUsers = new ArrayList<String>();
+    // Nothing to do
   }
 
   public void setId(String sId) {
-    m_sId = sId;
+    id = sId;
   }
 
   public String getId() {
-    return m_sId;
+    return id;
   }
 
   public void setName(String sName) {
-    m_sName = sName;
+    name = sName;
   }
 
   public String getName() {
-    return m_sName;
+    return name;
   }
 
   public void setGroupId(String sGroupId) {
-    m_sGroupId = sGroupId;
+    groupId = sGroupId;
   }
 
   public String getGroupId() {
-    return m_sGroupId;
+    return groupId;
   }
 
   public int getNumGroup() {
-    return m_alGroups.size();
+    return groups.size();
   }
 
   public String getGroup(int nIndex) {
-    return m_alGroups.get(nIndex);
+    return groups.get(nIndex);
   }
 
   public void addGroup(String sGroupId) {
-    m_alGroups.add(sGroupId);
+    groups.add(sGroupId);
   }
 
   public void removeGroup(String sGroupId) {
-    m_alGroups.remove(sGroupId);
+    groups.remove(sGroupId);
   }
 
-  public ArrayList<String> getAllGroups() {
-    return m_alGroups;
+  public List<String> getAllGroups() {
+    return groups;
   }
 
   public void removeAllGroups() {
-    m_alGroups = new ArrayList<String>();
+    groups.clear();
   }
 
   public int getNumUser() {
-    return m_alUsers.size();
+    return users.size();
   }
 
   public String getUser(int nIndex) {
-    return m_alUsers.get(nIndex);
+    return users.get(nIndex);
   }
 
   public void addUser(String sUserId) {
-    m_alUsers.add(sUserId);
+    users.add(sUserId);
   }
 
   public void removeUser(String sUserId) {
-    m_alUsers.remove(sUserId);
+    users.remove(sUserId);
   }
 
   public void addUsers(List<String> users) {
-    m_alUsers.addAll(users);
+    this.users.addAll(users);
   }
 
   public void addGroups(List<String> groups) {
-    m_alGroups.addAll(groups);
+    this.groups.addAll(groups);
   }
 
-  public ArrayList<String> getAllUsers() {
-    return m_alUsers;
+  public List<String> getAllUsers() {
+    return users;
   }
 
   public void removeAllUsers() {
-    m_alUsers = new ArrayList<String>();
+    users.clear();
   }
 
   public void setUsers(List<String> users) {

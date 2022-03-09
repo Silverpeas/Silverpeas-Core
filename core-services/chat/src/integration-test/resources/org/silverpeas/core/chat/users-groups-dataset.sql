@@ -44,16 +44,20 @@ INSERT INTO domainsp_user (id, lastName, login) VALUES (3, 'Hammett', 'khammett'
 /**
  * user groups
  */
-INSERT INTO st_group (id, domainId, specificId, name) VALUES (1, 0, '1', 'Group 1');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (1, 0, '1', 'Group 1', 'VALID', '2012-01-01 00:00:00.000');
 INSERT INTO domainsp_group (id, name) VALUES (1, 'Group 1');
 
-INSERT INTO st_group (id, domainId, specificId, name) VALUES (2, 0, '2', 'Group 2');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (2, 0, '2', 'Group 2', 'VALID', '2012-01-01 00:00:00.000');
 INSERT INTO domainsp_group (id, name) VALUES (2, 'Group 2');
 
-INSERT INTO st_group (id, domainId, specificId, name) VALUES (3, 0, '3', 'Group 3');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (3, 0, '3', 'Group 3', 'VALID', '2012-01-01 00:00:00.000');
 INSERT INTO domainsp_group (id, name) VALUES (3, 'Group 3');
 
-INSERT INTO st_group (id, domainId, specificId, name) VALUES (4, 0, '4', 'Group 4');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (4, 0, '4', 'Group 4', 'VALID', '2012-01-01 00:00:00.000');
 INSERT INTO domainsp_group (id, name) VALUES (4, 'Group 4');
 
 /**

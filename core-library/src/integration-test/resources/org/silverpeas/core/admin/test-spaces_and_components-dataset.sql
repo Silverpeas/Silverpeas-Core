@@ -20,7 +20,8 @@ INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, sta
 /**
  * user groups
  */
-INSERT INTO st_group (id, domainId, specificId, name) VALUES (1, 0, '1', 'Groupe 1');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (1, 0, '1', 'Groupe 1', 'VALID', '2012-01-01 00:00:00.000');
 
 /**
  * users in the default Silverpeas domain

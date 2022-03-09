@@ -71,68 +71,68 @@ public class TransactionIsolationWithOneServiceInstanceIT
 
   @Test
   public void testSaveUserWithoutExceptionByDefaultTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     try {
       TransactionTestService test = getTestService();
       test.transactionWithDefaultTransactionManagement(null);
     } catch (Exception ignore) {
     }
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserWithoutExceptionByCheckedTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     try {
       TransactionTestService test = getTestService();
       test.transactionWithCheckedTransactionManagement(null);
     } catch (Exception ignore) {
     }
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserWithRuntimeExceptionByDefaultTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     try {
       TransactionTestService test = getTestService();
       test.transactionWithDefaultTransactionManagement(new NullPointerException());
     } catch (Exception ignore) {
     }
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserWithRuntimeExceptionByCheckedTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     try {
       TransactionTestService test = getTestService();
       test.transactionWithCheckedTransactionManagement(new NullPointerException());
     } catch (Exception ignore) {
     }
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserWithCheckedExceptionByDefaultTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     try {
       TransactionTestService test = getTestService();
       test.transactionWithDefaultTransactionManagement(new TransactionCheckedException());
     } catch (Exception ignore) {
     }
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserWithCheckedExceptionByCheckedTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     try {
       TransactionTestService test = getTestService();
       test.transactionWithCheckedTransactionManagement(new TransactionCheckedException());
     } catch (Exception ignore) {
     }
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   /*
@@ -145,90 +145,90 @@ public class TransactionIsolationWithOneServiceInstanceIT
 
   @Test
   public void testSaveUserByMandatoryDefaultTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndDefaultHandledException(null);
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByMandatoryCheckedTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndCheckedHandledException(null);
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByMandatoryDefaultTransactionManagementAndFinallyThrowRuntimeException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndDefaultHandledException(null);
     }, new NullPointerException());
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserByMandatoryCheckedTransactionManagementAndFinallyThrowRuntimeException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndCheckedHandledException(null);
     }, new NullPointerException());
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserByMandatoryDefaultTransactionManagementAndFinallyThrowCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndDefaultHandledException(null);
     }, new TransactionCheckedException());
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByMandatoryCheckedTransactionManagementAndFinallyThrowCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndCheckedHandledException(null);
     }, new TransactionCheckedException());
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByMandatoryDefaultTransactionManagementWhichThrowsCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndDefaultHandledException(
           new TransactionCheckedException());
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByMandatoryCheckedTransactionManagementWhichThrowsCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithMandatoryTransactionAndCheckedHandledException(
           new TransactionCheckedException());
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   /*
@@ -241,90 +241,90 @@ public class TransactionIsolationWithOneServiceInstanceIT
 
   @Test
   public void testSaveUserByRequiredDefaultTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndDefaultHandledException(null);
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiredCheckedTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndCheckedHandledException(null);
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiredDefaultTransactionManagementAndFinallyThrowRuntimeException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndDefaultHandledException(null);
     }, new NullPointerException());
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserByRequiredCheckedTransactionManagementAndFinallyThrowRuntimeException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndCheckedHandledException(null);
     }, new NullPointerException());
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserByRequiredDefaultTransactionManagementAndFinallyThrowCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndDefaultHandledException(null);
     }, new TransactionCheckedException());
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiredCheckedTransactionManagementAndFinallyThrowCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndCheckedHandledException(null);
     }, new TransactionCheckedException());
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiredDefaultTransactionManagementWhichThrowsCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndDefaultHandledException(
           new TransactionCheckedException());
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiredCheckedTransactionManagementWhichThrowsCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiredTransactionAndCheckedHandledException(
           new TransactionCheckedException());
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   /*
@@ -337,90 +337,90 @@ public class TransactionIsolationWithOneServiceInstanceIT
 
   @Test
   public void testSaveUserByRequiresNewDefaultTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndDefaultHandledException(null);
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiresNewCheckedTransactionManagement() throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndCheckedHandledException(null);
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiresNewDefaultTransactionManagementAndFinallyThrowRuntimeException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndDefaultHandledException(null);
     }, new NullPointerException());
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserByRequiresNewCheckedTransactionManagementAndFinallyThrowRuntimeException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndCheckedHandledException(null);
     }, new NullPointerException());
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
   }
 
   @Test
   public void testSaveUserByRequiresNewDefaultTransactionManagementAndFinallyThrowCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndDefaultHandledException(null);
     }, new TransactionCheckedException());
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiresNewCheckedTransactionManagementAndFinallyThrowCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndCheckedHandledException(null);
     }, new TransactionCheckedException());
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiresNewDefaultTransactionManagementWhichThrowsCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndDefaultHandledException(
           new TransactionCheckedException());
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Test
   public void testSaveUserByRequiresNewCheckedTransactionManagementWhichThrowsCheckedException()
       throws Exception {
-    assertThat(getUserTableLines(), hasSize(3));
+    assertThat(getUserTableLines(), hasSize(6));
     performInExistingDefaultTransaction(() -> {
       TransactionTestService test = getTestService();
       test.saveNewUserWithRequiresNewTransactionAndCheckedHandledException(
           new TransactionCheckedException());
     }, null);
-    assertThat(getUserTableLines(), hasSize(4));
+    assertThat(getUserTableLines(), hasSize(7));
   }
 
   @Override

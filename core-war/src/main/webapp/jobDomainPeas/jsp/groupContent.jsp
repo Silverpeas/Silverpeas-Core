@@ -50,6 +50,10 @@
 <c:set var="manageableSpaces" value="${requestScope.ManageableSpaces}" />
 <c:set var="groupProfiles" value="${requestScope.GroupProfiles}" />
 
+<fmt:message key="JDP.groupRemConfirm" var="groupRemConfirmMessage"/>
+<fmt:message key="JDP.groupDelConfirm" var="groupDelConfirmMessage"/>
+<fmt:message key="JDP.groupDelConfirmHelp" var="groupDelConfirmMessageHelp"/>
+
 <%
 	  Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
@@ -76,7 +80,7 @@
     {
 	//Group operations
         operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','"+thisGroupId + "')");
+        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.remove"),"javascript:removeGroup()");
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
 
@@ -91,7 +95,7 @@
 	        // Group operations
 	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
 	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','"+thisGroupId + "')");
+	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.remove"),"javascript:removeGroup()");
 	        // User operations
           operationPane.addLine();
 	        operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
@@ -108,11 +112,9 @@
 			//Group operations
 	    operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
 	    operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-	    if (!isGroupManagerDirectly) {
-              operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString(
-                  "GML.delete"), "javascript:ConfirmAndSend('" + resource.getString(
-                  "JDP.groupDelConfirm") + "','" + thisGroupId + "')");
-            }
+      if (!isGroupManagerDirectly) {
+        operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
+      }
             // User operations
             operationPane.addLine();
             operationPane.addOperation(resource.getIcon("JDP.userManage"), resource.getString(
@@ -145,20 +147,38 @@
 <c:set var="grObject" value="<%=grObject%>"/>
 <c:set var="subGroupList" value="<%=Arrays.asList(subGroups)%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
-<view:includePlugin name="popup"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true" withFieldsetStyle="true">
 <view:includePlugin name="qtip"/>
+<style type="text/css">
+  #deletionFormDialog .complement {
+    display: flex;
+    padding-top: 5px;
+    vertical-align: middle;
+  }
+  #deletionFormDialog label {
+    padding-left: 5px;
+  }
+  #deletionFormDialog .help {
+    font-size: 0.8em;
+  }
+</style>
 <script type="text/javascript">
-function ConfirmAndSend(textToDisplay,groupId)
-{
-  jQuery.popup.confirm(textToDisplay, function() {
-    jQuery('#Idgroup').val(groupId);
-    jQuery('#deletionForm').submit();
-  });
-}
+  function removeGroup() {
+    var $dialog = jQuery('#deletionFormDialog');
+    $dialog.popup('confirmation', {
+      callback : function() {
+        var $deletionForm = jQuery('#deletionForm');
+        if (jQuery('#definitiveDeletion')[0].checked) {
+          $deletionForm.attr("action", "groupDelete");
+        } else {
+          $deletionForm.attr("action", "groupRemove");
+        }
+        $deletionForm.submit();
+      }
+    });
+  }
+
   function doSynchronization() {
     $.progressMessage();
     window.location.href = "groupSynchro?Idgroup=${groupData.id}";
@@ -251,8 +271,8 @@ var arrayBeforeAjaxRequest = function () {
   }
 }
 </script>
-</head>
-<body class="page_content_admin admin-group">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin admin-group">
 <%
 out.println(window.printBefore());
 if (showTabs) {
@@ -441,8 +461,17 @@ if (showTabs) {
 
 </view:frame>
 <form id="deletionForm" action="groupDelete" method="post">
-  <input id="Idgroup" type="hidden" name="Idgroup"/>
+  <input id="Idgroup" type="hidden" name="Idgroup" value="${groupData.id}"/>
 </form>
+
+<div id="deletionFormDialog" style="display: none;">
+  ${groupRemConfirmMessage}
+  <div class="complement">
+    <input type="checkbox" id="definitiveDeletion">
+    <label for="definitiveDeletion">${groupDelConfirmMessage}</label>
+  </div>
+  <div class="help">(${groupDelConfirmMessageHelp})</div>
+</div>
 <% out.println(window.printAfter()); %>
 
 <!-- Dialog choice rights -->
@@ -488,5 +517,5 @@ if (showTabs) {
 <% } %>
 
 <view:progressMessage/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

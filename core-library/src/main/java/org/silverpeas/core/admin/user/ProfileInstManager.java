@@ -104,11 +104,12 @@ public class ProfileInstManager {
 
   /**
    * Get Profile information from database with the given id and creates a new Profile instance
-   * @param sProfileId
-   * @return
-   * @throws AdminException
+   * @param sProfileId identifier of the profile.
+   * @param includeRemovedUsersAndGroups true to take into account removed groups and removed users.
+   * @return the corresponding {@link ProfileInst} if any, null otherwise.
+   * @throws AdminException if an error occurred.
    */
-  public ProfileInst getProfileInst(String sProfileId)
+  public ProfileInst getProfileInst(String sProfileId, final boolean includeRemovedUsersAndGroups)
       throws AdminException {
     ProfileInst profileInst = null;
     try {
@@ -117,7 +118,7 @@ public class ProfileInstManager {
 
       if (userRole != null) {
         profileInst = userRoleRow2ProfileInst(userRole);
-        setUsersAndGroups(profileInst);
+        setUsersAndGroups(profileInst, includeRemovedUsersAndGroups);
       } else {
         SilverLogger.getLogger(this).error("User profile {0} not found", sProfileId);
       }
@@ -146,13 +147,16 @@ public class ProfileInstManager {
     return profileInst;
   }
 
-  private void setUsersAndGroups(ProfileInst profileInst) throws AdminException {
+  private void setUsersAndGroups(ProfileInst profileInst,
+      final boolean includeRemovedUsersAndGroups) throws AdminException {
     // Get the groups
-    List<String> groupIds = GroupManager.get().getDirectGroupIdsInRole(profileInst.getId());
+    List<String> groupIds = GroupManager.get().getDirectGroupIdsInRole(profileInst.getId(),
+        includeRemovedUsersAndGroups);
     profileInst.setGroups(groupIds);
 
     // Get the Users
-    List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());
+    List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId(),
+        includeRemovedUsersAndGroups);
     profileInst.setUsers(userIds);
   }
 
@@ -167,7 +171,7 @@ public class ProfileInstManager {
       if (userRole != null) {
         // Set the attributes of the profile Inst
         profileInst = userRoleRow2ProfileInst(userRole);
-        setUsersAndGroups(profileInst);
+        setUsersAndGroups(profileInst, false);
       }
 
       return profileInst;
@@ -197,7 +201,7 @@ public class ProfileInstManager {
    * @throws AdminException
    */
   public String updateProfileInst(ProfileInst profileInstNew) throws AdminException {
-    ProfileInst profileInst = getProfileInst(profileInstNew.getId());
+    ProfileInst profileInst = getProfileInst(profileInstNew.getId(), false);
 
     try {
       // the groups in the previous state of the profile

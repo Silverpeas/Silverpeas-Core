@@ -1,12 +1,12 @@
 /* The group of users */
-INSERT INTO st_group (id, domainId, specificId, superGroupId, name, description, synchroRule)
-VALUES (1, 0, 'A', NULL, 'Simpsons', '', '');
+INSERT INTO st_group (id, domainId, specificId, superGroupId, name, description, synchroRule, state, stateSaveDate)
+VALUES (1, 0, 'A', NULL, 'Simpsons', '', '', 'VALID', '2012-01-01 00:00:00.000');
 
-INSERT INTO st_group (id, domainId, specificId, superGroupId, name, description, synchroRule)
-VALUES (2, 0, 'B', 1, 'Children', '', '');
+INSERT INTO st_group (id, domainId, specificId, superGroupId, name, description, synchroRule, state, stateSaveDate)
+VALUES (2, 0, 'B', 1, 'Children', '', '', 'VALID', '2012-01-01 00:00:00.000');
 
-INSERT INTO st_group (id, domainId, specificId, superGroupId, name, description, synchroRule)
-VALUES (3, 0, 'C', 1, 'Parents', '', '');
+INSERT INTO st_group (id, domainId, specificId, superGroupId, name, description, synchroRule, state, stateSaveDate)
+VALUES (3, 0, 'C', 1, 'Parents', '', '', 'VALID', '2012-01-01 00:00:00.000');
 
 /* the users */
 INSERT INTO st_user (id, domainId, specificId, firstName, lastName, email, login, loginMail,

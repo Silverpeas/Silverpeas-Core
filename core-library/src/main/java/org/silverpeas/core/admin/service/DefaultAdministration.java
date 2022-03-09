@@ -66,6 +66,7 @@ import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.ProfiledObjectManager;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
@@ -101,15 +102,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
+import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
+import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGroupDescriptor.synchronizingDomainFrom;
+import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGroupDescriptor.synchronizingOneGroupWithSuperGroupId;
 import static org.silverpeas.core.util.ArrayUtil.contains;
 import static org.silverpeas.core.util.CollectionUtil.intersection;
 import static org.silverpeas.core.util.ResourceLocator.getOptionalSettingBundle;
-import static org.silverpeas.core.util.StringUtil.isLong;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * The class Admin is the main class of the Administrator.
@@ -159,6 +163,7 @@ class DefaultAdministration implements Administration {
 
   // Divers
   private final Object semaphore = new Object();
+  private final SynchroGroupScheduler groupSynchroScheduler = new SynchroGroupScheduler();
   private boolean delUsersOnDiffSynchro = true;
   private boolean shouldFallbackGroupNames = true;
   private boolean shouldFallbackUserLogins = false;
@@ -166,7 +171,6 @@ class DefaultAdministration implements Administration {
   private String domainSynchroCron = "";
   private String senderEmail = null;
   private String senderName = null;
-  private SynchroGroupScheduler groupSynchroScheduler = null;
   private SynchroDomainScheduler domainSynchroScheduler = null;
   private AppRoleMappingManager roleMapping = null;
   private boolean useProfileInheritance = false;
@@ -288,7 +292,6 @@ class DefaultAdministration implements Administration {
           .filter(GroupDetail::isSynchronized)
           .map(GroupDetail::getId)
           .collect(toList());
-      groupSynchroScheduler = new SynchroGroupScheduler();
       groupSynchroScheduler.initialize(groupSynchroCron, synchronizedGroupIds);
     }
   }
@@ -499,9 +502,7 @@ class DefaultAdministration implements Administration {
     List<ComponentInst> components = spaceInst.getAllComponentsInst();
     for (ComponentInst component : components) {
       for (int p = 0; p < component.getNumProfileInst(); p++) {
-        if (!component.getProfileInst(p).isInherited()) {
-          deleteProfileInst(component.getProfileInst(p).getId());
-        }
+        deleteProfileInst(component.getProfileInst(p).getId());
       }
     }
 
@@ -1676,7 +1677,7 @@ class DefaultAdministration implements Administration {
     final ProfileInst profileInst;
     Optional<ProfileInst> optionalProfile = cache.getProfileInst(sProfileId);
     if (optionalProfile.isEmpty()) {
-      profileInst = profileManager.getProfileInst(sProfileId);
+      profileInst = profileManager.getProfileInst(sProfileId, false);
       cache.putProfileInst(profileInst);
     } else {
       profileInst = optionalProfile.get();
@@ -1773,7 +1774,7 @@ class DefaultAdministration implements Administration {
           componentInstFather.setUpdaterUserId(userId);
           updateComponentInst(componentInstFather);
         }
-        cache.opAddProfile(profileManager.getProfileInst(sProfileId));
+        cache.opAddProfile(profileManager.getProfileInst(sProfileId, false));
       }
       return sProfileId;
     } catch (Exception e) {
@@ -1787,7 +1788,7 @@ class DefaultAdministration implements Administration {
 
   @Override
   public String deleteProfileInst(String profileId, String userId) throws AdminException {
-    ProfileInst profile = profileManager.getProfileInst(profileId);
+    ProfileInst profile = profileManager.getProfileInst(profileId, true);
     try {
       profileManager.deleteProfileInst(profile);
       if (StringUtil.isDefined(userId) &&
@@ -1850,7 +1851,7 @@ class DefaultAdministration implements Administration {
   // --------------------------------------------------------------------------------------------------------
   @Override
   public SpaceProfileInst getSpaceProfileInst(String spaceProfileId) throws AdminException {
-    return spaceProfileManager.getSpaceProfileInst(spaceProfileId);
+    return spaceProfileManager.getSpaceProfileInst(spaceProfileId, false);
   }
 
   @Override
@@ -1904,7 +1905,7 @@ class DefaultAdministration implements Administration {
   @Override
   public String deleteSpaceProfileInst(String sSpaceProfileId, String userId)
       throws AdminException {
-    SpaceProfileInst spaceProfileInst = spaceProfileManager.getSpaceProfileInst(sSpaceProfileId);
+    SpaceProfileInst spaceProfileInst = spaceProfileManager.getSpaceProfileInst(sSpaceProfileId, true);
     if (spaceProfileInst == null) {
       return sSpaceProfileId;
     }
@@ -1940,7 +1941,7 @@ class DefaultAdministration implements Administration {
     try {
       final int spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
       SpaceProfileInst oldSpaceProfile =
-          spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId());
+          spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId(), false);
       if (oldSpaceProfile == null) {
         // Potential case of space that is switching inheritance blocking status
         // Avoiding the cache repository in order to get the new data of the space
@@ -1991,7 +1992,7 @@ class DefaultAdministration implements Administration {
         }
         spreadSpaceProfile(spaceId, profileToSpread);
       }
-      cache.opUpdateSpaceProfile(spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId()));
+      cache.opUpdateSpaceProfile(spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId(), false));
 
       return spaceProfileNewId;
     } catch (Exception e) {
@@ -2186,13 +2187,11 @@ class DefaultAdministration implements Administration {
   @Override
   public String addGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     try {
-      String sGroupId = groupManager.addGroup(group, onlyInSilverpeas);
-      group.setId(sGroupId);
-      if (group.isSynchronized()) {
-        groupSynchroScheduler.addGroup(sGroupId);
-      }
+      final String groupId = groupManager.addGroup(group, onlyInSilverpeas, true);
+      group.setId(groupId);
+      groupSynchroScheduler.updateContextWith(group);
       cache.opAddGroup(group);
-      return sGroupId;
+      return groupId;
     } catch (AdminException e) {
       throw e;
     } catch (Exception e) {
@@ -2201,7 +2200,44 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public String deleteGroupById(String sGroupId) throws AdminException {
+  public List<GroupDetail> restoreGroup(final String groupId) throws AdminException {
+    final GroupDetail group = getGroup(groupId);
+    if (group == null) {
+      throw new AdminException(unknown(GROUP, groupId));
+    }
+    try {
+      final List<GroupDetail> restoredGroups = groupManager.restoreGroup(group, true);
+      restoredGroups.forEach(groupSynchroScheduler::updateContextWith);
+      if (!restoredGroups.isEmpty()) {
+        cache.resetCache();
+      }
+      return restoredGroups;
+    } catch (Exception e) {
+      throw new AdminException(failureOnRemoving(GROUP, groupId), e);
+    }
+  }
+
+  @Override
+  public List<GroupDetail> removeGroup(final String groupId) throws AdminException {
+    final GroupDetail group = getGroup(groupId);
+    if (group == null) {
+      throw new AdminException(unknown(GROUP, groupId));
+    }
+    try {
+      final List<GroupDetail> removedGroups = groupManager.removeGroup(group, true);
+      // Removing the removed groups from caches
+      removedGroups.forEach(g -> {
+        groupSynchroScheduler.removeFromContext(g);
+        cache.opRemoveGroup(g);
+      });
+      return removedGroups;
+    } catch (Exception e) {
+      throw new AdminException(failureOnRemoving(GROUP, groupId), e);
+    }
+  }
+
+  @Override
+  public List<GroupDetail> deleteGroupById(String sGroupId) throws AdminException {
     try {
       return deleteGroupById(sGroupId, false);
     } catch (Exception e) {
@@ -2210,33 +2246,23 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public String deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException {
+  public List<GroupDetail> deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException {
     // Get group information
     GroupDetail group = getGroup(sGroupId);
     if (group == null) {
       throw new AdminException(unknown(GROUP, sGroupId));
     }
     try {
-
       // Delete group profiles
       deleteGroupProfileInst(sGroupId);
-
-      // Listing the group and its sub groups before the recursive deletion
-      final List<GroupDetail> groupAndSubGroups = new ArrayList<>();
-      groupAndSubGroups.add(group);
-      Collections.addAll(groupAndSubGroups, getRecursivelyAllSubGroups(sGroupId));
-
       // Delete group itself
-      String sReturnGroupId = groupManager.deleteGroup(group, onlyInSilverpeas);
-
+      final List<GroupDetail> deletedGroups = groupManager.deleteGroup(group, onlyInSilverpeas);
       // Removing the deleted groups from caches
-      groupAndSubGroups.forEach(g -> {
-        if (g.isSynchronized()) {
-          groupSynchroScheduler.removeGroup(g.getId());
-        }
+      deletedGroups.forEach(g -> {
+        groupSynchroScheduler.removeFromContext(g);
         cache.opRemoveGroup(g);
       });
-      return sReturnGroupId;
+      return deletedGroups;
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(GROUP, group.getId()), e);
     }
@@ -2254,9 +2280,10 @@ class DefaultAdministration implements Administration {
   @Override
   public String updateGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     try {
-      String sGroupId = groupManager.updateGroup(group, onlyInSilverpeas);
+      String groupId = groupManager.updateGroup(group, onlyInSilverpeas);
+      groupSynchroScheduler.updateContextWith(group);
       cache.resetOnUpdateGroup();
-      return sGroupId;
+      return groupId;
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate(GROUP, group.getId()), e);
     }
@@ -2297,7 +2324,7 @@ class DefaultAdministration implements Administration {
   // --------------------------------------------------------------------------------------------------------
   @Override
   public GroupProfileInst getGroupProfileInst(String groupId) throws AdminException {
-    return groupProfileManager.getGroupProfileInst(null, groupId);
+    return groupProfileManager.getGroupProfileInst(groupId, false);
   }
 
   @Override
@@ -2317,7 +2344,7 @@ class DefaultAdministration implements Administration {
   @Override
   public String deleteGroupProfileInst(String groupId) throws AdminException {
     // Get the SpaceProfile to delete
-    GroupProfileInst groupProfileInst = groupProfileManager.getGroupProfileInst(null, groupId);
+    GroupProfileInst groupProfileInst = groupProfileManager.getGroupProfileInst(groupId, true);
     if (groupProfileInst == null) {
       return groupId;
     }
@@ -2338,7 +2365,7 @@ class DefaultAdministration implements Administration {
     } else {
       try {
         GroupProfileInst oldSpaceProfile =
-            groupProfileManager.getGroupProfileInst(null, groupProfileInstNew.getGroupId());
+            groupProfileManager.getGroupProfileInst(groupProfileInstNew.getGroupId(), false);
         // Update the group profile in tables
         groupProfileManager.updateGroupProfileInst(oldSpaceProfile, groupProfileInstNew);
       } catch (Exception e) {
@@ -2896,7 +2923,6 @@ class DefaultAdministration implements Administration {
       List<String> groupIds = new ArrayList<>();
       groupIds.add(groupId);
       groupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
-
       return userManager.getAllUsersInGroups(groupIds);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users in group", groupId), e);
@@ -3253,6 +3279,11 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
+  public List<GroupDetail> getRemovedGroups(final String... domainIds) throws AdminException {
+    return groupManager.getRemovedGroupsOfDomains(domainIds);
+  }
+
+  @Override
   public List<UserDetail> getRemovedUsers(final String... domainIds) throws AdminException {
     return userManager.getRemovedUsersOfDomains(domainIds);
   }
@@ -3411,7 +3442,7 @@ class DefaultAdministration implements Administration {
       } else {
         result = optionalSpaceIds.get();
       }
-      return Arrays.stream(result).map(String::valueOf).toArray(String[]::new);
+      return stream(result).map(String::valueOf).toArray(String[]::new);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
     }
@@ -3874,7 +3905,7 @@ class DefaultAdministration implements Administration {
         if (profile != null && (profile.getName().equals(sProfile) || bAllProfiles)) {
           // add direct users
           alUserIds.addAll(profile.getAllUsers());
-          // add users of groups
+          // add users of valid groups
           addUsersOfAllGroups(alUserIds, profile);
         }
       }
@@ -3894,15 +3925,15 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  private void addUsersOfAllGroups(final ArrayList<String> alUserIds, final ProfileInst profile)
+  private void addUsersOfAllGroups(final Collection<String> alUserIds, final ProfileInst profile)
       throws AdminException {
-    List<String> groupIds = profile.getAllGroups();
+    final List<String> groupIds = profile.getAllGroups();
     for (String groupId : groupIds) {
-      List<String> subGroupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
+      final List<String> subGroupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
       // add current group
       subGroupIds.add(groupId);
-      UserDetail[] users = userManager.getAllUsersInGroups(subGroupIds);
-      for (UserDetail user : users) {
+      final UserDetail[] users = userManager.getAllUsersInGroups(subGroupIds);
+      for (final UserDetail user : users) {
         alUserIds.add(user.getId());
       }
     }
@@ -4172,8 +4203,8 @@ class DefaultAdministration implements Administration {
     return convertedGroupIds;
   }
 
-  private String[] translateUserIds(String sDomainId, String[] userSpecificIds) {
-    List<String> convertedUserIds = new ArrayList<>();
+  private Map<String, String> translateUserIds(String sDomainId, String[] userSpecificIds) {
+    final Map<String, String> userIdMapping = new HashMap<>(userSpecificIds.length);
     String userId = null;
     for (String userSpecificId : userSpecificIds) {
       try {
@@ -4189,26 +4220,24 @@ class DefaultAdministration implements Administration {
         SilverLogger.getLogger(this).error(e);
       }
       if (userId != null) {
-        convertedUserIds.add(userId);
+        userIdMapping.put(userSpecificId, userId);
       }
     }
-    return convertedUserIds.toArray(new String[0]);
+    return userIdMapping;
   }
 
   @Override
   public String synchronizeGroup(String groupId, boolean recurs) throws AdminException {
-
     GroupDetail theGroup = getGroup(groupId);
     if (theGroup.isSynchronized()) {
       synchronizeGroupByRule(groupId, false);
     } else {
       DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
-      GroupDetail gr = synchroDomain.synchroGroup(theGroup.getSpecificId());
-
-      gr.setId(groupId);
-      gr.setDomainId(theGroup.getDomainId());
-      gr.setSuperGroupId(theGroup.getSuperGroupId());
-      internalSynchronizeGroup(synchroDomain, gr, recurs);
+      GroupDetail distantGroup = synchroDomain.synchroGroup(theGroup.getSpecificId());
+      distantGroup.setId(groupId);
+      distantGroup.setDomainId(theGroup.getDomainId());
+      distantGroup.setSuperGroupId(theGroup.getSuperGroupId());
+      internalSynchronizeGroup(synchroDomain, distantGroup, theGroup, recurs);
     }
     return groupId;
   }
@@ -4258,7 +4287,8 @@ class DefaultAdministration implements Administration {
     String groupId = addGroup(gr, true);
     gr.setId(groupId);
     gr.setUserIds(specificIds);
-    internalSynchronizeGroup(synchroDomain, gr, recurs);
+    final GroupDetail spGroup = getGroup(groupId);
+    internalSynchronizeGroup(synchroDomain, gr, spGroup, recurs);
     return groupId;
   }
 
@@ -4267,24 +4297,31 @@ class DefaultAdministration implements Administration {
     GroupDetail theGroup = getGroup(groupId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
     synchroDomain.removeGroup(theGroup.getSpecificId());
-    return deleteGroupById(groupId, true);
+    final List<GroupDetail> removedGroups = removeGroup(groupId);
+    return removedGroups.stream().findFirst().map(GroupDetail::getId).orElse(EMPTY);
   }
 
-  protected void internalSynchronizeGroup(DomainDriver synchroDomain, GroupDetail latestGroup,
-      boolean recurs) throws AdminException {
-    latestGroup.setUserIds(translateUserIds(latestGroup.getDomainId(), latestGroup.getUserIds()));
-    updateGroup(latestGroup, true);
+  protected void internalSynchronizeGroup(DomainDriver synchroDomain, GroupDetail distantGroup,
+      GroupDetail silverpeasGroup, boolean recurs) throws AdminException {
+    final Map<String, String> userIdMapping = translateUserIds(distantGroup.getDomainId(),
+        distantGroup.getUserIds());
+    final SyncOfGroupsContext context = new SyncOfGroupsContext(distantGroup.getDomainId(),
+        userIdMapping);
+    if (mergeDistantGroupIntoSilverpeasGroup(context,
+        synchronizingOneGroupWithSuperGroupId(distantGroup.getSuperGroupId()),
+        distantGroup, silverpeasGroup)) {
+      updateGroup(silverpeasGroup, true);
+    }
     if (recurs) {
-      GroupDetail[] children = synchroDomain.getGroups(latestGroup.getSpecificId());
-
+      GroupDetail[] children = synchroDomain.getGroups(distantGroup.getSpecificId());
       for (final GroupDetail child : children) {
         String existingGroupId = null;
         try {
           existingGroupId = groupManager.getGroupIdBySpecificIdAndDomainId(child.getSpecificId(),
-              latestGroup.getDomainId());
+              distantGroup.getDomainId());
           GroupDetail existingGroup = getGroup(existingGroupId);
-          if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
-            // Only synchronize the group if latestGroup is his true parent
+          if (existingGroup.getSuperGroupId().equals(distantGroup.getId())) {
+            // Only synchronize the group if distantGroup is his true parent
             //noinspection ConstantConditions
             synchronizeGroup(existingGroupId, recurs);
           }
@@ -4293,8 +4330,8 @@ class DefaultAdministration implements Administration {
           if (existingGroupId == null) {
             // Import the new group
             //noinspection ConstantConditions
-            synchronizeImportGroup(latestGroup.getDomainId(), child.getSpecificId(),
-                latestGroup.getId(), recurs, true);
+            synchronizeImportGroup(distantGroup.getDomainId(), child.getSpecificId(),
+                distantGroup.getId(), recurs, true);
           }
         }
       }
@@ -4326,7 +4363,7 @@ class DefaultAdministration implements Administration {
           synchroDomain.getUserMemberGroupIds(theUserDetail.getSpecificId());
       List<String> incGroupsId =
           translateGroupIds(theUserDetail.getDomainId(), incGroupsSpecificId, recurs);
-      List<GroupDetail> oldGroups = groupManager.getDirectGroupsOfUser(userId);
+      final List<GroupDetail> oldGroups = groupManager.getAllDirectGroupsOfUser(userId);
       for (GroupDetail oldGroup : oldGroups) {
         if (incGroupsId.contains(oldGroup.getId())) { // No changes have to be
           // performed to the group -> Remove it
@@ -4431,17 +4468,19 @@ class DefaultAdministration implements Administration {
                   final DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
                   // Synchronize users
                   final boolean addUserIntoSilverpeas = synchroDomain.mustImportUsers() || threaded;
-                  final SyncOfUsersContext context =
-                      new SyncOfUsersContext(sDomainId, threaded, addUserIntoSilverpeas,
-                          delUsersOnDiffSynchro);
-                  final SyncOfUsersContext syncOfUsersContext = synchronizeUsers(context);
+                  final SyncOfUsersContext userContext = new SyncOfUsersContext(sDomainId, threaded,
+                      addUserIntoSilverpeas, delUsersOnDiffSynchro);
+                  final SyncOfUsersContext syncOfUsersContext = synchronizeUsers(userContext);
                   sReport += syncOfUsersContext.getReport();
                   // Synchronize groups
                   // Get all users of the domain from Silverpeas
-                  final UserDetail[] silverpeasUDs =
-                      userManager.getAllUsersInDomain(sDomainId, true);
-                  final Map<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
-                  sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping);
+                  final Map<String, String> userIdsMapping =
+                      stream(userManager.getAllUsersInDomain(sDomainId, true))
+                          .collect(toMap(UserDetail::getSpecificId, UserDetail::getId));
+                  final SyncOfGroupsContext groupContext = new SyncOfGroupsContext(sDomainId,
+                      userIdsMapping);
+                  final SyncOfGroupsContext syncOfGroupsContext = synchronizeGroups(groupContext);
+                  sReport += "\n" + syncOfGroupsContext.getReport();
                   // End synchronization
                   final String sDomainSpecificErrors =
                       domainDriverManager.endSynchronization(sDomainId, false);
@@ -4450,7 +4489,8 @@ class DefaultAdministration implements Administration {
                         "----------------" + sDomainSpecificErrors);
                   }
                   return Pair.of(sReport + "\n----------------\n" + sDomainSpecificErrors,
-                      singletonList(syncOfUsersContext.getIndexationBackgroundProcess()));
+                      List.of(syncOfUsersContext.getIndexationBackgroundProcess(),
+                          syncOfGroupsContext.getIndexationBackgroundProcess()));
                 } catch (Exception e) {
                   try {
                     // End synchronization
@@ -4542,11 +4582,11 @@ class DefaultAdministration implements Administration {
       message = "Synchronization of users terminated";
       context.appendToReport(message).appendToReport("\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
-      message = "# of updated users: " + context.getUpdatedUsers().size() +
-          ", added: " + context.getAddedUsers().size() +
-          ", removed: " + context.getRemovedUsers().size() +
-          ", restored: " + context.getRestoredUsers().size() +
-          ", deleted: " + context.getDeletedUsers().size();
+      message = format(
+          "# of updated users: {0}, added: {1}, removed: {2}, restored: {3}, deleted: {4}",
+          context.getUpdatedUsers().size(), context.getAddedUsers().size(),
+          context.getRemovedUsers().size(), context.getRestoredUsers().size(),
+          context.getDeletedUsers().size());
       context.appendToReport(message).appendToReport("\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
       context.setIndexationBackgroundProcess(
@@ -4597,8 +4637,7 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Background process request which ensure the reminder scheduler to not be disturbed by user
-   * notification send processing.
+   * Background process request in charge of user indexation.
    */
   private static class BackgroundUserIndexationProcess extends AbstractBackgroundProcessRequest {
 
@@ -4643,6 +4682,52 @@ class DefaultAdministration implements Administration {
     }
   }
 
+  /**
+   * Background process request in charge of group indexation.
+   */
+  private static class BackgroundGroupIndexationProcess extends AbstractBackgroundProcessRequest {
+
+    private final DomainDriverManager domainDriverManager;
+    private final SyncOfGroupsContext context;
+
+    private BackgroundGroupIndexationProcess(final DomainDriverManager domainDriverManager,
+        final SyncOfGroupsContext context) {
+      super();
+      this.domainDriverManager = domainDriverManager;
+      this.context = context;
+    }
+
+    @Override
+    protected void process() {
+      final SilverLogger logger = SilverLogger.getLogger(this);
+      final long start = System.currentTimeMillis();
+      final String totalOfGroups = String.valueOf(
+          context.getAddedGroups().size() + context.getUpdatedGroups().size() +
+              context.getRemovedGroups().size() + context.getRestoredGroups().size());
+      logger.debug(format("Starting indexation of {0} groups on domain id {1}...", totalOfGroups,
+          context.getDomainId()));
+      Transaction.performInOne(() -> {
+        logger.debug(format("unindexation of {0} removed groups on domain id {1}...",
+            String.valueOf(context.getRemovedGroups().size()), context.getDomainId()));
+        context.getRemovedGroups().keySet().forEach(domainDriverManager::unindexGroup);
+        logger.debug(format("indexation of {0} restored groups on domain id {1}...",
+            String.valueOf(context.getRestoredGroups().size()), context.getDomainId()));
+        context.getRestoredGroups().values().forEach(domainDriverManager::indexGroup);
+        logger.debug(format("indexation of {0} added groups on domain id {1}...",
+            String.valueOf(context.getAddedGroups().size()), context.getDomainId()));
+        context.getAddedGroups().values().forEach(domainDriverManager::indexGroup);
+        logger.debug(format("indexation of {0} updated groups on domain id {1}...",
+            String.valueOf(context.getUpdatedGroups().size()), context.getDomainId()));
+        context.getUpdatedGroups().values().forEach(domainDriverManager::indexGroup);
+        return null;
+      });
+      final long end = System.currentTimeMillis();
+      logger.debug(
+          () -> format("Ending indexation of {0} groups on domain id {1} in {2}", totalOfGroups,
+              context.getDomainId(), DurationFormatUtils.formatDurationHMS(end - start)));
+    }
+  }
+
   @Nullable
   private UserDetail getUserBySpecificIdOrFallbackLoginFrom(@Nonnull final UserDetail user,
       final Map<String, UserDetail> indexedUsers) {
@@ -4662,7 +4747,7 @@ class DefaultAdministration implements Administration {
   @Nonnull
   private Map<String, UserDetail> indexUsersBySpecificIdAndLogin(final UserDetail[] silverpeasUDs) {
     final Map<String, UserDetail> indexedSilverpeasUsers = new HashMap<>(silverpeasUDs.length * 2);
-    Arrays.stream(silverpeasUDs).forEach(u -> {
+    stream(silverpeasUDs).forEach(u -> {
       indexedSilverpeasUsers.put(u.getSpecificId(), u);
       indexedSilverpeasUsers.put(u.getLogin(), u);
     });
@@ -4673,25 +4758,13 @@ class DefaultAdministration implements Administration {
   private Set<String> extractUserSpecificIdAndFallbackLogin(final UserDetail[] users) {
     final Set<String> indexedUsers =
         new HashSet<>(shouldFallbackUserLogins ? (users.length * 2) : users.length);
-    Arrays.stream(users).forEach(u -> {
+    stream(users).forEach(u -> {
       indexedUsers.add(u.getSpecificId());
       if (shouldFallbackUserLogins) {
         indexedUsers.add(u.getLogin());
       }
     });
     return indexedUsers;
-  }
-
-  /**
-   * @param silverpeasUDs existing users after synchronization
-   * @return a Map <specificId, userId>
-   */
-  private HashMap<String, String> getUserIdsMapping(UserDetail[] silverpeasUDs) {
-    HashMap<String, String> ids = new HashMap<>();
-    for (UserDetail user : silverpeasUDs) {
-      ids.put(user.getSpecificId(), user.getId());
-    }
-    return ids;
   }
 
   private void updateUserDuringSynchronization(final SyncOfUsersContext context,
@@ -4776,7 +4849,9 @@ class DefaultAdministration implements Administration {
     final String specificId = silverpeasUD.getSpecificId();
     try {
       userManager.restoreUser(silverpeasUD, false);
-      silverpeasUD.setState(UserState.VALID);
+      final UserDetail updatedRestoreData = getUserDetail(silverpeasUD.getId());
+      silverpeasUD.setState(updatedRestoreData.getState());
+      silverpeasUD.setStateSaveDate(updatedRestoreData.getStateSaveDate());
       if (mergeDistantUserIntoSilverpeasUser(distantUD, silverpeasUD)) {
         userManager.updateUser(silverpeasUD, false);
       }
@@ -4865,95 +4940,76 @@ class DefaultAdministration implements Administration {
   /**
    * Synchronize groups between cache and domain's datastore
    */
-  private String synchronizeGroups(String domainId, Map<String, String> userIds)
+  private SyncOfGroupsContext synchronizeGroups(final SyncOfGroupsContext context)
       throws AdminException {
-    boolean bFound;
-    String specificId;
-    StringBuilder sReport = new StringBuilder("GroupDetail synchronization : \n");
-    Map<String, GroupDetail> allDistantGroups = new HashMap<>();
-    int iNbGroupsAdded = 0;
-    int iNbGroupsMaj = 0;
-    int iNbGroupsDeleted = 0;
+    final String domainId = context.getDomainId();
+    context.appendToReport("GroupDetail synchronization : \n");
+    String message;
     SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Starting groups synchronization...");
+    final GroupDetail[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
+    SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS,
+        format("Existing currently {0} ROOT groups in external repository before synchronization",
+            distantRootGroups.length));
+    final List<GroupDetail> allSilverpeasGroups = groupManager.getGroupsOfDomain(domainId);
+    SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS,
+        format("Existing currently {0} groups in Silverpeas before synchronization",
+            allSilverpeasGroups.size()));
     try {
-      // Get all root groups of the domain from distant datasource
-      GroupDetail[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
-      // Get all groups of the domain from Silverpeas
-      GroupDetail[] silverpeasGroups = groupManager.getGroupsOfDomain(domainId);
-
       SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS,
           "Adding or updating groups in database...");
-      // Check for new groups resursively
-      final CheckoutGroupDescriptor descriptor = new CheckoutGroupDescriptor().setDomainId(domainId)
-          .setExistingGroups(silverpeasGroups)
-          .setTestedGroups(distantRootGroups)
-          .setAllIncludedGroups(allDistantGroups)
-          .setUserIds(userIds)
-          .setNbGroupsAdded(iNbGroupsAdded)
-          .setNbGroupsUpdated(iNbGroupsMaj);
-      sReport.append(checkOutGroups(descriptor));
-
+      // Check for checking out groups recursively
+      final CheckoutGroupDescriptor descriptor =
+          synchronizingDomainFrom(allSilverpeasGroups, distantRootGroups);
+      checkOutGroups(context, descriptor);
       // Delete obsolete groups
       SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS, "Removing groups from database...");
-      GroupDetail[] distantGroups = allDistantGroups.values().toArray(new GroupDetail[0]);
-      for (GroupDetail silverpeasGroup : silverpeasGroups) {
-        bFound = false;
-        specificId = silverpeasGroup.getSpecificId();
-
-        // search for group in distant datasource
-        for (final GroupDetail distantGroup : distantGroups) {
-          if (distantGroup.getSpecificId().equals(specificId) ||
-              (shouldFallbackGroupNames && distantGroup.getName().equals(specificId))) {
-            bFound = true;
-            break;
-          }
-        }
-
-        // if found, do nothing, else delete
-        if (!bFound) {
-          iNbGroupsDeleted =
-              synchroDeleteGroup(specificId, silverpeasGroup, sReport, iNbGroupsDeleted);
-        }
-      }
-      sReport.append("Groups synchronization terminated\n");
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
-          "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
-          + ", deleted : " + iNbGroupsDeleted);
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Groups synchronization terminated");
-      return sReport.toString();
+      final Collection<GroupDetail> distantGroups = descriptor.getAllSavedDistantGroups().values();
+      allSilverpeasGroups.stream()
+          // search for group in distant datasource
+          .filter(s -> distantGroups.stream().noneMatch(d ->
+                  d.getSpecificId().equals(s.getSpecificId()) ||
+                      (shouldFallbackGroupNames && d.getName().equals(s.getSpecificId()))))
+          // not already removed
+          .filter(not(GroupDetail::isRemovedState))
+          // if found, do nothing, else delete
+          .forEach(s -> synchroRemoveGroup(context, s.getSpecificId(), s));
+      message = "Groups synchronization terminated\n";
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
+      message = format(
+          "# of updated groups: {0}, added: {1}, removed: {2}, restored: {3}",
+          context.getUpdatedGroups().size(), context.getAddedGroups().size(),
+          context.getRemovedGroups().size(), context.getRestoredGroups().size());
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, message);
+      context.setIndexationBackgroundProcess(
+          new BackgroundGroupIndexationProcess(domainDriverManager, context));
+      return context;
     } catch (Exception e) {
       SynchroDomainReport.error(ADMIN_SYNCHRONIZE_GROUPS,
           "Problème lors de la synchronisation des groupes : " + e.getMessage(), null);
       throw new AdminException(
-          "Fails to synchronize groups in domain " + domainId + ".Report: " + sReport, e);
+          "Fails to synchronize groups in domain " + domainId, e);
     }
   }
 
-  private int synchroDeleteGroup(final String specificId, final GroupDetail silverpeasGroup,
-      final StringBuilder sReport, int iNbGroupsDeleted) {
+  private void synchroRemoveGroup(final SyncOfGroupsContext context, final String specificId,
+      final GroupDetail silverpeasGroup) {
     try {
-      groupManager.deleteGroup(silverpeasGroup, true);
-      iNbGroupsDeleted++;
-      sReport.append("deleting group ")
-          .append(silverpeasGroup.getName())
-          .append("(id:")
-          .append(specificId)
-          .append(")\n");
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
-          "GroupDetail " + silverpeasGroup.getName() + " deleted (SpecificId:" + specificId + ")");
+      final List<GroupDetail> removedGroups = groupManager.removeGroup(silverpeasGroup, false);
+      removedGroups.forEach(g -> {
+        context.getRemovedGroups().put(g.getId(), g);
+        context.appendToReport(format("removing group {0} (id:{1})\n", g.getName(), g.getSpecificId()));
+        SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
+            "GroupDetail " + g.getName() + " removed (SpecificId:" + g.getSpecificId() + ")");
+      });
     } catch (AdminException aeDel) {
       SilverLogger.getLogger(this)
-          .error("Full synchro: error while deleting group " + specificId, aeDel);
-      sReport.append("problem deleting group ")
-          .append(silverpeasGroup.getName())
-          .append(" (specificId:")
-          .append(specificId)
-          .append(") - ")
-          .append(aeDel.getMessage())
-          .append("\n");
-      sReport.append("group has not been deleted\n");
+          .error("Full synchro: error while removing group " + specificId, aeDel);
+      context.appendToReport(format(
+          "problem removing group {0} (specificId:{1}) - {2}\ngroup has not been removed\n",
+          silverpeasGroup.getName(), specificId, aeDel.getMessage()));
     }
-    return iNbGroupsDeleted;
   }
 
   /**
@@ -4961,178 +5017,222 @@ class DefaultAdministration implements Administration {
    */
   // Au 1er appel : (domainId,silverpeasGroups,distantRootGroups,
   // allDistantGroups(vide), userIds, null)
-  // No need to refresh cache : the cache is reseted at the end of the
-  // synchronization
-  private String checkOutGroups(final CheckoutGroupDescriptor descriptor) throws AdminException {
-    StringBuilder report = new StringBuilder();
-    // Add new groups or update existing ones from distant data source
-    descriptor.addTestedGroupsInAllIncludedGroups();
-    for (GroupDetail testedGroup : descriptor.getTestedGroups()) {
+  // No need to refresh cache : the cache is reset at the end of the synchronization
+  private void checkOutGroups(final SyncOfGroupsContext context,
+      final CheckoutGroupDescriptor descriptor) throws AdminException {
+    // Add new groups or existing ones to update from distant data source
+    descriptor.addDistantTestedGroupsInAllSavedDistantGroups();
+    for (final GroupDetail distantGroup : descriptor.getDistantTestedGroups()) {
       // Prepare GroupDetail to be at Silverpeas format
-      testedGroup.setDomainId(descriptor.getDomainId());
-      final String specificId = testedGroup.getSpecificId();
-
-      // search for group in Silverpeas database
-      Optional<GroupDetail> foundGroup = Arrays.stream(descriptor.getExistingGroups())
+      distantGroup.setDomainId(context.getDomainId());
+      final String specificId = distantGroup.getSpecificId();
+      // search for group into Silverpeas database
+      final Optional<GroupDetail> foundGroup = descriptor.getAllSilverpeasGroups().stream()
           .filter(g -> g.getSpecificId().equals(specificId) ||
-              (shouldFallbackGroupNames && g.getSpecificId().equals(testedGroup.getName())))
+              (shouldFallbackGroupNames && g.getSpecificId().equals(distantGroup.getName())))
           .findFirst();
-      if (foundGroup.isPresent()) {
-        testedGroup.setId(foundGroup.get().getId());
-        SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
-            "avant maj du groupe " + specificId + ", recherche de ses groupes parents");
-      } else {
-        SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
-            "avant ajout du groupe " + specificId + ", recherche de ses groupes parents");
-      }
-
-      setParentGroup(descriptor, specificId, testedGroup);
-      setUserIds(descriptor, testedGroup);
       // if found, update, else create
       final String silverpeasId;
       if (foundGroup.isPresent()) {
-        silverpeasId = updateGroup(descriptor, specificId, testedGroup, report);
-      } else { // AJOUT
-        silverpeasId = addGroup(descriptor, specificId, testedGroup, report);
+        SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
+            "avant maj du groupe " + specificId + ", recherche de ses groupes parents");
+        final GroupDetail silverpeasGroup = foundGroup.get();
+        if (silverpeasGroup.isRemovedState()) {
+          silverpeasId = restoreGroupDuringSynchronization(context, descriptor, distantGroup, silverpeasGroup);
+        } else if (mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup, silverpeasGroup)) {
+          silverpeasId = updateGroupDuringSynchronization(context, specificId, silverpeasGroup);
+        } else {
+          silverpeasId = silverpeasGroup.getId();
+        }
+      } else {
+        SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
+            "avant ajout du groupe " + specificId + ", recherche de ses groupes parents");
+        mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup, distantGroup);
+        silverpeasId = addGroupDuringSynchronization(context, specificId, distantGroup);
       }
       // Recurse with subgroups
-      recursWithSubGroups(descriptor, specificId, silverpeasId, report);
+      recursWithSubGroups(context, descriptor, specificId, silverpeasId);
     }
-    return report.toString();
   }
 
-  private void recursWithSubGroups(final CheckoutGroupDescriptor descriptor,
-      final String specificId, final String silverpeasId, final StringBuilder report)
+  private String restoreGroupDuringSynchronization(final SyncOfGroupsContext context,
+      final CheckoutGroupDescriptor descriptor, final GroupDetail distantGroup,
+      final GroupDetail silverpeasGroup) {
+    final String specificId = silverpeasGroup.getSpecificId();
+    try {
+      groupManager.restoreGroup(silverpeasGroup, false);
+      final GroupDetail updatedRestoreData = getGroup(silverpeasGroup.getId());
+      silverpeasGroup.setState(updatedRestoreData.getState());
+      silverpeasGroup.setStateSaveDate(updatedRestoreData.getStateSaveDate());
+      if (mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup, silverpeasGroup)) {
+        groupManager.updateGroup(silverpeasGroup, false);
+      }
+      final String groupId = silverpeasGroup.getId();
+      context.getRestoredGroups().put(groupId, silverpeasGroup);
+      final String message = format("{0} {1} restored (id:{2} / specificId:{3})", GROUP,
+          silverpeasGroup.getName(), groupId, specificId);
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS, message);
+      return groupId;
+    } catch (AdminException aeDel) {
+      SilverLogger.getLogger(this)
+          .error("Full synchro: error while restoring group " + specificId, aeDel);
+      final String message = format("problem restoring group {0} (specificId:{1}) - {2}",
+          silverpeasGroup.getName(), specificId, aeDel.getMessage());
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, message);
+      context.appendToReport("group has not been restored\n");
+    }
+    return EMPTY;
+  }
+
+  /**
+   * Merge the data of a distant group into the data of a silverpeas group : - group identifier (the
+   * distant one) - name - description - parent group - users of group
+   * @param context the synchronization process context.
+   * @param descriptor the descriptor of current group synchronization.
+   * @param distantGroup {@link GroupDetail} representing data on external repository.
+   * @param silverpeasGroup {@link GroupDetail} representing data on silverpeas.
+   * @return true if a data has changed, false otherwise.
+   */
+  boolean mergeDistantGroupIntoSilverpeasGroup(final SyncOfGroupsContext context,
+      final CheckoutGroupDescriptor descriptor,
+      final GroupDetail distantGroup, final GroupDetail silverpeasGroup) throws AdminException {
+    boolean dataUpdated =
+        !Objects.equals(silverpeasGroup.getSpecificId(), distantGroup.getSpecificId());
+    silverpeasGroup.setSpecificId(distantGroup.getSpecificId());
+    dataUpdated |= !Objects.equals(silverpeasGroup.getName(), distantGroup.getName());
+    silverpeasGroup.setName(distantGroup.getName());
+    dataUpdated |= !Objects.equals(silverpeasGroup.getDescription(), distantGroup.getDescription());
+    silverpeasGroup.setDescription(distantGroup.getDescription());
+    dataUpdated |= setParentGroup(context, descriptor, silverpeasGroup);
+    distantGroup.setSuperGroupId(silverpeasGroup.getSuperGroupId());
+    dataUpdated |= setUserIds(context, distantGroup, silverpeasGroup);
+    distantGroup.setUserIds(silverpeasGroup.getUserIds());
+    if (silverpeasGroup.isRemovedState()) {
+      return dataUpdated;
+    }
+    final GroupState distantState = Optional.of(distantGroup.getState())
+        .filter(not(GroupState.UNKNOWN::equals))
+        .orElse(GroupState.VALID);
+    dataUpdated |= !Objects.equals(silverpeasGroup.getState(), distantState);
+    silverpeasGroup.setState(distantState);
+    return dataUpdated;
+  }
+
+  private void recursWithSubGroups(final SyncOfGroupsContext context,
+      final CheckoutGroupDescriptor descriptor, final String specificId, final String silverpeasId)
       throws AdminException {
-    if (silverpeasId != null && silverpeasId.length() > 0) {
-      GroupDetail[] subGroups = domainDriverManager.getGroups(silverpeasId);
+    if (isDefined(silverpeasId)) {
+      final GroupDetail[] subGroups = domainDriverManager.getGroups(silverpeasId);
       if (subGroups != null && subGroups.length > 0) {
-        GroupDetail[] cleanSubGroups =
-            removeCrossReferences(subGroups, descriptor.getAllIncludedGroups(), specificId);
+        final GroupDetail[] cleanSubGroups =
+            removeCrossReferences(subGroups, descriptor.getAllSavedDistantGroups(), specificId);
         if (cleanSubGroups.length > 0) {
           SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
               "Ajout ou mise à jour de " + cleanSubGroups.length + " groupes fils du groupe " +
                   specificId + "...");
-          descriptor.setTestedGroups(cleanSubGroups).setSuperGroupId(silverpeasId);
-          report.append(checkOutGroups(descriptor));
+          descriptor.setDistantTestedGroups(cleanSubGroups).setSuperGroupId(silverpeasId);
+          checkOutGroups(context, descriptor);
         }
       }
     }
   }
 
   @Nullable
-  private String addGroup(final CheckoutGroupDescriptor descriptor, final String specificId,
-      final GroupDetail testedGroup, final StringBuilder report) {
+  private String addGroupDuringSynchronization(final SyncOfGroupsContext context, final String specificId,
+      final GroupDetail group) {
     String silverpeasId = null;
     try {
-      silverpeasId = groupManager.addGroup(testedGroup, true);
+      silverpeasId = groupManager.addGroup(group, true, false);
       if (StringUtil.isDefined(silverpeasId)) {
-        descriptor.setNbGroupsAdded(descriptor.getNbGroupsAdded() + 1);
-
-        report.append("adding group ")
-            .append(testedGroup.getName())
-            .append("(id:")
-            .append(specificId)
-            .append(")\n");
+        context.getAddedGroups().put(silverpeasId, group);
+        context.appendToReport(format("adding group {0} (id:{1})\n", group.getName(), specificId));
         SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
-            "ajout groupe " + testedGroup.getName() + ID_IS + silverpeasId + ") OK");
-      } else { // le name groupe non renseigné
-
-        report.append("problem adding group id : ")
-            .append(specificId)
-            .append("\n");
+            "ajout groupe " + group.getName() + ID_IS + silverpeasId + ") OK");
+      } else {
+        // le name groupe non renseigné
+        context.appendToReport(format("problem adding group id: {0}", specificId));
       }
     } catch (AdminException aeAdd) {
-
-      report.append("problem adding group ")
-          .append(testedGroup.getName())
-          .append(ID_IS)
-          .append(specificId)
-          .append(") ")
-          .append(aeAdd.getMessage())
-          .append("\n");
-      report.append("group has not been added\n");
+      context.appendToReport(format(
+          "problem adding group {0} (id:{1}) {2}\ngroup has not been added\n",
+          group.getName(), specificId, aeAdd.getMessage()));
     }
     return silverpeasId;
   }
 
-  private String updateGroup(final CheckoutGroupDescriptor descriptor, final String specificId,
-      final GroupDetail testedGroup, final StringBuilder report) {
-    final String result;
+  private String updateGroupDuringSynchronization(final SyncOfGroupsContext context,
+      final String specificId, final GroupDetail group) {
     String silverpeasId = null;
     try {
-      result = groupManager.updateGroup(testedGroup, true);
+      final String result = groupManager.updateGroup(group, true);
       if (StringUtil.isDefined(result)) {
-        descriptor.setNbGroupsUpdated(descriptor.getNbGroupsUpdated() + 1);
-        silverpeasId = testedGroup.getId();
-        report.append("updating group ")
-            .append(testedGroup.getName())
-            .append("(id:")
-            .append(specificId)
-            .append(")\n");
+        context.getUpdatedGroups().put(group.getId(), group);
+        silverpeasId = group.getId();
+        context.appendToReport(format("updating group {0} (id:{1})\n", group.getName(), specificId));
         SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
-            "maj groupe " + testedGroup.getName() + ID_IS + silverpeasId + ") OK");
+            "maj groupe " + group.getName() + ID_IS + silverpeasId + ") OK");
       } else {
         // le name groupe non renseigné
         SilverLogger.getLogger(this)
             .error("Full Synchro: error while updating group {0}", specificId);
-        report.append("problem updating group id : ")
-            .append(specificId)
-            .append("\n");
+        context.appendToReport(format("problem updating group id : {0}\n", specificId));
       }
     } catch (AdminException aeMaj) {
       SilverLogger.getLogger(this)
           .error("Full Synchro: error while updating group {0}: ", specificId, aeMaj.getMessage());
-      report.append("problem updating group ")
-          .append(testedGroup.getName())
-          .append(ID_IS)
-          .append(specificId)
-          .append(") ")
-          .append(aeMaj.getMessage())
-          .append("\n")
-          .append("group has not been updated\n");
+      context.appendToReport(format(
+          "problem updating group {0} (id:{1}) {2}\ngroup has not been updated\n",
+          group.getName(), specificId, aeMaj.getMessage()));
     }
     return silverpeasId;
   }
 
-  private void setUserIds(final CheckoutGroupDescriptor descriptor, final GroupDetail testedGroup) {
-    String[] userSpecificIds = testedGroup.getUserIds();
-    List<String> convertedUserIds = new ArrayList<>();
-    for (String userSpecificId : userSpecificIds) {
-      if (descriptor.getUserIds().get(userSpecificId) != null) {
-        convertedUserIds.add(descriptor.getUserIds().get(userSpecificId));
-      }
-    }
-    // Le groupe contiendra une liste d'IDs de users existant ds la base et
-    // non + une liste de logins récupérés via LDAP
-    testedGroup.setUserIds(convertedUserIds.toArray(new String[0]));
+  private boolean setUserIds(final SyncOfGroupsContext context, final GroupDetail distantGroup,
+      final GroupDetail silverpeasGroup) {
+    final List<String> previousUserIds = stream(silverpeasGroup.getUserIds())
+        .distinct()
+        .sorted()
+        .collect(toList());
+    final List<String> newUserIds = stream(distantGroup.getUserIds())
+        .map(context.getUserIdsMapping()::get)
+        .filter(Objects::nonNull)
+        .distinct()
+        .sorted()
+        .collect(toList());
+    silverpeasGroup.setUserIds(newUserIds.toArray(String[]::new));
+    return !previousUserIds.stream().collect(joining(",")).equals(newUserIds.stream().collect(joining(",")));
   }
 
-  private void setParentGroup(final CheckoutGroupDescriptor descriptor, final String specificId,
-      final GroupDetail testedGroup) throws AdminException {
-    String[] groupParentsIds =
-        domainDriverManager.getGroupMemberGroupIds(descriptor.getDomainId(), testedGroup.
-            getSpecificId());
-    if ((groupParentsIds == null) || (groupParentsIds.length == 0)) {
-      testedGroup.setSuperGroupId(null);
+  private boolean setParentGroup(final SyncOfGroupsContext context,
+      final CheckoutGroupDescriptor descriptor, final GroupDetail group) throws AdminException {
+    final String specificId = group.getSpecificId();
+    final String currentSuperGroupId = group.getSuperGroupId();
+    final String[] groupParentsIds = domainDriverManager.getGroupMemberGroupIds(
+        context.getDomainId(), group.getSpecificId());
+    if (groupParentsIds == null || groupParentsIds.length == 0) {
+      group.setSuperGroupId(null);
       SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
           "le groupe " + specificId + " n'a pas de père");
     } else {
-      testedGroup.setSuperGroupId(descriptor.getSuperGroupId());
-      if (descriptor.getSuperGroupId() != null)// sécurité
-      {
+      // sécurité
+      final String superGroupId = descriptor.getSuperGroupId();
+      group.setSuperGroupId(superGroupId);
+      if (superGroupId != null) {
         SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
             "le groupe " + specificId + " a pour père le groupe " +
-                domainDriverManager.getGroup(descriptor.getSuperGroupId()).getSpecificId() +
-                " d'Id base " + descriptor.getSuperGroupId());
+                domainDriverManager.getGroup(superGroupId).getSpecificId() +
+                " d'Id base " + superGroupId);
       }
     }
+    return !Objects.equals(currentSuperGroupId, group.getSuperGroupId());
   }
 
   private GroupDetail[] removeCrossReferences(GroupDetail[] subGroups,
       Map<String, GroupDetail> allIncludedGroups, String fatherId) {
-    ArrayList<GroupDetail> cleanSubGroups = new ArrayList<>();
-    for (GroupDetail subGroup : subGroups) {
+    final List<GroupDetail> cleanSubGroups = new ArrayList<>(subGroups.length);
+    for (final GroupDetail subGroup : subGroups) {
       if (allIncludedGroups.get(subGroup.getSpecificId()) == null) {
         cleanSubGroups.add(subGroup);
       } else {
@@ -5150,7 +5250,7 @@ class DefaultAdministration implements Administration {
     // search users in profiles
     try {
       for (String profileId : profileIds) {
-        ProfileInst profile = profileManager.getProfileInst(profileId);
+        ProfileInst profile = profileManager.getProfileInst(profileId, false);
         // add users directly attach to profile
         addAllUsersInProfile(profile, userIds);
       }
@@ -5168,7 +5268,7 @@ class DefaultAdministration implements Administration {
   @Override
   public SilverpeasList<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
-    setAllGroupChildren(searchCriteria);
+    setAllValidGroupChildren(searchCriteria);
     final List<String> roleNames = Optional.ofNullable(searchCriteria.getCriterionOnRoleNames())
         .filter(ArrayUtil::isNotEmpty)
         .stream()
@@ -5213,13 +5313,13 @@ class DefaultAdministration implements Administration {
         .filter(r -> !searchCriteria.isCriterionOnUserIdsSet() ||
             contains(searchCriteria.getCriterionOnUserIds(), user.getId()))
         .map(r -> user.getId())
-        .orElse(StringUtil.EMPTY);
+        .orElse(EMPTY);
   }
 
   private void setGroupsPlayingRole(final List<String> roleNames,
       final SilverpeasComponentInstance instance, final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
-    final Set<String> groupIds = getRecursivelyGroupsIdPlaying(roleNames, instance,
+    final Set<String> groupIds = getRecursivelyValidGroupsIdPlaying(roleNames, instance,
         searchCriteria.getCriterionOnResourceId());
     final String[] groupIdArray = groupIds.toArray(new String[0]);
     searchCriteria.onGroupsInRoles(groupIdArray);
@@ -5228,7 +5328,7 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  private void setAllGroupChildren(final UserDetailsSearchCriteria searchCriteria)
+  private void setAllValidGroupChildren(final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
     if (searchCriteria.isCriterionOnGroupIdsSet()) {
       final Set<String> allGroupsId = new HashSet<>();
@@ -5240,7 +5340,7 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  private Set<String> getRecursivelyGroupsIdPlaying(final List<String> roleNames,
+  private Set<String> getRecursivelyValidGroupsIdPlaying(final List<String> roleNames,
       final SilverpeasComponentInstance instance, final String resourceId) throws AdminException {
     final Set<String> allGroupIds = new HashSet<>();
     final List<ProfileInst> profiles;
@@ -5909,66 +6009,49 @@ class DefaultAdministration implements Administration {
         UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(userDetail.getAccessLevel());
   }
 
-  private static class CheckoutGroupDescriptor {
-    private String domainId;
-    private GroupDetail[] existingGroups;
-    private GroupDetail[] testedGroups;
-    private Map<String, GroupDetail> allIncludedGroups;
-    private Map<String, String> userIds;
+  static class CheckoutGroupDescriptor {
+    private final Map<String, GroupDetail> allSavedDistantGroups = new HashMap<>();
+    private final List<GroupDetail> allSilverpeasGroups;
+    private GroupDetail[] distantTestedGroups;
     private String superGroupId;
-    private int nbGroupsAdded;
-    private int nbGroupsUpdated;
 
-    void addTestedGroupsInAllIncludedGroups() {
-      for (GroupDetail testedGroup : testedGroups) {
-        allIncludedGroups.put(testedGroup.getSpecificId(), testedGroup);
+    static CheckoutGroupDescriptor synchronizingDomainFrom(
+        final List<GroupDetail> allSilverpeasGroups, final GroupDetail[] distantRootGroups) {
+      return new CheckoutGroupDescriptor(allSilverpeasGroups, distantRootGroups);
+    }
+
+    static CheckoutGroupDescriptor synchronizingOneGroupWithSuperGroupId(
+        final String superGroupId) {
+      return new CheckoutGroupDescriptor(null, null).setSuperGroupId(superGroupId);
+    }
+
+    private CheckoutGroupDescriptor(final List<GroupDetail> allSilverpeasGroups,
+        final GroupDetail[] distantRootGroups) {
+      this.allSilverpeasGroups = allSilverpeasGroups;
+      setDistantTestedGroups(distantRootGroups);
+    }
+
+    void addDistantTestedGroupsInAllSavedDistantGroups() {
+      for (GroupDetail testedGroup : distantTestedGroups) {
+        allSavedDistantGroups.put(testedGroup.getSpecificId(), testedGroup);
       }
     }
 
-    public String getDomainId() {
-      return domainId;
+    public List<GroupDetail> getAllSilverpeasGroups() {
+      return allSilverpeasGroups;
     }
 
-    public CheckoutGroupDescriptor setDomainId(final String domainId) {
-      this.domainId = domainId;
+    public GroupDetail[] getDistantTestedGroups() {
+      return distantTestedGroups;
+    }
+
+    public CheckoutGroupDescriptor setDistantTestedGroups(final GroupDetail[] distantTestedGroups) {
+      this.distantTestedGroups = distantTestedGroups;
       return this;
     }
 
-    public GroupDetail[] getExistingGroups() {
-      return existingGroups;
-    }
-
-    public CheckoutGroupDescriptor setExistingGroups(final GroupDetail[] existingGroups) {
-      this.existingGroups = existingGroups;
-      return this;
-    }
-
-    public GroupDetail[] getTestedGroups() {
-      return testedGroups;
-    }
-
-    public CheckoutGroupDescriptor setTestedGroups(final GroupDetail[] testedGroups) {
-      this.testedGroups = testedGroups;
-      return this;
-    }
-
-    public Map<String, GroupDetail> getAllIncludedGroups() {
-      return allIncludedGroups;
-    }
-
-    public CheckoutGroupDescriptor setAllIncludedGroups(
-        final Map<String, GroupDetail> allIncludedGroups) {
-      this.allIncludedGroups = allIncludedGroups;
-      return this;
-    }
-
-    public Map<String, String> getUserIds() {
-      return userIds;
-    }
-
-    public CheckoutGroupDescriptor setUserIds(final Map<String, String> userIds) {
-      this.userIds = userIds;
-      return this;
+    public Map<String, GroupDetail> getAllSavedDistantGroups() {
+      return allSavedDistantGroups;
     }
 
     public String getSuperGroupId() {
@@ -5977,24 +6060,6 @@ class DefaultAdministration implements Administration {
 
     public CheckoutGroupDescriptor setSuperGroupId(final String superGroupId) {
       this.superGroupId = superGroupId;
-      return this;
-    }
-
-    public int getNbGroupsAdded() {
-      return nbGroupsAdded;
-    }
-
-    public CheckoutGroupDescriptor setNbGroupsAdded(final int nbGroupsAdded) {
-      this.nbGroupsAdded = nbGroupsAdded;
-      return this;
-    }
-
-    public int getNbGroupsUpdated() {
-      return nbGroupsUpdated;
-    }
-
-    public CheckoutGroupDescriptor setNbGroupsUpdated(final int nbGroupsUpdated) {
-      this.nbGroupsUpdated = nbGroupsUpdated;
       return this;
     }
   }

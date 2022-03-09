@@ -77,7 +77,7 @@
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),userPanelAccessLabel,"displaySelectUserOrGroup");
   if (theUser.isAccessAdmin()) {
-
+      operationPane.addOperation(resource.getIcon("JDP.removedGroupAccess"), resource.getString("JDP.removedGroupAccess"), "displayRemovedGroups");
 	    if (!mixedDomain) {
 	      operationPane.addOperation(resource.getIcon("JDP.removedUserAccess"), resource.getString("JDP.removedUserAccess"), "displayRemovedUsers");
 	      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"), resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");

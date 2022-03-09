@@ -80,7 +80,7 @@ public class UserDAO {
   protected UserDAO() {
   }
 
-  public String saveUser(final Connection connection, final UserDetail user) throws SQLException {
+  public String addUser(final Connection connection, final UserDetail user) throws SQLException {
     final int nextId = DBUtil.getNextId(USER_TABLE);
     final Instant now = new Date().toInstant();
 
@@ -474,13 +474,17 @@ public class UserDAO {
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
 
-  public List<String> getUserIdsByUserRole(final Connection connection, final String userRoleId)
+  public List<String> getUserIdsByUserRole(final Connection connection, final String userRoleId,
+      final boolean includeRemoved)
       throws SQLException {
+    final Object[] userStatesToExclude = includeRemoved
+        ? new UserState[]{UserState.DELETED}
+        : new UserState[]{UserState.REMOVED, UserState.DELETED};
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, "ST_UserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("userRoleId = ?", Integer.parseInt(userRoleId))
-        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
+        .and(STATE).notIn(userStatesToExclude)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -488,16 +492,20 @@ public class UserDAO {
   /**
    * Returns all the User ids having directly a given space userRole.
    * @param spaceUserRoleId the unique identifier of the space user role.
+   * @param includeRemoved true to include {@link UserState#REMOVED}.
    * @return all the User ids having directly a given space userRole.
    * @throws SQLException if an error occurs.
    */
   public List<String> getUserIdsBySpaceUserRole(final Connection connection,
-      final String spaceUserRoleId) throws SQLException {
+      final String spaceUserRoleId, final boolean includeRemoved) throws SQLException {
+    final Object[] userStatesToExclude = includeRemoved
+        ? new UserState[]{UserState.DELETED}
+        : new UserState[]{UserState.REMOVED, UserState.DELETED};
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, "ST_SpaceUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
-        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
+        .and(STATE).notIn(userStatesToExclude)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }

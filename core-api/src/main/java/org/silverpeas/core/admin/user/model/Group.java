@@ -23,9 +23,11 @@
  */
 package org.silverpeas.core.admin.user.model;
 
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +47,8 @@ public interface Group extends Serializable, Comparable<Group> {
   }
 
   /**
-   * Gets all root groups available in Silverpeas, whatever their domain.
+   * Gets all {@link GroupState#VALID} root groups in Silverpeas. A root group is the group of
+   * users without any other parent group.
    * @return a list with all the groups in the Silverpeas portal.
    */
   static List<Group> getAllRoots() {
@@ -53,7 +56,7 @@ public interface Group extends Serializable, Comparable<Group> {
   }
 
   /**
-   * Gets all root groups available in the specified domain in Silverpeas.
+   * Gets all {@link GroupState#VALID} root groups available in the specified domain in Silverpeas.
    * @param domainId the unique identifier of the domain to which the root groups belong.
    * @return a list with all the root user groups in the specified domain.
    */
@@ -148,4 +151,44 @@ public interface Group extends Serializable, Comparable<Group> {
    * @return a list of all the user details in this group.
    */
   List<User> getAllUsers();
+
+  /**
+   * Gets the date of the group creation.
+   * @return creation date of the group as {@link Date}.
+   */
+  Date getCreationDate();
+
+  /**
+   * Gets the date of the last group save.
+   * @return the date of the last group save as {@link Date}.
+   */
+  Date getSaveDate();
+
+  /**
+   * Please use {@link Group#isValidState()} to retrieve group validity information.
+   * Please use {@link Group#isRemovedState()} to retrieve group removed information.
+   * This method returns the stored state information but not the functional information.
+   * @return the state of the group.
+   */
+  GroupState getState();
+
+  /**
+   * This method is the only one able to indicate the group validity state. Please do not use {@link
+   * Group#getState()} to retrieve group validity information.
+   * @return true if valid state, false otherwise.
+   */
+  boolean isValidState();
+
+  /**
+   * This method is the only one able to indicate the group removed state. Please do not use {@link
+   * Group#getState()} to retrieve group removed information.
+   * @return true if deleted state, false otherwise.
+   */
+  boolean isRemovedState();
+
+  /**
+   * Gets the last date of the last state save.
+   * @return the date of last state save (when it changes) as {@link Date}.
+   */
+  Date getStateSaveDate();
 }

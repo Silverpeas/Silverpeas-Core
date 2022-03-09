@@ -25,6 +25,7 @@
 package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.SearchCriteria;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -47,14 +48,16 @@ public class SqlGroupSelectorByCriteriaBuilder {
   }
 
   /**
-   * Builds the a SQL query to find the groups of users that match the specified criteria.
+   * Builds the SQL query to find the {@link GroupState#VALID} groups of users that match the
+   * specified criteria.
    * @param criteria a set of criteria on the groups of users to find.
    * @return the SQL query matching the specified criteria.
    */
   public JdbcSqlQuery build(final GroupsSearchCriteria criteria) {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields)
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields)
         .from(getTables(criteria))
-        .where("st_group.id = st_group.id");
+        .where("st_group.state")
+        .notIn(GroupState.REMOVED);
 
     applyCriteriaOnGroupName(query, criteria);
     applyCriteriaOnGroupIds(query, criteria);

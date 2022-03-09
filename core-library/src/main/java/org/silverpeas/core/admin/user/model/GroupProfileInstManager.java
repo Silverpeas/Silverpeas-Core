@@ -89,62 +89,31 @@ public class GroupProfileInstManager {
   /**
    * Get Space profile information with given id and creates a new GroupProfileInst
    */
-  public GroupProfileInst getGroupProfileInst(String sProfileId, String sGroupId)
-      throws AdminException {
-    String groupId = sGroupId;
-    if (sGroupId == null) {
-      try (Connection connection = DBUtil.openConnection()) {
-        GroupDetail group = groupDAO.getGroupByGroupUserRole(connection, sProfileId);
-        if (group == null) {
-          groupId = "-1";
-        } else {
-          groupId = group.getId();
-        }
-      } catch (Exception e) {
-        throw new AdminException(
-            failureOnGetting("profile " + sProfileId, "of group " + groupId), e);
-      }
-    }
-
-    GroupProfileInst groupProfileInst = new GroupProfileInst();
-    groupProfileInst.removeAllGroups();
-    groupProfileInst.removeAllUsers();
-    this.setGroupProfileInst(groupProfileInst, sProfileId, groupId);
-
-    return groupProfileInst;
-  }
-
-  /**
-   * get information for given id and store it in the given GroupProfileInst object
-   */
-  public void setGroupProfileInst(GroupProfileInst groupProfileInst, String sProfileId,
-      String sGroupId)
-      throws AdminException {
-    try (Connection connection = DBUtil.openConnection()) {
+  public GroupProfileInst getGroupProfileInst(String groupId,
+      final boolean includeRemovedUsersAndGroups) throws AdminException {
+    final GroupProfileInst groupProfileInst = new GroupProfileInst();
+    try (final Connection connection = DBUtil.openConnection()) {
       // Load the profile detail
-      GroupUserRoleRow groupUserRole = organizationSchema.groupUserRole()
-          .getGroupUserRoleByGroupId(idAsInt(sGroupId));
-
-      groupProfileInst.setGroupId(sGroupId);
-
+      final GroupUserRoleRow groupUserRole = organizationSchema.groupUserRole()
+          .getGroupUserRoleByGroupId(idAsInt(groupId));
+      groupProfileInst.setGroupId(groupId);
       if (groupUserRole != null) {
         // Set the attributes of the space profile Inst
         groupProfileInst.setId(Integer.toString(groupUserRole.id));
         groupProfileInst.setName(groupUserRole.roleName);
-
-        String profileId = groupProfileInst.getId();
-
+        final String profileId = groupProfileInst.getId();
         // set the groups
-        groupDAO.getDirectGroupIdsByGroupUserRole(connection, profileId)
+        groupDAO.getDirectGroupIdsByGroupUserRole(connection, profileId, includeRemovedUsersAndGroups)
             .forEach(groupProfileInst::addGroup);
-
         // set the users
-        userDAO.getDirectUserIdsByGroupUserRole(connection, profileId, false)
+        userDAO.getDirectUserIdsByGroupUserRole(connection, profileId, includeRemovedUsersAndGroups)
             .forEach(groupProfileInst::addUser);
       }
     } catch (Exception e) {
-      throw new AdminException("Fail to set profile " + sProfileId + " to group " + sGroupId, e);
+      throw new AdminException(
+          "Fail to set profile " + groupProfileInst.getId() + " to group " + groupId, e);
     }
+    return groupProfileInst;
   }
 
   /**

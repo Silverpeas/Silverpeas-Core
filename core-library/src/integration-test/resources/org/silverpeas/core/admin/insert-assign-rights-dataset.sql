@@ -45,30 +45,31 @@ Groups
 - G1 (domain 0)
 - ...G1-1
 - ...G1-2
+- ...G1-3
 - G2 (domain 1)
 - G_TARGET (domain 1)
  */
-INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid)
-VALUES (1, 0, '1', 'G1_D0', 'G1_D0 description', '', NULL);
-INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid)
-VALUES (2, 0, '2', 'G1-1_D0', 'G1-1_D0 description', '', '1');
-INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid)
-VALUES (3, 0, '3', 'G1-2_D0', 'G1-2_D0 description', '', '1');
-INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid)
-VALUES (10, 1, '10', 'G2_D1', 'G2_D1 description', '', NULL);
-INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid)
-VALUES (26, 1, '26', 'G_TARGET_D1', 'G_TARGET_D1 description', '', NULL);
+INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid, state, stateSaveDate)
+    VALUES (1, 0, '1', 'G1_D0', 'G1_D0 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (2, 0, '2', 'G1-1_D0', 'G1-1_D0 description', '', '1', 'VALID', '2012-01-01 00:00:00.000'),
+           (3, 0, '3', 'G1-2_D0', 'G1-2_D0 description', '', '1', 'VALID', '2012-01-01 00:00:00.000'),
+           (4, 0, '4', 'G1-3_D0', 'G1-3_D0 description', '', '1', 'REMOVED', '2012-01-01 00:00:00.000'),
+           (10, 1, '10', 'G2_D1', 'G2_D1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (26, 1, '26', 'G_TARGET_D1', 'G_TARGET_D1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000');
 
 
 /*
 G1-2 (domain 0)
 - .....User id 1 (domain 0)
 - .....User id 2 (domain 0)
+G1-3 (domain 0)
+- .....User id 2 (domain 0)
 - G2 (domain 1)
 - ... User id 4 (domain 1)
  */
 INSERT INTO st_group_user_rel (groupid, userid) VALUES (3, 1);
 INSERT INTO st_group_user_rel (groupid, userid) VALUES (3, 2);
+INSERT INTO st_group_user_rel (groupid, userid) VALUES (4, 2);
 INSERT INTO st_group_user_rel (groupid, userid) VALUES (10, 4);
 
 
@@ -176,6 +177,7 @@ VALUES (410, 3, 'publisher', 1);
 INSERT INTO st_spaceuserrole_group_rel (spaceuserroleid, groupid) VALUES (10, 1);
 INSERT INTO st_spaceuserrole_group_rel (spaceuserroleid, groupid) VALUES (100, 1);
 INSERT INTO st_spaceuserrole_group_rel (spaceuserroleid, groupid) VALUES (30, 3);
+INSERT INTO st_spaceuserrole_group_rel (spaceuserroleid, groupid) VALUES (30, 4);
 
 
 /* Space USER roles Relations */
@@ -189,6 +191,7 @@ INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (100, 1);
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (200, 1);
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (911, 1);
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (300, 3);
+INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (300, 4);
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (30, 10);
 
 /* Component USER Role Relations */

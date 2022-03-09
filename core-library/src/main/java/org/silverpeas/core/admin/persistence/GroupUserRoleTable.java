@@ -173,9 +173,9 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
       }
 
       List<String> groupIds =
-          groupDAO.getDirectGroupIdsByGroupUserRole(connection, String.valueOf(id));
+          groupDAO.getDirectGroupIdsByGroupUserRole(connection, String.valueOf(id), true);
       for (String groupId : groupIds) {
-        removeGroupFromGroupUserRole(Integer.valueOf(groupId), id);
+        removeGroupFromGroupUserRole(Integer.parseInt(groupId), id);
       }
 
 

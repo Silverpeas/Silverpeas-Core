@@ -65,7 +65,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
@@ -635,7 +634,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   public List<GroupDetail> getAllGroupOfDomain(String domainId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return groupDAO.getAllGroupsByDomainId(connection, domainId);
+      return groupDAO.getAllGroupsByDomainId(connection, domainId, false);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("all groups in domain", domainId), e);
     }

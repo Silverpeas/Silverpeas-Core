@@ -87,7 +87,7 @@ public class ProfiledObjectManager {
 
     // Insert the profileInst in the componentInst
     for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
-      ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI]);
+      ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
       profiles.add(profileInst);
     }
 
@@ -161,7 +161,7 @@ public class ProfiledObjectManager {
     }
 
     for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
-      ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI]);
+      ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
       profiles.add(profileInst);
     }
 

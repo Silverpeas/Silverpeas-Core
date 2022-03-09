@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
@@ -37,11 +38,19 @@ import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.text.MessageFormat.format;
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 @Repository
@@ -54,33 +63,45 @@ public class GroupDAO {
   private static final String GROUP_ROLE_GROUPS_TABLE = "st_groupuserrole_group_rel";
   private static final String USER_ROLE_GROUPS_TABLE = "st_userrole_group_rel";
   private static final String SPACE_ROLE_GROUP = "st_spaceuserrole_group_rel";
-  private static final String GROUP_COLUMNS =
-      "DISTINCT(id),specificId,domainId,superGroupId,name,description,synchroRule";
+  private static final String GROUP_COLUMNS_PATTERN =
+      "DISTINCT({0}id),{0}specificId,{0}domainId,{0}superGroupId,{0}name,{0}description," +
+          "{0}synchroRule,{0}creationDate,{0}saveDate,{0}state,{0}stateSaveDate";
+  private static final String GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, EMPTY);
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
   private static final String GROUP_ID_CRITERION = "groupId = ?";
+  private static final String STATE_CRITERION = "state = ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String USER_ID = "userId";
   private static final String GROUP_ID = "groupId";
+  private static final String GROUP_ID_ATTR = ".groupid";
   private static final String SPECIFIC_ID = "specificId";
   private static final String DOMAIN_ID = "domainId";
   private static final String SUPER_GROUP_ID = "superGroupId";
   private static final String NAME = "name";
   private static final String DESCRIPTION = "description";
   private static final String SYNCHRO_RULE = "synchroRule";
-  
+  private static final String CREATION_DATE = "creationDate";
+  private static final String SAVE_DATE = "saveDate";
+  private static final String STATE = "state";
+  private static final String STATE_SAVE_DATE = "stateSaveDate";
+
   @Inject
   private GroupCache groupCache;
 
   protected GroupDAO() {
   }
 
-  public String saveGroup(final Connection connection, final GroupDetail group)
+  public String addGroup(final Connection connection, final GroupDetail group)
       throws SQLException {
-    Integer superGroupId = checkSuperGroup(connection, group);
-
+    final Integer superGroupId = checkSuperGroup(connection, group);
     final int nextId = DBUtil.getNextId(GROUP_TABLE);
-    String specificId =
-        isDefined(group.getSpecificId()) ? group.getSpecificId() : String.valueOf(nextId);
+    final String specificId = isDefined(group.getSpecificId()) ?
+        group.getSpecificId() :
+        String.valueOf(nextId);
+    final Instant now = new Date().toInstant();
+    if(GroupState.UNKNOWN.equals(group.getState())) {
+      group.setState(GroupState.VALID);
+    }
     JdbcSqlQuery.createInsertFor(GROUP_TABLE)
         .addInsertParam("id", nextId)
         .addInsertParam(SPECIFIC_ID, specificId)
@@ -89,9 +110,90 @@ public class GroupDAO {
         .addInsertParam(NAME, group.getName())
         .addInsertParam(DESCRIPTION, group.getDescription())
         .addInsertParam(SYNCHRO_RULE, group.getRule())
+        .addInsertParam(CREATION_DATE, now)
+        .addInsertParam(SAVE_DATE, now)
+        .addInsertParam(STATE, group.getState())
+        .addInsertParam(STATE_SAVE_DATE, now)
         .executeWith(connection);
-
     return String.valueOf(nextId);
+  }
+
+  public Optional<GroupDetail> restoreGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    final Date now = new Date();
+    final Instant nowI = now.toInstant();
+    GroupDetail restored = null;
+    final long nbRestored = JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
+        .addUpdateParam(STATE, GroupState.VALID)
+        .addUpdateParam(STATE_SAVE_DATE, nowI)
+        .addUpdateParam(SAVE_DATE, nowI)
+        .where(ID_CRITERION, Integer.parseInt(group.getId()))
+        .and(STATE).in(GroupState.REMOVED)
+        .executeWith(connection);
+    if (nbRestored > 0) {
+      groupCache.clearCache();
+      restored = new GroupDetail(group);
+      restored.setSaveDate(now);
+      restored.setState(GroupState.VALID);
+      restored.setStateSaveDate(now);
+    }
+    return ofNullable(restored);
+  }
+
+  public Optional<GroupDetail> removeGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    final Date now = new Date();
+    final Instant nowI = now.toInstant();
+    GroupDetail removed = null;
+    final long nbRemoved = JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
+        .addUpdateParam(STATE, GroupState.REMOVED)
+        .addUpdateParam(STATE_SAVE_DATE, nowI)
+        .addUpdateParam(SAVE_DATE, nowI)
+        .where(ID_CRITERION, Integer.parseInt(group.getId()))
+        .and(STATE).notIn(GroupState.REMOVED)
+        .executeWith(connection);
+    if (nbRemoved > 0) {
+      groupCache.clearCache();
+      removed = new GroupDetail(group);
+      removed.setSaveDate(now);
+      removed.setState(GroupState.REMOVED);
+      removed.setStateSaveDate(now);
+    }
+    return ofNullable(removed);
+  }
+
+  public long deleteGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    final long nbDeleted = JdbcSqlQuery.createDeleteFor(GROUP_TABLE)
+        .where(ID_CRITERION, Integer.parseInt(group.getId()))
+        .executeWith(connection);
+    if (nbDeleted > 0) {
+      groupCache.clearCache();
+    }
+    return nbDeleted;
+  }
+
+  /**
+   * Gets all the groups that were removed in the specified domains.
+   * @param connection a connection to the data source.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
+   * are passed, then all the domains are taken by the request.
+   * @return a list of group details.
+   * @throws SQLException if an error while requesting the groups.
+   */
+  public List<GroupDetail> getRemovedGroups(final Connection connection, final String... domainIds)
+      throws SQLException {
+    Objects.requireNonNull(connection);
+    Objects.requireNonNull(domainIds);
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where(STATE_CRITERION, GroupState.REMOVED);
+    final List<Integer> requestedDomainIds =
+        Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
+    if (!requestedDomainIds.isEmpty()) {
+      query.and(DOMAIN_ID).in(requestedDomainIds);
+    }
+    return query.executeWith(connection, GroupDAO::fetchGroup);
   }
 
   public void addUserInGroup(final Connection connection, final String userId, final String groupId)
@@ -141,8 +243,8 @@ public class GroupDAO {
 
   public void updateGroup(final Connection connection, final GroupDetail group)
       throws SQLException {
-    Integer superGroupId = checkSuperGroup(connection, group);
-
+    final Instant now = new Date().toInstant();
+    final Integer superGroupId = checkSuperGroup(connection, group);
     String specificId = isDefined(group.getSpecificId()) ? group.getSpecificId() : group.getId();
     JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
         .addUpdateParam(SPECIFIC_ID, specificId)
@@ -151,6 +253,9 @@ public class GroupDAO {
         .addUpdateParam(NAME, group.getName())
         .addUpdateParam(DESCRIPTION, group.getDescription())
         .addUpdateParam(SYNCHRO_RULE, isDefined(group.getRule()) ? group.getRule() : null)
+        .addUpdateParam(SAVE_DATE, now)
+        .addUpdateParam(STATE, group.getState())
+        .addUpdateParam(STATE_SAVE_DATE, toInstance(group.getStateSaveDate()))
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .executeWith(connection);
   }
@@ -167,13 +272,6 @@ public class GroupDAO {
     return superGroupId;
   }
 
-  public void deleteGroup(final Connection connection, final GroupDetail group)
-      throws SQLException {
-    JdbcSqlQuery.createDeleteFor(GROUP_TABLE)
-        .where(ID_CRITERION, Integer.parseInt(group.getId()))
-        .executeWith(connection);
-  }
-
   public void deleteUserInGroup(final Connection connection, final String userId,
       final String groupdId) throws SQLException {
     JdbcSqlQuery.createDeleteFor(GROUP_USERS_TABLE)
@@ -188,12 +286,13 @@ public class GroupDAO {
     return JdbcSqlQuery.createSelect("COUNT(id)")
         .from(GROUP_TABLE)
         .where("name like ?", name)
+        .and(STATE).notIn(GroupState.REMOVED)
         .executeUniqueWith(connection, rs -> rs.getInt(1)) > 0;
   }
 
   /**
-   * Gets all the user groups available in Silverpeas whatever the user domain they belongs to.
-   *
+   * Gets all {@link GroupState#VALID}  groups available in Silverpeas whatever the user domain
+   * they belongs to.
    * @param connection the connection with the data source to use.
    * @return a list of user groups.
    * @throws SQLException if an error occurs while getting the user groups from the data source.
@@ -201,12 +300,14 @@ public class GroupDAO {
   public List<GroupDetail> getAllGroups(Connection connection) throws SQLException {
     return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
         .from(GROUP_TABLE)
+        .where(STATE).notIn(GroupState.REMOVED)
         .orderBy(NAME)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
 
   /**
-   * Gets all root groups available in Silverpeas whatever the user domain they belongs to.
+   * Gets all {@link GroupState#VALID} root groups available in Silverpeas whatever the user
+   * domain they belongs to.
    * @param connection the connection with the data source to use.
    * @return a list of user groups.
    * @throws SQLException if an error occurs while getting the user groups from the data source.
@@ -215,6 +316,7 @@ public class GroupDAO {
     return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where("superGroupId is null")
+        .and(STATE).notIn(GroupState.REMOVED)
         .orderBy(NAME)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
@@ -231,6 +333,7 @@ public class GroupDAO {
         .from(GROUP_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("superGroupId is null")
+        .and(STATE).notIn(GroupState.REMOVED)
         .orderBy(NAME)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
@@ -239,14 +342,19 @@ public class GroupDAO {
    * Returns all the Groups having a given domain id.
    * @param connection connection to the data source.
    * @param domainId domain id
+   * @param includeRemoved true to include REMOVED from the result, false otherwise
    * @return all the Groups having a given domain id.
    * @throws SQLException
    */
   public List<GroupDetail> getAllGroupsByDomainId(final Connection connection,
-      final String domainId) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+      final String domainId, final boolean includeRemoved) throws SQLException {
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
         .from(GROUP_TABLE)
-        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId));
+    if (!includeRemoved) {
+      query.and(STATE).notIn(GroupState.REMOVED);
+    }
+    return query
         .orderBy(NAME)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
@@ -259,8 +367,7 @@ public class GroupDAO {
    * @throws SQLException
    */
   public GroupDetail getSuperGroup(Connection connection, String groupId) throws SQLException {
-    return JdbcSqlQuery.createSelect(
-        "sg.id,sg.specificId,sg.domainId,sg.superGroupId,sg.name,sg.description,sg.synchroRule")
+    return JdbcSqlQuery.createSelect(format(GROUP_COLUMNS_PATTERN, "sg."))
         .from(GROUP_TABLE + " sg", GROUP_TABLE + " g")
         .where("sg.id = g.superGroupId")
         .and("g.id = ?", Integer.parseInt(groupId))
@@ -270,7 +377,9 @@ public class GroupDAO {
   /**
    * Gets the user groups that match the specified criteria. The criteria are provided by a
    * SearchCriteriaBuilder instance that was used to create them.
-   *
+   * <p>
+   *   IMPORTANT: returned groups are {@link GroupState#VALID} ones.
+   * </p>
    * @param connection the connetion with a data source to use.
    * @param criteria a builder with which the criteria the user groups must satisfy has been built.
    * @return a list slice of user groups matching the criteria or an empty list if no such user groups are
@@ -301,11 +410,15 @@ public class GroupDAO {
         .executeUniqueWith(con, GroupDAO::fetchGroup);
   }
 
-  public List<GroupDetail> getDirectSubGroups(Connection con, String groupId) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+  public List<GroupDetail> getDirectSubGroups(Connection con, String groupId,
+      final boolean includeRemoved) throws SQLException {
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
         .from(GROUP_TABLE)
-        .where("superGroupId = ?", Integer.parseInt(groupId))
-        .executeWith(con, GroupDAO::fetchGroup);
+        .where("superGroupId = ?", Integer.parseInt(groupId));
+    if (!includeRemoved) {
+      query.and(STATE).notIn(GroupState.REMOVED);
+    }
+    return query.executeWith(con, GroupDAO::fetchGroup);
   }
 
   public int getNBUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
@@ -338,83 +451,94 @@ public class GroupDAO {
     return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where("synchroRule is not null")
+        .and(STATE).notIn(GroupState.REMOVED)
         .executeWith(connection, GroupDAO::fetchGroup);
   }
 
   /**
    * Returns all the groups of a given user (not recursive).
    * @param userId user id
+   * @param includeRemoved true to include REMOVED from the result, false otherwise
    * @return all the groups of a given user (not recursive).
-   * @throws SQLException
+   * @throws SQLException on technical error with database.
    */
-  public List<GroupDetail> getDirectGroupsOfUser(final Connection connection, final String userId)
+  public List<GroupDetail> getDirectGroupsOfUser(final Connection connection, final String userId,
+      final boolean includeRemoved)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
         .from(GROUP_TABLE, GROUP_USERS_TABLE)
         .where("id = groupId")
-        .and("userId = ?", Integer.parseInt(userId))
-        .executeWith(connection, GroupDAO::fetchGroup);
+        .and("userId = ?", Integer.parseInt(userId));
+    if (!includeRemoved) {
+      query.and(STATE).notIn(GroupState.REMOVED);
+    }
+    return query.executeWith(connection, GroupDAO::fetchGroup);
   }
 
   /**
    * Returns all the identifiers of the groups that are in the specified user role (not recursive).
    * @param userRoleId user role id
+   * @param includeRemoved true to take into account removed groups, false otherwise.
    * @return all the group identifiers.
-   * @throws SQLException
+   * @throws SQLException on technical error with database.
    */
-  public List<String> getDirectGroupIdsByUserRole(Connection connection, String userRoleId)
+  public List<String> getDirectGroupIdsByUserRole(Connection connection, String userRoleId,
+      final boolean includeRemoved)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
         .from(GROUP_TABLE, USER_ROLE_GROUPS_TABLE)
         .where("id = groupid")
-        .and("userroleid = ?", Integer.parseInt(userRoleId))
-        .executeWith(connection, rs -> String.valueOf(rs.getInt(1)));
+        .and("userroleid = ?", Integer.parseInt(userRoleId));
+    if (!includeRemoved) {
+      query.and(STATE).notIn(GroupState.REMOVED);
+    }
+    return query.executeWith(connection, rs -> String.valueOf(rs.getInt(1)));
   }
 
   public List<String> getDirectGroupIdsBySpaceUserRole(Connection connection,
-      String spaceUserRoleId) throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+      String spaceUserRoleId, final boolean includeRemoved) throws SQLException {
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
         .from(GROUP_TABLE, SPACE_ROLE_GROUP)
         .where("groupId = id")
-        .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
-        .executeWith(connection, rs -> String.valueOf(rs.getInt(1)));
+        .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId));
+    if (!includeRemoved) {
+      query.and(STATE).notIn(GroupState.REMOVED);
+    }
+    return query.executeWith(connection, rs -> String.valueOf(rs.getInt(1)));
   }
 
   public List<String> getDirectGroupIdsByGroupUserRole(Connection connection,
-      String groupUserRoleId) throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+      String groupUserRoleId, final boolean includeRemoved) throws SQLException {
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
         .from(GROUP_TABLE, GROUP_ROLE_GROUPS_TABLE)
         .where("id = groupId")
-        .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId))
-        .executeWith(connection, row -> Integer.toString(row.getInt(1)));
-  }
-
-  public GroupDetail getGroupByGroupUserRole(Connection connection, String groupUserRoleId)
-      throws SQLException {
-    return JdbcSqlQuery.createSelect(
-        "g.id,g.specificId,g.domainId,g.superGroupId,g.name,g.description,g.synchroRule")
-        .from(GROUP_TABLE + " g", GROUP_ROLE_TABLE + " gr")
-        .where("g.id = gr.groupId")
-        .and("gr.id = ?", Integer.parseInt(groupUserRoleId))
-        .executeUniqueWith(connection, GroupDAO::fetchGroup);
+        .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId));
+    if (!includeRemoved) {
+      query.and(STATE).notIn(GroupState.REMOVED);
+    }
+    return query.executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
 
   private List<String> getManageableGroupIdsByUser(Connection con, String userId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + ".groupid")
-        .from(GROUP_ROLE_USERS_TABLE, GROUP_ROLE_TABLE)
+    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + GROUP_ID_ATTR)
+        .from(GROUP_ROLE_USERS_TABLE, GROUP_ROLE_TABLE, GROUP_TABLE)
         .where(GROUP_ROLE_USERS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
+        .and(GROUP_TABLE + ".id = " + GROUP_ROLE_TABLE + GROUP_ID_ATTR)
         .and(GROUP_ROLE_USERS_TABLE + ".userId = ?", Integer.parseInt(userId))
+        .and(STATE).notIn(GroupState.REMOVED)
         .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }
 
   private List<String> getManageableGroupIdsByGroups(Connection con, List<String> groupIds)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + ".groupid")
-        .from(GROUP_ROLE_GROUPS_TABLE, GROUP_ROLE_TABLE)
+    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + GROUP_ID_ATTR)
+        .from(GROUP_ROLE_GROUPS_TABLE, GROUP_ROLE_TABLE, GROUP_TABLE)
         .where(GROUP_ROLE_GROUPS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
-        .and(GROUP_ROLE_GROUPS_TABLE + ".groupId")
+        .and(GROUP_TABLE + ".id = " + GROUP_ROLE_TABLE + GROUP_ID_ATTR)
+        .and(GROUP_ROLE_GROUPS_TABLE + GROUP_ID_ATTR)
         .in(groupIds.stream().map(Integer::parseInt).collect(Collectors.toList()))
+        .and(STATE).notIn(GroupState.REMOVED)
         .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }
 
@@ -422,7 +546,6 @@ public class GroupDAO {
    * Fetch the current group row from a resultSet.
    */
   private static GroupDetail fetchGroup(ResultSet rs) throws SQLException {
-
     GroupDetail group = new GroupDetail();
     group.setId(Integer.toString(rs.getInt("id")));
     group.setSpecificId(rs.getString(SPECIFIC_ID));
@@ -441,6 +564,10 @@ public class GroupDAO {
     group.setName(rs.getString(NAME));
     group.setDescription(rs.getString(DESCRIPTION));
     group.setRule(rs.getString(SYNCHRO_RULE));
+    group.setCreationDate(rs.getTimestamp(CREATION_DATE));
+    group.setSaveDate(rs.getTimestamp(SAVE_DATE));
+    group.setState(GroupState.from(rs.getString(STATE)));
+    group.setStateSaveDate(rs.getTimestamp(STATE_SAVE_DATE));
     return group;
   }
 
@@ -451,5 +578,9 @@ public class GroupDAO {
       return -1;
     }
     return Integer.parseInt(domainId);
+  }
+
+  private Instant toInstance(final Date aDate) {
+    return aDate == null ? null : aDate.toInstant();
   }
 }

@@ -117,13 +117,17 @@ INSERT INTO ST_User (id, specificId, domainId, lastName, login, accessLevel, sta
 VALUES (0, '0', 0, 'Administrateur', '${ADMINLOGIN}', 'A', 'VALID', CURRENT_TIMESTAMP);
 
 CREATE TABLE ST_Group (
-  id           INT          NOT NULL,
-  domainId     INT          NOT NULL,
-  specificId   VARCHAR(500) NOT NULL,
-  superGroupId INT,
-  name         VARCHAR(100) NOT NULL,
-  description  VARCHAR(400),
-  synchroRule  VARCHAR(100)
+  id            INT          NOT NULL,
+  domainId      INT          NOT NULL,
+  specificId    VARCHAR(500) NOT NULL,
+  superGroupId  INT,
+  name          VARCHAR(100) NOT NULL,
+  description   VARCHAR(400),
+  synchroRule   VARCHAR(100),
+  creationDate  timestamp,
+  saveDate      timestamp,
+  state         varchar(30)  NOT NULL,
+  stateSaveDate timestamp    NOT NULL
 );
 ALTER TABLE ST_Group ADD CONSTRAINT PK_Group PRIMARY KEY (id);
 ALTER TABLE ST_Group ADD CONSTRAINT UN_Group_1 UNIQUE (specificId, domainId);

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.user.service;
 
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -50,14 +51,15 @@ public interface GroupProvider {
   Group getGroup(String groupId);
 
   /**
-   * Gets all the root groups of users in Silverpeas, whatever the Silverpeas domain they belongs
-   * to.
+   * Gets all {@link GroupState#VALID} root groups in Silverpeas. A root group is the group of
+   * users without any other parent group.
    * @return a list of root groups.
    */
   List<Group> getAllRootGroups();
 
   /**
-   * Gets all the root groups of users that are defined in the specified domain in Silverpeas.
+   * Gets all {@link GroupState#VALID}  root groups of users that are defined in the specified
+   * domain in Silverpeas.
    * @param domainId the unique identifier of a Silverpeas domain.
    * @return a list of root groups belonging to the specified domain.
    */

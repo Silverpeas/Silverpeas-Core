@@ -58,11 +58,8 @@
   </view:applyTemplate>
 </c:set>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel withFieldsetStyle="true"/>
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true">
   <view:includePlugin name="qtip"/>
   <script type="application/javascript">
     var arrayPaneAjaxControl;
@@ -88,14 +85,14 @@
       sp.navRequest('domainContent').go();
     }
   </script>
-</head>
+</view:sp-head-part>
 <c:set var="domain"       value="${requestScope.domain}"/>
 <jsp:useBean id="domain" type="org.silverpeas.core.admin.domain.model.Domain"/>
 <c:set var="removedUsers" value="${requestScope.removedUsers}"/>
 <jsp:useBean id="removedUsers" type="java.util.List<org.silverpeas.web.jobdomain.servlets.RemovedUserUIEntity>"/>
 <c:set var="currentUser"  value="${requestScope.theUser}"/>
 <jsp:useBean id="currentUser" type="org.silverpeas.core.admin.user.model.UserDetail"/>
-<body id="domainContent" class="page_content_admin">
+<view:sp-body-part id="domainContent" cssClass="page_content_admin">
 <fmt:message var="domainTitle" key="JDP.domains"/>
 <view:browseBar componentId="${domainTitle}">
   <view:browseBarElt label="${domain.name}" link="domainContent?Iddomain=${domain.id}"/>
@@ -163,5 +160,5 @@
     </div>
   </view:frame>
 </view:window>
-</body>
-
+</view:sp-body-part>
+</view:sp-page>
