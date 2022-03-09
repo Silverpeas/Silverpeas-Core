@@ -70,6 +70,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FileUtils.sizeOfDirectory;
 import static org.silverpeas.core.persistence.jcr.JcrDatastoreTaskMonitor.StatusType.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
 import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 import static org.silverpeas.core.util.ServiceProvider.getSingleton;
 
@@ -325,11 +326,11 @@ public class JcrDatastoreManager {
     private Future<Long> size;
 
     protected DatastorePathView() {
-      final String dataHome = ResourceLocator.getGeneralSettingBundle().getString("dataHomePath");
+      final String dataHome = new File(getGeneralSettingBundle().getString("dataHomePath")).getPath();
       try (final JcrSession session = openSystemSession()) {
         final RepositoryConfig config = ((RepositoryImpl) session.getRepository()).getConfig();
         final FileDataStore dataStore = (FileDataStore) config.getDataStore();
-        final String datastorePath = dataStore.getPath().replace(dataHome, "");
+        final String datastorePath = new File(dataStore.getPath()).getPath().replace(dataHome, "");
         path = Paths.get(dataHome, datastorePath).toFile();
         pathWithVariable = Paths.get("$SILVERPEAS_DATA_HOME", datastorePath).toFile().getPath();
       } catch (RepositoryException e) {
