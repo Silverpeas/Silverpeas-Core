@@ -38,6 +38,7 @@ import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.viewer.model.Preview;
@@ -60,6 +61,9 @@ import static org.hamcrest.Matchers.is;
  * @author Yohann Chastagnier
  */
 public abstract class AbstractViewerIT {
+
+  public static final String CONVERSION_DURATION_FILE_NAME = "CONVERSION_DURATION";
+  public static final String DOCUMENT_VIEW_FILE_NAME = "DOCUMENT_VIEW";
 
   private static final String DOC_ID = "doc-id";
   private static final String LANG = "fr";
@@ -161,7 +165,7 @@ public abstract class AbstractViewerIT {
   String readAndRemoveFromTemporaryPath(String simpleFileName) throws Exception {
     File fileToReadAndRemove = new File(getTemporaryPath(), simpleFileName);
     try {
-      return FileUtils.readFileToString(fileToReadAndRemove);
+      return FileUtils.readFileToString(fileToReadAndRemove, Charsets.UTF_8);
     } finally {
       FileUtils.deleteQuietly(fileToReadAndRemove);
     }

@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.SerializationUtil;
@@ -38,15 +39,17 @@ import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(Arquillian.class)
-public class ViewServiceCacheDemonstrationBeforeIT extends AbstractViewerIT {
+public class ViewServiceCacheDemonstrationIT extends AbstractViewerIT {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -70,25 +73,72 @@ public class ViewServiceCacheDemonstrationBeforeIT extends AbstractViewerIT {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     clearTemporaryPath();
   }
 
   @Test
   public void demonstrateCache() throws Exception {
+    firstStep();
+    secondStep();
+  }
+
+  private void firstStep() {
+    final Thread thread = new Thread(() -> {
+      try {
+        if (canPerformViewConversionTest()) {
+          SimpleDocument document = getSimpleDocumentNamed("file.odt");
+          long start = System.currentTimeMillis();
+          DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
+          assertDocumentView(documentView);
+          long end = System.currentTimeMillis();
+          long conversionDuration = end - start;
+          Logger.getAnonymousLogger().info("Conversion duration + cache in " +
+              DurationFormatUtils.formatDurationHMS(conversionDuration));
+          assertThat(conversionDuration, greaterThan(250L));
+          saveInTemporaryPath(CONVERSION_DURATION_FILE_NAME, String.valueOf(conversionDuration));
+          saveInTemporaryPath(DOCUMENT_VIEW_FILE_NAME,
+              SerializationUtil.serializeAsString(documentView));
+        }
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    });
+    thread.start();
+    try {
+      thread.join(60000);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void secondStep() throws Exception {
     if (canPerformViewConversionTest()) {
+      long conversionDurationFromBefore = readAndRemoveFromTemporaryPathAsLong(
+          CONVERSION_DURATION_FILE_NAME);
+      DocumentView documentViewFromBefore = SerializationUtil.deserializeFromString(
+          readAndRemoveFromTemporaryPath(DOCUMENT_VIEW_FILE_NAME));
+      await().pollDelay(1001, TimeUnit.MILLISECONDS).until(() -> true);
       SimpleDocument document = getSimpleDocumentNamed("file.odt");
       long start = System.currentTimeMillis();
-      DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
-      assertDocumentView(documentView);
+      final DocumentView view = viewService.getDocumentView(ViewerContext.from(document));
+      assertDocumentView(view);
       long end = System.currentTimeMillis();
-      long conversionDuration = end - start;
-      Logger.getAnonymousLogger().info("Conversion duration + cache in " +
-          DurationFormatUtils.formatDurationHMS(conversionDuration));
-      assertThat(conversionDuration, greaterThan(250L));
-      saveInTemporaryPath(ViewServiceCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME, String.valueOf(conversionDuration));
-      saveInTemporaryPath(ViewServiceCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME,
-          SerializationUtil.serializeAsString(documentView));
+      long fromCacheDuration = end - start;
+      Logger.getAnonymousLogger()
+          .info("From cache in " + DurationFormatUtils.formatDurationHMS(fromCacheDuration));
+      assertThat(fromCacheDuration, lessThan(250L));
+
+      assertThat(view, not(sameInstance(documentViewFromBefore)));
+
+      assertThat(view.getPhysicalFile().getParentFile().getName(),
+          is(documentViewFromBefore.getPhysicalFile().getParentFile().getName()));
+
+      assertThat(view.getPhysicalFile().getParentFile().lastModified(),
+          is(documentViewFromBefore.getPhysicalFile().getParentFile().lastModified()));
+
+      assertThat(view.getPhysicalFile().lastModified(),
+          is(documentViewFromBefore.getPhysicalFile().lastModified()));
     }
   }
 

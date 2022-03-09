@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.SerializationUtil;
@@ -48,7 +49,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(Arquillian.class)
-public class ViewServiceNoCacheDemonstrationAfterIT extends AbstractViewerIT {
+public class ViewServiceNoCacheDemonstrationIT extends AbstractViewerIT {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -59,6 +60,7 @@ public class ViewServiceNoCacheDemonstrationAfterIT extends AbstractViewerIT {
   @Before
   public void setup() {
     clearTemporaryPath();
+    getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
@@ -76,25 +78,57 @@ public class ViewServiceNoCacheDemonstrationAfterIT extends AbstractViewerIT {
   }
 
   @Test
-  public void demonstrateNoCache() throws Exception {
+  public void demonstrateCache() throws Exception {
+    firstStep();
+    secondStep();
+  }
+
+  @Test
+  public void firstStep() {
+    final Thread thread = new Thread(() -> {
+      try {
+        if (canPerformViewConversionTest()) {
+          SimpleDocument document = getSimpleDocumentNamed("file.odt");
+          long start = System.currentTimeMillis();
+          DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
+          assertDocumentView(documentView, 1);
+          long end = System.currentTimeMillis();
+          long conversionDuration = end - start;
+          Logger.getAnonymousLogger().info("Conversion duration without cache in " +
+              DurationFormatUtils.formatDurationHMS(conversionDuration));
+          assertThat(conversionDuration, greaterThan(250L));
+          saveInTemporaryPath(CONVERSION_DURATION_FILE_NAME, String.valueOf(conversionDuration));
+          saveInTemporaryPath(DOCUMENT_VIEW_FILE_NAME,
+              SerializationUtil.serializeAsString(documentView));
+        }
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    });
+    thread.start();
+    try {
+      thread.join(60000);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void secondStep() throws Exception {
     if (canPerformViewConversionTest()) {
       long conversionDurationFromBefore =
-          readAndRemoveFromTemporaryPathAsLong(
-              ViewServiceNoCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME);
+          readAndRemoveFromTemporaryPathAsLong(CONVERSION_DURATION_FILE_NAME);
       DocumentView documentViewFromBefore = SerializationUtil
-          .deserializeFromString(readAndRemoveFromTemporaryPath(
-              ViewServiceNoCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME));
+          .deserializeFromString(readAndRemoveFromTemporaryPath(DOCUMENT_VIEW_FILE_NAME));
       await().pollDelay(1001, TimeUnit.MILLISECONDS).until(() -> true);
       SimpleDocument document = getSimpleDocumentNamed("file.odt");
       long start = System.currentTimeMillis();
       final DocumentView view = viewService.getDocumentView(ViewerContext.from(document));
-      assertDocumentView(view);
+      assertDocumentView(view, 2);
       long end = System.currentTimeMillis();
       long fromCacheDuration = end - start;
       Logger.getAnonymousLogger().info("(Again) Conversion duration without cache in " +
           DurationFormatUtils.formatDurationHMS(fromCacheDuration));
       assertThat(fromCacheDuration, greaterThan(250L));
-      assertThat((fromCacheDuration * 2), greaterThan(conversionDurationFromBefore));
 
       assertThat(view, not(sameInstance(documentViewFromBefore)));
 
@@ -109,9 +143,9 @@ public class ViewServiceNoCacheDemonstrationAfterIT extends AbstractViewerIT {
     }
   }
 
-  private void assertDocumentView(DocumentView view) {
+  private void assertDocumentView(DocumentView view, final int nbAttemptedFiles) {
     assertThat(view, notNullValue());
-    assertThat(getTemporaryPath().listFiles(), arrayWithSize(2));
+    assertThat(getTemporaryPath().listFiles(), arrayWithSize(nbAttemptedFiles));
     assertThat(view.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
     assertThat(view.getPhysicalFile().getName(), endsWith("file.swf"));
     assertThat(view.getWidth(), is("595"));
