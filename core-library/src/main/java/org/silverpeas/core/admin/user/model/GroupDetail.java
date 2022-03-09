@@ -25,10 +25,12 @@ package org.silverpeas.core.admin.user.model;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.util.ArrayUtil;
 
 import java.text.Collator;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +47,10 @@ public class GroupDetail implements Group {
   private String description = "";
   private String rule = null;
   private String[] userIds = ArrayUtil.emptyStringArray();
+  private Date creationDate = null;
+  private Date saveDate = null;
+  private GroupState state = GroupState.from(null);
+  private Date stateSaveDate = null;
 
   private int nbUsers = -1;
   private int nbTotalUsers = -1;
@@ -59,6 +65,9 @@ public class GroupDetail implements Group {
   /**
    * Constructs a group detail from the specified one. The given group detail is cloned to the
    * new group detail.
+   * <p>
+   *   BE CAREFULL: {@link #nbUsers} and {@link #nbTotalUsers} fields are not copied.
+   * </p>
    * @param toClone a group to clone.
    */
   public GroupDetail(GroupDetail toClone) {
@@ -70,6 +79,10 @@ public class GroupDetail implements Group {
     description = toClone.description;
     userIds = toClone.userIds;
     rule = toClone.rule;
+    creationDate = toClone.getCreationDate();
+    saveDate = toClone.getSaveDate();
+    state = toClone.getState();
+    stateSaveDate = toClone.getStateSaveDate();
   }
 
   /**
@@ -270,5 +283,64 @@ public class GroupDetail implements Group {
   @Override
   public List<User> getAllUsers() {
     return Arrays.asList(getOrganisationController().getAllUsersOfGroup(getId()));
+  }
+
+  @Override
+  public boolean isValidState() {
+    return !GroupState.UNKNOWN.equals(state) && !isRemovedState();
+  }
+
+  @Override
+  public boolean isRemovedState() {
+    return GroupState.REMOVED.equals(state);
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return creationDate;
+  }
+
+  /**
+   * @param creationDate the date of the user creation
+   */
+  public void setCreationDate(final Date creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  @Override
+  public Date getSaveDate() {
+    return saveDate;
+  }
+
+  /**
+   * @param saveDate the date of the last group save
+   */
+  public void setSaveDate(final Date saveDate) {
+    this.saveDate = saveDate;
+  }
+
+  @Override
+  public GroupState getState() {
+    return state;
+  }
+
+  /**
+   * The state of the group is updated and the according save date too.
+   * @param state the state of the group.
+   */
+  public void setState(final GroupState state) {
+    this.state = state != null ? state : GroupState.from(null);
+  }
+
+  @Override
+  public Date getStateSaveDate() {
+    return stateSaveDate;
+  }
+
+  /**
+   * @param stateSaveDate the date of last user state save (when it changes)
+   */
+  public void setStateSaveDate(final Date stateSaveDate) {
+    this.stateSaveDate = stateSaveDate;
   }
 }

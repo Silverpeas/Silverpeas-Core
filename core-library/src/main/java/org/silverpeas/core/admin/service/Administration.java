@@ -41,6 +41,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
@@ -439,14 +440,14 @@ public interface Administration {
   String getGroupName(String sGroupId) throws AdminException;
 
   /**
-   * Get the all the groups available in Silverpeas.
+   * Get the all the {@link GroupState#VALID} groups available in Silverpeas.
    * @return a list of available user groups in Silverpeas.
    * @throws AdminException if an error occurs
    */
   List<GroupDetail> getAllGroups() throws AdminException;
 
   /**
-   * Tests if group exists in Silverpeas.
+   * Tests if {@link GroupState#VALID} group exists in Silverpeas.
    * @param groupName the name of a group
    * @return true if a group with the given name
    * @throws AdminException if an error occurs
@@ -498,21 +499,37 @@ public interface Administration {
   String addGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException;
 
   /**
-   * Delete the group with the given Id. The deletion is applied recursively to the sub-groups.
+   * Restores the given group from silverpeas and specific domain
+   * @param groupId the group identifier
+   * @return all the group instance which have been restored from the given one.
+   * @throws AdminException if an error occurs
+   */
+  List<GroupDetail> restoreGroup(String groupId) throws AdminException;
+
+  /**
+   * Removes the given group from silverpeas and specific domain
+   * @param groupId the group identifier
+   * @return all the group instance which have been removed from the given one.
+   * @throws AdminException if an error occurs
+   */
+  List<GroupDetail> removeGroup(String groupId) throws AdminException;
+
+  /**
+   * Delete the group with the given Id. The deletion is applied recursively to the subgroups.
    * @param sGroupId the unique identifier of a group
    * @return the identifier of the deleted group.
    * @throws AdminException if an error occurs
    */
-  String deleteGroupById(String sGroupId) throws AdminException;
+  List<GroupDetail> deleteGroupById(String sGroupId) throws AdminException;
 
   /**
-   * Delete the group with the given id. The deletion is applied recursively to the sub-groups.
-   * @param sGroupId the unique identifier of a grouo
-   * @param onlyInSilverpeas performs the operation only in Silverpeas
+   * Delete the group with the given id. The deletion is applied recursively to the subgroups.
+   * @param sGroupId the unique identifier of a group.
+   * @param onlyInSilverpeas performs the operation only in Silverpeas.
    * @return the identifier of the deleted group.
-   * @throws AdminException if an error occurs
+   * @throws AdminException if an error occurs.
    */
-  String deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException;
+  List<GroupDetail> deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException;
 
   /**
    * Update the given group in Silverpeas and specific.
@@ -536,8 +553,8 @@ public interface Administration {
   void addUserInGroup(String sUserId, String sGroupId) throws AdminException;
 
   /**
-   * Gets all root user groups in Silverpeas. A root group is the group of users without any other
-   * parent group.
+   * Gets all {@link GroupState#VALID} root groups in Silverpeas. A root group is the group of
+   * users without any other parent group.
    * @return a list of user groups.
    * @throws AdminException if an error occurs whil getting the root user groups.
    */
@@ -795,10 +812,22 @@ public interface Administration {
 
   long getDomainActions(String domainId) throws AdminException;
 
+  /**
+   * Gets all {@link GroupState#VALID} groups at the root of a domain.
+   * @param domainId identifier of a domain.
+   * @return an array of {@link GroupDetail} instance.
+   * @throws AdminException on any technical error.
+   */
   GroupDetail[] getRootGroupsOfDomain(String domainId) throws AdminException;
 
   List<GroupDetail> getSynchronizedGroups() throws AdminException;
 
+  /**
+   * Gets all users of a group, including these of {@link GroupState#VALID} subgroups.
+   * @param groupId the identifier of the group from which users are retrieved.
+   * @return an array of {@link UserDetail} instance.
+   * @throws AdminException on any technical error.
+   */
   UserDetail[] getAllUsersOfGroup(String groupId) throws AdminException;
 
   UserDetail[] getUsersOfDomain(String domainId) throws AdminException;
@@ -1169,7 +1198,7 @@ public interface Administration {
       String sClientComponentId) throws AdminException;
 
   /**
-   * For use in userPanel : return the direct sub-groups
+   * For use in userPanel : return the direct {@link GroupState#VALID} subgroups.
    * @param parentGroupId the unique identifier of the parent group
    * @return an array with all the groups children of the specified group
    * @throws AdminException if an error occurs
@@ -1177,7 +1206,8 @@ public interface Administration {
   GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException;
 
   /**
-   * For use in userPanel: return recursively the direct sub-groups of the specified group
+   * For use in userPanel: return recursively the direct {@link GroupState#VALID} subgroups of 
+   * the specified group.
    * @param parentGroupId the unique identifier of the parent group
    * @return an array with all the groups children of the specified group
    * @throws AdminException if an error occurs
@@ -1408,6 +1438,15 @@ public interface Administration {
 
   SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId, String spaceId)
       throws AdminException;
+
+  /**
+   * Gets all the groups that were removed in the specified domains. If no domains are specified,
+   * then all the domains are taken into account.
+   * @param domainIds the unique identifiers of the domains.
+   * @return a list of groups or an empty list if there is no removed groups in the specified domains.
+   * @throws AdminException if an error occurs
+   */
+  List<GroupDetail> getRemovedGroups(String... domainIds) throws AdminException;
 
   /**
    * Gets all the users that were removed in the specified domains. If no domains are specified,

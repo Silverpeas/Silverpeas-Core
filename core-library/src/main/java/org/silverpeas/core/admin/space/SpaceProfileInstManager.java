@@ -140,12 +140,13 @@ public class SpaceProfileInstManager {
 
   /**
    * Get Space profile information with given id and creates a new SpaceProfileInst
-   *
-   * @param spaceProfileId
-   * @return
-   * @throws AdminException
+   * @param spaceProfileId identifier for the space profile.
+   * @param includeRemovedUsersAndGroups true to take into account removed groups and removed users.
+   * @return the corresponding {@link SpaceProfileInst} if any, null otherwise.
+   * @throws AdminException if an error occurred.
    */
-  public SpaceProfileInst getSpaceProfileInst(String spaceProfileId) throws AdminException {
+  public SpaceProfileInst getSpaceProfileInst(String spaceProfileId,
+      final boolean includeRemovedUsersAndGroups) throws AdminException {
     try {
       // Load the profile detail
       SpaceUserRoleRow spaceUserRole = organizationSchema.spaceUserRole().
@@ -155,7 +156,7 @@ public class SpaceProfileInstManager {
       if (spaceUserRole != null) {
         // Set the attributes of the space profile Inst
         spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
-        setUsersAndGroups(spaceProfileInst);
+        setUsersAndGroups(spaceProfileInst, includeRemovedUsersAndGroups);
       }
       return spaceProfileInst;
     } catch (Exception e) {
@@ -195,7 +196,7 @@ public class SpaceProfileInstManager {
       if (spaceUserRole != null) {
         // Set the attributes of the space profile Inst
         spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
-        setUsersAndGroups(spaceProfileInst);
+        setUsersAndGroups(spaceProfileInst, false);
       }
       return spaceProfileInst;
     } catch (Exception e) {
@@ -203,11 +204,14 @@ public class SpaceProfileInstManager {
     }
   }
 
-  private void setUsersAndGroups(SpaceProfileInst spaceProfileInst) throws AdminException {
-    List<String> groupIds = GroupManager.get().getDirectGroupIdsInSpaceRole(spaceProfileInst.getId());
+  private void setUsersAndGroups(SpaceProfileInst spaceProfileInst,
+      final boolean includeRemovedUsersAndGroups) throws AdminException {
+    List<String> groupIds = GroupManager.get().getDirectGroupIdsInSpaceRole(spaceProfileInst.getId(),
+        includeRemovedUsersAndGroups);
     spaceProfileInst.setGroups(groupIds);
 
-    List<String> userIds = UserManager.get().getDirectUserIdsInSpaceRole(spaceProfileInst.getId());
+    List<String> userIds = UserManager.get().getDirectUserIdsInSpaceRole(spaceProfileInst.getId(),
+        includeRemovedUsersAndGroups);
     spaceProfileInst.setUsers(userIds);
   }
 

@@ -45,7 +45,7 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
    * Creates an empty profile of rights access.
    */
   public BaseRightProfile() {
-
+    // Nothing to do
   }
 
   /**

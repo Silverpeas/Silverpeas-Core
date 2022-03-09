@@ -41,6 +41,21 @@ FROM (SELECT
       -- #############################
       UNION
       SELECT
+        g.domainid         AS domainId,
+        '(G) - ' || g.name AS NAME,
+        rpad('GROUP MANAGER', 16, ' ') || ' - ' ||
+        (ur.rolename || '@' || GR.name)    AS ROLE,
+        1
+      FROM st_group g
+        JOIN st_groupuserrole_group_rel ur_gr
+          ON ur_gr.groupid = g.id
+        JOIN st_groupuserrole ur
+          ON ur.id = ur_gr.groupuserroleid
+        JOIN st_group GR
+          ON GR.id = ur.groupid
+      -- #############################
+      UNION
+      SELECT
         u.domainid                                                           AS domainId,
         '(U) - ' || u.login                                                  AS name,
         rpad('SPACE', 16, ' ') || ' - ' || (sur2.rolename || '@' || s2.name) AS role,
@@ -52,7 +67,6 @@ FROM (SELECT
           ON sur2.id = sur_ur.spaceuserroleid
         JOIN st_space s2
           ON s2.id = sur2.spaceid
-      WHERE u.state = 'VALID'
       -- #############################
       UNION
       SELECT
@@ -75,6 +89,20 @@ FROM (SELECT
           ON c2.id = ur2.instanceid
         LEFT OUTER JOIN sb_node_node node
           ON node.nodeid = ur2.objectid
-      WHERE u.state = 'VALID'
+      -- #############################
+      UNION
+      SELECT
+          u.domainid          AS domainId,
+          '(U) - ' || u.login AS NAME,
+          rpad('GROUP MANAGER', 16, ' ') || ' - ' ||
+          (ur.rolename || '@' || GR.name)    AS ROLE,
+          1
+      FROM st_user u
+               JOIN st_groupuserrole_user_rel ur_gr
+                    ON ur_gr.userid = u.id
+               JOIN st_groupuserrole ur
+                    ON ur.id = ur_gr.groupuserroleid
+               JOIN st_group GR
+                    ON GR.id = ur.groupid
      ) AS result
 ORDER BY result.domainid, result.name, result.role

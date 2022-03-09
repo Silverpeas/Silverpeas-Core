@@ -27,6 +27,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
@@ -47,6 +48,8 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
@@ -75,7 +78,11 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   public boolean isGroupAuthorized(final String groupId, final String instanceId) {
     try {
-      return controller.isComponentAvailableToGroup(instanceId, groupId);
+      final Group group = controller.getGroup(groupId);
+      return ofNullable(group)
+          .filter(not(Group::isRemovedState)
+              .and(g -> controller.isComponentAvailableToGroup(instanceId, g.getId())))
+          .isPresent();
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
     }

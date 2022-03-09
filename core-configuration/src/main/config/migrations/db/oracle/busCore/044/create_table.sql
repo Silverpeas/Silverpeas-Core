@@ -38,7 +38,11 @@ CREATE TABLE ST_Group
     superGroupId    int,
     name            varchar(100)  NOT NULL,
     description     varchar(400),
-    synchroRule     varchar(2000)
+    synchroRule     varchar(2000),
+    creationDate    timestamp,
+    saveDate        timestamp,
+    state           varchar(30)  NOT NULL,
+    stateSaveDate   timestamp    NOT NULL
 );
 
 CREATE TABLE ST_Group_User_Rel

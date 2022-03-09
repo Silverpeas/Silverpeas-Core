@@ -79,13 +79,17 @@ CREATE TABLE IF NOT EXISTS ST_User
 
 CREATE TABLE IF NOT EXISTS ST_Group
 (
-  id           INT          NOT NULL,
-  domainId     INT          NOT NULL,
-  specificId   VARCHAR(500) NOT NULL,
-  superGroupId INT,
-  name         VARCHAR(100) NOT NULL,
-  description  VARCHAR(400),
-  synchroRule  VARCHAR(100),
+  id            INT          NOT NULL,
+  domainId      INT          NOT NULL,
+  specificId    VARCHAR(500) NOT NULL,
+  superGroupId  INT,
+  name          VARCHAR(100) NOT NULL,
+  description   VARCHAR(400),
+  synchroRule   VARCHAR(100),
+  creationDate  TIMESTAMP,
+  saveDate      TIMESTAMP,
+  state         VARCHAR(30)  NOT NULL,
+  stateSaveDate TIMESTAMP    NOT NULL,
   CONSTRAINT PK_Group PRIMARY KEY (id),
   CONSTRAINT UN_Group_1 UNIQUE(specificId, domainId),
   CONSTRAINT UN_Group_2 UNIQUE(superGroupId, name, domainId),
@@ -266,6 +270,35 @@ CREATE TABLE IF NOT EXISTS ST_SpaceUserRole_Group_Rel
   CONSTRAINT FK_SpaceUserRole_Group_Rel_1 FOREIGN KEY (spaceUserRoleId) REFERENCES ST_SpaceUserRole(id),
   CONSTRAINT FK_SpaceUserRole_Group_Rel_2 FOREIGN KEY (groupId) REFERENCES ST_Group(id)
 );
+
+CREATE TABLE IF NOT EXISTS ST_GroupUserRole
+(
+    id       int          NOT NULL,
+    groupId  int          NOT NULL,
+    roleName varchar(100) NOT NULL,
+    CONSTRAINT PK_GroupUserRole PRIMARY KEY (id),
+    CONSTRAINT UN_GroupUserRole_1 UNIQUE(groupId, roleName),
+    CONSTRAINT FK_GroupUserRole_1 FOREIGN KEY (groupId) REFERENCES ST_Group(id)
+);
+
+CREATE TABLE IF NOT EXISTS ST_GroupUserRole_User_Rel
+(
+    groupUserRoleId int NOT NULL,
+    userId          int NOT NULL,
+    CONSTRAINT PK_GroupUserRole_User_Rel PRIMARY KEY (groupUserRoleId, userId),
+    CONSTRAINT FK_GroupUserRole_User_Rel_1 FOREIGN KEY (groupUserRoleId) REFERENCES ST_GroupUserRole(id),
+    CONSTRAINT FK_GroupUserRole_User_Rel_2 FOREIGN KEY (userId) REFERENCES ST_User(id)
+);
+
+CREATE TABLE IF NOT EXISTS ST_GroupUserRole_Group_Rel
+(
+    groupUserRoleId int NOT NULL,
+    groupId         int NOT NULL,
+    CONSTRAINT PK_GroupUserRole_Group_Rel PRIMARY KEY (groupUserRoleId, groupId),
+    CONSTRAINT FK_GroupUserRole_Group_Rel_1 FOREIGN KEY (groupUserRoleId) REFERENCES ST_GroupUserRole(id),
+    CONSTRAINT FK_GroupUserRole_Group_Rel_2 FOREIGN KEY (groupId) REFERENCES ST_Group(id)
+);
+
 
 CREATE TABLE IF NOT EXISTS SB_Node_Node
 (

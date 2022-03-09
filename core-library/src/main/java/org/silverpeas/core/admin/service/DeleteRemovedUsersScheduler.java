@@ -59,7 +59,7 @@ public class DeleteRemovedUsersScheduler implements Initialization {
     }
   }
 
-  private class DeleteRemovedUsersJob extends Job {
+  private static class DeleteRemovedUsersJob extends Job {
 
     DeleteRemovedUsersJob() {
       super(JOB_NAME);

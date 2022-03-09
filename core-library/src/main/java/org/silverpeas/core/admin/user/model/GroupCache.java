@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentMap;
 @Singleton
 public class GroupCache {
 
-  private ConcurrentMap<String, List<String>> map = new ConcurrentHashMap<>();
+  private final ConcurrentMap<String, List<String>> map = new ConcurrentHashMap<>();
 
   /**
    * Clears the cache.

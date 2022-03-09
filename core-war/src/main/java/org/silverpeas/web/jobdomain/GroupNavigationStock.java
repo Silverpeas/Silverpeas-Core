@@ -28,6 +28,7 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;
@@ -36,7 +37,7 @@ import java.util.List;
 
 /**
  * This class manage the information needed for groups navigation and browse PRE-REQUIRED : the
- * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
+ * Group passed in the constructor MUST BE A {@link GroupState#VALID} GROUP (with Id, etc...)
  * @t.leroi
  */
 public class GroupNavigationStock extends NavigationStock {

@@ -304,7 +304,7 @@ class GroupSynchronizationRule {
     Set<String> allGroupIds = new HashSet<>();
     for (String currentGroupId : new HashSet<>(groupIds)) {
       allGroupIds.add(currentGroupId);
-      // Add sub groups recursively if recursive option is selected
+      // Add valid subgroups recursively if recursive option is selected
       if (withSubGroups) {
         allGroupIds.addAll(getGroupManager().getAllSubGroupIdsRecursively(currentGroupId));
       }

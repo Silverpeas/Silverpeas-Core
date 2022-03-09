@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -34,8 +34,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class AdminSettings {
 
-  private static SettingBundle settings = ResourceLocator
-      .getSettingBundle("org.silverpeas.admin.admin");
+  private static final SettingBundle settings = getSettingBundle("org.silverpeas.admin.admin");
 
   private AdminSettings() {
     throw new IllegalStateException("Utility class");
@@ -63,5 +62,29 @@ public class AdminSettings {
    */
   public static int getDeletionOfRemovedUsersDayDelay() {
     return settings.getInteger("DeleteRemovedUsersDelay", 30);
+  }
+
+  /**
+   * Indicates if the automatic deletion of removed groups is enabled.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isAutomaticDeletionOfRemovedGroupsEnabled() {
+    return isDefined(getDeletionOfRemovedGroupsCron()) && getDeletionOfRemovedGroupsDayDelay() > 0;
+  }
+
+  /**
+   * Gets the cron of the JOB execution in charge of deleting the removed groups.
+   * @return cron as string, empty to deactivate the JOB.
+   */
+  public static String getDeletionOfRemovedGroupsCron() {
+    return settings.getString("DeleteRemovedGroupsCron", "");
+  }
+
+  /**
+   * Gets the delay in days after which a removed group can be deleted.
+   * @return day delay as int, 0 to deactivate the automatic deletion of removed groups.
+   */
+  public static int getDeletionOfRemovedGroupsDayDelay() {
+    return settings.getInteger("DeleteRemovedGroupsDelay", 30);
   }
 }

@@ -45,7 +45,6 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.MemoizedSyncSupplier;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 

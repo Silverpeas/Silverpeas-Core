@@ -54,13 +54,17 @@ CREATE TABLE ST_User
 
 CREATE TABLE ST_Group
 (
-    id              int           NOT NULL,
-    domainId        int           NOT NULL,
-    specificId      varchar(500)  NOT NULL,
-    superGroupId    int,
-    name            varchar(100)  NOT NULL,
-    description     varchar(400),
-    synchroRule	    varchar(100)
+    id            int           NOT NULL,
+    domainId      int           NOT NULL,
+    specificId    varchar(500)  NOT NULL,
+    superGroupId  int,
+    name          varchar(100)  NOT NULL,
+    description   varchar(400),
+    synchroRule	  varchar(100),
+    creationDate  timestamp,
+    saveDate      timestamp,
+    state         varchar(30)  NOT NULL,
+    stateSaveDate timestamp    NOT NULL
 );
 
 CREATE TABLE ST_Group_User_Rel

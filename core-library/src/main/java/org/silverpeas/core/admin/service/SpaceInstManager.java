@@ -238,7 +238,7 @@ public class SpaceInstManager {
       final List<SpaceProfileInst> spaceProfiles = new ArrayList<>(asProfIds.length);
       for (String profileId : asProfIds) {
         SpaceProfileInst spaceProfileInst =
-            spaceProfileInstManager.getSpaceProfileInst(profileId);
+            spaceProfileInstManager.getSpaceProfileInst(profileId, false);
         spaceProfiles.add(spaceProfileInst);
       }
       spaceInst.setData(spaceProfiles, subSpaces, components);

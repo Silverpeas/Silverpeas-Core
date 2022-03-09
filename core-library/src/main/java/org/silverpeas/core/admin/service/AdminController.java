@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
+
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
  * It provides access functions to query and modify the domains as well as the company organization
@@ -110,7 +112,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getPathToComponent(componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -120,7 +122,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getPathToSpace(spaceId, includeTarget);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -452,7 +454,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getRemovedSpaces();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -461,7 +463,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getRemovedComponents();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -511,7 +513,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getProfilesByObject(objectId, componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -696,7 +698,7 @@ public class AdminController implements java.io.Serializable {
       SilverLogger.getLogger(this)
           .error("cannot get direct group identifiers of userId ''{0}'' ({1})",
               new String[]{userId, e.getLocalizedMessage()}, e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -1270,7 +1272,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getPathToGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -1296,14 +1298,37 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  /** Delete the given group */
-  public String deleteGroupById(String sGroupId) {
+  public List<GroupDetail> getRemovedGroupsInDomain(final String domainId) throws AdminException {
+    return admin.getRemovedGroups(domainId);
+  }
 
+  /** Restores the given group */
+  public List<GroupDetail> restoreGroupById(String groupId) {
+    try {
+      return admin.restoreGroup(groupId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      return emptyList();
+    }
+  }
+
+  /** Removes the given group */
+  public List<GroupDetail> removeGroupById(String groupId) {
+    try {
+      return admin.removeGroup(groupId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      return emptyList();
+    }
+  }
+
+  /** Delete the given group */
+  public List<GroupDetail> deleteGroupById(String sGroupId) {
     try {
       return admin.deleteGroupById(sGroupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return "";
+      return emptyList();
     }
   }
 
@@ -1377,7 +1402,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getSpecificPropertiesToImportUsers(domainId, language);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -1386,7 +1411,7 @@ public class AdminController implements java.io.Serializable {
       return Arrays.asList(admin.searchUsers(domainId, query));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 

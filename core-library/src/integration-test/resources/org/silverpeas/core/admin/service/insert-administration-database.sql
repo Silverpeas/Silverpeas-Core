@@ -113,17 +113,17 @@ VALUES (0, 0, '0', 'adm', 'Administrateur', 'adm@silverpeas.org', 'administrateu
  - ... Group SQL 1-2
  */
 
-INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid)
-VALUES (1, -1, '1', 'Group MIX 1', 'Group MIX 1 description', '', NULL),
-       (2, -1, '2', 'Group MIX 2', 'Group MIX 2 description', '', NULL),
-       (3, -1, '3', 'Group MIX 3', 'Group MIX 3 description', '', NULL),
-       (31, -1, '4', 'Group MIX 3-1', 'Group MIX 3-1 description', '', 3),
-       (311, -1, '5', 'Group MIX 3-1-1', 'Group MIX 3-1-1 description', '', 31),
-       (312, -1, '6', 'Group MIX 3-1-2', 'Group MIX 3-1-2 description', '', 31),
-       (1001, 0, '7', 'Group SP 1', 'Group SP 1 description', '', NULL),
-       (1002, 0, '8', 'Group SP 2', 'Group SP 2 description', '', NULL),
-       (2001, 1, '9', 'Group SQL 1', 'Group SQL 1 description', '', NULL),
-       (2011, 1, '10', 'Group SQL 1-1', 'Group SQL 1-1 description', '', 2001);
+INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, supergroupid, state, stateSaveDate)
+    VALUES (1, -1, '1', 'Group MIX 1', 'Group MIX 1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (2, -1, '2', 'Group MIX 2', 'Group MIX 2 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (3, -1, '3', 'Group MIX 3', 'Group MIX 3 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (31, -1, '4', 'Group MIX 3-1', 'Group MIX 3-1 description', '', 3, 'VALID', '2012-01-01 00:00:00.000'),
+           (311, -1, '5', 'Group MIX 3-1-1', 'Group MIX 3-1-1 description', '', 31, 'VALID', '2012-01-01 00:00:00.000'),
+           (312, -1, '6', 'Group MIX 3-1-2', 'Group MIX 3-1-2 description', '', 31, 'VALID', '2012-01-01 00:00:00.000'),
+           (1001, 0, '7', 'Group SP 1', 'Group SP 1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (1002, 0, '8', 'Group SP 2', 'Group SP 2 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (2001, 1, '9', 'Group SQL 1', 'Group SQL 1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
+           (2011, 1, '10', 'Group SQL 1-1', 'Group SQL 1-1 description', '', 2001, 'VALID', '2012-01-01 00:00:00.000');
 
 INSERT INTO st_group_user_rel (groupid, userid)
     -- # MIXED DOMAIN
