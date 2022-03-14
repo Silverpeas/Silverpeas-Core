@@ -105,7 +105,7 @@ public class MailSenderTask extends AbstractRequestTask<MailSenderTask.MailProce
     public void process(final MailProcessContext context) throws InterruptedException {
       try {
         context.getSemaphore().acquire();
-        MailSenderProvider.get().send(mailToSend);
+        MailSender.get().send(mailToSend);
       } finally {
         context.getSemaphore().release();
       }

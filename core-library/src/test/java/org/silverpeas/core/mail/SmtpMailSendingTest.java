@@ -24,16 +24,13 @@
 package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.base.GreenMailOperations;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.MailSender;
-import org.silverpeas.core.mail.engine.MailSenderProvider;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
@@ -46,8 +43,10 @@ import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -57,9 +56,10 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -71,7 +71,8 @@ import static org.silverpeas.core.util.StringUtil.EMPTY;
 @LoggerLevel(Level.DEBUG)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
-@TestManagedBeans({MailSenderTask.class, RequestTaskManager.class})
+@TestManagedBeans({MailSenderTask.class, RequestTaskManager.class,
+    SmtpMailSendingTest.StubbedSmtpMailSender.class})
 class SmtpMailSendingTest {
 
   private final static String COMMON_FROM = "from@titi.org";
@@ -85,23 +86,6 @@ class SmtpMailSendingTest {
           "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">" +
           "</head><body>%s</body></html>";
   private static final String EMPTY_HTML_CONTENT = String.format(HTML_PATTERN, EMPTY);
-
-  private MailSender oldMailSender;
-
-  @BeforeEach
-  public void setup() throws Exception {
-    // Injecting by reflection the mock instance
-    oldMailSender = MailSenderProvider.get();
-    FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
-        new StubbedSmtpMailSender(), true);
-  }
-
-  @AfterEach
-  public void destroy() throws Exception {
-    // Replacing by reflection the mock instances by the previous extracted one.
-    FieldUtils
-        .writeDeclaredStaticField(MailSenderProvider.class, "mailSender", oldMailSender, true);
-  }
 
   @Test
   void sendingMailSynchronouslyWithDefaultValues(GreenMailOperations mail) {
@@ -424,25 +408,25 @@ class SmtpMailSendingTest {
   }
 
   private StubbedSmtpMailSender getStubbedSmtpMailSender() {
-    return (StubbedSmtpMailSender) MailSenderProvider.get();
+    return (StubbedSmtpMailSender) MailSender.get();
   }
 
   /**
    * Stubbed SMTP mail sender.
    */
+  @Service
+  @Singleton
+  @Alternative
+  @Priority(APPLICATION + 10)
   static class StubbedSmtpMailSender extends SmtpMailSender {
 
     public MailToSend currentMailToSend;
 
     @Override
     public void send(final MailToSend mail) {
-      await().atLeast(2, TimeUnit.MILLISECONDS).untilTrue(new AtomicBoolean(true));
+      await().atLeast(2, MILLISECONDS).untilTrue(new AtomicBoolean(true));
       currentMailToSend = mail;
-      try {
-        super.send(mail);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage());
-      }
+      super.send(mail);
     }
   }
 }

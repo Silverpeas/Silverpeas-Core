@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.mail.engine;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
@@ -31,6 +32,7 @@ import org.silverpeas.core.util.MailUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -50,6 +52,8 @@ import java.util.Properties;
  * This implementation uses the parameters provided by {@link MailUtil}.
  * @author Yohann Chastagnier
  */
+@Service
+@Singleton
 public class SmtpMailSender implements MailSender {
 
   /**
@@ -73,14 +77,23 @@ public class SmtpMailSender implements MailSender {
     SmtpConfiguration smtpConfiguration = SmtpConfiguration.fromDefaultSettings();
 
     MailAddress fromMailAddress = mail.getFrom();
+    ReceiverMailAddressSet toMailAddresses = mail.getTo();
     Session session = getMailSession(smtpConfiguration);
+    if (fromMailAddress == null || StringUtil.isNotDefined(fromMailAddress.getEmail())) {
+      SilverLogger.getLogger(this).warn("No expeditor set: mail won't be sent");
+      return;
+    }
+    if (toMailAddresses == null || toMailAddresses.isEmpty()) {
+      SilverLogger.getLogger(this).warn("No receivers set: mail won't be sent");
+      return;
+    }
     try {
       InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
       List<InternetAddress[]> toAddresses = new ArrayList<>();
 
       // Parsing destination address for compliance with RFC822.
       final Collection<ReceiverMailAddressSet> addressBatches =
-          mail.getTo().getBatchedReceiversList();
+          toMailAddresses.getBatchedReceiversList();
       for (ReceiverMailAddressSet addressBatch : addressBatches) {
         addReceiverMailAddress(toAddresses, addressBatch);
       }

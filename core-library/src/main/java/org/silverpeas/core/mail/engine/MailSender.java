@@ -24,12 +24,17 @@
 package org.silverpeas.core.mail.engine;
 
 import org.silverpeas.core.mail.MailToSend;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This interface provides a method to send a mail.
  * @author Yohann Chastagnier
  */
 public interface MailSender {
+
+  static MailSender get() {
+    return ServiceProvider.getSingleton(MailSender.class);
+  }
 
   /**
    * Performs a send of a mail.

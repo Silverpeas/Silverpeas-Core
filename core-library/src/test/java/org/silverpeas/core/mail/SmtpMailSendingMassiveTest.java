@@ -24,31 +24,35 @@
 package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.base.GreenMailOperations;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.MailSender;
-import org.silverpeas.core.mail.engine.MailSenderProvider;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.GreenMailExtension;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SmtpConfig;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -58,29 +62,18 @@ import static org.hamcrest.Matchers.*;
 @LoggerLevel(Level.DEBUG)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
-@TestManagedBeans({MailSenderTask.class, RequestTaskManager.class})
+@TestManagedBeans({MailSenderTask.class, RequestTaskManager.class,
+    SmtpMailSendingMassiveTest.StubbedSmtpMailSender.class})
 class SmtpMailSendingMassiveTest {
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String COMMON_TO = "to@toto.org";
 
-  private MailSender oldMailSender;
   private long lastLogTime = -1;
 
   @BeforeEach
-  public void setup() throws Exception {
-    // Injecting by reflection the mock instance
-    oldMailSender = MailSenderProvider.get();
-    FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
-        new StubbedSmtpMailSender(), true);
-
-  }
-
-  @AfterEach
-  public void destroy() throws Exception {
-    // Replacing by reflection the mock instances by the previous extracted one.
-    FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender", oldMailSender,
-        true);
+  void setup() {
+    getStubbedSmtpMailSender().setTestInstance(this);
   }
 
   @Test
@@ -100,7 +93,7 @@ class SmtpMailSendingMassiveTest {
 
     // Starting threads
     for (Thread thread : threads) {
-      Thread.sleep(50);
+      await().pollDelay(50, MILLISECONDS).until(() -> true);
       thread.start();
     }
 
@@ -116,7 +109,7 @@ class SmtpMailSendingMassiveTest {
 
     // Verifying that mails has been sent
     mail.waitForIncomingEmail(60000, runnables.size());
-    Thread.sleep(100);
+    await().pollDelay(100, MILLISECONDS).until(() -> true);
     assertMailSentOneByOne(runnables);
 
     MimeMessage[] messages = mail.getReceivedMessages();
@@ -183,32 +176,38 @@ class SmtpMailSendingMassiveTest {
   }
 
   private StubbedSmtpMailSender getStubbedSmtpMailSender() {
-    return (StubbedSmtpMailSender) MailSenderProvider.get();
+    return (StubbedSmtpMailSender) MailSender.get();
   }
 
   /**
    * Stubbed SMTP mail sender.
    */
-  class StubbedSmtpMailSender extends SmtpMailSender {
+  @Service
+  @Singleton
+  @Alternative
+  @Priority(APPLICATION + 10)
+  static class StubbedSmtpMailSender extends SmtpMailSender {
 
     public List<String> sentOneByOne = new ArrayList<>();
+    private SmtpMailSendingMassiveTest testInstance;
 
     @Override
     public void send(final MailToSend mail) {
-      try {
-        Thread.sleep(5);
-      } catch (InterruptedException ignored) {
-      }
+      await().pollDelay(5, MILLISECONDS).until(() -> true);
       tagOneByOne("TIC");
-      log(mail.getSubject() + " - " + (mail.isAsynchronous() ? "asynchronously" : "synchronously") +
+      testInstance.log(mail.getSubject() + " - " + (mail.isAsynchronous() ? "asynchronously" : "synchronously") +
           " - sending...");
       super.send(mail);
-      log(mail.getSubject() + " - sent.");
+      testInstance.log(mail.getSubject() + " - sent.");
       tagOneByOne("TAC");
     }
 
     private synchronized void tagOneByOne(String tag) {
       sentOneByOne.add(tag);
+    }
+
+    public void setTestInstance(final SmtpMailSendingMassiveTest testInstance) {
+      this.testInstance = testInstance;
     }
   }
 }
