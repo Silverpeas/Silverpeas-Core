@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2022 Silverpeas
+ * Copyright (C) 2000 - 2020 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -91,7 +91,6 @@
    * @private
    */
   function __configurePlayerContainer($container, config) {
-    $container.empty();
     var $embed = $('<iframe>');
     $embed.attr('class', 'embed');
     $embed.attr('frameborder', '0');
@@ -101,8 +100,9 @@
     $embed.attr('webkitallowfullscreen', 'true');
     $embed.attr('mozallowfullscreen', 'true');
     $embed.attr('allowfullscreen', 'true');
-    $container.append($embed);
-    setTimeout(function() {
+    $container.empty();
+    whenSilverpeasEntirelyLoaded(function() {
+      $container.append($embed);
       var playerParameters = jQuery.extend(config.playerParameters, {
         'embedPlayer' : true,
         'width' : config.width,
@@ -116,7 +116,8 @@
         }
       }
       $embed.attr('src', config.url);
-    }, 0)
+    });
   }
 
 })(jQuery, undefined);
+
