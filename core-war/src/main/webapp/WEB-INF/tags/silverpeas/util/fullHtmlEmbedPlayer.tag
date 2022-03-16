@@ -115,12 +115,12 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
-      var $window = $(window);
-      var $mediaContainer = $('<div>', {
+      const $window = $(window);
+      const $mediaContainer = $('<div>', {
         'id' : 'mediaContainer'
       });
 
-      var config =  {
+      const config =  {
         container : {
           width : $window.width() + 'px',
           height : $window.height() + 'px'
@@ -144,18 +144,16 @@
         return;
       }
 
-      var mediaType = "${type}";
+      const mediaType = "${type}";
       if (mediaType === "video") {
 
-        var $videoContainer = jQuery('#videoContainer');
+        const $videoContainer = jQuery('#videoContainer');
         $videoContainer.replaceWith($mediaContainer);
         spMediaPlayer.loadVideoPlayer($mediaContainer[0], config);
 
       } else if (mediaType === "audio") {
 
-        var $audioContainer = jQuery('#audioContainer');
-        var $audioBeforeContainer = jQuery('#audioBeforeContainer');
-        $audioBeforeContainer.remove();
+        const $audioContainer = jQuery('#audioContainer');
         $audioContainer.replaceWith($mediaContainer);
         spMediaPlayer.loadAudioPlayer($mediaContainer[0], config);
       }
@@ -165,21 +163,10 @@
 <body>
 <c:choose>
   <c:when test="${type eq 'video'}">
-    <div id="videoContainer" class="minimalist" data-ratio="${definitionRatio}">
-      <video preload="auto" poster="${posterUrl}" controls>
-        <source type="${mimeType}" src="${url}"/>
-      </video>
-    </div>
+    <div id="videoContainer" class="minimalist" data-ratio="${definitionRatio}"></div>
   </c:when>
   <c:when test="${type eq 'audio'}">
-    <div id="audioBeforeContainer" style="display: none">
-      <span><img src="${posterUrl}"></span>
-    </div>
-    <div id="audioContainer" style="display: none">
-      <audio preload="auto" controls>
-        <source type="${mimeType}" src="${url}"/>
-      </audio>
-    </div>
+    <div id="audioContainer"></div>
   </c:when>
 </c:choose>
 </body>

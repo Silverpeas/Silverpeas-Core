@@ -96,47 +96,51 @@
    */
   function __configurePlayerContainer($container, config) {
     $container.empty();
-    setTimeout(function() {
-      const playerParameters = extendsObject(config.playerParameters, {
-        'embedPlayer' : true,
-        'width' : config.width,
-        'height' : config.height,
-        '_' : new Date().getTime()
-      });
-      for (let paramName in playerParameters) {
-        if (paramName) {
-          config.url += (config.url.indexOf('?') > 0) ? '&' : '?';
-          config.url += paramName + '=' + encodeURIComponent(playerParameters[paramName]);
-        }
+    const $iframe = document.createElement('iframe');
+    $iframe.setAttribute("class", "embed");
+    $iframe.setAttribute("frameborder", "0");
+    $iframe.setAttribute('width', config.width);
+    $iframe.setAttribute('height', config.height);
+    $iframe.setAttribute('scrolling', 'no');
+    $iframe.setAttribute('webkitallowfullscreen', 'true');
+    $iframe.setAttribute('mozallowfullscreen', 'true');
+    $iframe.setAttribute('allowfullscreen', 'true');
+    const playerParameters = extendsObject(config.playerParameters, {
+      'embedPlayer' : true,
+      'width' : config.width,
+      'height' : config.height,
+      '_' : new Date().getTime()
+    });
+    for (let paramName in playerParameters) {
+      if (paramName) {
+        config.url += (config.url.indexOf('?') > 0) ? '&' : '?';
+        config.url += paramName + '=' + encodeURIComponent(playerParameters[paramName]);
       }
-      let $iframe = document.createElement('iframe');
+    }
+    whenSilverpeasEntirelyLoaded(function() {
       $iframe.setAttribute('src', config.url);
-      $iframe.setAttribute("class", "embed");
-      $iframe.setAttribute("frameborder", "0");
-      $iframe.setAttribute('width', config.width);
-      $iframe.setAttribute('height', config.height);
-      $iframe.setAttribute('scrolling', 'no');
-      $iframe.setAttribute('webkitallowfullscreen', 'true');
-      $iframe.setAttribute('mozallowfullscreen', 'true');
-      $iframe.setAttribute('allowfullscreen', 'true');
-      $container.append(jQuery($iframe));
-      const messageEventHandlerConfig = config.messageEventHandlerConfig;
-      if (typeof messageEventHandlerConfig === 'object') {
+      $container[0].appendChild($iframe);
+      __configureMessageApi(config, $iframe);
+    });
+  }
+
+  function __configureMessageApi(config, $iframe) {
+    const messageEventHandlerConfig = config.messageEventHandlerConfig;
+    if (typeof messageEventHandlerConfig === 'object') {
+      if (typeof messageEventHandlerConfig.handler === 'function') {
         if (StringUtil.isNotDefined(messageEventHandlerConfig.origin)) {
           const errorMsg = "silverpeas-embed-player - config.messageEventHandlerConfig.origin MUST be defined";
           sp.log.error(errorMsg);
           throw new Error(errorMsg);
         }
-        if (typeof messageEventHandlerConfig.handler === 'function') {
-          $iframe.contentWindow.addEventListener("message", function(event) {
-            if (event.origin === messageEventHandlerConfig.origin) {
-              event.$iframe = $iframe;
-              messageEventHandlerConfig.handler(event);
-            }
-          }, false);
-        }
+        $iframe.contentWindow.addEventListener("message", function(event) {
+          if (event.origin === messageEventHandlerConfig.origin) {
+            event.$iframe = $iframe;
+            messageEventHandlerConfig.handler(event);
+          }
+        }, false);
       }
-    }, 0)
+    }
   }
 
 })(jQuery, undefined);
