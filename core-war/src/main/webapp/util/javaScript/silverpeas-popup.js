@@ -51,6 +51,14 @@
 
   var __displayFullscreenModalBackground = FS_MANAGER.isWindowCompatible();
 
+  // Little hack to prevent some unexpected errors when escape key is
+  // pressed during an ajax request
+  const __preventEscape = function(e) {
+    if (e.keyCode === 27) {
+      e.preventDefault();
+    }
+  };
+
   $.popup = {
     /**
      * Shows a waiting information. Usually used while the popup is rendering or when the treatment
@@ -63,14 +71,7 @@
                 'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
         $(document.body).append($waiting);
         $waiting.popup("waiting");
-
-        // Little hack to prevent some unexpected errors when escape key is
-        // pressed during an ajax request
-        $waiting.dialog("widget").keydown(function(e) {
-          if (e.keyCode === 27) {
-            e.preventDefault();
-          }
-        });
+        $waiting.dialog("widget").keydown(__preventEscape);
       }
       $waiting.dialog("open");
     },
@@ -100,6 +101,21 @@
         }
       }
       $confirm.popup('confirmation', options);
+    },
+    /**
+     * Shows a validate popup with the specified message and the popup parameters.
+     * @param message the message to display in the popup.
+     * @param params the parameters to parametrize the popup window.
+     */
+    validate: function(message, params) {
+      let options = params;
+      const $confirm = $('<div>').append($('<p>').append(message));
+      if (typeof params === 'function') {
+        options = {
+          callback: params
+        }
+      }
+      $confirm.popup('validation', options);
     },
     /**
      * Shows an info popup with the specified message and the popup parameters.
@@ -725,30 +741,47 @@
     });
   }
 
-  var spFullscreenModalBackgroundContext = new function() {
-    var __debug = function(message) {
+  function __openOnTop() {
+    spFullscreenModalBackgroundContext.refreshBackgroundState(true);
+    FS_MANAGER.getLayoutManager().getBody().getContent().forceOnBackground();
+  }
+
+  function __closeFromTop() {
+    const existsPopupsOnTop = FS_MANAGER.top$()('div.ui-dialog').filter(':visible').length > 0;
+    spFullscreenModalBackgroundContext.refreshBackgroundState(existsPopupsOnTop);
+    if (!existsPopupsOnTop) {
+      FS_MANAGER.getLayoutManager().getBody().getContent().unforceOnBackground();
+    }
+  }
+
+  const spFullscreenModalBackgroundContext = new function() {
+    const __debug = function(message) {
       __logDebug("FSContext -", message)
     };
-    var removeContainers = function($containers) {
+    const removeContainers = function($containers) {
       if ($containers.length > 0) {
-        $containers.dialog("close");
-        $containers.dialog("destroy");
-        $containers.remove();
+        $containers.each(function(index, $container){
+          $container.spUIManager.destroy();
+        });
         __debug($containers.length + " dialogs removed");
+      }
+    };
+    this.refreshBackgroundState  = function(forceBackground) {
+      if(!forceBackground && this.getContainers().length > 0) {
+        FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
+      } else {
+        FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
       }
     };
     this.clear = function() {
       __debug("clearing");
       removeContainers(this.getContainers());
-      FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
+      this.refreshBackgroundState();
     };
     this.removeLast = function() {
       __debug("removing last");
-      var $containers = this.getContainers();
-      removeContainers($containers.filter(':last'));
-      if ($containers.length === 1) {
-        FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
-      }
+      removeContainers(this.getContainers().filter(':last'));
+      this.refreshBackgroundState();
     };
     this.getContainers = function() {
       return FS_MANAGER.top$()(".spFullscreenModalBackground", FS_MANAGER.topDocument());
@@ -760,34 +793,30 @@
    * Be careful, options have to be well initialized before this function call
    */
   function __openFullscreenModalBackground($dialogInstance) {
-    var nbCurrentContainers = spFullscreenModalBackgroundContext.getContainers().length;
-    if (nbCurrentContainers === 0) {
-      FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
-    }
-    var $container = FS_MANAGER.top$()("<div>")
-        .attr('class', 'spFullscreenModalBackground')
-        .attr('style', 'display: none; border: 0; padding: 0; height: 0; width: 0; overflow: hidden;');
+    spFullscreenModalBackgroundContext.refreshBackgroundState();
+    const $container = FS_MANAGER.top$()("<div>")
+        .attr('class', 'spFullscreenModalBackground ui-widget-overlay ui-front')
+        .attr('style', 'display: none; border: 0; padding: 0; overflow: hidden;');
     FS_MANAGER.top$()(FS_MANAGER.topDocument().body).append($container);
-
-    $container.dialog({
-      fullscreenModalBackground : true,
-      closeOnEscape : false,
-      autoOpen : false,
-      modal : true,
-      resizable : false,
-      height : '0px',
-      width : '0px'
-    });
-
-    $container.dialog('widget').find(".ui-dialog-titlebar").hide();
+    const $containerElement = $container[0];
+    $containerElement.spUIManager = new function() {
+      this.isOpen = function() {
+        return $container.css('display') !== 'none';
+      };
+      this.open = function() {
+        return $container.show();
+      };
+      this.close = function() {
+        return $container.hide();
+      };
+      this.destroy = function() {
+        return $container.remove();
+      };
+    };
 
     // Little hack to prevent some unexpected errors when escape key is
     // pressed during an ajax request
-    $container.dialog("widget").keydown(function(e) {
-      if (e.keyCode === 27) {
-        e.preventDefault();
-      }
-    });
+    $containerElement.addEventListener('keydown', __preventEscape);
 
     // Handling HTML forms in order to close the dialog on submit action.
     // As jQuery Handles only jQuery triggering, jQuery method and the standard one must be
@@ -804,8 +833,8 @@
     }
     dialogInstanceElement.__lastRegisteredHandler = function() {
       try {
-        if ($container.dialog('isOpen')) {
-          $container.dialog("close");
+        if ($containerElement.spUIManager.isOpen()) {
+          $containerElement.spUIManager.close();
         }
       } catch (e) {
         sp.log.debug(e);
@@ -818,8 +847,8 @@
     });
 
     // Displaying the dialog.
-    $container.dialog("open");
-    $container.dialog("widget").css('top', '-1000px').css('left', '-1000px');
+    $containerElement.spUIManager.open();
+    spFullscreenModalBackgroundContext.refreshBackgroundState();
   }
 
   function __closeFullscreenModalBackground() {
@@ -845,24 +874,27 @@
 
   $.widget("ui.dialog", $.ui.dialog, {
     open : function() {
-      if (__displayFullscreenModalBackground && !this._isOpen &&
-          !this.options.fullscreenModalBackground) {
+      if (__displayFullscreenModalBackground && !this._isOpen) {
         __adjustPosition(this.options);
         __openFullscreenModalBackground(this.element);
+      } else {
+        __openOnTop();
       }
       return this._super();
     },
     close : function() {
-      if (__displayFullscreenModalBackground && this._isOpen &&
-          !this.options.fullscreenModalBackground) {
+      if (__displayFullscreenModalBackground && this._isOpen) {
         __closeFullscreenModalBackground();
+      } else {
+        __closeFromTop();
       }
       return this._super();
     },
     destroy : function() {
-      if (__displayFullscreenModalBackground && this._isOpen &&
-          !this.options.fullscreenModalBackground) {
+      if (__displayFullscreenModalBackground && this._isOpen) {
         __closeFullscreenModalBackground();
+      } else {
+        __closeFromTop();
       }
       return this._super();
     }
