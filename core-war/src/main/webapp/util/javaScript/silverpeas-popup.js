@@ -741,11 +741,24 @@
     });
   }
 
-  var spFullscreenModalBackgroundContext = new function() {
-    var __debug = function(message) {
+  function __openOnTop() {
+    spFullscreenModalBackgroundContext.refreshBackgroundState(true);
+    FS_MANAGER.getLayoutManager().getBody().getContent().forceOnBackground();
+  }
+
+  function __closeFromTop() {
+    const existsPopupsOnTop = FS_MANAGER.top$()('div.ui-dialog').filter(':visible').length > 0;
+    spFullscreenModalBackgroundContext.refreshBackgroundState(existsPopupsOnTop);
+    if (!existsPopupsOnTop) {
+      FS_MANAGER.getLayoutManager().getBody().getContent().unforceOnBackground();
+    }
+  }
+
+  const spFullscreenModalBackgroundContext = new function() {
+    const __debug = function(message) {
       __logDebug("FSContext -", message)
     };
-    var removeContainers = function($containers) {
+    const removeContainers = function($containers) {
       if ($containers.length > 0) {
         $containers.each(function(index, $container){
           $container.spUIManager.destroy();
@@ -753,18 +766,22 @@
         __debug($containers.length + " dialogs removed");
       }
     };
+    this.refreshBackgroundState  = function(forceBackground) {
+      if(!forceBackground && this.getContainers().length > 0) {
+        FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
+      } else {
+        FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
+      }
+    };
     this.clear = function() {
       __debug("clearing");
       removeContainers(this.getContainers());
-      FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
+      this.refreshBackgroundState();
     };
     this.removeLast = function() {
       __debug("removing last");
-      var $containers = this.getContainers();
-      removeContainers($containers.filter(':last'));
-      if ($containers.length === 1) {
-        FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
-      }
+      removeContainers(this.getContainers().filter(':last'));
+      this.refreshBackgroundState();
     };
     this.getContainers = function() {
       return FS_MANAGER.top$()(".spFullscreenModalBackground", FS_MANAGER.topDocument());
@@ -776,15 +793,12 @@
    * Be careful, options have to be well initialized before this function call
    */
   function __openFullscreenModalBackground($dialogInstance) {
-    var nbCurrentContainers = spFullscreenModalBackgroundContext.getContainers().length;
-    if (nbCurrentContainers === 0) {
-      FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
-    }
-    var $container = FS_MANAGER.top$()("<div>")
+    spFullscreenModalBackgroundContext.refreshBackgroundState();
+    const $container = FS_MANAGER.top$()("<div>")
         .attr('class', 'spFullscreenModalBackground ui-widget-overlay ui-front')
         .attr('style', 'display: none; border: 0; padding: 0; overflow: hidden;');
     FS_MANAGER.top$()(FS_MANAGER.topDocument().body).append($container);
-    var $containerElement = $container[0];
+    const $containerElement = $container[0];
     $containerElement.spUIManager = new function() {
       this.isOpen = function() {
         return $container.css('display') !== 'none';
@@ -834,6 +848,7 @@
 
     // Displaying the dialog.
     $containerElement.spUIManager.open();
+    spFullscreenModalBackgroundContext.refreshBackgroundState();
   }
 
   function __closeFullscreenModalBackground() {
@@ -862,18 +877,24 @@
       if (__displayFullscreenModalBackground && !this._isOpen) {
         __adjustPosition(this.options);
         __openFullscreenModalBackground(this.element);
+      } else {
+        __openOnTop();
       }
       return this._super();
     },
     close : function() {
       if (__displayFullscreenModalBackground && this._isOpen) {
         __closeFullscreenModalBackground();
+      } else {
+        __closeFromTop();
       }
       return this._super();
     },
     destroy : function() {
       if (__displayFullscreenModalBackground && this._isOpen) {
         __closeFullscreenModalBackground();
+      } else {
+        __closeFromTop();
       }
       return this._super();
     }
