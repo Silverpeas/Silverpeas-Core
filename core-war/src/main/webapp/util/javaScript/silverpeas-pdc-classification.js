@@ -91,6 +91,9 @@
  *  synonyms: [ the synonyms of the value term as strings ]
  * }
  */
+
+//# sourceURL=/util/javaScript/silverpeas-pdc-classification.js
+
 (function($) {
 
   /**
@@ -753,7 +756,7 @@
 
   function isInherited(settings, classification) {
     return settings.mode === 'predefinition' &&
-            escape(classification.uri).search(escape(settings.defaultClassificationURI)) === -1;
+        encodeURIComponent(classification.uri).search(encodeURIComponent(settings.defaultClassificationURI)) === -1;
   }
 
 })(jQuery);
