@@ -741,17 +741,24 @@
     });
   }
 
+  const spOnTopContext = new function() {
+    this.refreshState = function() {
+      const existsPopupsOnTop = FS_MANAGER.top$()('div.ui-dialog').filter(':visible').length > 0;
+      spFullscreenModalBackgroundContext.refreshBackgroundState(existsPopupsOnTop);
+      if (existsPopupsOnTop) {
+        FS_MANAGER.getLayoutManager().getBody().getContent().forceOnBackground();
+      } else {
+        FS_MANAGER.getLayoutManager().getBody().getContent().unforceOnBackground();
+      }
+    }
+  }
+
   function __openOnTop() {
-    spFullscreenModalBackgroundContext.refreshBackgroundState(true);
-    FS_MANAGER.getLayoutManager().getBody().getContent().forceOnBackground();
+    spOnTopContext.refreshState();
   }
 
   function __closeFromTop() {
-    const existsPopupsOnTop = FS_MANAGER.top$()('div.ui-dialog').filter(':visible').length > 0;
-    spFullscreenModalBackgroundContext.refreshBackgroundState(existsPopupsOnTop);
-    if (!existsPopupsOnTop) {
-      FS_MANAGER.getLayoutManager().getBody().getContent().unforceOnBackground();
-    }
+    spOnTopContext.refreshState();
   }
 
   const spFullscreenModalBackgroundContext = new function() {
@@ -874,29 +881,44 @@
 
   $.widget("ui.dialog", $.ui.dialog, {
     open : function() {
-      if (__displayFullscreenModalBackground && !this._isOpen) {
+      const isFS = __displayFullscreenModalBackground && !this._isOpen;
+      if (isFS) {
         __adjustPosition(this.options);
         __openFullscreenModalBackground(this.element);
-      } else {
-        __openOnTop();
       }
-      return this._super();
+      try {
+        return this._super();
+      } finally {
+        if (!isFS) {
+          __openOnTop();
+        }
+      }
     },
     close : function() {
-      if (__displayFullscreenModalBackground && this._isOpen) {
+      const isFS = __displayFullscreenModalBackground && this._isOpen;
+      if (isFS) {
         __closeFullscreenModalBackground();
-      } else {
-        __closeFromTop();
       }
-      return this._super();
+      try {
+        return this._super();
+      } finally {
+        if (!isFS) {
+          __closeFromTop();
+        }
+      }
     },
     destroy : function() {
-      if (__displayFullscreenModalBackground && this._isOpen) {
+      const isFS = __displayFullscreenModalBackground && this._isOpen;
+      if (isFS) {
         __closeFullscreenModalBackground();
-      } else {
-        __closeFromTop();
       }
-      return this._super();
+      try {
+        return this._super();
+      } finally {
+        if (!isFS) {
+          __closeFromTop();
+        }
+      }
     }
   });
 
