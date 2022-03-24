@@ -23,11 +23,6 @@
  */
 package org.silverpeas.core.io.temp;
 
-import org.apache.commons.io.filefilter.AbstractFileFilter;
-import org.apache.commons.io.filefilter.AgeFileFilter;
-import org.apache.commons.io.filefilter.AndFileFilter;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
@@ -38,12 +33,30 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
-import java.util.Collection;
+import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.apache.commons.io.FileUtils.*;
+import static java.text.MessageFormat.format;
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.io.temp.TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeletedAtServerStart;
 
 /**
  * @author Yohann Chastagnier
@@ -55,7 +68,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
   protected static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
 
-  Thread startTask;
+  private Future<Void> startTask;
 
   @Override
   public void init() throws Exception{
@@ -64,12 +77,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
 
     // Cleaning temporary data at start if requested
-    startTask = ManagedThreadPool.getPool()
-        .invoke(() ->
-      temporaryDataCleanerJob.clean(
-          TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeletedAtServerStart()))
-        .iterator()
-        .next();
+    startTask = temporaryDataCleanerJob.startCleanProcess(getTimeAfterThatFilesMustBeDeletedAtServerStart());
 
     // Setting CRON
     final String cron = TemporaryDataManagementSetting.getJobCron();
@@ -80,11 +88,19 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     }
   }
 
+  Optional<Future<Void>> getStartTask() {
+    return ofNullable(startTask);
+  }
+
   /**
    * Temporary data cleaner.
    * @author Yohann Chastagnier
    */
-  private class TemporaryDataCleanerJob extends Job {
+  static class TemporaryDataCleanerJob extends Job {
+
+    private final Object mutex = new Object();
+    private final AtomicInteger nbAttempts = new AtomicInteger(0);
+    private Future<Void> currentTask;
 
     /**
      * Default constructor.
@@ -95,59 +111,176 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
 
     @Override
     public void execute(final JobExecutionContext context) {
-
       // 1 hour minimum or each time
       long nbMilliseconds = TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted();
       if (nbMilliseconds < 0) {
         nbMilliseconds = 0;
       }
-      clean(nbMilliseconds);
+      startCleanProcess(nbMilliseconds);
     }
 
     /**
-     * Cleaning treatment
+     * Starting the cleaning processing.
+     * <p>
+     *   This method ensures not having two threads running at same time. If this method is
+     *   invoked while a cleaning process is yet running, then nothing is done.
+     * </p>
+     * <p>
+     *   When the first time a new clean process is started while an other one is yet running, it
+     *   is ignored.
+     * </p>
+     * <p>
+     *   When for a second time a new clean process is started while the other one is yet running
+     *   (the same than the first time), the one running is aborted (because it could be a
+     *   technical problem) and the new one processes.
+     * </p>
      * @param nbMilliseconds : age of files that don't have to be deleted (in milliseconds)
+     * @return the {@link Future} of the current process which can be the same as a previous JOB
+     * invocation.
      */
-    private synchronized void clean(final long nbMilliseconds) {
-
-      // Temporary temp directory
-      // Nothing to do if fileAge is negative
-      if (tempPath.exists() && nbMilliseconds >= 0) {
-        // Calculating the date from which files should be deleted from their date of last
-        // modification. (in milliseconds)
-        long fileAge = System.currentTimeMillis() - nbMilliseconds;
-
-        // List all files to clean in temp directory and its subdirectories if any
-        delete(listFiles(tempPath, new AgeFileFilter(fileAge), TrueFileFilter.TRUE));
-
-        // Calculating the date from which empty directories should be deleted from their date of
-        // last modification. (in milliseconds)
-        fileAge = System.currentTimeMillis() - nbMilliseconds;
-
-        // Deleting all empty subdirectories
-        delete(listFilesAndDirs(tempPath, FalseFileFilter.FALSE,
-            new AndFileFilter(new AgeFileFilter(fileAge), new AbstractFileFilter() {
-
-              @Override
-              public boolean accept(final File file, final String name) {
-                // Checks subdirectories
-                return listFiles(file, TrueFileFilter.TRUE, TrueFileFilter.TRUE).isEmpty();
-              }
-            })));
+    Future<Void> startCleanProcess(final long nbMilliseconds) {
+      synchronized (mutex) {
+        if (!tempPath.exists() || nbMilliseconds < 0) {
+          return null;
+        }
+        Future<Void> task = getSafelyCurrentTask();
+        if (task != null && !task.isDone()) {
+          if (nbAttempts.incrementAndGet() > 1) {
+            nbAttempts.setRelease(0);
+            SilverLogger.getLogger(this)
+                .warn("Attempt for a second time to start a new cleaning process " +
+                    "whereas an other one is not yet finished. " +
+                    "Aborting the previous one to create a new process");
+            task.cancel(true);
+          } else {
+            SilverLogger.getLogger(this)
+                .warn("Attempt to start a new cleaning process " +
+                    "whereas an other one is not yet finished. New cleaning process is ignored");
+            return task;
+          }
+        }
+        try {
+          task = ManagedThreadPool.getPool().invoke(new CleaningProcess(nbMilliseconds));
+          this.currentTask = task;
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          SilverLogger.getLogger(this).error(e);
+        }
+        return task;
       }
     }
 
-    /**
-     * Deleting files
-     * @param filesToDelete
-     */
-    private void delete(final Collection<File> filesToDelete) {
-      if (filesToDelete != null) {
-        filesToDelete.remove(tempPath);
-        for (final File fileToDelete : filesToDelete) {
-          deleteQuietly(fileToDelete);
+    private Future<Void> getSafelyCurrentTask() {
+      synchronized (mutex) {
+        return currentTask;
+      }
+    }
+  }
+
+  private static class CleaningProcess implements Callable<Void> {
+    private final long millisecondOffset;
+
+    private CleaningProcess(final long millisecondOffset) {
+      this.millisecondOffset = millisecondOffset;
+    }
+
+    @Override
+    public Void call() throws Exception {
+      // Calculating the date from which files and directories should be deleted from their date
+      // of last modification. (from offset specified in milliseconds)
+      final ZonedDateTime age = ZonedDateTime.now().minus(millisecondOffset, ChronoUnit.MILLIS);
+      final CleaningObsoleteFileAndDirectoriesVisitor visitor = new CleaningObsoleteFileAndDirectoriesVisitor(age);
+      try {
+        Files.walkFileTree(tempPath.toPath(), visitor);
+        SilverLogger.getLogger(this)
+            .info(format("{0} file(s) and {1} directorie(s) deleted.", visitor.getNbDeletedFiles(),
+                visitor.getNbDeletedDirectories()));
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+      return null;
+    }
+  }
+
+  static class CleaningObsoleteFileAndDirectoriesVisitor extends SimpleFileVisitor<Path> {
+    private final Instant age;
+    private final Set<Path> directoriesThatCanBeDeleted = new HashSet<>();
+    private final SilverLogger logger = SilverLogger.getLogger(this);
+    private boolean rootVisited = false;
+    private long nbDeletedFiles = 0;
+    private long nbDeletedDirectories = 0;
+
+    public CleaningObsoleteFileAndDirectoriesVisitor(final ZonedDateTime age) {
+      this.age = age.toInstant();
+    }
+
+    public long getNbDeletedFiles() {
+      return nbDeletedFiles;
+    }
+
+    public long getNbDeletedDirectories() {
+      return nbDeletedDirectories;
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
+        throws IOException {
+      try {
+        return super.preVisitDirectory(dir, attrs);
+      } finally {
+        if(rootVisited && isObsolete(attrs)) {
+          directoriesThatCanBeDeleted.add(dir);
+        }
+        rootVisited = true;
+      }
+    }
+
+    @Override
+    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
+        throws IOException {
+      try {
+        return super.visitFile(file, attrs);
+      } finally {
+        if (isObsolete(attrs)) {
+          if(Files.deleteIfExists(file)) {
+            nbDeletedFiles++;
+            logger.debug(() -> format("Deleting file {0}", file.toFile().getPath()));
+          } else {
+            logger.warn(
+                format("Detecting file [{0}] for deletion, but it is not present when deleting it!",
+                    file.toFile().getPath()));
+          }
         }
       }
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(final Path dir, final IOException exc)
+        throws IOException {
+      try {
+        return super.postVisitDirectory(dir, exc);
+      } finally {
+        if (directoriesThatCanBeDeleted.remove(dir)) {
+          try {
+            // deleting a directory only if it is empty
+            if (Files.deleteIfExists(dir)) {
+              nbDeletedDirectories++;
+              logger.debug(() -> format("Deleting directory {0}", dir.toFile().getPath()));
+            } else {
+              logger.warn(format(
+                  "Detecting directory [{0}] for deletion, but it is not present when deleting it!",
+                      dir.toFile().getPath()));
+            }
+          } catch (DirectoryNotEmptyException e) {
+            // ignoring this exception as it is a functional case
+            logger.silent(e);
+          }
+        }
+      }
+    }
+
+    private boolean isObsolete(final BasicFileAttributes attrs) {
+      return attrs.lastModifiedTime().toInstant().isBefore(age);
     }
   }
 }
