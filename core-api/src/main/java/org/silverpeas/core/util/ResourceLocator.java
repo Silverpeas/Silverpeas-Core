@@ -24,7 +24,6 @@
 package org.silverpeas.core.util;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -70,7 +69,7 @@ import java.util.concurrent.ConcurrentMap;
 public class ResourceLocator {
 
   private static final int INITIAL_CACHE_SIZE = 128;
-  private static ClassLoader loader =
+  private static final ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
   private static final ConfigurationControl configurationControl = new ConfigurationControl();
   private static final ConcurrentMap<String, SilverpeasBundle> bundles =
@@ -107,42 +106,27 @@ public class ResourceLocator {
   }
 
   /**
-   * Gets optionally the localized resource defined under the specified full qualified name and
-   * for the specified locale. This resource can be a set of icons or of messages that are
-   * defined for the given locale.
-   * @param name the full qualified name of the localized resource to return. It maps the path
-   * of the file in which the resource is stored (the path is relative to the Silverpeas
-   * resources home directory).
-   * @param locale is an ISO 639-1 code identifying a language. If null, empty or missing, the
-   * default locale of the platform onto which Silverpeas is running will be taken into account.
-   * @return an optional resource bundle with the asked localized resources plus the general ones.
+   * Loads the resource bundle with the specified name for the given locale.
+   * @param bundleName the path of the bundle in the classpath.
+   * @param locale the locale for which the bundle has to be loaded. If the bundle has no instance
+   * for the given locale, then the instance of the bundle for the default locale ({@link
+   * Locale#ROOT} will be loaded.
+   * @param mandatory a boolean indicating if the bundle must exist. If true and the bundle isn't
+   * found, then a {@link MissingResourceException} is thrown. If false and the bundle isn't found,
+   * then null is returned.
+   * @return either the resource bundle or null if the bundle isn't found and the mandatory flag is
+   * set at false.
    */
-  public static Optional<LocalizationBundle> getOptionalLocalizationBundle(String name,
-      String locale) {
-    final Locale localeToUse =
-        (locale == null || locale.trim().isEmpty() ? Locale.ROOT : new Locale(locale));
-    final String key =
-        name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
-    final LocalizationBundle bundle = (LocalizationBundle) bundles.computeIfAbsent(key,
-        n -> new LocalizationBundle(name, localeToUse,
-            (bundleName, locale1) -> loadResourceBundle(bundleName, locale1, false), false));
-    final Optional<LocalizationBundle> optionalBundle = Optional.ofNullable(bundle);
-    optionalBundle.ifPresent(b -> b.changeLocale(localeToUse));
-    return optionalBundle;
-  }
-
-  /**
-   * Gets the localized resource that is defined under the specified full qualified name and for
-   * the root locale (default locale when no one is specified or a locale is missing);
-   * the resources are provided by the bundle whose the name matches exactly the bundle base name
-   * (id est without any locale extension). This resource can be a set of icons or of messages.
-   * @param name the full qualified name of the localized resource to return. It maps the path
-   * of the file in which the resource is stored (the path is relative to the Silverpeas
-   * resources home directory).
-   * @return the bundle with the asked localized resource plus the general one.
-   */
-  public static LocalizationBundle getLocalizationBundle(String name) {
-    return getLocalizationBundle(name, null);
+  private static ResourceBundle loadResourceBundle(String bundleName, Locale locale,
+      final boolean mandatory) {
+    try {
+      return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
+    } catch (MissingResourceException mex) {
+      if (mandatory) {
+        throw mex;
+      }
+    }
+    return null;
   }
 
   /**
@@ -161,19 +145,13 @@ public class ResourceLocator {
   }
 
   /**
-   * Gets optionally the setting resource that is defined under the specified full qualified name.
-   * This resource is a set of settings used to configure the behaviour of a Silverpeas
-   * functionality.
-   * @param name the full qualified name of the resource to return. It maps the path
-   * of the file in which the resource is stored (the path is relative to the Silverpeas
-   * resources home directory).
-   * @return an optional bundle with the asked settings.
+   * Loads the resource bundle with the specified name. If the bundle isn't found, then a {@link
+   * MissingResourceException} is thrown.
+   * @param bundleName the path of the bundle in the classpath.
+   * @return the resource bundle.
    */
-  public static Optional<SettingBundle> getOptionalSettingBundle(String name) {
-    SettingBundle bundle = (SettingBundle) bundles.computeIfAbsent(name,
-        n -> new SettingBundle(name,
-            b -> ResourceLocator.loadResourceBundle(b, Locale.ROOT, false)));
-    return Optional.ofNullable(bundle).filter(SettingBundle::exists);
+  private static ResourceBundle loadResourceBundle(String bundleName) {
+    return loadResourceBundle(bundleName, Locale.ROOT, true);
   }
 
   /**
@@ -243,7 +221,6 @@ public class ResourceLocator {
   public static Properties getSettingsAsProperties(final String name) {
     Properties properties = new Properties();
     try {
-      checkBundleName(name);
       final String bundleName = "/" + name.replace('.', '/') + ".properties";
       properties.load(loadResourceBundleAsStream(bundleName));
     } catch (IOException e) {
@@ -265,30 +242,12 @@ public class ResourceLocator {
     ResourceBundle.clearCache();
   }
 
-  private static void checkBundleName(String bundleName) {
-    if (!bundleName.startsWith("org.silverpeas.") &&
-        !bundleName.startsWith("com.silverpeas.customers")) {
-      SilverLogger.getLogger(ResourceLocator.class).warn("INVALID BUNDLE BASE NAME: " + bundleName);
-    }
-  }
-
-  private static ResourceBundle loadResourceBundle(String bundleName) {
-    return loadResourceBundle(bundleName, Locale.ROOT, true);
-  }
-
-  private static ResourceBundle loadResourceBundle(String bundleName, Locale locale,
-      final boolean mandatory) {
-    try {
-      checkBundleName(bundleName);
-      return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
-    } catch (MissingResourceException mex) {
-      if (mandatory) {
-        throw mex;
-      }
-    }
-    return null;
-  }
-
+  /**
+   * Loads the resource bundle with the specified name. If the bundle isn't found, then a {@link
+   * MissingResourceException} is thrown.
+   * @param bundleName the path of the bundle in the classpath.
+   * @return an IO stream on the resource bundle.
+   */
   private static InputStream loadResourceBundleAsStream(String bundleName) {
     InputStream inputStream = loader.getResourceAsStream(bundleName);
     if (inputStream == null) {
@@ -296,5 +255,63 @@ public class ResourceLocator {
           bundleName, "");
     }
     return inputStream;
+  }
+
+  /**
+   * Gets optionally the setting resource that is defined under the specified full qualified name.
+   * This resource is a set of settings used to configure the behaviour of a Silverpeas
+   * functionality.
+   * @param name the full qualified name of the resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @return an optional bundle with the asked settings.
+   */
+  public static Optional<SettingBundle> getOptionalSettingBundle(String name) {
+    SettingBundle bundle = (SettingBundle) bundles.computeIfAbsent(name,
+        n -> new SettingBundle(name,
+            b -> ResourceLocator.loadResourceBundle(b, Locale.ROOT, false)));
+    return Optional.of(bundle).filter(SettingBundle::exists);
+  }
+
+  /**
+   * Gets optionally the localized resource defined under the specified full qualified name and for
+   * the specified locale. This resource can be a set of icons or of messages that are defined for
+   * the given locale.
+   * @param name the full qualified name of the localized resource to return. It maps the path of
+   * the file in which the resource is stored (the path is relative to the Silverpeas resources home
+   * directory).
+   * @param locale is an ISO 639-1 code identifying a language. If null, empty or missing, the
+   * default locale of the platform onto which Silverpeas is running will be taken into account.
+   * @return an optional resource bundle with the asked localized resources plus the general ones.
+   */
+  public static Optional<LocalizationBundle> getOptionalLocalizationBundle(String name,
+      String locale) {
+    final Locale localeToUse =
+        (locale == null || locale.trim().isEmpty() ? Locale.ROOT : new Locale(locale));
+    final String key =
+        name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
+    final LocalizationBundle bundle = (LocalizationBundle) bundles.computeIfAbsent(key,
+        n -> new LocalizationBundle(name, localeToUse,
+            (bundleName, locale1) -> loadResourceBundle(bundleName, locale1, false), false));
+    return Optional.of(bundle)
+        .filter(LocalizationBundle::exists)
+        .map(b -> {
+          b.changeLocale(localeToUse);
+          return b;
+        });
+  }
+
+  /**
+   * Gets the localized resource that is defined under the specified full qualified name and for the
+   * root locale (default locale when no one is specified or a locale is missing); the resources are
+   * provided by the bundle whose name matches exactly the bundle base name (id est without any
+   * locale extension). This resource can be a set of icons or of messages.
+   * @param name the full qualified name of the localized resource to return. It maps the path of
+   * the file in which the resource is stored (the path is relative to the Silverpeas resources home
+   * directory).
+   * @return the bundle with the asked localized resource plus the general one.
+   */
+  public static LocalizationBundle getLocalizationBundle(String name) {
+    return getLocalizationBundle(name, null);
   }
 }
