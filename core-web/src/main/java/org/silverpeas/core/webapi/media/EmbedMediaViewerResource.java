@@ -50,7 +50,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.nio.file.Paths;
 
+import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
@@ -121,7 +123,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
 
       final SimpleDocument document = getDocument(documentId, language);
       final DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
-      return sendDocument(document, documentView.getServerFilePath().toString());
+      return sendDocument(document, documentView);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final AttachmentException ex) {
@@ -191,7 +193,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
                                          .queryParam("language", language).build())
                                  .build();
       }
-      return sendDocument(document, Paths.get(documentView.getServerFilePath().getParent().toString(), page).toString());
+      return sendDocument(document, documentView, page);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final AttachmentException ex) {
@@ -226,11 +228,22 @@ public class EmbedMediaViewerResource extends RESTWebService {
     getHttpServletRequest().setAttribute("userLanguage", getUserPreferences().getLanguage());
   }
 
-  private Response sendDocument(final SimpleDocument document, final String path) {
-    final SilverpeasFile file = SilverpeasFileProvider.getFile(path);
+  private Response sendDocument(final SimpleDocument document, final DocumentView documentView) {
+    return sendDocument(document, documentView, null);
+  }
+
+  private Response sendDocument(final SimpleDocument document, final DocumentView documentView, final String page) {
+    final java.nio.file.Path path = isDefined(page) ?
+        Paths.get(documentView.getServerFilePath().getParent().toString(), page) :
+        documentView.getServerFilePath();
+    final SilverpeasFile file = SilverpeasFileProvider.getFile(path.toString());
+    final String filename = isDefined(page) ?
+        documentView.getOriginalFileName() :
+        getBaseName(documentView.getOriginalFileName()) + ".pdf";
     return FileResponse.fromRest(getHttpRequest(), getHttpServletResponse())
-                       .forceMimeType(document.getContentType())
-                       .silverpeasFile(file)
-                       .build();
+        .forceMimeType(document.getContentType())
+        .forceFileName(filename)
+        .silverpeasFile(file)
+        .build();
   }
 }
