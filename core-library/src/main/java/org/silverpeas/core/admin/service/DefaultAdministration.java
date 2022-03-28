@@ -4354,17 +4354,17 @@ class DefaultAdministration implements Administration {
   @Override
   public String synchronizeUser(String userId, boolean recurs) throws AdminException {
     Collection<UserDetail> listUsersUpdate = new ArrayList<>();
+    UserDetail theUserDetail = getUserDetail(userId);
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
+    // Synchronize the user's infos
+    final Mutable<UserDetail> silverpeasUser = Mutable.empty();
     try {
-      UserDetail theUserDetail = getUserDetail(userId);
-      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
-      // Synchronize the user's infos
-      final Mutable<UserDetail> silverpeasUser = Mutable.empty();
-      try {
-        silverpeasUser.set(synchroDomain.synchroUser(theUserDetail.getSpecificId()));
-      } catch (AdminException e) {
-        SilverLogger.getLogger(this)
-            .warn("User {0} not found into identity manager, removing it", userId);
-      }
+      silverpeasUser.set(synchroDomain.synchroUser(theUserDetail.getSpecificId()));
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this)
+          .warn("User {0} not found into identity manager, removing it", userId);
+    }
+    try {
       if (!silverpeasUser.isPresent()) {
         return synchronizeRemoveUser(userId);
       }
