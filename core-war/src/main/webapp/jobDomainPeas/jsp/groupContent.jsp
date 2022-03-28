@@ -55,88 +55,80 @@
 <fmt:message key="JDP.groupDelConfirmHelp" var="groupDelConfirmMessageHelp"/>
 
 <%
-	  Domain  domObject 				= (Domain)request.getAttribute("domainObject");
-    Group 	grObject 				= (Group)request.getAttribute("groupObject");
-    Group[] subGroups = (Group[])request.getAttribute("subGroups");
-    List<UserDetail> subUsers = (List<UserDetail>) request.getAttribute("subUsers");
-    String 	groupsPath 				= (String)request.getAttribute("groupsPath");
-    boolean isDomainRW 				= (Boolean)request.getAttribute("isDomainRW");
-    boolean isDomainSync 			= (Boolean)request.getAttribute("isDomainSync");
-    boolean isGroupManagerHere		= (Boolean)request.getAttribute("isGroupManagerOnThisGroup");
-    boolean isGroupManager			= (Boolean)request.getAttribute("isOnlyGroupManager");
-    boolean isGroupManagerDirectly	= (Boolean)request.getAttribute("isGroupManagerDirectlyOnThisGroup");
-    boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
-    boolean onlySpaceManager = (Boolean)request.getAttribute("isOnlySpaceManager");
+  Domain domObject = (Domain) request.getAttribute("domainObject");
+  Group grObject = (Group) request.getAttribute("groupObject");
+  Group[] subGroups = (Group[]) request.getAttribute("subGroups");
+  List<UserDetail> subUsers = (List<UserDetail>) request.getAttribute("subUsers");
+  String groupsPath = (String) request.getAttribute("groupsPath");
+  boolean isDomainRW = (Boolean) request.getAttribute("isDomainRW");
+  boolean isDomainSync = (Boolean) request.getAttribute("isDomainSync");
+  boolean isGroupManagerHere = (Boolean) request.getAttribute("isGroupManagerOnThisGroup");
+  boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
+  boolean isGroupManagerDirectly = (Boolean) request.getAttribute("isGroupManagerDirectlyOnThisGroup");
+  boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
+  boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
 
-    boolean showTabs		= false;
+  boolean showTabs = false;
 
-    String thisGroupId = grObject.getId();
+  String thisGroupId = grObject.getId();
 
-    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
-    if (groupsPath != null)
-        browseBar.setPath(groupsPath);
-
-    if (grObject.isSynchronized())
-    {
-	//Group operations
-        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.remove"),"javascript:removeGroup()");
-        operationPane.addLine();
-        operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
-
-        showTabs = true;
-    }
-    else if (isDomainRW)
-    {
-	if (!isGroupManager)
-	{
-		showTabs = true;
-
-	        // Group operations
-	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.remove"),"javascript:removeGroup()");
-	        // User operations
-          operationPane.addLine();
-	        operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
-	}
-	else if (isGroupManagerHere)
-	{
-		if (grObject.getSuperGroupId() == null) {
-			//Group operations
-	    operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-			//User operations
-			operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
-		}
-        else {
-			//Group operations
-	    operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-	    operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
-      if (!isGroupManagerDirectly) {
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
-      }
-            // User operations
-            operationPane.addLine();
-            operationPane.addOperation(resource.getIcon("JDP.userManage"), resource.getString(
-                "JDP.userManage"), "displayAddRemoveUsers?Idgroup=" + thisGroupId);
-		}
-
-		showTabs = true;
-	}
-    }
-    if (isDomainSync) {
+  browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain=" + domObject.getId());
+  if (groupsPath != null) {
+    browseBar.setPath(groupsPath);
+  }
+  if (isDomainRW) {
+    if (!isGroupManager) {
+      showTabs = true;
       // Group operations
+      operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"), resource.getString("JDP.groupAdd"), "displayGroupCreate?Idgroup=" + thisGroupId);
+      operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupModify?Idgroup=" + thisGroupId);
+      operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
+      // User operations
       operationPane.addLine();
-      operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"),"javascript:doSynchronization()");
-      operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"),resource.getString("JDP.groupUnsynchro"),"groupUnSynchro?Idgroup="+thisGroupId);
+      if (grObject.isSynchronized()) {
+        operationPane.addOperation(resource.getIcon("JDP.groupSynchro"), resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
+      } else {
+        operationPane.addOperation(resource.getIcon("JDP.userManage"), resource.getString("JDP.userManage"), "displayAddRemoveUsers?Idgroup=" + thisGroupId);
+      }
+    } else if (isGroupManagerHere) {
+      if (grObject.getSuperGroupId() == null) {
+        //Group operations
+        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"), resource.getString("JDP.groupAdd"), "displayGroupCreate?Idgroup=" + thisGroupId);
+        //User operations
+        if (grObject.isSynchronized()) {
+          operationPane.addOperation(resource.getIcon("JDP.groupSynchro"), resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
+        } else {
+          operationPane.addOperation(resource.getIcon("JDP.userManage"), resource.getString("JDP.userManage"), "displayAddRemoveUsers?Idgroup=" + thisGroupId);
+        }
+      } else {
+        //Group operations
+        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"), resource.getString("JDP.groupAdd"), "displayGroupCreate?Idgroup=" + thisGroupId);
+        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupModify?Idgroup=" + thisGroupId);
+        if (!isGroupManagerDirectly) {
+          operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
+        }
+        // User operations
+        operationPane.addLine();
+        if (grObject.isSynchronized()) {
+          operationPane.addOperation(resource.getIcon("JDP.groupSynchro"), resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
+        } else {
+          operationPane.addOperation(resource.getIcon("JDP.userManage"), resource.getString("JDP.userManage"), "displayAddRemoveUsers?Idgroup=" + thisGroupId);
+        }
+      }
+      showTabs = true;
     }
-
+  }
+  if (isDomainSync) {
+    // Group operations
+    operationPane.addLine();
+    operationPane.addOperation(resource.getIcon("JDP.groupSynchro"), resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
+    operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"), resource.getString("JDP.groupUnsynchro"), "groupUnSynchro?Idgroup=" + thisGroupId);
+  }
   operationPane.addLine();
   operationPane.addOperation("useless", resource.getString("JDP.user.rights.action"), "groupViewRights");
   if (isRightCopyReplaceEnabled) {
     operationPane.addOperation("useless", resource.getString("JDP.rights.assign"), "javascript:assignSameRights()");
   }
-
   if (onlySpaceManager) {
     // no action to space manager
     operationPane.clear();
@@ -266,7 +258,7 @@ $(document).ready(function() {
 });
 
 var arrayBeforeAjaxRequest = function () {
-  if (${grObject.synchronized ? 0 : fn:length(subGroupList)} > 25) {
+  if (${fn:length(subGroupList)} > 25) {
     spProgressMessage.show();
   }
 }
@@ -317,48 +309,46 @@ if (showTabs) {
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
-  <c:if test="${not grObject.synchronized}">
-    <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
-    <fmt:message var="groupArrayTitle" key="JDP.groups"/>
-    <fmt:message var="groupLabel" key="GML.groupe"/>
-    <fmt:message var="nameLabel" key="GML.name"/>
-    <fmt:message var="usersLabel" key="GML.users"/>
-    <fmt:message var="descriptionLabel" key="GML.description"/>
-    <c:set var="iconPanelSynchronized"><view:icon iconName='<%=resource.getIcon("JDP.groupSynchronized")%>' altText="${groupLabel}"/></c:set>
-    <c:set var="iconPanel"><view:icon iconName='<%=resource.getIcon("JDP.group")%>' altText="${groupLabel}"/></c:set>
-    <div id="dynamic-group-container">
-      <view:arrayPane var="_gc_groupe"
-                      routingAddress="groupContent.jsp"
-                      numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
-                      title="${groupArrayTitle} (${fn:length(subGroupList)})"
-                      export="true">
-        <view:arrayColumn title="" sortable="false"/>
-        <view:arrayColumn title="${nameLabel}" sortable="false"/>
-        <view:arrayColumn title="${usersLabel}" sortable="false"/>
-        <view:arrayColumn title="${descriptionLabel}" sortable="false"/>
-        <view:arrayLines var="group" items="${subGroupList}">
-          <view:arrayLine>
-            <view:arrayCellText>
-              <c:choose>
-                <c:when test="${group.synchronized}">${iconPanelSynchronized}</c:when>
-                <c:otherwise>${iconPanel}</c:otherwise>
-              </c:choose>
-            </view:arrayCellText>
-            <view:arrayCellText><view:a href="${groupCommonLinkPart}${group.id}">${silfn:escapeHtml(group.name)}</view:a></view:arrayCellText>
-            <view:arrayCellText>${group.totalNbUsers}</view:arrayCellText>
-            <view:arrayCellText text="${silfn:escapeHtml(group.description)}"/>
-          </view:arrayLine>
-        </view:arrayLines>
-      </view:arrayPane>
-      <script type="text/javascript">
-        whenSilverpeasReady(function() {
-          sp.arrayPane.ajaxControls('#dynamic-group-container', {
-            before : arrayBeforeAjaxRequest
-          });
+  <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
+  <fmt:message var="groupArrayTitle" key="JDP.groups"/>
+  <fmt:message var="groupLabel" key="GML.groupe"/>
+  <fmt:message var="nameLabel" key="GML.name"/>
+  <fmt:message var="usersLabel" key="GML.users"/>
+  <fmt:message var="descriptionLabel" key="GML.description"/>
+  <c:set var="iconPanelSynchronized"><view:icon iconName='<%=resource.getIcon("JDP.groupSynchronized")%>' altText="${groupLabel}"/></c:set>
+  <c:set var="iconPanel"><view:icon iconName='<%=resource.getIcon("JDP.group")%>' altText="${groupLabel}"/></c:set>
+  <div id="dynamic-group-container">
+    <view:arrayPane var="_gc_groupe"
+                    routingAddress="groupContent.jsp"
+                    numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
+                    title="${groupArrayTitle} (${fn:length(subGroupList)})"
+                    export="true">
+      <view:arrayColumn title="" sortable="false"/>
+      <view:arrayColumn title="${nameLabel}" sortable="false"/>
+      <view:arrayColumn title="${usersLabel}" sortable="false"/>
+      <view:arrayColumn title="${descriptionLabel}" sortable="false"/>
+      <view:arrayLines var="group" items="${subGroupList}">
+        <view:arrayLine>
+          <view:arrayCellText>
+            <c:choose>
+              <c:when test="${group.synchronized}">${iconPanelSynchronized}</c:when>
+              <c:otherwise>${iconPanel}</c:otherwise>
+            </c:choose>
+          </view:arrayCellText>
+          <view:arrayCellText><view:a href="${groupCommonLinkPart}${group.id}">${silfn:escapeHtml(group.name)}</view:a></view:arrayCellText>
+          <view:arrayCellText>${group.totalNbUsers}</view:arrayCellText>
+          <view:arrayCellText text="${silfn:escapeHtml(group.description)}"/>
+        </view:arrayLine>
+      </view:arrayLines>
+    </view:arrayPane>
+    <script type="text/javascript">
+      whenSilverpeasReady(function() {
+        sp.arrayPane.ajaxControls('#dynamic-group-container', {
+          before : arrayBeforeAjaxRequest
         });
-      </script>
-    </div>
-  </c:if>
+      });
+    </script>
+  </div>
   <br/>
 <%
   Map<UserState, Pair<String, String>> bundleCache = new HashMap<>(UserState.values().length);
