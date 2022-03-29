@@ -38,14 +38,14 @@
       return top.spLayout && !top.spLayout.isWindowTop($window);
     };
     this.getLayoutManager = function() {
-      var _topWindow = top.spLayout.getWindowTopFrom($window).window;
-      return _topWindow.spAdminLayout ? _topWindow.spAdminLayout : spLayout;
+      var _topWindow = top.spLayout ? top.spLayout.getWindowTopFrom($window).window : $window;
+      return _topWindow.spAdminLayout ? _topWindow.spAdminLayout : $window.spLayout;
     };
     this.top$ = function() {
-      return top.spLayout.getWindowTopFrom($window).jQuery;
+      return top.spLayout ? top.spLayout.getWindowTopFrom($window).jQuery : $;
     };
     this.topDocument = function() {
-      return top.spLayout.getWindowTopFrom($window).document;
+      return top.spLayout ? top.spLayout.getWindowTopFrom($window).document : document;
     }
   };
 
@@ -232,6 +232,13 @@
    * The different methods on messages handled by the plugin.
    */
   var methods = {
+    /**
+     * Destroy the current popup
+     */
+    destroy : function() {
+      $(this).dialog('close');
+      $(this).dialog('destroy');
+    },
     /**
      * Close the current popup
      */
@@ -745,10 +752,13 @@
     this.refreshState = function() {
       const existsPopupsOnTop = FS_MANAGER.top$()('div.ui-dialog').filter(':visible').length > 0;
       spFullscreenModalBackgroundContext.refreshBackgroundState(existsPopupsOnTop);
-      if (existsPopupsOnTop) {
-        FS_MANAGER.getLayoutManager().getBody().getContent().forceOnBackground();
-      } else {
-        FS_MANAGER.getLayoutManager().getBody().getContent().unforceOnBackground();
+      const __layoutManager = FS_MANAGER.getLayoutManager();
+      if (__layoutManager) {
+        if (existsPopupsOnTop) {
+          __layoutManager.getBody().getContent().forceOnBackground();
+        } else {
+          __layoutManager.getBody().getContent().unforceOnBackground();
+        }
       }
     }
   }
@@ -774,10 +784,13 @@
       }
     };
     this.refreshBackgroundState  = function(forceBackground) {
-      if(!forceBackground && this.getContainers().length > 0) {
-        FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
-      } else {
-        FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
+      const __layoutManager = FS_MANAGER.getLayoutManager();
+      if (__layoutManager) {
+        if (!forceBackground && this.getContainers().length > 0) {
+          __layoutManager.getBody().getContent().setOnForeground();
+        } else {
+          __layoutManager.getBody().getContent().setOnBackground();
+        }
       }
     };
     this.clear = function() {

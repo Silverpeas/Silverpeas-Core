@@ -4999,6 +4999,23 @@ input.search:focus {
 /*************/
 /** preview **/
 /*************/
+#documentPreview {
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0 auto;
+  text-align: center;
+  background-color: white;
+}
+
+#documentPreview .content {
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .dialog-popup-button {
   cursor: pointer;
   text-align: center;

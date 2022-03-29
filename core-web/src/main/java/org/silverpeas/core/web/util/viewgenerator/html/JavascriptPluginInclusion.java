@@ -619,8 +619,10 @@ public class JavascriptPluginInclusion {
     includePopup(xhtml);
     includeEmbedPlayer(xhtml);
     xhtml.addElement(scriptContent(settingVariableName("ViewSettings")
+        .add("v.ep", normalizeWebResourceUrl(JAVASCRIPT_PATH + SILVERPEAS_EMBED_PLAYER))
         .add("dac.cns", displayableAsContentComponentNames(), true)
         .produce()));
+    xhtml.addElement(script(SERVICE_PATH + "content/silverpeas-document-view-service.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PREVIEW));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_VIEW));
     return xhtml;

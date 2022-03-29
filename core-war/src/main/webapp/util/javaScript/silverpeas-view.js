@@ -26,14 +26,20 @@
  * Silverpeas plugin build upon JQuery to display a document view.
  * It uses the JQuery UI framework.
  */
-(function($){
+(function(){
 
-  if ($.view) {
+  const $W = window;
+  const $TW = top.window;
+  const $Src = $W.jQuery;
+  const docUI = $TW.document;
+  const $UI = $TW.jQuery;
+
+  if ($Src.view) {
     // no redefine
     return;
   }
 
-  $.view = {
+  $Src.view = {
     webServiceContext : webContext + '/services'
   };
 
@@ -64,7 +70,7 @@
       }
 
       // Dialog
-      return __openView($(this), options);
+      return __openView($Src(this), options);
     }
   };
 
@@ -75,9 +81,9 @@
    *
    * Here the view namespace in JQuery.
    */
-  $.fn.view = function( method ) {
+  $Src.fn.view = function( method ) {
 
-    if (!$().popup) {
+    if (!$Src.popup) {
       console.error("Silverpeas Popup JQuery Plugin is required.");
       return false;
     }
@@ -87,7 +93,7 @@
     } else if ( typeof method === 'object' || ! method ) {
       return methods.view.apply( this, arguments );
     } else {
-      $.error( 'Method ' +  method + ' does not exist on jQuery.view' );
+      $Src.error( 'Method ' +  method + ' does not exist on jQuery.view' );
     }
   };
 
@@ -101,40 +107,25 @@
       return $this;
 
     return $this.each(function() {
-      const $_this = $(this);
-
+      const $_this = $Src(this);
       // Waiting animation
       if (!options.insertMode) {
-        $.popup.showWaiting();
+        $UI.popup.showWaiting();
       } else {
         const imageUrl = popupViewGeneratorIconPath + '/inProgress.gif';
-        $_this.html($('<img>').attr('src', imageUrl).attr('width', '32').attr('height', '32'));
+        $_this.html($Src('<img>').attr('src', imageUrl).attr('width', '32').attr('height', '32'));
       }
-
+      const service = new ViewService();
       // Getting view
-      let url = $.view.webServiceContext;
-      url += "/view/" + options.componentInstanceId;
-      url += "/attachment/" + options.attachmentId;
-      if (options.lang) {
-        url += "?lang=" + options.lang;
-      }
-      $.ajax({
-        url : url,
-        type : 'GET',
-        dataType : 'json',
-        cache : false,
-        success : function(data, status, jqXHR) {
-          if (options.insertMode) {
-            __insertView($_this, data);
-          } else {
-            __openDialogView($_this, data);
-          }
-          $.popup.hideWaiting();
-        },
-        error : function(jqXHR, textStatus, errorThrown) {
-          $.popup.hideWaiting();
-          sp.log.error("view", "technical error for", JSON.stringify(options), errorThrown);
+      service.getDocumentView(options.attachmentId, options.componentInstanceId, options.lang).then(function(data) {
+        if (options.insertMode) {
+          __insertView($_this, data);
+        } else {
+          __openDialogView($_this, data).then($UI.popup.hideWaiting, $UI.popup.hideWaiting);
         }
+      }, function(e) {
+        $UI.popup.hideWaiting();
+        sp.log.error("view", "technical error for", JSON.stringify(options), e);
       });
     })
   }
@@ -143,10 +134,10 @@
    * Private function that centralizes the dialog view construction.
    */
   function __insertView($this, view) {
-    __adjustViewSize(view);
+    __adjustViewSize(view, $Src($W));
 
     // Initializing the resulting html container
-    const $baseContainer = $("<div>")
+    const $baseContainer = $Src("<div>")
         .css('display', 'block')
         .css('border', '0px')
         .css('padding', '0px')
@@ -156,13 +147,13 @@
     $this.html($baseContainer);
 
     // Popup
-    const $documentViewer = __setView($baseContainer, view, true);
+    const $documentViewer = __setView($Src, $baseContainer, view, true);
 
     // Player
     $documentViewer.embedPlayer({
-      url : view.viewerUri,
-      width : view.width,
-      height : view.height
+      url : view.getViewerUrl(),
+      width : view.getWidth(),
+      height : view.getHeight()
     });
   }
 
@@ -172,14 +163,14 @@
   function __openDialogView($this, view) {
     sp.navigation.mute();
 
-    __adjustViewSize(view);
+    __adjustViewSize(view, $UI($TW));
 
     // Initializing the resulting html container
-    let $baseContainer = $("#documentView");
+    let $baseContainer = $UI("#documentView");
     if ($baseContainer.length !== 0) {
       $baseContainer.remove();
     }
-    $baseContainer = $("<div>")
+    $baseContainer = $UI("<div>")
                       .attr('id', 'documentView')
                       .css('display', 'block')
                       .css('border', '0px')
@@ -187,45 +178,59 @@
                       .css('margin', '0px auto')
                       .css('text-align', 'center')
                       .css('background-color', 'white');
-    $baseContainer.insertAfter($this);
+    $baseContainer.appendTo($UI(docUI.body));
 
     // Settings
     const settings = {
-      title : view.originalFileName,
-      width : view.width,
-      height : view.height,
+      title : view.getTitle(),
+      width : view.getWidth(),
+      height : view.getHeight(),
       callbackOnClose : function() {
         sp.navigation.unmute();
       }
     };
 
     // Popup
-    const $documentViewer = __setView($baseContainer, view);
+    const $documentViewer = __setView($UI, $baseContainer, view, false);
 
     // Player
-    $documentViewer.embedPlayer({
-      url : view.viewerUri,
-      width : view.width,
-      height : view.height
+    return new Promise(function(resolve) {
+      function __render() {
+        $documentViewer.embedPlayer({
+          url : view.getViewerUrl(),
+          width : view.getWidth(),
+          height : view.getHeight()
+        });
+        $baseContainer.popup('view', settings);
+        resolve();
+      }
+      if (!$UI.fn.embedPlayer) {
+        $UI.getScript(ViewSettings.get("v.ep"), __render);
+      } else {
+        __render();
+      }
     });
-
-    $baseContainer.popup('view', settings);
   }
 
   /**
    * Private function that adjust size of view (size limitations)
    */
-  function __adjustViewSize(view) {
+  function __adjustViewSize(view, $window) {
     const isDefaultView = view.viewMode === 'Default';
 
     // Screen size
-    const offsetWidth = isDefaultView ? 1 : (view.width < view.height ? 2 : 1.75);
-    const parentWidth = $(window).width() * 0.9;
-    const parentHeight = $(window).height() * 0.9;
+    let offsetWidth;
+    if (isDefaultView) {
+      offsetWidth = 1;
+    } else {
+      offsetWidth = view.getWidth() < view.getHeight() ? 2 : 1.75;
+    }
+    const parentWidth = $window.width() * 0.9;
+    const parentHeight = $window.height() * 0.9;
 
     // Document size
-    let width = view.width * offsetWidth;
-    let height = view.height;
+    let width = view.getWidth() * offsetWidth;
+    let height = view.getHeight();
 
     // Maximum size
     if (width > parentWidth) {
@@ -250,7 +255,7 @@
   /**
    * Private function that sets the view container.
    */
-  function __setView($baseContainer, view, insertMode) {
+  function __setView($, $baseContainer, view, insertMode) {
     const documentViewer = $('<div>')
         .css('display', 'block')
         .css('margin', '0px')
@@ -264,10 +269,10 @@
         .append(documentViewer);
     $baseContainer.html($viewerContainer);
     if (!insertMode) {
-      $viewerContainer.css('width', view.width + 'px')
-          .css('height', view.height + 'px');
-      documentViewer.css('width', view.width + 'px')
-          .css('height', view.height + 'px')
+      $viewerContainer.css('width', view.getWidth() + 'px')
+          .css('height', view.getHeight() + 'px');
+      documentViewer.css('width', view.getWidth() + 'px')
+          .css('height', view.getHeight() + 'px')
           .css('background-color', '#222222');
     }
     return documentViewer;
@@ -448,4 +453,4 @@
       domInit();
     }
   }
-})(jQuery);
+})();

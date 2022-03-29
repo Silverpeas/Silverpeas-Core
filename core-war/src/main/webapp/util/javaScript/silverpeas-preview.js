@@ -26,16 +26,23 @@
  * Silverpeas plugin build upon JQuery to display a document preview.
  * It uses the JQuery UI framework.
  */
-(function($) {
+(function() {
 
-  $.preview = {
+  const $W = window;
+  const $TW = top.window;
+  const docSrc = $W.document;
+  const $Src = $W.jQuery;
+  const docUI = $TW.document;
+  const $UI = $TW.jQuery;
+
+  $Src.preview = {
     webServiceContext: webContext + '/services'
   };
 
   /**
    * The different preview methods handled by the plugin.
    */
-  var methods = {
+  const methods = {
     /**
      * Does nothing
      */
@@ -57,7 +64,7 @@
       }
 
       // Dialog
-      return __openPreview($(this), options);
+      return __openPreview($Src(this), options);
     }
   };
 
@@ -68,9 +75,9 @@
    *
    * Here the preview namespace in JQuery.
    */
-  $.fn.preview = function(method) {
+  $Src.fn.preview = function(method) {
 
-    if (!$().popup) {
+    if (!$UI.popup) {
       console.error("Silverpeas Popup JQuery Plugin is required.");
       return false;
     }
@@ -80,7 +87,7 @@
     } else if (typeof method === 'object' || !method) {
       return methods.preview.apply(this, arguments);
     } else {
-      $.error('Method ' + method + ' does not exist on jQuery.preview');
+      $Src.error('Method ' + method + ' does not exist on jQuery.preview');
     }
   };
 
@@ -89,87 +96,102 @@
    * Be careful, options have to be well initialized before this function call
    */
   function __openPreview($this, options) {
-
-    if (!$this.length)
+    if (!$this.length) {
       return $this;
-
+    }
+    const service = new ViewService();
+    const dialog = new PreviewDialog();
     return $this.each(function() {
-      var $_this = $(this);
-
+      const $_this = $Src(this);
       // Waiting animation
-      $.popup.showWaiting();
-
-      // Getting preview
-      var url = $.preview.webServiceContext;
-      url += "/preview/" + options.componentInstanceId;
-      url += "/attachment/" + options.attachmentId;
-      if (options.lang) {
-        url += "?lang=" + options.lang;
-      }
-      $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: 'json',
-        cache: false,
-        success: function(data, status, jqXHR) {
-          $.popup.hideWaiting();
-          __openDialogPreview($_this, data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          $.popup.hideWaiting();
-          console.error(errorThrown);
-        }
+      $UI.popup.showWaiting();
+      service.getDocumentPreview(options.attachmentId, options.componentInstanceId, options.lang).then(function(preview) {
+        $UI.popup.hideWaiting();
+        dialog.showWith($_this[0], preview);
+      }, function(e) {
+        $UI.popup.hideWaiting();
+        console.error(e);
       });
     });
   }
 
-  /** Technical attribute to avoid having several same functions triggered on keydown */
-  var __previousOrNextPreview;
-
-  /**
-   * Private function that centralizes the dialog preview construction
-   */
-  function __openDialogPreview($this, preview) {
-
-    if (__previousOrNextPreview) {
-      $(document).unbind('keydown', __previousOrNextPreview);
+  const PreviewDialog = function() {
+    let __$ref;
+    let __preview;
+    let $container = docUI.querySelector("#documentPreview");
+    function __closePreviousPopup() {
+      const __spPreviewPopup = $container.__spPreviewPopup;
+      if (__spPreviewPopup) {
+        __spPreviewPopup.popup('destroy');
+      }
     }
-
-    // Initializing the resulting html container
-    var $baseContainer = $("#documentPreview");
-    if ($baseContainer.length === 0) {
-      $baseContainer = $("<div>")
-              .attr('id', 'documentPreview')
-              .css('display', 'block')
-              .css('border', '0px')
-              .css('padding', '0px')
-              .css('margin', '0px auto')
-              .css('text-align', 'center')
-              .css('background-color', 'white');
-      $baseContainer.insertAfter($this);
+    if ($container) {
+      __closePreviousPopup();
+      $container.remove();
     }
+    $container = docUI.createElement('div');
+    $container.setAttribute('id', 'documentPreview');
+    docUI.body.appendChild($container);
+    this.showWith = function($ref, preview) {
+      __$ref = $ref;
+      __preview = preview;
+      this.refresh();
+    }
+    this.refresh = function() {
+      $container.innerHTML = '';
+      if (!!__preview) {
+        const $previewContent = new PreviewContent(__preview, docUI);
+        $container.appendChild($previewContent.getContainer());
+        const $navigation = new PreviewNavigation(__$ref, $container);
+        __closePreviousPopup();
+        $container.__spPreviewPopup = $UI($container).popup('preview', {
+          title: __preview.getTitle(),
+          width: __preview.getWidth(),
+          height: __preview.getHeight(),
+          callbackOnClose : function() {
+            $navigation.destroy();
+          }
+        });
+        $navigation.refresh();
+      }
+    };
+    this.refresh();
+  }
 
-    // Getting previous and next
-    var previousIndex = -1;
-    var nextIndex = -1;
-    var allDocumentPreviews = $.makeArray($(document).find(".preview-file"));
+  const PreviewContent = function(preview, doc) {
+    const $container = doc.createElement('div');
+    $container.classList.add('content');
+    const $img = docUI.createElement('img');
+    $img.setAttribute('width', preview.getWidth());
+    $img.setAttribute('height', preview.getHeight());
+    $img.setAttribute('src', preview.getImgUrl());
+    $container.appendChild($img);
+    this.getContainer = function() {
+      return $container;
+    };
+  }
+
+  const PreviewNavigation = function($ref, $hostContainer) {
+    const $baseContainer = $UI($hostContainer);
+    let previousIndex = -1;
+    let nextIndex = -1;
+    const allDocumentPreviews = $W.sp.element.querySelectorAll(".preview-file", docSrc);
     if (allDocumentPreviews && allDocumentPreviews.length > 1) {
-      previousIndex = $.inArray($this.get(0), allDocumentPreviews) - 1;
+      previousIndex = $Src.inArray($ref, allDocumentPreviews) - 1;
       if (previousIndex < 0) {
         previousIndex = allDocumentPreviews.length - 1;
       }
-      nextIndex = $.inArray($this.get(0), allDocumentPreviews) + 1;
+      nextIndex = $Src.inArray($ref, allDocumentPreviews) + 1;
       if (nextIndex >= allDocumentPreviews.length) {
         nextIndex = 0;
       }
     }
-
     // Function to navigate between images
-    __previousOrNextPreview = function(e) {
-      var keyCode = Number(e.keyCode);
+    const __previousOrNextPreview = function(e) {
+      const keyCode = Number(e.keyCode);
       if (previousIndex >= 0 && 37 <= keyCode && keyCode <= 40) {
         e.preventDefault();
-        var previousOrNextPreviewTarget = null;
+        let previousOrNextPreviewTarget = null;
         if (38 === keyCode) {
           // Up
           previousOrNextPreviewTarget = allDocumentPreviews[previousIndex];
@@ -177,88 +199,66 @@
           // Down
           previousOrNextPreviewTarget = allDocumentPreviews[nextIndex];
         }
-        $(previousOrNextPreviewTarget).click();
+        $Src(previousOrNextPreviewTarget).click();
         return false;
       }
       return true;
     };
-    $(document).bind('keydown', __previousOrNextPreview);
-
-    // Popup settings
-    var settings = {
-      title: preview.originalFileName,
-      width: preview.width,
-      height: preview.height,
-      callbackOnClose: function() {
-        $(document).unbind('keydown', __previousOrNextPreview);
-      }
-    };
-
-    // Preview content
-    var $previewContent = $('<div>').css('display', 'block').css('margin', '0px').css('padding',
-            '0px').css('text-align', 'center');
-    $previewContent.append($('<img>').attr('src', preview.url)
-            .attr('width', preview.width)
-            .attr('height', preview.height));
-
-    // Buttons
-    var $previousButton;
-    var $nextButton;
+    let $previousButton;
+    let $nextButton;
     if (previousIndex >= 0) {
       $previousButton = __buildButton($baseContainer,
-              'previousPreview',
-              allDocumentPreviews[previousIndex]);
+          'previousPreview',
+          allDocumentPreviews[previousIndex]);
       $nextButton = __buildButton($baseContainer,
-              'nextPreview',
-              allDocumentPreviews[nextIndex]);
-      $previewContent.append($previousButton);
-      $previewContent.append($nextButton);
+          'nextPreview',
+          allDocumentPreviews[nextIndex]);
+      $baseContainer.append($previousButton);
+      $baseContainer.append($nextButton);
+      $UI(docUI).bind('keydown', __previousOrNextPreview);
     }
-
-    // Popup
-    $baseContainer.html($previewContent);
-    $baseContainer.popup('preview', settings);
-
-    // Final event/UI configurations (that need the dialog opened)
-    if (previousIndex >= 0) {
-      __configureButtonPosition('previousPreview', $baseContainer, $previousButton);
-      __configureButtonPosition('nextPreview', $baseContainer, $nextButton);
-    }
+    this.refresh = function() {
+      // Final event/UI configurations (that need the dialog opened)
+      if (previousIndex >= 0) {
+        __configureButtonPosition('previousPreview', $baseContainer, $previousButton);
+        __configureButtonPosition('nextPreview', $baseContainer, $nextButton);
+      }
+    };
+    this.destroy = function() {
+      if (previousIndex >= 0) {
+        $UI(docUI).unbind('keydown', __previousOrNextPreview);
+      }
+    };
   }
 
   /**
    * Private function that centralizes an button construction
    */
   function __buildButton($baseContainer, type, nextDomObjectPreview) {
-
     // Initializing
-    var $buttonContainer = $('<div>')
+    const $buttonContainer = $UI('<div>')
             .addClass('dialog-popup-button')
             .css('display', 'none')
             .css('position', 'absolute')
             .css('top', '0px')
             .css('left', '0px');
-
     // Help
-    var titlePropertyKey;
+    let titlePropertyKey;
     if (type === 'previousPreview') {
       titlePropertyKey = 'GML.preview.help.file.previous';
     } else {
       titlePropertyKey = 'GML.preview.help.file.next';
     }
     $buttonContainer.attr('title', sp.i18n.get(titlePropertyKey));
-
     // This first call permits to load required images for a button hover event
     __configureVisualButtonAspect(type, true);
     // This second call permits to load required images for a simple button
-    var $button = __configureVisualButtonAspect(type, false);
+    const $button = __configureVisualButtonAspect(type, false);
     $buttonContainer.html($button);
-
     // Setting onclick result
     $buttonContainer.click(function() {
-      $(nextDomObjectPreview).click();
+      $UI(nextDomObjectPreview).click();
     });
-
     // Setting onmouseover/onmouseout button event
     $buttonContainer.mouseenter(function() {
       __configureVisualButtonAspect(type, true, $button);
@@ -266,7 +266,6 @@
     $buttonContainer.mouseleave(function() {
       __configureVisualButtonAspect(type, false, $button);
     });
-
     // Setting baseContainer event (print buttons)
     $baseContainer.mouseenter(function() {
       $buttonContainer.fadeIn(200);
@@ -281,20 +280,17 @@
    * Private function that centralizes the configuration of a button on visual side
    */
   function __configureVisualButtonAspect(type, isHover, $button) {
-
     // Choosing the right image
-    var iconFileName;
+    let iconFileName;
     if (type === 'previousPreview') {
       iconFileName = (!isHover) ? 'arrowUp.gif' : 'arrowUpModal.png';
     } else {
       iconFileName = (!isHover) ? 'arrowDown.gif' : 'arrowDownModal.png';
     }
-
     // Initializing the image if necessary
     if (!$button) {
-      $button = $('<img>').addClass('dialog-popup-button-image');
+      $button = $UI('<img>').addClass('dialog-popup-button-image');
     }
-
     // Setting the image source attribute
     $button.attr('src', webContext + '/util/icons/arrow/' + iconFileName);
     return $button;
@@ -304,17 +300,14 @@
    * Private function that centralizes the position configuration of a button
    */
   function __configureButtonPosition(type, $target, $buttonContainer) {
-
     // Top
-    var top = $(document).scrollTop();
+    let top = $UI(docUI).scrollTop();
     if (type !== 'previousPreview') {
       top += ($target.outerHeight(true) - $buttonContainer.outerHeight(true));
     }
-
     // Left
-    var left = $(document).scrollLeft() + (($target.outerWidth(true) / 2) - ($buttonContainer.outerWidth(true) / 2));
-
+    let left = $UI(docUI).scrollLeft() + (($target.outerWidth(true) / 2) - ($buttonContainer.outerWidth(true) / 2));
     // Changing the position
     $buttonContainer.offset({top: top, left: left});
   }
-})(jQuery);
+})();
