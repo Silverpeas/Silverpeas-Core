@@ -23,13 +23,18 @@
  */
 package org.silverpeas.core.viewer.model;
 
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
+import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
 /**
@@ -132,7 +137,17 @@ public abstract class AbstractPreview implements Preview {
    */
   private String[] getWidthAndHeight() {
     if (widthAndHeight == null) {
-      widthAndHeight = ImageUtil.getWidthAndHeight(physicalFile);
+      final ImageTool imageTool = ImageTool.get();
+      if (imageTool.isActivated()) {
+        try {
+          widthAndHeight = imageTool.getImageInfo(physicalFile, WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
+        } catch (SilverpeasException e) {
+          SilverLogger.getLogger(this).warn(e);
+        }
+      }
+      if (widthAndHeight == null) {
+        widthAndHeight = ImageUtil.getWidthAndHeight(physicalFile);
+      }
     }
     return widthAndHeight;
   }
