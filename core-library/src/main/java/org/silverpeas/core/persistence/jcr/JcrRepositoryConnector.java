@@ -24,7 +24,9 @@
 package org.silverpeas.core.persistence.jcr;
 
 import org.silverpeas.core.persistence.jcr.provider.JcrSystemCredentialsProvider;
+import org.silverpeas.core.thread.concurrent.ReentrantSemaphore;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
@@ -33,15 +35,29 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import java.text.MessageFormat;
 
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
+
 /**
  * A connector in charge to manage the connexions with the underlying JCR repository used by
  * Silverpeas. For each opened connexion, a session is created and from which the content of
  * the repository can be accessed.
+ * <p>
+ *   Number of thread that are able to use a session at a same time can be managed by setting a
+ *   positive value to parameter 'jcr.connection.maxThread' of property file 'org.silverpeas.util
+ *   .attachment.Attachment'.<br/>
+ *   By default, there is no limitation.
+ * </p>
  * @author mmoquillon
  */
 public class JcrRepositoryConnector {
 
   private static final String USER_ID_PATTERN = "{0}@domain{1}";
+  private static final SettingBundle settings = getSettingBundle("org.silverpeas.util.attachment.Attachment");
+  private static final ReentrantSemaphore semaphore = new ReentrantSemaphore(settings.getInteger("jcr.connection.maxThread", 0));
+
+  private JcrRepositoryConnector() {
+    // hidden constructor
+  }
 
   /**
    * Opens a connection with the underlying JCR repository by using a basic authentication in which
@@ -56,10 +72,17 @@ public class JcrRepositoryConnector {
    */
   public static JcrSession openBasicSession(String login, String domainId, String password)
       throws RepositoryException {
-    Repository repository = getRepository();
-    String userID = MessageFormat.format(USER_ID_PATTERN, login, domainId);
-    Credentials credentials = new SimpleCredentials(userID, password.toCharArray());
-    return new JcrSession(repository.login(credentials));
+    try {
+      semaphore.acquire();
+      Repository repository = getRepository();
+      String userID = MessageFormat.format(USER_ID_PATTERN, login, domainId);
+      Credentials credentials = new SimpleCredentials(userID, password.toCharArray());
+      return new JcrSession(repository.login(credentials));
+    } catch (InterruptedException e) {
+      semaphore.release();
+      Thread.currentThread().interrupt();
+      throw new RepositoryException(e);
+    }
   }
 
   /**
@@ -71,19 +94,28 @@ public class JcrRepositoryConnector {
    * the repository.
    */
   public static JcrSession openSystemSession() throws RepositoryException {
-    Repository repository = getRepository();
-    Credentials credentials = JcrSystemCredentialsProvider.getJcrSystemCredentials();
-    return new JcrSession(repository.login(credentials));
+    try {
+      semaphore.acquire();
+      Repository repository = getRepository();
+      Credentials credentials = JcrSystemCredentialsProvider.getJcrSystemCredentials();
+      return new JcrSession(repository.login(credentials));
+    } catch (InterruptedException e) {
+      semaphore.release();
+      Thread.currentThread().interrupt();
+      throw new RepositoryException(e);
+    }
   }
 
   public static void closeSession(Session session) {
+    semaphore.release();
     if (session != null) {
       session.logout();
     }
   }
 
-  private static final Repository getRepository() {
+  private static Repository getRepository() {
     JcrRepositoryProvider provider = ServiceProvider.getService(JcrRepositoryProvider.class);
     return provider.getRepository();
   }
+
 }
