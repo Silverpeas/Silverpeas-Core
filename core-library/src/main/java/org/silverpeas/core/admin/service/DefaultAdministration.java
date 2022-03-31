@@ -422,7 +422,7 @@ class DefaultAdministration implements Administration {
         spaceManager.sendSpaceToBasket(spaceInst, userId);
 
         // delete all profiles (space, components and subspaces)
-        deleteSpaceProfiles(spaceInst);
+        deleteSpaceProfilesOnSpaceLogicalDeletion(spaceInst);
 
         // notify logical deletion
         notifyOnSpaceLogicalDeletion(spaceId);
@@ -492,7 +492,8 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  private void deleteSpaceProfiles(SpaceInst spaceInst) throws AdminException {
+  private void deleteSpaceProfilesOnSpaceLogicalDeletion(SpaceInst spaceInst)
+      throws AdminException {
     // delete the space profiles
     for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
       deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId());
@@ -509,7 +510,7 @@ class DefaultAdministration implements Administration {
     // delete the subspace profiles
     List<SpaceInst> subSpaces = spaceInst.getSubSpaces();
     for (SpaceInst subSpace: subSpaces) {
-      deleteSpaceProfiles(subSpace);
+      deleteSpaceProfilesOnSpaceLogicalDeletion(subSpace);
     }
   }
 
@@ -4228,16 +4229,28 @@ class DefaultAdministration implements Administration {
 
   @Override
   public String synchronizeGroup(String groupId, boolean recurs) throws AdminException {
-    GroupDetail theGroup = getGroup(groupId);
-    if (theGroup.isSynchronized()) {
+    final GroupDetail silverpeasGroup = getGroup(groupId);
+    if (silverpeasGroup.isSynchronized()) {
       synchronizeGroupByRule(groupId, false);
     } else {
-      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
-      GroupDetail distantGroup = synchroDomain.synchroGroup(theGroup.getSpecificId());
-      distantGroup.setId(groupId);
-      distantGroup.setDomainId(theGroup.getDomainId());
-      distantGroup.setSuperGroupId(theGroup.getSuperGroupId());
-      internalSynchronizeGroup(synchroDomain, distantGroup, theGroup, recurs);
+      final String domainId = silverpeasGroup.getDomainId();
+      final String specificId = silverpeasGroup.getSpecificId();
+      final Mutable<GroupDetail> distantGroup = Mutable.empty();
+      final DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
+      try {
+        distantGroup.set(synchroDomain.synchroGroup(specificId));
+      } catch (AdminException e) {
+        SilverLogger.getLogger(this)
+            .warn("Group {0} not found into identity manager, removing it", groupId);
+      }
+      if (!distantGroup.isPresent()) {
+        return synchronizeRemoveGroup(groupId);
+      }
+      final GroupDetail existingDistantGroup = distantGroup.get();
+      existingDistantGroup.setId(groupId);
+      existingDistantGroup.setDomainId(domainId);
+      existingDistantGroup.setSuperGroupId(silverpeasGroup.getSuperGroupId());
+      internalSynchronizeGroup(synchroDomain, existingDistantGroup, silverpeasGroup, recurs);
     }
     return groupId;
   }
@@ -4345,6 +4358,16 @@ class DefaultAdministration implements Administration {
       UserDetail theUserDetail = getUserDetail(userId);
       DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
       // Synchronize the user's infos
+      final Mutable<UserDetail> silverpeasUser = Mutable.empty();
+      try {
+        silverpeasUser.set(synchroDomain.synchroUser(theUserDetail.getSpecificId()));
+      } catch (AdminException e) {
+        SilverLogger.getLogger(this)
+            .warn("User {0} not found into identity manager, removing it", userId);
+      }
+      if (!silverpeasUser.isPresent()) {
+        return synchronizeRemoveUser(userId);
+      }
       UserDetail ud = synchroDomain.synchroUser(theUserDetail.getSpecificId());
       ud.setId(userId);
       ud.setAccessLevel(theUserDetail.getAccessLevel());
@@ -4998,6 +5021,8 @@ class DefaultAdministration implements Administration {
     try {
       final List<GroupDetail> removedGroups = groupManager.removeGroup(silverpeasGroup, false);
       removedGroups.forEach(g -> {
+        groupSynchroScheduler.removeFromContext(g);
+        cache.opRemoveGroup(g);
         context.getRemovedGroups().put(g.getId(), g);
         context.appendToReport(format("removing group {0} (id:{1})\n", g.getName(), g.getSpecificId()));
         SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,

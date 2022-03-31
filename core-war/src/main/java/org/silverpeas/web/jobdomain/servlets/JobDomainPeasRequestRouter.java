@@ -60,15 +60,7 @@ import org.silverpeas.web.jobdomain.UserRequestData;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static java.util.Collections.emptySet;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
@@ -451,7 +443,15 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupDelete")) {
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter(IDGROUP_PARAM));
         } else if (function.startsWith("groupSynchro")) {
-          bHaveToRefreshDomain = jobDomainSC.synchroGroup(request.getParameter(IDGROUP_PARAM));
+          final Optional<Group> synchronizedGroup = jobDomainSC.synchroGroup(request.getParameter(IDGROUP_PARAM));
+          if (synchronizedGroup.isPresent()) {
+            final Group group = synchronizedGroup.get();
+            if (group.isRemovedState()) {
+              reloadDomainNavigation(request);
+            } else {
+              bHaveToRefreshDomain = true;
+            }
+          }
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter(IDGROUP_PARAM));
         } else if (function.startsWith("groupImport")) {
@@ -884,7 +884,11 @@ public class JobDomainPeasRequestRouter extends
               isUserInAtLeastOneGroupManageableByCurrentUser());
           request.setAttribute(IS_ONLY_SPACE_MANAGER_ATTR, jobDomainSC.isOnlySpaceManager());
         }
-        request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
+        try {
+          request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
+        } catch (JobDomainPeasException e) {
+          request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserDetail());
+        }
         request.setAttribute("Index", jobDomainSC.getIndex());
         request.setAttribute("UserGroups", jobDomainSC.getCurrentUserGroups());
         request.setAttribute("UserManageableSpaces", jobDomainSC.getManageablesSpaces());

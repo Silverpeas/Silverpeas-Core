@@ -1,0 +1,1 @@
+Additional information cannot be presented because the user account is not found in the identity manager

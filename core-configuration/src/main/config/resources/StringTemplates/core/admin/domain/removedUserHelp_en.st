@@ -1,8 +1,8 @@
 List of <b>removed</b> users.
 <p>
-At this level, it is possible to :
+At this level, it is possible to:
 <ul>
-<li>restore users. Their groups and their rights to which they belonged <b>at time of their remove</b> are also restored.</li>
+<li>restore users. Their groups and their attached access rights <b>at the time of their removal</b> will be also restored.</li>
 <li><b>delete permanently</b> users.</li>
 </ul>
 </p>
