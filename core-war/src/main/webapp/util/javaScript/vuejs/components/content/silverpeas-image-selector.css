@@ -23,7 +23,10 @@
  */
 
 .image-selector-container .thumbnail {
-  width: 60px;
+  max-width: 60px;
+  max-height: 74px;
+  width: auto;
+  height: auto;
 }
 
 .image-url {
