@@ -55,7 +55,7 @@
 <fmt:message key="JDP.user.avatar.delete.confirm" var="labelDeleteAvatar"/>
 
 <c:set var="userInfos" value="${requestScope.userObject}" />
-<jsp:useBean id="userInfos" type="org.silverpeas.core.admin.user.model.UserFull"/>
+<jsp:useBean id="userInfos" type="org.silverpeas.core.admin.user.model.UserDetail"/>
 <c:set var="listIndex" value="${requestScope.Index}" />
 
 <c:set var="lastName" value="${userInfos.lastName}" />
@@ -75,7 +75,9 @@
 <fmt:message key="JDP.userDelConfirmHelp" var="userDelConfirmMessageHelp"/>
 
 <c:set var="userObject" value="${requestScope.userObject}" />
-<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserFull"/>
+<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserDetail"/>
+<c:set var="isUserFull" value="<%=userObject instanceof UserFull%>" />
+<jsp:useBean id="isUserFull" type="java.lang.Boolean"/>
 <c:set var="userGroups" value="${requestScope.UserGroups}" />
 <c:set var="userManageableSpaces" value="${requestScope.UserManageableSpaces}" />
 <c:set var="userManageableGroups" value="${requestScope.UserManageableGroups}" />
@@ -111,9 +113,11 @@
   }
 
   if (isDomainRW && isUserRW && (!isGroupManager || isUserManageableByGroupManager)) {
-    operationPane
-        .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
-            "displayUserModify?Iduser=" + thisUserId);
+    if (isUserFull) {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
+              "displayUserModify?Iduser=" + thisUserId);
+    }
     updatableUser = true;
     if (userObject.isBlockedState()) {
       operationPane
@@ -137,9 +141,11 @@
         "javascript:removeUser()");
   }
   if ((isDomainSync || isDomainListener) && !isGroupManager) {
-    operationPane
-        .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
-            "displayUserMS?Iduser=" + thisUserId);
+    if (isUserFull) {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
+              "displayUserMS?Iduser=" + thisUserId);
+    }
     updatableUser = true;
     if (userObject.isBlockedState()) {
       operationPane
@@ -191,10 +197,8 @@
   }
 
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
   <view:includePlugin name="popup"/>
   <view:includePlugin name="qtip"/>
   <style type="text/css">
@@ -333,8 +337,8 @@
       });
     });
   </script>
-</head>
-<body class="admin-user page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="admin-user page_content_admin">
 <%
 out.println(window.printBefore());
 %>
@@ -411,12 +415,21 @@ out.println(window.printBefore());
       </fieldset>
     </div>
     <div class="cell">
-      <c:if test="${fn:length(userObject.propertiesNames) > 0}">
-        <fieldset id="identity-extra" class="skinFieldset">
-          <legend><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-          <viewTags:displayUserExtraProperties user="<%=userObject%>" readOnly="true" includeEmail="false"/>
-        </fieldset>
-      </c:if>
+      <c:choose>
+        <c:when test="${isUserFull}">
+          <c:if test="${fn:length(userObject.propertiesNames) > 0}">
+            <fieldset id="identity-extra" class="skinFieldset">
+              <legend><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+              <viewTags:displayUserExtraProperties user="<%=userObject%>" readOnly="true" includeEmail="false"/>
+            </fieldset>
+          </c:if>
+        </c:when>
+        <c:otherwise>
+          <div class="inlineMessage">
+            <view:applyTemplate locationBase="core:admin/domain" name="userContentExtraDataNotFoundInIdentityManagerHelp"/>
+          </div>
+        </c:otherwise>
+      </c:choose>
     </div>
   </div>
 
@@ -561,9 +574,9 @@ out.println(window.printAfter());
 
 <% if (isRightCopyReplaceEnabled) { %>
   <div id="assignRightsDialog" title="<fmt:message key="JDP.rights.assign"/>">
-    <form accept-charset="UTF-8" enctype="multipart/form-data;charset=utf-8" id="affected-profil"
+    <form accept-charset="UTF-8" enctype="multipart/form-data" id="affected-profil"
           name="rightsForm" action="AssignSameRights" method="post">
-      <label class="label-ui-dialog" for="profil-from"><fmt:message key="JDP.rights.assign.as"/></label>
+      <label class="label-ui-dialog"><fmt:message key="JDP.rights.assign.as"/></label>
       <span class="champ-ui-dialog">
 		    <input type="text" id="sourceRightsName" name="sourceRightsName" value="" size="50" readonly="readonly"/>
 		    <a title="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>" href="#" onclick="javascript:SP_openWindow('SelectRightsUserOrGroup','SelectUserGroupWindow',800,600,'');">
@@ -571,7 +584,7 @@ out.println(window.printAfter());
              alt="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>"
              title="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>"/>
 			  </a>
-        <img src="${context}${mandatoryIcon}" width="5" height="5" border="0"/>
+        <img src="${context}${mandatoryIcon}" width="5" height="5" border="0" alt=""/>
         <input type="hidden" name="sourceRightsId" id="sourceRightsId" value=""/>
         <input type="hidden" name="sourceRightsType" id="sourceRightsType" value=""/>
 		  </span>
@@ -589,7 +602,7 @@ out.println(window.printAfter());
         <input type="hidden" name="nodeAssignRights" id="nodeAssignRights" value="true"/>
 	    </span>
       <label class="label-ui-dialog">
-        <img src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+        <img src="${context}${mandatoryIcon}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/>
       </label>
     </form>
   </div>
@@ -597,5 +610,5 @@ out.println(window.printAfter());
 
 <view:progressMessage/>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

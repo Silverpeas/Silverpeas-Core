@@ -53,6 +53,8 @@
 <fmt:message var="userPanelAccessLabel" key="JDP.userPanelAccess"><fmt:param value="${not isGroupHandled ? 0 : 2}"/></fmt:message>
 <jsp:useBean id="userPanelAccessLabel" type="java.lang.String"/>
 
+<c:set var="reloadDomainNavigationFrame" value="${requestScope.reloadDomainNavigationFrame}"/>
+
 <%
   UserDetail theUser 			= (UserDetail)request.getAttribute("theUser");
   boolean isDomainRW 			= (Boolean)request.getAttribute("isDomainRW");
@@ -210,6 +212,11 @@ var arrayBeforeAjaxRequest = function () {
     spProgressMessage.show();
   }
 }
+<c:if test="${reloadDomainNavigationFrame}">
+whenSilverpeasReady(function() {
+  parent.refreshCurrentLevel();
+});
+</c:if>
 </script>
 </head>
 <body id="domainContent" class="page_content_admin">

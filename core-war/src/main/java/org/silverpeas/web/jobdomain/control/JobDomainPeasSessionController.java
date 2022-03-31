@@ -1039,14 +1039,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return adminCtrl.getUserFull(targetDomainId, specificId);
   }
 
-  public void synchroUser(String idUser) throws JobDomainPeasException {
-
-    String idRet = adminCtrl.synchronizeUser(idUser);
+  public void synchroUser(String userId) throws JobDomainPeasException {
+    String idRet = adminCtrl.synchronizeUser(userId);
     if (!isDefined(idRet)) {
-      throw new JobDomainPeasException(failureOnAdding("synchronize user", idUser));
+      throw new JobDomainPeasException(failureOnAdding("synchronize user", userId));
     }
     refresh();
-    setTargetUser(idRet);
+    final User user = adminCtrl.getUserDetail(userId);
+    if (!user.isRemovedState()) {
+      setTargetUser(idRet);
+    } else {
+      MessageNotifier.addWarning(getString("JDP.userSynchro.removed"));
+    }
   }
 
   public void unsynchroUser(String idUser) throws JobDomainPeasException {
@@ -1301,7 +1305,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     goIntoGroup(idRet);
 
-    return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
+    return isSynchronizationToPerform ? synchroGroup(idRet).isPresent() : isGroupRoot(idRet);
   }
 
   public boolean modifyGroup(String idGroup, String groupName,
@@ -1325,7 +1329,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException(failureOnUpdate("group", idGroup));
     }
     refresh();
-    return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
+    return isSynchronizationToPerform ? synchroGroup(idRet).isPresent() : isGroupRoot(idRet);
   }
 
   public boolean updateGroupSubUsers(String idGroup, String[] userIds)
@@ -1382,14 +1386,19 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return true;
   }
 
-  public boolean synchroGroup(String idGroup) throws JobDomainPeasException {
-    String synchronizationResult = adminCtrl.synchronizeGroup(idGroup);
+  public Optional<Group> synchroGroup(String groupId) throws JobDomainPeasException {
+    String synchronizationResult = adminCtrl.synchronizeGroup(groupId);
     if (!isDefined(synchronizationResult)) {
-      throw new JobDomainPeasException(failureOnAdding("synchronized group", idGroup));
+      throw new JobDomainPeasException(failureOnAdding("synchronized group", groupId));
     }
     if (StringUtil.isLong(synchronizationResult)) {
+      final GroupDetail group = adminCtrl.getGroupById(synchronizationResult);
+      if (group.isRemovedState()) {
+        MessageNotifier.addWarning(getString("JDP.groupSynchro.removed"));
+        removeGroupFromPath(groupId);
+      }
       refresh();
-      return true;
+      return Optional.of(group);
     }
     if (synchronizationResult.startsWith("expression.")) {
       if (synchronizationResult.startsWith("expression.groundrule.unknown")) {
@@ -1404,7 +1413,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } else {
       MessageNotifier.addError(synchronizationResult);
     }
-    return false;
+    return Optional.empty();
   }
 
   public boolean unsynchroGroup(String idGroup) throws JobDomainPeasException {

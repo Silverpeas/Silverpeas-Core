@@ -1,0 +1,1 @@
+Les informations complémentaires ne peuvent pas être présentées car le compte utilisateur n'est pas trouvé dans le gestionnaire d'identité
