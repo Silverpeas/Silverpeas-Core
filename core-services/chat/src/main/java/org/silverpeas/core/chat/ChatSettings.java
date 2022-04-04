@@ -94,6 +94,18 @@ public class ChatSettings {
   }
 
   /**
+   * Indicates if messages MUST be cleared after a user reconnection.
+   * <p>
+   *   It can avoid getting a huge history on WEB browser clients and improve the time access to
+   *   last messages.
+   * </p>
+   * @return a boolean.
+   */
+  public boolean clearMessagesOnReconnection() {
+    return settings.getBoolean(CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".clearMessagesOnReconnection", true);
+  }
+
+  /**
    * Indicates if the 'reply to' message is enabled.
    * @return true of enabled, false otherwise.
    */

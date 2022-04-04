@@ -394,7 +394,10 @@
         async : true
       }).then(function() {
         const initOptions = {
+          'theme' : 'default',
+          'dark_theme' : 'default',
           'prune_messages_above' : __settings.nbMsgMaxCachedPerRoom,
+          'clear_messages_on_reconnection' : __settings.clearMessagesOnReconnection,
           'view_mode' : __settings.viewMode,
           'loglevel' : __settings.debug ? 'debug' : 'error',
           'i18n' : __settings.language,

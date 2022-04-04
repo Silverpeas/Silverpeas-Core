@@ -84,7 +84,9 @@
         }
       };
       const api = new JitsiMeetExternalAPI(domain, options);
-      api.executeCommand('avatarUrl', '${userAvatarUrl}');
+      api.addListener('videoConferenceJoined', function() {
+        api.executeCommand('avatarUrl', '${userAvatarUrl}');
+      });
     </script>
   </view:sp-body-part>
 </view:sp-page>

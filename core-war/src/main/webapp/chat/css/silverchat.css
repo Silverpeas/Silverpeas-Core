@@ -766,6 +766,10 @@ Converse.js
   bottom: 37px;
 }
 
+.conversejs converse-chats.converse-overlayed #minimized-chats #toggle-minimized-chats {
+  background-color: var(--link-color);
+}
+
 .conversejs svg {
   border-radius: 0;
 }
@@ -774,8 +778,8 @@ Converse.js
   line-height: 25px;
 }
 
-.conversejs .toggle-compose-spoiler {
-  display: none;
+.conversejs .message.chat-info {
+  color: var(--chat-head-color);
 }
 
 .conversejs .suggestion-box > ul > li[aria-basket="true"] {
