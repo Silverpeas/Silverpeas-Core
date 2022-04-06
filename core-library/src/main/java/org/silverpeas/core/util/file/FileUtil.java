@@ -56,6 +56,7 @@ import java.util.stream.Stream;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.util.MimeTypes.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Util class to perform file system operations.
@@ -442,5 +443,17 @@ public class FileUtil {
     } else {
       throw new IllegalStateException("File is outside extraction target directory (security)");
     }
+  }
+
+  /**
+   * Verifies if the given data is a tainted one.
+   * @param value a string data representing a path.
+   * @return the given data.
+   */
+  public static String verifyTaintedData(String value) {
+    if (isDefined(value) && value.contains("..")) {
+      throw new IllegalArgumentException(String.format("Value '%s' is forbidden", value));
+    }
+    return value;
   }
 }

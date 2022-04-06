@@ -177,22 +177,22 @@ class FileUtilTest {
   }
 
   @Test
-  void testCheckPathNotRelativeError1() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError1() {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("../"));
   }
 
   @Test
-  void testCheckPathNotRelativeError2() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError2() {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("..\\"));
   }
 
   @Test
-  void testCheckPathNotRelativeError3() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError3() {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("/.."));
   }
 
   @Test
-  void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
+  void testCheckPathNotRelativeError4() {
     assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("\\.."));
   }
 
@@ -262,9 +262,29 @@ class FileUtilTest {
   }
 
   @Test
-  void testValidateFileNameKo() throws Exception {
+  void testValidateFileNameKo() {
     assertThrows(IllegalStateException.class,
         () -> FileUtil.validateFilename(".." + File.separator, "."));
+  }
+
+  @Test
+  void testVerifyTaintedData() {
+    assertThat(FileUtil.verifyTaintedData("a.b"), is("a.b"));
+    assertThat(FileUtil.verifyTaintedData(""), is(""));
+    assertThat(FileUtil.verifyTaintedData("null"), is("null"));
+    assertThat(FileUtil.verifyTaintedData("."), is("."));
+    assertThat(FileUtil.verifyTaintedData(File.separator + "."), is(File.separator + "."));
+    assertThat(FileUtil.verifyTaintedData("." + File.separator), is("." + File.separator));
+    assertThrows(IllegalArgumentException.class,
+        () -> FileUtil.verifyTaintedData(File.separator + ".." + File.separator));
+    assertThrows(IllegalArgumentException.class,
+        () -> FileUtil.verifyTaintedData(".." + File.separator));
+    assertThrows(IllegalArgumentException.class,
+        () -> FileUtil.verifyTaintedData(File.separator + ".."));
+    assertThrows(IllegalArgumentException.class,
+        () -> FileUtil.verifyTaintedData(".."));
+    assertThrows(IllegalArgumentException.class,
+        () -> FileUtil.verifyTaintedData("a..b"));
   }
 
 }
