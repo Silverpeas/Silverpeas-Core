@@ -79,6 +79,7 @@
 
   <upgrade fromVersion="043">
     <script name="alter_table.sql" type="sql"/>
+    <script name="update_table.sql" type="sql"/>
   </upgrade>
 
 </migration>
