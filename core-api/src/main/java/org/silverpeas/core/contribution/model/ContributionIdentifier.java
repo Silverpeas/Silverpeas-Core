@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.ComponentResourceIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.ContributionLocator;
 import org.silverpeas.core.util.Mutable;
 
@@ -176,9 +176,8 @@ public class ContributionIdentifier implements ComponentResourceIdentifier, Seri
    * @param key an old and deprecated representation of an identifier of Silverpeas.
    * @return an contribution identifier.
    */
-  public static ContributionIdentifier from(WAPrimaryKey key) {
-    return new ContributionIdentifier(key.getInstanceId(), key.getId(),
-        CoreContributionType.UNKNOWN.name());
+  public static ContributionIdentifier from(ResourceReference key) {
+    return from(key, CoreContributionType.UNKNOWN.name());
   }
 
   /**
@@ -200,7 +199,7 @@ public class ContributionIdentifier implements ComponentResourceIdentifier, Seri
    * @param type the type of the contribution.
    * @return an contribution identifier.
    */
-  public static ContributionIdentifier from(WAPrimaryKey key, String type) {
+  public static ContributionIdentifier from(ResourceReference key, String type) {
     return new ContributionIdentifier(key.getInstanceId(), key.getId(), type);
   }
 

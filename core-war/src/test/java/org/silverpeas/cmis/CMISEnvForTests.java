@@ -457,7 +457,7 @@ public abstract class CMISEnvForTests {
         (Answer<SimpleDocument>) invocation -> {
           SimpleDocumentPK pk = invocation.getArgument(0);
           ContributionIdentifier id =
-              ContributionIdentifier.from(pk, DocumentType.attachment.getName());
+              ContributionIdentifier.from(new ResourceReference(pk), DocumentType.attachment.getName());
           return getInTreeAndApply(id.asString(), n -> {
             LocalizedResource doc = n.getObject();
             return doc instanceof SimpleDocument ? (SimpleDocument) doc : null;
@@ -493,7 +493,7 @@ public abstract class CMISEnvForTests {
       long offset = i.getArgument(3);
       long length = i.getArgument(4);
       ContributionIdentifier id =
-          ContributionIdentifier.from(pk, DocumentType.attachment.getName());
+          ContributionIdentifier.from(new ResourceReference(pk), DocumentType.attachment.getName());
       return getInTreeAndApply(id.asString(), n -> {
         SimpleDocument doc = (SimpleDocument) n.getObject();
         String fileName = doc.getAttachment().getFilename();

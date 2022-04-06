@@ -85,12 +85,11 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
           .getApplicationServiceById(componentInstanceId);
       mayBeService.ifPresent(service -> {
         try {
-          ContributionIdentifier contributionId =
-              ContributionIdentifier.from((ResourceIdentifier) comment.getResourceReference());
+          ContributionIdentifier contributionId = ContributionIdentifier.from(
+              comment.getResourceReference(), comment.getResourceType());
           Contribution commentedContent = service.getContributionById(contributionId)
               .orElseThrow(
                   () -> new NotFoundException("No such contribution " + contributionId.asString()));
-
           final Set<String> recipients = getInterestedUsers(comment.getCreator()
               .getId(), commentedContent);
           if (!recipients.isEmpty()) {

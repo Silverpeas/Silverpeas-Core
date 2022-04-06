@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -169,7 +170,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
   @Override
   @SuppressWarnings("unchecked")
   public ContributionIdentifier getIdentifier() {
-    return ContributionIdentifier.from(getPk(), getDocumentType().getName());
+    return ContributionIdentifier.from(new ResourceReference(getPk()), getDocumentType().getName());
   }
 
   @Override
