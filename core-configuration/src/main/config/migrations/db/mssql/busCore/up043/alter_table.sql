@@ -3,6 +3,8 @@ ALTER TABLE ST_Group ADD saveDate DATETIME;
 ALTER TABLE ST_Group ADD state VARCHAR(30);
 ALTER TABLE ST_Group ADD stateSaveDate DATETIME;
 
+GO
+
 UPDATE ST_Group
 SET
     state = 'VALID',
