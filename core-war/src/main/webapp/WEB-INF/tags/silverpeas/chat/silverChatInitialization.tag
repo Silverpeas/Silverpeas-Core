@@ -36,8 +36,6 @@
 <jsp:useBean id="chatUser" type="org.silverpeas.core.chat.ChatUser"/>
 <c:set var="chatSettings" value="<%=ChatServer.getChatSettings()%>"/>
 <jsp:useBean id="chatSettings" type="org.silverpeas.core.chat.ChatSettings"/>
-<c:set var="chatServer" value="<%=ChatServer.get()%>"/>
-<jsp:useBean id="chatServer" type="org.silverpeas.core.chat.servers.ChatServer"/>
 <c:set var="chatBundle" value="<%=ChatLocalizationProvider.getLocalizationBundle(
           User.getCurrentRequester().getUserPreferences().getLanguage())%>"/>
 <jsp:useBean id="chatBundle" type="org.silverpeas.core.util.LocalizationBundle"/>
@@ -53,7 +51,7 @@
     whenSilverpeasReady(function() {
       spLayout.getHeader().addEventListener('load', function() {
         <c:choose>
-        <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled and chatServer.isUserExisting(chatUser)}">
+        <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.registered}">
         window.USERSESSION_PROMISE.then(function() {
           const chatOptions = {
             viewMode : 'overlayed',

@@ -145,6 +145,19 @@ public class ChatUser extends UserDetail {
   }
 
   /**
+   * Has the user already an account in the chat server?
+   * @return true if {@link #isChatEnabled()} returns true and if the user has an account in the
+   * chat server, false otherwise or if {@link ChatServerException} has been detected.
+   */
+  public boolean isRegistered() {
+    try {
+      return isChatEnabled() && ChatServer.get().isUserExisting(this);
+    } catch (final ChatServerException e) {
+      return false;
+    }
+  }
+
+  /**
    * Is the user at least in one of the following groups of users in Silverpeas? This method is
    * mainly used to check the ACL on the chat client functionalities when bootstrapping later.
    * @param groupIds a list of unique identifiers of group of users in Silverpeas.
