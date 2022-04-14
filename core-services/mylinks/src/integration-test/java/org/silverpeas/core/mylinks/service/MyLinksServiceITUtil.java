@@ -43,21 +43,21 @@ public class MyLinksServiceITUtil {
   }
 
   static List<String> getLinks() throws Exception {
-    return JdbcSqlQuery.createSelect("linkid, url, instanceid, userid from sb_mylinks_link")
+    return JdbcSqlQuery.select("linkid, url, instanceid, userid from sb_mylinks_link")
         .addSqlPart("order by linkId")
         .execute(row -> row.getInt(1) + " | " + row.getString(2) + " | " +
                         row.getString(3) + " | " + row.getString(4));
   }
 
   static List<String> getCategoryIds() throws Exception {
-    return JdbcSqlQuery.createSelect("catid, userid")
+    return JdbcSqlQuery.select("catid, userid")
         .from("SB_MyLinks_Cat")
         .orderBy("catid")
         .execute(r -> r.getInt(1) + " | " + r.getString(2) );
   }
 
   static List<String> getLinkCategoryCouples() throws Exception {
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from("SB_MyLinks_LinkCat")
         .orderBy("catid, linkid")
         .execute(row -> row.getInt("catid") + " | " + row.getString("linkid"));

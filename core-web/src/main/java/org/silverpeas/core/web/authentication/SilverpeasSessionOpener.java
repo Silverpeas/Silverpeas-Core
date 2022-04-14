@@ -34,7 +34,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
-import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
 import org.silverpeas.core.security.authentication.UserAuthenticationListenerRegistration;
@@ -207,7 +207,7 @@ public class SilverpeasSessionOpener {
   private String notifyAboutPasswordExpiration(final HttpSession session,
       final MainSessionController controller) {
     Boolean alertUserAboutPwdExpiration =
-        (Boolean) session.getAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
+        (Boolean) session.getAttribute(AuthenticationProtocol.PASSWORD_IS_ABOUT_TO_EXPIRE);
     String redirectURL = null;
     if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
       redirectURL = alertUserAboutPwdExpiration(controller.getUserId(),
@@ -225,7 +225,7 @@ public class SilverpeasSessionOpener {
    */
   private boolean isPasswordChangedAllowed(final HttpSession session) {
     return StringUtil
-        .getBooleanValue((String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED));
+        .getBooleanValue((String) session.getAttribute(AuthenticationProtocol.PASSWORD_CHANGE_ALLOWED));
   }
 
   /**

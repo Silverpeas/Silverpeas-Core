@@ -127,7 +127,7 @@ public class ComponentInstanceRatingDeletionIT {
    */
   private List<String> getRatings() throws Exception {
     return JdbcSqlQuery
-        .createSelect("id, instanceid, externalId, externalType from SB_Notation_Notation")
+        .select("id, instanceid, externalId, externalType from SB_Notation_Notation")
         .addSqlPart("order by externalId")
         .execute(row -> row.getInt(1) + "-" + row.getString(2) + "-" + row.getString(3) + "-" +
             row.getString(4));

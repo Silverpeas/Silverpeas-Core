@@ -201,7 +201,7 @@ public class ComponentInstancePublicationDeletionIT {
    * @throws Exception
    */
   private List<String> getPublications() throws Exception {
-    return JdbcSqlQuery.createSelect("pubid, instanceid, pubstatus from sb_publication_publi")
+    return JdbcSqlQuery.select("pubid, instanceid, pubstatus from sb_publication_publi")
         .addSqlPart("order by instanceid, pubid")
         .execute(row -> row.getInt(1) + "-" + row.getString(2) + "-" + row.getString(3));
   }
@@ -212,7 +212,7 @@ public class ComponentInstancePublicationDeletionIT {
    * @throws Exception
    */
   private List<String> getPublicationTranslations() throws Exception {
-    return JdbcSqlQuery.createSelect("id, pubid, lang from sb_publication_publii18n")
+    return JdbcSqlQuery.select("id, pubid, lang from sb_publication_publii18n")
         .addSqlPart("order by pubid")
         .execute(row -> row.getInt(1) + "-" + row.getInt(2) + "-" + row.getString(3));
   }
@@ -223,7 +223,7 @@ public class ComponentInstancePublicationDeletionIT {
    * @throws Exception
    */
   private List<String> getPublicationLocations() throws Exception {
-    return JdbcSqlQuery.createSelect("pubid, nodeid, instanceid from sb_publication_publifather")
+    return JdbcSqlQuery.select("pubid, nodeid, instanceid from sb_publication_publifather")
         .addSqlPart("order by pubid, instanceId, nodeid")
         .execute(row -> row.getInt(1) + "-" + row.getString(2) + "-" + row.getString(3));
   }
@@ -234,7 +234,7 @@ public class ComponentInstancePublicationDeletionIT {
    * @throws Exception
    */
   private List<String> getPublicationValidations() throws Exception {
-    return JdbcSqlQuery.createSelect("id, pubid, instanceid, userid from sb_publication_validation")
+    return JdbcSqlQuery.select("id, pubid, instanceid, userid from sb_publication_validation")
         .addSqlPart("order by pubid, instanceId, userid")
         .execute(row -> row.getInt(1) + "-" + row.getInt(2) + "-" + row.getString(3) + "-" +
             row.getInt(4));
@@ -247,7 +247,7 @@ public class ComponentInstancePublicationDeletionIT {
    * @throws Exception
    */
   private List<String> getPublicationSeeAlso() throws Exception {
-    return JdbcSqlQuery.createSelect(
+    return JdbcSqlQuery.select(
         "id, objectid, objectinstanceid, targetid, targetinstanceid from sb_seealso_link")
         .addSqlPart("order by objectid, targetid")
         .execute(row -> row.getInt(1) + "-" + row.getInt(2) + "-" + row.getString(3) + "-" +

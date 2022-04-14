@@ -165,7 +165,7 @@ public class SentNotificationDAO {
   public static void deleteNotif(Connection con, int notifId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      JdbcSqlQuery.createDeleteFor("ST_LongText")
+      JdbcSqlQuery.deleteFrom("ST_LongText")
           .where("id = (select body from ST_NotifSended where notifId = ?)", notifId)
           .executeWith(con);
       // supprimer la liste des users ayant reçu la notification

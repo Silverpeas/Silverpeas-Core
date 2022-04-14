@@ -53,7 +53,7 @@ public class SqlGroupSelectorByCriteriaBuilder {
    * @return the SQL query matching the specified criteria.
    */
   public JdbcSqlQuery build(final GroupsSearchCriteria criteria) {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields);
+    final JdbcSqlQuery query = JdbcSqlQuery.select(fields);
 
     applyJoinsAndDefaultCriteria(query, criteria);
     applyCriteriaOnGroupName(query, criteria);

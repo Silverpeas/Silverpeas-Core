@@ -32,8 +32,10 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
@@ -45,18 +47,17 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationUserA
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
@@ -71,19 +72,14 @@ import static java.util.Arrays.stream;
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
  * authentication process as it wraps all the mechanism and the delegation to perform the actual
  * authentication.
- *
+ * <p>
  * This service wraps all the mechanism to perform the authentication process itself. It uses for
  * doing an authentication server that is mapped with the user domain.
  */
 @Service
-public class AuthenticationService {
+@Singleton
+public class AuthenticationService implements Authentication {
 
-  public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
-  public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
-  public static final String ERROR_INCORRECT_LOGIN_PWD = "Error_1";
-  public static final String ERROR_AUTHENTICATION_FAILURE = "Error_2";
-  public static final String ERROR_PASSWORD_NOT_AVAILABLE = "Error_5";
-  public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "Error_6";
   private static final String DATA_SOURCE_JNDI_NAME;
   private static final String DOMAIN_TABLE_NAME;
   private static final String DOMAIN_ID_COLUMN_NAME;
@@ -96,16 +92,15 @@ public class AuthenticationService {
   private static final String USER_ID_COLUMN_NAME;
   private static final String USER_LOGIN_COLUMN_NAME;
   private static final String USER_DOMAIN_COLUMN_NAME;
-  private static final String ERROR_PREFIX = "Error";
   private static int autoInc = 1;
 
   @Inject
   private AdminController adminController;
 
   private static final Predicate<Domain> DOMAIN_WITH_AUTHENTICATION_SERVER = d -> {
-    final AuthenticationServer authenticationServer = AuthenticationServer
-        .getAuthenticationServer(d.getAuthenticationServer());
-    return !authenticationServer.authServers.isEmpty();
+    final AuthenticationServer authenticationServer =
+        AuthenticationServer.getAuthenticationServer(d.getAuthenticationServer());
+    return authenticationServer.hasProtocols();
   };
 
   /**
@@ -139,18 +134,18 @@ public class AuthenticationService {
 
   /**
    * Gets all the available user domains. A domain in Silverpeas is a repository of users with its
-   * its own authentication process.
-   *
-   * At each user domain is associated an authentication server that is responsible of the
+   * own authentication process.
+   * <p>
+   * At each user domain is associated an authentication server that is responsible for the
    * authentication of the domain's users.
-   *
    * @return an unmodifiable list of user domains.
    */
-  public List<Domain> getAllDomains() {
-    List<Domain> domains;
+  @Nonnull
+  public List<AuthDomain> getAllAuthDomains() {
+    List<AuthDomain> domains;
     try {
-      domains = stream(Administration.get().getAllDomains())
-          .filter(DOMAIN_WITH_AUTHENTICATION_SERVER)
+      domains = stream(Administration.get()
+          .getAllDomains()).filter(DOMAIN_WITH_AUTHENTICATION_SERVER)
           .collect(Collectors.toList());
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
@@ -159,56 +154,47 @@ public class AuthenticationService {
     return domains;
   }
 
-  /**
-   * Authenticates a user with the specified authentication credential.
-   *
-   * If the authentication succeed, the security-related capabilities, mapped to the user's
-   * credential, are set from information sent back by the authentication server related to the
-   * domain to which the user belongs.
-   *
-   * @param userCredential the credential of the user to use to authenticate him.
-   * @return an authentication key or null if the authentication fails. The authentication key
-   * identifies uniquely the status of the user authentication and it is unique to the user so that
-   * he can be identified from it.
-   */
-  public String authenticate(final AuthenticationCredential userCredential) {
-    if (userCredential.getLogin() == null) {
-      return null;
+  @Override
+  public AuthenticationResponse authenticate(final AuthenticationCredential userCredential) {
+    if (StringUtil.isNotDefined(userCredential.getLogin())) {
+      SilverLogger.getLogger(this).error("No login is passed in the user credentials!");
+      return AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
 
-    String key;
+    AuthenticationResponse result;
     try {
-      key = checkAuthentication(userCredential);
+      String token = checkAuthentication(userCredential);
+      result = AuthenticationResponse.succeed(token);
     } catch (AuthenticationBadCredentialException e) {
-      List<Domain> listDomain = getAllDomains();
-      if (listDomain != null && listDomain.size() > 1) {
-        key = ERROR_INCORRECT_LOGIN_PWD_DOMAIN;
+      if (isThereMultipleDomainsDefined()) {
+        result = AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD_DOMAIN);
       } else {
-        key = ERROR_INCORRECT_LOGIN_PWD;
+        result = AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD);
       }
     } catch (AuthenticationPwdNotAvailException e) {
-      key = ERROR_PASSWORD_NOT_AVAILABLE;
+      result = AuthenticationResponse.error(Status.NO_PASSWORD);
     } catch (AuthenticationPasswordExpired e) {
-      key = ERROR_PWD_EXPIRED;
+      result = AuthenticationResponse.error(Status.PASSWORD_EXPIRED);
     } catch (AuthenticationPasswordMustBeChangedAtNextLogon e) {
-      key = ERROR_PWD_MUST_BE_CHANGED;
+      result = AuthenticationResponse.error(Status.PASSWORD_TO_CHANGE);
     } catch (AuthenticationPasswordMustBeChangedOnFirstLogin e) {
-      key = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
+      result = AuthenticationResponse.error(Status.PASSWORD_TO_CHANGE_ON_FIRST_LOGIN);
     } catch (AuthenticationUserAccountBlockedException e) {
-      key = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+      result = AuthenticationResponse.error(Status.USER_ACCOUNT_BLOCKED);
     } catch (AuthenticationUserAccountDeactivatedException e) {
-      key = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
+      result = AuthenticationResponse.error(Status.USER_ACCOUNT_DEACTIVATED);
     } catch (AuthenticationException ae) {
-      key = ERROR_AUTHENTICATION_FAILURE;
+      result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
 
-    if (key != null && key.startsWith(ERROR_PREFIX)) {
+    if (!result.getStatus().succeeded()) {
       SilverLogger.getLogger(this)
-          .error("authentication error ({0}) with login ''{1}'' and domain id ''{2}''", key,
-              userCredential.getLogin(), userCredential.getDomainId());
+          .error("authentication error ({0}) with login ''{1}'' and domain id ''{2}''",
+              result.getStatus().toString(), userCredential.getLogin(),
+              userCredential.getDomainId());
     }
 
-    return key;
+    return result;
   }
 
   private String checkAuthentication(final AuthenticationCredential userCredential)
@@ -223,19 +209,8 @@ public class AuthenticationService {
   }
 
   /**
-   * Is the specified authentication key represents an error status?
-   *
-   * @param authenticationKey the key returned by the authentication process.
-   * @return true if the key is in fact an authentication error status.
-   */
-  public boolean isInError(String authenticationKey) {
-    return StringUtil.isNotDefined(authenticationKey) || authenticationKey.startsWith(ERROR_PREFIX);
-  }
-
-  /**
    * Authenticates the user with the login, password, and domain contained in the specified
    * authentication credential.
-   *
    * @param credential an authentication credential with the login and the password of the user, and
    * with the domain to which the user belongs.
    * @return an authentication key if the authentication succeed, null otherwise.
@@ -250,34 +225,31 @@ public class AuthenticationService {
       return null;
     }
 
-    // Verify that the user can login
+    // Verify that the user can log in
     AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
-    Connection connection = null;
-    try {
-      // Open connection
-      connection = openConnection();
-
+    try (Connection connection = openConnection()) {
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
       // Store information about password change capabilities
-      credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
-          authenticationServer.isPasswordChangeAllowed() ? "yes" : "no");
+      credential.getCapabilities()
+          .put(AuthenticationProtocol.PASSWORD_CHANGE_ALLOWED,
+              authenticationServer.isPasswordChangeAllowed() ? "yes" : "no");
 
       // Authentication test
       authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database
-      return getAuthenticationKey(login, domainId);
+      return getAuthToken(credential);
 
-    } finally {
-      closeConnection(connection);
+    } catch (SQLException e) {
+      SilverLogger.getLogger(this).warn(e);
+      throw new AuthenticationException(e);
     }
   }
 
   /**
    * Authenticates the user only by its login and the domain to which he belongs.
-   *
    * @param credential an authentication credential with the login and the domain to which the user
    * belongs.
    * @return an authentication key if the authentication succeed, null otherwise.
@@ -291,9 +263,8 @@ public class AuthenticationService {
       return null;
     }
     final boolean authenticationOK;
-    try {
-      final JdbcSqlQuery query = JdbcSqlQuery
-          .createSelect(USER_ID_COLUMN_NAME)
+    try (Connection connection = openConnection()) {
+      final JdbcSqlQuery query = JdbcSqlQuery.select(USER_ID_COLUMN_NAME)
           .from(USER_TABLE_NAME)
           .where(USER_DOMAIN_COLUMN_NAME + " = ?", Integer.parseInt(domainId));
       if (credential.loginIgnoreCase()) {
@@ -301,36 +272,31 @@ public class AuthenticationService {
       } else {
         query.and(USER_LOGIN_COLUMN_NAME + " = ?", login);
       }
-      authenticationOK = !query.execute(r -> true).isEmpty();
+      authenticationOK = !query.executeWith(connection, row -> true).isEmpty();
     } catch (Exception ex) {
       SilverLogger.getLogger(this).warn(ex);
-      return ERROR_AUTHENTICATION_FAILURE;
+      throw new AuthenticationException(ex);
     }
 
-    String key = null;
-
     if (authenticationOK) {
-
-      // Verify that the user can login
+      // Verify that the user can log in
       AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
       // Generate a random key and store it in database
       try {
-        key = getAuthenticationKey(login, domainId);
+        return getAuthToken(credential);
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
-        return ERROR_AUTHENTICATION_FAILURE;
+        throw new AuthenticationException(e);
       }
     }
-
-    return key;
+    return null;
   }
 
   /**
    * Changes the password of the specified user credential with the specified new one. In order to
    * change the password of a user, the user will be first authenticated. The specified credential
    * won't be updated by the password change.
-   *
    * @param credential the current authentication credential of the user.
    * @param newPassword User new password the new password to set.
    * @throws AuthenticationException if an error occurs while changing the password of the specified
@@ -345,7 +311,6 @@ public class AuthenticationService {
    * Changes the password and email of the specified user credential with the specified new ones. In
    * order to change the password and email of a user, the user will be first authenticated. The
    * specified credential won't be updated by the password change.
-   *
    * @param credential the current authentication credential of the user.
    * @param newPassword User new password the new password to set.
    * @param email User email the email to set.
@@ -363,8 +328,9 @@ public class AuthenticationService {
           "The login, the password or the domain isn't set!");
     }
 
-    // Verify that the user can login
-    final UserCanLoginVerifier userCanLoginVerifier = AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential);
+    // Verify that the user can log in
+    final UserCanLoginVerifier userCanLoginVerifier =
+        AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential);
     userCanLoginVerifier.verify();
     try (Connection connection = openConnection()) {
       getAuthenticationServer(connection, domainId).changePassword(credential, newPassword);
@@ -381,59 +347,47 @@ public class AuthenticationService {
     onPasswordAndEmailChanged(credential, email);
   }
 
-  /**
-   * Gets an authentication key for a given user from its specified login and from the domain to
-   * which he belongs. This method doesn't perform any authentication but it only set a new
-   * authentication key for the given user. This method can be used, for example, to let a user who
-   * has forgotten its password of setting a new one.
-   *
-   * @param login the user login.
-   * @param domainId the unique identifier of the domain of the user.
-   * @return an authentication key.
-   */
-  public String getAuthenticationKey(String login, String domainId) throws AuthenticationException {
-    String authKey = computeGenerationKey(login);
-    storeAuthenticationKey(login, domainId, authKey);
+ @Override
+  public String getAuthToken(AuthenticationCredential credential) {
+    String authKey = generateTokenFor(credential.getLogin());
+    storeAuthenticationKey(credential.getLogin(), credential.getDomainId(), authKey);
     return authKey;
   }
 
   /**
-   * Gets the Authentication Server name for the given domain.
-   *
+   * Gets the Authentication server name for the given domain.
    * @param domainId the unique domain identifier.
    * @return the authentication server name related to the specified domain.
    */
   private String getAuthenticationServerName(Connection con, String domainId)
       throws AuthenticationException {
-    String query = "SELECT " + DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME
-        + " FROM " + DOMAIN_TABLE_NAME + " WHERE " + DOMAIN_ID_COLUMN_NAME
-        + " = ?";
-    try(PreparedStatement stmt = con.prepareStatement(query)) {
-      stmt.setInt(1, Integer.parseInt(domainId));
-      try(ResultSet rs = stmt.executeQuery()) {
-        if (rs.next()) {
-          String serverName = rs.getString(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME);
+    JdbcSqlQuery query = JdbcSqlQuery.select(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME)
+        .from(DOMAIN_TABLE_NAME)
+        .where(DOMAIN_ID_COLUMN_NAME + " = ?", Integer.parseInt(domainId));
+    try {
+      String domainServerName = query.executeUniqueWith(con, row -> {
+          String serverName = row.getString(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME);
           if (!StringUtil.isDefined(serverName)) {
-            throw new AuthenticationException("No server found for domain of id " + domainId);
+            throw new SQLException("No server found for domain of id " + domainId);
           } else {
             return serverName;
           }
-        } else {
-          throw new AuthenticationException("No such domain with id " + domainId);
-        }
+      });
+      if (StringUtil.isNotDefined(domainServerName)) {
+        throw new SQLException("No such domain with id " + domainId);
       }
-    } catch (SQLException ex) {
-      throw new AuthenticationException("Error with domain of id" + domainId, ex);
+      return domainServerName;
+    } catch (SQLException e) {
+      throw new AuthenticationException(e.getMessage(), e);
     }
   }
 
   /**
    * Builds a random authentication key.
-   *
    * @param login a user login
    * @return the generated authentication key.
    */
-  private static String computeGenerationKey(String login) {
+  private static String generateTokenFor(String login) {
     // Random key generation
     long nStart = login.hashCode() * new Date().getTime() * (autoInc++);
     Random rand = new Random(nStart);
@@ -442,32 +396,22 @@ public class AuthenticationService {
     return String.valueOf(key);
   }
 
-  private void storeAuthenticationKey(String login, String domainId, String sKey)
-      throws AuthenticationException {
-    PreparedStatement stmt = null;
+  private void storeAuthenticationKey(String login, String domainId, String sKey) {
+    Transaction.performInOne(() -> {
+      JdbcSqlQuery query = JdbcSqlQuery.insertInto(KEY_STORE_TABLE_NAME)
+          .withInsertParam(KEY_STORE_KEY_COLUMN_NAME, Integer.parseInt(sKey))
+          .withInsertParam(KEY_STORE_LOGIN_COLUMN_NAME, login)
+          .withInsertParam(KEY_STORE_DOMAIN_ID_COLUMN_NAME, Integer.parseInt(domainId));
 
-    String query = "INSERT INTO " + KEY_STORE_TABLE_NAME + "("
-        + KEY_STORE_KEY_COLUMN_NAME + ", " + KEY_STORE_LOGIN_COLUMN_NAME + ", "
-        + KEY_STORE_DOMAIN_ID_COLUMN_NAME + ")" + " VALUES (?, ?, ?)";
-
-    Connection connection = null;
-    try {
-      connection = openConnection();
-
-      stmt = connection.prepareStatement(query);
-      stmt.setInt(1, Integer.parseInt(sKey));
-      stmt.setString(2, login);
-      stmt.setInt(3, Integer.parseInt(domainId));
-
-      stmt.executeUpdate();
-    } catch (SQLException ex) {
-      SilverLogger.getLogger(this)
-          .error(SilverpeasExceptionMessages.failureOnAdding("authentication key for login", login),
-              ex);
-    } finally {
-      DBUtil.close(stmt);
-      closeConnection(connection);
-    }
+      try (Connection connection = openConnection()) {
+        query.executeWith(connection);
+      } catch (SQLException ex) {
+        SilverLogger.getLogger(this).error(
+            SilverpeasExceptionMessages.failureOnAdding("authentication key for login", login),
+            ex);
+      }
+      return null;
+    });
   }
 
   /**
@@ -478,7 +422,6 @@ public class AuthenticationService {
    * itself can do this operation). The privileged mode isn't checked by this method, hence it is
    * the responsibility of the caller to ensure this. The specified credential won't be updated by
    * the password reset.
-   *
    * @param credential the authentication credential of the user for which the password has to be
    * reset.
    * @param newPassword the password with which the credential password will be reset.
@@ -494,12 +437,11 @@ public class AuthenticationService {
           "The login, the password or the domain isn't set!");
     }
 
-    // Verify that the user can login
+    // Verify that the user can log in
     AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
     Connection connection = null;
     try {
-      // Open connection
       connection = openConnection();
 
       // Build a AuthenticationServer instance
@@ -518,13 +460,6 @@ public class AuthenticationService {
     onPasswordAndEmailChanged(credential, null);
   }
 
-  /**
-   * Treatments on password change.
-   *
-   * @param credential
-   * @param email
-   * @throws AuthenticationException
-   */
   private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email)
       throws AuthenticationException {
     UserDetail user = UserDetail.getById(
@@ -558,12 +493,11 @@ public class AuthenticationService {
 
   /**
    * Is the change of a user password is allowed by specified user domain?
-   *
    * @param domainId the unique identifier of the user domain.
    * @return true if the password of the users in the specified domain can be changed, false
    * otherwise.
    */
-  public boolean isPasswordChangeAllowed(String domainId) {
+  boolean isPasswordChangeAllowed(String domainId) {
     Connection connection = null;
     try {
       // Open connection
@@ -594,13 +528,12 @@ public class AuthenticationService {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.authentication.domains");
 
-    // Lecture du fichier de proprietes
     DATA_SOURCE_JNDI_NAME = settings.getString("SQLDomainDataSourceJNDIName");
 
     DOMAIN_TABLE_NAME = settings.getString("SQLDomainTableName");
     DOMAIN_ID_COLUMN_NAME = settings.getString("SQLDomainIdColumnName");
-    DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME = settings.getString(
-        "SQLDomainAuthenticationServerColumnName");
+    DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME =
+        settings.getString("SQLDomainAuthenticationServerColumnName");
 
     KEY_STORE_TABLE_NAME = settings.getString("SQLKeyStoreTableName");
     KEY_STORE_KEY_COLUMN_NAME = settings.getString("SQLKeyStoreKeyColumnName");

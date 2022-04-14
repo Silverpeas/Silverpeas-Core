@@ -233,22 +233,22 @@ public abstract class AbstractAdministrationTest {
    */
   List<SQLRequester.ResultLine> getDbGroupRelations(String id) throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(JdbcSqlQuery
-        .createSelect("* from st_group_user_rel")
+        .select("* from st_group_user_rel")
         .where("groupid = ?", Integer.parseInt(id)));
   }
 
   void setComponentInstanceAsPublic(final String instanceLocalId) {
     Transaction.performInOne(
-        JdbcSqlQuery.createUpdateFor("st_componentinstance")
-            .addSaveParam("ispublic", 1, false)
+        JdbcSqlQuery.update("st_componentinstance")
+            .withSaveParam("ispublic", 1, false)
             .where("id = ?", Integer.parseInt(instanceLocalId))::execute);
     admin.reloadCache();
   }
 
   void unsetComponentInstanceAsPublic(final String instanceLocalId) {
     Transaction.performInOne(
-        JdbcSqlQuery.createUpdateFor("st_componentinstance")
-            .addSaveParam("ispublic", 0, false)
+        JdbcSqlQuery.update("st_componentinstance")
+            .withSaveParam("ispublic", 0, false)
             .where("id = ?", Integer.parseInt(instanceLocalId))::execute);
     admin.reloadCache();
   }

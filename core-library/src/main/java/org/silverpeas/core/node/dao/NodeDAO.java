@@ -106,7 +106,7 @@ public class NodeDAO extends AbstractDAO {
    * @throws SQLException
    */
   public void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor("sb_node_node").where("instanceId = ?", componentInstanceId)
+    JdbcSqlQuery.deleteFrom("sb_node_node").where("instanceId = ?", componentInstanceId)
         .execute();
   }
 
@@ -452,7 +452,7 @@ public class NodeDAO extends AbstractDAO {
     final List<Integer> instanceIdsAsInt = instanceIds.stream()
         .map(ComponentInst::getComponentLocalId).collect(Collectors.toList());
     JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) ->
-      JdbcSqlQuery.createSelect("nodeid, instanceid, rightsdependson")
+      JdbcSqlQuery.select("nodeid, instanceid, rightsdependson")
           .from(NODE_TABLE + " N")
           .join("ST_ComponentInstance I").on("N.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))")
           .where("I.id").in(idBatch)

@@ -25,6 +25,7 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.core.util.StringUtil;
@@ -76,7 +77,7 @@ public class TermsOfServiceResponseHandler extends FunctionHandler {
         } catch (AdminException e) {
           SilverLogger.getLogger(this).error("terms of service error with login {0}",
               new String[]{verifier.getUser().getLogin()}, e);
-          return getErrorDestination("2");
+          return getErrorDestination(AuthenticationResponse.Status.UNKNOWN_FAILURE.getCode());
         }
 
         // Using internalAuthToken request attribute that uses common cache services in order to
@@ -95,14 +96,14 @@ public class TermsOfServiceResponseHandler extends FunctionHandler {
         verifier.clearCache();
       }
     }
-    return getErrorDestination("2");
+    return getErrorDestination(AuthenticationResponse.Status.UNKNOWN_FAILURE.getCode());
   }
 
   /**
    * The error destination is always the login page.
    *
-   * @param errorCode
-   * @return
+   * @param errorCode the error code.
+   * @return the relative web page to go when an error occurs.
    */
   private String getErrorDestination(String errorCode) {
     return "/Login?ErrorCode=" + errorCode;

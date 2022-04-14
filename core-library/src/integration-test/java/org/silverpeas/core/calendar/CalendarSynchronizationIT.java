@@ -308,8 +308,8 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
   private void updateLastUpdateDate(final CalendarEvent event, final Instant dateTime) {
     final String componentId = event.asCalendarComponent().getId();
     Transaction.performInOne(() -> {
-      JdbcSqlQuery.createUpdateFor("sb_cal_components")
-          .addUpdateParam("lastUpdateDate", dateTime)
+      JdbcSqlQuery.update("sb_cal_components")
+          .withUpdateParam("lastUpdateDate", dateTime)
           .where("id = ?", componentId)
           .execute();
       return null;
@@ -327,8 +327,8 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
 
   private void updateExternalId(final CalendarEvent event, final String externalId) {
     Transaction.performInOne(() -> {
-      JdbcSqlQuery.createUpdateFor("sb_cal_event")
-          .addUpdateParam("externalId", externalId)
+      JdbcSqlQuery.update("sb_cal_event")
+          .withUpdateParam("externalId", externalId)
           .where("id = ?", event.getId())
           .execute();
       return null;

@@ -304,6 +304,6 @@ public class ConnectionDAO {
    * @throws SQLException
    */
   public void deleteByComponentInstanceId(final String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(tableName).where("componentId = ?", componentInstanceId).execute();
+    JdbcSqlQuery.deleteFrom(tableName).where("componentId = ?", componentInstanceId).execute();
   }
 }

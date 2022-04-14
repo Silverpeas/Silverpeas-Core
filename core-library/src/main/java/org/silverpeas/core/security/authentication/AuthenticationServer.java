@@ -41,7 +41,7 @@ import java.util.List;
 
 /**
  * The authentication server is a proxy in Silverpeas side of the external authentication service
- * related to a given user domain. This service is identified by an unique name. The authentication
+ * related to a given user domain. This service is identified by a unique name. The authentication
  * is delegated to an implementation of the Authentication abstract class that knows how to perform
  * the authentication with the remote service.
  *
@@ -57,9 +57,9 @@ import java.util.List;
  */
 public class AuthenticationServer {
 
-  protected String fallbackMode;
-  protected List<Authentication> authServers;
-  protected boolean passwordChangeAllowed;
+  private String fallbackMode;
+  private List<AuthenticationProtocol> authProtocols;
+  private boolean passwordChangeAllowed;
 
   /**
    * Gets the authentication server identified by the specified name.
@@ -85,7 +85,7 @@ public class AuthenticationServer {
       fallbackMode = serverSettings.getString("fallbackType");
       passwordChangeAllowed = serverSettings.getBoolean("allowPasswordChange", false);
       int nbServers = Integer.parseInt(serverSettings.getString("autServersCount"));
-      authServers = new ArrayList<>(nbServers);
+      authProtocols = new ArrayList<>(nbServers);
       for (int i = 0; i < nbServers; i++) {
         String serverName = "autServer" + i;
         if (serverSettings.getBoolean(serverName + ".enabled", true)) {
@@ -101,14 +101,26 @@ public class AuthenticationServer {
   private void addAuthenticationService(final String serverName, final String authServerName,
       final SettingBundle serverSettings) {
     try {
-      Constructor<Authentication> constructor = ((Class<Authentication>) Class.forName(
+      Constructor<AuthenticationProtocol> constructor = ((Class<AuthenticationProtocol>) Class.forName(
           serverSettings.getString(serverName + ".type"))).getConstructor();
-      Authentication authenticationWithAServer = constructor.newInstance();
-      authenticationWithAServer.init(serverName, serverSettings);
-      authServers.add(authenticationWithAServer);
+      AuthenticationProtocol authProtocol = constructor.newInstance();
+      authProtocol.init(serverName, serverSettings);
+      authProtocols.add(authProtocol);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(authServerName + " / " + serverName, ex);
     }
+  }
+
+  /**
+   * Is this server has one or more authentication protocols defined? An authentication server
+   * cannot delegate the authentication process to an external service without knowing how to
+   * communicate with it. And the communication is performed by a protocol represented here by
+   * a {@link AuthenticationProtocol} object.
+   * @return true if this server knows one or more protocols to communicate with an external
+   * authentication service. False otherwise.
+   */
+  public boolean hasProtocols() {
+    return !authProtocols.isEmpty();
   }
 
   /**
@@ -123,8 +135,8 @@ public class AuthenticationServer {
       AuthenticationException {
     doSecurityOperation(new SecurityOperation(SecurityOperation.AUTHENTICATION, credential) {
       @Override
-      public void performWith(Authentication authentication) throws AuthenticationException {
-        authentication.authenticate(credential);
+      public void performWith(AuthenticationProtocol authProtocol) throws AuthenticationException {
+        authProtocol.authenticate(credential);
       }
     });
   }
@@ -150,14 +162,14 @@ public class AuthenticationServer {
 
     doSecurityOperation(new SecurityOperation(SecurityOperation.P_CHANGE, credential) {
       @Override
-      public void performWith(Authentication authentication) throws AuthenticationException {
-        authentication.changePassword(credential, newPassword);
+      public void performWith(AuthenticationProtocol authProtocol) throws AuthenticationException {
+        authProtocol.changePassword(credential, newPassword);
       }
     });
   }
 
   /**
-   * Is the the password change is allowed by the remote authentication service represented by this
+   * Is the password change is allowed by the remote authentication service represented by this
    * instance?
    *
    * @return true if the password can be changed, false otherwise.
@@ -187,7 +199,7 @@ public class AuthenticationServer {
     doSecurityOperation(new SecurityOperation(SecurityOperation.P_RESET,
         AuthenticationCredential.newWithAsLogin(login)) {
       @Override
-      public void performWith(Authentication authentication) throws AuthenticationException {
+      public void performWith(AuthenticationProtocol authentication) throws AuthenticationException {
         authentication.resetPassword(login, loginIgnoreCase, newPassword);
       }
     });
@@ -200,10 +212,10 @@ public class AuthenticationServer {
 
     boolean serverNotFound = true;
     AuthenticationException lastException = null;
-    for (Authentication authServer : authServers) {
-      if (authServer.isEnabled()) {
+    for (AuthenticationProtocol authProtocol : authProtocols) {
+      if (authProtocol.isEnabled()) {
         try {
-          op.performWith(authServer);
+          op.performWith(authProtocol);
           serverNotFound = false;
         } catch (AuthenticationException ex) {
           AuthenticationExceptionProcessor processor =
@@ -226,13 +238,13 @@ public class AuthenticationServer {
     }
   }
 
-  private abstract class SecurityOperation {
+  private abstract static class SecurityOperation {
 
     public static final String AUTHENTICATION = "authenticate";
     public static final String P_CHANGE = "changePassword";
     public static final String P_RESET = "resetPassword";
-    private String name;
-    private AuthenticationCredential credential;
+    private final String name;
+    private final AuthenticationCredential credential;
 
     public SecurityOperation(String operationName, AuthenticationCredential credential) {
       this.credential = credential;
@@ -247,7 +259,7 @@ public class AuthenticationServer {
       return credential;
     }
 
-    public abstract void performWith(Authentication authentication) throws AuthenticationException;
+    public abstract void performWith(AuthenticationProtocol authProtocol) throws AuthenticationException;
   }
 
   private class AuthenticationExceptionProcessor implements AuthenticationExceptionVisitor {
@@ -300,7 +312,7 @@ public class AuthenticationServer {
      */
     @Override
     public void visit(AuthenticationPasswordAboutToExpireException ex) {
-      credential.getCapabilities().put(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, Boolean.TRUE);
+      credential.getCapabilities().put(AuthenticationProtocol.PASSWORD_IS_ABOUT_TO_EXPIRE, Boolean.TRUE);
       continueAuthentication = false;
     }
 

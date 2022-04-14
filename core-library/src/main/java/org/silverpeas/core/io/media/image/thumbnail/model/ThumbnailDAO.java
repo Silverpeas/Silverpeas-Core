@@ -179,7 +179,7 @@ public class ThumbnailDAO {
         .collect(Collectors.toSet());
     JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignore) ->
         JdbcSqlQuery.executeBySplittingOn(objectIds, (objectIdBatch, ignoreToo) ->
-            JdbcSqlQuery.createSelect(ALL_FIELDS)
+            JdbcSqlQuery.select(ALL_FIELDS)
                 .from(THUMBNAIL_TABLE)
                 .where("instanceId").in(instanceIdBatch)
                 .and("objectId").in(objectIdBatch)

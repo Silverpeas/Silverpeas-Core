@@ -87,30 +87,30 @@ public class UserDAO {
     if(UserState.UNKNOWN.equals(user.getState())) {
       user.setState(UserState.VALID);
     }
-    JdbcSqlQuery.createInsertFor(USER_TABLE)
-        .addInsertParam("id", nextId)
-        .addInsertParam(SPECIFIC_ID, user.getSpecificId())
-        .addInsertParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
-        .addInsertParam(LOGIN, user.getLogin())
-        .addInsertParam(FIRST_NAME, user.getFirstName())
-        .addInsertParam(LAST_NAME, user.getLastName())
-        .addInsertParam("loginMail", "")
-        .addInsertParam("email", user.geteMail())
-        .addInsertParam(ACCESS_LEVEL, user.getAccessLevel().code())
-        .addInsertParam("loginQuestion", user.getLoginQuestion())
-        .addInsertParam("loginAnswer", user.getLoginAnswer())
-        .addInsertParam("creationDate", now)
-        .addInsertParam(SAVE_DATE, now)
-        .addInsertParam("version", 0)
-        .addInsertParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
-        .addInsertParam("lastLoginDate", toInstance(user.getLastLoginDate()))
-        .addInsertParam("nbSuccessfulLoginAttempts", user.getNbSuccessfulLoginAttempts())
-        .addInsertParam("lastLoginCredentialUpdateDate",
+    JdbcSqlQuery.insertInto(USER_TABLE)
+        .withInsertParam("id", nextId)
+        .withInsertParam(SPECIFIC_ID, user.getSpecificId())
+        .withInsertParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
+        .withInsertParam(LOGIN, user.getLogin())
+        .withInsertParam(FIRST_NAME, user.getFirstName())
+        .withInsertParam(LAST_NAME, user.getLastName())
+        .withInsertParam("loginMail", "")
+        .withInsertParam("email", user.geteMail())
+        .withInsertParam(ACCESS_LEVEL, user.getAccessLevel().code())
+        .withInsertParam("loginQuestion", user.getLoginQuestion())
+        .withInsertParam("loginAnswer", user.getLoginAnswer())
+        .withInsertParam("creationDate", now)
+        .withInsertParam(SAVE_DATE, now)
+        .withInsertParam("version", 0)
+        .withInsertParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
+        .withInsertParam("lastLoginDate", toInstance(user.getLastLoginDate()))
+        .withInsertParam("nbSuccessfulLoginAttempts", user.getNbSuccessfulLoginAttempts())
+        .withInsertParam("lastLoginCredentialUpdateDate",
             toInstance(user.getLastLoginCredentialUpdateDate()))
-        .addInsertParam("expirationDate", toInstance(user.getExpirationDate()))
-        .addInsertParam(STATE, user.getState())
-        .addInsertParam(STATE_SAVE_DATE, now)
-        .addInsertParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
+        .withInsertParam("expirationDate", toInstance(user.getExpirationDate()))
+        .withInsertParam(STATE, user.getState())
+        .withInsertParam(STATE_SAVE_DATE, now)
+        .withInsertParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
         .executeWith(connection);
 
     return String.valueOf(nextId);
@@ -118,10 +118,10 @@ public class UserDAO {
 
   public void restoreUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
-    JdbcSqlQuery.createUpdateFor(USER_TABLE)
-        .addUpdateParam(STATE, UserState.VALID)
-        .addUpdateParam(STATE_SAVE_DATE, now)
-        .addUpdateParam(SAVE_DATE, now)
+    JdbcSqlQuery.update(USER_TABLE)
+        .withUpdateParam(STATE, UserState.VALID)
+        .withUpdateParam(STATE_SAVE_DATE, now)
+        .withUpdateParam(SAVE_DATE, now)
         .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .and(STATE).in(UserState.REMOVED)
         .executeWith(connection);
@@ -129,10 +129,10 @@ public class UserDAO {
 
   public void removeUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
-    JdbcSqlQuery.createUpdateFor(USER_TABLE)
-        .addUpdateParam(STATE, UserState.REMOVED)
-        .addUpdateParam(STATE_SAVE_DATE, now)
-        .addUpdateParam(SAVE_DATE, now)
+    JdbcSqlQuery.update(USER_TABLE)
+        .withUpdateParam(STATE, UserState.REMOVED)
+        .withUpdateParam(STATE_SAVE_DATE, now)
+        .withUpdateParam(SAVE_DATE, now)
         .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .executeWith(connection);
@@ -140,12 +140,12 @@ public class UserDAO {
 
   public void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
-    JdbcSqlQuery.createUpdateFor(USER_TABLE)
-        .addUpdateParam(LOGIN, "???REM???" + user.getId())
-        .addUpdateParam(SPECIFIC_ID, "???REM???" + user.getId())
-        .addUpdateParam(STATE, UserState.DELETED)
-        .addUpdateParam(STATE_SAVE_DATE, now)
-        .addUpdateParam(SAVE_DATE, now)
+    JdbcSqlQuery.update(USER_TABLE)
+        .withUpdateParam(LOGIN, "???REM???" + user.getId())
+        .withUpdateParam(SPECIFIC_ID, "???REM???" + user.getId())
+        .withUpdateParam(STATE, UserState.DELETED)
+        .withUpdateParam(STATE_SAVE_DATE, now)
+        .withUpdateParam(SAVE_DATE, now)
         .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
@@ -158,7 +158,7 @@ public class UserDAO {
    * @throws SQLException if an error occurs while getting the user detail from the data source.
    */
   public UserDetail getUserById(final Connection connection, final String id) throws SQLException {
-    return JdbcSqlQuery.createSelect(USER_COLUMNS)
+    return JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(ID_CRITERION, Integer.parseInt(id))
         .executeUniqueWith(connection, UserDAO::fetchUser);
@@ -175,7 +175,7 @@ public class UserDAO {
       throws SQLException {
     return JdbcSqlQuery.streamBySplittingOn(
         ids.stream().map(Integer::parseInt).collect(Collectors.toList()), idBatch ->
-                JdbcSqlQuery.createSelect(USER_COLUMNS)
+                JdbcSqlQuery.select(USER_COLUMNS)
                     .from(USER_TABLE)
                     .where("id").in(idBatch)
                     .executeWith(connection, UserDAO::fetchUser))
@@ -184,7 +184,7 @@ public class UserDAO {
 
   public boolean isUserByIdExists(final Connection connection, final String id)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("COUNT(id)")
+    return JdbcSqlQuery.select("COUNT(id)")
         .from(USER_TABLE)
         .where(ID_CRITERION, Integer.parseInt(id))
         .and(STATE).notIn(UserState.DELETED)
@@ -193,7 +193,7 @@ public class UserDAO {
 
   public UserDetail getUserBySpecificId(final Connection connection, final String domainId,
       final String specificId) throws SQLException {
-    return JdbcSqlQuery.createSelect(USER_COLUMNS)
+    return JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("specificId = ?", specificId)
@@ -203,7 +203,7 @@ public class UserDAO {
   public List<UserDetail> getUsersBySpecificIds(final Connection connection, final String domainId,
       final Collection<String> specificIds) throws SQLException {
     return JdbcSqlQuery.streamBySplittingOn(specificIds, idBatch ->
-        JdbcSqlQuery.createSelect(USER_COLUMNS)
+        JdbcSqlQuery.select(USER_COLUMNS)
             .from(USER_TABLE)
             .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
             .and(SPECIFIC_ID).in(idBatch)
@@ -223,7 +223,7 @@ public class UserDAO {
       throws SQLException {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(domainIds);
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.REMOVED);
     final List<Integer> requestedDomainIds =
@@ -246,7 +246,7 @@ public class UserDAO {
       throws SQLException {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(domainIds);
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.DELETED)
         .and("firstName <> ?", BLANK_NAME);
@@ -260,7 +260,7 @@ public class UserDAO {
 
   public String getUserIdByLoginAndDomain(final Connection connection, final String login,
       final String domainId) throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("lower(login) = lower(?)", login)
@@ -270,7 +270,7 @@ public class UserDAO {
 
   public boolean isUserEmailExisting(final Connection connection, final String email)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("COUNT(id)")
+    return JdbcSqlQuery.select("COUNT(id)")
         .from(USER_TABLE)
         .where("email = ?", email)
         .executeUniqueWith(connection, row -> row.getInt(1)) > 1;
@@ -286,7 +286,7 @@ public class UserDAO {
    */
   public List<String> getDomainsContainingLogin(Connection connection, String login) throws
       SQLException {
-    return JdbcSqlQuery.createSelect("DISTINCT(domainId) AS domain")
+    return JdbcSqlQuery.select("DISTINCT(domainId) AS domain")
         .from(USER_TABLE)
         .where(STATE).notIn(UserState.DELETED)
         .and("login = ?", login)
@@ -316,27 +316,27 @@ public class UserDAO {
   public void updateUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
     String firstName = user.isBlanked() ? BLANK_NAME : user.getFirstName();
-    JdbcSqlQuery.createUpdateFor(USER_TABLE)
-        .addUpdateParam(SPECIFIC_ID, user.getSpecificId())
-        .addUpdateParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
-        .addUpdateParam(LOGIN, user.getLogin())
-        .addUpdateParam(FIRST_NAME, firstName)
-        .addUpdateParam(LAST_NAME, user.getLastName())
-        .addUpdateParam("email", user.geteMail())
-        .addUpdateParam(ACCESS_LEVEL, user.getAccessLevel().code())
-        .addUpdateParam("loginQuestion", user.getLoginQuestion())
-        .addUpdateParam("loginAnswer", user.getLoginAnswer())
-        .addUpdateParam(SAVE_DATE, now)
-        .addUpdateParam("version", user.getVersion() + 1)
-        .addUpdateParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
-        .addUpdateParam("lastLoginDate", toInstance(user.getLastLoginDate()))
-        .addUpdateParam("nbSuccessfulLoginAttempts", user.getNbSuccessfulLoginAttempts())
-        .addUpdateParam("lastLoginCredentialUpdateDate",
+    JdbcSqlQuery.update(USER_TABLE)
+        .withUpdateParam(SPECIFIC_ID, user.getSpecificId())
+        .withUpdateParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
+        .withUpdateParam(LOGIN, user.getLogin())
+        .withUpdateParam(FIRST_NAME, firstName)
+        .withUpdateParam(LAST_NAME, user.getLastName())
+        .withUpdateParam("email", user.geteMail())
+        .withUpdateParam(ACCESS_LEVEL, user.getAccessLevel().code())
+        .withUpdateParam("loginQuestion", user.getLoginQuestion())
+        .withUpdateParam("loginAnswer", user.getLoginAnswer())
+        .withUpdateParam(SAVE_DATE, now)
+        .withUpdateParam("version", user.getVersion() + 1)
+        .withUpdateParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
+        .withUpdateParam("lastLoginDate", toInstance(user.getLastLoginDate()))
+        .withUpdateParam("nbSuccessfulLoginAttempts", user.getNbSuccessfulLoginAttempts())
+        .withUpdateParam("lastLoginCredentialUpdateDate",
             toInstance(user.getLastLoginCredentialUpdateDate()))
-        .addUpdateParam("expirationDate", toInstance(user.getExpirationDate()))
-        .addUpdateParam(STATE, user.getState())
-        .addUpdateParam(STATE_SAVE_DATE, toInstance(user.getStateSaveDate()))
-        .addUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
+        .withUpdateParam("expirationDate", toInstance(user.getExpirationDate()))
+        .withUpdateParam(STATE, user.getState())
+        .withUpdateParam(STATE_SAVE_DATE, toInstance(user.getStateSaveDate()))
+        .withUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
         .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
@@ -375,7 +375,7 @@ public class UserDAO {
       throws SQLException {
     List<Integer> groupIdsAsInt =
         groupIds.stream().map(Integer::parseInt).collect(Collectors.toList());
-    return JdbcSqlQuery.createSelect(USER_COLUMNS)
+    return JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
         .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
@@ -384,7 +384,7 @@ public class UserDAO {
   }
 
   public List<String> getAllUserIds(Connection connection) throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE)
         .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .orderBy(LAST_NAME)
@@ -393,7 +393,7 @@ public class UserDAO {
 
   public List<String> getAllAdminIds(Connection connection, final UserDetail fromUser)
       throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
+    JdbcSqlQuery query = JdbcSqlQuery.select("id")
         .from(USER_TABLE)
         .where(STATE)
         .notIn(UserState.REMOVED, UserState.DELETED);
@@ -420,7 +420,7 @@ public class UserDAO {
         : new UserState[]{UserState.REMOVED, UserState.DELETED};
     final Map<String, List<String>> result = new HashMap<>(groupIds.size());
     if (!groupIds.isEmpty()) {
-      JdbcSqlQuery.createSelect("groupid, userid")
+      JdbcSqlQuery.select("groupid, userid")
           .from(USER_TABLE, GROUP_USER_REL_TABLE)
           .where(USER_ID_JOINTURE)
           .and("groupId").in(groupIds.stream().map(Integer::parseInt).collect(Collectors.toList()))
@@ -435,7 +435,7 @@ public class UserDAO {
       throws SQLException {
     List<Integer> groupIdsAsInt =
         groupIds.stream().map(Integer::parseInt).collect(Collectors.toList());
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
         .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
@@ -445,7 +445,7 @@ public class UserDAO {
 
   public List<String> getUserIdsInDomain(Connection connection, final String domainId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE)
         .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
@@ -455,7 +455,7 @@ public class UserDAO {
 
   public List<String> getUserIdsByAccessLevel(final Connection connection,
       final UserAccessLevel accessLevel) throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE)
         .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
@@ -465,7 +465,7 @@ public class UserDAO {
 
   public List<String> getUserIdsByAccessLevelInDomain(Connection connection,
       final UserAccessLevel accessLevel, final String domainId) throws SQLException {
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE)
         .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
@@ -480,7 +480,7 @@ public class UserDAO {
     final Object[] userStatesToExclude = includeRemoved
         ? new UserState[]{UserState.DELETED}
         : new UserState[]{UserState.REMOVED, UserState.DELETED};
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE, "ST_UserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("userRoleId = ?", Integer.parseInt(userRoleId))
@@ -501,7 +501,7 @@ public class UserDAO {
     final Object[] userStatesToExclude = includeRemoved
         ? new UserState[]{UserState.DELETED}
         : new UserState[]{UserState.REMOVED, UserState.DELETED};
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE, "ST_SpaceUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
@@ -515,7 +515,7 @@ public class UserDAO {
     final Object[] userStatesToExclude = includeRemoved
         ? new UserState[]{UserState.DELETED}
         : new UserState[]{UserState.REMOVED, UserState.DELETED};
-    return JdbcSqlQuery.createSelect("id")
+    return JdbcSqlQuery.select("id")
         .from(USER_TABLE, "ST_GroupUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId))
@@ -535,7 +535,7 @@ public class UserDAO {
   private List<UserDetail> getAllUsers(Connection con, List<String> domainIds, String orderBy)
       throws SQLException {
     final String order = StringUtil.isDefined(orderBy) ? orderBy : LAST_NAME;
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
+    JdbcSqlQuery query = JdbcSqlQuery.select(USER_COLUMNS)
         .from(USER_TABLE)
         .where(STATE).notIn(UserState.REMOVED, UserState.DELETED);
     if (domainIds != null && !domainIds.isEmpty()) {

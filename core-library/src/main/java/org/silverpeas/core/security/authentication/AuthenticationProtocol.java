@@ -30,18 +30,17 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A set of security-related operations about a user authentication.
- *
- * The authentication is performed by a server of a remote authentication service and an instance
- * of this class manages for Silverpeas the negotiation with the service to perform the asked
+ * <p>
+ * The authentication is performed by a server of a remote authentication service and an instance of
+ * this class manages for Silverpeas the negotiation with the service to perform the asked
  * security-related operation.
- *
- * Each concrete implementation of this abstract class must implement the communication protocol with
- * the a server of the remote service; it is dedicated to a given authentication service.
- *
+ * <p>
+ * Each concrete implementation of this abstract class must implement the communication protocol
+ * with the server of the remote service; it is dedicated to a given authentication service.
  * @author tleroi
  * @author mmoquillon
  */
-public abstract class Authentication {
+public abstract class AuthenticationProtocol {
 
   protected boolean enabled = true;
 
@@ -50,8 +49,8 @@ public abstract class Authentication {
   private String authServerName;
 
   /**
-   * Is this authentication enabled?
-   * When an authentication is enabled, it can be performed against an authentication service.
+   * Is this authentication enabled? When an authentication is enabled, it can be performed against
+   * an authentication service.
    * @return true if it is enabled, false otherwise.
    */
   public boolean isEnabled() {
@@ -67,32 +66,33 @@ public abstract class Authentication {
   }
 
   /**
-   * Initializes this authentication with the specified settings to communicate with a server of
-   * an authentication service.
-   * @param authenticationServerName the name of a remote service behind a given authentication service.
+   * Initializes this authentication with the specified settings to communicate with a server of an
+   * authentication service.
+   * @param authenticationServerName the name of a remote service behind a given authentication
+   * service.
    * @param settings the settings of the server communication.
    */
   public void init(String authenticationServerName, SettingBundle settings) {
     this.authServerName = authenticationServerName;
-    this.enabled =  settings.getBoolean(this.authServerName + ".enabled", true);
+    this.enabled = settings.getBoolean(this.authServerName + ".enabled", true);
     loadProperties(settings);
   }
 
   /**
-   * Authenticates the user with its specified credential (containing a password in clear).
-   * If the user cannot be authenticated, an exception is thrown, whatever the reason.
-   * If the authentication could not be performed because the credentials are invalid
-   * (e.g. wrong password), the AuthenticationException code should be set to
-   * EXCEPTION_BAD_CREDENTIALS.
+   * Authenticates the user with its specified credential (containing a password in clear). If the
+   * user cannot be authenticated, an exception is thrown, whatever the reason. If the
+   * authentication could not be performed because the credentials are invalid (e.g. wrong
+   * password), the AuthenticationException code should be set to EXCEPTION_BAD_CREDENTIALS.
    * @param credential the credential to use to authenticate the user.
-   * @throws org.silverpeas.core.security.authentication.exception.AuthenticationException
-   * if an error occurs while authenticating the user.
+   * @throws org.silverpeas.core.security.authentication.exception.AuthenticationException if an
+   * error occurs while authenticating the user.
    */
-  public void authenticate(final AuthenticationCredential credential) throws
-      AuthenticationException {
+  public void authenticate(final AuthenticationCredential credential)
+      throws AuthenticationException {
     doSecurityOperation(new SecurityOperation(SecurityOperation.AUTHENTICATION) {
       @Override
-      public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {
+      public <T> void perform(AuthenticationConnection<T> connection)
+          throws AuthenticationException {
         doAuthentication(connection, credential);
       }
     });
@@ -100,21 +100,21 @@ public abstract class Authentication {
 
   /**
    * Changes the password of the user, authenticated with the specified credential, with the
-   * specified new one. The user must be authenticated for doing a such operation.
-   * The specified credential won't be updated by the password change.
-   * If the user cannot be authenticated, an exception is thrown, whatever the reason.
-   * If the authentication could not be performed because the credentials are invalid
-   * (e.g. wrong password), the AuthenticationException code should be set to
-   * EXCEPTION_BAD_CREDENTIALS.
+   * specified new one. The user must be authenticated for doing a such operation. The specified
+   * credential won't be updated by the password change. If the user cannot be authenticated, an
+   * exception is thrown, whatever the reason. If the authentication could not be performed because
+   * the credentials are invalid (e.g. wrong password), the AuthenticationException code should be
+   * set to EXCEPTION_BAD_CREDENTIALS.
    * @param credential the user credential used in an authentication with Silverpeas.
    * @param newPassword user new password
    * @throws AuthenticationException if an error occurs while changing the user password.
    */
-  public void changePassword(final AuthenticationCredential credential,
-                             final String newPassword) throws AuthenticationException {
+  public void changePassword(final AuthenticationCredential credential, final String newPassword)
+      throws AuthenticationException {
     doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_CHANGE) {
       @Override
-      public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {
+      public <T> void perform(AuthenticationConnection<T> connection)
+          throws AuthenticationException {
         doChangePassword(connection, credential, newPassword);
       }
     });
@@ -122,8 +122,8 @@ public abstract class Authentication {
 
   /**
    * Resets the password associated with the specified login of a user  with the new specified one.
-   * Contrary to the password change, this operation doesn't require the user to be authenticated; it
-   * isn't a password modification but a reset of it generally under the control of the system.
+   * Contrary to the password change, this operation doesn't require the user to be authenticated;
+   * it isn't a password modification but a reset of it generally under the control of the system.
    * If the login of the user doesn't exist or if the reset cannot be done an exception is thrown.
    * @param login the user login
    * @param loginIgnoreCase true to ignore case when comparing the login
@@ -148,8 +148,8 @@ public abstract class Authentication {
   protected abstract void loadProperties(SettingBundle settings);
 
   /**
-   * Opens a connection with a server of the remote authentication service.
-   * The policy of the connection management is left to the concrete Authentication implementation.
+   * Opens a connection with a server of the remote authentication service. The policy of the
+   * connection management is left to the concrete Authentication implementation.
    * @param <T> the type of the authentication server's connector.
    * @return a connection with a remote authentication server.
    * @throws AuthenticationException if no connection can be established with a server of the remote
@@ -160,8 +160,8 @@ public abstract class Authentication {
 
   /**
    * Closes the connection that was previously opened with the server of the remote authentication
-   * service.
-   * The policy of the connection management is left to the concrete Authentication implementation.
+   * service. The policy of the connection management is left to the concrete Authentication
+   * implementation.
    * @param connection the connection with a remote authentication server.
    * @param <T> the type of the authentication server's connector.
    * @throws AuthenticationException if no connection was previously opened or if the connection
@@ -171,23 +171,22 @@ public abstract class Authentication {
       throws AuthenticationException;
 
   /**
-   * Does the authentication by using the specified connection with the remote server and with
-   * with the specified user credential.
+   * Does the authentication by using the specified connection with the remote server and with with
+   * the specified user credential.
    * @param connection the connection with a remote authentication server.
    * @param credential the credential to use to authenticate the user.
    * @param <T> the type of the authentication server's connector.
    * @throws AuthenticationException if an error occurs while authenticating the user.
    */
   protected abstract <T> void doAuthentication(AuthenticationConnection<T> connection,
-       AuthenticationCredential credential) throws AuthenticationException;
+      AuthenticationCredential credential) throws AuthenticationException;
 
   /**
-   * Does the password change by using the specified connection with the remote server and with
-   * with the specified user credential and new password.
-   * By default, this operation is considered as not supported by the remote authentication service
-   * and throws then an UnsupportedOperationException exception. If the authentication service
-   * supports this operation, the concrete Authentication implementation has to implement this
-   * method.
+   * Does the password change by using the specified connection with the remote server and with with
+   * the specified user credential and new password. By default, this operation is considered as not
+   * supported by the remote authentication service and throws then an UnsupportedOperationException
+   * exception. If the authentication service supports this operation, the concrete Authentication
+   * implementation has to implement this method.
    * @param connection the connection with a remote authentication server.
    * @param credential the credential to use to authenticate the user.
    * @param newPassword the new password that will replace the one in the user credential.
@@ -195,18 +194,16 @@ public abstract class Authentication {
    * @throws AuthenticationException if an error occurs while changing the user password.
    */
   protected <T> void doChangePassword(AuthenticationConnection<T> connection,
-        AuthenticationCredential credential,
-        String newPassword) throws AuthenticationException {
+      AuthenticationCredential credential, String newPassword) throws AuthenticationException {
     throw new AuthenticationPwdChangeNotAvailException("The password modification isn't available");
   }
 
   /**
    * Does the password reset by using the specified connection with the remote server the user login
-   * for which the password has to be reset and a new password.
-   * By default, this operation is considered as not supported by the remote authentication service
-   * and throws then an UnsupportedOperationException exception. If the authentication service
-   * supports this operation, the concrete Authentication implementation has to implement this
-   * method.
+   * for which the password has to be reset and a new password. By default, this operation is
+   * considered as not supported by the remote authentication service and throws then an
+   * UnsupportedOperationException exception. If the authentication service supports this operation,
+   * the concrete Authentication implementation has to implement this method.
    * @param connection the connection with a remote authentication server.
    * @param login the login of the user for which the password has to be reset.
    * @param loginIgnoreCase true to ignore case when comparing the login.
@@ -220,11 +217,10 @@ public abstract class Authentication {
   }
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
-    AuthenticationConnection connection = null;
+    AuthenticationConnection<?> connection = null;
     try {
       connection = openConnection();
       op.perform(connection);
-      closeConnection(connection);
     } finally {
       try {
         if (connection != null) {
@@ -237,13 +233,13 @@ public abstract class Authentication {
     }
   }
 
-  private abstract class SecurityOperation {
+  private abstract static class SecurityOperation {
 
     public static final String AUTHENTICATION = "authenticate";
     public static final String PASSWORD_CHANGE = "changePassword";
     public static final String PASSWORD_RESET = "resetPassword";
 
-    private String name;
+    private final String name;
 
     public SecurityOperation(String operationName) {
       this.name = operationName;
@@ -253,6 +249,7 @@ public abstract class Authentication {
       return name;
     }
 
-    public abstract <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException;
+    public abstract <T> void perform(AuthenticationConnection<T> connection)
+        throws AuthenticationException;
   }
 }

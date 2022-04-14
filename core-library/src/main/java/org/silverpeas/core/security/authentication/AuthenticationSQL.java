@@ -44,7 +44,7 @@ import java.sql.SQLException;
 /**
  * This class performs the authentication using an SQL table.
  */
-public class AuthenticationSQL extends Authentication {
+public class AuthenticationSQL extends AuthenticationProtocol {
 
   protected String dataSourceJndiName;
   protected String userTableName;
@@ -63,6 +63,7 @@ public class AuthenticationSQL extends Authentication {
         + ".SQLUserPasswordAvailableColumnName");
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected AuthenticationConnection<Connection> openConnection() throws AuthenticationException {
     try {
@@ -75,8 +76,10 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   protected void closeConnection(AuthenticationConnection connection) throws AuthenticationException {
+    //noinspection unchecked
     Connection sqlConnection = getSQLConnection(connection);
     try {
       if (sqlConnection != null) {
@@ -88,6 +91,7 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   protected void doAuthentication(AuthenticationConnection connection,
       AuthenticationCredential credential) throws AuthenticationException {
@@ -97,6 +101,7 @@ public class AuthenticationSQL extends Authentication {
     if (password == null) {
       password = "";
     }
+    //noinspection unchecked
     String sqlPassword = getPassword(getSQLConnection(connection), login, loginIgnoreCase);
     if (!StringUtil.isDefined(sqlPassword)) {
       throw new AuthenticationBadCredentialException(
@@ -166,9 +171,11 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   protected void doChangePassword(AuthenticationConnection connection,
       AuthenticationCredential credential, String newPassword) throws AuthenticationException {
+    //noinspection unchecked
     Connection sqlConnection = getSQLConnection(connection);
     String login = credential.getLogin();
     String oldPassword = credential.getPassword();
@@ -179,9 +186,11 @@ public class AuthenticationSQL extends Authentication {
     updatePassword(sqlConnection, login, loginIgnoreCase, newPasswordInDB);
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   protected void doResetPassword(AuthenticationConnection connection, String login,
       final boolean loginIgnoreCase, String newPassword) throws AuthenticationException {
+    //noinspection unchecked
     Connection sqlConnection = getSQLConnection(connection);
     String newPasswordInDB = getNewPasswordDigest(newPassword);
     updatePassword(sqlConnection, login, loginIgnoreCase, newPasswordInDB);
@@ -206,7 +215,7 @@ public class AuthenticationSQL extends Authentication {
    * Checks the specified password associated with the specified login matches the specified
    * password digest.
    *
-   * As some passwords have been errorly computed in a pure MD5 encryption, this method takes care
+   * As some passwords have been computed by error in a pure MD5 encryption, this method takes care
    * of this situation. In the case the password was encrypted with a correct cryptographic function
    * (that is to say with another a MD5 hash function), the encryption having computed the specified
    * digest is then used to encrypt the password in order to compare them.
@@ -214,7 +223,7 @@ public class AuthenticationSQL extends Authentication {
    * @param login a user login, used only in case of error.
    * @param password the password associated with the user login.
    * @param digest the digest of the password by using the current encryption.
-   * @throws AuthenticationBadCredentialException
+   * @throws AuthenticationBadCredentialException if an error occurs.
    */
   private void checkPassword(String login, String password, String digest)
       throws AuthenticationBadCredentialException {

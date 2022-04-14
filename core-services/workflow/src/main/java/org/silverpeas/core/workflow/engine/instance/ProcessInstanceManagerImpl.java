@@ -89,13 +89,13 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
     if ("supervisor".equals(role)) {
       select = JdbcSqlQuery
-          .createSelect("I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
+          .select("I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
           .from(SB_WORKFLOW_PROCESS_INSTANCE_TABLE)
           .where(MODEL_ID_CRITERION, peasId)
           .orderBy("I.instanceId DESC");
     } else {
       select = JdbcSqlQuery
-          .createSelect("*")
+          .select("*")
           .from("(")
 
           .addSqlPart("SELECT I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
@@ -165,7 +165,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         // getting History
         final RuptureContext<ProcessInstanceImpl> ruptureContext = RuptureContext.newOne(instances);
         JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, result)-> JdbcSqlQuery
-            .createSelect("instanceId, id, userId, userRoleName, action, actionDate, resolvedState, toState, actionStatus")
+            .select("instanceId, id, userId, userRoleName, action, actionDate, resolvedState, toState, actionStatus")
             .from("SB_Workflow_HistoryStep")
             .where("instanceId").in(idBatch)
             .orderBy("instanceId DESC, id ASC")
@@ -188,7 +188,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         // getting Active States
         ruptureContext.reset();
         JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, result)-> JdbcSqlQuery
-            .createSelect("id, instanceId, state, backStatus, timeoutStatus")
+            .select("id, instanceId, state, backStatus, timeoutStatus")
             .from("SB_Workflow_ActiveState")
             .where("instanceId").in(idBatch)
             .orderBy("instanceId DESC, id ASC")
@@ -343,7 +343,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   public SilverpeasList<ProcessInstance> getTimeOutProcessInstances() throws WorkflowException {
     try {
       JdbcSqlQuery query = JdbcSqlQuery
-          .createSelect("instanceid")
+          .select("instanceid")
           .from("SB_Workflow_ActiveState")
           .where("timeoutDate < ? ", new Timestamp((new Date()).getTime()));
       List<String> ids = query.execute(row -> String.valueOf(row.getInt(1)));

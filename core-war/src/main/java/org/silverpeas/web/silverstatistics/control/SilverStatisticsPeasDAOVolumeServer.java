@@ -54,7 +54,7 @@ class SilverStatisticsPeasDAOVolumeServer {
    */
   static Collection<String[]> getStatsVolumeServer() throws SQLException {
     return JdbcSqlQuery
-        .createSelect("dateStat, fileDir, sizeDir")
+        .select("dateStat, fileDir, sizeDir")
         .from("SB_Stat_SizeDirCumul")
         .orderBy("dateStat")
         .execute(r -> {

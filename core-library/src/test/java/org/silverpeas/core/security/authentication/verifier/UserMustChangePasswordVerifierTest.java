@@ -41,17 +41,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 15/02/13
  */
 @EnableSilverTestEnv
-public class UserMustChangePasswordVerifierTest {
+class UserMustChangePasswordVerifierTest {
 
   private static final int MAX_CONNECTIONS_FORCING = 8;
   private static final int MAX_CONNECTIONS_PROPOSING = 5;
 
   @Test
-  public void verifierNotActivated() throws AuthenticationException {
+  void verifierNotActivated() throws AuthenticationException {
     UserDetail user = createUser(0);
 
     UserMustChangePasswordVerifier verifier = createVerifierInstance(user, false, 0, 0);
@@ -68,7 +68,7 @@ public class UserMustChangePasswordVerifierTest {
   }
 
   @Test
-  public void verifyFromFirstUserConnectionWithoutProposing() throws AuthenticationException {
+  void verifyFromFirstUserConnectionWithoutProposing() throws AuthenticationException {
     UserDetail user = createUser(0);
     UserMustChangePasswordVerifier verifier =
         createVerifierInstance(user, false, MAX_CONNECTIONS_FORCING, 0);
@@ -89,7 +89,7 @@ public class UserMustChangePasswordVerifierTest {
   }
 
   @Test
-  public void verifyFromFirstUserConnectionWithProposing() throws AuthenticationException {
+  void verifyFromFirstUserConnectionWithProposing() throws AuthenticationException {
     UserDetail user = createUser(0);
     UserMustChangePasswordVerifier verifier =
         createVerifierInstance(user, false, MAX_CONNECTIONS_FORCING, MAX_CONNECTIONS_PROPOSING);
@@ -117,7 +117,7 @@ public class UserMustChangePasswordVerifierTest {
   }
 
   @Test
-  public void verifyUserMustChangePasswordOnFirstLogin() {
+  void verifyUserMustChangePasswordOnFirstLogin() {
     Assertions.assertThrows(AuthenticationPasswordMustBeChangedOnFirstLogin.class, () -> {
       UserDetail user = createUser(0);
       user.setLastLoginDate(null);
@@ -127,7 +127,7 @@ public class UserMustChangePasswordVerifierTest {
   }
 
   @Test
-  public void verifyUserMustChangePasswordOnFirstLoginButNotTheFirstUserLogin()
+  void verifyUserMustChangePasswordOnFirstLoginButNotTheFirstUserLogin()
       throws AuthenticationException {
     UserDetail user = createUser(0);
     user.setLastLoginDate(new Date());
@@ -135,13 +135,6 @@ public class UserMustChangePasswordVerifierTest {
     verifier.verify();
   }
 
-  /**
-   * Gets a new verifier instance.
-   * @param user
-   * @param nbSuccessfulUserConnectionsBeforeForcingPasswordChange
-   * @param nbSuccessfulUserConnectionsBeforeProposingToChangePassword
-   * @return
-   */
   private UserMustChangePasswordVerifier createVerifierInstance(UserDetail user,
       boolean userMustChangePasswordOnFirstLogin,
       int nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
@@ -154,11 +147,6 @@ public class UserMustChangePasswordVerifierTest {
     return verifier;
   }
 
-  /**
-   * Create a UserDetail
-   * @param withXSuccessfulConnections
-   * @return
-   */
   private UserDetail createUser(int withXSuccessfulConnections) {
     UserDetail user = new UserDetail();
     user.setId("0");
@@ -169,12 +157,8 @@ public class UserMustChangePasswordVerifierTest {
   /**
    * Wrapper for tests.
    */
-  private class UserMustChangePasswordVerifierForTest extends UserMustChangePasswordVerifier {
+  private static class UserMustChangePasswordVerifierForTest extends UserMustChangePasswordVerifier {
 
-    /**
-     * Default constructor.
-     * @param user
-     */
     protected UserMustChangePasswordVerifierForTest(final UserDetail user) {
       super(user);
     }

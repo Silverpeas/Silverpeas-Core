@@ -56,7 +56,7 @@ public class CalendarIntegrityProcessor implements Initialization {
     protected void process() {
       try {
         final List<String> componentInstanceIdsToClear = JdbcSqlQuery
-            .createSelect("distinct c.instanceid")
+            .select("distinct c.instanceid")
             .from("st_user u")
             .join("sb_cal_calendar c").on("c.instanceid = " + COMPONENT_INSTANCE_FROM_USER)
             .where("u.state = ?", UserState.DELETED.name())

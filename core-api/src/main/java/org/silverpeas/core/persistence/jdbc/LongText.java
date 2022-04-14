@@ -82,7 +82,7 @@ public class LongText {
   public static String getLongText(int longTextId) {
     try {
       final StringBuilder content = new StringBuilder();
-      JdbcSqlQuery.createSelect("bodyContent from ST_LongText")
+      JdbcSqlQuery.select("bodyContent from ST_LongText")
           .where("id = ?", longTextId)
           .addSqlPart("order by orderNum")
           .executeUnique(row -> {
@@ -107,7 +107,7 @@ public class LongText {
       final Mutable<Integer> previousId = Mutable.empty();
       final StringBuilder content = new StringBuilder();
       final Map<Integer, String> result = new HashMap<>();
-      JdbcSqlQuery.createSelect("id, bodyContent from ST_LongText")
+      JdbcSqlQuery.select("id, bodyContent from ST_LongText")
           .where("id").in(longTextIds)
           .addSqlPart("order by id, orderNum")
           .execute(row -> {
@@ -129,7 +129,7 @@ public class LongText {
 
   public static void removeLongText(int longTextId) {
     try {
-      JdbcSqlQuery.createDeleteFor("ST_LongText").where("id = ?", longTextId).execute();
+      JdbcSqlQuery.deleteFrom("ST_LongText").where("id = ?", longTextId).execute();
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
     }

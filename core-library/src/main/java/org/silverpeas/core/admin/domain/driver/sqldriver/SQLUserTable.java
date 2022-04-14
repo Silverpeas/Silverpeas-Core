@@ -256,7 +256,7 @@ public class SQLUserTable {
       throws AdminException {
     try {
       return JdbcSqlQuery.streamBySplittingOn(userIds, idBatch ->
-              JdbcSqlQuery.createSelect(getColumns())
+              JdbcSqlQuery.select(getColumns())
                   .from(drvSettings.getUserTableName())
                   .where("id").in(idBatch)
                   .executeWith(c, this::fetchUser))

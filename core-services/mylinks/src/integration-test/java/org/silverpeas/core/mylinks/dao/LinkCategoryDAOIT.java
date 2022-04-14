@@ -231,14 +231,14 @@ public class LinkCategoryDAOIT {
   }
 
   private List<Integer> getAllLinkIds() throws SQLException {
-    return JdbcSqlQuery.createSelect("linkid")
+    return JdbcSqlQuery.select("linkid")
         .from("SB_MyLinks_Link")
         .orderBy("linkid")
         .execute(r -> r.getInt(1));
   }
 
   private List<Integer> getAllCategoryIds() throws SQLException {
-    return JdbcSqlQuery.createSelect("catid")
+    return JdbcSqlQuery.select("catid")
         .from("SB_MyLinks_Cat")
         .orderBy("catid")
         .execute(r -> r.getInt(1));

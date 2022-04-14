@@ -226,10 +226,11 @@ public class PersonalizationRepositoryIT {
 
   private UserPreferences actualUserPreferencesForUserId(String userId) {
     try {
-      return JdbcSqlQuery.createSelect(
+      return JdbcSqlQuery.select(
           "id, languages, zoneId, look, personalWSpace, thesaurusStatus, dragAndDropStatus, " +
-              "webdavEditingStatus, menuDisplay FROM personalization where " +
-              "id = ?", userId).executeUnique(
+              "webdavEditingStatus, menuDisplay")
+          .from("personalization")
+          .where("id = ?", userId).executeUnique(
           row -> new UserPreferences(row.getString(1), row.getString(2),
               ZoneId.of(row.getString(3)), row.getString(4), row.getString(5), row.getBoolean(6),
               row.getBoolean(7), row.getBoolean(8), UserMenuDisplay.valueOf(row.getString(9))));

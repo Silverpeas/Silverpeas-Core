@@ -146,7 +146,7 @@ public class SubscriptionDao {
   public void remove(Connection con, Subscription subscription) throws SQLException {
     final SubscriptionSubscriber subscriber = subscription.getSubscriber();
     final SubscriptionResource resource = subscription.getResource();
-    JdbcSqlQuery.createDeleteFor(SUBSCRIBE_TABLE)
+    JdbcSqlQuery.deleteFrom(SUBSCRIBE_TABLE)
         .where(SUBSCRIBER_ID_CLAUSE, subscriber.getId())
         .and(SUBSCRIBER_TYPE_CLAUSE, subscriber.getType().getName())
         .and(SUBSCRIPTION_METHOD_CLAUSE, subscription.getSubscriptionMethod().getName())
@@ -183,7 +183,7 @@ public class SubscriptionDao {
    *
    */
   public void removeByResource(Connection con, SubscriptionResource resource) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(SUBSCRIBE_TABLE)
+    JdbcSqlQuery.deleteFrom(SUBSCRIBE_TABLE)
         .where(RESOURCE_ID_CLAUSE, resource.getId())
         .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())
         .and(INSTANCE_ID_CLAUSE, resource.getInstanceId())
@@ -208,7 +208,8 @@ public class SubscriptionDao {
   public boolean existsSubscription(Connection con, Subscription subscription) throws SQLException {
     final SubscriptionSubscriber subscriber = subscription.getSubscriber();
     final SubscriptionResource resource = subscription.getResource();
-    return JdbcSqlQuery.createCountFor(SUBSCRIBE_TABLE)
+    return JdbcSqlQuery.countAll()
+        .from(SUBSCRIBE_TABLE)
         .where(SUBSCRIBER_ID_CLAUSE, subscriber.getId())
         .and(SUBSCRIBER_TYPE_CLAUSE, subscriber.getType().getName())
         .and(SUBSCRIPTION_METHOD_CLAUSE, subscription.getSubscriptionMethod().getName())
@@ -278,7 +279,7 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect(SUBSCRIBE_COLUMNS)
+    JdbcSqlQuery query = JdbcSqlQuery.select(SUBSCRIBE_COLUMNS)
         .from(SUBSCRIBE_TABLE)
         .where(RESOURCE_ID_CLAUSE, resource.getId())
         .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName());
@@ -302,7 +303,7 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsBySubscriberAndResource(Connection con,
       SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
-    return new SubscriptionList(JdbcSqlQuery.createSelect(SUBSCRIBE_COLUMNS)
+    return new SubscriptionList(JdbcSqlQuery.select(SUBSCRIBE_COLUMNS)
         .from(SUBSCRIBE_TABLE)
         .where(SUBSCRIBER_ID_CLAUSE, subscriber.getId())
         .and(SUBSCRIBER_TYPE_CLAUSE, subscriber.getType().getName())
@@ -355,7 +356,7 @@ public class SubscriptionDao {
    */
   private void findSubscribers(Connection con, SubscriptionResource resource,
       Collection<SubscriptionSubscriber> result, SubscriptionMethod method) throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect("subscriberId, subscriberType")
+    JdbcSqlQuery query = JdbcSqlQuery.select("subscriberId, subscriberType")
         .from(SUBSCRIBE_TABLE)
         .where(RESOURCE_ID_CLAUSE, resource.getId())
         .and(RESOURCE_TYPE_CLAUSE, resource.getType().getName())

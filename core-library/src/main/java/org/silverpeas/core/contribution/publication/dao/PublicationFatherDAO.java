@@ -70,10 +70,10 @@ public class PublicationFatherDAO {
    * @throws SQLException if an error occurs while requesting the data source.
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME).where("pubId in (" +
-        JdbcSqlQuery.createSelect(PUB_ID).from(PublicationDAO.PUBLICATION_TABLE_NAME)
+    JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME).where("pubId in (" +
+        JdbcSqlQuery.select(PUB_ID).from(PublicationDAO.PUBLICATION_TABLE_NAME)
             .where(INSTANCE_ID_SET).getSqlQuery() + ")", componentInstanceId).execute();
-    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+    JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME)
         .where(INSTANCE_ID_SET, componentInstanceId).execute();
   }
 
@@ -88,13 +88,13 @@ public class PublicationFatherDAO {
    */
   public static void addFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    JdbcSqlQuery.createInsertFor(PUBLICATION_FATHER_TABLE_NAME)
-        .addInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
-        .addInsertParam(NODE_ID, Integer.parseInt(fatherPK.getId()))
-        .addInsertParam(INSTANCE_ID, pubPK.getInstanceId())
-        .addInsertParam(ALIAS_USER_ID, null)
-        .addInsertParam(ALIAS_DATE, null)
-        .addInsertParam(PUB_ORDER, 0)
+    JdbcSqlQuery.insertInto(PUBLICATION_FATHER_TABLE_NAME)
+        .withInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
+        .withInsertParam(NODE_ID, Integer.parseInt(fatherPK.getId()))
+        .withInsertParam(INSTANCE_ID, pubPK.getInstanceId())
+        .withInsertParam(ALIAS_USER_ID, null)
+        .withInsertParam(ALIAS_DATE, null)
+        .withInsertParam(PUB_ORDER, 0)
         .executeWith(con);
   }
 
@@ -109,8 +109,8 @@ public class PublicationFatherDAO {
    */
   public static void updateOrder(Connection con, PublicationPK pubPK, NodePK fatherPK, int order)
       throws SQLException {
-    JdbcSqlQuery.createUpdateFor(PUBLICATION_FATHER_TABLE_NAME)
-        .addUpdateParam(PUB_ORDER, order)
+    JdbcSqlQuery.update(PUBLICATION_FATHER_TABLE_NAME)
+        .withUpdateParam(PUB_ORDER, order)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
         .and(INSTANCE_ID_SET, pubPK.getInstanceId())
@@ -124,8 +124,8 @@ public class PublicationFatherDAO {
    * @throws SQLException if an error occurs while requesting the data source.
    */
   public static void resetOrder(Connection con, NodePK fatherPK) throws SQLException {
-    JdbcSqlQuery.createUpdateFor(PUBLICATION_FATHER_TABLE_NAME)
-        .addUpdateParam(PUB_ORDER, 0)
+    JdbcSqlQuery.update(PUBLICATION_FATHER_TABLE_NAME)
+        .withUpdateParam(PUB_ORDER, 0)
         .where(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
         .and(INSTANCE_ID_SET, fatherPK.getInstanceId())
         .executeWith(con);
@@ -150,13 +150,13 @@ public class PublicationFatherDAO {
         alias.getUserId() != null ? alias.getUserId() : User.getCurrentRequester().getId();
     final Date date = alias.getDate() != null ? alias.getDate() : new Date();
 
-     JdbcSqlQuery.createInsertFor(PUBLICATION_FATHER_TABLE_NAME)
-         .addInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
-         .addInsertParam(NODE_ID, Integer.parseInt(location.getId()))
-         .addInsertParam(INSTANCE_ID, location.getInstanceId())
-         .addInsertParam(ALIAS_USER_ID, Integer.parseInt(userId))
-         .addInsertParam(ALIAS_DATE, Long.toString(date.getTime()))
-         .addInsertParam(PUB_ORDER, location.getPubOrder())
+     JdbcSqlQuery.insertInto(PUBLICATION_FATHER_TABLE_NAME)
+         .withInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
+         .withInsertParam(NODE_ID, Integer.parseInt(location.getId()))
+         .withInsertParam(INSTANCE_ID, location.getInstanceId())
+         .withInsertParam(ALIAS_USER_ID, Integer.parseInt(userId))
+         .withInsertParam(ALIAS_DATE, Long.toString(date.getTime()))
+         .withInsertParam(PUB_ORDER, location.getPubOrder())
          .executeWith(con);
   }
 
@@ -176,7 +176,7 @@ public class PublicationFatherDAO {
           "Location " + location.getId() + " isn't an alias for publication " + pubPK.getId());
     }
 
-    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+    JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(NODE_ID_SET, Integer.parseInt(location.getId()))
         .and(INSTANCE_ID_SET, location.getInstanceId())
@@ -198,7 +198,7 @@ public class PublicationFatherDAO {
   public static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
       Collection<String> pubIds) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, result) -> {
-      final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS + ", " + PUB_ID)
+      final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS + ", " + PUB_ID)
           .from(PUBLICATION_FATHER_TABLE_NAME)
           .where(PUB_ID).in(pubIdBatch.stream().map(Integer::parseInt).collect(Collectors.toList()));
       query.executeWith(con, r -> {
@@ -217,7 +217,7 @@ public class PublicationFatherDAO {
    * @throws SQLException if an error occurs while executing the SQL request.
    */
   public static List<Location> getLocations(Connection con, PublicationPK pubPK) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()));
     return findLocations(con, query);
@@ -233,7 +233,7 @@ public class PublicationFatherDAO {
    */
   public static List<Location> getLocations(Connection con, PublicationPK pubPK, String compoId)
       throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(INSTANCE_ID_SET, compoId);
@@ -270,7 +270,7 @@ public class PublicationFatherDAO {
    * @throws SQLException if an error occurs while requesting the data source.
    */
   public static Location getMainLocation(Connection con, PublicationPK pubPK) throws SQLException {
-    return JdbcSqlQuery.createSelect("nodeId, instanceId, pubOrder")
+    return JdbcSqlQuery.select("nodeId, instanceId, pubOrder")
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(INSTANCE_ID_SET, pubPK.getInstanceId())
@@ -313,7 +313,7 @@ public class PublicationFatherDAO {
 
   private static void removeLink(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+    JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
         .executeWith(con);
@@ -336,7 +336,7 @@ public class PublicationFatherDAO {
    */
   public static void removeAllFathers(Connection con, PublicationPK pubPK)
       throws SQLException {
-    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+    JdbcSqlQuery.deleteFrom(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .executeWith(con);
   }
@@ -353,7 +353,7 @@ public class PublicationFatherDAO {
    */
   public static List<NodePK> getAllFatherPKInSamePublicationComponentInstance(Connection con,
       PublicationPK pubPK) throws SQLException {
-    return JdbcSqlQuery.createSelect(NODE_ID).from(PUBLICATION_FATHER_TABLE_NAME)
+    return JdbcSqlQuery.select(NODE_ID).from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(INSTANCE_ID_SET, pubPK.getInstanceId())
         .executeWith(con, row -> {
@@ -373,7 +373,7 @@ public class PublicationFatherDAO {
   public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-    return JdbcSqlQuery.createSelect("P.pubId, P.instanceId")
+    return JdbcSqlQuery.select("P.pubId, P.instanceId")
         .from(PUBLICATION_FATHER_TABLE_NAME + " F", pubPK.getTableName() + " P")
         .where("F.instanceId = ?", fatherPK.getInstanceId())
         .and("F.nodeId = ?", Integer.parseInt(fatherPK.getId()))
@@ -394,7 +394,7 @@ public class PublicationFatherDAO {
    */
   public static List<Location> getAliases(final Connection con, final PublicationPK pubPK)
       throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .andNotNull(ALIAS_DATE)

@@ -27,8 +27,6 @@
 <%@page import="org.silverpeas.core.admin.user.model.User" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
-<%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
 <%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
@@ -37,6 +35,8 @@
 <%@ page import="org.silverpeas.core.web.authentication.credentials.RegistrationSettings" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil" %>
+<%@ page import="org.silverpeas.core.security.authentication.Authentication" %>
+<%@ page import="org.silverpeas.core.security.authentication.AuthDomain" %>
 
 <%
   response.setDateHeader("Expires", -1);
@@ -79,11 +79,11 @@
   boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
   boolean registrationPartActive = newRegistrationActive || facebookEnabled || linkedInEnabled;
 // Get a AuthenticationService object
-AuthenticationService lpAuth = AuthenticationServiceProvider.getService();
+Authentication lpAuth = Authentication.get();
 // list of domains
-List<Domain> listDomains = lpAuth.getAllDomains();
+List<AuthDomain> listDomains = lpAuth.getAllAuthDomains();
 pageContext.setAttribute("listDomains", listDomains);
-boolean multipleDomains = listDomains != null && listDomains.size() > 1;
+boolean multipleDomains = listDomains.size() > 1;
 pageContext.setAttribute("multipleDomains", multipleDomains);
 String submitClass = "submitWithOneDomain";
 if (multipleDomains) {

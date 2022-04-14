@@ -123,7 +123,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   public String getParameterValueByComponentAndParamName(final Integer componentId,
       final String paramName, final boolean ignoreCase) throws SQLException {
     final Mutable<String> result = Mutable.empty();
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("value")
+    final JdbcSqlQuery query = JdbcSqlQuery.select("value")
         .from(INSTANCE_DATA_TABLE)
         .where("componentId = ?", componentId);
     if (ignoreCase) {
@@ -150,7 +150,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     final Map<Integer, Map<String, String>> result = new HashMap<>(componentIds.size());
     JdbcSqlQuery.executeBySplittingOn(componentIds, (idBatch, ignore) -> {
       final JdbcSqlQuery query = JdbcSqlQuery
-          .createSelect("componentId,name,value")
+          .select("componentId,name,value")
           .from(INSTANCE_DATA_TABLE)
           .where("componentId").in(idBatch);
       if (isNotEmpty(paramNames)) {

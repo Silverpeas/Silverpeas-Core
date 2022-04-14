@@ -55,7 +55,7 @@ public class SeeAlsoDAO {
    * @throws SQLException
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(SEEALSO_TABLENAME)
+    JdbcSqlQuery.deleteFrom(SEEALSO_TABLENAME)
         .where("objectinstanceid = ?", componentInstanceId)
         .or("targetinstanceid = ?", componentInstanceId).execute();
   }
@@ -91,7 +91,7 @@ public class SeeAlsoDAO {
   }
 
   public static void deleteLink(String id) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(SEEALSO_TABLENAME).where("id = ?", Integer.parseInt(id)).execute();
+    JdbcSqlQuery.deleteFrom(SEEALSO_TABLENAME).where("id = ?", Integer.parseInt(id)).execute();
   }
 
   public static void deleteLinksByObjectId(Connection con, PublicationPK objectPK)

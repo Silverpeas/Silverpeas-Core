@@ -33,7 +33,7 @@ import org.silverpeas.core.notification.sse.SilverpeasServerEventContextManager;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatistics;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
@@ -83,8 +83,8 @@ class SilverpeasSessionOpenerTest {
     when(request.getSession()).thenReturn(session);
     when(request.getSession(false)).thenReturn(session);
     when(session.getId()).thenReturn(UUID.randomUUID().toString());
-    when(session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED)).thenReturn("true");
-    when(session.getAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE)).thenReturn(true);
+    when(session.getAttribute(AuthenticationProtocol.PASSWORD_CHANGE_ALLOWED)).thenReturn("true");
+    when(session.getAttribute(AuthenticationProtocol.PASSWORD_IS_ABOUT_TO_EXPIRE)).thenReturn(true);
 
     httpRequest = HttpRequest.decorate(request);
   }

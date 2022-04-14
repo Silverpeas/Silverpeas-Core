@@ -23,23 +23,23 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.security.authentication.AuthDomain;
+import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 public class ForgotPasswordHandler extends FunctionHandler {
 
-  private AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-  private ForgottenPasswordMailManager forgottenPasswordMailManager =
+  private final Authentication authenticator = Authentication.get();
+  private final ForgottenPasswordMailManager forgottenPasswordMailManager =
       new ForgottenPasswordMailManager();
 
   @Override
@@ -47,26 +47,26 @@ public class ForgotPasswordHandler extends FunctionHandler {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
     String userId;
+
+    AuthDomain domain;
+    String domainName = "";
     try {
+      domain = authenticator.getAllAuthDomains().stream()
+          .filter(d -> d.getId().equals(domainId))
+          .findFirst()
+          .orElseThrow();
+      domainName = domain.getName();
       userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
       request.setAttribute("userLanguage", User.getById(userId).getUserPreferences().getLanguage());
-    } catch (AdminException e) {
+    } catch (NoSuchElementException | AdminException e) {
       // Login incorrect.
       request.setAttribute("login", login);
-
-      List<Domain> domains = authenticator.getAllDomains();
-      String domain = "";
-      for (Domain aDomain: domains) {
-        if (aDomain.getId().equals(domainId)) {
-          domain = aDomain.getName();
-        }
-      }
-      request.setAttribute("domain", domain);
+      request.setAttribute("domain", domainName);
       return getGeneral().getString("forgottenPasswordInvalidLogin");
     }
 
     try {
-      if (authenticator.isPasswordChangeAllowed(domainId)) {
+      if (domain.getCredentialsChangePolicy().canPasswordBeChanged()) {
         return sendUserResetMail(request, login, domainId, userId);
       } else {
         // Affichage d'un message d'information invitant à joindre l'administrateur système
@@ -97,7 +97,8 @@ public class ForgotPasswordHandler extends FunctionHandler {
   private String getAuthenticationKey(final String login, final String domainId)
       throws ForgottenPasswordException {
     try {
-      return authenticator.getAuthenticationKey(login, domainId);
+      return authenticator.getAuthToken(
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
     } catch (AuthenticationException e) {
       throw new ForgottenPasswordException(
           "CredentialsServlet.forgotPasswordHandler.doAction()",

@@ -97,7 +97,7 @@ public class SpaceRoleDAO {
   }
 
   private JdbcSqlQuery getQueryCommons(final String joins, final String clauses) {
-    return JdbcSqlQuery.createSelect("DISTINCT " + SPACEUSERROLE_COLUMNS)
+    return JdbcSqlQuery.select("DISTINCT " + SPACEUSERROLE_COLUMNS)
         .addSqlPart(joins)
         .addSqlPart(clauses);
   }

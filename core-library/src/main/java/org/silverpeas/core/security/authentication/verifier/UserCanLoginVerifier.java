@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
@@ -36,19 +37,15 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 
 /**
- * Class that provides tools to verify if the user can login in relation to its account state.
- * User: Yohann Chastagnier
+ * Class that provides tools to verify if the user can connect in relation to its account state.
+ * @author Yohann Chastagnier
  * Date: 02/02/13
  */
 public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
-  public static final String ERROR_INCORRECT_LOGIN_PWD = "1";
-  public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "6";
-  public static final String ERROR_USER_ACCOUNT_BLOCKED = "Error_UserAccountBlocked";
-  public static final String ERROR_USER_ACCOUNT_DEACTIVATED = "Error_UserAccountDeactivated";
 
   /**
    * Default constructor.
-   * @param user
+   * @param user the user behind a connexion attempt.
    */
   protected UserCanLoginVerifier(final UserDetail user) {
     super(user);
@@ -56,7 +53,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
 
   /**
    * Gets the error destination.
-   * @return
+   * @return the relative path of the error web page.
    */
   public String getErrorDestination() {
     String errorDest = "/Login?ErrorCode=";
@@ -70,28 +67,28 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
 
     if (getUser() == null || StringUtil.isNotDefined(getUser().getId())) {
       if(tabDomains != null && tabDomains.length > 1) {
-        errorDest += ERROR_INCORRECT_LOGIN_PWD_DOMAIN;
+        errorDest += AuthenticationResponse.Status.BAD_LOGIN_PASSWORD_DOMAIN;
       } else {
-        errorDest += ERROR_INCORRECT_LOGIN_PWD;
+        errorDest += AuthenticationResponse.Status.BAD_LOGIN_PASSWORD;
       }
-    } else if (!isUserStateValid()) {
+    } else if (isUserStateNotValid()) {
       if (getUser().isDeactivatedState()) {
-        errorDest += ERROR_USER_ACCOUNT_DEACTIVATED;
+        errorDest += AuthenticationResponse.Status.USER_ACCOUNT_DEACTIVATED;
       } else {
-        errorDest += ERROR_USER_ACCOUNT_BLOCKED;
+        errorDest += AuthenticationResponse.Status.USER_ACCOUNT_BLOCKED;
       }
     }
     return errorDest;
   }
 
   /**
-   * Verify if the user can login.
+   * Verify if the user can log in.
    */
   public void verify() throws AuthenticationException {
     if(getUser() == null) {
       // Authentication failed
       throw new AuthenticationBadCredentialException("No user with such credential");
-    } else if (!isUserStateValid()) {
+    } else if (isUserStateNotValid()) {
       // For now, if user is not valid (BLOCKED, DEACTIVATED, EXPIRED, REMOVED, DELETED, UNKNOWN)
       // he is considered as BLOCKED.
       if (getUser().isDeactivatedState()) {
@@ -107,10 +104,10 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
   /**
    * Is the specified user has a valid state?
    * A state is valid when the user can open a session in silverpeas, in other words, whether its
-   * account is neither deleted or blocked or expired.
+   * account is neither deleted nor blocked nor expired.
    * @return true if the user can open a session in Silverpeas, false otherwise.
    */
-  private boolean isUserStateValid() {
-    return getUser() != null && getUser().isValidState();
+  private boolean isUserStateNotValid() {
+    return getUser() == null || !getUser().isValidState();
   }
 }

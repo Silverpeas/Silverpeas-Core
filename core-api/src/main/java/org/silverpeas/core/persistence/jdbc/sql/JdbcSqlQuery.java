@@ -29,6 +29,7 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -120,32 +121,29 @@ public class JdbcSqlQuery {
   /**
    * Creates a new instance of the JDBC SQL query to select some fields of the items to find
    * according to the specified SQL part.
-   * @param sqlPart the sql part to append.
-   * @param paramValue the value of parameters included into the given sqlPart.
+   * @param columns the fields to select in the SQL query.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createSelect(String sqlPart, Object... paramValue) {
-    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
+  public static JdbcSqlQuery select(String columns) {
+    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(columns);
   }
 
   /**
-   * Creates a new instance of the JDBC SQL query to select some fields of the items to find
-   * according to the specified SQL part.
-   * @param sqlPart the sql part to append.
-   * @param paramValue the value of parameters included into the given sqlPart.
+   * Creates a new instance of the SQL query to count all the items that are in the specified
+   * table.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createSelect(String sqlPart, Collection<?> paramValue) {
-    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
+  public static JdbcSqlQuery countAll() {
+    return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*)");
   }
 
   /**
-   * Creates a new instance of the SQL query to count the items that are in the specified table.
-   * @param tableName the table name aimed by the count.
+   * Creates a new instance of the SQL query to count all the items under the given name of counter.
+   * @param counterName the name of the counter containing the counted number of items.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createCountFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*) FROM").addSqlPart(tableName);
+  public static JdbcSqlQuery countAllAs(@Nonnull String counterName) {
+    return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*) AS").addSqlPart(counterName);
   }
 
   /**
@@ -162,7 +160,7 @@ public class JdbcSqlQuery {
    * @param tableName the table name aimed by the insert.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createInsertFor(String tableName) {
+  public static JdbcSqlQuery insertInto(String tableName) {
     return new JdbcSqlQuery().addSqlPart("INSERT INTO").addSqlPart(tableName).addSqlPart(" (");
   }
 
@@ -171,7 +169,7 @@ public class JdbcSqlQuery {
    * @param tableName the table name aimed by the update.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createUpdateFor(String tableName) {
+  public static JdbcSqlQuery update(String tableName) {
     return new JdbcSqlQuery().addSqlPart("UPDATE ").addSqlPart(tableName).addSqlPart(" SET");
   }
 
@@ -180,7 +178,7 @@ public class JdbcSqlQuery {
    * @param tableName the table name aimed by the delete.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createDeleteFor(String tableName) {
+  public static JdbcSqlQuery deleteFrom(String tableName) {
     return new JdbcSqlQuery().addSqlPart("DELETE FROM").addSqlPart(tableName);
   }
 
@@ -189,7 +187,7 @@ public class JdbcSqlQuery {
    * @param tableName the table name aimed by the drop.
    * @return the instance of the new sql query.
    */
-  public static JdbcSqlQuery createDropFor(String tableName) {
+  public static JdbcSqlQuery dropTable(String tableName) {
     return new JdbcSqlQuery().addSqlPart("DROP TABLE").addSqlPart(tableName);
   }
 
@@ -303,7 +301,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery from(String... tableNames) {
-    return addSqlPart("FROM " + Arrays.stream(tableNames).collect(Collectors.joining(",")));
+    return addSqlPart("FROM " + String.join(",", tableNames));
   }
 
   /**
@@ -387,15 +385,14 @@ public class JdbcSqlQuery {
   }
 
   /**
-   * Orders the result of the query by the specified statement. If the statement isn't defined,
+   * Orders the result of the query by the specified columns. If the statement isn't defined,
    * then no ordering will be done.
-   * @param sqlPart the SQL part that contains the statement over which the result of the query
-   * should be ordered.
+   * @param fields the fields by which the query results should be ordered.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  public JdbcSqlQuery orderBy(String sqlPart) {
-    if (StringUtil.isDefined(sqlPart)) {
-      return addSqlPart("ORDER BY " + sqlPart);
+  public JdbcSqlQuery orderBy(String... fields) {
+    if (fields != null && fields.length > 0) {
+      return addSqlPart("ORDER BY " + String.join(",", fields));
     }
     return this;
   }
@@ -403,13 +400,12 @@ public class JdbcSqlQuery {
   /**
    * Group the result of the query by the specified columns. If the statement isn't defined,
    * then no group by will be done.
-   * @param sqlPart the SQL part that contains the statement over which the result of the query
-   * should be grouped.
+   * @param fields the fields by which the query results should be grouped.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  public JdbcSqlQuery groupBy(String sqlPart) {
-    if (StringUtil.isDefined(sqlPart)) {
-      return addSqlPart("GROUP BY " + sqlPart);
+  public JdbcSqlQuery groupBy(String... fields) {
+    if (fields != null && fields.length > 0) {
+      return addSqlPart("GROUP BY " + String.join(",", fields));
     }
     return this;
   }
@@ -478,7 +474,7 @@ public class JdbcSqlQuery {
         sqlQuery.append(" ");
       }
     }
-    sqlQuery.append(sqlPart.trim().replaceAll("[ ]+", " "));
+    sqlQuery.append(sqlPart.trim().replaceAll(" +", " "));
     return this;
   }
 
@@ -664,8 +660,8 @@ public class JdbcSqlQuery {
    * @param paramValue the value of the parameter.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  public JdbcSqlQuery addInsertParam(String paramName, Object paramValue) {
-    return addSaveParam(paramName, paramValue, true);
+  public JdbcSqlQuery withInsertParam(String paramName, Object paramValue) {
+    return withSaveParam(paramName, paramValue, true);
   }
 
   /**
@@ -674,8 +670,8 @@ public class JdbcSqlQuery {
    * @param paramValue the value of the parameter.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  public JdbcSqlQuery addUpdateParam(String paramName, Object paramValue) {
-    return addSaveParam(paramName, paramValue, false);
+  public JdbcSqlQuery withUpdateParam(String paramName, Object paramValue) {
+    return withSaveParam(paramName, paramValue, false);
   }
 
   /**
@@ -685,7 +681,7 @@ public class JdbcSqlQuery {
    * @param isInsert indicates if the SQL built is an INSERT or an UPDATE one.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  public JdbcSqlQuery addSaveParam(String paramName, Object paramValue, final boolean isInsert) {
+  public JdbcSqlQuery withSaveParam(String paramName, Object paramValue, final boolean isInsert) {
     if (!allParameters.isEmpty()) {
       sqlQuery.append(", ");
     } else if (!isInsert) {
