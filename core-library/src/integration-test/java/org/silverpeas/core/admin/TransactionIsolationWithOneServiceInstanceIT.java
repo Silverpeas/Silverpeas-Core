@@ -434,6 +434,6 @@ public class TransactionIsolationWithOneServiceInstanceIT
    */
   private List<SQLRequester.ResultLine> getUserTableLines() throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from st_user").addSqlPart("order by id"));
+        JdbcSqlQuery.select("* from st_user").addSqlPart("order by id"));
   }
 }

@@ -71,7 +71,7 @@ public class ResetPasswordHandler extends FunctionHandler {
 
   private ForgottenPasswordMailParameters initializeParameters(final String userId)
       throws ForgottenPasswordException {
-    ForgottenPasswordMailParameters parameters = null;
+    ForgottenPasswordMailParameters parameters;
     try {
       parameters = getMailParameters(userId);
     } catch (AdminException e) {

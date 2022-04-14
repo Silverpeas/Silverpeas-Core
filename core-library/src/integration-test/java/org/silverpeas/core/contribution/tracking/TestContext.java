@@ -134,7 +134,7 @@ public class TestContext {
    */
   public TrackingEventRecord getLastTrackingEventOn(String pubId) {
     try (Connection connection = DBUtil.openConnection()) {
-      List<TrackingEventRecord> results = JdbcSqlQuery.createSelect(
+      List<TrackingEventRecord> results = JdbcSqlQuery.select(
           "id, context, contrib_id, contrib_type, contrib_instanceId, action_type, action_date, " +
               "action_by")
           .from("SB_Contribution_Tracking")

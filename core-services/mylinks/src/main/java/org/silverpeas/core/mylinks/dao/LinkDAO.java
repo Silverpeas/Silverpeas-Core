@@ -72,7 +72,7 @@ public class LinkDAO {
   public void deleteComponentInstanceData(String componentInstanceId)
       throws SQLException {
     linkCategoryDAO.deleteComponentInstanceData(componentInstanceId);
-    JdbcSqlQuery.createDeleteFor(LINK_TABLE)
+    JdbcSqlQuery.deleteFrom(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, componentInstanceId)
         .or("url like ?", "%" + componentInstanceId)
         .execute();
@@ -91,7 +91,7 @@ public class LinkDAO {
    */
   protected List<Integer> getLinkIdsByComponentInstance(String componentInstanceId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(LINK_ID)
+    return JdbcSqlQuery.select(LINK_ID)
         .from(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, componentInstanceId)
         .or("url like ?", "%" + componentInstanceId)
@@ -105,7 +105,7 @@ public class LinkDAO {
    */
   public void deleteUserData(String userId) throws SQLException {
     linkCategoryDAO.deleteUserData(userId);
-    JdbcSqlQuery.createDeleteFor(LINK_TABLE)
+    JdbcSqlQuery.deleteFrom(LINK_TABLE)
         .where(USER_ID_CLAUSE, userId)
         .and("(instanceId IS NULL").or("instanceId = '')")
         .and("(objectId IS NULL").or("objectId = '')")
@@ -122,7 +122,7 @@ public class LinkDAO {
       throws SQLException {
     final Map<Integer, CategoryDetail> categoriesByLinkId =
         linkCategoryDAO.getAllCategoriesByLinkOfUser(userId);
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from(LINK_TABLE)
         .where(USER_ID_CLAUSE, userId)
         .and("(instanceId IS NULL").or("instanceId = '')")
@@ -138,7 +138,7 @@ public class LinkDAO {
    */
   public List<LinkDetail> getAllLinksByInstance(String instanceId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, instanceId)
         .execute(rs -> fetchLink(rs, emptyMap()));
@@ -153,7 +153,7 @@ public class LinkDAO {
    */
   public List<LinkDetail> getAllLinksByObject(String instanceId, String objectId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from(LINK_TABLE)
         .where(INSTANCE_ID_CLAUSE, instanceId)
         .and(OBJECT_ID_CLAUSE, objectId)
@@ -169,7 +169,7 @@ public class LinkDAO {
   public LinkDetail getLink(int linkId) throws SQLException {
     final Map<Integer, CategoryDetail> categoriesByLinkId =
         linkCategoryDAO.getAllCategoriesByLink(linkId);
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from(LINK_TABLE)
         .where(LINK_ID_CLAUSE, linkId)
         .executeUnique(rs -> fetchLink(rs, categoriesByLinkId));
@@ -185,7 +185,7 @@ public class LinkDAO {
     final LinkDetail linkToPersist = new LinkDetail(link);
     linkToPersist.setLinkId(DBUtil.getNextId(LINK_TABLE, LINK_ID));
     linkToPersist.setHasPosition(false);
-    final JdbcSqlQuery insertQuery = JdbcSqlQuery.createInsertFor(LINK_TABLE);
+    final JdbcSqlQuery insertQuery = JdbcSqlQuery.insertInto(LINK_TABLE);
     setupSaveQuery(insertQuery, linkToPersist, true).execute();
     linkCategoryDAO.saveByLink(linkToPersist);
     return linkToPersist;
@@ -199,7 +199,7 @@ public class LinkDAO {
    */
   public LinkDetail updateLink(LinkDetail link) throws SQLException {
     final LinkDetail linkToUpdate = new LinkDetail(link);
-    final JdbcSqlQuery updateQuery = JdbcSqlQuery.createUpdateFor(LINK_TABLE);
+    final JdbcSqlQuery updateQuery = JdbcSqlQuery.update(LINK_TABLE);
     setupSaveQuery(updateQuery, linkToUpdate, false).execute();
     linkCategoryDAO.saveByLink(linkToUpdate);
     return linkToUpdate;
@@ -212,7 +212,7 @@ public class LinkDAO {
    */
   public void deleteLink(String linkId) throws SQLException {
     linkCategoryDAO.deleteByLink(parseInt(linkId));
-    JdbcSqlQuery.createDeleteFor(LINK_TABLE)
+    JdbcSqlQuery.deleteFrom(LINK_TABLE)
         .where(LINK_ID_CLAUSE, parseInt(linkId))
         .execute();
   }
@@ -239,22 +239,22 @@ public class LinkDAO {
   private static JdbcSqlQuery setupSaveQuery(final JdbcSqlQuery saveQuery, final LinkDetail link,
       final boolean isInsert) {
     if (isInsert) {
-      saveQuery.addSaveParam(LINK_ID, link.getLinkId(), true);
+      saveQuery.withSaveParam(LINK_ID, link.getLinkId(), true);
     }
     final String name = StringUtil.truncate(link.getName(), 255);
     final String description = StringUtil.truncate(link.getDescription(), 255);
     final String url = StringUtil.truncate(link.getUrl(), 255);
     saveQuery
-        .addSaveParam("name", name, isInsert)
-        .addSaveParam("description", description, isInsert)
-        .addSaveParam("url", url, isInsert)
-        .addSaveParam("visible", link.isVisible() ? 1 : 0, isInsert)
-        .addSaveParam("popup", link.isPopup() ? 1 : 0, isInsert)
-        .addSaveParam("userId", link.getUserId(), isInsert)
-        .addSaveParam("instanceId", link.getInstanceId(), isInsert)
-        .addSaveParam("objectId", link.getObjectId(), isInsert);
+        .withSaveParam("name", name, isInsert)
+        .withSaveParam("description", description, isInsert)
+        .withSaveParam("url", url, isInsert)
+        .withSaveParam("visible", link.isVisible() ? 1 : 0, isInsert)
+        .withSaveParam("popup", link.isPopup() ? 1 : 0, isInsert)
+        .withSaveParam("userId", link.getUserId(), isInsert)
+        .withSaveParam("instanceId", link.getInstanceId(), isInsert)
+        .withSaveParam("objectId", link.getObjectId(), isInsert);
     if (link.hasPosition()) {
-      saveQuery.addSaveParam("position", link.getPosition(), isInsert);
+      saveQuery.withSaveParam("position", link.getPosition(), isInsert);
     }
     if (!isInsert) {
       saveQuery.where(LINK_ID_CLAUSE, link.getLinkId());

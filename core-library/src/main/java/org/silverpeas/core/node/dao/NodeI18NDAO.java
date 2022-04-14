@@ -65,8 +65,8 @@ public class NodeI18NDAO {
    * @throws SQLException
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(TABLENAME).where("nodeId in (" +
-        JdbcSqlQuery.createSelect("nodeId from sb_node_node").where("instanceId = ?")
+    JdbcSqlQuery.deleteFrom(TABLENAME).where("nodeId in (" +
+        JdbcSqlQuery.select("nodeId from sb_node_node").where("instanceId = ?")
             .getSqlQuery() + ")", componentInstanceId).execute();
   }
 
@@ -218,7 +218,7 @@ public class NodeI18NDAO {
       List<String> nodeIds) throws SQLException {
     List<Integer> localIds = nodeIds.stream().map(Integer::parseInt).collect(Collectors.toList());
     return JdbcSqlQuery.executeBySplittingOn(localIds, (idBatch, result) -> JdbcSqlQuery
-        .createSelect(FIELDS)
+        .select(FIELDS)
         .from(TABLENAME)
         .where("nodeId").in(idBatch)
         .executeWith(con, r -> {

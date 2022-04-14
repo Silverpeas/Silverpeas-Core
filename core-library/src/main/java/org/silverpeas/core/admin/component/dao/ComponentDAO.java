@@ -134,7 +134,7 @@ public class ComponentDAO {
 
   public static List<String> getAllActiveComponentIds() throws SQLException {
     return JdbcSqlQuery
-        .createSelect("componentName, id")
+        .select("componentName, id")
         .from("ST_ComponentInstance")
         .where("componentStatus IS NULL")
         .and("componentName").in(WAComponent.getAll().stream().map(WAComponent::getName).collect(Collectors.toList()))

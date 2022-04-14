@@ -771,7 +771,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       }
     };
     try {
-      JdbcSqlQuery.createSelect(ToDoDAO.COLUMNNAMES).from("CalendarToDo").execute(rs -> {
+      JdbcSqlQuery.select(ToDoDAO.COLUMNNAMES).from("CalendarToDo").execute(rs -> {
         final ToDoHeader todo = ToDoDAO.getToDoHeaderFromResultSet(rs);
         todos.add(todo);
         todoIds.add(todo.getId());

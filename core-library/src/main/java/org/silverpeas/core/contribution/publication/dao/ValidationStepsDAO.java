@@ -52,7 +52,7 @@ public class ValidationStepsDAO {
    * @throws SQLException
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(publicationValidationTableName)
+    JdbcSqlQuery.deleteFrom(publicationValidationTableName)
         .where("instanceId = ?", componentInstanceId).execute();
   }
 

@@ -266,7 +266,7 @@ public class RoleDAO {
 
   private JdbcSqlQuery getQueryCommons(final String joins, final String clauses,
       final Collection<String> objectIds, final ProfiledObjectType profiledObjectType) {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("DISTINCT " + USERROLE_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select("DISTINCT " + USERROLE_COLUMNS)
         .addSqlPart(joins)
         .addSqlPart(clauses);
     if (isNotEmpty(objectIds)) {

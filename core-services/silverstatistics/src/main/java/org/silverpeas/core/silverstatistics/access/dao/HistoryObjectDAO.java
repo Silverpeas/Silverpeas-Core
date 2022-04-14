@@ -156,7 +156,7 @@ public class HistoryObjectDAO {
    */
   public static SilverpeasList<HistoryByUser> findByUserByCriteria(Connection con,
       final HistoryCriteria criteria) throws SQLException  {
-    final JdbcSqlQuery sqlQuery = JdbcSqlQuery.createSelect(
+    final JdbcSqlQuery sqlQuery = JdbcSqlQuery.select(
         "userId, max(concat(dateStat, concat('T', heureStat))) as lastAccess, count(userId) as nbAccess");
     applySqlCriteria(sqlQuery, criteria);
     return sqlQuery
@@ -177,7 +177,7 @@ public class HistoryObjectDAO {
       final HistoryCriteria criteria)
       throws SQLException {
     final JdbcSqlQuery sqlQuery = JdbcSqlQuery
-        .createSelect("dateStat, heureStat, userId, resourceId, componentId");
+        .select("dateStat, heureStat, userId, resourceId, componentId");
     applySqlCriteria(sqlQuery, criteria);
     if (!criteria.getOrderByList().isEmpty()) {
       sqlQuery.orderBy(criteria.getOrderByList().stream()
@@ -310,7 +310,7 @@ public class HistoryObjectDAO {
     JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, ignore) ->
         JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignoreToo) ->
             JdbcSqlQuery.executeBySplittingOn(types, (typeBatch, ignoreAlsoToo) -> JdbcSqlQuery
-                .createSelect("resourceId, ComponentId, resourceType, count(*)")
+                .select("resourceId, ComponentId, resourceType, count(*)")
                 .from(HISTORY_TABLE_NAME)
                 .where(RESOURCE_ID).in(idBatch)
                 .and("ComponentId").in(instanceIdBatch)
@@ -365,7 +365,7 @@ public class HistoryObjectDAO {
         .collect(Collectors.toList());
     final List<String> result = new ArrayList<>(ids.size());
     JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, ignore) -> {
-      final JdbcSqlQuery sqlQuery = JdbcSqlQuery.createSelect(RESOURCE_ID)
+      final JdbcSqlQuery sqlQuery = JdbcSqlQuery.select(RESOURCE_ID)
           .from(HISTORY_TABLE_NAME)
           .where("ComponentId = ?", instanceId)
           .and("resourceType = ?", objectType)

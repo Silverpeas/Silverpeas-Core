@@ -84,7 +84,7 @@ public class AttendeeDAO {
   private static Map<String, List<Attendee>> getAttendees(Collection<String> ids, String columns,
       String table, String idLabel) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, result)-> JdbcSqlQuery
-        .createSelect(columns)
+        .select(columns)
         .from(table)
         .where(idLabel).in(idBatch.stream().map(Integer::parseInt).collect(Collectors.toList()))
         .execute(r ->  {
@@ -161,6 +161,6 @@ public class AttendeeDAO {
 
   private static void removeAttendees(String id, String table, String idLabel)
       throws SQLException {
-    JdbcSqlQuery.createDeleteFor(table).where(idLabel + " = ?", Integer.parseInt(id)).execute();
+    JdbcSqlQuery.deleteFrom(table).where(idLabel + " = ?", Integer.parseInt(id)).execute();
   }
 }

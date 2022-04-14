@@ -89,7 +89,7 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
   public Map<Integer, List<ComponentInstanceI18NRow>> getIndexedTranslations(final Connection con,
       final Collection<Integer> componentIds) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(componentIds,
-        (idBatch, result) -> JdbcSqlQuery.createSelect(COLUMNS).from(TABLENAME)
+        (idBatch, result) -> JdbcSqlQuery.select(COLUMNS).from(TABLENAME)
             .where(COMPONENT_ID_FIELD).in(idBatch).executeWith(con, r -> {
               final ComponentInstanceI18NRow translation = fetchTranslation(r);
               MapUtil.putAddList(result, translation.componentId, translation);

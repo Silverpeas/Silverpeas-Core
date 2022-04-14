@@ -109,16 +109,16 @@ public class JdbcSqlQueryUseIT {
 
     // save new person
     Transaction.performInOne(() -> {
-      long insertCount = JdbcSqlQuery.createInsertFor("test_persons")
-          .addInsertParam("id", id)
-          .addInsertParam("firstName", "Lucifer")
-          .addInsertParam("lastName", "Satan")
-          .addInsertParam("birthday", SQLDateTimeConstants.MIN_DATE)
-          .addInsertParam("createDate", new Timestamp(now.getTime()))
-          .addInsertParam("lastUpdateDate", new Timestamp(now.getTime()))
-          .addInsertParam("createdBy", "666")
-          .addInsertParam("lastUpdatedBy", "666")
-          .addInsertParam("version", 0L)
+      long insertCount = JdbcSqlQuery.insertInto("test_persons")
+          .withInsertParam("id", id)
+          .withInsertParam("firstName", "Lucifer")
+          .withInsertParam("lastName", "Satan")
+          .withInsertParam("birthday", SQLDateTimeConstants.MIN_DATE)
+          .withInsertParam("createDate", new Timestamp(now.getTime()))
+          .withInsertParam("lastUpdateDate", new Timestamp(now.getTime()))
+          .withInsertParam("createdBy", "666")
+          .withInsertParam("lastUpdatedBy", "666")
+          .withInsertParam("version", 0L)
           .execute();
       assertThat(insertCount, is(1L));
       return null;
@@ -140,7 +140,7 @@ public class JdbcSqlQueryUseIT {
 
   private void assertPersistedPerson(String id, Consumer<Map<String, Object>> assertion)
       throws SQLException {
-    JdbcSqlQuery.createSelect(
+    JdbcSqlQuery.select(
         "id, firstName, lastName, birthday, createDate, createdBy, lastUpdateDate, lastUpdatedBy," +
             " version").from("test_persons").where("id = ?", id).executeUnique(rs -> {
       Map<String, Object> personData = new HashMap<>();

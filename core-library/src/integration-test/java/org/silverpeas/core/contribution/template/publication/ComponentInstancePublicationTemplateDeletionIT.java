@@ -142,20 +142,20 @@ public class ComponentInstancePublicationTemplateDeletionIT {
 
   private List<String> getTemplates() throws Exception {
     return JdbcSqlQuery
-        .createSelect("templateid,externalid,templatename from sb_formtemplate_template")
+        .select("templateid,externalid,templatename from sb_formtemplate_template")
         .addSqlPart("order by templateid")
         .execute(row -> row.getInt(1) + " - " + row.getString(2) + " - " + row.getString(3));
   }
 
   private long getRecords() throws Exception {
-    return JdbcSqlQuery.createCountFor("sb_formtemplate_record").execute();
+    return JdbcSqlQuery.countAll().from("sb_formtemplate_record").execute();
   }
 
   private long getTemplateFields() throws Exception {
-    return JdbcSqlQuery.createCountFor("sb_formtemplate_templatefield").execute();
+    return JdbcSqlQuery.countAll().from("sb_formtemplate_templatefield").execute();
   }
 
   private long getTextFields() throws Exception {
-    return JdbcSqlQuery.createCountFor("sb_formtemplate_textfield").execute();
+    return JdbcSqlQuery.countAll().from("sb_formtemplate_textfield").execute();
   }
 }

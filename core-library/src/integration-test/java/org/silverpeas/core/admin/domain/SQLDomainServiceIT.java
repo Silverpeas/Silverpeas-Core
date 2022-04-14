@@ -57,7 +57,7 @@ import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createCountFor;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.countAll;
 
 /**
  * @author lbertin
@@ -283,11 +283,11 @@ public class SQLDomainServiceIT extends DataSetTest {
   }
 
   private void testTablesExistence(String name, boolean mustExists) throws SQLException {
-    boolean userTableFound = createCountFor("INFORMATION_SCHEMA.TABLES")
+    boolean userTableFound = countAll().from("INFORMATION_SCHEMA.TABLES")
         .where("lower(TABLE_NAME) = lower(?)", "domain" + name + "_User").execute() == 1;
-    boolean groupTableFound = createCountFor("INFORMATION_SCHEMA.TABLES")
+    boolean groupTableFound = countAll().from("INFORMATION_SCHEMA.TABLES")
         .where("lower(TABLE_NAME) = lower(?)", "domain" + name + "_Group").execute() == 1;
-    boolean groupUserRelTableFound = createCountFor("INFORMATION_SCHEMA.TABLES")
+    boolean groupUserRelTableFound = countAll().from("INFORMATION_SCHEMA.TABLES")
         .where("lower(TABLE_NAME) = lower(?)", "domain" + name + "_Group_User_Rel").execute() == 1;
 
     // Performs checks

@@ -25,8 +25,10 @@ package org.silverpeas.core.web.authentication;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.AuthenticationResponse;
+import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
@@ -72,9 +74,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = -8695946617361150513L;
   private static final String SSO_NON_EXISTING_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
-  private static final String TECHNICAL_ISSUE = "2";
-  private static final String INCORRECT_LOGIN_PWD = "1";
-  private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
   private static final String LOGIN_ERROR_PAGE = "/Login?ErrorCode=";
   private static final int COOKIE_TIME_LIFE = 31536000;
 
@@ -91,7 +90,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
-   *
    * @param servletRequest the HTTP request.
    * @param response the HTTP response.
    */
@@ -101,7 +99,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       HttpRequest request = HttpRequest.decorate(servletRequest);
 
       final UserSessionStatus userSessionStatus = existOpenedUserSession(servletRequest);
-      final AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
+      final AuthenticationParameters authenticationParameters =
+          new AuthenticationParameters(request);
       if (userSessionStatus.isValid()) {
         final User connectedUser = userSessionStatus.getInfo().getUserDetail();
         // Prevent trashing the user session on SSO authentication when user behind the current
@@ -111,7 +110,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
             connectedUser.getDomainId().equals(authenticationParameters.getDomainId())) {
           SilverLogger.getLogger("silverpeas.sso")
               .debug(() -> format(
-                  "SSO Authentication of PRINCIPAL {0} on domain {1}, keeping existing user session alive {2}",
+                  "SSO Authentication of PRINCIPAL {0} on domain {1}, keeping existing user " +
+                      "session alive {2}",
                   connectedUser.getLogin(), connectedUser.getDomainId(),
                   userSessionStatus.getInfo().getSessionId()));
           forward(request, response, "/Login");
@@ -134,7 +134,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         renewHttpSession(request);
       }
 
-      String authenticationKey = authenticate(request, authenticationParameters);
+      AuthenticationResponse result = authenticate(request, authenticationParameters);
 
       // Verify if the user can try again to login.
       UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier =
@@ -142,11 +142,11 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
               authenticationParameters.getCredential());
       userCanTryAgainToLoginVerifier.clearSession(request);
 
-      if (authService.isInError(authenticationKey)) {
-        processError(authenticationKey, request, response, authenticationParameters,
+      if (result == null || result.getStatus().isInError()) {
+        processError(result, request, response, authenticationParameters,
             userCanTryAgainToLoginVerifier);
       } else {
-        openNewSession(authenticationKey, request, response, authenticationParameters,
+        openNewSession(result.getToken(), request, response, authenticationParameters,
             userCanTryAgainToLoginVerifier);
       }
     } catch (ServletException | IOException e) {
@@ -155,7 +155,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     }
   }
 
-  private void openNewSession(String authenticationKey,
+  private void openNewSession(final String token,
       HttpRequest request,
       HttpServletResponse response,
       AuthenticationParameters authenticationParameters,
@@ -183,13 +183,13 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       }
     }
 
-    String destination = mandatoryQuestionChecker.check(request, authenticationKey);
+    String destination = mandatoryQuestionChecker.check(request, token);
     if (StringUtil.isDefined(destination)) {
       forward(request, response, destination);
       return;
     }
 
-    String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
+    String absoluteUrl = silverpeasSessionOpener.openSession(request, token);
     // fetch the new opened session
     HttpSession session = request.getSession(false);
     session.
@@ -198,7 +198,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
   }
 
-  private void processError(final String errorCode,
+  private void processError(final AuthenticationResponse error,
       final HttpRequest request,
       final HttpServletResponse response,
       final AuthenticationParameters authenticationParameters,
@@ -208,65 +208,81 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     HttpSession session = request.getSession();
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
-    } else {
-      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode) ||
-          AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
-        url = processBadLogin(errorCode, request, response, authenticationParameters,
-            userCanTryAgainToLoginVerifier);
-      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(errorCode) ||
-          UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(errorCode)) {
-        url = processBadAccountState(errorCode, response, authenticationParameters,
-            userCanTryAgainToLoginVerifier);
-      } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(errorCode) ||
-          AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(errorCode)) {
-        url = processPasswordExpiration(authenticationParameters, session);
-      } else if (UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN
-          .equals(errorCode)) {
-        // User has been successfully authenticated, but he has to change his password on his
-        // first login and login / domain id can be stored
-        storeLogin(response, authenticationParameters);
-        storeDomain(response, authenticationParameters);
-        url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(
-            authenticationParameters.getCredential()).getDestinationOnFirstLogin(request);
-        forward(request, response, url);
-        return;
-      } else if (authenticationParameters.isSsoMode()) {
-        // User has been successfully authenticated on AD, but he has no user account on Silverpeas
-        // -> login / domain id can be stored
-        storeDomain(response, authenticationParameters);
-        storeLogin(response, authenticationParameters);
-        url = LOGIN_ERROR_PAGE + SSO_NON_EXISTING_USER_ACCOUNT;
-      } else {
-        url = LOGIN_ERROR_PAGE + TECHNICAL_ISSUE;
-      }
+    } else if (error != null) {
+      url = processUrlForError(error, request, response, authenticationParameters,
+          userCanTryAgainToLoginVerifier);
       if (url != null) {
         String paramDelimiter = (url.contains("?") ? "&" : "?");
         url += paramDelimiter + LoginServlet.PARAM_DOMAINID + "=" +
             authenticationParameters.getDomainId();
+      } else {
+        return;
       }
+    } else {
+      url = LOGIN_ERROR_PAGE + Status.UNKNOWN_FAILURE;
     }
     response.sendRedirect(
         response.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));
+  }
+
+  private String processUrlForError(final AuthenticationResponse error, final HttpRequest request,
+      final HttpServletResponse response,
+      final AuthenticationParameters authenticationParameters,
+      final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier)
+      throws ServletException, IOException {
+    final String url;
+    Status status = error.getStatus();
+    if (status == Status.BAD_LOGIN_PASSWORD ||
+        status == Status.BAD_LOGIN_PASSWORD_DOMAIN) {
+      url = processBadLogin(status, request, response, authenticationParameters,
+          userCanTryAgainToLoginVerifier);
+    } else if (status == Status.USER_ACCOUNT_BLOCKED ||
+        status == Status.USER_ACCOUNT_DEACTIVATED) {
+      url = processBadAccountState(status, response, authenticationParameters,
+          userCanTryAgainToLoginVerifier);
+    } else if (status == Status.PASSWORD_EXPIRED ||
+        status == Status.PASSWORD_TO_CHANGE) {
+      HttpSession session = request.getSession();
+      url = processPasswordExpiration(authenticationParameters, session);
+    } else if (status == Status.PASSWORD_TO_CHANGE_ON_FIRST_LOGIN) {
+      // User has been successfully authenticated, but he has to change his password on his
+      // first login and login / domain id can be stored
+      storeLogin(response, authenticationParameters);
+      storeDomain(response, authenticationParameters);
+      url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(
+          authenticationParameters.getCredential()).getDestinationOnFirstLogin(request);
+      forward(request, response, url);
+      return null;
+    } else if (authenticationParameters.isSsoMode()) {
+      // User has been successfully authenticated on AD, but he has no user account on Silverpeas
+      // -> login / domain id can be stored
+      storeDomain(response, authenticationParameters);
+      storeLogin(response, authenticationParameters);
+      url = LOGIN_ERROR_PAGE + SSO_NON_EXISTING_USER_ACCOUNT;
+    } else {
+      url = LOGIN_ERROR_PAGE + status.getCode();
+    }
+    return url;
   }
 
   private String processPasswordExpiration(final AuthenticationParameters authenticationParameters,
       final HttpSession session) {
     final String url;
     String allowPasswordChange = (String) session.getAttribute(
-        Authentication.PASSWORD_CHANGE_ALLOWED);
+        AuthenticationProtocol.PASSWORD_CHANGE_ALLOWED);
     if (StringUtil.getBooleanValue(allowPasswordChange)) {
       SettingBundle settings = ResourceLocator.getSettingBundle(
           "org.silverpeas.authentication.settings.passwordExpiration");
       url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
           getLogin() + "&domainId=" + authenticationParameters.getDomainId();
     } else {
-      url = LOGIN_ERROR_PAGE + AuthenticationService.ERROR_PWD_EXPIRED;
+      url = LOGIN_ERROR_PAGE + Status.PASSWORD_EXPIRED;
     }
     return url;
   }
 
-  private String processBadAccountState(final String errorCode, final HttpServletResponse response,
-      final AuthenticationParameters authenticationParameters,
+  private String processBadAccountState(final Status error,
+      final HttpServletResponse response, final AuthenticationParameters authenticationParameters,
       final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier) {
     String url = null;
     if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
@@ -278,17 +294,13 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       url = AuthenticationUserVerifierFactory
           .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
           .getErrorDestination();
-    } else {
-      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
-        url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD;
-      } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
-        url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN;
-      }
+    } else if (error == Status.BAD_LOGIN_PASSWORD || error == Status.BAD_LOGIN_PASSWORD_DOMAIN) {
+      url = LOGIN_ERROR_PAGE + error;
     }
     return url;
   }
 
-  private String processBadLogin(final String errorCode, final HttpRequest request,
+  private String processBadLogin(final Status error, final HttpRequest request,
       final HttpServletResponse response, final AuthenticationParameters authenticationParameters,
       final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier) {
     String url = null;
@@ -297,12 +309,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         storeLogin(response, authenticationParameters);
         storeDomain(response, authenticationParameters);
       }
-      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
+      if (error == Status.BAD_LOGIN_PASSWORD || error == Status.BAD_LOGIN_PASSWORD_DOMAIN) {
         url = userCanTryAgainToLoginVerifier.verify()
-            .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD);
-      } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
-        url = userCanTryAgainToLoginVerifier.verify()
-            .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN);
+            .performRequestUrl(request, LOGIN_ERROR_PAGE + error);
       }
     } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
       logger.error(e.getMessage(), e);
@@ -323,7 +332,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       boolean secured = params.isSecuredAccess();
       if (params.isNewEncryptionMode()) {
         writeCookie(response, "var1", credentialEncryption.encode(sLogin), -1, secured);
-        writeCookie(response, "var1", credentialEncryption.encode(sLogin), COOKIE_TIME_LIFE, secured);
+        writeCookie(response, "var1", credentialEncryption.encode(sLogin), COOKIE_TIME_LIFE,
+            secured);
       } else {
         writeCookie(response, "svpLogin", sLogin, -1, secured);
         writeCookie(response, "svpLogin", sLogin, COOKIE_TIME_LIFE, secured);
@@ -345,21 +355,22 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     return anonymous == null || !anonymous.getLogin().equals(params.getLogin());
   }
 
-  private String authenticate(HttpServletRequest request,
+  private AuthenticationResponse authenticate(HttpServletRequest request,
       AuthenticationParameters authenticationParameters) {
-    String key = request.getParameter("TestKey");
-    if (!StringUtil.isDefined(key)) {
+    final String key = request.getParameter("TestKey");
+    if (StringUtil.isNotDefined(key)) {
       AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
           authenticationParameters.getLogin());
+      AuthenticationResponse result;
       if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
           isSsoMode() || authenticationParameters.isCasMode()) {
-        key = authService.authenticate(
+        result = authService.authenticate(
             credential.withAsDomainId(authenticationParameters.getDomainId()));
       } else if (authenticationParameters.isSocialNetworkMode()) {
-        key = authService.authenticate(credential.withAsDomainId(authenticationParameters.
+        result = authService.authenticate(credential.withAsDomainId(authenticationParameters.
             getDomainId()));
       } else {
-        key = authService.authenticate(credential
+        result = authService.authenticate(credential
             .withAsPassword(authenticationParameters.getPassword())
             .withAsDomainId(authenticationParameters.getDomainId()));
       }
@@ -368,14 +379,13 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       for (Map.Entry<String, Serializable> capability : credential.getCapabilities().entrySet()) {
         session.setAttribute(capability.getKey(), capability.getValue());
       }
-      return key;
+      return result;
     }
     return null;
   }
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request.
-   *
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws ServletException if the servlet fails to answer the request.

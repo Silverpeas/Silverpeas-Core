@@ -35,20 +35,20 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 10/09/13
  */
 @EnableSilverTestEnv
-public class UserMustAcceptTermsOfServiceVerifierTest {
+class UserMustAcceptTermsOfServiceVerifierTest {
 
   @Test
-  public void testUserHasAlreadyAccepted() throws AuthenticationUserMustAcceptTermsOfService {
+  void testUserHasAlreadyAccepted() throws AuthenticationUserMustAcceptTermsOfService {
     UserDetail user = createUser(DateUtil.getNow());
     new UserMustAcceptTermsOfServiceVerifier(user).verify();
   }
 
   @Test
-  public void testUserMustAccept() {
+  void testUserMustAccept() {
     assertThrows(AuthenticationUserMustAcceptTermsOfService.class, () -> {
       UserDetail user = createUser(null);
       new UserMustAcceptTermsOfServiceVerifier(user).verify();
@@ -56,15 +56,10 @@ public class UserMustAcceptTermsOfServiceVerifierTest {
   }
 
   @Test
-  public void testNoUser() throws AuthenticationUserMustAcceptTermsOfService {
+  void testNoUser() throws AuthenticationUserMustAcceptTermsOfService {
     new UserMustAcceptTermsOfServiceVerifier(null).verify();
   }
 
-  /**
-   * Create a UserDetail
-   * @param lastTosAcceptanceDate
-   * @return
-   */
   private UserDetail createUser(Date lastTosAcceptanceDate) {
     UserDetail user = new UserDetail();
     user.setId("0");

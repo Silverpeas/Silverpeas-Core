@@ -26,16 +26,14 @@ package org.silverpeas.core.security.authentication.verifier;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationUserMustAcceptTermsOfService;
+import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class that provides tools to verify if the user must accept terms of service.
- * User: Yohann Chastagnier
+ * @author  Yohann Chastagnier
  * Date: 10/09/13
  */
 public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthenticationVerifier {
@@ -43,7 +41,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
   public static final String ERROR_USER_TOS_REFUSED = "Error_UserTosRefused";
   public static final String ERROR_USER_TOS_TIMEOUT = "Error_UserTosTimeout";
 
-  private static TermsOfServiceAcceptanceFrequency globalAcceptanceFrequency;
+  private static final TermsOfServiceAcceptanceFrequency globalAcceptanceFrequency;
 
   // In seconds, 10 minutes (60seconds x 10minutes)
   private static final int LIVE_10_MINUTES = 60 * 10;
@@ -60,7 +58,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
 
   /**
    * Default constructor.
-   * @param user
+   * @param user the user behind a login.
    */
   protected UserMustAcceptTermsOfServiceVerifier(final UserDetail user) {
     super(user);
@@ -68,7 +66,8 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
 
   /**
    * Gets the destination.
-   * @return
+   * @return the relative URL of the web page displaying the terms of service once the user
+   * authenticated.
    */
   public String getDestination(HttpServletRequest request) {
     request.setAttribute("tosToken", tosToken);
@@ -123,7 +122,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
     }
 
     return acceptanceFrequency.isActivated() && acceptanceFrequency
-        .isAcceptanceDateExpired(getUser().getTosAcceptanceDate(), I18NHelper.DEFAULT_LANGUAGE);
+        .isAcceptanceDateExpired(getUser().getTosAcceptanceDate());
   }
 
   /**
@@ -136,8 +135,8 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
 
   /**
    * Gets the verifier with the given token.
-   * @param tosToken
-   * @return
+   * @param tosToken token mapped with a {@link UserMustAcceptTermsOfServiceVerifier} instance.
+   * @return a {@link UserMustAcceptTermsOfServiceVerifier} object.
    */
   protected static synchronized UserMustAcceptTermsOfServiceVerifier get(String tosToken) {
     UserMustAcceptTermsOfServiceVerifier verifier = applicationCache
@@ -150,7 +149,8 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
 
   /**
    * Clear cache of the verifier.
-   * @param tosToken
+   * @param tosToken token identifying in the cache a {@link UserMustAcceptTermsOfServiceVerifier}
+   * instance.
    */
   private static synchronized void clearCache(String tosToken) {
     if (tosToken != null) {

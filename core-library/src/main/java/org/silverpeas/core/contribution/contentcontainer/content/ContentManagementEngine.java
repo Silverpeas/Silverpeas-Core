@@ -548,7 +548,7 @@ public class ContentManagementEngine implements Serializable {
     try {
       final List<ResourceReference> result = new ArrayList<>();
       JdbcSqlQuery.executeBySplittingOn(alSilverContentId,
-          (idBatch, ignore) -> JdbcSqlQuery.createSelect("C.internalcontentid, I.componentId ")
+          (idBatch, ignore) -> JdbcSqlQuery.select("C.internalcontentid, I.componentId ")
               .from(INSTANCE_TABLE + " I")
               .join(SILVER_CONTENT_TABLE + " C")
               .on("I.instanceId = C.contentInstanceId")

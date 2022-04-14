@@ -101,7 +101,7 @@ public class ConnexionSilverStatisticsManagerDAOIT extends DataSetTest {
     try (Connection connection = getConnection()) {
       SilverStatisticsManagerDAO.insertDataStatsCumul(connection, typeofStat, data, config);
     }
-    JdbcSqlQuery selectQuery = JdbcSqlQuery.createSelect("* FROM SB_Stat_ConnectionCumul");
+    JdbcSqlQuery selectQuery = JdbcSqlQuery.select("* FROM SB_Stat_ConnectionCumul");
     List<DataStatsCumul> results = selectQuery.execute(
         row -> new DataStatsCumul(row.getString(1), row.getInt(2), row.getLong(3), row.getLong(4)));
     assertThat(results, hasSize(1));

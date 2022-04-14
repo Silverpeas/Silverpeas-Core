@@ -142,7 +142,7 @@ public class JdbcSqlQueryIT {
                 }
                 awaitUntil(10, MILLISECONDS);
                 synchronized (monitorOfVerification) {
-                  assertThat(createDeleteFor("a_table").execute(), is(NB_ROW_AT_BEGINNING));
+                  assertThat(deleteFrom("a_table").execute(), is(NB_ROW_AT_BEGINNING));
                   info(result, "DELETION PROCESS - Waiting for verification (lines deleted)");
                   monitorOfVerification.notifyAll();
                 }
@@ -219,17 +219,17 @@ public class JdbcSqlQueryIT {
 
   @Test
   public void selectCountVerifications() throws SQLException {
-    assertThat(createCountFor("a_table").execute(), is(NB_ROW_AT_BEGINNING));
-    assertThat(createCountFor("a_table").where("id != ?", 8).execute(),
+    assertThat(countAll().from("a_table").execute(), is(NB_ROW_AT_BEGINNING));
+    assertThat(countAll().from("a_table").where("id != ?", 8).execute(),
         is(NB_ROW_AT_BEGINNING - 1));
-    assertThat(createCountFor("a_table").where("id != ?", 8).and("LENGTH(value) <= ?", 7).execute(),
+    assertThat(countAll().from("a_table").where("id != ?", 8).and("LENGTH(value) <= ?", 7).execute(),
         is(9l));
   }
 
   @Test
   public void selectAll() throws SQLException {
     List<Pair<Long, String>> rows =
-        createSelect("* from a_table").execute(new TableResultProcess());
+        select("* from a_table").execute(new TableResultProcess());
     long l = 0;
     assertThat(rows, hasSize((int) NB_ROW_AT_BEGINNING));
     for (Pair<Long, String> row : rows) {
@@ -238,23 +238,23 @@ public class JdbcSqlQueryIT {
     }
 
     int resultLimit = (int) (NB_ROW_AT_BEGINNING - 10);
-    rows = createSelect("* from a_table").configure(config -> config.withResultLimit(resultLimit))
+    rows = select("* from a_table").configure(config -> config.withResultLimit(resultLimit))
         .execute(new TableResultProcess());
     assertThat(rows, hasSize(resultLimit));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void selectAllButUsingUnique() throws SQLException {
-    createSelect("* from a_table").executeUnique(new TableResultProcess());
+    select("* from a_table").executeUnique(new TableResultProcess());
   }
 
   @Test
   public void selectOneParameter() throws SQLException {
-    final String sqlQuery = "* from a_table where id = ?";
-    List<Pair<Long, String>> rows = createSelect(sqlQuery, 30).execute(new TableResultProcess());
+    List<Pair<Long, String>> rows = select("*").from("a_table").where("id = ?", 30)
+        .execute(new TableResultProcess());
     assertThat(rows, hasSize(1));
     assertThat(unique(rows).getLeft(), is(30L));
-    rows = createSelect(sqlQuery, 200).execute(new TableResultProcess());
+    rows = select("*").from("a_table").where("id = ?", 200).execute(new TableResultProcess());
     assertThat(rows, hasSize(0));
     assertThat(unique(rows), nullValue());
   }
@@ -262,16 +262,16 @@ public class JdbcSqlQueryIT {
   @Test
   public void selectUsingOneAppendParameter() throws SQLException {
     List<Pair<Long, String>> rows =
-        createSelect("* from a_table where id = ?", 26).execute(new TableResultProcess());
+        select("*").from("a_table").where("id = ?", 26).execute(new TableResultProcess());
     assertThat(rows, hasSize(1));
     assertThat(unique(rows).getLeft(), is(26L));
   }
 
   @Test
   public void selectUsingTwoAppendParametersAndAppendListOfParameters() throws SQLException {
-    JdbcSqlQuery sqlQuery = createSelect("* from a_table where (id = ?", 26);
-    sqlQuery.or("LENGTH(value) <= ?)", 7);
-    sqlQuery.or("id").in(38, 39, 40);
+    JdbcSqlQuery sqlQuery = select("*").from("a_table").where("id = ?", 26)
+      .or("LENGTH(value) <= ?", 7)
+      .or("id").in(38, 39, 40);
     List<Pair<Long, String>> rows = sqlQuery.execute(new TableResultProcess());
     assertThat(rows, hasSize(14));
   }
@@ -279,7 +279,7 @@ public class JdbcSqlQueryIT {
   @Test
   public void selectUsingAppendListOfParameters() throws SQLException {
     List<Pair<Long, String>> rows =
-        createSelect("* from a_table where id").in(38, 39, 40).execute(new TableResultProcess());
+        select("*").from("a_table").where("id").in(38, 39, 40).execute(new TableResultProcess());
     assertThat(rows, hasSize(3));
   }
 
@@ -310,7 +310,7 @@ public class JdbcSqlQueryIT {
 
   @Test
   public void selectWithOffsetAndLimitAll() throws SQLException {
-    List<Pair<Long, String>> rows = createSelect("*").from("a_table").where("value like ?", "%0")
+    List<Pair<Long, String>> rows = select("*").from("a_table").where("value like ?", "%0")
         .orderBy("id desc").execute(new TableResultProcess());
     assertThat(rows, hasSize(10));
     assertThat(rows.get(0).getRight(), is("value_90"));
@@ -318,7 +318,7 @@ public class JdbcSqlQueryIT {
 
     int resultLimit = 5;
 
-    rows = createSelect("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
+    rows = select("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
         .configure(config -> config.withResultLimit(resultLimit)).execute(new TableResultProcess());
 
     assertThat(rows, hasSize(resultLimit));
@@ -327,7 +327,7 @@ public class JdbcSqlQueryIT {
 
     int offset = 2;
 
-    rows = createSelect("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
+    rows = select("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
         .configure(config -> config.withOffset(offset))
         .configure(config -> config.withResultLimit(resultLimit)).execute(new TableResultProcess(false));
 
@@ -339,9 +339,9 @@ public class JdbcSqlQueryIT {
   @Test
   public void createRowUsingAppendSaveParameter() {
     assertThat(getTableLines(), hasSize(100));
-    JdbcSqlQuery insertSqlQuery = JdbcSqlQuery.createInsertFor("a_table");
-    insertSqlQuery.addInsertParam("id", 200);
-    insertSqlQuery.addInsertParam("value", "value_200_inserted");
+    JdbcSqlQuery insertSqlQuery = JdbcSqlQuery.insertInto("a_table");
+    insertSqlQuery.withInsertParam("id", 200);
+    insertSqlQuery.withInsertParam("value", "value_200_inserted");
     Transaction.performInOne(() -> {
       long insertCount = insertSqlQuery.execute();
       assertThat(insertCount, is(1L));
@@ -357,16 +357,16 @@ public class JdbcSqlQueryIT {
     assertThat(getTableLines().get(26), is("26@value_26"));
     assertThat(getTableLines().get(38), is("38@value_38"));
 
-    JdbcSqlQuery firstInsertSqlQuery = createUpdateFor("a_table");
-    firstInsertSqlQuery.addUpdateParam("value", "value_26_updated");
+    JdbcSqlQuery firstInsertSqlQuery = update("a_table");
+    firstInsertSqlQuery.withUpdateParam("value", "value_26_updated");
     firstInsertSqlQuery.where("id = ?", 26);
 
-    JdbcSqlQuery secondInsertSqlQuery = createUpdateFor("a_table");
-    secondInsertSqlQuery.addUpdateParam("value", "value_38_updated");
+    JdbcSqlQuery secondInsertSqlQuery = update("a_table");
+    secondInsertSqlQuery.withUpdateParam("value", "value_38_updated");
     secondInsertSqlQuery.where("id = ?", 38);
 
-    JdbcSqlQuery thirdInsertSqlQuery = createUpdateFor("a_table");
-    thirdInsertSqlQuery.addUpdateParam("value", "value_200_updated");
+    JdbcSqlQuery thirdInsertSqlQuery = update("a_table");
+    thirdInsertSqlQuery.withUpdateParam("value", "value_200_updated");
     thirdInsertSqlQuery.where("id = ?", 200);
 
     Transaction.performInOne(() -> {
@@ -387,16 +387,16 @@ public class JdbcSqlQueryIT {
     assertThat(getTableLines().get(26), is("26@value_26"));
     assertThat(getTableLines().get(38), is("38@value_38"));
 
-    JdbcSqlQuery firstInsertSqlQuery = createUpdateFor("a_table");
-    firstInsertSqlQuery.addUpdateParam("value", "value_26_updated");
+    JdbcSqlQuery firstInsertSqlQuery = update("a_table");
+    firstInsertSqlQuery.withUpdateParam("value", "value_26_updated");
     firstInsertSqlQuery.where("id = ?", 26);
 
-    JdbcSqlQuery secondInsertSqlQuery = createUpdateFor("a_table");
-    secondInsertSqlQuery.addUpdateParam("value", "value_38_updated");
+    JdbcSqlQuery secondInsertSqlQuery = update("a_table");
+    secondInsertSqlQuery.withUpdateParam("value", "value_38_updated");
     secondInsertSqlQuery.where("id = ?", 38);
 
-    JdbcSqlQuery thirdInsertSqlQuery = createUpdateFor("a_table");
-    thirdInsertSqlQuery.addUpdateParam("value", "value_200_updated");
+    JdbcSqlQuery thirdInsertSqlQuery = update("a_table");
+    thirdInsertSqlQuery.withUpdateParam("value", "value_200_updated");
     thirdInsertSqlQuery.where("id = ?", 200);
 
     Transaction.performInOne(() -> {
@@ -418,7 +418,7 @@ public class JdbcSqlQueryIT {
   public void deleteRows() {
     assertThat(getTableLines(), hasSize(100));
     Transaction.performInOne(() -> {
-      long deleteCount = createDeleteFor("a_table").where("LENGTH(value) <= ?", 7).execute();
+      long deleteCount = deleteFrom("a_table").where("LENGTH(value) <= ?", 7).execute();
       assertThat(deleteCount, is(10L));
       return null;
     });
@@ -427,30 +427,30 @@ public class JdbcSqlQueryIT {
 
   @Test
   public void dropTableA() throws SQLException {
-    assertThat(createCountFor("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "a_table")
+    assertThat(countAll().from("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "a_table")
         .execute(), is(1L));
     Transaction.performInOne(() -> {
-      createDropFor("a_table").execute();
+      dropTable("a_table").execute();
       return null;
     });
-    assertThat(createCountFor("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "a_table")
+    assertThat(countAll().from("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "a_table")
         .execute(), is(0L));
   }
 
   @Test
   public void createTableB() throws SQLException {
-    assertThat(createCountFor("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "b_table")
+    assertThat(countAll().from("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "b_table")
         .execute(), is(0L));
     Transaction.performInOne(() -> {
       createTable("b_table").addField("identifier", "integer primary key")
           .addField("description", "varchar(50) NOT NULL").execute();
-      createInsertFor("b_table").addInsertParam("identifier", 26)
-          .addInsertParam("description", "Drôme").execute();
+      insertInto("b_table").withInsertParam("identifier", 26)
+          .withInsertParam("description", "Drôme").execute();
       return null;
     });
-    assertThat(createCountFor("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "b_table")
+    assertThat(countAll().from("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "b_table")
         .execute(), is(1L));
-    assertThat(createCountFor("b_table").execute(), is(1L));
+    assertThat(countAll().from("b_table").execute(), is(1L));
   }
 
   /**

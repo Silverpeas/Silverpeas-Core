@@ -128,13 +128,13 @@ public class ToDoDAO {
   }
 
   static void removeToDo(String id) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(TO_DO_TABLE).where("id = ?", Integer.parseInt(id)).execute();
+    JdbcSqlQuery.deleteFrom(TO_DO_TABLE).where("id = ?", Integer.parseInt(id)).execute();
   }
 
   static SilverpeasList<ToDoHeader> getNotCompletedToDoHeadersForUser(String userId)
       throws SQLException {
     return JdbcSqlQuery
-        .createSelect(DISTINCT_CLAUSE + TODOCOLUMNNAMES + ORDER_BY_COL)
+        .select(DISTINCT_CLAUSE + TODOCOLUMNNAMES + ORDER_BY_COL)
         .from(TO_DO_TABLE)
         .join(TO_DO_ATTENDEE_TABLE).on(TO_DO_JOINING_TO_DO_ATTENDEE)
         .where(USER_ID_CRITERION, userId)
@@ -146,7 +146,7 @@ public class ToDoDAO {
   static SilverpeasList<ToDoHeader> getOrganizerToDoHeaders(String organizerId)
       throws SQLException {
     return JdbcSqlQuery
-        .createSelect(TODOCOLUMNNAMES + ORDER_BY_COL)
+        .select(TODOCOLUMNNAMES + ORDER_BY_COL)
         .from(TO_DO_TABLE)
         .where("delegatorId = ?", organizerId)
         .and("completedDay IS NULL")
@@ -156,7 +156,7 @@ public class ToDoDAO {
 
   static SilverpeasList<ToDoHeader> getClosedToDoHeaders(String organizerId) throws SQLException {
     return JdbcSqlQuery
-        .createSelect("*")
+        .select("*")
         .from("(")
 
         .addSqlPart("SELECT " + TODOCOLUMNNAMES + ORDER_BY_COL)
@@ -180,7 +180,7 @@ public class ToDoDAO {
   static SilverpeasList<ToDoHeader> getToDoHeadersByExternalId(String componentId,
       String externalId) throws SQLException {
     return JdbcSqlQuery
-        .createSelect(DISTINCT_CLAUSE + TODOCOLUMNNAMES + ORDER_BY_COL)
+        .select(DISTINCT_CLAUSE + TODOCOLUMNNAMES + ORDER_BY_COL)
         .from(TO_DO_TABLE)
         .where("componentId = ?", componentId)
         .and("externalId like ?", externalId)
@@ -197,7 +197,7 @@ public class ToDoDAO {
   static SilverpeasList<ToDoHeader> getToDoHeadersByInstanceId(final String componentId)
       throws SQLException {
     return JdbcSqlQuery
-        .createSelect(TODOCOLUMNNAMES + ORDER_BY_COL)
+        .select(TODOCOLUMNNAMES + ORDER_BY_COL)
         .from(TO_DO_TABLE)
         .where("componentId = ?", componentId)
         .orderBy(ORDER_BY_CLAUSE)
@@ -239,7 +239,7 @@ public class ToDoDAO {
    */
   static ToDoHeader getToDoHeader(String toDoId) throws SQLException {
     return JdbcSqlQuery
-        .createSelect(COLUMNNAMES)
+        .select(COLUMNNAMES)
         .from(TO_DO_TABLE)
         .where("id = ?", Integer.parseInt(toDoId))
         .executeUnique(ToDoDAO::getToDoHeaderFromResultSet);
@@ -253,7 +253,7 @@ public class ToDoDAO {
    */
   static SilverpeasList<String> getAllTodoByUser(String userId) throws SQLException {
     return JdbcSqlQuery
-        .createSelect(DISTINCT_CLAUSE + "(" + TO_DO_TABLE + ".id)")
+        .select(DISTINCT_CLAUSE + "(" + TO_DO_TABLE + ".id)")
         .from(TO_DO_TABLE)
         .join(TO_DO_ATTENDEE_TABLE).on(TO_DO_JOINING_TO_DO_ATTENDEE)
         .where(USER_ID_CRITERION, userId)

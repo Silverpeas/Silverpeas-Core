@@ -30,9 +30,9 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.session.SessionInfo;
@@ -196,13 +196,12 @@ public class HTTPAuthentication {
           AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
               .withAsPassword(matcher.group(passwordPart))
               .withAsDomainId(matcher.group(domainIdPart));
-      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-      String key = authenticator.authenticate(credential);
-      if (!authenticator.isInError(key)) {
+      Authentication authenticator = Authentication.get();
+      AuthenticationResponse result = authenticator.authenticate(credential);
+      if (result.getStatus().succeeded()) {
         try {
-          String userId = Administration.get().getUserIdByAuthenticationKey(key);
+          String userId = Administration.get().getUserIdByAuthenticationKey(result.getToken());
           UserDetail user = UserDetail.getById(userId);
-          verifyUserCanLogin(user);
           final SessionInfo session;
           if (!UserDetail.isAnonymousUser(userId)) {
             session = SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());

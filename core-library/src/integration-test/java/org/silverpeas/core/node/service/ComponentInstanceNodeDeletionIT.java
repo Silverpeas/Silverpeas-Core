@@ -159,7 +159,7 @@ public class ComponentInstanceNodeDeletionIT {
    * @throws Exception
    */
   private List<String> getNodes() throws Exception {
-    return JdbcSqlQuery.createSelect("instanceid,nodeid,nodefatherid,nodepath from sb_node_node")
+    return JdbcSqlQuery.select("instanceid,nodeid,nodefatherid,nodepath from sb_node_node")
         .addSqlPart("order by instanceid, nodeid")
         .execute(row -> row.getString(1) + " | " + row.getInt(2) + " | " + row.getInt(3) + " | " +
             row.getString(4));
@@ -171,7 +171,7 @@ public class ComponentInstanceNodeDeletionIT {
    * @throws Exception
    */
   private List<String> getNodeTranslations() throws Exception {
-    return JdbcSqlQuery.createSelect("id, nodeid, lang from sb_node_nodei18n")
+    return JdbcSqlQuery.select("id, nodeid, lang from sb_node_nodei18n")
         .addSqlPart("order by nodeid")
         .execute(row -> row.getInt(1) + " | " + row.getInt(2) + " | " + row.getString(3));
   }

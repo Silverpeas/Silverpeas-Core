@@ -62,7 +62,7 @@ public class CategoryDAO {
    */
   public void deleteUserData(String userId) throws SQLException {
     LinkCategoryDAO.get().deleteUserData(userId);
-    JdbcSqlQuery.createDeleteFor(CATEGORY_TABLE)
+    JdbcSqlQuery.deleteFrom(CATEGORY_TABLE)
         .where(USER_ID_CLAUSE, userId)
         .execute();
   }
@@ -75,7 +75,7 @@ public class CategoryDAO {
    */
   public List<CategoryDetail> getAllCategoriesByUser(String userId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from(CATEGORY_TABLE)
         .where(USER_ID_CLAUSE, userId)
         .execute(CategoryDAO::fetchCategory);
@@ -100,7 +100,7 @@ public class CategoryDAO {
   public List<CategoryDetail> getCategories(Collection<Integer> ids) throws SQLException {
     final Mutable<Stream<CategoryDetail>> categories = Mutable.of(empty());
     JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, ignore) -> categories.set(
-        concat(categories.get(), JdbcSqlQuery.createSelect("*")
+        concat(categories.get(), JdbcSqlQuery.select("*")
             .from(CATEGORY_TABLE)
             .where(CAT_ID).in(idBatch)
             .execute(CategoryDAO::fetchCategory)
@@ -119,7 +119,7 @@ public class CategoryDAO {
     final CategoryDetail categoryToPersist = new CategoryDetail(category);
     categoryToPersist.setId(DBUtil.getNextId(CATEGORY_TABLE, CAT_ID));
     categoryToPersist.setHasPosition(false);
-    final JdbcSqlQuery insertQuery = JdbcSqlQuery.createInsertFor(CATEGORY_TABLE);
+    final JdbcSqlQuery insertQuery = JdbcSqlQuery.insertInto(CATEGORY_TABLE);
     setupSaveQuery(insertQuery, categoryToPersist, true).execute();
     return categoryToPersist;
   }
@@ -132,7 +132,7 @@ public class CategoryDAO {
    */
   public CategoryDetail update(CategoryDetail category) throws SQLException {
     final CategoryDetail categoryToUpdate = new CategoryDetail(category);
-    final JdbcSqlQuery updateQuery = JdbcSqlQuery.createUpdateFor(CATEGORY_TABLE);
+    final JdbcSqlQuery updateQuery = JdbcSqlQuery.update(CATEGORY_TABLE);
     setupSaveQuery(updateQuery, categoryToUpdate, false).execute();
     return categoryToUpdate;
   }
@@ -144,7 +144,7 @@ public class CategoryDAO {
    */
   public void deleteCategory(int id) throws SQLException {
     LinkCategoryDAO.get().deleteByCategory(id);
-    JdbcSqlQuery.createDeleteFor(CATEGORY_TABLE)
+    JdbcSqlQuery.deleteFrom(CATEGORY_TABLE)
         .where(CAT_ID_CLAUSE, id)
         .execute();
   }
@@ -163,16 +163,16 @@ public class CategoryDAO {
   private static JdbcSqlQuery setupSaveQuery(final JdbcSqlQuery saveQuery,
       final CategoryDetail category, final boolean isInsert) {
     if (isInsert) {
-      saveQuery.addSaveParam(CAT_ID, category.getId(), true);
+      saveQuery.withSaveParam(CAT_ID, category.getId(), true);
     }
     final String name = StringUtil.truncate(category.getName(), 255);
     final String description = StringUtil.truncate(category.getDescription(), 255);
     saveQuery
-        .addSaveParam("name", name, isInsert)
-        .addSaveParam("description", description, isInsert)
-        .addSaveParam("userId", category.getUserId(), isInsert);
+        .withSaveParam("name", name, isInsert)
+        .withSaveParam("description", description, isInsert)
+        .withSaveParam("userId", category.getUserId(), isInsert);
     if (category.hasPosition()) {
-      saveQuery.addSaveParam("position", category.getPosition(), isInsert);
+      saveQuery.withSaveParam("position", category.getPosition(), isInsert);
     }
     if (!isInsert) {
       saveQuery.where(CAT_ID_CLAUSE, category.getId());

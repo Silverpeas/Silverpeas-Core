@@ -71,7 +71,7 @@ public class LinkCategoryDAO {
       throws SQLException {
     JdbcSqlQuery.executeBySplittingOn(
         LinkDAO.get().getLinkIdsByComponentInstance(componentInstanceId), (linkIdBatch, ignored) ->
-          JdbcSqlQuery.createDeleteFor(LINK_CATEGORY_TABLE)
+          JdbcSqlQuery.deleteFrom(LINK_CATEGORY_TABLE)
               .where(LINK_ID).in(linkIdBatch)
               .execute());
   }
@@ -86,7 +86,7 @@ public class LinkCategoryDAO {
             .stream()
             .map(CategoryDetail::getId)
             .collect(toList()), (catIdBatch, ignored) ->
-        JdbcSqlQuery.createDeleteFor(LINK_CATEGORY_TABLE)
+        JdbcSqlQuery.deleteFrom(LINK_CATEGORY_TABLE)
             .where(CAT_ID).in(catIdBatch)
             .execute());
   }
@@ -103,7 +103,7 @@ public class LinkCategoryDAO {
         .stream()
         .collect(toMap(CategoryDetail::getId, c -> c));
     return JdbcSqlQuery.executeBySplittingOn(categoriesById.keySet(), (catIdBatch, result) ->
-          JdbcSqlQuery.createSelect("*")
+          JdbcSqlQuery.select("*")
               .from(LINK_CATEGORY_TABLE)
               .where(CAT_ID).in(catIdBatch)
               .execute(rs -> {
@@ -126,7 +126,7 @@ public class LinkCategoryDAO {
    */
   protected Map<Integer, CategoryDetail> getAllCategoriesByLink(int linkId)
       throws SQLException {
-    final List<Integer> categoryIds = JdbcSqlQuery.createSelect(CAT_ID)
+    final List<Integer> categoryIds = JdbcSqlQuery.select(CAT_ID)
         .from(LINK_CATEGORY_TABLE)
         .where(LINK_ID_CLAUSE, linkId)
         .execute(rs -> rs.getInt(1));
@@ -144,7 +144,7 @@ public class LinkCategoryDAO {
    * @throws SQLException on SQL problem.
    */
   protected void saveByLink(LinkDetail link) throws SQLException {
-    final Integer previousCat = JdbcSqlQuery.createSelect(CAT_ID)
+    final Integer previousCat = JdbcSqlQuery.select(CAT_ID)
         .from(LINK_CATEGORY_TABLE)
         .where(LINK_ID_CLAUSE, link.getLinkId())
         .executeUnique(rs -> rs.getInt(1));
@@ -159,12 +159,12 @@ public class LinkCategoryDAO {
       final JdbcSqlQuery saveQuery;
       final boolean isInsert = previousCat == null;
       if (isInsert) {
-        saveQuery = JdbcSqlQuery.createInsertFor(LINK_CATEGORY_TABLE);
-        saveQuery.addSaveParam(LINK_ID, link.getLinkId(), true);
+        saveQuery = JdbcSqlQuery.insertInto(LINK_CATEGORY_TABLE);
+        saveQuery.withSaveParam(LINK_ID, link.getLinkId(), true);
       } else {
-        saveQuery = JdbcSqlQuery.createUpdateFor(LINK_CATEGORY_TABLE);
+        saveQuery = JdbcSqlQuery.update(LINK_CATEGORY_TABLE);
       }
-      saveQuery.addSaveParam(CAT_ID, link.getCategory().getId(), isInsert);
+      saveQuery.withSaveParam(CAT_ID, link.getCategory().getId(), isInsert);
       if (!isInsert) {
         saveQuery.where(LINK_ID_CLAUSE, link.getLinkId());
       }
@@ -178,7 +178,7 @@ public class LinkCategoryDAO {
    * @throws SQLException on SQL problem
    */
   protected void deleteByLink(int linkId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(LINK_CATEGORY_TABLE)
+    JdbcSqlQuery.deleteFrom(LINK_CATEGORY_TABLE)
         .where(LINK_ID_CLAUSE, linkId)
         .execute();
   }
@@ -189,7 +189,7 @@ public class LinkCategoryDAO {
    * @throws SQLException on SQL problem
    */
   protected void deleteByCategory(int catId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(LINK_CATEGORY_TABLE)
+    JdbcSqlQuery.deleteFrom(LINK_CATEGORY_TABLE)
         .where(CAT_ID_CLAUSE, catId)
         .execute();
   }

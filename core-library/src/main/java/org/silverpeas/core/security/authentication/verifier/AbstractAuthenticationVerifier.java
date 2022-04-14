@@ -39,7 +39,7 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestC
 
 /**
  * Common use or treatments in relation to user verifier.
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 06/02/13
  */
 class AbstractAuthenticationVerifier {

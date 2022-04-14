@@ -24,6 +24,7 @@
 package org.silverpeas.core.date;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.annotation.constraint.DateRange;
 
 import javax.persistence.Column;
@@ -35,7 +36,10 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Objects;
 
@@ -45,12 +49,12 @@ import static org.silverpeas.core.date.TemporalConverter.asInstant;
  * <p>
  * A period is a lapse of time starting at a given date or datetime and ending at another given date
  * or datetime. When the period takes care of the time, it is always set in UTC/Greenwich in order
- * to avoid any bugs by comparing two periods in different time zones or offset zones. A period
- * is indefinite when it spans over a very large of time that cannot be reached; in this case the
+ * to avoid any bugs by comparing two periods in different time zones or offset zones. A period is
+ * indefinite when it spans over a very large of time that cannot be reached; in this case the
  * period is counted in days between {@link LocalDate#MIN} and {@link LocalDate#MAX}. An indefinite
  * period can be created either by:
  * </p>
- *<ul>
+ * <ul>
  *   <li>invoking the {@link Period#indefinite()} method,</li>
  *   <li>or by invoking one of the <code>between(...,...)</code> method with as arguments the
  *   <code>MIN</code> et <code>MAX</code> values of one of the concrete date or datetime of the Java
@@ -58,8 +62,7 @@ import static org.silverpeas.core.date.TemporalConverter.asInstant;
  *   <li>or by invoking one of the <code>betweenNullable(...,...)</code> method with as arguments
  *   either null or the <code>MIN</code> et <code>MAX</code> values of one of the concrete date or
  *   datetime of the Java Time API.</li>
- *</ul>
- *
+ * </ul>
  * @author mmoquillon
  */
 @Embeddable
@@ -87,16 +90,15 @@ public class Period implements Serializable {
   }
 
   /**
-   * Creates a new period of time between the two specified non null date or datetime. It accepts
-   * as both {@link Temporal} parameters either {@link LocalDate}, {@link LocalDateTime},
-   * {@link OffsetDateTime}, {@link ZonedDateTime} or {@link Instant} instances.
-   *
+   * Creates a new period of time between the two specified non null date or datetime. It accepts as
+   * both {@link Temporal} parameters either {@link LocalDate}, {@link LocalDateTime}, {@link
+   * OffsetDateTime}, {@link ZonedDateTime} or {@link Instant} instances.
    * @param start the start of the period. It defines the inclusive date or datetime at which the
-   *              period starts.
-   * @param end   the end day of the period. It defines the exclusive date or the exclusive datetime
-   *              at which the period ends. The end date must be the same or after the start date.
-   *              An end date equal to the start date means the period is spanning all the day; it
-   *              is equivalent to an end date being one day after the start date.
+   * period starts.
+   * @param end the end day of the period. It defines the exclusive date or the exclusive datetime
+   * at which the period ends. The end date must be the same or after the start date. An end date
+   * equal to the start date means the period is spanning all the day; it is equivalent to an end
+   * date being one day after the start date.
    * @return the period of days between the two specified dates.
    * @throws IllegalArgumentException if the concrete type of the temporal parameters isn't
    * supported or if they aren't of the same concrete type.
@@ -120,13 +122,12 @@ public class Period implements Serializable {
    * over all the day(s) between the specified inclusive start day and the exclusive end day; the
    * period is expressed in days. For example, a period between 2016-12-15 and 2016-12-17 means the
    * period is spreading over two days (2016-12-15 and 2016-12-16).
-   *
    * @param startDay the start day of the period. It defines the inclusive date at which the period
-   *                 starts.
-   * @param endDay   the end day of the period. It defines the exclusive date at which the period
-   *                 ends. The end date must be the same or after the start date. An end date equal
-   *                 to the start date means the period is spanning all the day of the start date;
-   *                 it is equivalent to an end date being one day after the start date.
+   * starts.
+   * @param endDay the end day of the period. It defines the exclusive date at which the period
+   * ends. The end date must be the same or after the start date. An end date equal to the start
+   * date means the period is spanning all the day of the start date; it is equivalent to an end
+   * date being one day after the start date.
    * @return the period of days between the two specified dates.
    */
   public static Period between(LocalDate startDay, LocalDate endDay) {
@@ -141,11 +142,10 @@ public class Period implements Serializable {
    * the specified inclusive datetime and it ends at the specified other exclusive datetime. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   *
    * @param startDateTime the start datetime of the period. It defines the inclusive date time at
-   *                      which the period starts.
-   * @param endDateTime   the end datetime of the period. It defines the exclusive datetime at which
-   *                      the period ends. The end datetime must be after the start datetime.
+   * which the period starts.
+   * @param endDateTime the end datetime of the period. It defines the exclusive datetime at which
+   * the period ends. The end datetime must be after the start datetime.
    * @return the period of time between the two specified datetimes.
    */
   public static Period between(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
@@ -157,11 +157,10 @@ public class Period implements Serializable {
    * the specified inclusive datetime and it ends at the specified other exclusive datetime. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   *
    * @param startDateTime the start datetime of the period. It defines the inclusive date time at
-   *                      which the period starts.
+   * which the period starts.
    * @param endDateTime the end datetime of the period. It defines the exclusive datetime at which
-   *                    the period ends. The end datetime must be after the start datetime.
+   * the period ends. The end datetime must be after the start datetime.
    * @return the period of time between the two specified datetimes.
    */
   public static Period between(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
@@ -173,11 +172,10 @@ public class Period implements Serializable {
    * the specified inclusive instant and it ends at the specified other exclusive instant. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   *
    * @param startInstant the start instant of the period. It defines the inclusive epoch date time
-   *                     at which the period starts.
+   * at which the period starts.
    * @param endInstant the end instant of the period. It defines the exclusive epoch date time at
-   *                   which the period ends. The end instant must be after the start instant.
+   * which the period ends. The end instant must be after the start instant.
    * @return the period of time between the two specified instants.
    */
   public static Period between(Instant startInstant, Instant endInstant) {
@@ -194,20 +192,19 @@ public class Period implements Serializable {
    * instant. The period is spreading over all the day(s) between the specified inclusive start day
    * and the exclusive end day; the period is expressed in days. For example, a period between
    * 2016-12-15 and 2016-12-17 means the period is spreading over two days (2016-12-15 and
-   * 2016-12-16). If you want the period spreads over a whole day, then the endInstant must
-   * after one day the startInstant (as the endInstant is exclusive): a period starting at
-   * 2016-12-15 and ending at 2016-12-16 means the period is spreading over the 2016-12-15.
+   * 2016-12-16). If you want the period spreads over a whole day, then the endInstant must after
+   * one day the startInstant (as the endInstant is exclusive): a period starting at 2016-12-15 and
+   * ending at 2016-12-16 means the period is spreading over the 2016-12-15.
    * <p>
    * This method is a convenient one to represent a period in days with {@link java.util.Date} or
    * {@link Instant} object (by using {@link Date#toInstant()}). Nevertheless we strongly recommend
-   * to prefer the {@link Period#between(LocalDate, LocalDate)} instead to avoid unexpected
-   * surprise with the date handling.
+   * to prefer the {@link Period#between(LocalDate, LocalDate)} instead to avoid unexpected surprise
+   * with the date handling.
    * </p>
-   *
-   * @param startInstant the start instant of the period. It defines the inclusive epoch day
-   *                     at which the period starts.
-   * @param endInstant the end instant of the period. It defines the exclusive epoch day at
-   *                   which the period ends. The end instant must be after the start instant.
+   * @param startInstant the start instant of the period. It defines the inclusive epoch day at
+   * which the period starts.
+   * @param endInstant the end instant of the period. It defines the exclusive epoch day at which
+   * the period ends. The end instant must be after the start instant.
    * @return the period of time between the two specified instants.
    */
   public static Period betweenInDays(Instant startInstant, Instant endInstant) {
@@ -224,18 +221,16 @@ public class Period implements Serializable {
    * OffsetDateTime)}. If both date parameters are null, then a period between {@link LocalDate#MIN}
    * and {@link LocalDate#MAX} is returned unless those parameters are explicitly typed; for
    * example: {@code Period.betweenNullable((OffsetDateTime) null, null)}
-   *
    * @param start the start of the period. It defines the inclusive date or datetime at which the
-   *              period starts. If it is null then the minimum temporal (date or datetime) is
-   *              taken.
-   * @param end   the end day of the period. It defines the exclusive date or the exclusive datetime
-   *              at which the period ends. The end date must be the same or after the start date.
-   *              An end date equal to the start date means the period is spanning all the day; it
-   *              is equivalent to an end date being one day after the start date. If It is null
-   *              then the maximum temporal (date or datetime) is taken.
+   * period starts. If it is null then the minimum temporal (date or datetime) is taken.
+   * @param end the end day of the period. It defines the exclusive date or the exclusive datetime
+   * at which the period ends. The end date must be the same or after the start date. An end date
+   * equal to the start date means the period is spanning all the day; it is equivalent to an end
+   * date being one day after the start date. If It is null then the maximum temporal (date or
+   * datetime) is taken.
    * @return the period of days between the two specified dates.
    * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or {@link
-   *                                  OffsetDateTime} instances.
+   * OffsetDateTime} instances.
    * @see LocalDate#MIN for the minimum supported date.
    * @see OffsetDateTime#MIN for the maximum supported date.
    * @see LocalDate#MAX for the maximum supported datetime.
@@ -257,22 +252,21 @@ public class Period implements Serializable {
    * the day(s) between the specified inclusive start day and the exclusive end day; the period is
    * expressed in days. For example, a period between 2016-12-15 and 2016-12-17 means the period is
    * spreading over two days (2016-12-15 and 2016-12-16).
-   *
    * @param startDay the start day of the period. It defines the inclusive date at which the period
-   *                 starts. If null, then the minimum supported {@link LocalDate#MIN} date is
-   *                 taken.
-   * @param endDay   the end day of the period. It defines the exclusive date at which the period
-   *                 ends. The end date must be the same or after the start date. An end date equal
-   *                 to the start date means the period is spanning all the day of the start date;
-   *                 it is equivalent to an end date being one day after the start date. If null,
-   *                 then the maximum supported {@link LocalDate#MAX} is taken.
+   * starts. If null, then the minimum supported {@link LocalDate#MIN} date is taken.
+   * @param endDay the end day of the period. It defines the exclusive date at which the period
+   * ends. The end date must be the same or after the start date. An end date equal to the start
+   * date means the period is spanning all the day of the start date; it is equivalent to an end
+   * date being one day after the start date. If null, then the maximum supported {@link
+   * LocalDate#MAX} is taken.
    * @return the period of days between the two specified dates.
    * @see LocalDate#MIN for the minimum supported date.
    * @see LocalDate#MAX for the maximum supported date.
    */
   public static Period betweenNullable(LocalDate startDay, LocalDate endDay) {
-   LocalDate upperBound = startDay != null && startDay.equals(endDay) ? endDay.plusDays(1) : endDay;
-   return betweenInDays(minOrInstant(startDay), maxOrInstant(upperBound));
+    LocalDate upperBound =
+        startDay != null && startDay.equals(endDay) ? endDay.plusDays(1) : endDay;
+    return betweenInDays(minOrInstant(startDay), maxOrInstant(upperBound));
   }
 
   /**
@@ -280,13 +274,12 @@ public class Period implements Serializable {
    * specified inclusive datetime and it ends at the specified other exclusive datetime. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   *
    * @param startDateTime the start datetime of the period. It defines the inclusive date time at
-   *                      which the period starts. If null then the minimum supported {@link
-   *                      OffsetDateTime#MIN} is taken.
-   * @param endDateTime   the end datetime of the period. It defines the exclusive datetime at which
-   *                      the period ends. The end datetime must be after the start datetime. If
-   *                      null, then the maximum supported {@link OffsetDateTime#MAX} is taken.
+   * which the period starts. If null then the minimum supported {@link OffsetDateTime#MIN} is
+   * taken.
+   * @param endDateTime the end datetime of the period. It defines the exclusive datetime at which
+   * the period ends. The end datetime must be after the start datetime. If null, then the maximum
+   * supported {@link OffsetDateTime#MAX} is taken.
    * @return the period of time between the two specified date times.
    * @see OffsetDateTime#MIN for the minimum supported date.
    * @see OffsetDateTime#MAX for the maximum supported date.
@@ -300,13 +293,12 @@ public class Period implements Serializable {
    * specified inclusive datetime and it ends at the specified other exclusive datetime. For
    * example, a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is
    * spanning one hour the December 12.
-   *
    * @param startDateTime the start datetime of the period. It defines the inclusive date time at
-   *                      which the period starts. If null then the minimum supported
-   *                      {@link OffsetDateTime#MIN} is taken.
+   * which the period starts. If null then the minimum supported {@link OffsetDateTime#MIN} is
+   * taken.
    * @param endDateTime the end datetime of the period. It defines the exclusive datetime at which
-   *                    the period ends. The end datetime must be after the start datetime. If null,
-   *                    then the maximum supported {@link OffsetDateTime#MAX} is taken.
+   * the period ends. The end datetime must be after the start datetime. If null, then the maximum
+   * supported {@link OffsetDateTime#MAX} is taken.
    * @return the period of time between the two specified date times.
    * @see OffsetDateTime#MIN for the minimum supported date.
    * @see OffsetDateTime#MAX for the maximum supported date.
@@ -320,13 +312,12 @@ public class Period implements Serializable {
    * specified inclusive instant and it ends at the specified other exclusive instant. For example,
    * a period between 2016-12-17T13:30:00Z and 2016-12-17T14:30:00Z means the period is spanning one
    * hour the December 12.
-   *
    * @param startInstant the start instant of the period. It defines the inclusive epoch date time
-   *                     at which the period starts. If null then the minimum supported
-   *                     {@link OffsetDateTime#MIN} is taken.
+   * at which the period starts. If null then the minimum supported {@link OffsetDateTime#MIN} is
+   * taken.
    * @param endInstant the end instant of the period. It defines the exclusive epoch date time at
-   *                   which the period ends. The end instant must be after the start instant. If
-   *                   null, then the maximum supported {@link Instant#MAX} is taken.
+   * which the period ends. The end instant must be after the start instant. If null, then the
+   * maximum supported {@link Instant#MAX} is taken.
    * @return the period of time between the two specified instants.
    * @see Instant#MIN for the minimum supported date.
    * @see Instant#MAX for the maximum supported date.
@@ -338,12 +329,21 @@ public class Period implements Serializable {
   }
 
   /**
+   * Prepares the creation of a new period that starts at the specified date or datetime.
+   * @param temporal the date or date time at which the new period will start.
+   * @return a builder of a {@link Period} instance with which the duration of the period can be
+   * set.
+   */
+  public static PeriodBuilder from(final Temporal temporal) {
+    return new PeriodBuilder(asInstant(temporal));
+  }
+
+  /**
    * Gets the inclusive temporal start date of this period of time.
    * <p>
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
    * the first day of the period.<br> Otherwise, the date and the time in UTC/Greenwich at which
    * this period starts on the timeline is returned.
-   *
    * @return a temporal instance ({@link LocalDate} if all day period or {@link OffsetDateTime})
    * otherwise.
    */
@@ -364,7 +364,6 @@ public class Period implements Serializable {
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
    * the last day of the period.<br> Otherwise, the date and the time in UTC/Greenwich at which this
    * period ends on the timeline is returned.
-   *
    * @return a temporal instance ({@link LocalDate} if all day period or {@link OffsetDateTime})
    * otherwise.
    */
@@ -381,7 +380,6 @@ public class Period implements Serializable {
 
   /**
    * Is this period in days?
-   *
    * @return true if the lapse of time defining this period is expressed in days. False otherwise.
    */
   public boolean isInDays() {
@@ -389,8 +387,8 @@ public class Period implements Serializable {
   }
 
   /**
-   * Is this period an indefinite one? That is to say a period ranging over an indefinite range
-   * of time meaning that whatever any event, it occurs during this period. In Silverpeas, an
+   * Is this period an indefinite one? That is to say a period ranging over an indefinite range of
+   * time meaning that whatever any event, it occurs during this period. In Silverpeas, an
    * indefinite period starts at {@link LocalDate#MIN} and ends at {@link LocalDate#MAX}.
    * @return true if this period is an indefinite one. False otherwise.
    */
@@ -420,7 +418,6 @@ public class Period implements Serializable {
 
   /**
    * Is this period including the specified temporal?
-   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if the specified date is included in this period, false otherwise.
    */
@@ -431,7 +428,6 @@ public class Period implements Serializable {
 
   /**
    * Is this period ending before the specified temporal?
-   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if this period's end date is at or before the specified temporal (the period's end
    * date is exclusive).
@@ -443,7 +439,6 @@ public class Period implements Serializable {
 
   /**
    * Is this period ending after the specified temporal?
-   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if this period's end date is at or before the specified temporal (the period's end
    * date is exclusive).
@@ -455,7 +450,6 @@ public class Period implements Serializable {
 
   /**
    * Is this period starting after the specified temporal?
-   *
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if this period's start date is after the specified temporal (the period's start
    * date is inclusive).
@@ -509,5 +503,111 @@ public class Period implements Serializable {
         .append(endDateTime)
         .append(inDays)
         .toHashCode();
+  }
+
+  /**
+   * A builder of a {@link Period} instance that starts at a specified date or datetime.
+   */
+  public static class PeriodBuilder {
+
+    private final Instant startDate;
+
+    private PeriodBuilder(final Instant startDate) {
+      this.startDate = startDate;
+    }
+
+    /**
+     * Creates a new period of the specified amount of time unit and starting at the underlying date
+     * or datetime.
+     * @param amount the amount of time unit.
+     * @param unit the unit of time in which is expressed the amount.
+     * @return a period of the specified amount of time unit.
+     */
+    public Period of(long amount, final TimeUnit unit) {
+      ChronoUnit chrono = unit.toChronoUnit();
+      Instant endDate = startDate.plus(amount, chrono);
+      Period period;
+      if (chrono.isDateBased()) {
+        period = Period.betweenInDays(startDate, endDate);
+      } else {
+        period = Period.between(startDate, endDate);
+      }
+      return period;
+    }
+
+    /**
+     * Creates a new period of the specified amount of time unit and starting at the underlying date
+     * or datetime.
+     * @param amount the amount of time unit.
+     * @param unit the unit of time in which is expressed the amount.
+     * @return a period of the specified amount of time unit.
+     */
+    public Period of(long amount, final ChronoUnit unit) {
+      Instant endDate = startDate.plus(amount, unit);
+      Period period;
+      if (unit.isDateBased()) {
+        period = Period.betweenInDays(startDate, endDate);
+      } else {
+        period = Period.between(startDate, endDate);
+      }
+      return period;
+    }
+
+    /**
+     * Creates a new period of the specified amount of hours and starting at the underlying date or
+     * datetime.
+     * @param amount the amount of hours.
+     * @return a period of the specified amount of hours.
+     */
+    public Period ofHours(long amount) {
+      return of(amount, ChronoUnit.HOURS);
+    }
+
+    /**
+     * Creates a new period of the specified amount of days and starting at the underlying date or
+     * datetime.
+     * @param amount the amount of days.
+     * @return a period of the specified amount of days.
+     */
+    public Period ofDays(long amount) {
+      return of(amount, ChronoUnit.DAYS);
+    }
+
+    /**
+     * Creates a new period of the specified amount of weeks and starting at the underlying date or
+     * datetime.
+     * @param amount the amount of weeks.
+     * @return a period of the specified amount of weeks.
+     */
+    public Period ofWeeks(long amount) {
+      return of(amount, ChronoUnit.WEEKS);
+    }
+
+    /**
+     * Creates a new period of the specified amount of months and starting at the underlying date or
+     * datetime.
+     * @param amount the amount of months.
+     * @return a period of the specified amount of months.
+     */
+    public Period ofMonths(long amount) {
+      return of(amount, ChronoUnit.MONTHS);
+    }
+
+    /**
+     * Creates a new period of the specified amount of years and starting at the underlying date or
+     * datetime.
+     * @param amount the amount of years.
+     * @return a period of the specified amount of years.
+     */
+    public Period ofYears(long amount) {
+      return of(amount, ChronoUnit.YEARS);
+    }
+
+    private void checkTimeUnit(final ChronoUnit timeUnit) {
+      if (ChronoUnit.HOURS.compareTo(timeUnit) < 0 || ChronoUnit.YEARS.compareTo(timeUnit) > 0) {
+        throw new NotSupportedException(
+            "Only time unit of hours, days, months, years are currently supported in Period");
+      }
+    }
   }
 }

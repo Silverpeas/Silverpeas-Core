@@ -135,14 +135,14 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   }
 
   private JdbcSqlQuery generateGroupUserRelTableDropStatement(String domainName) {
-    return JdbcSqlQuery.createDropFor(DOMAIN_TABLE + domainName + "_Group_User_Rel");
+    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + "_Group_User_Rel");
   }
 
   private JdbcSqlQuery generateGroupTableDropStatement(String domainName) {
-    return JdbcSqlQuery.createDropFor(DOMAIN_TABLE + domainName + "_Group");
+    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + "_Group");
   }
 
   private JdbcSqlQuery generateUserTableDropStatement(String domainName) {
-    return JdbcSqlQuery.createDropFor(DOMAIN_TABLE + domainName + "_User");
+    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + "_User");
   }
 }

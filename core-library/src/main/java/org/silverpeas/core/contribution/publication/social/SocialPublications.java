@@ -49,9 +49,10 @@ public class SocialPublications implements SocialPublicationProvider {
   }
 
 
+  @SuppressWarnings("unchecked")
   @Override
   public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
-    return getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
+    return (List) getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
   }
 
   private PublicationService getPublicationService() {

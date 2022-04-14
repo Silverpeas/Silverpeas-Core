@@ -275,11 +275,11 @@ public class SILVERMAILMessageBeanRepositoryIT {
 
   private List<SQLRequester.ResultLine> getUserNotificationTableLines() throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from ST_SilverMailMessage"));
+        JdbcSqlQuery.select("* from ST_SilverMailMessage"));
   }
 
   private List<SQLRequester.ResultLine> getUserNotificationReadTableLines() throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from ST_SilverMailMessage where readen = 1"));
+        JdbcSqlQuery.select("* from ST_SilverMailMessage where readen = 1"));
   }
 }

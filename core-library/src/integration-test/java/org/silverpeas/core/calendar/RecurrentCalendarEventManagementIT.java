@@ -43,7 +43,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 
 import static java.time.DayOfWeek.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -561,21 +560,21 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
 
   protected List<SQLRequester.ResultLine> getRecurrenceTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence"));
+        JdbcSqlQuery.select("* from SB_Cal_Recurrence"));
   }
 
   protected List<SQLRequester.ResultLine> getOccurrenceTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from SB_Cal_Occurrences"));
+        JdbcSqlQuery.select("* from SB_Cal_Occurrences"));
   }
 
   protected List<SQLRequester.ResultLine> getRecurrenceDayOfWeekTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence_DayOfWeek"));
+        JdbcSqlQuery.select("* from SB_Cal_Recurrence_DayOfWeek"));
   }
 
   protected List<SQLRequester.ResultLine> getRecurrenceExceptionTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence_Exception"));
+        JdbcSqlQuery.select("* from SB_Cal_Recurrence_Exception"));
   }
 }

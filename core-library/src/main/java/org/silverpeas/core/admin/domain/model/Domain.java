@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.security.authentication.AuthDomain;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -37,7 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class Domain implements Serializable {
+public class Domain implements AuthDomain, Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
 
@@ -55,44 +56,31 @@ public class Domain implements Serializable {
    */
   private Quota userDomainQuota;
 
-  /**
-   * @return String
-   */
+  @Override
   public String getId() {
     return id;
   }
 
-  /**
-   * @param id
-   */
   public void setId(String id) {
     this.id = id;
   }
 
-  /**
-   * @return String
-   */
+
+  @Override
   public String getName() {
     return name;
   }
 
-  /**
-   * @param name
-   */
   public void setName(String name) {
     this.name = name;
   }
 
-  /**
-   * @return String
-   */
+
   public String getDescription() {
     return description;
   }
 
-  /**
-   * @param description
-   */
+
   public void setDescription(String description) {
     this.description = description;
   }
@@ -130,29 +118,26 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @return String
+   * Gets the name of the authentication server used by this authentication domain.
+   * @return the unique name of an authentication server.
    */
   public String getAuthenticationServer() {
     return authenticationServer;
   }
 
   /**
+   * Sets the name of the authentication server that will perform the authentication process for
+   * this authentication domain.
    * @param authenticationServer the class to be used.
    */
   public void setAuthenticationServer(String authenticationServer) {
     this.authenticationServer = authenticationServer;
   }
 
-  /**
-   * @return String
-   */
   public String getSilverpeasServerURL() {
     return silverpeasServerURL;
   }
 
-  /**
-   * @param silverpeasServerURL
-   */
   public void setSilverpeasServerURL(String silverpeasServerURL) {
     this.silverpeasServerURL = silverpeasServerURL;
   }
@@ -180,10 +165,10 @@ public class Domain implements Serializable {
   }
 
   /**
-   * Sets the max count of users of the domain
+   * Sets the max count of users allowed for this domain.
    *
-   * @param userDomainQuotaMaxCount
-   * @throws QuotaException
+   * @param userDomainQuotaMaxCount the quota about the maximum users allowed in this domain.
+   * @throws QuotaException if an error occurs while setting the quota.
    */
   public void setUserDomainQuotaMaxCount(final String userDomainQuotaMaxCount) throws QuotaException {
     loadUserDomainQuota();

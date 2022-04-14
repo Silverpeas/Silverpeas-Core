@@ -1597,7 +1597,7 @@ public class ProcessInstanceImpl
       wkUser.setState(stateName);
       wkUser.setRole(roleName);
       if (workingUsers.contains(wkUser)) {
-        JdbcSqlQuery query = JdbcSqlQuery.createSelect("stepid from sb_workflow_undo_step")
+        JdbcSqlQuery query = JdbcSqlQuery.select("stepid from sb_workflow_undo_step")
             .where("instanceid = ? ", Integer.parseInt(getId()))
             .and("action = ? ", ADD_ACTIVE_STATE)
             .and("parameters = ? ", stateName);

@@ -107,18 +107,18 @@ public class GroupDAO {
     if(GroupState.UNKNOWN.equals(group.getState())) {
       group.setState(GroupState.VALID);
     }
-    JdbcSqlQuery.createInsertFor(GROUP_TABLE)
-        .addInsertParam("id", nextId)
-        .addInsertParam(SPECIFIC_ID, specificId)
-        .addInsertParam(DOMAIN_ID, getDomainIdOf(group))
-        .addInsertParam(SUPER_GROUP_ID, superGroupId)
-        .addInsertParam(NAME, group.getName())
-        .addInsertParam(DESCRIPTION, group.getDescription())
-        .addInsertParam(SYNCHRO_RULE, group.getRule())
-        .addInsertParam(CREATION_DATE, now)
-        .addInsertParam(SAVE_DATE, now)
-        .addInsertParam(STATE, group.getState())
-        .addInsertParam(STATE_SAVE_DATE, now)
+    JdbcSqlQuery.insertInto(GROUP_TABLE)
+        .withInsertParam("id", nextId)
+        .withInsertParam(SPECIFIC_ID, specificId)
+        .withInsertParam(DOMAIN_ID, getDomainIdOf(group))
+        .withInsertParam(SUPER_GROUP_ID, superGroupId)
+        .withInsertParam(NAME, group.getName())
+        .withInsertParam(DESCRIPTION, group.getDescription())
+        .withInsertParam(SYNCHRO_RULE, group.getRule())
+        .withInsertParam(CREATION_DATE, now)
+        .withInsertParam(SAVE_DATE, now)
+        .withInsertParam(STATE, group.getState())
+        .withInsertParam(STATE_SAVE_DATE, now)
         .executeWith(connection);
     return String.valueOf(nextId);
   }
@@ -128,10 +128,10 @@ public class GroupDAO {
     final Date now = new Date();
     final Instant nowI = now.toInstant();
     GroupDetail restored = null;
-    final long nbRestored = JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
-        .addUpdateParam(STATE, GroupState.VALID)
-        .addUpdateParam(STATE_SAVE_DATE, nowI)
-        .addUpdateParam(SAVE_DATE, nowI)
+    final long nbRestored = JdbcSqlQuery.update(GROUP_TABLE)
+        .withUpdateParam(STATE, GroupState.VALID)
+        .withUpdateParam(STATE_SAVE_DATE, nowI)
+        .withUpdateParam(SAVE_DATE, nowI)
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .and(STATE).in(GroupState.REMOVED)
         .executeWith(connection);
@@ -150,10 +150,10 @@ public class GroupDAO {
     final Date now = new Date();
     final Instant nowI = now.toInstant();
     GroupDetail removed = null;
-    final long nbRemoved = JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
-        .addUpdateParam(STATE, GroupState.REMOVED)
-        .addUpdateParam(STATE_SAVE_DATE, nowI)
-        .addUpdateParam(SAVE_DATE, nowI)
+    final long nbRemoved = JdbcSqlQuery.update(GROUP_TABLE)
+        .withUpdateParam(STATE, GroupState.REMOVED)
+        .withUpdateParam(STATE_SAVE_DATE, nowI)
+        .withUpdateParam(SAVE_DATE, nowI)
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .and(STATE).notIn(GroupState.REMOVED)
         .executeWith(connection);
@@ -169,7 +169,7 @@ public class GroupDAO {
 
   public long deleteGroup(final Connection connection, final GroupDetail group)
       throws SQLException {
-    final long nbDeleted = JdbcSqlQuery.createDeleteFor(GROUP_TABLE)
+    final long nbDeleted = JdbcSqlQuery.deleteFrom(GROUP_TABLE)
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .executeWith(connection);
     if (nbDeleted > 0) {
@@ -190,7 +190,7 @@ public class GroupDAO {
       throws SQLException {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(domainIds);
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(STATE_CRITERION, GroupState.REMOVED);
     final List<Integer> requestedDomainIds =
@@ -207,9 +207,9 @@ public class GroupDAO {
 
     checkGroupExistence(connection, groupId);
 
-    JdbcSqlQuery.createInsertFor(GROUP_USERS_TABLE)
-        .addInsertParam(GROUP_ID, Integer.parseInt(groupId))
-        .addInsertParam(USER_ID, Integer.parseInt(userId))
+    JdbcSqlQuery.insertInto(GROUP_USERS_TABLE)
+        .withInsertParam(GROUP_ID, Integer.parseInt(groupId))
+        .withInsertParam(USER_ID, Integer.parseInt(userId))
         .executeWith(connection);
 
     groupCache.removeCacheOfUser(userId);
@@ -222,9 +222,9 @@ public class GroupDAO {
     for (String userId : userIds) {
       checkUserExistence(connection, userId);
 
-      JdbcSqlQuery.createInsertFor(GROUP_USERS_TABLE)
-          .addInsertParam(GROUP_ID, Integer.parseInt(groupId))
-          .addInsertParam(USER_ID, Integer.parseInt(userId))
+      JdbcSqlQuery.insertInto(GROUP_USERS_TABLE)
+          .withInsertParam(GROUP_ID, Integer.parseInt(groupId))
+          .withInsertParam(USER_ID, Integer.parseInt(userId))
           .executeWith(connection);
 
       groupCache.removeCacheOfUser(userId);
@@ -251,16 +251,16 @@ public class GroupDAO {
     final Instant now = new Date().toInstant();
     final Integer superGroupId = checkSuperGroup(connection, group);
     String specificId = isDefined(group.getSpecificId()) ? group.getSpecificId() : group.getId();
-    JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
-        .addUpdateParam(SPECIFIC_ID, specificId)
-        .addUpdateParam(DOMAIN_ID, getDomainIdOf(group))
-        .addUpdateParam(SUPER_GROUP_ID, superGroupId)
-        .addUpdateParam(NAME, group.getName())
-        .addUpdateParam(DESCRIPTION, group.getDescription())
-        .addUpdateParam(SYNCHRO_RULE, isDefined(group.getRule()) ? group.getRule() : null)
-        .addUpdateParam(SAVE_DATE, now)
-        .addUpdateParam(STATE, group.getState())
-        .addUpdateParam(STATE_SAVE_DATE, toInstance(group.getStateSaveDate()))
+    JdbcSqlQuery.update(GROUP_TABLE)
+        .withUpdateParam(SPECIFIC_ID, specificId)
+        .withUpdateParam(DOMAIN_ID, getDomainIdOf(group))
+        .withUpdateParam(SUPER_GROUP_ID, superGroupId)
+        .withUpdateParam(NAME, group.getName())
+        .withUpdateParam(DESCRIPTION, group.getDescription())
+        .withUpdateParam(SYNCHRO_RULE, isDefined(group.getRule()) ? group.getRule() : null)
+        .withUpdateParam(SAVE_DATE, now)
+        .withUpdateParam(STATE, group.getState())
+        .withUpdateParam(STATE_SAVE_DATE, toInstance(group.getStateSaveDate()))
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .executeWith(connection);
   }
@@ -279,7 +279,7 @@ public class GroupDAO {
 
   public void deleteUserInGroup(final Connection connection, final String userId,
       final String groupdId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(GROUP_USERS_TABLE)
+    JdbcSqlQuery.deleteFrom(GROUP_USERS_TABLE)
         .where("userId = ?", Integer.parseInt(userId))
         .and(GROUP_ID_CRITERION, Integer.parseInt(groupdId))
         .executeWith(connection);
@@ -288,7 +288,7 @@ public class GroupDAO {
 
   public boolean isGroupByNameExists(final Connection connection, final String name)
       throws SQLException {
-    return JdbcSqlQuery.createSelect("COUNT(id)")
+    return JdbcSqlQuery.select("COUNT(id)")
         .from(GROUP_TABLE)
         .where("name like ?", name)
         .and(STATE).notIn(GroupState.REMOVED)
@@ -303,7 +303,7 @@ public class GroupDAO {
    * @throws SQLException if an error occurs while getting the user groups from the data source.
    */
   public List<GroupDetail> getAllGroups(Connection connection) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(STATE).notIn(GroupState.REMOVED)
         .orderBy(NAME)
@@ -318,7 +318,7 @@ public class GroupDAO {
    * @throws SQLException if an error occurs while getting the user groups from the data source.
    */
   public List<GroupDetail> getAllRootGroups(Connection connection) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where("superGroupId is null")
         .and(STATE).notIn(GroupState.REMOVED)
@@ -334,7 +334,7 @@ public class GroupDAO {
    */
   public List<GroupDetail> getAllRootGroupsByDomainId(final Connection connection,
       final String domainId) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("superGroupId is null")
@@ -353,7 +353,7 @@ public class GroupDAO {
    */
   public List<GroupDetail> getAllGroupsByDomainId(final Connection connection,
       final String domainId, final boolean includeRemoved) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId));
     if (!includeRemoved) {
@@ -372,7 +372,7 @@ public class GroupDAO {
    * @throws SQLException
    */
   public GroupDetail getSuperGroup(Connection connection, String groupId) throws SQLException {
-    return JdbcSqlQuery.createSelect(format(GROUP_COLUMNS_PATTERN, "sg."))
+    return JdbcSqlQuery.select(format(GROUP_COLUMNS_PATTERN, "sg."))
         .from(GROUP_TABLE + " sg", GROUP_TABLE + " g")
         .where("sg.id = g.superGroupId")
         .and("g.id = ?", Integer.parseInt(groupId))
@@ -402,7 +402,7 @@ public class GroupDAO {
       final List<String> groupIds, final String[] profileIds) throws SQLException {
     final Map<String, Set<String>> rolesByGroup = new HashMap<>(groupIds.size());
     JdbcSqlQuery.executeBySplittingOn(groupIds, (idBatch, ignore) ->
-        JdbcSqlQuery.createSelect("urgr.groupid, ur.rolename")
+        JdbcSqlQuery.select("urgr.groupid, ur.rolename")
             .from(USER_ROLE_GROUPS_TABLE + " urgr")
             .join("st_userrole ur").on("ur.id = urgr.userroleid")
             .where("urgr.groupid").in(idBatch.stream().map(Integer::parseInt).collect(toList()))
@@ -418,7 +418,7 @@ public class GroupDAO {
 
   public GroupDetail getGroupBySpecificId(final Connection connection, final String domainId,
       final String specificId) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("specificId = ?", specificId)
@@ -427,7 +427,7 @@ public class GroupDAO {
 
   public GroupDetail getGroup(Connection con, String groupId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where(ID_CRITERION, Integer.parseInt(groupId))
         .executeUniqueWith(con, GroupDAO::fetchGroup);
@@ -435,7 +435,7 @@ public class GroupDAO {
 
   public List<GroupDetail> getDirectSubGroups(Connection con, String groupId,
       final boolean includeRemoved) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where("superGroupId = ?", Integer.parseInt(groupId));
     if (!includeRemoved) {
@@ -445,14 +445,14 @@ public class GroupDAO {
   }
 
   public int getNBUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
-    return JdbcSqlQuery.createSelect("COUNT(userId)")
+    return JdbcSqlQuery.select("COUNT(userId)")
         .from(GROUP_USERS_TABLE)
         .where(GROUP_ID_CRITERION, Integer.parseInt(groupId))
         .executeUniqueWith(con, rs -> rs.getInt(1));
   }
 
   public List<String> getUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
-    return JdbcSqlQuery.createSelect(USER_ID)
+    return JdbcSqlQuery.select(USER_ID)
         .from(GROUP_USERS_TABLE)
         .where(GROUP_ID_CRITERION, Integer.parseInt(groupId))
         .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
@@ -471,7 +471,7 @@ public class GroupDAO {
   }
 
   public List<GroupDetail> getSynchronizedGroups(final Connection connection) throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    return JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE)
         .where("synchroRule is not null")
         .and(STATE).notIn(GroupState.REMOVED)
@@ -488,7 +488,7 @@ public class GroupDAO {
   public List<GroupDetail> getDirectGroupsOfUser(final Connection connection, final String userId,
       final boolean includeRemoved)
       throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.select(GROUP_COLUMNS)
         .from(GROUP_TABLE, GROUP_USERS_TABLE)
         .where("id = groupId")
         .and("userId = ?", Integer.parseInt(userId));
@@ -508,7 +508,7 @@ public class GroupDAO {
   public List<String> getDirectGroupIdsByUserRole(Connection connection, String userRoleId,
       final boolean includeRemoved)
       throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
+    final JdbcSqlQuery query = JdbcSqlQuery.select("id")
         .from(GROUP_TABLE, USER_ROLE_GROUPS_TABLE)
         .where("id = groupid")
         .and("userroleid = ?", Integer.parseInt(userRoleId));
@@ -520,7 +520,7 @@ public class GroupDAO {
 
   public List<String> getDirectGroupIdsBySpaceUserRole(Connection connection,
       String spaceUserRoleId, final boolean includeRemoved) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
+    final JdbcSqlQuery query = JdbcSqlQuery.select("id")
         .from(GROUP_TABLE, SPACE_ROLE_GROUP)
         .where("groupId = id")
         .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId));
@@ -532,7 +532,7 @@ public class GroupDAO {
 
   public List<String> getDirectGroupIdsByGroupUserRole(Connection connection,
       String groupUserRoleId, final boolean includeRemoved) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
+    final JdbcSqlQuery query = JdbcSqlQuery.select("id")
         .from(GROUP_TABLE, GROUP_ROLE_GROUPS_TABLE)
         .where("id = groupId")
         .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId));
@@ -544,7 +544,7 @@ public class GroupDAO {
 
   private List<String> getManageableGroupIdsByUser(Connection con, String userId)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + GROUP_ID_ATTR)
+    return JdbcSqlQuery.select(GROUP_ROLE_TABLE + GROUP_ID_ATTR)
         .from(GROUP_ROLE_USERS_TABLE, GROUP_ROLE_TABLE, GROUP_TABLE)
         .where(GROUP_ROLE_USERS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
         .and(GROUP_TABLE + ".id = " + GROUP_ROLE_TABLE + GROUP_ID_ATTR)
@@ -555,7 +555,7 @@ public class GroupDAO {
 
   private List<String> getManageableGroupIdsByGroups(Connection con, List<String> groupIds)
       throws SQLException {
-    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + GROUP_ID_ATTR)
+    return JdbcSqlQuery.select(GROUP_ROLE_TABLE + GROUP_ID_ATTR)
         .from(GROUP_ROLE_GROUPS_TABLE, GROUP_ROLE_TABLE, GROUP_TABLE)
         .where(GROUP_ROLE_GROUPS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
         .and(GROUP_TABLE + ".id = " + GROUP_ROLE_TABLE + GROUP_ID_ATTR)

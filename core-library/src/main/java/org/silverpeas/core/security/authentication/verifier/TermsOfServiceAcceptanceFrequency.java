@@ -23,35 +23,37 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.date.period.PeriodType;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
- * User: Yohann Chastagnier
- * Date: 10/09/13
+ * Frequency at which the acceptance of the terms of service have to be checked.
+ * @author Yohann Chastagnier Date: 10/09/13
  */
 public enum TermsOfServiceAcceptanceFrequency {
+
   NEVER(null),
   ONE(null),
-  DAILY(PeriodType.day),
-  WEEKLY(PeriodType.week),
-  MONTHLY(PeriodType.month),
-  YEARLY(PeriodType.year),
-  ALWAYS(null);
+  DAILY(ChronoUnit.DAYS),
+  WEEKLY(ChronoUnit.WEEKS),
+  MONTHLY(ChronoUnit.MONTHS),
+  YEARLY(ChronoUnit.YEARS),
+  ALWAYS(ChronoUnit.FOREVER);
 
-  private PeriodType periodeType;
+  private final ChronoUnit periodType;
 
-  private TermsOfServiceAcceptanceFrequency(PeriodType periodeType) {
-    this.periodeType = periodeType;
+  TermsOfServiceAcceptanceFrequency(ChronoUnit periodType) {
+    this.periodType = periodType;
   }
 
   /**
    * Indicates if terms of service frequency is activated.
-   * @return
+   * @return true if the terms of service is activated. False otherwise.
    */
   public boolean isActivated() {
     return this != NEVER;
@@ -60,24 +62,23 @@ public enum TermsOfServiceAcceptanceFrequency {
   /**
    * Indicates if the given acceptance date of terms of service is valid compared to the current
    * date.
-   * @param tosAcceptanceDate
-   * @param locale
-   * @return
+   * @param tosAcceptanceDate the date at which the terms of service have been accepted.
+   * @return true if the acceptance date has expired. False otherwise.
    */
-  public boolean isAcceptanceDateExpired(Date tosAcceptanceDate, String locale) {
-    return isAcceptanceDateExpired(DateUtil.getNow(), tosAcceptanceDate, locale);
+  public boolean isAcceptanceDateExpired(Date tosAcceptanceDate) {
+    LocalDate acceptanceDate = tosAcceptanceDate == null ? null :
+        LocalDate.ofInstant(tosAcceptanceDate.toInstant(), ZoneId.systemDefault());
+    return isAcceptanceDateExpired(LocalDate.now(), acceptanceDate);
   }
 
   /**
    * Indicates if the given acceptance date of terms of service is valid compared to the reference
    * date.
-   * @param referenceDate
-   * @param tosAcceptanceDate
-   * @param locale
-   * @return
+   * @param referenceDate a date of reference to accept the terms of service.
+   * @param tosAcceptanceDate the date at which the terms of service have been accepted.
+   * @return true if the acceptance date has expired. False otherwise.
    */
-  protected boolean isAcceptanceDateExpired(Date referenceDate, Date tosAcceptanceDate,
-      String locale) {
+  private boolean isAcceptanceDateExpired(LocalDate referenceDate, LocalDate tosAcceptanceDate) {
     switch (this) {
       case NEVER:
         return false;
@@ -90,18 +91,18 @@ public enum TermsOfServiceAcceptanceFrequency {
         break;
       default:
         if (tosAcceptanceDate != null) {
-          Period validPeriod = Period.from(referenceDate, periodeType, locale);
-          return !validPeriod.contains(tosAcceptanceDate);
+          Period validPeriod = Period.from(referenceDate).of(1, periodType);
+          return !validPeriod.includes(tosAcceptanceDate);
         }
     }
     return true;
   }
 
   /**
-   * Decode from a string value.
-   * NEVER by default (even the given value is unknown).
-   * @param tosAcceptanceFrequency
-   * @return
+   * Decode from a string value. NEVER by default (even the given value is unknown).
+   * @param tosAcceptanceFrequency a string encoding the frequency at which the acceptance of the
+   * terms of service has to be checked.
+   * @return the check frequency of the acceptance of the terms of service.
    */
   public static TermsOfServiceAcceptanceFrequency decode(final String tosAcceptanceFrequency) {
     if (StringUtil.isDefined(tosAcceptanceFrequency)) {

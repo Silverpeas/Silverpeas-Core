@@ -80,7 +80,7 @@ public class SqlUserSelectorByCriteriaBuilder {
    * @return the SQL query matching the specified criteria.
    */
   public JdbcSqlQuery build(final UserDetailsSearchCriteria criteria) {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields);
+    final JdbcSqlQuery query = JdbcSqlQuery.select(fields);
 
     applyJoinsAndDefaultCriteria(query, criteria);
     applyCriteriaOnRoles(query, criteria);

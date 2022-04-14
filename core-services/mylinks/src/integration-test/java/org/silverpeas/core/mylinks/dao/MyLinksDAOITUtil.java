@@ -50,7 +50,7 @@ public class MyLinksDAOITUtil {
   }
 
   static List<Integer> getAllLinkIds() throws SQLException {
-    return JdbcSqlQuery.createSelect("linkid")
+    return JdbcSqlQuery.select("linkid")
         .from("SB_MyLinks_Link")
         .orderBy("linkid")
         .execute(r -> r.getInt(1));
@@ -65,7 +65,7 @@ public class MyLinksDAOITUtil {
   }
 
   static List<Integer> getAllCategoryIds() throws SQLException {
-    return JdbcSqlQuery.createSelect("catid")
+    return JdbcSqlQuery.select("catid")
         .from("SB_MyLinks_Cat")
         .orderBy("catid")
         .execute(r -> r.getInt(1));
@@ -80,7 +80,7 @@ public class MyLinksDAOITUtil {
   }
 
   static List<String> getAllOfCouples() throws SQLException {
-    return JdbcSqlQuery.createSelect("*")
+    return JdbcSqlQuery.select("*")
         .from("SB_MyLinks_LinkCat")
         .orderBy("catid, linkid")
         .execute(r -> r.getInt("catid") + "/" + r.getInt("linkid"));

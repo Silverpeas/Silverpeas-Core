@@ -170,7 +170,7 @@ public class ComponentInstanceThumbnailDeletionIT {
    * @throws Exception
    */
   private List<String> getThumbnails() throws Exception {
-    return JdbcSqlQuery.createSelect(
+    return JdbcSqlQuery.select(
         "instanceid, objectid, objecttype, originalattachmentname from sb_thumbnail_thumbnail")
         .addSqlPart("order by instanceid, objectid")
         .execute(row -> row.getString(1) + " | " + row.getInt(2) + " | " + row.getInt(3) + " | " +

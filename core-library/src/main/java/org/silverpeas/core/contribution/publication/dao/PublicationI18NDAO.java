@@ -61,8 +61,8 @@ public class PublicationI18NDAO {
    * @throws SQLException on technical SQL error
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(TABLENAME).where("pubId in (" +
-        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.PUBLICATION_TABLE_NAME)
+    JdbcSqlQuery.deleteFrom(TABLENAME).where("pubId in (" +
+        JdbcSqlQuery.select("pubId from " + PublicationDAO.PUBLICATION_TABLE_NAME)
             .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
   }
 
@@ -84,7 +84,7 @@ public class PublicationI18NDAO {
   public static Map<String, List<PublicationI18N>> getIndexedTranslations(Connection con,
       List<String> publicationIds) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, result) -> JdbcSqlQuery
-        .createSelect(FIELDS)
+        .select(FIELDS)
         .from(TABLENAME)
         .where("pubId").in(idBatch.stream().map(Integer::parseInt).collect(toList()))
         .executeWith(con, r -> {

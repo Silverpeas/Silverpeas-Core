@@ -1404,8 +1404,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    * @param end date
    * @return List <SocialInformation>
    */
+  @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId, Date begin,
+  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId, Date begin,
       Date end) {
     try (Connection con = getConnection()) {
       return PublicationDAO.getAllPublicationsIDbyUserid(con, userId, begin, end);

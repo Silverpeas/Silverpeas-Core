@@ -478,7 +478,7 @@ public interface PublicationService {
    */
   void addLinks(PublicationPK pubPK, List<ResourceReference> links);
 
-  List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId,
+  List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
       Date begin, Date end);
 
   /**

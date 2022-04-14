@@ -25,6 +25,7 @@ package org.silverpeas.core.security.authentication.verifier;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
@@ -38,21 +39,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Class that provides tools to verify if the user have to change his password or if the user will
  * soon have to change his password.
- * User: Yohann Chastagnier
- * Date: 14/02/13
+ * @author Yohann Chastagnier Date: 14/02/13
  */
 public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifier {
-  public static final String ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN =
-      "Error_PwdMustBeChangedOnFirstLogin";
-  public static final String ERROR_PWD_AND_EMAIL_MUST_BE_CHANGED_ON_FIRST_LOGIN =
-      "Error_PwdAndEmailMustBeChangedOnFirstLogin";
 
   private enum UserFirstLoginStep {
     CHANGE_PASSWORD,
     PASSWORD_CHANGED
   }
 
-  private static Map<String, UserFirstLoginStep> usersFirstLoginStep = new ConcurrentHashMap<>();
+  private static final Map<String, UserFirstLoginStep> usersFirstLoginStep =
+      new ConcurrentHashMap<>();
 
   protected static boolean isThatUserMustChangePasswordOnFirstLogin = false;
   protected static boolean isThatUserMustFillEmailAddressOnFirstLogin = false;
@@ -101,7 +98,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
 
   /**
    * Default constructor.
-   * @param user
+   * @param user the user behind a login.
    */
   protected UserMustChangePasswordVerifier(final UserDetail user) {
     super(user);
@@ -109,15 +106,16 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
 
   /**
    * Gets the destination on first login.
-   * @return
+   * @return the URL of the next web page for a first login according to some settings.
    */
   public String getDestinationOnFirstLogin(HttpServletRequest request) {
-    String errorCode =
-        (!isThatUserMustFillEmailAddressOnFirstLogin) ? ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN :
-            ERROR_PWD_AND_EMAIL_MUST_BE_CHANGED_ON_FIRST_LOGIN;
+    AuthenticationResponse.Status error = isThatUserMustFillEmailAddressOnFirstLogin ?
+        AuthenticationResponse.Status.PASSWORD_EMAIL_TO_CHANGE_ON_FIRST_LOGIN :
+        AuthenticationResponse.Status.PASSWORD_TO_CHANGE;
     if (request != null) {
-      String message = getString("authentication.logon." + errorCode, (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
-              getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE);
+      String language = (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
+          getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE;
+      String message = error.getMessage(language);
       request.setAttribute("message", message);
       request.setAttribute("isThatUserMustFillEmailAddressOnFirstLogin",
           isThatUserMustFillEmailAddressOnFirstLogin);
@@ -125,7 +123,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
         request.setAttribute("emailAddress", getUser().geteMail());
       }
     }
-    return otherSettings.getString("passwordChangeOnFirstLoginURL") + "?ErrorCode=" + errorCode;
+    return otherSettings.getString("passwordChangeOnFirstLoginURL") + "?ErrorCode=" + error;
   }
 
   /**

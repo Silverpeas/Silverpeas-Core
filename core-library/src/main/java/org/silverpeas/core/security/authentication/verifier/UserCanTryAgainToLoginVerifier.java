@@ -33,6 +33,7 @@ import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
+import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -47,9 +48,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class that provides tools to verify if the user can try to login one more time after a login
+ * Class that provides tools to verify if the user can try to log in one more time after a login
  * error.
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 05/02/13
  */
 public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifier {
@@ -59,7 +60,8 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
 
   private static boolean isActivated = false;
   private static boolean isCacheCleanerInitialized = false;
-  private static int nbMaxAttempts = 0;
+  @SuppressWarnings("FieldMayBeFinal")
+  private static int nbMaxAttempts;
 
   static {
     nbMaxAttempts = settings.getInteger("nbConnectionAttemptsBeforeBlockingUser", 0);
@@ -73,7 +75,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
 
   /**
    * Default constructor.
-   * @param user
+   * @param user the user behind a login attempt.
    */
   private UserCanTryAgainToLoginVerifier(final UserDetail user) {
     super(user);
@@ -96,7 +98,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
 
   /**
    * Indicates if the verifier is activated.
-   * @return
+   * @return true if this verifier has to be used. False otherwise.
    */
   public boolean isActivated() {
     return isActivated;
@@ -104,9 +106,9 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
 
   /**
    * Performs request and an original url.
-   * @param request
-   * @param originalUrl
-   * @return
+   * @param request the incoming HTTP request for login.
+   * @param originalUrl the URL at which the user should be directed if all is ok.
+   * @return the actual destination URL once this verifier completed its work.
    */
   public String performRequestUrl(final HttpServletRequest request, final String originalUrl) {
 
@@ -124,8 +126,8 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Gets (warning) message the message according to connection attempts.
-   * @return
+   * Gets the (warning) message according to connection attempts.
+   * @return the message to render to the user for its login attempt.
    */
   public String getMessage() {
 
@@ -142,10 +144,10 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
 
   /**
    * Gets the error destination.
-   * @return
+   * @return relative URL of the web page for login errors.
    */
   public String getErrorDestination() {
-    return "/Login?ErrorCode=" + UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+    return "/Login?ErrorCode=" + AuthenticationResponse.Status.USER_ACCOUNT_BLOCKED;
   }
 
   /**
@@ -167,11 +169,11 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Indicates if the user can try to login one more time after an login error.
+   * Indicates if the user can try to log in one more time after a login error.
    * If the system is not activated (see file settings), this method answers always yes.
    * If the system is activated, this method answers yes until the try number of login is less than
    * the maximum number of try set.
-   * @return true if the user can try to login one more time, false otherwise.
+   * @return true if the user can try to log in one more time, false otherwise.
    */
   private synchronized boolean isAtLeastOneUserConnectionAttempt() {
     return !isActivated ||
@@ -198,13 +200,13 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Gets user connection attempt handling.
-   * @param user
-   * @return
+   * Gets a verifier of user connection for the specified user.
+   * @param user the user behind the login attempt.
+   * @return an instance of this verifier for the given user.
    */
   protected static synchronized UserCanTryAgainToLoginVerifier get(UserDetail user) {
     if (user == null) {
-      return new UserCanTryAgainToLoginVerifier(user);
+      return new UserCanTryAgainToLoginVerifier(null);
     }
     String userKey = key(user);
     UserCanTryAgainToLoginVerifier verifier = cache.get(userKey);
@@ -220,8 +222,8 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Clear cache of user connection attempt handling.
-   * @param user
+   * Clear the cache of user connection attempts.
+   * @param user the user behind the login attempt.
    */
   private static synchronized void clearCache(UserDetail user) {
     if (user != null) {
@@ -230,9 +232,9 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Centralized key build.
-   * @param user
-   * @return
+   * Centralized build of the connexion attempts cache key.
+   * @param user the user behind a login attempt.
+   * @return the key to use in cache for the given user.
    */
   private static String key(UserDetail user) {
     return "key(" + user.getLogin() + "#@#" + user.getDomainId() + ")";
@@ -244,7 +246,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * removed.
    * @author Yohann Chastagnier
    */
-  private class CacheCleanerJob extends Job {
+  private static class CacheCleanerJob extends Job {
 
     public static final String JOB_NAME = "AuthenticationUserConnectionAttemptsVerifierCleanerJob";
 

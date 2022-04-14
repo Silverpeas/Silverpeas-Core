@@ -89,7 +89,7 @@ public class GenericRecordSetManager {
   public List<String> getExternalIdOfComponentInstanceId(String componentInstanceId)
       throws FormException {
     try {
-      return JdbcSqlQuery.createSelect("externalId from " + TEMPLATE_TABLE)
+      return JdbcSqlQuery.select("externalId from " + TEMPLATE_TABLE)
           .where("externalId like ?", componentInstanceId + ":%").execute(row -> row.getString(1));
     } catch (SQLException e) {
       throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_SELECT_FAILED, e);

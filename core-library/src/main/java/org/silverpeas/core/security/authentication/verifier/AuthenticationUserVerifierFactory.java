@@ -30,10 +30,13 @@ import static org.silverpeas.core.security.authentication.verifier.AbstractAuthe
 import static org.silverpeas.core.security.authentication.verifier.AbstractAuthenticationVerifier.getUserById;
 
 /**
- * Factory that provides some verifiers about user authentication :
- * - one to verify if the user can login in relation to its account state
- * - one to verify if the user can try to login one more time after a login error
- * User: Yohann Chastagnier
+ * Factory that provides external verifiers of user authentication that are invoked around a
+ * user authentication:
+ * <ul>
+ * <li>some to verify whether the user can log on in relation to its account state,</li>
+ * <li>another one to verify whether the user can try to log on one more time after a login error,</li>
+ * </ul>
+ * @author Yohann Chastagnier
  * Date: 06/02/13
  */
 public class AuthenticationUserVerifierFactory {
@@ -44,44 +47,44 @@ public class AuthenticationUserVerifierFactory {
 
   /**
    * Removes from request cache the given user.
-   * @param user a user instance.
+   * @param user the user behind a login attempt.
    */
   public static void removeFromRequestCache(UserDetail user) {
     AbstractAuthenticationVerifier.removeFromRequestCache(user);
   }
 
   /**
-   * Gets user state verifier from UserDetail.
-   * @param user
-   * @return the verifier that checks if the user can login in relation to its account state
+   * Gets the verifier of the account state of the specified user.
+   * @param user the user behind a login attempt.
+   * @return the verifier that checks if the user can log on in relation to its account state
    */
   public static UserCanLoginVerifier getUserCanLoginVerifier(UserDetail user) {
     return new UserCanLoginVerifier(user);
   }
 
   /**
-   * Gets user state verifier from a user identifier.
-   * @param userId
-   * @return the verifier that checks if the user can login in relation to its account state
+   * Gets the verifier of the account state if the specified user.
+   * @param userId the unique identifier of the user behind a login attempt.
+   * @return the verifier that checks if the user can log on in relation to its account state
    */
   public static UserCanLoginVerifier getUserCanLoginVerifier(String userId) {
     return getUserCanLoginVerifier(getUserById(userId));
   }
 
   /**
-   * Gets user state verifier from credentials.
-   * @param credential
-   * @return the verifier that checks if the user can login in relation to its account state
+   * Gets the verifier of the account state of user referred by the specified credentials.
+   * @param credential the credential of the user behind the login.
+   * @return the verifier that checks if the user can log on in relation to its account state
    */
   public static UserCanLoginVerifier getUserCanLoginVerifier(AuthenticationCredential credential) {
     return getUserCanLoginVerifier(getUserByCredential(credential));
   }
 
   /**
-   * Gets user connection attempt verifier from a login and a domain identifier.
-   * @param credential
-   * @return the verifier that checks if the user can try to login one more time after a login
-   *         error
+   * Gets the verifier of login attempts with the specified credentials.
+   * @param credential the credential of the user behind the login.
+   * @return the verifier that checks if the user can try to log on one more time after a login
+   * error
    */
   public static UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
       AuthenticationCredential credential) {
@@ -96,10 +99,10 @@ public class AuthenticationUserVerifierFactory {
   }
 
   /**
-   * Gets user connection attempt verifier from a login and a domain identifier.
-   * @param user
-   * @return the verifier that checks if the user can try to login one more time after a login
-   *         error
+   * Gets the verifier of login attempts by the specified user.
+   * @param user the user behind a login attempt.
+   * @return the verifier that checks if the user can try to log on one more time after a login
+   * error
    */
   public static synchronized UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
       UserDetail user) {
@@ -107,20 +110,20 @@ public class AuthenticationUserVerifierFactory {
   }
 
   /**
-   * Gets user must change his password verifier from credentials.
-   * @param user
+   * Gets the verifier about the state of the password of the specified user.
+   * @param user the user behind a login attempt.
    * @return the verifier that checks if the user must change his password or if the user will soon
-   *         have to change his password
+   * have to change his password
    */
   public static UserMustChangePasswordVerifier getUserMustChangePasswordVerifier(UserDetail user) {
     return new UserMustChangePasswordVerifier(user);
   }
 
   /**
-   * Gets user must change his password verifier from credentials.
-   * @param credential
+   * Gets the verifier about the state of the password passed in the credentials.
+   * @param credential the credential of the user behind the login.
    * @return the verifier that checks if the user must change his password or if the user will soon
-   *         have to change his password
+   * have to change his password
    */
   public static UserMustChangePasswordVerifier getUserMustChangePasswordVerifier(
       AuthenticationCredential credential) {
@@ -128,8 +131,8 @@ public class AuthenticationUserVerifierFactory {
   }
 
   /**
-   * Gets user must accept terms of service verifier from credentials.
-   * @param credential
+   * Gets the terms of service verifier for the user referred by the specified credentials.
+   * @param credential the credential of the user behind the login.
    * @return the verifier that checks if the user must accept terms of service
    */
   public static UserMustAcceptTermsOfServiceVerifier getUserMustAcceptTermsOfServiceVerifier(
@@ -138,9 +141,11 @@ public class AuthenticationUserVerifierFactory {
   }
 
   /**
-   * Gets user must accept terms of service verifier from a token.
-   * @param tosToken
-   * @return the verifier that checks if the user must accept terms of service
+   * Gets the terms of service verifier for the specified token with which the verifier is mapped.
+   * Each verifier is identified by a key (the token here) in a cache and these verifiers are each
+   * for a given user trying to log on.
+   * @param tosToken a token.
+   * @return the verifier that checks if the user must accept terms of service.
    */
   public static synchronized UserMustAcceptTermsOfServiceVerifier getUserMustAcceptTermsOfServiceVerifier(
       String tosToken) {
