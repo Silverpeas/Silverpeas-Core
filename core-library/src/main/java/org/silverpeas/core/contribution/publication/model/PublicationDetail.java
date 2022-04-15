@@ -75,9 +75,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -92,7 +90,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,6 +100,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.contribution.indicator.NewContributionIndicator.isNewContribution;
 import static org.silverpeas.core.date.TemporalConverter.asDate;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -121,9 +119,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   private static final String EXCHANGE_NAMESPACE = "http://www.silverpeas.org/exchange";
   public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
-
-  private static final SettingBundle SETTING_BUNDLE =
-      ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
 
   private PublicationPK pk;
   private String infoId;
@@ -1102,11 +1097,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @return true of this publication was created or updated recently. False otherwise
    */
   public boolean isNew() {
-    int days = SETTING_BUNDLE.getInteger("publication.new", 0);
-    LocalDate threshold =
-        LocalDate.ofInstant(getLastUpdateDate().toInstant(), ZoneId.systemDefault()).plusDays(days);
-    LocalDate today = LocalDate.now();
-    return today.isBefore(threshold) || today.isEqual(threshold);
+    return isNewContribution(this);
   }
 
   /**

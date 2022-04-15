@@ -293,6 +293,10 @@ public class GlobalSilverResult implements java.io.Serializable {
     return result.isAlias();
   }
 
+  public boolean isNew() {
+    return result.isNew();
+  }
+
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof GlobalSilverResult)) {

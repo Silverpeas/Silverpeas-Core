@@ -24,23 +24,23 @@
 package org.silverpeas.core.web.util.viewgenerator.html.result;
 
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -68,7 +68,7 @@ public class HtmlSearchResultTag extends TagSupport {
   private Integer sortValue = null;
   private boolean exportEnabled = false;
   private MultiSilverpeasBundle resources = null;
-  private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
+  private Map<String, Boolean> componentSettings = new HashMap<>();
 
   @Override
   public int doStartTag() throws JspException {
@@ -140,9 +140,8 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * @return an HTML result search of a searched element
-   * @throws JspTagException
    */
-  private String getHtmlResult() throws JspTagException {
+  private String getHtmlResult() {
     // Get settings from MultiSilverpeasBundle
     MultiSilverpeasBundle settings = getResources();
     // Retrieve result instance identifier
@@ -244,6 +243,9 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append(componentName).append(" ");
     result.append(gsr.getInstanceId()).append(" ");
     result.append(gsr.getType()).append(" ");
+    if (gsr.isNew()) {
+      result.append("new-contribution ");
+    }
     result.append(serverName).append("\">");
 
     if (exportEnabled) {
