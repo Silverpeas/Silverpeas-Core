@@ -29,6 +29,9 @@ import org.silverpeas.core.util.DateUtil;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
+
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * A FieldDescription pack all the needed information to parse and index a generic field (xml field,
@@ -130,5 +133,29 @@ public class FieldDescription implements Serializable {
 
   public LocalDate getEndDate() {
     return endDate;
+  }
+
+  public boolean isEmpty() {
+    return isNotDefined(content);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final FieldDescription that = (FieldDescription) o;
+    return stored == that.stored && basedOnDates == that.basedOnDates &&
+        Objects.equals(content, that.content) && Objects.equals(lang, that.lang) &&
+        Objects.equals(fieldName, that.fieldName) && Objects.equals(startDate, that.startDate) &&
+        Objects.equals(endDate, that.endDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(content, lang, fieldName, stored, basedOnDates, startDate, endDate);
   }
 }
