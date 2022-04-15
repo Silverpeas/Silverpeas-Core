@@ -36,6 +36,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+
 /**
  * A QueryDescription packs a query with the different spaces and components to be searched.
  */
@@ -46,7 +49,7 @@ public final class QueryDescription implements Serializable {
    * The searched components' instance is built empty. To be searched any space or component must
    * be explicitly added with the addSpaceComponent() method.
    **/
-  private HashSet<String> whereToSearch = new HashSet<>();
+  private final HashSet<String> whereToSearch = new HashSet<>();
   /**
    * The query defaults to the empty query. This is an error to set the query to null : a query is
    * needed to perform the search.
@@ -70,15 +73,13 @@ public final class QueryDescription implements Serializable {
   private LocalDate requestedUpdatedAfter = null;
   private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
-  private boolean searchBySpace = false;
-  private boolean searchByComponentType = false;
   private String requestedFolder = null;
   private String taxonomyPosition = null;
 
   /**
    * The external searched components are build empty. This is a set of ExternalComponent
    */
-  private Set<ExternalComponent> extComponents = new HashSet<>();
+  private final Set<ExternalComponent> extComponents = new HashSet<>();
 
   private boolean adminScope = false;
 
@@ -112,7 +113,7 @@ public final class QueryDescription implements Serializable {
     this.query = findAndReplace(this.query, " not ", " NOT ");
     if (this.query.indexOf("not ") == 0) {
       final int notLength = 4;
-      this.query = "NOT " + this.query.substring(notLength, this.query.length());
+      this.query = "NOT " + this.query.substring(notLength);
     }
 
   }
@@ -146,9 +147,8 @@ public final class QueryDescription implements Serializable {
   }
 
   /**
-   * Return the set of all the component's instances whose the documents must be searched. The
-   * return Set is a set of SpaceComponentPair.
-   * @return
+   * @return the set of all the component's instances where the documents must be searched.
+   * The return Set is a set of SpaceComponentPair.
    */
   public Set<String> getWhereToSearch() {
     return whereToSearch;
@@ -156,15 +156,14 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the requested language.
-   * @param requestedLang
+   * @param requestedLang a language.
    */
   public void setRequestedLanguage(String requestedLang) {
     this.requestedLang = requestedLang;
   }
 
   /**
-   * Returns the requested language.
-   * @return
+   * @return the requested language.
    */
   public String getRequestedLanguage() {
     if (requestedLang == null) {
@@ -175,15 +174,14 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the requested author.
-   * @param author
+   * @param author an author.
    */
   public void setRequestedAuthor(String author) {
     this.requestedAuthor = (author == null) ? null : author.toLowerCase();
   }
 
   /**
-   * Return the requested author.
-   * @return
+   * @return the requested author.
    */
   public String getRequestedAuthor() {
     return requestedAuthor;
@@ -191,7 +189,7 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the before date
-   * @param beforedate
+   * @param beforedate a date.
    */
   public void setRequestedCreatedBefore(LocalDate beforedate) {
     this.requestedCreatedBefore = beforedate;
@@ -262,7 +260,9 @@ public final class QueryDescription implements Serializable {
   }
 
   public boolean isEmpty() {
-    boolean queryDefined = StringUtil.isDefined(query) || getMultiFieldQuery() != null;
+    boolean queryDefined = StringUtil.isDefined(query) || ofNullable(getMultiFieldQuery()).stream()
+        .flatMap(List::stream)
+        .anyMatch(not(FieldDescription::isEmpty));
     boolean filtersDefined = StringUtil.isDefined(getRequestedAuthor()) || isPeriodDefined();
     return !queryDefined && !filtersDefined;
   }
@@ -276,7 +276,7 @@ public final class QueryDescription implements Serializable {
     String replacedSource = source;
     while (index > -1) {
       replacedSource = replacedSource.substring(0, index) + replace +
-          replacedSource.substring(index + find.length(), replacedSource.length());
+          replacedSource.substring(index + find.length());
       index = replacedSource.indexOf(find);
     }
 
