@@ -24,6 +24,7 @@
 package org.silverpeas.core.index.search.model;
 
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -31,8 +32,13 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.contribution.indicator.NewContributionIndicator.isNewContribution;
 
 /**
  * @author Nicolas Eysseric
@@ -45,9 +51,7 @@ public class SearchResult extends AbstractBean {
   private LocalDate lastUpdateDate;
   private String lastUpdaterId;
 
-  private String id;
-  private String componentId;
-  private String type;
+  private ContributionIdentifier cId;
 
   private float score;
   private String serverName;
@@ -73,9 +77,7 @@ public class SearchResult extends AbstractBean {
     this.creatorId = mie.getCreationUser();
     this.lastUpdaterId = mie.getLastModificationUser();
 
-    this.id = mie.getObjectId();
-    this.componentId = mie.getComponent();
-    this.type = mie.getObjectType();
+    this.cId = ContributionIdentifier.from(mie.getComponent(), mie.getObjectId(), mie.getObjectType());
 
     this.score = mie.getScore();
     this.serverName = mie.getServerName();
@@ -116,9 +118,7 @@ public class SearchResult extends AbstractBean {
 
     this.lastUpdateDate = DateUtil.toLocalDate(gsc.getLastUpdateDate());
 
-    this.id = gsc.getId();
-    this.componentId = gsc.getInstanceId();
-    this.type = gsc.getType();
+    this.cId = ContributionIdentifier.from(gsc.getInstanceId(), gsc.getId(), gsc.getType());
 
     for (String language : gsc.getTranslations().keySet()) {
       SearchResultTranslation translation =
@@ -174,15 +174,15 @@ public class SearchResult extends AbstractBean {
   }
 
   public String getId() {
-    return id;
+    return cId.getLocalId();
   }
 
   public String getInstanceId() {
-    return componentId;
+    return cId.getComponentInstanceId();
   }
 
   public String getType() {
-    return type;
+    return cId.getType();
   }
 
   public float getScore() {
@@ -225,6 +225,13 @@ public class SearchResult extends AbstractBean {
     return alias;
   }
 
+  public boolean isNew() {
+    return ofNullable(lastUpdateDate != null ? lastUpdateDate : creationDate)
+        .map(d -> d.atStartOfDay(ZoneId.systemDefault()).toInstant())
+        .map(i -> isNewContribution(cId, i))
+        .orElse(false);
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -233,24 +240,12 @@ public class SearchResult extends AbstractBean {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-
     final SearchResult that = (SearchResult) o;
-
-    if (id != null ? !id.equals(that.id) : that.id != null) {
-      return false;
-    }
-
-    if (type != null ? !type.equals(that.type) : that.type != null) {
-      return false;
-    }
-
-    return componentId != null ? componentId.equals(that.componentId) : that.componentId == null;
+    return Objects.equals(cId, that.cId);
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + (componentId != null ? componentId.hashCode() : 0);
-    return result;
+    return Objects.hash(cId);
   }
 }

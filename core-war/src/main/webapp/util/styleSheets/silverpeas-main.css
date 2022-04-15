@@ -5410,6 +5410,19 @@ div.fileUpload {
   font-style: italic;
 }
 
+/*********** Last publications and new ones *******************/
+#globalResultListDetails .locationTitle a,
+.last-publication-list .publication-name {
+  font-weight: 500;
+}
+
+#globalResultListDetails .new-contribution .locationTitle a,
+.spaceHome #publicationList .new-contribution a b,
+.last-publication-list .new-contribution .publication-name {
+  font-weight: bold;
+  opacity: 1;
+}
+
 /*******************************/
 /** Tagit **/
 /*******************************/

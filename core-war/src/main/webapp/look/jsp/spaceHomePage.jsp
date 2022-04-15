@@ -372,7 +372,8 @@
 
       <ul id="publicationList">
         <% for (PublicationDetail publication : publications) { %>
-        <li>
+        <c:set var="isNewOne" value="<%=publication.isNew()%>"/>
+        <li class="${isNewOne ? 'new-contribution' : ''}">
           <a class="sp-permalink" href="<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getId())%>"><b><%=Encode
               .forHtml(publication.getName(helper.getLanguage())) %>
           </b></a>
