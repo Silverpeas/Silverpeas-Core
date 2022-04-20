@@ -28,12 +28,13 @@ import org.apache.ecs.ElementAttributes;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.html.WebPlugin;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import java.text.MessageFormat;
 import java.util.Random;
+
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.EMBEDPLAYER;
+import static org.silverpeas.core.ui.DisplayI18NHelper.getDefaultLanguage;
 
 /**
  * An (X)HTML video player with javascript. The video player is set up and rendered by using
@@ -207,8 +208,7 @@ public class VideoPlayer {
    * @param element an XHTML element into which the resources declaration will be rendered.
    */
   public void init(final ConcreteElement element) {
-    include(element, WebPlugin.get()
-        .getHtml(SupportedWebPlugins.EMBEDPLAYER, DisplayI18NHelper.getDefaultLanguage()));
+    include(element, WebPlugin.get().getHtml(EMBEDPLAYER, getDefaultLanguage()));
   }
 
   /**

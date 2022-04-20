@@ -23,24 +23,20 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.apache.ecs.ElementContainer;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.html.WebPluginConsumerRegistry;
 import org.silverpeas.core.initialization.Initialization;
 
 import javax.inject.Singleton;
-import java.util.function.BiConsumer;
 
-import static org.silverpeas.core.html.SupportedWebPlugins.*;
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.*;
 import static org.silverpeas.core.html.WebPluginConsumerRegistry.add;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 /**
  * @author Yohann Chastagnier
  */
-@SuppressWarnings("Duplicates")
 @Service
 @Singleton
 public class DefaultWebPlugin implements WebPlugin, Initialization {
@@ -99,15 +95,5 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(PANES, (x, l) -> includePanes(x));
     add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
     add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
-  }
-
-  @Override
-  public ElementContainer getHtml(final SupportedWebPlugins plugin, final String language) {
-    ElementContainer xhtml = new ElementContainer();
-    BiConsumer<ElementContainer, String> inclusion = WebPluginConsumerRegistry.get(plugin);
-    if (inclusion != null) {
-      inclusion.accept(xhtml, language);
-    }
-    return xhtml;
   }
 }

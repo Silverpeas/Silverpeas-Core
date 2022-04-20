@@ -35,7 +35,7 @@ import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.html.PermalinkRegistry;
-import org.silverpeas.core.html.SupportedWebPlugins;
+import org.silverpeas.core.html.SupportedWebPlugin;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.subscription.SubscriptionFactory;
@@ -61,7 +61,7 @@ import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAs
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
 import static org.silverpeas.core.contribution.ContributionSettings.streamComponentNamesWithMinorModificationBehaviorEnabled;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.displayableAsContentComponentNames;
-import static org.silverpeas.core.html.SupportedWebPlugins.*;
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.*;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
@@ -224,10 +224,10 @@ public class JavascriptPluginInclusion {
    * @param src the source of plugin file.
    * @return the promise as string.
    */
-  private static String generateDynamicPluginLoadingPromise(final SupportedWebPlugins plugin,
+  private static String generateDynamicPluginLoadingPromise(final SupportedWebPlugin plugin,
       final String src) {
     return generatePromise(plugin,
-        generateDynamicPluginLoading(src, plugin.name().toLowerCase() + "Plugin", RESOLVE_CALLBACK,
+        generateDynamicPluginLoading(src, plugin.getName().toLowerCase() + "Plugin", RESOLVE_CALLBACK,
             null));
   }
 
@@ -238,8 +238,8 @@ public class JavascriptPluginInclusion {
    * and the reject calls).
    * @return the promise as string.
    */
-  private static String generatePromise(SupportedWebPlugins plugin, String promiseContent) {
-    String promise = "window." + plugin.name() + "_PROMISE";
+  private static String generatePromise(SupportedWebPlugin plugin, String promiseContent) {
+    String promise = "window." + plugin.getName() + "_PROMISE";
     promise += "=new Promise(function(resolve, reject){";
     promise += promiseContent;
     promise += "});";
@@ -258,7 +258,6 @@ public class JavascriptPluginInclusion {
    * that is always performed after that the plugin existence is verified.
    * @return
    */
-  @SuppressWarnings("StringBufferReplaceableByString")
   private static String generateDynamicPluginLoading(String src, String jqPluginName,
       String jsCallbackContentOnSuccessfulLoad, String jsCallback) {
     String key = "$jsDynamicPlugin$script$" + src;
@@ -432,7 +431,7 @@ public class JavascriptPluginInclusion {
     } else {
       xhtml.addElement(scriptContent(generatePromise(PDC,
           generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET,
-              PDC.name().toLowerCase() + "Plugin",
+              PDC.getName().toLowerCase() + "Plugin",
               generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_PDC, "__pdcDynLoad",
                   RESOLVE_CALLBACK, null), null))));
     }

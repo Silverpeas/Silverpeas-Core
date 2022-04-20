@@ -24,14 +24,16 @@
 
 package org.silverpeas.core.html.plugin;
 
-import org.silverpeas.core.html.SupportedWebPlugins;
+import org.silverpeas.core.html.SupportedWebPlugin;
 import org.silverpeas.core.html.WebPlugin;
 
 import java.util.Arrays;
 
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.LISTOFUSERSANDGROUPS;
+
 /**
  * A producer of HTML data necessary to initialize the {@code UserGroupSelect} plugin on the
- * WEB browser. The plugin is available under {@link SupportedWebPlugins#LISTOFUSERSANDGROUPS}.
+ * WEB browser. The plugin is available under {@link SupportedWebPlugin.Constants#LISTOFUSERSANDGROUPS}.
  * @author silveryocha
  */
 public class UserGroupSelectProducer extends AbstractPluginInitializationProducer {
@@ -103,7 +105,6 @@ public class UserGroupSelectProducer extends AbstractPluginInitializationProduce
 
   @Override
   protected String getDependencies() {
-    return WebPlugin.get().getHtml(SupportedWebPlugins.LISTOFUSERSANDGROUPS, getUserLanguage())
-        .toString();
+    return WebPlugin.get().getHtml(LISTOFUSERSANDGROUPS, getUserLanguage()).toString();
   }
 }

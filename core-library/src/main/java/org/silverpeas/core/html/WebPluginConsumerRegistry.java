@@ -27,18 +27,20 @@ import org.apache.ecs.ElementContainer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Web plugin consumer registry.<br>
- * It consists to map a {@link SupportedWebPlugins} with a {@link BiConsumer} which consumes an
+ * It consists to map a {@link SupportedWebPlugin} with a {@link BiConsumer} which consumes an
  * {@link ElementContainer} and the language as string.
  * @author Yohann Chastagnier
  */
 public class WebPluginConsumerRegistry {
 
-  private static final Map<SupportedWebPlugins, BiConsumer<ElementContainer, String>> registry =
-      new HashMap<>();
+  private static final Map<String, BiConsumer<ElementContainer, String>> registry = new HashMap<>();
 
   /**
    * Hidden constructor.
@@ -51,17 +53,16 @@ public class WebPluginConsumerRegistry {
    * @param plugin a plugin.
    * @param inclusion the inclusion.
    */
-  public static void add(SupportedWebPlugins plugin,
-      BiConsumer<ElementContainer, String> inclusion) {
-    registry.put(plugin, inclusion);
+  public static void add(SupportedWebPlugin plugin, BiConsumer<ElementContainer, String> inclusion) {
+    registry.put(plugin.getName().toLowerCase(), inclusion);
   }
 
   /**
    * Gets a plugin into registry.
-   * @param plugin a plugin.
+   * @param pluginName a plugin name.
    * @return the consumer.
    */
-  public static BiConsumer<ElementContainer, String> get(SupportedWebPlugins plugin) {
-    return registry.get(plugin);
+  protected static Optional<BiConsumer<ElementContainer, String>> get(String pluginName) {
+    return ofNullable(registry.get(pluginName.toLowerCase()));
   }
 }

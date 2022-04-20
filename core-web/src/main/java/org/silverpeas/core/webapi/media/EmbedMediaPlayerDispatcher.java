@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.media;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.html.SupportedWebPlugins;
+import org.silverpeas.core.html.SupportedWebPlugin;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.util.StringUtil;
 
@@ -46,7 +46,7 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
  * From a Servlet or a Web Service, this class handles the forwarding of the request to the media
  * embed player services.<br>
  * The data necessary to perform this operation are set by the JavasScript plugin {@link
- * SupportedWebPlugins#EMBEDPLAYER}.
+ * SupportedWebPlugin.Constants#EMBEDPLAYER}.
  * @author Yohann Chastagnier
  */
 public class EmbedMediaPlayerDispatcher {

@@ -43,5 +43,21 @@ public interface WebPlugin {
    * @return the element container filled with the necessary HTML tags to invoke the plugin, or
    * empty if the initialization script has already been done into the context of the same request.
    */
-  ElementContainer getHtml(SupportedWebPlugins plugin, final String language);
+  default ElementContainer getHtml(SupportedWebPlugin plugin, final String language) {
+    return getHtml(plugin.getName(), language);
+  }
+
+  /**
+   * Include a plugin by its name.
+   * <p>The method returns a filled element container one time per request.</p>
+   * @param pluginName the aimed plugin name.
+   * @param language the aimed language.
+   * @return the element container filled with the necessary HTML tags to invoke the plugin, or
+   * empty if the initialization script has already been done into the context of the same request.
+   */
+  default ElementContainer getHtml(String pluginName, final String language) {
+    final ElementContainer xhtml = new ElementContainer();
+    WebPluginConsumerRegistry.get(pluginName).ifPresent(i -> i.accept(xhtml, language));
+    return xhtml;
+  }
 }

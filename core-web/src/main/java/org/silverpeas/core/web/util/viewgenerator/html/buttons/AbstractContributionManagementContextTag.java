@@ -29,7 +29,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
-import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.util.StringUtil;
@@ -42,6 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.CONTRIBUTIONMODICTX;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.getDynamicSubscriptionJavascriptLoadContent;
 
@@ -70,8 +70,8 @@ abstract class AbstractContributionManagementContextTag extends TagSupport {
     if (buttonTag != null) {
       buttonTag.setActionPreProcessing("");
       ElementContainer xhtml = new ElementContainer();
-      xhtml.addElement(WebPlugin.get()
-          .getHtml(SupportedWebPlugins.CONTRIBUTIONMODICTX, getRequest().getUserLanguage()));
+      xhtml.addElement(
+          WebPlugin.get().getHtml(CONTRIBUTIONMODICTX, getRequest().getUserLanguage()));
       xhtml.addElement(new script().setType("text/javascript")
           .addElement(getDynamicSubscriptionJavascriptLoadContent(null)));
       xhtml.output(pageContext.getOut());

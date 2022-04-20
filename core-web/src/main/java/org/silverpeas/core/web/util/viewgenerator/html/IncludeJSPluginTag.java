@@ -24,7 +24,6 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.apache.ecs.ElementContainer;
-import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.StringUtil;
@@ -38,8 +37,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 
-import static org.silverpeas.core.html.SupportedWebPlugins.LAYOUT;
-import static org.silverpeas.core.html.SupportedWebPlugins.USERSESSION;
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.LAYOUT;
+import static org.silverpeas.core.html.SupportedWebPlugin.Constants.USERSESSION;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeLayout;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeUserSession;
 
@@ -63,11 +62,10 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   public void doTag() throws JspException, IOException {
     ElementContainer xhtml = new ElementContainer();
     try {
-      SupportedWebPlugins jsPlugin = SupportedWebPlugins.valueOf(getName());
-      xhtml = WebPlugin.get().getHtml(jsPlugin, getLanguage());
-      if (LAYOUT == jsPlugin) {
+      xhtml = WebPlugin.get().getHtml(getName(), getLanguage());
+      if (LAYOUT.getName().equalsIgnoreCase(getName())) {
         includeLayout(xhtml, getLookHelper());
-      } else if (USERSESSION == jsPlugin) {
+      } else if (USERSESSION.getName().equalsIgnoreCase(getName())) {
         includeUserSession(xhtml, getLookHelper());
       }
     } catch (IllegalArgumentException ex) {

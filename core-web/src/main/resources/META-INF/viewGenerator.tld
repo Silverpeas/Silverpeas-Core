@@ -184,7 +184,7 @@
       Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
       in charge by the tag. If the javascript requires a stylesheet, it is also included with
       the script. Currently, the supported plugins (JQuery as well Silverpeas ones) are defined in
-      the enum org.silverpeas.core.html.SupportedWebPlugins.
+      the enum org.silverpeas.core.html.SupportedWebPlugin.
     </description>
     <name>includePlugin</name>
     <tag-class>org.silverpeas.core.web.util.viewgenerator.html.IncludeJSPluginTag</tag-class>
