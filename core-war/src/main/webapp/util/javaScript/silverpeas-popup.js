@@ -224,6 +224,10 @@
     }
   };
 
+  if (window.sp) {
+    window.sp.popup = $.popup;
+  }
+
   var __getLabel = function(key) {
     return sp.i18n.get(key);
   };
