@@ -34,12 +34,14 @@ import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.util.ElisionFilter;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Extends lucene Analyzer : prunes from a tokens stream all the meaningless words and prunes all
@@ -48,7 +50,7 @@ import java.util.Map;
 public final class WAAnalyzer extends Analyzer {
 
   private static final int LANGUAGE_CODE_LENGTH = 2;
-  private static final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
+  private static final Map<String, WAAnalyzer> languageMap = new ConcurrentHashMap<>();
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
   /**
@@ -62,11 +64,7 @@ public final class WAAnalyzer extends Analyzer {
    * The constructor is private
    */
   private WAAnalyzer(String lang) {
-    if (!StringUtil.isDefined(lang) || lang.length() != LANGUAGE_CODE_LENGTH) {
-      language = settings.getString("analyzer.language.default", "fr");
-    } else {
-      language = lang;
-    }
+    language = lang;
     stemmer = getStemmer();
     snowballUsed = settings.getBoolean("snowball.active", false);
   }
@@ -78,14 +76,13 @@ public final class WAAnalyzer extends Analyzer {
    * @return
    */
   public static Analyzer getAnalyzer(String language) {
-    Analyzer analyzer = languageMap.get(language);
-
-    if (analyzer == null) {
-      analyzer = new WAAnalyzer(language);
-      languageMap.put(language, analyzer);
-    }
-
-    return analyzer;
+    return ofNullable(languageMap.get(language)).orElseGet(() -> {
+      final String computedLanguage = ofNullable(language)
+          .filter(l -> l.length() == LANGUAGE_CODE_LENGTH)
+          .orElseGet(() -> settings.getString("analyzer.language.default", I18n.get().getDefaultLanguage()));
+      final WAAnalyzer analyzer = languageMap.computeIfAbsent(computedLanguage, WAAnalyzer::new);
+      return languageMap.computeIfAbsent(language, l -> analyzer);
+    });
   }
 
   /**
