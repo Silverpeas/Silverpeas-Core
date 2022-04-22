@@ -79,7 +79,8 @@ public class DidYouMeanSearcher {
     if (StringUtil.isDefined(queryDescription.getQuery())) {
 
       // parses the query string to prepare the search
-      Analyzer analyzer = indexManager.getAnalyzer(queryDescription.getRequestedLanguage());
+      final String language = queryDescription.getRequestedLanguage().orElse(StringUtil.EMPTY);
+      Analyzer analyzer = indexManager.getAnalyzer(language);
       QueryParser queryParser = new QueryParser(field, analyzer);
 
       Query parsedQuery;

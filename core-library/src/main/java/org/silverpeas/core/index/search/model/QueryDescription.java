@@ -32,9 +32,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 
 /**
  * A QueryDescription packs a query with the different spaces and components to be searched.
@@ -164,13 +167,13 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Returns the requested language.
-   * @return
+   * <p>
+   * if no language or wildcard '*' has been set, all languages are checked.
+   * </p>
+   * @return optional requested language. Empty optional means all languages.
    */
-  public String getRequestedLanguage() {
-    if (requestedLang == null) {
-      return Locale.getDefault().getLanguage();
-    }
-    return requestedLang;
+  public Optional<String> getRequestedLanguage() {
+    return ofNullable(requestedLang).filter(not("*"::equals));
   }
 
   /**
