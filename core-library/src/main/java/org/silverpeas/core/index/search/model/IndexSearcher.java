@@ -260,21 +260,11 @@ public class IndexSearcher {
     if (!StringUtil.isDefined(query.getQuery())) {
       return null;
     }
-
-    String language = query.getRequestedLanguage();
-    Analyzer analyzer = indexManager.getAnalyzer(language);
-
-    Set<String> languages = Stream.of(language).collect(Collectors.toSet());
-    if (I18NHelper.isI18nContentActivated && "*".equals(language)) {
-      // search over all languages
-      languages = I18NHelper.getAllSupportedLanguages();
-    }
-
-    Query queryOnContent = getQuery(IndexManager.CONTENT, query.getQuery(), languages, analyzer);
-    Query queryOnHeader = getQuery(IndexManager.HEADER, query.getQuery(), languages, analyzer);
-
-    BoostQuery boostQuery = new BoostQuery(queryOnHeader, fieldHeaderBoost);
-    BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
+    final Set<String> languages = getRequestedLanguages(query);
+    final Query queryOnContent = getQuery(IndexManager.CONTENT, query.getQuery(), languages);
+    final Query queryOnHeader = getQuery(IndexManager.HEADER, query.getQuery(), languages);
+    final BoostQuery boostQuery = new BoostQuery(queryOnHeader, fieldHeaderBoost);
+    final BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
     booleanQuery.add(boostQuery, BooleanClause.Occur.SHOULD);
     booleanQuery.add(queryOnContent, BooleanClause.Occur.SHOULD);
     booleanQuery.setMinimumNumberShouldMatch(1);
@@ -284,8 +274,7 @@ public class IndexSearcher {
   private Query getMultiFieldQuery(QueryDescription query)
       throws org.silverpeas.core.index.search.model.ParseException {
     try {
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
-      Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
+      Set<String> languages = getRequestedLanguages(query);
       BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 
       Query plainTextQuery = getPlainTextQuery(query);
@@ -304,7 +293,7 @@ public class IndexSearcher {
         } else {
           if (StringUtil.isDefined(fieldQuery.getContent())) {
             Query fieldI18NQuery =
-                getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages, analyzer);
+                getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages);
             booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
           }
         }
@@ -316,16 +305,23 @@ public class IndexSearcher {
     }
   }
 
+  private Set<String> getRequestedLanguages(final QueryDescription query) {
+    return query.getRequestedLanguage()
+        .map(Collections::singleton)
+        .orElseGet(I18NHelper::getAllSupportedLanguages);
+  }
+
   /**
    * Generates MultiFieldQuery about one field and all languages.
    * This generated the following query : (fieldName:queryStr fieldName_en:queryStr fieldName_de:queryStr)
    * @return a Query limited to given fieldName
    * @throws ParseException
    */
-  private Query getQuery(String fieldName, String queryStr, Set<String> languages, Analyzer analyzer)
+  private Query getQuery(String fieldName, String queryStr, Set<String> languages)
       throws ParseException {
     BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
     for (String language : languages) {
+      final Analyzer analyzer = indexManager.getAnalyzer(language);
       QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
       parser.setDefaultOperator(defaultOperator);
       Query query = parse(parser, queryStr);
@@ -456,11 +452,11 @@ public class IndexSearcher {
    */
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
       org.apache.lucene.search.IndexSearcher searcher) throws IOException {
-    List<MatchingIndexEntry> results = new ArrayList<>();
-
+    final List<MatchingIndexEntry> results = new ArrayList<>();
     if (topDocs != null) {
       for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-        results.add(createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher));
+        final String requestedLanguage = query.getRequestedLanguage().orElse("*");
+        results.add(createMatchingIndexEntry(scoreDoc, requestedLanguage, searcher));
       }
     }
     return results;
