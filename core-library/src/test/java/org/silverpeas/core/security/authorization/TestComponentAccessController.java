@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -43,6 +44,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Optional;
 import java.util.Set;
@@ -84,6 +86,8 @@ class TestComponentAccessController {
   private OrganizationController controller;
   @TestManagedMock
   private PersonalComponentRegistry personalComponentRegistry;
+  @TestManagedMock
+  private RemovedSpaceAndComponentInstanceChecker checker;
 
   private ComponentAccessControl instance;
 
@@ -91,6 +95,8 @@ class TestComponentAccessController {
 
   @BeforeEach
   void setup() {
+    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     final UserDetail user = new UserDetail();
     user.setId(USER_ID);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);

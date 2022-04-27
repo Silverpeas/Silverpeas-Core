@@ -30,7 +30,6 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
-import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -185,6 +184,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     } else {
       setManagedSpaceId(getSpaceId(), true);
     }
+    setManagedInstanceId(null, getScope());
   }
 
   public void setSpaceId(String spaceUserId) {

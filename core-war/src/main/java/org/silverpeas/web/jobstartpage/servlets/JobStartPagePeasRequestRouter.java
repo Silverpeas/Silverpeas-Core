@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.component.model.ParameterList;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -41,8 +40,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -59,6 +56,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.util.JSONCodec.encodeObject;
+
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
   private static final long serialVersionUID = 3751632991093466433L;
@@ -66,12 +68,15 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   private static final String WELCOME_SPACE_MGR_TEMPLATE_FILE = "/space/welcome_space_manager_";
   private static final String WELCOME_FCT = "welcome";
   private static final String VIEW_BIN_FCT = "ViewBin";
+  private static final String GO_TO_COMPONENT_FCT = "GoToComponent";
   private static final String GO_TO_CURRENT_COMPONENT_FCT = "GoToCurrentComponent";
   private static final String SPACE_LOOK_FCT = "SpaceLook";
   private static final String ESPACE_PARAM = "Espace";
+  private static final String SPACE_ID_PARAM = "SpaceId";
   private static final String COMPONENT_ID_PARAM = "ComponentId";
   private static final String USER_PANEL_CURRENT_USER_IDS_PARAM = "UserPanelCurrentUserIds";
   private static final String USER_PANEL_CURRENT_GROUP_IDS_PARAM = "UserPanelCurrentGroupIds";
+  private static final String AS_JSON_PARAM = "AsJson";
   private static final String INHERITANCE_ATTR = "IsInheritanceEnable";
   private static final String URL_TO_RELOAD_ATTR = "urlToReload";
   private static final String PROFILE_ATTR = "Profile";
@@ -204,7 +209,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
     if ("Main".equals(function)) {
       jobStartPageSC.init(); // Only ONCE
-      final String spaceId = request.getParameter("SpaceId");
+      final String spaceId = request.getParameter(SPACE_ID_PARAM);
       setSpaceOrHomepage(jobStartPageSC, spaceId);
       destination = "/jobStartPagePeas/jsp/jobStartPage.jsp";
     } else if (function.startsWith("GoToSpace")) {
@@ -231,45 +236,32 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("Spaces", jobStartPageSC.getRemovedSpaces());
       request.setAttribute("Components", jobStartPageSC.getRemovedComponents());
       destination = "/jobStartPagePeas/jsp/bin.jsp";
-    } else if ("RestoreFromBin".equals(function)) {
-      String itemId = request.getParameter("ItemId");
+    } else if ("RestoreFromBin".equals(function) || "RemoveDefinitely".equals(function)) {
+      final List<String> spaceIds;
+      final List<String> componentIds;
+      final String itemId = request.getParameter("ItemId");
       if (StringUtil.isDefined(itemId)) {
         if (itemId.startsWith("WA")) {
-          jobStartPageSC.restoreSpaceFromBin(itemId);
+          spaceIds = singletonList(itemId);
+          componentIds = emptyList();
         } else {
-          jobStartPageSC.restoreComponentFromBin(itemId);
+          spaceIds = emptyList();
+          componentIds = singletonList(itemId);
         }
       } else {
-        String[] spaceIds = request.getParameterValues("SpaceIds");
-        for (int i = 0; spaceIds != null && i < spaceIds.length; i++) {
-          jobStartPageSC.restoreSpaceFromBin(spaceIds[i]);
-        }
-        String[] componentIds = request.getParameterValues("ComponentIds");
-        for (int i = 0; componentIds != null && i < componentIds.length; i++) {
-          jobStartPageSC.restoreComponentFromBin(componentIds[i]);
-        }
+        spaceIds = request.getParameterAsList("SpaceIds");
+        componentIds = request.getParameterAsList("ComponentIds");
       }
-      request.setAttribute(HAVE_TO_REFRESH_NAV_BAR_ATTR, Boolean.TRUE);
-      destination = getDestination(VIEW_BIN_FCT, jobStartPageSC, request);
-    } else if ("RemoveDefinitely".equals(function)) {
-      String itemId = request.getParameter("ItemId");
-      if (StringUtil.isDefined(itemId)) {
-        if (itemId.startsWith("WA")) {
-          jobStartPageSC.deleteSpaceInBin(itemId);
-        } else {
-          jobStartPageSC.deleteComponentInBin(itemId);
-        }
+      if ("RestoreFromBin".equals(function)) {
+        spaceIds.forEach(jobStartPageSC::restoreSpaceFromBin);
+        componentIds.forEach(jobStartPageSC::restoreComponentFromBin);
       } else {
-        String[] spaceIds = request.getParameterValues("SpaceIds");
-        for (int i = 0; spaceIds != null && i < spaceIds.length; i++) {
-          jobStartPageSC.deleteSpaceInBin(spaceIds[i]);
-        }
-        String[] componentIds = request.getParameterValues("ComponentIds");
-        for (int i = 0; componentIds != null && i < componentIds.length; i++) {
-          jobStartPageSC.deleteComponentInBin(componentIds[i]);
-        }
+        spaceIds.forEach(jobStartPageSC::deleteSpaceInBin);
+        componentIds.forEach(jobStartPageSC::deleteComponentInBin);
       }
-      destination = getDestinationNavBar(VIEW_BIN_FCT, jobStartPageSC, request);
+      destination = sendJson(encodeObject(o -> o
+          .putJSONArray("spaceIds", a -> a.addJSONArray(spaceIds))
+          .putJSONArray("componentIds", a -> a.addJSONArray(componentIds))));
     }
 
     return destination;
@@ -299,18 +291,17 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       AdminException {
     String destination = null;
 
-    if (function.equals("GoToComponent")) {
+    if (function.equals(GO_TO_COMPONENT_FCT)) {
       String compoId = request.getParameter(COMPONENT_ID_PARAM);
+      ComponentInst componentInst = jobStartPageSC.getComponentInst(compoId);
+      ofNullable(componentInst.getDomainFatherId())
+          .map(jobStartPageSC::getSpaceInstById)
+          .map(SpaceInst::getId)
+          .ifPresent(jobStartPageSC::setSpaceId);
       jobStartPageSC.setManagedInstanceId(compoId);
-      ComponentInst compoint1 = jobStartPageSC.getComponentInst(compoId);
-      String espaceId = compoint1.getDomainFatherId(); // WAid
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(espaceId);
-      String idFather = spaceint1.getDomainFatherId();
-      if ("0".equals(idFather) || idFather == null) {// l'instance appartient à un espace
-        jobStartPageSC.setSpaceId(spaceint1.getId());
-      }
-
-      destination = COMPONENT_INFO_FULL_DEST;
+      destination = request.getParameterAsBoolean(AS_JSON_PARAM) ?
+          emptyJsonResponse() :
+          COMPONENT_INFO_FULL_DEST;
     } else if ("SetupComponent".equals(function)) {
       String compoId = request.getParameter(COMPONENT_ID_PARAM);
       if (jobStartPageSC.isComponentManageable(compoId)) {
@@ -482,7 +473,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       } else {
         jobStartPageSC.init();
         request.setAttribute("PopupMode", true);
-        destination = getDestination("GoToComponent", jobStartPageSC, request);
+        destination = getDestination(GO_TO_COMPONENT_FCT, jobStartPageSC, request);
       }
     }
 

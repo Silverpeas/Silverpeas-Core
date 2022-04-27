@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.publication.dao.DistributionTreeCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -382,15 +383,11 @@ public interface PublicationService {
 
   /**
    * Gets the tree of nodes with the number of publication per node.
-   *
-   * @param instanceId
-   * @param statusSubQuery
-   * @param checkVisibility
+   * @param criteria criteria for delimiting the scope of the request.
    * @return the tree of nodes with the number of publication per node
    * @
    */
-  Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
-      boolean checkVisibility);
+  Map<String, Integer> getDistributionTree(DistributionTreeCriteria criteria);
 
   Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       String instanceId, boolean filterOnVisibilityPeriod);

@@ -29,6 +29,7 @@ import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -45,6 +46,7 @@ import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,12 +77,16 @@ class TestSimpleDocumentAccessController {
   private ComponentAccessControl componentAccessController;
   @TestManagedMock
   private NodeAccessControl nodeAccessController;
+  @TestManagedMock
+  private RemovedSpaceAndComponentInstanceChecker checker;
   private SimpleDocumentAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
   @BeforeEach
   void setup() {
+    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);

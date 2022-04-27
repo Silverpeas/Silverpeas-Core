@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.Thumbnail;
+import org.silverpeas.core.contribution.publication.dao.DistributionTreeCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
@@ -869,10 +870,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
-      boolean checkVisibility) {
+  public Map<String, Integer> getDistributionTree(DistributionTreeCriteria criteria) {
     try (Connection con = getConnection()) {
-      return PublicationDAO.getDistributionTree(con, instanceId, statusSubQuery, checkVisibility);
+      return PublicationDAO.getDistributionTree(con, criteria);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }

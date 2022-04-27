@@ -261,6 +261,15 @@ public class JdbcSqlQuery {
   /**
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery outerJoin(String sqlPart) {
+    return addSqlPart("LEFT OUTER JOIN " + sqlPart);
+  }
+
+  /**
+   * Centralization in order to populate the prepare statement parameters.
+   * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */

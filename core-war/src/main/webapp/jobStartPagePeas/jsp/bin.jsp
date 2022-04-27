@@ -28,8 +28,22 @@
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
+<c:set var="language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message key="JSPP.BinDeleteConfirm" var="BinDeleteConfirm"/>
+<fmt:message key="JSPP.BinDeleteConfirmSelected" var="BinDeleteConfirmSelected"/>
+<fmt:message key="JSPP.BinRestoreSelected" var="BinRestoreSelected"/>
+<fmt:message key="JSPP.BinAfterRestoreAskNavSpace" var="BinAfterRestoreAskNavSpace"/>
+<fmt:message key="JSPP.BinAfterRestoreAskNavComponent" var="BinAfterRestoreAskNavComponent"/>
 
 <%
 List removedSpaces 		= (List) request.getAttribute("Spaces");
@@ -43,41 +57,81 @@ browseBar.setComponentName(resource.getString("JSPP.Bin"));
 boolean emptyBin = true;
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("JSPP.Bin")%></title>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
-<!--
 function removeItem(id) {
-  jQuery.popup.confirm("<%=resource.getString("JSPP.BinDeleteConfirm")%>", function() {
-    $.progressMessage();
-    location.href = "RemoveDefinitely?ItemId=" + id;
+  jQuery.popup.confirm("${silfn:escapeJs(BinDeleteConfirm)}", function() {
+    performRemove({'ItemId' : id});
   });
 }
 
 function remove() {
-  jQuery.popup.confirm("<%=resource.getString("JSPP.BinDeleteConfirmSelected")%>", function() {
-    $.progressMessage();
-    window.document.binForm.action = "RemoveDefinitely";
-    window.document.binForm.submit();
+  jQuery.popup.confirm("${silfn:escapeJs(BinDeleteConfirmSelected)}", function() {
+    performRemove(sp.form.serializeJson(document.forms.binForm));
   });
 }
 
-function restore() {
-  jQuery.popup.confirm("<%=resource.getString("JSPP.BinRestoreSelected")%>", function() {
-    $.progressMessage();
-    window.document.binForm.action = "RestoreFromBin";
-    window.document.binForm.submit();
-  });
+function performRemove(params) {
+  spProgressMessage.show();
+  sp.ajaxRequest('RemoveDefinitely')
+      .withParams(params)
+      .byPostMethod()
+      .sendAndPromiseJsonResponse()
+      .then(smoothReload);
 }
 
 function restoreItem(id) {
-  $.progressMessage();
-  location.href = "RestoreFromBin?ItemId=" + id;
+  performRestore({'ItemId' : id});
+}
+
+function restore() {
+  jQuery.popup.confirm("${silfn:escapeJs(BinRestoreSelected)}", function() {
+    performRestore(sp.form.serializeJson(document.forms.binForm));
+  });
+}
+
+function performRestore(params) {
+  spProgressMessage.show();
+  sp.ajaxRequest('RestoreFromBin')
+      .withParams(params)
+      .byPostMethod()
+      .sendAndPromiseJsonResponse()
+      .then(function (restoreContext) {
+        const action = {};
+        if (restoreContext.spaceIds.length === 1 && restoreContext.componentIds.length === 0) {
+          action.confirmMsg = "${silfn:escapeJs(BinAfterRestoreAskNavSpace)}";
+          action.execute = function() {
+            spAdminWindow.loadSpace(restoreContext.spaceIds[0]);
+          }
+        } else if (restoreContext.spaceIds.length === 0 && restoreContext.componentIds.length === 1) {
+          action.confirmMsg = "${silfn:escapeJs(BinAfterRestoreAskNavComponent)}";
+          action.execute = function() {
+            spAdminWindow.loadComponent(restoreContext.componentIds[0]);
+          }
+        }
+        if (action.confirmMsg) {
+          spProgressMessage.hide();
+          jQuery.popup.confirm(action.confirmMsg, {
+            forceTitle : '',
+            callback : action.execute,
+            alternativeCallback : smoothReload,
+            callbackOnClose : smoothReload
+          });
+        } else {
+          smoothReload();
+        }
+      });
+}
+
+function smoothReload() {
+  spProgressMessage.show();
+  sp.ajaxRequest('ViewBin').send().then(function(request) {
+    sp.updateTargetWithHtmlContent('#binContainer', request.responseText, true);
+    spProgressMessage.hide();
+  }, spProgressMessage.hide)
 }
 
 function jqCheckAll2(id, name)
@@ -108,14 +162,14 @@ $(document).ready(function() {
     }
   });
 });
--->
 </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
+<div id="binContainer">
 <form name="binForm" action="" method="post">
 <%
 	ArrayPane arrayPane = gef.getArrayPane("binContentSpaces", "ViewBin", request, session);
@@ -194,10 +248,11 @@ out.println(frame.printBefore());
 	}
 %>
 </form>
+</div>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

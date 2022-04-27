@@ -34,6 +34,7 @@ import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -47,6 +48,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,6 +64,7 @@ import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.SEARCH;
@@ -98,12 +101,16 @@ class TestNodeAccessControllerFilter {
   private NodeService nodeService;
   @TestManagedMock
   private OrganizationController organizationController;
+  @TestManagedMock
+  private RemovedSpaceAndComponentInstanceChecker checker;
   private NodeAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
   @BeforeEach
   void setup() {
+    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     testContext = new TestContext();

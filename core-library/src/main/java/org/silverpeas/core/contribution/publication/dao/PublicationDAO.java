@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.dao;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -64,6 +65,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.time.OffsetDateTime.now;
+import static java.util.Optional.of;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO.PUBLICATION_FATHER_TABLE_NAME;
 import static org.silverpeas.core.util.DateUtil.formatDate;
@@ -178,72 +183,65 @@ public class PublicationDAO extends AbstractDAO {
     return result;
   }
 
-  public static Map<String, Integer> getDistributionTree(Connection con, String instanceId,
-      String statusSubQuery, boolean checkVisibility) throws SQLException {
-    Map<String, Integer> nodes = new HashMap<>();
-    StringBuilder selectStatement = new StringBuilder(128);
+  public static Map<String, Integer> getDistributionTree(final Connection con,
+      final DistributionTreeCriteria criteria) throws SQLException {
+    final DistributionTreeCriteria completedCriteria = new DistributionTreeCriteria(criteria)
+        .ignoringInstanceIds(getRemovedInstanceIdsLinkedToInstance(con, criteria));
+    return loadDistributionTree(con, completedCriteria);
+  }
 
-    selectStatement
-        .append("SELECT sb_node_node.nodeId, sb_node_node.nodefatherid, ")
-        .append("COUNT(sb_publication_publi.pubName) AS nbPubli FROM sb_node_node LEFT OUTER JOIN ")
-        .append(
-            "sb_publication_publifather ON sb_publication_publifather.nodeid = sb_node_node.nodeid")
-        .append(
-            " AND sb_publication_publifather.instanceId = ? LEFT OUTER JOIN sb_publication_publi ")
-        .append("ON sb_publication_publifather.pubId = sb_publication_publi.pubId ");
-    if (statusSubQuery != null) {
-      selectStatement.append(statusSubQuery);
+  private static List<String> getRemovedInstanceIdsLinkedToInstance(final Connection con,
+      final DistributionTreeCriteria criteria) throws SQLException {
+    final String instanceId = criteria.getInstanceId();
+    final JdbcSqlQuery query = JdbcSqlQuery
+        .createSelect("distinct sb_publication_publi.instanceId AS instanceId")
+        .from("sb_node_node")
+          .join("sb_publication_publifather")
+          .on("sb_publication_publifather.nodeid = sb_node_node.nodeid")
+          .and("sb_publication_publifather.instanceId = ?", instanceId)
+        .join(SB_PUBLICATION_PUBLI_TABLE)
+          .on("sb_publication_publifather.pubId = sb_publication_publi.pubId");
+    criteria.getStatusSubQuery().ifPresent(query::addSqlPart);
+    if (criteria.visibilityCheckRequired()) {
+      visibleFilter(query, AND_CONJUNCTION, now(), SB_PUBLICATION_PUBLI_TABLE);
     }
-    if (checkVisibility) {
-      selectStatement
-          .append(" AND (( ? > sb_publication_publi.pubBeginDate AND ")
-          .append(
-              "? < sb_publication_publi.pubEndDate ) OR ( ? = sb_publication_publi.pubBeginDate AND ")
-          .append(
-              "? < sb_publication_publi.pubEndDate AND ? > sb_publication_publi.pubBeginHour ) ")
-          .append("OR ( ? > sb_publication_publi.pubBeginDate AND ")
-          .append(
-              "? = sb_publication_publi.pubEndDate AND ? < sb_publication_publi.pubEndHour ) OR "
-                  + "( ? = sb_publication_publi.pubBeginDate AND ? = sb_publication_publi.pubEndDate "
-                  + "AND ? > sb_publication_publi.pubBeginHour AND ? < sb_publication_publi.pubEndHour )) ");
+    final RemovedSpaceAndComponentInstanceChecker checker = RemovedSpaceAndComponentInstanceChecker.create();
+    return query.where("sb_publication_publi.instanceId <> ?", instanceId)
+                .executeWith(con, r -> of(r.getString("instanceId"))
+                    .filter(checker::isRemovedComponentInstanceById)
+                    .orElse(null));
+  }
+
+  private static Map<String, Integer> loadDistributionTree(final Connection con,
+      final DistributionTreeCriteria criteria) throws SQLException {
+    final String instanceId = criteria.getInstanceId();
+    final JdbcSqlQuery query = JdbcSqlQuery
+        .createSelect("sb_node_node.nodeId, sb_node_node.nodefatherid, COUNT(sb_publication_publi.pubName) AS nbPubli")
+        .from("sb_node_node")
+        .outerJoin("sb_publication_publifather")
+          .on("sb_publication_publifather.nodeid = sb_node_node.nodeid")
+          .and("sb_publication_publifather.instanceId = ?", instanceId)
+        .outerJoin(SB_PUBLICATION_PUBLI_TABLE)
+          .on("sb_publication_publifather.pubId = sb_publication_publi.pubId");
+    final Collection<String> instanceIdsToIgnore = criteria.getInstanceIdsToIgnore();
+    if (!instanceIdsToIgnore.isEmpty()) {
+      query.and("sb_publication_publi.instanceId").notIn(instanceIdsToIgnore);
     }
-    selectStatement.append(
-        " WHERE sb_node_node.instanceId = ? GROUP BY sb_node_node.nodeId, sb_node_node" +
-            ".nodefatherid");
-
-    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
-      java.util.Date now = new java.util.Date();
-      String dateNow = formatDate(now);
-      String hourNow = DateUtil.formatTime(now);
-
-      prepStmt.setString(1, instanceId);
-      if (checkVisibility) {
-        prepStmt.setString(2, dateNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, hourNow);
-        prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, dateNow);
-        prepStmt.setString(9, hourNow);
-        prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, dateNow);
-        prepStmt.setString(12, hourNow);
-        prepStmt.setString(13, hourNow);
-        prepStmt.setString(14, instanceId);
-      } else {
-        prepStmt.setString(2, instanceId);
-      }
-
-      try (ResultSet rs = prepStmt.executeQuery()) {
-        while (rs.next()) {
-          int nodeId = rs.getInt("nodeId");
-          String nodeIdentifier = String.valueOf(nodeId);
-          nodes.put(nodeIdentifier, rs.getInt("nbPubli"));
-        }
-      }
-      return nodes;
+    criteria.getStatusSubQuery().ifPresent(query::addSqlPart);
+    if (criteria.visibilityCheckRequired()) {
+      visibleFilter(query, AND_CONJUNCTION, now(), SB_PUBLICATION_PUBLI_TABLE);
     }
+    final Map<String, Integer> nodes = new HashMap<>();
+    query
+        .where("sb_node_node.instanceId = ?", instanceId)
+        .groupBy("sb_node_node.nodeId, sb_node_node.nodefatherid")
+        .executeWith(con, r -> {
+      final int nodeId = r.getInt("nodeId");
+      final String nodeIdentifier = String.valueOf(nodeId);
+      nodes.put(nodeIdentifier, r.getInt("nbPubli"));
+      return null;
+    });
+    return nodes;
   }
 
   public static void insertRow(Connection con, PublicationDetail detail) {
@@ -824,22 +822,27 @@ public class PublicationDAO extends AbstractDAO {
       conjunction = AND_CONJUNCTION;
     }
     if (visibilityDate != null) {
-      dateFilters(query, conjunction, visibilityDate);
+      visibleFilter(query, conjunction, visibilityDate, "P");
     } else if (invisibilityDate != null) {
       nonVisibleFilter(query, conjunction, invisibilityDate);
     }
   }
 
-  private static void dateFilters(final JdbcSqlQuery sqlQuery, final String conjunction,
-    final OffsetDateTime visibilityDate) {
+  private static void visibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
+    final OffsetDateTime visibilityDate, final String target) {
     final java.util.Date asDateType = TemporalConverter.asDate(visibilityDate);
     final String dateNow =  formatDate(asDateType);
     final String hourNow = DateUtil.formatTime(asDateType);
+    final String p = target + ".";
     sqlQuery
-      .addSqlPart(conjunction + "((? > P.pubBeginDate", dateNow).and("? < P.pubEndDate)", dateNow)
-      .or("(? = P.pubBeginDate", dateNow).and("? < P.pubEndDate", dateNow).and("? > P.pubBeginHour)", hourNow)
-      .or("(? > P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? < P.pubEndHour)", hourNow)
-      .or("(? = P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? > P.pubBeginHour", hourNow).and("? < P.pubEndHour))", hourNow);
+      .addSqlPart(conjunction + f("((? > %spubBeginDate", p), dateNow).and(f("? < %spubEndDate)", p), dateNow)
+      .or(f("(? = %spubBeginDate", p), dateNow).and(f("? < %spubEndDate", p), dateNow).and(f("? > %spubBeginHour)", p), hourNow)
+      .or(f("(? > %spubBeginDate", p), dateNow).and(f("? = %spubEndDate", p), dateNow).and(f("? < %spubEndHour)", p), hourNow)
+      .or(f("(? = %spubBeginDate", p), dateNow).and(f("? = %spubEndDate", p), dateNow).and(f("? > %spubBeginHour", p), hourNow).and(f("? < %spubEndHour))", p), hourNow);
+  }
+
+  private static String f(final String sqlToFormat, final String prefix) {
+    return format(sqlToFormat, prefix);
   }
 
   private static void nonVisibleFilter(final JdbcSqlQuery sqlQuery, final String conjunction,
@@ -859,7 +862,7 @@ public class PublicationDAO extends AbstractDAO {
     if (!orderBies.isEmpty()) {
       query.orderBy(orderBies.stream()
           .map(o -> (o.isComplex() ? "" : "P.") + o.getPropertyName() + " " + (o.isAsc() ? "asc" : "desc"))
-          .collect(Collectors.joining(",")));
+          .collect(joining(",")));
     }
   }
 

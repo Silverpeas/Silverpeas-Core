@@ -98,6 +98,7 @@
       <admin-navigation-tree-application
           v-for="application in applications" v-bind:key="application.id"
           v-bind:application="application" v-bind:level="spacePath.length"
+          v-bind:class="{'selected':currentApplication.id === application.id}"
           v-on:application-select="$emit('application-select', $event)"></admin-navigation-tree-application>
     </div>
   </div>

@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -50,6 +51,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -138,12 +140,16 @@ class TestPublicationAccessControllerFilter {
   private NodeService nodeService;
   @TestManagedMock
   private OrganizationController organizationController;
+  @TestManagedMock
+  private RemovedSpaceAndComponentInstanceChecker checker;
   private PublicationAccessControl testInstance;
   private TestContext testContext;
   private User user;
 
   @BeforeEach
   void setup() {
+    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(user.getDisplayedName()).thenReturn(USER_ID);
     when(UserProvider.get().getUser(anyString())).thenReturn(user);

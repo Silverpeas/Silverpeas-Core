@@ -239,6 +239,11 @@ public class PublicationAccessController extends AbstractAccessController<Public
     return componentDataManager.isTopicTrackerSupported(instanceId);
   }
 
+  private boolean isComponentInstanceRemoved(final String instanceId, final AccessControlContext context) {
+    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    return componentDataManager.isRemoved(instanceId);
+  }
+
   /**
    * Fills given userRoles with the given context.
    * @param userRoles the {@link Set} to fill.
@@ -249,11 +254,14 @@ public class PublicationAccessController extends AbstractAccessController<Public
    */
   private boolean fillTopicTrackerRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final PublicationPK pubPK) {
-    boolean rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubPK);
-    if (rolesProcessed && CollectionUtil.isEmpty(userRoles)) {
-      // if the publication is not on root node and if user has no rights on folder, check if
-      // an alias of publication is authorized
-      rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
+    boolean rolesProcessed = isComponentInstanceRemoved(pubPK.getInstanceId(), context);
+    if (!rolesProcessed) {
+      rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubPK);
+      if (rolesProcessed && CollectionUtil.isEmpty(userRoles)) {
+        // if the publication is not on root node and if user has no rights on folder, check if
+        // an alias of publication is authorized
+        rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubPK);
+      }
     }
     return rolesProcessed;
   }
@@ -288,7 +296,10 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerAliasRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final PublicationPK pubPk) {
     final Set<AccessControlOperation> operations = context.getOperations();
-    if (!isPersistActionFrom(operations)) {
+    // Rights on alias are verified if no persist action detected and if it exists a main
+    // location on another component instance than the one hosting pubPk which is not removed
+    if (!isPersistActionFrom(operations) &&
+        !existsExternalMainLocationLinkedToRemovedComponentInstance(context, pubPk)) {
       try {
         final Collection<Location> locations = getDataManager(context).getAllPublicationAliases(pubPk);
         for (final Location location : locations) {
@@ -304,6 +315,19 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
     }
     return true;
+  }
+
+  /**
+   * @return true if it exists a main location hosted into a different component instance than
+   * the one of given pubPK and if this component instance is removed, false otherwise
+   */
+  private boolean existsExternalMainLocationLinkedToRemovedComponentInstance(
+      final AccessControlContext context, final PublicationPK pubPk) {
+    return getDataManager(context).getPublicationMainLocationSupplier(pubPk)
+        .get()
+        .filter(l -> !l.getInstanceId().equals(pubPk.getInstanceId()))
+        .map(l -> isComponentInstanceRemoved(l.getInstanceId(), context))
+        .orElse(false);
   }
 
   private static boolean isNotCreationContext(final String pubId, final String instanceId) {

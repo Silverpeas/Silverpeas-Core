@@ -31,6 +31,7 @@ import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -47,6 +48,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,6 +72,7 @@ class TestPublicationAccessController {
 
   private static final String USER_ID = "bart";
   private static final String GED_INSTANCE_ID = "kmelia26";
+  private static final String OTHER_GED_INSTANCE_ID = "kmelia38";
 
   @TestManagedMock
   private PublicationService publicationService;
@@ -79,6 +82,8 @@ class TestPublicationAccessController {
   private ComponentAccessControl componentAccessController;
   @TestManagedMock
   private NodeAccessControl nodeAccessController;
+  @TestManagedMock
+  private RemovedSpaceAndComponentInstanceChecker checker;
   private PublicationAccessControl testInstance;
   private TestContext testContext;
   private User user;
@@ -88,6 +93,8 @@ class TestPublicationAccessController {
 
   @BeforeEach
   void setup() {
+    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     testContext = new TestContext();
@@ -1084,9 +1091,25 @@ class TestPublicationAccessController {
     testContext.results()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
-        .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
+
+    // User has no right on component, but has alias right linked to a valid GED
+    testContext.clear();
+    testContext.onGEDComponent().withAliasUserRolesAndMainOnOtherGed(SilverpeasRole.PUBLISHER);
+    testContext.results()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
+        .verifyCallOfPublicationBmGetMainLocation();
+    assertIsUserAuthorized(true);
+
+    // User has no right on component, but has alias right linked to a removed GED
+    testContext.clear();
+    testContext.onGEDComponent().withAliasUserRolesAndMainOnOtherRemovedGed(SilverpeasRole.PUBLISHER);
+    testContext.results()
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
+        .verifyCallOfPublicationBmGetMainLocation();
+    assertIsUserAuthorized(false);
 
     // User has no right on component, but has alias right (PUBLISHER)
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -1096,7 +1119,6 @@ class TestPublicationAccessController {
     testContext.results()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
-        .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
@@ -1108,7 +1130,6 @@ class TestPublicationAccessController {
     testContext.results()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
-        .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
@@ -1122,7 +1143,6 @@ class TestPublicationAccessController {
     testContext.results()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
-        .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
@@ -3599,6 +3619,8 @@ class TestPublicationAccessController {
     private boolean isPublicationOnTrashDirectory;
     private TestVerifyResults testVerifyResults;
     private boolean isUserThePublicationAuthor;
+    private boolean otherInstanceRemoved;
+    private boolean mainOnOtherInstanceId;
 
     public void clear() {
       CacheServiceProvider.clearAllThreadCaches();
@@ -3624,6 +3646,8 @@ class TestPublicationAccessController {
       nodeNotInheritedUserRoles = null;
       testVerifyResults = new TestVerifyResults();
       isUserThePublicationAuthor = false;
+      otherInstanceRemoved = false;
+      mainOnOtherInstanceId = false;
     }
 
     public TestContext userIsAnonymous() {
@@ -3732,6 +3756,18 @@ class TestPublicationAccessController {
       return this;
     }
 
+    public TestContext withAliasUserRolesAndMainOnOtherGed(SilverpeasRole... roles) {
+      withAliasUserRoles(roles);
+      mainOnOtherInstanceId = true;
+      return this;
+    }
+
+    public TestContext withAliasUserRolesAndMainOnOtherRemovedGed(SilverpeasRole... roles) {
+      withAliasUserRolesAndMainOnOtherGed(roles);
+      otherInstanceRemoved = true;
+      return this;
+    }
+
     public TestContext userIsThePublicationAuthor() {
       isUserThePublicationAuthor = true;
       return this;
@@ -3757,6 +3793,10 @@ class TestPublicationAccessController {
             when(instance.isTopicTracker()).then(new Returns(i.startsWith("kmelia") || i.startsWith("kmax") || i.startsWith("toolbox")));
             return Optional.of(instance);
           });
+      when(checker.isRemovedComponentInstanceById(anyString())).then(a -> {
+        final String i = a.getArgument(0);
+        return i.equals(OTHER_GED_INSTANCE_ID) && mainOnOtherInstanceId && otherInstanceRemoved;
+      });
       when(organizationController.getComponentParameterValue(anyString(), eq("rightsOnTopics")))
           .then(new Returns(Boolean.toString(isRightsOnDirectories)));
       when(organizationController.getComponentParameterValue(anyString(), eq("coWriting")))
@@ -3800,7 +3840,7 @@ class TestPublicationAccessController {
       });
       when(publicationService.getAllLocations(any(PublicationPK.class))).then(invocation -> {
         final Collection<Location> allLocations = new ArrayList<>();
-        final String instanceId = GED_INSTANCE_ID;
+        final String instanceId = mainOnOtherInstanceId ? OTHER_GED_INSTANCE_ID : GED_INSTANCE_ID;
         if (testContext.isPublicationOnRootDirectory) {
           allLocations.add(new Location(NodePK.ROOT_NODE_ID, instanceId));
         } else if (testContext.isPublicationOnTrashDirectory) {

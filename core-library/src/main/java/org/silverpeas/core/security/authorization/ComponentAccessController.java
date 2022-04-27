@@ -27,6 +27,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -51,6 +52,7 @@ import static java.util.Collections.emptySet;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker.create;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
@@ -67,7 +69,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
   private static final String DATA_MANAGER_CONTEXT_KEY = "ComponentAccessControllerDataManager";
   private static final String RIGHTS_ON_TOPICS_PARAM_NAME = "rightsOnTopics";
 
-  private OrganizationController controller;
+  private final OrganizationController controller;
 
   @Inject
   ComponentAccessController(OrganizationController controller) {
@@ -126,6 +128,9 @@ public class ComponentAccessController extends AbstractAccessController<String>
       final AccessControlContext context, final String userId, final String componentId) {
     final DataManager dataManager = getDataManager(context);
     try {
+      if (dataManager.isRemoved(componentId)) {
+        return;
+      }
       final Predicate<User> isUserNotValidState = u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
       final Predicate<String> isTool = c -> c == null || dataManager.isToolAvailable(c);
 
@@ -176,7 +181,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
       final AccessControlContext context, final Set<SilverpeasRole> userRoles) {
     final DataManager dataManager = getDataManager(context);
     final Optional<SilverpeasComponentInstance> optionalInstance = dataManager.getComponentInstance(componentId);
-    if (!optionalInstance.isPresent()) {
+    if (optionalInstance.isEmpty()) {
       return true;
     }
 
@@ -205,7 +210,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
     private static final List<String> HANDLED_PARAM_NAMES = Arrays
         .asList(RIGHTS_ON_TOPICS_PARAM_NAME, "usePublicationSharing", "useFileSharing",
             "useFolderSharing", "coWriting", "publicFiles");
-    private OrganizationController controller;
+    private final OrganizationController controller;
+    private final RemovedSpaceAndComponentInstanceChecker removedChecker;
     private Map<String, Optional<SilverpeasComponentInstance>> componentInstancesCache = new HashMap<>(1);
     private Map<String, Boolean> isPublicationSharingEnabledForRoleCache = new HashMap<>(1);
     private Map<String, Boolean> isFileSharingEnabledForRoleCache = new HashMap<>(1);
@@ -220,6 +226,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
     DataManager() {
       controller = OrganizationController.get();
+      removedChecker = create().resetWithCacheSizeOf(1);
     }
 
     void loadCaches(final String userId, final Collection<String> instanceIds) {
@@ -235,6 +242,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
       isCoWritingEnabledCache = new HashMap<>(nbElements);
       isTopicTrackerSupportedCache = new HashMap<>(nbElements);
       hasUserReadAccessAtLeast = new HashMap<>(nbElements);
+      removedChecker.resetWithCacheSizeOf(nbElements);
       availableComponentCache = new HashSet<>(controller.getAvailableComponentsByUser(userId));
       completeCaches(userId, instanceIds);
     }
@@ -244,15 +252,15 @@ public class ComponentAccessController extends AbstractAccessController<String>
       if (firstLoad) {
         userProfiles = controller.getUserProfilesByComponentId(userId, instanceIds);
       } else {
-        controller.getUserProfilesByComponentId(userId, instanceIds)
-            .forEach((k, v) -> userProfiles.put(k, v));
+        userProfiles.putAll(controller.getUserProfilesByComponentId(userId, instanceIds));
       }
       if (firstLoad) {
         componentParameterValueCache = controller
             .getParameterValuesByComponentIdThenByParamName(instanceIds, HANDLED_PARAM_NAMES);
       } else {
-        controller.getParameterValuesByComponentIdThenByParamName(instanceIds, HANDLED_PARAM_NAMES)
-            .forEach((k, v) -> componentParameterValueCache.put(k, v));
+        componentParameterValueCache.putAll(
+            controller.getParameterValuesByComponentIdThenByParamName(instanceIds,
+                HANDLED_PARAM_NAMES));
       }
     }
 
@@ -293,6 +301,10 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
     boolean isToolAvailable(final String componentId) {
       return controller.isToolAvailable(componentId);
+    }
+
+    boolean isRemoved(final String componentId) {
+      return removedChecker.isRemovedComponentInstanceById(componentId);
     }
 
     Optional<SilverpeasComponentInstance> getComponentInstance(final String componentId) {
