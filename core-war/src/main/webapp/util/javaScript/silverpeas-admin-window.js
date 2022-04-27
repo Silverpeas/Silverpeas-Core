@@ -23,7 +23,7 @@
  */
 
 (function($window) {
-  var __adminWindowDebug = false;
+  const __adminWindowDebug = false;
 
   if(window === top.window) {
     return;
@@ -44,7 +44,7 @@
     return;
   }
 
-  var __loadErrorListener = function(request) {
+  const __loadErrorListener = function(request) {
     if (request.status === 0 || request.status >= 500) {
       __logError("technical load error");
       top.location = webContext;
@@ -54,7 +54,7 @@
     }
   };
 
-  var __spAdminWindowContext = {
+  const __spAdminWindowContext = {
     queue : new function() {
       this.__queue = undefined;
       this.exists = function() {
@@ -90,7 +90,7 @@
     lastNavigationEventData : {}
   };
 
-  var __showProgressMessage = function(hidePromise) {
+  const __showProgressMessage = function(hidePromise) {
     if (__spAdminWindowContext.queue.exists()) {
       __spAdminWindowContext.queue.insertAtBeginning(function() {
         __logDebug("show progress message");
@@ -102,7 +102,7 @@
     }
   };
 
-  var __loadMainAdminPage = function(params) {
+  const __loadMainAdminPage = function(params) {
     __showProgressMessage();
     if (__spAdminWindowContext.queue.exists()) {
       return new Promise(function(resolve, reject) {
@@ -133,12 +133,12 @@
     }, __loadErrorListener);
   }
 
-  var __loadSpaceAndComponentBody = function(params) {
+  const __loadSpaceAndComponentBody = function(params) {
     __showProgressMessage();
-    var _params = sp.param.singleToObject('jsonPromise', params);
-    var _jsonPromise = _params.jsonPromise;
+    const _params = sp.param.singleToObject('jsonPromise', params);
+    const _jsonPromise = _params.jsonPromise;
     delete _params.jsonPromise;
-    var _bodyParams = {
+    let _bodyParams = {
       navigationParams : webContext + '/RjobStartPagePeas/jsp/jobStartPageNav',
       contentParams : webContext + '/RjobStartPagePeas/jsp/StartPageInfo'
     };
@@ -154,16 +154,16 @@
       __logDebug("__loadSpaceAndComponentBody");
       return _jsonPromise.then(function() {
         return __loadBody(_bodyParams);
-      },__loadErrorListener);
+      }, __loadErrorListener);
     }
   };
 
-  var __loadUserAndGroupBody = function(params) {
+  const __loadUserAndGroupBody = function(params) {
     __showProgressMessage();
-    var _params = sp.param.singleToObject('jsonPromise', params);
-    var _jsonPromise = _params.jsonPromise;
+    const _params = sp.param.singleToObject('jsonPromise', params);
+    const _jsonPromise = _params.jsonPromise;
     delete _params.jsonPromise;
-    var _bodyParams = {
+    let _bodyParams = {
       navigationParams : {url : webContext + '/RjobDomainPeas/jsp/domainNavigation'},
       contentParams : {url : webContext + '/RjobDomainPeas/jsp/domainContent'}
     };
@@ -179,7 +179,7 @@
       __logDebug("__loadUserAndGroupBody");
       return _jsonPromise.then(function() {
         return __loadBody(_bodyParams);
-      },__loadErrorListener);
+      }, __loadErrorListener);
     }
   };
 
@@ -230,7 +230,7 @@
     }
   };
 
-  var __loadContent = function(url) {
+  const __loadContent = function(url) {
     return new Promise(function(resolve, reject) {
       if (__spAdminWindowContext.queue.exists()) {
         __spAdminWindowContext.queue.push(function() {
@@ -302,9 +302,14 @@
 
     this.loadComponent = function(id) {
       __logDebug("Loading component " + JSON.stringify(id));
-      return __loadContent(
-          sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToComponent').withParam(
-              'ComponentId', id).getUrl());
+      return __loadSpaceAndComponentBody({
+        jsonPromise : sp.ajaxRequest(webContext + '/RjobStartPagePeas/jsp/GoToComponent')
+            .withParam('ComponentId', id)
+            .withParam('AsJson', true)
+            .send(),
+        navigationParams : webContext + '/RjobStartPagePeas/jsp/jobStartPageNavAsJson',
+        contentParams : webContext + '/RjobStartPagePeas/jsp/GoToCurrentComponent'
+      });
     };
 
     this.loadUserAndGroupHomepage = function() {
@@ -349,9 +354,9 @@
    */
   function __logDebug() {
     if (__adminWindowDebug) {
-      var mainDebugStatus = sp.log.debugActivated;
+      const mainDebugStatus = sp.log.debugActivated;
       sp.log.debugActivated = true;
-      var messages = [];
+      const messages = [];
       Array.prototype.push.apply(messages, arguments);
       messages.splice(0, 0, "Admin Window -");
       sp.log.debug.apply(this, messages);

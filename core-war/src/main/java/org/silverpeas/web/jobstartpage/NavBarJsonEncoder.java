@@ -82,6 +82,7 @@ public class NavBarJsonEncoder {
       encodeSpacePath(o);
       encodeSpaces(o);
       encodeApplications(o);
+      encodeCurrentComponentInstance(o);
       return o;
     });
   }
@@ -186,6 +187,29 @@ public class NavBarJsonEncoder {
                 .put(LABEL, i.getName())));
         return a;
       });
+    }
+  }
+
+  /**
+   * Encodes if it exists the current root space. It's about the current root space into which
+   * the sub spaces are walked through.
+   * @param jsonObject the JSON object to fill.
+   */
+  private void encodeCurrentComponentInstance(final JSONObject jsonObject) {
+    final String currentApplicationId = controller.getManagedInstanceId();
+    if (isDefined(currentApplicationId)) {
+      final Collection<DisplaySorted> applications = isDefined(controller.getSubSpaceId()) ?
+          controller.getSubSpaceComponents() :
+          controller.getSpaceComponents();
+      if (isNotEmpty(applications)) {
+        applications.stream()
+            .filter(a -> currentApplicationId.equals(a.getId()))
+            .findFirst()
+            .ifPresent(a -> jsonObject.putJSONObject("currentApplication", o -> o
+                .put(ID, a.getId())
+                .put(NAME, a.getTypeName())
+                .put(LABEL, a.getName())));
+      }
     }
   }
 

@@ -49,12 +49,14 @@
                 currentRootSpace : undefined,
                 spacePath : undefined,
                 spaces : undefined,
-                applications : undefined
+                applications : undefined,
+                currentApplication : undefined
               }, data);
               this.selectorSpaces = data.rootSpaces;
               this.selectorCurrentSpace = data.currentRootSpace;
               const currentTreeLevel = [];
               currentTreeLevel.spacePath = data.spacePath;
+              currentTreeLevel.currentApplication = data.currentApplication;
               Array.prototype.push.apply(currentTreeLevel, data.spaces);
               Array.prototype.push.apply(currentTreeLevel, data.applications);
               this.tree = currentTreeLevel;
@@ -94,7 +96,7 @@
           }
         },
         mounted : function() {
-          this.selectedSpaceId = this.currentSpace ? this.currentSpace.id : "none";
+          this.updateSelectedSpaceId();
         },
         methods : {
           selected : function() {
@@ -102,6 +104,14 @@
               return s.id === this.selectedSpaceId;
             }.bind(this))[0];
             this.$emit('space-select', space);
+          },
+          updateSelectedSpaceId : function() {
+            this.selectedSpaceId = this.currentSpace ? this.currentSpace.id : "none";
+          }
+        },
+        watch : {
+          currentSpace : function() {
+            this.updateSelectedSpaceId();
           }
         }
       }));
@@ -127,6 +137,9 @@
             return this.tree.filter(function(item) {
               return !item.type;
             });
+          },
+          currentApplication : function() {
+            return this.tree.currentApplication ? this.tree.currentApplication : {}
           }
         }
       }));

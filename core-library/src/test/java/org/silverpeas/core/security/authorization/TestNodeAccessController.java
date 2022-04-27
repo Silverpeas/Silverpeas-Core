@@ -32,6 +32,7 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -43,6 +44,7 @@ import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.HashSet;
 import java.util.List;
@@ -75,9 +77,13 @@ class TestNodeAccessController {
   private ComponentAccessControl componentAccessController;
   @TestManagedMock
   private NodeService nodeService;
+  @TestManagedMock
+  private RemovedSpaceAndComponentInstanceChecker checker;
 
   @BeforeEach
   void setup() {
+    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     User user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
   }

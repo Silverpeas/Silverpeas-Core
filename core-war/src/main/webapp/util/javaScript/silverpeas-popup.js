@@ -413,20 +413,24 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      if (!settings.title) {
-        settings.title = __getLabel('GML.confirmation.dialog.title');
+      if (typeof options.forceTitle === 'string') {
+        settings.title = options.forceTitle;
+      } else {
+        if (!settings.title) {
+          settings.title = __getLabel('GML.confirmation.dialog.title');
+        }
+        var $title = $('<div>').attr('style', 'display: table;');
+        var $titleRow = $('<div>').attr('style', 'display: table-row;');
+        $title.append($titleRow);
+        var $icon = $('<span>').addClass('ui-icon ui-icon-alert');
+        $icon.attr('style', 'float:left; margin:0 7px 0 0;');
+        var $titleText = $('<div>').attr('style', 'display: table-cell;vertical-align: bottom;');
+        $titleText.html(settings.title);
+        $titleRow.append(
+            $('<div>').attr('style', 'display: table-cell;vertical-align: middle;').append($icon));
+        $titleRow.append($titleText);
+        settings.title = $('<div>').append($title).html();
       }
-      var $title = $('<div>').attr('style', 'display: table;');
-      var $titleRow = $('<div>').attr('style', 'display: table-row;');
-      $title.append($titleRow);
-      var $icon = $('<span>').addClass('ui-icon ui-icon-alert');
-      $icon.attr('style', 'float:left; margin:0 7px 0 0;');
-      var $titleText = $('<div>').attr('style', 'display: table-cell;vertical-align: bottom;');
-      $titleText.html(settings.title);
-      $titleRow.append($('<div>').attr('style',
-              'display: table-cell;vertical-align: middle;').append($icon));
-      $titleRow.append($titleText);
-      settings.title = $('<div>').append($title).html();
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
