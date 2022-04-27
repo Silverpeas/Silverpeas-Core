@@ -524,6 +524,7 @@ class DefaultAdministration implements Administration {
 
       // force caches to be refreshed
       cache.removeSpaceInst(driverSpaceId);
+      treeCache.removeSpace(driverSpaceId);
       // restore space in global tree
       addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
 

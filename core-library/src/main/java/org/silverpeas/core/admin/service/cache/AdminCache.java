@@ -372,6 +372,11 @@ public class AdminCache {
         Optional<SpaceInst> optionalFather = getSpaceInst(spaceId);
         optionalFather.ifPresent(f -> {
           final List<SpaceInst> subSpaces = new ArrayList<>(f.getSubSpaces());
+          // ensure distinct space registering
+          subSpaces.stream()
+              .filter(s -> s.getLocalId() == theSpace.getLocalId())
+              .findFirst()
+              .ifPresent(subSpaces::remove);
           subSpaces.add(theSpace);
           f.setSubSpaces(subSpaces);
         });
