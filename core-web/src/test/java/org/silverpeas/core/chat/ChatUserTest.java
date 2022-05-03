@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,7 +42,8 @@ import static org.mockito.Mockito.when;
  * @author silveryocha
  */
 @EnableSilverTestEnv
-public class ChatUserTest {
+@TestManagedBeans({ChatSettings.class})
+class ChatUserTest {
 
   @BeforeEach
   public void setup(@TestManagedMock UserProvider userProvider) {
@@ -53,19 +55,19 @@ public class ChatUserTest {
   }
 
   @Test
-  public void emailLoginShouldWork() throws Exception {
+  void emailLoginShouldWork() throws Exception {
     final ChatUser user = createChatUserWithLogin("yohann.chastagnier@silverpeas.org");
     assertThat(user.getChatLogin(), is("yohann.chastagnier"));
   }
 
   @Test
-  public void chatLoginShouldAlwaysBeLowercase() throws Exception {
+  void chatLoginShouldAlwaysBeLowercase() throws Exception {
     final ChatUser user = createChatUserWithLogin("yohann26.cHastaGNier@silverpeas.org");
     assertThat(user.getChatLogin(), is("yohann26.chastagnier"));
   }
 
   @Test
-  public void complexEmailLoginShouldWork() throws Exception {
+  void complexEmailLoginShouldWork() throws Exception {
     final ChatUser user = createChatUserWithLogin("yo.CHA.boule-de_boule@silverpeas.co.uk");
     assertThat(user.getChatLogin(), is("yo.cha.boule-de_boule"));
   }
