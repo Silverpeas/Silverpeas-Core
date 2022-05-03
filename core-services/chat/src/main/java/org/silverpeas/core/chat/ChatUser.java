@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.chat;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -30,7 +31,9 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.util.Charsets;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -89,15 +92,33 @@ public class ChatUser extends UserDetail {
   }
 
   /**
-   * Gets the chat service login of this user.
+   * Gets the chat service login of this user. The login format is defined by the RFC-7622 in which
+   * it represents the <code>localpart</code> field conforming the <code>UsernameCaseMapped</code>
+   * profile of the PRECIS <code>IdentifierClass</code> defined in RFC-7613.
    * @return the login of the user in the chat service.
    */
   public String getChatLogin() {
-    return getLogin().replaceAll("(@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9]" +
-        "(?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
-        "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:" +
-        "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c" +
-        "\\x0e-\\x7f])+)\\])|'*)", "").toLowerCase();
+    // take into account some aspects of the RFC-7622 defining the JID format
+    String chatLogin = getLogin().toLowerCase();
+    int idx = chatLogin.indexOf("@");
+    if (idx > 0) {
+      ChatSettings.JidFormatPolicy policy = ChatSettings.get().getJidFormatPolicy();
+      switch (policy) {
+        case REMOVED:
+          chatLogin = chatLogin.substring(0, idx);
+          break;
+        case SPECIFIC_CODE:
+          chatLogin = chatLogin.replace("@", "0x40").replace("/", "0x2f");
+          break;
+        default:
+          throw new SilverpeasRuntimeException("Invalid policy");
+      }
+      byte[] bytes = chatLogin.getBytes(Charsets.UTF_8);
+      if (bytes.length > 1023) {
+        chatLogin = new String(Arrays.copyOf(bytes, 1022), Charsets.UTF_8);
+      }
+    }
+    return chatLogin.replaceAll("\\s", "");
   }
 
   /**

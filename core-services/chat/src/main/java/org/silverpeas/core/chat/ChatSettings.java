@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.chat;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -327,6 +328,20 @@ public class ChatSettings {
   }
 
   /**
+   * Gets the policy on how the JID should be formatted. This policy applies only on the local part
+   * of the JID.
+   * @return the policy on how the local part of the JID should be formatted.
+   */
+  public JidFormatPolicy getJidFormatPolicy() {
+    int policy = settings.getInteger("chat.xmpp.jid.policy", 1);
+    JidFormatPolicy[] policies = JidFormatPolicy.values();
+    if (policy >= policies.length) {
+      throw new SilverpeasRuntimeException("Unknown JID format policy value: " + policy);
+    }
+    return policies[policy];
+  }
+
+  /**
    * Gets the ACL on the chat client.
    * @return a {@link ChatACL} instance representing the ACL configured in the use of the chat
    * client.
@@ -384,5 +399,10 @@ public class ChatSettings {
     public GroupChat getAclOnGroupChat() {
       return new GroupChat();
     }
+  }
+
+  public enum JidFormatPolicy {
+    REMOVED,
+    SPECIFIC_CODE
   }
 }
