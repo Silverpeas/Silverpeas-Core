@@ -608,6 +608,14 @@
 Converse.js
  */
 
+#conversejs .show-add-muc-modal {
+  display: none;
+}
+
+#conversejs .show-add-muc-modal.authorized {
+  display: block;
+}
+
 #conversejs #converse-roster .filter-by .fa-users {
   display: none;
 }

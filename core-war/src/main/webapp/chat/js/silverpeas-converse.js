@@ -336,11 +336,15 @@
           });
         };
         const __aclUiHandler = function() {
-          if (!chatOptions.acl.groupchat.creation) {
+          setTimeout(function() {
             sp.element.querySelectorAll('#conversejs .show-add-muc-modal').forEach(function($el) {
-              $el.remove();
+              if (!chatOptions.acl.groupchat.creation) {
+                $el.remove();
+              } else if (!$el.classList.contains('authorized')) {
+                $el.classList.add('authorized')
+              }
             });
-          }
+          });
         };
         _converse.api.listen.on('rosterInitialized', __aclUiHandler);
         _converse.api.listen.on('rosterReadyAfterReconnection', __aclUiHandler);
