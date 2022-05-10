@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.initialization;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -47,14 +46,14 @@ public class SilverpeasServiceInitialization {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Initialization...");
     getAllInitializations(filters).forEach(i -> {
-      String simpleClassName = i.getClass().getSimpleName();
+      String name = getName(i);
       try {
-        logger.info(" -> {0} initialization...", simpleClassName);
+        logger.info(" -> {0} initialization...", name);
         i.init();
-        logger.info("    {0} initialization done.", simpleClassName);
+        logger.info("    {0} initialization done.", name);
       } catch (Exception e) {
-        logger.error("    {0} initialization failure!", i.getClass().getName());
-        throw new SilverpeasRuntimeException(e.getMessage(), e);
+        logger.error("    {0} initialization failure!", name);
+        logger.error(e.getMessage());
       }
     });
   }
@@ -64,10 +63,14 @@ public class SilverpeasServiceInitialization {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Release...");
     getAllInitializations(filters).forEach(i -> {
+      String name = getName(i);
       try {
+        logger.info(" -> {0} release...", name);
         i.release();
+        logger.info("    {0} release done.", name);
       } catch (Exception ex) {
-        logger.warn(ex.getMessage());
+        logger.error("    {0} release failure!", name);
+        logger.error(ex.getMessage());
       }
     });
   }
@@ -78,5 +81,9 @@ public class SilverpeasServiceInitialization {
         .stream()
         .filter(Stream.of(filters).reduce(Predicate::and).orElse(x -> true))
         .sorted(Comparator.comparing(Initialization::getPriority));
+  }
+
+  private static String getName(final Initialization init) {
+    return init.getClass().getSimpleName().replaceAll("\\$.+", "");
   }
 }
