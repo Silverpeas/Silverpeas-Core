@@ -70,6 +70,13 @@ import java.util.regex.Pattern;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
+/**
+ * A request router for a given Silverpeas component instance. The user must be authenticated to
+ * access an application in Silverpeas (even in the case of an anonymous access) and such accesses
+ * are managed by a {@link ComponentRequestRouter} instance.
+ * @param <T> the concrete type of the web controller of the targeted application to which the
+ * processing of the request is taken in charge.
+ */
 public abstract class ComponentRequestRouter<T extends ComponentSessionController>
     extends SilverpeasAuthenticatedHttpServlet {
 
@@ -188,17 +195,18 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       return "/admin/jsp/spaceInMaintenance.jsp";
     }
 
+    // isUserStateValid that the user has an access to this component instance
+    boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
+    if (!bCompoAllowed) {
+      SilverLogger.getLogger(this)
+          .warn("User {0} not allowed to access application {1} in space {2}",
+              mainSessionCtrl.getUserId(), componentId, spaceId);
+      destination = "/admin/jsp/spaceOrCompAccessForbidden.jsp";
+      return destination;
+    }
+
     T ctrl = this.getComponentSessionController(session, componentId);
     if (ctrl == null) {
-      // isUserStateValid that the user has an access to this component instance
-      boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
-      if (!bCompoAllowed) {
-        SilverLogger.getLogger(this)
-            .warn("User {0} not allowed to access application {1} in space {2}", mainSessionCtrl.getUserId(), componentId, spaceId);
-        destination = ResourceLocator.getGeneralSettingBundle()
-            .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
-        return destination;
-      }
       ctrl = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);
     }
 

@@ -307,7 +307,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
     // Affichage de l'espace collaboratif
     SpaceInstLight space = organisationController.getSpaceInstLightById(spaceId);
-    if (space != null && isSpaceVisible(userId, spaceId, helper)) {
+    if (space != null && isSpaceVisible(userId, space, helper)) {
       StringBuilder itemSB = new StringBuilder(200);
       itemSB.append("<item open=\"").append(open).append("\" ");
       itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
@@ -331,8 +331,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
               writer, listUFS, userMenuDisplayMode);
         }
       }
+      writer.write("</item>");
     }
-    writer.write("</item>");
   }
 
   /**
@@ -379,7 +379,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       SpaceInstLight spaceInst = organisationController.getSpaceInstLightById(spaceId);
       boolean loadCurSpace =
           isLoadingContentNeeded(userMenuDisplayMode, userId, spaceInst, listUFS);
-      if (loadCurSpace && isSpaceVisible(userId, spaceId, helper)) {
+      if (loadCurSpace && isSpaceVisible(userId, spaceInst, helper)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language, defaultLook, false,
             helper, out, listUFS, userMenuDisplayMode, false);
       }
@@ -441,7 +441,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       spaceId = availableSpaceId;
       space = organisationController.getSpaceInstLightById(spaceId);
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, space, listUFS);
-      if (loadCurSpace && isSpaceVisible(userId, spaceId, helper) && space != null) {
+      if (loadCurSpace && isSpaceVisible(userId, space, helper) && space != null) {
         StringBuilder itemSB = new StringBuilder(200);
         itemSB.append("<item ");
         itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
@@ -468,7 +468,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         open = (spacePath != null && spacePath.contains(subSpaceId));
         // Check user favorite space
         loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, space, listUFS);
-        if (loadCurSpace && isSpaceVisible(userId, subSpaceId, helper)) {
+        if (loadCurSpace && isSpaceVisible(userId, space, helper)) {
           StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
@@ -785,17 +785,21 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
   }
 
   /**
-   * a Space is visible if at least one of its items is visible for the currentUser
-   * @param userId
-   * @param spaceId
-   * @param helper
+   * a Space is visible if this space isn't removed and at least one of its items is visible for the
+   * current user
+   * @param userId the unique identifier of the user
+   * @param space the space
+   * @param helper a Look helper to access some peculiar settings regarding the accessibility.
    * @return true or false
    */
-  protected boolean isSpaceVisible(String userId, String spaceId, LookHelper helper) {
+  protected boolean isSpaceVisible(String userId, SpaceInstLight space, LookHelper helper) {
+    if (space.isRemoved()) {
+      return false;
+    }
     if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {
       return true;
     }
-    String[] compoIds = organisationController.getAvailCompoIds(spaceId, userId);
+    String[] compoIds = organisationController.getAvailCompoIds(space.getId(), userId);
     for (String id : compoIds) {
       ComponentInst compInst = organisationController.getComponentInst(id);
       if (!compInst.isHidden()) {
