@@ -26,6 +26,8 @@ package org.silverpeas.core.contribution.content.wysiwyg.service;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.MailLinkCssApplierDirective;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.OpenLinkOnBlankPageDirective;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SanitizeDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SilverpeasLinkCssApplierDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
@@ -100,6 +102,24 @@ public class WysiwygContentTransformer {
    */
   public WysiwygContentTransformer applySilverpeasLinkCssDirective() {
     directives.add(new SilverpeasLinkCssApplierDirective());
+    return this;
+  }
+
+  /**
+   * Applies the opening of links into a blank page.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  public WysiwygContentTransformer applyOpenLinkOnBlankDirective() {
+    directives.add(new OpenLinkOnBlankPageDirective());
+    return this;
+  }
+
+  /**
+   * Applies HTML sanitize operations.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  public WysiwygContentTransformer applySanitizeDirective() {
+    directives.add(new SanitizeDirective());
     return this;
   }
 

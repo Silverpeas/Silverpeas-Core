@@ -69,7 +69,8 @@
     </div>
   </div>
   <div class="occurrence-description">
-    <div ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></div>
+    <div ng-if="$ctrl.occurrence.calendarSync" ng-bind-html="$ctrl.occurrence.description | trustedHTML"></div>
+    <div ng-if="!$ctrl.occurrence.calendarSync" ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></div>
     <br class="clearAll">
   </div>
 </script>

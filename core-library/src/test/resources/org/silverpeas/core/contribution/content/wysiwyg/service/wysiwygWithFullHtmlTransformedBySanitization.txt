@@ -1,0 +1,155 @@
+
+
+
+
+<a href="http://github.com/Silverpeas" rel="nofollow">
+  <img style="border:0" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub" />
+</a>
+
+  <div>
+    <div>
+      
+        
+        
+        
+      
+      
+        <ul><li>
+            <a href="#" rel="nofollow">Silverpeas <b></b></a>
+            <ul><li><a href="intro.html" rel="nofollow">About</a></li><li><a href="product/features.html" rel="nofollow">Key Features</a></li><li>
+                <a href="product/applications.html" rel="nofollow">Applications</a>
+                <ul><li><a href="product/social_network.html" rel="nofollow">Social Network</a>
+                  </li><li><a href="product/documentation_management.html" rel="nofollow">Electronic Documentation Management</a></li><li><a href="product/content_management.html" rel="nofollow">Content Management</a></li><li><a href="product/data_collection.html" rel="nofollow">Data Collection</a></li><li><a href="product/gallery.html" rel="nofollow">Pictures Management</a></li><li><a href="product/knowledge_management.html" rel="nofollow">Knowledge Management</a></li><li><a href="product/project_documentation.html" rel="nofollow">Project Documentation</a></li></ul>
+              </li><li><a href="screenshots.html" rel="nofollow">Screenshots</a></li><li>
+                <a href="installation/index.html" rel="nofollow">Install Silverpeas</a>
+                <ul><li><a href="installation/izpack.html" rel="nofollow">Try Silverpeas</a>
+                  </li><li><a href="installation/installationV6.html" rel="nofollow">Installation of Silverpeas 6</a></li><li><a href="installation/cloud.html" rel="nofollow">Silverpeas in the Cloud</a></li><li><a href="installation/webdav.html" rel="nofollow">Online Edition of Documents</a></li></ul>
+              </li><li>
+                <a href="#" rel="nofollow">Our versions</a>
+                <ul><li><a href="https://tracker.silverpeas.org/projects/silverpeas/roadmap" rel="nofollow">Roadmap</a></li><li><a href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed&#61;1&amp;with_subprojects&#61;1" rel="nofollow">Changelog</a></li><li><a href="releasenotes.html" rel="nofollow">Release Notes</a></li></ul>
+              </li><li><a href="scm.html" rel="nofollow">Source Code</a></li><li>
+                <a href="#" rel="nofollow">Some Configuration Tips</a>
+                <ul><li><a href="configuration/ldap.html" rel="nofollow">LDAP Synchronization</a></li><li><a href="configuration/proxy.html" rel="nofollow">Configuring a reverse-proxy</a></li></ul>
+              </li><li><a href="faq.html" rel="nofollow">FAQ</a></li></ul>
+          </li><li>
+            <a href="#" rel="nofollow">Silverpeas Projects <b></b></a>
+            <ul><li>
+                <a href="#" rel="nofollow">Global information</a>
+                <ul><li><a href="intro.html" rel="nofollow">About Silverpeas</a></li><li><a href="team.html" rel="nofollow">Team</a></li><li><a href="mailing-lists.html" rel="nofollow">Mailing List</a></li><li><a href="issue-management.html" rel="nofollow">Issue Tracking</a></li><li><a href="source-repository.html" rel="nofollow">Source Repository</a></li><li><a href="ci-management.html" rel="nofollow">Continuous Integration</a></li></ul>
+              </li><li><a href="docs/core/index.html" rel="nofollow">Silverpeas Core</a></li><li><a href="docs/components/index.html" rel="nofollow">Silverpeas Applications</a></li></ul>
+          </li><li>
+            <a href="#" rel="nofollow">How to contribute <b></b></a>
+            <ul><li><a href="dev/collaboration.html" rel="nofollow">Contribution</a></li><li><a href="dev/quality.html" rel="nofollow">Code Quality</a></li><li><a href="dev/ldap_testing.html" rel="nofollow">Testing the LDAP code</a></li></ul>
+          </li><li>
+            <a href="#" rel="nofollow">Licensing <b></b></a>
+            <ul><li><a href="legal/licensing_gnu_affero.html" rel="nofollow">License</a></li><li><a href="legal/licensing_faq.html" rel="nofollow">Licensing FAQ</a></li><li><a href="legal/floss_exception.html" rel="nofollow">FLOSS Exception</a></li><li><a href="legal/trademark.html" rel="nofollow">Silverpeas Trade Mark</a></li></ul>
+          </li></ul>
+      
+      <div></div>
+    </div>
+  </div>
+
+
+<div>
+  
+  <div>
+    <div><a href="https://www.silverpeas.org/" rel="nofollow"> <img src="images/logo.png" alt="Silverpeas" /> </a></div>
+    <div></div>
+    <h1>Improving the <strong>collaboration</strong> and the <strong>sharing</strong></h1>
+    <p>We believe in the work efficiency by the collaboration, by knowledge-sharing
+      and by a rapid feedback, and we want to extend and improve this way of thinking and of
+      working.
+      Therefore, we have built a collaborative and social-networking platform that is both intuitive
+      and ready to be used: Silverpeas.</p>
+    <p>
+      <a href="https://www.silverpeas.org/installation/izpack.html" rel="nofollow">
+        <img src="images/download_sidebar.png" alt="Download the IzpAck Installer" />
+      </a>
+      <a href="installation/installationV6.html" rel="nofollow">
+        <img src="images/instruction_installation.png" alt="Find the instruction installation" />
+      </a>
+    </p>
+    <p>Silverpeas is available as <strong>Free Software</strong> under the Affero GPL</p>
+    <div>
+      
+    </div>
+  </div>
+
+  <div>
+    <ul><li>
+        <a href="project-info.html" rel="nofollow">Documentation Learn more about our project</a>
+      </li><li>
+        <a href="support.html" rel="nofollow">Support Subscribe to our mailing List</a>
+      </li><li>
+        <a href="dev/collaboration.html" rel="nofollow">Contribution How to contribute with GitHub</a>
+      </li><li>
+        <a href="https://www.silverpeas.org/files/silverpeas-6.2.2-wildfly20.zip" rel="nofollow">Download the latest stable version of Silverpeas
+        </a>
+      </li><li>
+        <a href="https://www.silverpeas.com/en/59/portail.html/" rel="nofollow">Screenshots Some product screenshot on silverpeas.com
+        </a>
+      </li></ul>
+  </div>
+  
+</div>
+
+<div>
+
+
+    <div>
+      <div>
+        <div>
+          
+          
+          
+          <div><a href="https://twitter.com/Silverpeas" rel="nofollow"><img alt="Twitter" src="images/btn-twitt-uk.png" /></a> <a href="https://www.facebook.com/pages/Silverpeas/113429255383677" rel="nofollow"><img alt="Facebook" src="images/btn-fb-uk.png" /></a></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <p>Accessible from a simple web browser or from a Smartphone, Silverpeas is used every days
+          by ourselves. It makes it possible for users to work together, share their knowledge and
+          good practices, and in general to improve their reciprocal empathy, therefore their
+          willingness to collaborate.
+          The introduction in the latest version of the conversational and relational (social
+          network) functions has once again improved its benchmark coverage.</p>
+        <h2>Collaborative workspaces </h2>
+        <p>Use Silverpeas to build an Intranet or Extranet and feed web 2.0 sites optimizing sharing
+          and performance.<br />
+          Based on it&#39;s collaborative bus, Silverpeas is used to share documents (EDM for Electronic
+          Documentation Management), to optimize project managment, content management and knowledge
+          and skills management.<br />
+          Silverpeas improves and encourages best practices and helps the creation of social
+          networks, thanks to improved workflow and information management.</p>
+        <h2>Ready-to-use applications </h2>
+        <p>With more than 30 ready-to-use applications, Silverpeas™ combines all the tools you
+          need to get your collaborative spaces up and running in a few clicks. Applications such as
+          blog, wiki, forum, directories, project management, ECM, picture gallery, diaries, and
+          many more let you develop your own personalized space. Other features: EDM (Electronic
+          Documentation Management), collaborative tools, agendas, booking system, chat, yellow
+          pages, social network, survey, quiz, forums, Project management tools (with Gantt
+          support), knowledge management, content management tools such as blogs, image gallery,
+          EDM, RSS flows, workflow engine, connections to databases, and groupware (Domino,
+          Groupwise, Zimbra, Outlook)...</p>
+        <p>A transverse social Network gives a user centric access to information and
+          activities. </p>
+      </div>
+    </div>
+  
+
+</div>
+
+
+  <div>
+    <div>Copyright © 2021 <a href="https://www.silverpeas.org" rel="nofollow">Silverpeas</a>.
+      All Rights Reserved.
+    </div>
+  </div>
+  <div>
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="nofollow"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>.
+  </div>
+
+

@@ -29,10 +29,8 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
 import org.silverpeas.core.util.StringUtil;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,14 +42,11 @@ import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
  * Silverpeas's server.
  * @author silveryocha
  */
-public class MailLinkCssApplierDirective implements WysiwygContentTransformerDirective {
+public class MailLinkCssApplierDirective extends AbstractDirective {
 
   @Override
-  public String execute(final String wysiwygContent) {
-    final String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
-    final Source source = new Source(wysiwygToTransform);
+  public void prepareReplacements(final Source source, final Map<String, String> replacements) {
     final List<Element> linkElements = source.getAllElements(HTMLElementName.A);
-    final Map<String, String> replacements = new HashMap<>();
     for (final Element currentLink : linkElements) {
       final StartTag linkStartTag = currentLink.getStartTag();
       if (isCompliantHref(linkStartTag)) {
@@ -60,15 +55,6 @@ public class MailLinkCssApplierDirective implements WysiwygContentTransformerDir
         apply(linkStartTag, newHref, replacements);
       }
     }
-
-    String transformedWysiwygContent = wysiwygToTransform;
-    for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-      transformedWysiwygContent = transformedWysiwygContent.replace(replacement.getKey(),
-          replacement.getValue());
-    }
-
-    // Returning the transformed WYSIWYG.
-    return transformedWysiwygContent;
   }
 
   private void apply(final StartTag linkStartTag, final String newHref,

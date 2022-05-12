@@ -27,9 +27,7 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,14 +40,11 @@ import static org.silverpeas.core.util.URLUtil.isPermalink;
  * Applies sp-permalink or sp-link CSS classes to links.
  * @author silveryocha
  */
-public class SilverpeasLinkCssApplierDirective implements WysiwygContentTransformerDirective {
+public class SilverpeasLinkCssApplierDirective extends AbstractDirective {
 
   @Override
-  public String execute(final String wysiwygContent) {
-    final String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
-    final Source source = new Source(wysiwygToTransform);
+  public void prepareReplacements(final Source source, final Map<String, String> replacements) {
     final List<Element> linkElements = source.getAllElements(HTMLElementName.A);
-    final Map<String, String> replacements = new HashMap<>();
     for (final Element currentLink : linkElements) {
       final StartTag linkStartTag = currentLink.getStartTag();
       if (isCompliantTarget(linkStartTag)) {
@@ -61,36 +56,19 @@ public class SilverpeasLinkCssApplierDirective implements WysiwygContentTransfor
         }
       }
     }
-
-    String transformedWysiwygContent = wysiwygToTransform;
-    for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-      transformedWysiwygContent = transformedWysiwygContent.replace(replacement.getKey(),
-          replacement.getValue());
-    }
-
-    // Returning the transformed WYSIWYG.
-    return transformedWysiwygContent;
   }
 
-  private void apply(final StartTag linkStartTag, final String cssClass, final Map<String, String> replacements) {
-    final String linkStartTagAsString = linkStartTag.toString();
-    if (replacements.containsKey(linkStartTagAsString)) {
-      return;
-    }
-    final String currentCssClasses = linkStartTag.getAttributeValue("class");
-    final String newLinkStartTagAsString;
-    if (currentCssClasses == null) {
-      newLinkStartTagAsString = linkStartTagAsString
-          .replaceFirst("([ \t\r\n]*)>$", " class=\"" + cssClass + "\"$1>");
-    } else {
-      final String cleanedCssClasses = currentCssClasses.replaceAll("[ ]*(sp-permalink|sp-link)", "").trim();
-      final String cssClassToAdd = cleanedCssClasses.isEmpty() ? cssClass : (" " + cssClass);
-      final String newCssClasses = cleanedCssClasses + cssClassToAdd;
-      newLinkStartTagAsString = linkStartTagAsString.replaceAll(
-          "(class[ \t\r\n]*=[ \t\r\n]*([\"'])[ \t\r\n]*)" + currentCssClasses +
-              "([ \t\r\n]*([\"']))", "$1" + newCssClasses + "$2");
-    }
-    replacements.put(linkStartTagAsString, newLinkStartTagAsString);
+  private void apply(final StartTag linkStartTag, final String cssClass,
+      final Map<String, String> replacements) {
+    modifyElementAttribute(linkStartTag, "class", c -> {
+      if (c == null) {
+        return cssClass;
+      } else {
+        final String cleanedCssClasses = c.replaceAll("[ ]*(sp-permalink|sp-link)", "").trim();
+        final String cssClassToAdd = cleanedCssClasses.isEmpty() ? cssClass : (" " + cssClass);
+        return cleanedCssClasses + cssClassToAdd;
+      }
+    }, replacements);
   }
 
   private boolean isCompliantTarget(final StartTag linkStartTag) {

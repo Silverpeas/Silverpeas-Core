@@ -32,6 +32,7 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
+import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 
@@ -222,9 +223,13 @@ public class ICalendarEventImportProcessor {
     } else if (component.getTitle().length() > TITLE_MAX_LENGTH) {
       component.setTitle(StringUtil.truncate(component.getTitle().trim(), TITLE_MAX_LENGTH));
     }
-    if (component.getDescription().length() > DESCRIPTION_MAX_LENGTH) {
-      component.setDescription(
-          StringUtil.truncate(component.getDescription().trim(), DESCRIPTION_MAX_LENGTH));
+    if (StringUtil.isDefined(component.getDescription())) {
+      final String sanitizedDesc = HtmlSanitizer.get().sanitize(component.getDescription().trim());
+      if (sanitizedDesc.length() > DESCRIPTION_MAX_LENGTH) {
+        component.setDescription(StringUtil.truncate(sanitizedDesc, DESCRIPTION_MAX_LENGTH));
+      } else {
+        component.setDescription(sanitizedDesc);
+      }
     }
     if (component.getLocation().length() > TITLE_MAX_LENGTH) {
       component.setLocation(StringUtil.truncate(component.getLocation().trim(), TITLE_MAX_LENGTH));

@@ -24,8 +24,8 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.BaseRightProfile;
 import org.silverpeas.core.admin.PaginationPage;
@@ -78,8 +78,8 @@ import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
@@ -114,6 +114,8 @@ import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.DefaultReminderRepository;
+import org.silverpeas.core.security.html.DefaultHtmlSanitizer;
+import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
@@ -147,7 +149,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addServiceProviderFeatures();
     addBundleBaseFeatures();
     addClasses(EntityReference.class);
-    addCalendarFeatures();
+    addCalendarBaseFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
@@ -754,7 +756,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Add calendar feature in web archive (war)
    * @return the instance of the war builder with calendar features
    */
-  public WarBuilder4LibCore addCalendarFeatures() {
+  public WarBuilder4LibCore addCalendarBaseFeatures() {
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
     addClasses(
         ICal4JCalendarEventOccurrenceGenerator.class,
@@ -765,6 +767,17 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
         ICal4JExporter.class,
         ICal4JDateCodec.class,
         ICal4JRecurrenceCodec.class);
+    return this;
+  }
+
+  /**
+   * Add calendar feature in web archive (war)
+   * @return the instance of the war builder with calendar features
+   */
+  public WarBuilder4LibCore addCalendarSynchronizationFeatures() {
+    addMavenDependencies("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer");
+    addWysiwygFeatures();
+    addClasses(HtmlSanitizer.class, DefaultHtmlSanitizer.class);
     return this;
   }
 
