@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import net.htmlparser.jericho.HTMLElementName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -205,7 +206,7 @@ public class WysiwygContentTransformerTest {
   }
 
   @Test
-  void manageImageResizing() throws Exception {
+  void manageImageResizing() {
     WysiwygContentTransformer transformer =
         WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralImages.txt"));
 
@@ -216,7 +217,7 @@ public class WysiwygContentTransformerTest {
   }
 
   @Test
-  void applyingSilverpeasLinkCss() throws Exception {
+  void applyingSilverpeasLinkCss() {
     WysiwygContentTransformer transformer =
         WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
 
@@ -227,7 +228,38 @@ public class WysiwygContentTransformerTest {
   }
 
   @Test
-  void applyingMailLinkCss() throws Exception {
+  void applyingSilverpeasBlankLinks() {
+    WysiwygContentTransformer transformer =
+        WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
+
+    String result = transformer.applyOpenLinkOnBlankDirective().transform();
+
+    assertThat(result, is(getContentOfDocumentNamed(
+        "wysiwygWithSeveralTypesOfLinkTransformedForOpeningOnBlankPage.txt")));
+  }
+
+  @Test
+  void sanitizeFromHtml() {
+    WysiwygContentTransformer transformer =
+        WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithFullHtml.txt"));
+
+    String result = transformer.applySanitizeDirective().transform();
+
+    assertThat(result, is(getContentOfDocumentNamed(
+        "wysiwygWithFullHtmlTransformedBySanitization.txt")));
+  }
+
+  @Test
+  void sanitizeFromSimpleText() {
+    WysiwygContentTransformer transformer = WysiwygContentTransformer.on("Silverpeas's < simple\nText\t or > toto");
+
+    String result = transformer.applySanitizeDirective().transform();
+
+    assertThat(result, is("Silverpeas&#39;s &lt; simple\nText\t or &gt; toto"));
+  }
+
+  @Test
+  void applyingMailLinkCss() {
     WysiwygContentTransformer transformer =
         WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
 

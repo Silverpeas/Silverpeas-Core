@@ -72,7 +72,8 @@
   </div>
 </div>
 <div>
-  <span class="occurrence-description" ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>
+  <span class="occurrence-description" ng-if="$ctrl.occurrence.calendarSync" ng-bind-html="$ctrl.occurrence.description | trustedHTML"></span>
+  <span class="occurrence-description" ng-if="!$ctrl.occurrence.calendarSync" ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>
 </div>
 <div>
   <silverpeas-attendees ng-if="$ctrl.occurrence.attendees.length"

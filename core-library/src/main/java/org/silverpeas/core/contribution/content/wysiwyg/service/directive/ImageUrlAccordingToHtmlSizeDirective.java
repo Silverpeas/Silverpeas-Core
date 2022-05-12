@@ -27,7 +27,6 @@ import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
@@ -38,7 +37,6 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,7 +53,7 @@ import static org.silverpeas.core.util.StringUtil.EMPTY;
  * Transforms all URL of images to take into account theirs display size.
  * @author Yohann Chastagnier
  */
-public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTransformerDirective {
+public class ImageUrlAccordingToHtmlSizeDirective extends AbstractDirective {
 
   private static final String WIDTH_ATTR = "width";
   private static final String HEIGHT_ATTR = "height";
@@ -79,11 +77,8 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
   }
 
   @Override
-  public String execute(final String wysiwygContent) {
-    final String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
-    final Source source = new Source(wysiwygToTransform);
+  public void prepareReplacements(final Source source, final Map<String, String> replacements) {
     final List<Element> imgElements = source.getAllElements(HTMLElementName.IMG);
-    final Map<String, String> replacements = new HashMap<>();
     if (!imgElements.isEmpty()) {
       final List<SrcTranslator> translators = SrcTranslator.getAll();
       for (Element currentImg : imgElements) {
@@ -105,14 +100,6 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
         }
       }
     }
-    String transformedWysiwygContent = wysiwygToTransform;
-    for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-      transformedWysiwygContent =
-          transformedWysiwygContent.replace(replacement.getKey(), replacement.getValue());
-    }
-
-    // Returning the transformed WYSIWYG.
-    return transformedWysiwygContent;
   }
 
   private void applyMinWidthIfNecessary(final Mutable<String> width, final Mutable<String> height) {

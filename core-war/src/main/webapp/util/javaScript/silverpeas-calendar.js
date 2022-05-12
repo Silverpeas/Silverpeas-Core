@@ -187,6 +187,7 @@
         occurrenceEditionUrl : occurrence.occurrenceEditionUrl,
         eventPermalinkUrl : occurrence.eventPermalinkUrl,
         calendarZoneId : occurrence.calendarZoneId,
+        calendarSync : occurrence.calendarSync,
         originalStartDate : occurrence.originalStartDate,
         firstEventOccurrence : occurrence.firstEventOccurrence,
         startDate : occurrence.startDate,

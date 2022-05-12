@@ -26,41 +26,26 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.variables.Variable;
+import net.htmlparser.jericho.StartTag;
+import org.silverpeas.core.util.Pair;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Transforms all URL of images to take into account theirs display size.
- * @author Yohann Chastagnier
+ * Modify the content in order to make that links are opened on a blank page.
+ * @author silveryocha
  */
-public class VariablesReplacementDirective extends AbstractDirective {
+public class OpenLinkOnBlankPageDirective extends AbstractDirective {
 
   @Override
   public void prepareReplacements(final Source source, final Map<String, String> replacements) {
-    List<Element> spanElements = source.getAllElements(HTMLElementName.SPAN);
-    for (Element currentSpan : spanElements) {
-
-      // The part that is not modified
-      String spanTag = currentSpan.toString();
-
-      String spanClass = currentSpan.getAttributeValue("class");
-      if ("sp-variable".equals(spanClass)) {
-        String valueId = currentSpan.getAttributeValue("rel");
-        if (!replacements.containsKey(spanTag)) {
-          Variable variable = Variable.getById(valueId);
-          if (variable != null) {
-            variable.getVariableValues().getCurrent().ifPresent(v -> {
-              String newSpanTag = currentSpan.getStartTag().toString() +
-                  WebEncodeHelper.convertBlanksForHtml(v.getValue()) +
-                  currentSpan.getEndTag().toString();
-              replacements.put(spanTag, newSpanTag);
-            });
-          }
-        }
-      }
+    final List<Element> linkElements = source.getAllElements(HTMLElementName.A);
+    for (final Element currentLink : linkElements) {
+      final StartTag linkStartTag = currentLink.getStartTag();
+      modifyElementAttributes(linkStartTag, List.of(
+          Pair.of("target", c -> "_blank"),
+          Pair.of("rel", c -> "noopener noreferrer nofollow")), replacements);
     }
   }
 }

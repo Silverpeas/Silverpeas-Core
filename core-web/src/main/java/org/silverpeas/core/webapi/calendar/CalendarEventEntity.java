@@ -36,9 +36,10 @@ import org.silverpeas.core.contribution.content.renderer.ContributionContentRend
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.web.rs.WebEntity;
+import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.core.webapi.reminder.ReminderEntity;
 
@@ -58,8 +59,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
-    .getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -81,6 +81,7 @@ public class CalendarEventEntity implements WebEntity {
   private String eventId;
   private String calendarId;
   private String calendarZoneId;
+  private boolean calendarSync;
   private String id;
   private String type;
   private String title;
@@ -257,7 +258,7 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   protected void setDescription(String description) {
-    this.description = description;
+    this.description = normalizeDescription(description);
   }
 
   public String getContent() {
@@ -369,6 +370,11 @@ public class CalendarEventEntity implements WebEntity {
 
   public void setLastUpdatedById(final String lastUpdatedById) {
     this.lastUpdatedById = lastUpdatedById;
+  }
+
+  @XmlElement
+  public boolean calendarSync() {
+    return calendarSync;
   }
 
   @XmlElement
@@ -525,6 +531,7 @@ public class CalendarEventEntity implements WebEntity {
     eventId = calendarEvent.getId();
     calendarId = calendar.getId();
     calendarZoneId = calendar.getZoneId().toString();
+    calendarSync = calendar.isSynchronized();
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(component, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(component, calendarEvent.getEndDate(), zoneId);
@@ -536,7 +543,7 @@ public class CalendarEventEntity implements WebEntity {
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);
     title = formatTitle(component, componentInstanceId, canBeAccessed);
     if (canBeAccessed) {
-      description = calendarEvent.getDescription();
+      description = normalizeDescription(calendarEvent.getDescription());
       final Optional<WysiwygContent> wysiwyg = calendarEvent.getContent();
       if (wysiwyg.isPresent()) {
         final ContributionContentRenderer wysiwygRenderer = wysiwyg.get().getRenderer();
@@ -555,6 +562,12 @@ public class CalendarEventEntity implements WebEntity {
       canBeDeleted = false;
     }
     return this;
+  }
+
+  private String normalizeDescription(final String description) {
+    return calendarSync && isDefined(description) ?
+        HtmlSanitizer.get().sanitize(description) :
+        description;
   }
 
   @Override
