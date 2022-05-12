@@ -205,6 +205,10 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     return status;
   }
 
+  public void setStatus(final String status) {
+    this.status = status;
+  }
+
   public Date getLastUpdateDate() {
     return updateDate;
   }

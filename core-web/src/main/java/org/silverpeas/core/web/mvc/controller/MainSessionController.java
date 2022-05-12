@@ -62,11 +62,11 @@ import java.util.List;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
-/*
+/**
  This object is used by all the components jsp that have access to the session.
  It is initialized given a login and a password which is authenticated.
  It provides functions to get information about the logged user (which is unique).
- It is also used to update the current environnement of the user (current domain, current component).
+ It is also used to update the current environment of the user (current domain, current component).
  */
 public class MainSessionController implements Clipboard, SessionCloseable, Serializable {
 

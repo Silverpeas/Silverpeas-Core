@@ -41,7 +41,7 @@ import java.util.Set;
 public class SpaceDAO {
 
   private static final String SPACE_COLUMNS =
-      "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
+      "id,domainFatherId,name,description,spaceStatus,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
 
 
   public List<Integer> getRootSpaceIds(Connection con)
@@ -143,6 +143,7 @@ public class SpaceDAO {
     space.setName(rs.getString("name"));
     space.setOrderNum(rs.getInt("orderNum"));
     space.setLook(rs.getString("look"));
+    space.setStatus(rs.getString("spaceStatus"));
     boolean isPersonalSpace = rs.getInt("isPersonal") == 1;
     space.setPersonalSpace(isPersonalSpace);
     boolean inheritanceBlocked = rs.getInt("isInheritanceBlocked") == 1;

@@ -37,7 +37,9 @@ import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -100,8 +102,13 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
         SpaceInst.DEFAULT_SPACE_ID.equals(spaceId)) {
       request.getSession().removeAttribute("Silverpeas_Portlet_SpaceId");
     } else if (isDefined(spaceId)) {
-      request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
-      spaceHomePage = getSpaceHomepageURL(spaceId, request);
+      if (!SpaceAccessControl.get()
+          .isUserAuthorized(User.getCurrentRequester().getId(), spaceId)) {
+        spaceHomePage = "/admin/jsp/spaceOrCompAccessForbidden.jsp";
+      } else {
+        request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
+        spaceHomePage = getSpaceHomepageURL(spaceId, request);
+      }
     }
 
     if (isDefined(spaceHomePage)) {
