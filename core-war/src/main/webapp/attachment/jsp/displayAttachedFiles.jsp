@@ -422,12 +422,16 @@
   $(document).ready(function() {
     // Use the each() method to gain access to each elements attributes
     $('a[rel]').each(function() {
+      const url = $(this).attr('rel');
+      if (!url || !url.startsWith(webContext)) {
+        return;
+      }
       $(this).qtip({
         content : {
           // Set the text to an image HTML string with the correct src URL to the loading image you want to use
           text : '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
           ajax: {
-            url : $(this).attr('rel') // Use the rel attribute of each element for the url to load
+            url : url // Use the rel attribute of each element for the url to load
           },
           title : {
             text : '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
