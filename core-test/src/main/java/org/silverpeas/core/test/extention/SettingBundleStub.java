@@ -116,6 +116,15 @@ public class SettingBundleStub implements BeforeEachCallback, AfterEachCallback 
     return this;
   }
 
+  /**
+   * Removes all registered keys.
+   * @return itself.
+   */
+  public SettingBundleStub removeAll() {
+    settingMap.clear();
+    return this;
+  }
+
   @Override
   public void beforeEach(final ExtensionContext context) throws Exception {
     init();

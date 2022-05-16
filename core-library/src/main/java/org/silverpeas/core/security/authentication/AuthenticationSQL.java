@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
@@ -93,11 +92,12 @@ public class AuthenticationSQL extends Authentication {
   protected void doAuthentication(AuthenticationConnection connection,
       AuthenticationCredential credential) throws AuthenticationException {
     String login = credential.getLogin();
+    boolean loginIgnoreCase = credential.loginIgnoreCase();
     String password = credential.getPassword();
     if (password == null) {
       password = "";
     }
-    String sqlPassword = getPassword(getSQLConnection(connection), login);
+    String sqlPassword = getPassword(getSQLConnection(connection), login, loginIgnoreCase);
     if (!StringUtil.isDefined(sqlPassword)) {
       throw new AuthenticationBadCredentialException(
           "Invalid credential for user with login: " + login);
@@ -110,59 +110,59 @@ public class AuthenticationSQL extends Authentication {
 
   }
 
-  private String getPassword(Connection connection, String login) throws AuthenticationException {
+  private String getPassword(Connection connection, String login, final boolean ignoreCase)
+      throws AuthenticationException {
     String loginQuery;
     String sqlPasswd;
-    ResultSet rs = null;
-    PreparedStatement stmt = null;
     if (StringUtil.isDefined(passwordAvailableColumnName)) {
       loginQuery = "SELECT " + loginColumnName + ", " + passwordColumnName + ", "
-          + passwordAvailableColumnName + " FROM " + userTableName + " WHERE " + loginColumnName
-          + " = ?";
+          + passwordAvailableColumnName + " FROM " + userTableName;
     } else {
       loginQuery = "SELECT " + loginColumnName + ", " + passwordColumnName + " FROM "
-          + userTableName + " WHERE " + loginColumnName + " = ?";
+          + userTableName;
     }
-
-    try {
-      stmt = connection.prepareStatement(loginQuery);
+    if (ignoreCase) {
+      loginQuery += " WHERE lower(" + loginColumnName + ") = lower(?)";
+    } else {
+      loginQuery += " WHERE " + loginColumnName + " = ?";
+    }
+    try (final PreparedStatement stmt = connection.prepareStatement(loginQuery)) {
       stmt.setString(1, login);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        if (StringUtil.isDefined(passwordAvailableColumnName)) {
-          String validString = rs.getString(passwordAvailableColumnName);
-          if ("N".equalsIgnoreCase(validString)) {
-            throw new AuthenticationPwdNotAvailException(
-                "Not password set for user with login: " + login);
+      try (final ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          if (StringUtil.isDefined(passwordAvailableColumnName)) {
+            String validString = rs.getString(passwordAvailableColumnName);
+            if ("N".equalsIgnoreCase(validString)) {
+              throw new AuthenticationPwdNotAvailException(
+                  "Not password set for user with login: " + login);
+            }
           }
+          sqlPasswd = rs.getString(passwordColumnName);
+        } else {
+          throw new AuthenticationBadCredentialException("User not found with login: " + login);
         }
-        sqlPasswd = rs.getString(passwordColumnName);
-      } else {
-        throw new AuthenticationBadCredentialException("User not found with login: " + login);
       }
-
     } catch (SQLException ex) {
       throw new AuthenticationHostException(ex);
-    } finally {
-      DBUtil.close(rs, stmt);
     }
     return sqlPasswd;
   }
 
-  private void updatePassword(Connection connection, String login, String newPassword)
+  private void updatePassword(Connection connection, String login, final boolean loginIgnoreCase,
+      String newPassword)
       throws AuthenticationException {
-    PreparedStatement stmt = null;
-    String updateQuery = "UPDATE " + userTableName + " SET " + passwordColumnName + " = ? WHERE "
-        + loginColumnName + " = ?";
-    try {
-      stmt = connection.prepareStatement(updateQuery);
+    String updateQuery = "UPDATE " + userTableName + " SET " + passwordColumnName + " = ? WHERE ";
+    if (loginIgnoreCase) {
+      updateQuery += "lower(" + loginColumnName + ") = lower(?)";
+    } else {
+      updateQuery += loginColumnName + " = ?";
+    }
+    try (final PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
       stmt.setString(1, newPassword);
       stmt.setString(2, login);
       stmt.executeUpdate();
     } catch (SQLException ex) {
       throw new AuthenticationHostException(ex);
-    } finally {
-      DBUtil.close(stmt);
     }
   }
 
@@ -172,18 +172,19 @@ public class AuthenticationSQL extends Authentication {
     Connection sqlConnection = getSQLConnection(connection);
     String login = credential.getLogin();
     String oldPassword = credential.getPassword();
-    String passwordInDB = getPassword(sqlConnection, login);
+    final boolean loginIgnoreCase = credential.loginIgnoreCase();
+    String passwordInDB = getPassword(sqlConnection, login, loginIgnoreCase);
     checkPassword(login, oldPassword, passwordInDB);
     String newPasswordInDB = getNewPasswordDigest(newPassword);
-    updatePassword(sqlConnection, login, newPasswordInDB);
+    updatePassword(sqlConnection, login, loginIgnoreCase, newPasswordInDB);
   }
 
   @Override
   protected void doResetPassword(AuthenticationConnection connection, String login,
-      String newPassword) throws AuthenticationException {
+      final boolean loginIgnoreCase, String newPassword) throws AuthenticationException {
     Connection sqlConnection = getSQLConnection(connection);
     String newPasswordInDB = getNewPasswordDigest(newPassword);
-    updatePassword(sqlConnection, login, newPasswordInDB);
+    updatePassword(sqlConnection, login, loginIgnoreCase, newPasswordInDB);
   }
 
   protected static Connection getSQLConnection(AuthenticationConnection<Connection> connection) {
@@ -210,7 +211,7 @@ public class AuthenticationSQL extends Authentication {
    * (that is to say with another a MD5 hash function), the encryption having computed the specified
    * digest is then used to encrypt the password in order to compare them.
    *
-   * @param login a user login.
+   * @param login a user login, used only in case of error.
    * @param password the password associated with the user login.
    * @param digest the digest of the password by using the current encryption.
    * @throws AuthenticationBadCredentialException

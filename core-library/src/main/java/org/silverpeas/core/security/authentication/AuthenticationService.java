@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
@@ -289,33 +290,21 @@ public class AuthenticationService {
     if (login == null || domainId == null) {
       return null;
     }
-
-    PreparedStatement prepStmt = null;
-    ResultSet resultSet = null;
-    Connection connection = null;
-    boolean authenticationOK = false;
+    final boolean authenticationOK;
     try {
-
-      // Open connection
-      connection = openConnection();
-
-      String query = "SELECT " + USER_ID_COLUMN_NAME + " FROM "
-          + USER_TABLE_NAME + " WHERE " + USER_LOGIN_COLUMN_NAME + " = ? AND "
-          + USER_DOMAIN_COLUMN_NAME + " = ?";
-      prepStmt = connection.prepareStatement(query);
-
-      prepStmt.setString(1, login);
-      prepStmt.setInt(2, Integer.parseInt(domainId));
-
-      resultSet = prepStmt.executeQuery();
-
-      authenticationOK = resultSet.next();
+      final JdbcSqlQuery query = JdbcSqlQuery
+          .createSelect(USER_ID_COLUMN_NAME)
+          .from(USER_TABLE_NAME)
+          .where(USER_DOMAIN_COLUMN_NAME + " = ?", Integer.parseInt(domainId));
+      if (credential.loginIgnoreCase()) {
+        query.and("lower(" + USER_LOGIN_COLUMN_NAME + ") = lower(?)", login);
+      } else {
+        query.and(USER_LOGIN_COLUMN_NAME + " = ?", login);
+      }
+      authenticationOK = !query.execute(r -> true).isEmpty();
     } catch (Exception ex) {
       SilverLogger.getLogger(this).warn(ex);
       return ERROR_AUTHENTICATION_FAILURE;
-    } finally {
-      DBUtil.close(resultSet, prepStmt);
-      closeConnection(connection);
     }
 
     String key = null;
@@ -517,7 +506,7 @@ public class AuthenticationService {
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
       // Authentication test
-      authenticationServer.resetPassword(login, newPassword);
+      authenticationServer.resetPassword(login, credential.loginIgnoreCase(), newPassword);
     } catch (AuthenticationException ex) {
       SilverLogger.getLogger(this).warn(ex);
       throw ex;

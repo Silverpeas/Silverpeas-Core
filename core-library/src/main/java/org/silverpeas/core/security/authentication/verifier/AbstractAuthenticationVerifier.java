@@ -89,7 +89,9 @@ class AbstractAuthenticationVerifier {
             credential.getDomainId());
         return Optional.ofNullable(userId)
             .map(UserDetail::getById)
-            .filter(u -> u.getLogin().equals(credential.getLogin()))
+            .filter(u -> credential.loginIgnoreCase() ?
+                u.getLogin().equalsIgnoreCase(credential.getLogin()) :
+                u.getLogin().equals(credential.getLogin()))
             .orElse(null);
       } catch (AdminException ignore) {
         return null;

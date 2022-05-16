@@ -172,14 +172,14 @@ public class AuthenticationServer {
    * the password change. Please use the method
    * <code>isPasswordChangeAllowed()</code> to check this. This operation doesn't require the user
    * to be authenticated, so the reset must be under the control of the system for security reasons.
-   *
    * @param login the login of the user for which the password has to be reset.
+   * @param loginIgnoreCase true to ignore case when comparing the login.
    * @param newPassword the new password of the user.
    * @throws AuthenticationException if an error occurs while resetting the password with the new
    * one.
    */
-  public void resetPassword(final String login, final String newPassword) throws
-      AuthenticationException {
+  public void resetPassword(final String login, final boolean loginIgnoreCase,
+      final String newPassword) throws AuthenticationException {
     if (!passwordChangeAllowed) {
       throw new AuthenticationPwdChangeNotAvailException("The password reset isn't available");
     }
@@ -188,7 +188,7 @@ public class AuthenticationServer {
         AuthenticationCredential.newWithAsLogin(login)) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {
-        authentication.resetPassword(login, newPassword);
+        authentication.resetPassword(login, loginIgnoreCase, newPassword);
       }
     });
   }
