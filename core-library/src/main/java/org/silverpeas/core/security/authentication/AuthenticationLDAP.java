@@ -469,7 +469,7 @@ public class AuthenticationLDAP extends Authentication {
 
   @Override
   protected void doResetPassword(AuthenticationConnection connection, String login,
-      String newPassword)
+      final boolean loginIgnoreCase, String newPassword)
       throws AuthenticationException {
     String userFullDN;
     String searchString = userLoginFieldName + "=" + login;

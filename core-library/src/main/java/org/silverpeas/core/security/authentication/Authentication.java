@@ -126,14 +126,16 @@ public abstract class Authentication {
    * isn't a password modification but a reset of it generally under the control of the system.
    * If the login of the user doesn't exist or if the reset cannot be done an exception is thrown.
    * @param login the user login
+   * @param loginIgnoreCase true to ignore case when comparing the login
    * @param newPassword the new password
    * @throws AuthenticationException if an error occurs while resetting the user password.
    */
-  public void resetPassword(final String login, final String newPassword) throws AuthenticationException {
+  public void resetPassword(final String login, final boolean loginIgnoreCase,
+      final String newPassword) throws AuthenticationException {
       doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_RESET) {
         @Override
         public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {
-          doResetPassword(connection, login, newPassword);
+          doResetPassword(connection, login, loginIgnoreCase, newPassword);
         }
       });
     }
@@ -207,12 +209,13 @@ public abstract class Authentication {
    * method.
    * @param connection the connection with a remote authentication server.
    * @param login the login of the user for which the password has to be reset.
+   * @param loginIgnoreCase true to ignore case when comparing the login.
    * @param newPassword the new password with which the user password will be reset.
    * @param <T> the type of the authentication server's connector.
    * @throws AuthenticationException if an error occurs while resetting the user password.
    */
   protected <T> void doResetPassword(AuthenticationConnection<T> connection, String login,
-      String newPassword) throws AuthenticationException {
+      final boolean loginIgnoreCase, String newPassword) throws AuthenticationException {
     throw new AuthenticationPwdChangeNotAvailException("The password reset isn't available");
   }
 

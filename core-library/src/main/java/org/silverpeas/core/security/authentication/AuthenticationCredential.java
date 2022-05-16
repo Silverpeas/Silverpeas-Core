@@ -22,9 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * A credential is a set of security-related capabilities for a given user, it contains information
@@ -46,14 +52,15 @@ import java.util.Map;
  */
 public class AuthenticationCredential {
 
+  private final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
+
+  private final Map<String, Serializable> capabilities = new HashMap<>();
   private String login;
   private String password;
   private String domainId;
 
-  private Map<String, Serializable> capabilities = new HashMap<>();
-
   private AuthenticationCredential() {
-
   }
 
   /**
@@ -120,6 +127,18 @@ public class AuthenticationCredential {
    */
   public Map<String, Serializable> getCapabilities() {
     return capabilities;
+  }
+
+  /**
+   * Indicates if login case can be ignored during authentication processing.
+   * @return true to ignore case, false to compare exactly.
+   */
+  public boolean loginIgnoreCase() {
+    return ofNullable(getDomainId()).filter(StringUtil::isDefined)
+        .map(d -> authenticationSettings.getString("loginIgnoreCaseOnUserAuthentication.domain" + d, null))
+        .filter(StringUtil::isDefined)
+        .map(StringUtil::getBooleanValue)
+        .orElseGet(() -> authenticationSettings.getBoolean("loginIgnoreCaseOnUserAuthentication.default", false));
   }
 
   private void setLogin(String login) {

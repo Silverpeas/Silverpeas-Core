@@ -35,21 +35,24 @@ import java.sql.SQLException;
 public class AuthenticationCAS extends AuthenticationSQL {
 
   private String query;
+  private String lowerCaseQuery;
 
   @Override
   public void loadProperties(final SettingBundle settings) {
-    String serverName = getServerName();
+    final String serverName = getServerName();
     dataSourceJndiName = settings.getString(serverName + ".SQLDataSourceJNDIName");
     userTableName = settings.getString(serverName + ".SQLUserTableName");
     loginColumnName = settings.getString(serverName + ".SQLUserLoginColumnName");
-    query = "select " + loginColumnName + " from " + userTableName + " where " + loginColumnName +
-        " = ?";
+    final String queryBase = "select " + loginColumnName + " from " + userTableName + " where ";
+    query = queryBase + loginColumnName + " = ?";
+    lowerCaseQuery = queryBase + "lower(" + loginColumnName + ") = lower(?)";
   }
 
   @Override
   protected void doAuthentication(AuthenticationConnection connection,
       AuthenticationCredential credential) throws AuthenticationException {
-    try (PreparedStatement stmt = getSQLConnection(connection).prepareStatement(query)) {
+    try (PreparedStatement stmt = getSQLConnection(connection).prepareStatement(
+        credential.loginIgnoreCase() ? lowerCaseQuery : query)) {
       stmt.setString(1, credential.getLogin());
       try (ResultSet rs = stmt.executeQuery()) {
         if (!rs.next()) {

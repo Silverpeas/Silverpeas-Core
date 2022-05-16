@@ -23,46 +23,37 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<%@ page import="org.silverpeas.core.util.ResourceLocator"
-%>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%
-	SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-	LocalizationBundle generalMultilang = ResourceLocator.getGeneralLocalizationBundle(
-			request.getLocale().getLanguage());
-	String sURI = request.getRequestURI();
-	String sServletPath = request.getServletPath();
-	String sPathInfo = request.getPathInfo();
-	if (sPathInfo != null)
-	{
-	    sURI = sURI.substring(0, sURI.lastIndexOf(sPathInfo));
-	}
-	String m_context = "../../.." + sURI.substring(0, sURI.lastIndexOf(sServletPath));
-
-	String styleSheet = general.getString("defaultStyleSheet", m_context + "/util/styleSheets/silverpeas-main.css");
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title><%=generalMultilang.getString("GML.popupTitle")%></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<link rel="stylesheet" href="<%=styleSheet%>"/>
-</head>
-
-<body>
-	<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
-		<tr>
-			<td class="intfdcolor4" align="center">
-				<br/>
-				<span class="txtnav"><%=generalMultilang.getString("GML.ForbiddenAccess")%></span>
-				<br/>
-				<br/>
-			</td>
-		</tr>
-	</table>
-</body>
-</html>
+<view:sp-page>
+  <fmt:setLocale value="${requestScope.userLanguage}"/>
+  <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+  <view:sp-head-part noLookAndFeel="true">
+    <view:link href="/style.css"/>
+    <style type="text/css">
+      .fnfinformation {
+        float: unset;
+        margin-top: 80px;
+      }
+    </style>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <div class="page">
+      <div id="background">
+        <div class="cadre">
+          <div id="header">
+            <c:url var="logoUrl" value="/images/logo.jpg"/>
+            <img src="${logoUrl}" class="logo" alt="logo"/>
+            <p class="information"></p>
+          </div>
+          <div class="fnfinformation">
+            <fmt:message key="GML.UnauthenticatedAccess"/><br/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </view:sp-body-part>
+</view:sp-page>
