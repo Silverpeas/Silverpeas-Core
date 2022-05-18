@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.jobsearch;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
@@ -50,6 +49,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.pdc.QueryParameters;
 
+import javax.annotation.Nonnull;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -456,7 +456,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     return emplacement.toString();
   }
 
-  @NotNull
+  @Nonnull
   private StringBuilder setDomainInPath(final String domainId) {
     StringBuilder emplacement = new StringBuilder();
     final String theDomainId = domainId == null ? "-1" : domainId;

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -49,6 +48,7 @@ import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
+import javax.annotation.Nonnull;
 import java.io.FileWriter;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
@@ -252,7 +252,7 @@ public class ExportIcalManager {
     return events;
   }
 
-  @NotNull
+  @Nonnull
   private CalendarEvent getCalendarEvent(final OffsetDateTime startDateTime,
       final OffsetDateTime endDateTime, final boolean allDay) {
     CalendarEvent event;

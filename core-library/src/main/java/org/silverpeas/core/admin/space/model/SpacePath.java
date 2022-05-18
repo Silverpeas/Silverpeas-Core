@@ -24,11 +24,11 @@
 
 package org.silverpeas.core.admin.space.model;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.ResourcePath;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -48,7 +48,7 @@ public class SpacePath extends ArrayList<SpaceInstLight> implements ResourcePath
     return new SpacePath(OrganizationController.get().getPathToSpace(spaceId));
   }
 
-  private SpacePath(@NotNull final Collection<? extends SpaceInstLight> c) {
+  private SpacePath(@Nonnull final Collection<? extends SpaceInstLight> c) {
     super(c);
   }
 

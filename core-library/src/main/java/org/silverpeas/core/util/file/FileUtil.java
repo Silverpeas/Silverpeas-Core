@@ -26,8 +26,6 @@ package org.silverpeas.core.util.file;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.io.media.MetadataExtractor;
@@ -40,6 +38,8 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
@@ -59,8 +60,8 @@ import static org.silverpeas.core.util.MimeTypes.*;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * Util class to perform file system operations.
- * All file operations wil be removed in the future in profit of the new Files class in the JDK.
+ * Util class to perform file system operations. All file operations wil be removed in the future in
+ * profit of the new Files class in the JDK.
  */
 public class FileUtil {
 
@@ -76,10 +77,9 @@ public class FileUtil {
 
   /**
    * Detects the mime-type of the specified file.
-   *
+   * <p>
    * The mime-type is first extracted from its content. If the detection fails or if the file cannot
    * be located by its specified name, then the mime-type is detected from the file extension.
-   *
    * @param fileName the name of the file with its path.
    * @return the mime-type of the specified file.
    */
@@ -99,7 +99,7 @@ public class FileUtil {
     return mimeType;
   }
 
-  @NotNull
+  @Nonnull
   private static String computeMimeType(final String fileName) {
     String mimeType = null;
     final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
@@ -122,10 +122,12 @@ public class FileUtil {
   }
 
   @Nullable
-  private static String getPeculiarChildMimeType(String parentMimeType, final String fileExtension) {
+  private static String getPeculiarChildMimeType(String parentMimeType,
+      final String fileExtension) {
     String mimeType = parentMimeType;
     // if the mime type is application/xhml+xml or text/html whereas the file is a JSP or PHP script
-    if (XHTML_MIME_TYPE.equalsIgnoreCase(parentMimeType) || HTML_MIME_TYPE.equalsIgnoreCase(parentMimeType)) {
+    if (XHTML_MIME_TYPE.equalsIgnoreCase(parentMimeType) ||
+        HTML_MIME_TYPE.equalsIgnoreCase(parentMimeType)) {
       if (fileExtension.contains(JSP_EXTENSION)) {
         mimeType = JSP_MIME_TYPE;
       } else if (fileExtension.contains(PHP_EXTENSION)) {
@@ -144,7 +146,8 @@ public class FileUtil {
     return mimeType;
   }
 
-  private static String getMimeTypeByFileExtension(final String fileExtension, final String defaultMimeType) {
+  private static String getMimeTypeByFileExtension(final String fileExtension,
+      final String defaultMimeType) {
     String mimeType = defaultMimeType;
     try {
       mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
@@ -180,25 +183,23 @@ public class FileUtil {
     while (strToken.hasMoreElements()) {
       folders.add(strToken.nextToken().trim());
     }
-    return folders.toArray(new String[folders.size()]);
+    return folders.toArray(new String[0]);
   }
 
   /**
-   * Read the content of a file as text (the text is supposed to be in the UTF-8 charset).
-   * Instead of using this method, prefer to use the following Java > 7 statement:<br/>
+   * Read the content of a file as text (the text is supposed to be in the UTF-8 charset). Instead
+   * of using this method, prefer to use the following Java > 7 statement:<br/>
    * <pre>{@code new String(Files.readAllBytes(file.toPath()), Charset.defaultCharset());}</pre>
-   *
    * @param file the file to read.
    * @return the file content as a String.
    * @throws IOException if an error occurs while reading the file.
    */
   public static String readFileToString(final File file) throws IOException {
-    return new String(Files.readAllBytes(file.toPath()), Charset.defaultCharset());
+    return Files.readString(file.toPath(), Charset.defaultCharset());
   }
 
   /**
    * Indicates if the OS is from the Microsoft Windows familly
-   *
    * @return true if the OS is from the Microsoft Windows familly - false otherwise.
    */
   public static boolean isWindows() {
@@ -207,7 +208,6 @@ public class FileUtil {
 
   /**
    * If 3D document.
-   *
    * @param filename the name of the file.
    * @return true or false
    */
@@ -217,7 +217,6 @@ public class FileUtil {
 
   /**
    * Indicates if the current file is of type archive.
-   *
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
    */
@@ -227,7 +226,6 @@ public class FileUtil {
 
   /**
    * Indicates if the current file is of type image.
-   *
    * @param filename the name of the file.
    * @return true is the file is of type image - false otherwise.
    */
@@ -242,7 +240,6 @@ public class FileUtil {
 
   /**
    * Indicates if the current file is of type mail.
-   *
    * @param filename the name of the file.
    * @return true is the file is of type mail - false otherwise.
    */
@@ -252,7 +249,6 @@ public class FileUtil {
 
   /**
    * Indicates if the current file is of type PDF.
-   *
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
    */
@@ -274,7 +270,6 @@ public class FileUtil {
 
   /**
    * Asserts that the path doesn't contain relative navigation between pathes.
-   *
    * @param path the path to check
    * @throws RelativeFileAccessException when a relative path is detected.
    */
@@ -289,15 +284,19 @@ public class FileUtil {
   /**
    * Forces the deletion of the specified file. If the write property of the file to delete isn't
    * set, this property is then set before deleting.
-   *
    * @param fileToDelete file to delete.
    * @throws IOException if the deletion failed or if the file doesn't exist.
    */
   public static void forceDeletion(File fileToDelete) throws IOException {
     if (fileToDelete.exists() && !fileToDelete.canWrite()) {
-      fileToDelete.setWritable(true);
+      boolean result = fileToDelete.setWritable(true);
+      if (!result) {
+        SilverLogger.getLogger(FileUtil.class)
+            .warn("Cannot set file ${0} writable", fileToDelete.getName());
+      }
     }
-    try(Stream<Path> paths = Files.walk(fileToDelete.toPath())) {
+    try (Stream<Path> paths = Files.walk(fileToDelete.toPath())) {
+      //noinspection ResultOfMethodCallIgnored
       paths.sorted(Comparator.reverseOrder())
           .map(Path::toFile)
           .forEach(File::delete);
@@ -308,7 +307,6 @@ public class FileUtil {
    * Moves the specified source file to the specified destination. If the destination exists, it is
    * then replaced by the source; if the destination is a directory, then it is deleted with all of
    * its contain.
-   *
    * @param source the file to move.
    * @param destination the destination file of the move.
    * @throws IOException if the source or the destination is invalid or if an error occurs while
@@ -325,7 +323,6 @@ public class FileUtil {
    * Copies the specified source file to the specified destination. If the destination exists, it is
    * then replaced by the source. If the destination can be overwritten, its write property is set
    * before the copy.
-   *
    * @param source the file to copy.
    * @param destination the destination file of the move.
    * @throws IOException if the source or the destination is invalid or if an error occurs while
@@ -333,7 +330,11 @@ public class FileUtil {
    */
   public static void copyFile(File source, File destination) throws IOException {
     if (destination.exists() && !destination.canWrite()) {
-      destination.setWritable(true);
+      boolean result = destination.setWritable(true);
+      if (!result) {
+        SilverLogger.getLogger(FileUtil.class)
+            .warn("Cannot set file ${0} writable", destination.getName());
+      }
     }
     Files.copy(source.toPath(), destination.toPath(), REPLACE_EXISTING);
   }
@@ -353,12 +354,11 @@ public class FileUtil {
 
   /**
    * Convert a path to the current OS path format.
-   *
    * @param undeterminedOsPath a path
    * @return server OS pah.
    */
   public static String convertPathToServerOS(String undeterminedOsPath) {
-    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
+    if (!StringUtil.isDefined(undeterminedOsPath)) {
       return "";
     }
     String localPath = undeterminedOsPath;
@@ -366,9 +366,9 @@ public class FileUtil {
     return localPath;
   }
 
-  public static boolean deleteEmptyDir(File directory) {
-    if (directory.exists() && directory.isDirectory() && directory.list() != null && directory.
-        list().length == 0) {
+  public static boolean deleteEmptyDir(@Nonnull File directory) {
+    if (directory.exists() && directory.isDirectory() && directory.list() != null &&
+        Objects.requireNonNull(directory.list()).length == 0) {
       try {
         Files.delete(directory.toPath());
         return true;
@@ -387,7 +387,7 @@ public class FileUtil {
    * files will be moved if any.
    * @return an array of {@link File} that represents the found sub folders. The returned array is
    * never null.
-   * @throws IOException
+   * @throws IOException if an IO error occurs
    */
   public static File[] moveAllFilesAtRootFolder(File rootFolder) throws IOException {
     return moveAllFilesAtRootFolder(rootFolder, true);
@@ -400,7 +400,7 @@ public class FileUtil {
    * @param deleteFolders true if the sub folders must be deleted.
    * @return an array of {@link File} that represents the found sub folders. The returned array is
    * never null.
-   * @throws IOException
+   * @throws IOException if an IO error occurs
    */
   public static File[] moveAllFilesAtRootFolder(File rootFolder, boolean deleteFolders)
       throws IOException {
@@ -427,10 +427,9 @@ public class FileUtil {
    * Validate that fileName given in parameter is inside extraction target directory (intendedDir)
    * @param fileName the file name to extract
    * @param intendedDir the extraction target directory
-   * @return the filename if fileName is inside extraction target directory
    * @throws java.io.IOException if fileName is outside extraction target directory
    */
-  public static String validateFilename(String fileName, String intendedDir)
+  public static void validateFilename(String fileName, String intendedDir)
       throws java.io.IOException {
     File f = new File(fileName);
     String canonicalPath = f.getCanonicalPath();
@@ -438,9 +437,7 @@ public class FileUtil {
     File iD = new File(intendedDir);
     String canonicalID = iD.getCanonicalPath();
 
-    if (canonicalPath.startsWith(canonicalID)) {
-      return canonicalPath;
-    } else {
+    if (!canonicalPath.startsWith(canonicalID)) {
       throw new IllegalStateException("File is outside extraction target directory (security)");
     }
   }

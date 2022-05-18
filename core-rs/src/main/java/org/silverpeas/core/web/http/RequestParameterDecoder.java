@@ -24,13 +24,13 @@
 package org.silverpeas.core.web.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
 import javax.xml.bind.annotation.XmlElement;
@@ -173,7 +173,7 @@ public class RequestParameterDecoder {
     return null;
   }
 
-  @SuppressWarnings({"unchecked", "ConstantConditions"})
+  @SuppressWarnings("unchecked")
   public static <E extends Enum<E>> E asEnum(String enumValue, Class<E> enumClass) {
     Method fromMethod = null;
 
@@ -287,9 +287,8 @@ public class RequestParameterDecoder {
    * @param parameterName the current parameter name to verify.
    * @param parameterClass the class into which the parameter value must be converted.
    * @return the decoded parameter value.
-   * @throws Exception
+   * @throws ParseException if an error occurs while parsing the request
    */
-  @SuppressWarnings("unchecked")
   private Object getParameterValue(HttpRequest request, String parameterName,
       Class<?> parameterClass, boolean unescapeHtml) throws ParseException {
     final Object value;
@@ -319,7 +318,6 @@ public class RequestParameterDecoder {
    * @param parameterValue the value to get as.
    * @param parameterClass the class into which the parameter value must be converted.
    * @return the decoded value.
-   * @throws Exception
    */
   @SuppressWarnings("unchecked")
   private <T> T getValueAs(String parameterValue, Class<?> parameterClass, boolean unescapeHtml) {
@@ -341,6 +339,7 @@ public class RequestParameterDecoder {
     } else if (parameterClass.isAssignableFrom(Boolean.TYPE)) {
       value = asBoolean(parameterValue);
     } else if (parameterClass.isEnum()) {
+      //noinspection rawtypes
       value = asEnum(parameterValue, (Class) parameterClass);
     } else if (parameterClass.isAssignableFrom(URI.class)) {
       value = asURI(parameterValue);

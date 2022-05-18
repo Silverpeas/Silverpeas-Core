@@ -30,8 +30,6 @@ import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchResults;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.admin.domain.driver.ldapdriver.LdapConfiguration;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
@@ -44,6 +42,8 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -61,7 +61,6 @@ import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * This class performs the LDAP authentication
- *
  * @author tleroi, mmoquillon
  */
 public class AuthenticationLDAP extends Authentication {
@@ -73,11 +72,11 @@ public class AuthenticationLDAP extends Authentication {
   private static final int FORMAT_TIMESTAMP = 1;
 
   /**
-   * Formatter used to format the 'TimeStamp' representation of a LDAP attribute.
-   * Its pattern is derived from the GeneralizedTime type as defined by the LDAP standard.
-   * See https://ldapwiki.com/wiki/GeneralizedTime for more information.
+   * Formatter used to format the 'TimeStamp' representation of a LDAP attribute. Its pattern is
+   * derived from the GeneralizedTime type as defined by the LDAP standard. See <a
+   * href="https://ldapwiki.com/wiki/GeneralizedTime>Generalized time</a> for more information.
    * Here, it is a simple attempt to implement the standard with some restrictions in order to not
-   * complexify the code for date time format not used by the commonly used LDAP servers: we don't
+   * complexity the code for date time format not used by the commonly used LDAP servers: we don't
    * support the optional leap-second and the comma separator in the optional fraction parts.
    */
   private static final DateTimeFormatter GENERALIZED_TIME =
@@ -105,7 +104,7 @@ public class AuthenticationLDAP extends Authentication {
   private String ldapImpl;
   private String userBaseDN;
   private String userLoginFieldName;
-  private LdapConfiguration configuration = new LdapConfiguration();
+  private final LdapConfiguration configuration = new LdapConfiguration();
 
   @Override
   public void loadProperties(SettingBundle settings) {
@@ -142,7 +141,8 @@ public class AuthenticationLDAP extends Authentication {
           mustAlertPasswordExpiration = false;
         } else {
           pwdMaxAge = settings.getInteger(serverName + ".LDAPPwdMaxAge", Integer.MAX_VALUE);
-          pwdExpirationReminderDelay = settings.getInteger(serverName + ".PwdExpirationReminderDelay", 5);
+          pwdExpirationReminderDelay =
+              settings.getInteger(serverName + ".PwdExpirationReminderDelay", 5);
         }
       }
       if (mustAlertPasswordExpiration) {
@@ -161,7 +161,9 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @Override
-  protected AuthenticationConnection<LDAPConnection> openConnection() throws AuthenticationException {
+  @SuppressWarnings("unchecked")
+  protected AuthenticationConnection<LDAPConnection> openConnection()
+      throws AuthenticationException {
     LDAPConnection ldapConnection;
     if (configuration.isSecure()) {
       ldapConnection = new LDAPConnection(new LDAPJSSESecureSocketFactory());
@@ -176,13 +178,15 @@ public class AuthenticationLDAP extends Authentication {
     } catch (LDAPException ex) {
       throw new AuthenticationHostException(
           "Connection to the LDAP server failed with the following configuration: "
-          + configuration, ex);
+              + configuration, ex);
     }
     return new AuthenticationConnection<>(ldapConnection);
   }
 
   @Override
-  protected void closeConnection(AuthenticationConnection connection) throws AuthenticationException {
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  protected void closeConnection(AuthenticationConnection connection)
+      throws AuthenticationException {
     // disconnect from the server
     try {
       LDAPConnection ldapConnection = getLDAPConnection(connection);
@@ -197,6 +201,7 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
   protected void doAuthentication(final AuthenticationConnection connection,
       final AuthenticationCredential credential)
       throws AuthenticationException {
@@ -247,7 +252,8 @@ public class AuthenticationLDAP extends Authentication {
       pwdExpirationDateTime = getPasswordExpirationDateTime(userEntry);
       if (pwdExpirationDateTime == null) {
         // special case of MS AD
-        throw new AuthenticationPasswordMustBeChangedAtNextLogon("Password required to be change at next logon for user " + userEntry.getDN());
+        throw new AuthenticationPasswordMustBeChangedAtNextLogon(
+            "Password required to be change at next logon for user " + userEntry.getDN());
       } else if (pwdExpirationDateTime.isBefore(ZonedDateTime.now())) {
         throw new AuthenticationPasswordExpired("Password expired for user " + userEntry.getDN());
       }
@@ -257,7 +263,7 @@ public class AuthenticationLDAP extends Authentication {
     return pwdExpirationDateTime;
   }
 
-  @NotNull
+  @Nonnull
   private LDAPEntry findLDAPUserMatchingCredential(final LDAPConnection ldapConnection,
       final AuthenticationCredential credential)
       throws AuthenticationHostException, AuthenticationBadCredentialException {
@@ -287,7 +293,7 @@ public class AuthenticationLDAP extends Authentication {
     return userEntry;
   }
 
-  @NotNull
+  @Nonnull
   private String[] getLDAPAttributeNamesToSeek() {
     final String[] attrNames;
     if (mustAlertPasswordExpiration) {
@@ -302,8 +308,9 @@ public class AuthenticationLDAP extends Authentication {
     return attrNames;
   }
 
-  @NotNull
-  private LDAPConnection openLDAPConnection(final AuthenticationConnection<LDAPConnection> connection)
+  @Nonnull
+  private LDAPConnection openLDAPConnection(
+      final AuthenticationConnection<LDAPConnection> connection)
       throws AuthenticationHostException {
     final LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
@@ -372,6 +379,7 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
   protected void doChangePassword(AuthenticationConnection connection,
       AuthenticationCredential credential, String newPassword) throws AuthenticationException {
     String login = credential.getLogin();
@@ -419,7 +427,8 @@ public class AuthenticationLDAP extends Authentication {
     }
   }
 
-  private LDAPModification[] getActiveDirectoryPasswordChange(String oldPassword, String newPassword) {
+  private LDAPModification[] getActiveDirectoryPasswordChange(String oldPassword,
+      String newPassword) {
     // Convert passwords to UTF-16LE
     byte[] oldUnicodePassword = getActiveDirectoryUnicodePwd(oldPassword);
     byte[] newUnicodePassword = getActiveDirectoryUnicodePwd(newPassword);
@@ -436,7 +445,7 @@ public class AuthenticationLDAP extends Authentication {
     byte[] newUnicodePassword = getActiveDirectoryUnicodePwd(newPassword);
     return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute(
         UNICODE_PASS_ATTR,
-      newUnicodePassword))};
+        newUnicodePassword))};
   }
 
   private byte[] getActiveDirectoryUnicodePwd(String password) {
@@ -447,8 +456,8 @@ public class AuthenticationLDAP extends Authentication {
   private LDAPModification[] changeOpenDSPassword(String newPassword) {
     // prepare password change
     return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute(
-      "userPassword",
-      newPassword))};
+        "userPassword",
+        newPassword))};
   }
 
   private static String[] extractBaseDNs(String baseDN) {
@@ -464,10 +473,11 @@ public class AuthenticationLDAP extends Authentication {
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
     }
-    return baseDNs.toArray(new String[baseDNs.size()]);
+    return baseDNs.toArray(new String[0]);
   }
 
   @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
   protected void doResetPassword(AuthenticationConnection connection, String login,
       final boolean loginIgnoreCase, String newPassword)
       throws AuthenticationException {
@@ -508,7 +518,8 @@ public class AuthenticationLDAP extends Authentication {
     }
   }
 
-  private static LDAPConnection getLDAPConnection(AuthenticationConnection<LDAPConnection> connection) {
+  private static LDAPConnection getLDAPConnection(
+      AuthenticationConnection<LDAPConnection> connection) {
     return connection.getConnector();
   }
 }

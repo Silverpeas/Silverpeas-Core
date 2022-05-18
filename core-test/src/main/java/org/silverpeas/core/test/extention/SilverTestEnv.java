@@ -25,7 +25,6 @@
 package org.silverpeas.core.test.extention;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -46,6 +45,7 @@ import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.inject.AmbiguousResolutionException;
@@ -601,7 +601,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       // nothing to do
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Iterator<T> iterator() {
       Set<T> beans = TestBeanContainer.getMockedBeanContainer().getAllBeansByType(beansType);

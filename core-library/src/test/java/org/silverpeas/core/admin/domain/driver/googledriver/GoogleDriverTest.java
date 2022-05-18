@@ -52,7 +52,7 @@ import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserBui
 @EnableSilverTestEnv
 class GoogleDriverTest {
 
-  private static List<User> allGoogleUsers = new ArrayList<>();
+  private static final List<User> allGoogleUsers = new ArrayList<>();
 
   @BeforeAll
   static void setup() {

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -134,7 +134,7 @@ public class RoleDAO {
     return getUserRoleRows(con, query);
   }
 
-  @NotNull
+  @Nonnull
   private List<UserRoleRow> getUserRoleRows(final Connection con, final String query)
       throws SQLException {
     final List<UserRoleRow> roles = new ArrayList<>();

@@ -27,7 +27,6 @@ package org.silverpeas.cmis.walkers;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.core.BasicIdentifier;
@@ -45,6 +44,7 @@ import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.Pair;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
@@ -171,14 +171,14 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
     return browseObjectsInFolderSubTrees(children, filtering, depth);
   }
 
-  @NotNull
+  @Nonnull
   private List<LocalizedResource> getAllowedRootSpaces(final User user) {
     return Stream.of(getController().getAllRootSpaceIds(user.getId()))
         .map(this::getSilverpeasObjectById)
         .collect(Collectors.toList());
   }
 
-  @NotNull
+  @Nonnull
   private Stream<LocalizedResource> getAllowedChildrenOfSpace(final ResourceIdentifier spaceId,
       final User user) {
     String[] allowedSubSpaceIds =

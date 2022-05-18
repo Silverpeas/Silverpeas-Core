@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.AdminController;
@@ -35,6 +34,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,7 +92,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return getYearsWithQuery(SELECT_VOLUME_YEARS);
   }
 
-  @NotNull
+  @Nonnull
   private static Collection<String> getYearsWithQuery(final String selectQuery)
       throws SQLException {
     PreparedStatement stmt = null;
@@ -167,7 +167,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return getAccessEvolFor(spaceId, SELECT_ACCESS_EVOL_FOR_SPACE);
   }
 
-  @NotNull
+  @Nonnull
   private static List<String[]> getAccessEvolFor(final String spaceId,
       final String accessQuery) throws SQLException, ParseException {
     PreparedStatement pstmt = null;
@@ -190,7 +190,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return getAccessEvolByUser(spaceId, userId, SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
   }
 
-  @NotNull
+  @Nonnull
   private static List<String[]> getAccessEvolByUser(final String spaceId, final String userId,
       final String accessEvolQuery) throws SQLException, ParseException {
     PreparedStatement pstmt = null;
@@ -220,7 +220,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return processAccessEvolDate(allAccesses);
   }
 
-  @NotNull
+  @Nonnull
   private static List<String[]> processAccessEvolDate(final Map<String, String[]> allAccesses) {
     List<String> dates = new ArrayList<>(allAccesses.keySet());
     Collections.sort(dates);

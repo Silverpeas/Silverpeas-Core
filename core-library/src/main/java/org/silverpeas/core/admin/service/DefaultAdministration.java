@@ -24,8 +24,6 @@
 package org.silverpeas.core.admin.service;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
@@ -88,6 +86,7 @@ import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -1386,7 +1385,7 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  @NotNull
+  @Nonnull
   private ProfileInst removeInheritedComponentRole(final ComponentInst component,
       final Profile componentRole) {
     ProfileInst inheritedProfile = component.getInheritedProfileInst(componentRole.getName());
@@ -1427,7 +1426,7 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  @NotNull
+  @Nonnull
   private List<String> getUserIdsToRemove(final String componentId, final ProfileInst objectProfile)
       throws AdminException {
     List<String> userIdsToRemove = new ArrayList<>();
@@ -1440,7 +1439,7 @@ class DefaultAdministration implements Administration {
     return userIdsToRemove;
   }
 
-  @NotNull
+  @Nonnull
   private List<String> getGroupIdsToRemove(final String componentId,
       final ProfileInst objectProfile) throws AdminException {
     List<String> groupIdsToRemove = new ArrayList<>();
@@ -5228,7 +5227,7 @@ class DefaultAdministration implements Administration {
         .sorted()
         .collect(toList());
     silverpeasGroup.setUserIds(newUserIds.toArray(String[]::new));
-    return !previousUserIds.stream().collect(joining(",")).equals(newUserIds.stream().collect(joining(",")));
+    return !String.join(",", previousUserIds).equals(String.join(",", newUserIds));
   }
 
   private boolean setParentGroup(final SyncOfGroupsContext context,
@@ -5653,7 +5652,7 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  @NotNull
+  @Nonnull
   private SpaceInst createPasteSpace(final PasteDetail pasteDetail, final SpaceInst oldSpace,
       final String toSpaceId) throws AdminException {
     SpaceInst newSpace = new SpaceInst(oldSpace);

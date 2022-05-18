@@ -24,8 +24,6 @@
 package org.silverpeas.web.pdc.control;
 
 import org.apache.commons.fileupload.FileItem;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -100,6 +98,7 @@ import org.silverpeas.web.pdc.vo.ResultFilterVO;
 import org.silverpeas.web.pdc.vo.ResultGroupFilter;
 import org.silverpeas.web.pdc.vo.SearchTypeConfigurationVO;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -603,7 +602,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  @Nullable
+  @Nonnull
   private Facet findFacet(final String formName, final String fieldName, final String facetId,
       final Map<String, Facet> fieldFacetsMap) {
     Facet facet = null;
@@ -1368,7 +1367,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return synonymsQueryString;
   }
 
-  @NotNull
+  @Nonnull
   private String parseSynonymsQueryString(final StreamTokenizer st) {
     final StringBuilder parsedSynonyms = new StringBuilder();
     try {

@@ -25,12 +25,12 @@ package org.silverpeas.core.io.temp;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -109,7 +109,7 @@ class TestLastModifiedDateFileTask {
     }
   }
 
-  @NotNull
+  @Nonnull
   private List<File> createFilesForTest() throws IOException {
     final List<File> files = new ArrayList<>();
     final Path folder1 = tempPath.resolve("folder");

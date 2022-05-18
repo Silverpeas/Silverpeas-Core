@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.index.search;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -43,6 +42,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class SimpleSearchEngine implements SearchEngine {
   private DidYouMeanSearcher didYouMeanSearcher;
   @Inject
   private IndexSearcher indexSearcher;
-  private SettingBundle pdcSettings =
+  private final SettingBundle pdcSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
   private final boolean enableWordSpelling = pdcSettings.getBoolean("enableWordSpelling", false);
@@ -172,7 +172,7 @@ public class SimpleSearchEngine implements SearchEngine {
         .collect(Collectors.toList());
   }
 
-  @NotNull
+  @Nonnull
   private List<FilterMatchingIndexEntryItem> checkAccessAuthorization(final String userId,
       List<FilterMatchingIndexEntryItem> otherItems,
       final ComponentAuthorization componentAuthorization) {
@@ -195,7 +195,7 @@ public class SimpleSearchEngine implements SearchEngine {
     return otherItems;
   }
 
-  @NotNull
+  @Nonnull
   private List<FilterMatchingIndexEntryItem> removeNonPublicationAndNonNodeExternalEntries(
       final List<FilterMatchingIndexEntryItem> filterItems, final boolean enableExternalSearch) {
     return filterItems.stream()

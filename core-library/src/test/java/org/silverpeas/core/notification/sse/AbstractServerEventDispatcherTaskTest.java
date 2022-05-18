@@ -46,10 +46,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
-import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,18 +126,17 @@ abstract class AbstractServerEventDispatcherTaskTest {
   SilverpeasWebSocketContext4Test newMockedWebSocketContext(final String sessionId) {
     final Session mockedSession = mock(Session.class);
     when(mockedSession.getRequestURI())
-        .thenReturn(UriBuilder.fromUri(EVENT_SOURCE_REQUEST_URI).build());
+        .thenReturn(URI.create(EVENT_SOURCE_REQUEST_URI));
     return new SilverpeasWebSocketContext4Test(
         mockedSession, sessionId, new UserDetail());
   }
 
-  String getSentServerEventStream(final SilverpeasAsyncContext mockedAsyncContext)
-      throws IOException {
+  String getSentServerEventStream(final SilverpeasAsyncContext mockedAsyncContext) {
     return getSentServerEventStream(mockedAsyncContext, 1);
   }
 
   String getSentServerEventStream(final SilverpeasAsyncContext mockedAsyncContext,
-      final int nbPerform) throws IOException {
+      final int nbPerform) {
     final SilverpeasAsyncContext4Test testContext = (SilverpeasAsyncContext4Test) mockedAsyncContext;
     assertThat(testContext.getNbIsPossibleCalls(), greaterThanOrEqualTo(nbPerform));
     assertThat(testContext.getSentEvents(), hasSize(nbPerform));
@@ -308,7 +307,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
   }
 
   static class SentEvent {
-    private String name;
+    private final String name;
     private final long id;
     private final String data;
     public SentEvent(final String name, final long id, final String data) {
@@ -316,6 +315,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
       this.id = id;
       this.data = data;
     }
+    @SuppressWarnings("unused")
     String toJson() {
       return JSONCodec.encodeObject(o -> o.put("name", name).put("id", id).put("data", data));
     }
@@ -348,7 +348,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
     }
 
     @Override
-    public PrintWriter4Test getWriter() throws IOException {
+    public PrintWriter4Test getWriter() {
       nbGetWriterCalls.addAndGet(1);
       return printer;
     }

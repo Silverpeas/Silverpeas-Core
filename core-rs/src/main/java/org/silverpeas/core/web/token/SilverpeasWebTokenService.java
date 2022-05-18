@@ -24,11 +24,11 @@
 
 package org.silverpeas.core.web.token;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
+import javax.annotation.Nonnull;
 import javax.inject.Singleton;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -129,7 +129,7 @@ public class SilverpeasWebTokenService {
     }
 
     @Override
-    public int compareTo(@NotNull final SilverpeasWebTokenService.WebToken o) {
+    public int compareTo(@Nonnull final SilverpeasWebTokenService.WebToken o) {
       return timestamp.compareTo(o.timestamp);
     }
 

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.token;
 
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
@@ -42,6 +41,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.OffsetDateTime;

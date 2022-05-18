@@ -25,7 +25,6 @@
 package org.silverpeas.core.test.extention;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -33,6 +32,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasBundle;
 
+import javax.annotation.Nonnull;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -198,12 +198,12 @@ public class SettingBundleStub implements BeforeEachCallback, AfterEachCallback 
     }
 
     @Override
-    protected Object handleGetObject(@NotNull final String key) {
+    protected Object handleGetObject(@Nonnull final String key) {
       return Optional.ofNullable(settingMap.get(key))
           .orElseGet(() -> originalLoader.apply(settingBundle.getBaseBundleName()).getString(key));
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Enumeration<String> getKeys() {
       throw new UnsupportedOperationException("This method is not yet implemented");

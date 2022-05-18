@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -40,6 +39,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.annotation.Nullable;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;

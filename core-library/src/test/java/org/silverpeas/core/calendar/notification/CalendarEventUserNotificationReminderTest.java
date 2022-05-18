@@ -66,7 +66,7 @@ import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
-import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -631,8 +631,7 @@ class CalendarEventUserNotificationReminderTest {
     when(applicationService.getContributionById(event.getIdentifier())).thenReturn(
         Optional.of(event));
     when(componentInstanceRoutingMap.getPermalink(occurrence.getIdentifier())).thenReturn(
-        UriBuilder.fromPath("")
-            .build());
+        URI.create(""));
     when(calendarEventOccurrenceRepository.getById(occurrence.getId())).thenReturn(occurrence);
     return event;
   }

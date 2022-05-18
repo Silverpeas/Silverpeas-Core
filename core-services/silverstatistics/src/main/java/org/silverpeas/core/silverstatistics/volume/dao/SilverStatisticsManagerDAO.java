@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.silverstatistics.volume.dao;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.model.StatDataType;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
@@ -33,6 +32,7 @@ import org.silverpeas.core.silverstatistics.volume.model.StatisticsRuntimeExcept
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -322,7 +322,7 @@ public class SilverStatisticsManagerDAO {
     }
   }
 
-  @NotNull
+  @Nonnull
   private static String getValueKey(final ResultSet rs, final String keyNameCurrent,
       final StatDataType currentType) throws SQLException {
     final String valueKey;

@@ -24,7 +24,6 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -62,6 +61,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
@@ -626,7 +626,7 @@ public class DefaultNotificationManager
     return setCommonNotifPrefsProperties(canEdit, canDelete, canTest, isDefault, p);
   }
 
-  @NotNull
+  @Nonnull
   private Properties setCommonNotifPrefsProperties(final boolean canEdit, final boolean canDelete,
       final boolean canTest, final boolean isDefault, final Properties p) {
     p.setProperty("canEdit", String.valueOf(canEdit));
@@ -859,7 +859,7 @@ public class DefaultNotificationManager
     return setCommonNotifData(params, theExtraParams, theMessage, senderName, nd);
   }
 
-  @NotNull
+  @Nonnull
   private NotificationData setCommonNotifData(final NotificationParameters params,
       final Map<String, Object> theExtraParams, final StringBuilder theMessage,
       final String senderName, final NotificationData nd) {
@@ -981,7 +981,7 @@ public class DefaultNotificationManager
     return dnds;
   }
 
-  @NotNull
+  @Nonnull
   private DelayedNotificationData initDelayedNotificationData(final String aUserId,
       final NotificationParameters params, final NotificationData notificationData,
       final NotifAddressRow curAddresseRow) {

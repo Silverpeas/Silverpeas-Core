@@ -24,7 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas</groupId>
@@ -36,7 +38,9 @@
   <artifactId>silverpeas-core-test</artifactId>
   <packaging>jar</packaging>
   <name>Silverpeas Core Test ${project.version}</name>
-  <description>Providing foundation bases dedicated to the writing of tests of Silverpeas code.</description>
+  <description>
+    Providing foundation bases dedicated to the writing of tests of Silverpeas code.
+  </description>
 
   <dependencies>
     <dependency>
@@ -168,6 +172,11 @@
     <dependency>
       <groupId>org.jboss.shrinkwrap.resolver</groupId>
       <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-common</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>

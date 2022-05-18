@@ -36,7 +36,6 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
@@ -47,6 +46,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -100,7 +100,7 @@ public class ImportIcalManager {
     return returnCode;
   }
 
-  @NotNull
+  @Nonnull
   private String importFrom(final File file, final String charsetUsed) {
     String returnCode;
     try (InputStreamReader inputStream = new InputStreamReader(new FileInputStream(file),

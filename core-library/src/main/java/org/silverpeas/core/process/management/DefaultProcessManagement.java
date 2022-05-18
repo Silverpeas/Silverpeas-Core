@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.process.management;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.process.SilverpeasProcess;
 import org.silverpeas.core.process.check.ProcessCheck;
 import org.silverpeas.core.process.session.ProcessSession;
@@ -31,6 +30,7 @@ import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
@@ -136,7 +136,7 @@ public class DefaultProcessManagement implements ProcessManagement {
     }
   }
 
-  @NotNull
+  @Nonnull
   private <C extends ProcessExecutionContext> InternalContext<C> initInternalContext(
       final C processExecutionContext, LinkedList<InternalContext<?>> internalParentContexts) {
     // Context

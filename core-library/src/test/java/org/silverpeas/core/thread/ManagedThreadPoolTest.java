@@ -45,7 +45,7 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.maxTh
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 
 @EnableSilverTestEnv
-public class ManagedThreadPoolTest {
+class ManagedThreadPoolTest {
 
   private final static long OFFSET_TIME = 350;
   private final static long SLEEP_TIME_OF_1_SECOND = 1000;
@@ -63,7 +63,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeRunnables() throws Exception {
+  void invokeRunnables() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invoke(runnables.toArray(new Runnable[5])));
@@ -82,7 +82,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeRunnablesAndAwaitTermination() throws Exception {
+  void invokeRunnablesAndAwaitTermination() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     Duration duration =
         executeInvokeRunnableTest(() -> managedThreadPool.invokeAndAwaitTermination(runnables));
@@ -95,7 +95,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeRunnablesAndAwaitTerminationWithShortTimeout() throws Exception {
+  void invokeRunnablesAndAwaitTerminationWithShortTimeout() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invokeAndAwaitTermination(runnables, timeoutOf(SHORT_TIMEOUT)));
@@ -113,7 +113,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeRunnablesAndAwaitTerminationWithShortTimeoutAndKillingRunningThreads()
+  void invokeRunnablesAndAwaitTerminationWithShortTimeoutAndKillingRunningThreads()
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
@@ -132,8 +132,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void
-  invokeRunnablesAndAwaitTerminationWithShortTimeoutAndKillingRunningThreadsBut2ThreadsOkOn7()
+  void invokeRunnablesAndAwaitTerminationWithShortTimeoutAndKillingRunningThreadsBut2ThreadsOkOn7()
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     runnables.addAll(initializeRunnables(100, 200));
@@ -155,7 +154,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeRunnablesAndAwaitTerminationWithLargeTimeout() throws Exception {
+  void invokeRunnablesAndAwaitTerminationWithLargeTimeout() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invokeAndAwaitTermination(runnables, timeoutOf(LARGE_TIMEOUT)));
@@ -168,7 +167,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeRunnablesAndAwaitTerminationWithLargeTimeoutAndKillingRunningThreads()
+  void invokeRunnablesAndAwaitTerminationWithLargeTimeoutAndKillingRunningThreads()
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
@@ -182,7 +181,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeCallable() throws Exception {
+  void invokeCallable() throws Exception {
     final TestCallable callable = initializeCallables(SLEEP_TIME_OF_1_SECOND).get(0);
     Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
         () -> Collections.singletonList(managedThreadPool.invoke(callable)));
@@ -203,7 +202,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeCallables() throws Exception {
+  void invokeCallables() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
     Pair<Duration, List<Future<Long>>> result =
         executeInvokeCallableTest(() -> managedThreadPool.invoke(callables));
@@ -227,7 +226,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeCallablesAndSpecifyPoolSize() throws Exception {
+  void invokeCallablesAndSpecifyPoolSize() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
     final List<TestCallable> callablesWithPoolSize = fiveCallablesOf1SecondOfTreatment();
 
@@ -265,7 +264,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeCallablesWithShortTimeout() throws Exception {
+  void invokeCallablesWithShortTimeout() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
     Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
         () -> managedThreadPool.invoke(callables, timeoutOf(SHORT_TIMEOUT)));
@@ -291,7 +290,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeCallablesWithShortTimeoutDemonstrationByNotCallingOfGetMethodOfFuture()
+  void invokeCallablesWithShortTimeoutDemonstrationByNotCallingOfGetMethodOfFuture()
       throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
     Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
@@ -314,7 +313,7 @@ public class ManagedThreadPoolTest {
   }
 
   @Test
-  public void invokeCallablesWithShortTimeoutAndKillingRunningThreads() throws Exception {
+  void invokeCallablesWithShortTimeoutAndKillingRunningThreads() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
     Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(() -> managedThreadPool
         .invoke(callables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));

@@ -78,23 +78,22 @@ public class MetadataExtractor {
    */
   public MetaData extractMetadata(File file) {
     Metadata metadata = new Metadata();
-    try (Reader reader = getTikaService().parse(file, metadata)) {
-      return adjust(file, metadata);
+    try (@SuppressWarnings("unused") Reader reader = getTikaService().parse(file, metadata)) {
+      return adjust(metadata);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).warn(ex);
-      return new MetaData(file, new Metadata());
+      return new MetaData(new Metadata());
     }
   }
 
   /**
    * Adjusts the the given metadata by adding new ones or modifying extracted ones.
-   * @param file the file from which the metadata were extracted.
    * @param metaData the extracted metadata to adjust if necessary.
    * @return a {@link MetaData} instance that handles the metadata extracted from the given file.
    */
-  private MetaData adjust(final File file, Metadata metaData) {
+  private MetaData adjust(Metadata metaData) {
     adjustMediaDuration(metaData);
-    return new MetaData(file, metaData);
+    return new MetaData(metaData);
   }
 
 

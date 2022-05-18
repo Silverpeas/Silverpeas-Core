@@ -60,7 +60,7 @@ class ServerEventListenerPushingServerEventOnWebSocketContextDispatcherTaskTest
 
   @BeforeEach
   @AfterEach
-  public void bucketSetup() throws Exception {
+  public void bucketSetup() {
     bucket.empty();
   }
 

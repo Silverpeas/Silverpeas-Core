@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.process.annotation;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.annotation.Action;
@@ -33,6 +32,7 @@ import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -106,7 +106,7 @@ public class SimulationActionProcessAnnotationInterceptor {
       .execute(() -> proceed(context));
   }
 
-  @NotNull
+  @Nonnull
   private Action getAction(final Map<Class<? extends Annotation>, Annotation> methodAnnotations) {
     Action actionType = (Action) methodAnnotations.get(Action.class);
 
@@ -118,7 +118,7 @@ public class SimulationActionProcessAnnotationInterceptor {
     return actionType;
   }
 
-  @NotNull
+  @Nonnull
   private SimulationActionProcess getSimulationActionProcess(
       final Map<Class<? extends Annotation>, Annotation> methodAnnotations) {
     SimulationActionProcess simulationActionProcess =

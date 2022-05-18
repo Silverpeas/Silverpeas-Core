@@ -33,8 +33,7 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
-import org.apache.tika.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.HtmlProperty;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
@@ -45,6 +44,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
@@ -60,7 +60,7 @@ import java.util.Optional;
 @Singleton
 public class ICal4JICalCodec implements ICalCodec {
 
-  private OffLineInetAddressHostInfo hostInfo = new OffLineInetAddressHostInfo();
+  private final OffLineInetAddressHostInfo hostInfo = new OffLineInetAddressHostInfo();
 
   private final ICal4JDateCodec iCal4JDateCodec;
   private final ICal4JRecurrenceCodec iCal4JRecurrenceCodec;
@@ -73,7 +73,6 @@ public class ICal4JICalCodec implements ICalCodec {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public String encode(List<CalendarEvent> events) {
 
     if (events == null || events.isEmpty()) {
@@ -111,7 +110,7 @@ public class ICal4JICalCodec implements ICalCodec {
     }
   }
 
-  @NotNull
+  @Nonnull
   private VEvent getICalEvent(final CalendarEvent event, final Date startDate, final Date endDate) {
     VEvent iCalEvent;
     if (event.isOnAllDay() && startDate.equals(endDate)) {
@@ -182,7 +181,7 @@ public class ICal4JICalCodec implements ICalCodec {
   private Uid generateUid(CalendarEvent event) {
     StringBuilder b = new StringBuilder();
     b.append(event.getId());
-    if(this.hostInfo != null) {
+    if(StringUtil.isDefined(this.hostInfo.getHostName())) {
       b.append('@');
       b.append(this.hostInfo.getHostName());
     }

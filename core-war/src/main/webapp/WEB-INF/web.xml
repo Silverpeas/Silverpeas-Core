@@ -66,8 +66,8 @@
       To ensure the encoding of the request parameters are in UTF-8. This filter MUST be the first
       one in order to work correctly.
     </description>
-    <filter-name>CharacterEncodingFilter</filter-name>
-    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <filter-name>CharsetFilter</filter-name>
+    <filter-class>org.silverpeas.web.filter.CharsetFilter</filter-class>
     <async-supported>true</async-supported>
     <init-param>
       <param-name>encoding</param-name>
@@ -171,7 +171,7 @@
   </filter>
 
   <filter-mapping>
-    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-name>CharsetFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter-mapping>

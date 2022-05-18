@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.util;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.component.model.ComponentInstPath;
 import org.silverpeas.core.contribution.model.Contribution;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public abstract class ContributionPath<T extends Contribution> extends ArrayList
     super(initialCapacity);
   }
 
-  public ContributionPath(@NotNull final Collection<? extends T> c) {
+  public ContributionPath(@Nonnull final Collection<? extends T> c) {
     super(c);
   }
 

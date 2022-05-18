@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.look;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -40,6 +39,7 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -230,7 +230,7 @@ public class AjaxActionServlet extends HttpServlet {
     return json;
   }
 
-  @NotNull
+  @Nonnull
   private JSONCodec.JSONObject putSpaceStateJSON(final HttpSession session,
       final String userId, final String spaceId, final SpaceInstLight spaceInst,
       final JSONCodec.JSONObject jsonRslt) {

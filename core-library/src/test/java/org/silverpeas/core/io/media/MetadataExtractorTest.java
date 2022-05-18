@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.io.media;
 
-import org.apache.tika.Tika;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.util.StringUtil;
@@ -35,9 +35,10 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
+import java.util.Objects;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author ehugonnet
@@ -121,7 +122,8 @@ class MetadataExtractorTest {
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Test pour Tika"));
     assertThat(result.getSubject(), is("Document de test pour Tika"));
-    assertThat(result.getAuthor(), is("Emmanuel Hugonnet"));
+    assertThat(result.getAuthor(), is("Inconnu"));
+    assertThat(result.getLastAuthor(), is("Emmanuel Hugonnet"));
     assertThat(result.getComments(), is("Comments"));
     assertThat(result.getKeywords()[0], is("Tika Keywords Test"));
     assertThat(result.getSilverId(), is(nullValue()));
@@ -140,13 +142,11 @@ class MetadataExtractorTest {
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Logo Silverpeas"));
-    assertThat(result.getSubject(), is("silverpeas"));
+    assertThat(result.getSubject(), is("silverpeas, logo"));
     assertThat(result.getAuthor(), is("AuroreAllibe"));
     assertThat(result.getComments(), is("Logo silverpeas txt noir"));
     assertThat(result.getKeywords(), is(notNullValue()));
-    assertThat(result.getKeywords().length, is(2));
-    assertThat(result.getKeywords()[0], is("silverpeas"));
-    assertThat(result.getKeywords()[1], is("logo"));
+    assertThat(result.getKeywords(), emptyArray());
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), greaterThanOrEqualTo(1340963223000L));
@@ -163,10 +163,11 @@ class MetadataExtractorTest {
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Blank PDF Document"));
-    assertThat(result.getSubject(), nullValue());
+    assertThat(result.getSubject(), is(""));
     assertThat(result.getAuthor(),
         is("Department of Justice (Executive Office of Immigration Review)"));
     assertThat(result.getComments(), is(nullValue()));
+    assertThat(result.getKeywords(), is(notNullValue()));
     assertThat(result.getKeywords(), emptyArray());
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
@@ -188,7 +189,7 @@ class MetadataExtractorTest {
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.of(1280, 720)));
     assertThat(result.getFramerate(), nullValue());
-    assertThat(result.getDuration().getTimeAsLong(), is(6040l));
+    assertThat(result.getDuration().getTimeAsLong(), is(6040L));
     assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:06.040"));
     assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:06"));
   }
@@ -203,7 +204,7 @@ class MetadataExtractorTest {
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.of(1280, 720)));
     assertThat(result.getFramerate(), nullValue());
-    assertThat(result.getDuration().getTimeAsLong(), is(6040l));
+    assertThat(result.getDuration().getTimeAsLong(), is(6040L));
     assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:06.040"));
     assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:06"));
   }
@@ -218,7 +219,7 @@ class MetadataExtractorTest {
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.of(1280, 720)));
     assertThat(result.getFramerate().intValue(), is(25));
-    assertThat(result.getDuration().getTimeAsLong(), is(6120l));
+    assertThat(result.getDuration().getTimeAsLong(), is(6120L));
     assertThat(result.getDuration().getFormattedDurationAsHMSM(), is("00:00:06.120"));
     assertThat(result.getDuration().getFormattedDurationAsHMS(), is("00:00:06"));
   }
@@ -228,12 +229,12 @@ class MetadataExtractorTest {
     File file = mp3File;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
-    assertThat(result.getTitle(), isEmptyString());
-    assertThat(result.getSubject(), nullValue());
+    assertThat(result.getTitle(), is(emptyString()));
+    assertThat(result.getSubject(), is(""));
     assertThat(result.getAuthor(), is("sound fishing bruitages"));
     assertThat(result.getComments(), nullValue());
-    assertThat(result.getKeywords(), notNullValue());
-    assertThat(result.getKeywords().length, is(0));
+    assertThat(result.getKeywords(), is(notNullValue()));
+    assertThat(result.getKeywords(), emptyArray());
     assertThat(result.getSilverId(), nullValue());
     assertThat(result.getSilverName(), nullValue());
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
@@ -247,9 +248,9 @@ class MetadataExtractorTest {
   private static File getDocumentNamed(final String name) {
     final URL documentLocation = MetadataExtractorTest.class.getResource(name);
     try {
-      return new File(documentLocation.toURI());
+      return new File(Objects.requireNonNull(documentLocation).toURI());
     } catch (URISyntaxException e) {
-      return null;
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

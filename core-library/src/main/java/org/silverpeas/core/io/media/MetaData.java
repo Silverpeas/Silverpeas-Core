@@ -23,12 +23,7 @@
  */
 package org.silverpeas.core.io.media;
 
-import org.apache.tika.metadata.HttpHeaders;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.OfficeOpenXMLCore;
-import org.apache.tika.metadata.Property;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.metadata.XMPDM;
+import org.apache.tika.metadata.*;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -36,9 +31,9 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.time.Duration;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -46,148 +41,192 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Metadata embedded in a media, whatever its type or format. It wraps the Tika Metadata to both
+ * provide unified access to a metadata property that can have a different name according to type of
+ * the format of the media, and to avoid Tika property name or namespace evolution in the time.
+ */
 public class MetaData {
 
-  private final File source;
-  private final Metadata metadata;
+  private final Metadata tikaMetadata;
 
-  MetaData(final File source, Metadata metadata) {
-    this.source = source;
-    this.metadata = metadata;
-  }
-
-  public String getValue(String name) {
-    return metadata.get(name);
-  }
-
-  public List<String> getAvailablePropertyNames() {
-    return Arrays.asList(metadata.names());
+  MetaData(Metadata metadata) {
+    this.tikaMetadata = metadata;
   }
 
   /**
-   * Return Title of an Office document
-   *
-   * @return String
+   * Gets the value of the specified property name.
+   * @param name the name of a metadata property.
+   * @return the value of the property.
+   */
+  public String getValue(String name) {
+    return tikaMetadata.get(name);
+  }
+
+  /**
+   * Gets all name of all the properties in this metadata instance.
+   * @return a list of property names.
+   */
+  @SuppressWarnings("unused")
+  public List<String> getAvailablePropertyNames() {
+    return Arrays.asList(tikaMetadata.names());
+  }
+
+  /**
+   * Gets the title as set in the media's metadata.
+   * @return the title the media related by this metadata
    */
   public String getTitle() {
-    String title = metadata.get((Metadata.TITLE));
-    if (StringUtil.isNotDefined(title)) {
-      title = cleanString(metadata.get(TikaCoreProperties.TITLE));
-    }
-    return title;
+    return cleanString(tikaMetadata.get(TikaCoreProperties.TITLE));
   }
 
   /**
-   * Return Subject of an Office document
-   *
-   * @return String
+   * Gets the subject as set in the media's metadata. Because the subject can be covered by a
+   * property that differs from a media format to another one, this property is seeked for each of
+   * them. And because the property in which the subject is set can also refer others values than
+   * the subject itself, the subject is figured out from the values of such a property.
+   * @return the subject of the media related by this metadata.
    */
   public String getSubject() {
-    String subject = metadata.get(metadata.get(Metadata.SUBJECT));
-    if (!StringUtil.isDefined(subject)) {
-      subject = metadata.get(OfficeOpenXMLCore.SUBJECT);
+    String subject = "";
+    // the Dublin Core subject property is made up of both the subject and the keywords
+    List<String> subjectAndKeywords =
+        new ArrayList<>(
+            Arrays.asList(cleanString(tikaMetadata.getValues(TikaCoreProperties.SUBJECT))));
+    List<String> keywords = Arrays.asList(getKeywords());
+    subjectAndKeywords.removeAll(keywords);
+    if (!subjectAndKeywords.isEmpty()) {
+      subject = String.join(", ", subjectAndKeywords);
     }
-    if (!StringUtil.isDefined(subject)) {
-      subject = metadata.get(TikaCoreProperties.KEYWORDS);
+
+    if (StringUtil.isNotDefined(subject)) {
+      // for old Open XML document
+      Property ooXmlSubject = Property.composite(Property.externalText(
+              OfficeOpenXMLCore.PREFIX + TikaCoreProperties.NAMESPACE_PREFIX_DELIMITER + "subject"),
+          new Property[]{DublinCore.SUBJECT,});
+      subject = tikaMetadata.get(ooXmlSubject);
+    }
+
+    if (StringUtil.isNotDefined(subject)) {
+      subject = String.join(". ", keywords);
     }
     return cleanString(subject);
   }
 
   /**
-   * Return Author of an Office document
-   *
-   * @return String
+   * Gets the initial author, id est the creator, of the media as set in the media's metadata. The
+   * author can be a person, an organisation or a service.
+   * @return the name of the author of the media related by this metadata.
    */
   public String getAuthor() {
-    return cleanString(metadata.get(TikaCoreProperties.CREATOR));
+    String author = tikaMetadata.get(TikaCoreProperties.CREATOR);
+    if (StringUtil.isNotDefined(author)) {
+      author = tikaMetadata.get(Office.AUTHOR);
+    }
+    return cleanString(author);
   }
 
   /**
-   * Return Comments of an Office document
-   *
-   * @return String
+   * Gets the last author (the more recent one), id est the last modifier, of the media as set in
+   * the media's metadata. The author can be a person, an organisation or a service.
+   * @return the name of the more recent author of the media related by this metadata.
+   */
+  public String getLastAuthor() {
+    String[] authors = tikaMetadata.getValues(TikaCoreProperties.CREATOR);
+    if (authors.length > 1) {
+      return authors[authors.length - 1];
+    }
+    return cleanString(tikaMetadata.get(TikaCoreProperties.MODIFIER));
+  }
+
+  /**
+   * Gets any comments set in the media's metadata.
+   * @return the comment on the media related by this metadata.
    */
   public String getComments() {
-    String comments = metadata.get(TikaCoreProperties.COMMENTS);
-    if (!StringUtil.isDefined(comments)) {
-      comments = metadata.get(TikaCoreProperties.DESCRIPTION);
+    String comments = tikaMetadata.get(TikaCoreProperties.COMMENTS);
+    if (StringUtil.isNotDefined(comments)) {
+      comments = tikaMetadata.get(TikaCoreProperties.DESCRIPTION);
     }
     return cleanString(comments);
   }
 
   /**
-   * Return Security of an Office document
-   *
-   * @return String
-   */
-  public int getSecurity() {
-    return metadata.getInt(Property.internalInteger(Metadata.SECURITY));
-  }
-
-  /**
-   * Return Keywords of an Office document
-   *
-   * @return String
+   * Gets the keywords as set in the media's metadata. This property is supported only for office
+   * documents.
+   * @return an array of keywords qualifying the office document related by this metadata.
    */
   public String[] getKeywords() {
-    return cleanString(metadata.getValues(TikaCoreProperties.KEYWORDS));
+    return cleanString(tikaMetadata.getValues(Office.KEYWORDS));
   }
 
   /**
-   * Return SILVERID of an Office document
-   *
-   * @return String
+   * Gets the Silverpeas identifier of the media related by this metadata.
+   * @return the silverpeas identifier.
    */
   public String getSilverId() {
-    return cleanString(metadata.get("SILVERID"));
+    return cleanString(tikaMetadata.get("SILVERID"));
   }
 
   /**
-   * Return SILVERNAME of an Office document
-   *
-   * @return String
+   * Gets the name of the media in Silverpeas. The name of the media itself can differ from the name
+   * set in Silverpeas by a user for the media related by this metadata.
+   * @return the name of the media related by this metadata as set by the user in Silverpeas.
    */
   public String getSilverName() {
-    return metadata.get("SILVERNAME");
+    return tikaMetadata.get("SILVERNAME");
   }
 
+  /**
+   * Gets the date at which the media related by this metadata has been lastly saved.
+   * @return the date of the last modification of the media related by this metadata.
+   */
   public Date getLastSaveDateTime() {
     Date date = parseDate(TikaCoreProperties.MODIFIED);
     if (date == null) {
-      return parseDate(Metadata.LAST_MODIFIED);
+      return parseDate(Office.SAVE_DATE);
     }
     return date;
   }
 
   /**
-   * Return CreateDateTime of an Office document
+   * Gets the date at which the media related by this metadata has been created.
+   * @return the date of the creation of the media related by this metadata.
    */
   public Date getCreationDate() {
     Date result = getDate(TikaCoreProperties.CREATED);
     if (result == null) {
-      result = metadata.getDate(TikaCoreProperties.CREATED);
+      result = tikaMetadata.getDate(TikaCoreProperties.CREATED);
     }
     if (result == null) {
-      result = metadata.getDate(Metadata.DATE);
+      result = tikaMetadata.getDate(Office.CREATION_DATE);
     }
     return result;
   }
 
   /**
-   * Return the definition of the file.
+   * Gets the definition of the media related by this metadata. Only images and videos are supported
+   * by this metadata property.
+   * @return the image or video definition (id est the width x height of the picture or frame)
    */
   public Definition getDefinition() {
     Definition definition = Definition.fromZero();
-    Integer result = getInteger(Metadata.IMAGE_WIDTH);
+    Integer result = getInteger(TIFF.IMAGE_WIDTH);
     if (result == null) {
       result = getInteger(FLV.WIDTH);
+    }
+    if (result == null) {
+      result = getInteger(IPTC.MAX_AVAIL_WIDTH);
     }
     if (result != null) {
       definition.widthOf(result);
     }
-    result = getInteger(Metadata.IMAGE_LENGTH);
+    result = getInteger(TIFF.IMAGE_LENGTH);
     if (result == null) {
       result = getInteger(FLV.HEIGHT);
+    }
+    if (result == null) {
+      result = getInteger(IPTC.MAX_AVAIL_HEIGHT);
     }
     if (result != null) {
       definition.heightOf(result);
@@ -196,7 +235,9 @@ public class MetaData {
   }
 
   /**
-   * Return the duration of the file.
+   * Gets the frame rate of the media related by this metadata. Only videos are supported by this
+   * metadata property.
+   * @return the frame rate of the video (id est the number of frames per second)
    */
   public BigDecimal getFramerate() {
     BigDecimal result = getBigDecimal(XMPDM.VIDEO_FRAME_RATE);
@@ -207,7 +248,9 @@ public class MetaData {
   }
 
   /**
-   * Return the duration of the file.
+   * Gets the duration of the media related by this metadata. Only videos are supported by this
+   * metadata property.
+   * @return the duration of the video.
    */
   public Duration getDuration() {
     Duration result = null;
@@ -225,23 +268,24 @@ public class MetaData {
   }
 
   /**
-   * Return the memory data.
+   * Gets the memory foootprint of the media related by this metadata.
+   * @return data of the memory taken by the media (id est the size of the storage space)
    */
   public MemoryData getMemoryData() {
     Long result = getLong(HttpHeaders.CONTENT_LENGTH);
     return result != null ? UnitUtil.getMemData(result) : null;
   }
 
-  protected Date getDate(Property property) {
-    Date result = metadata.getDate(property);
+  private Date getDate(@SuppressWarnings("SameParameterValue") Property property) {
+    Date result = tikaMetadata.getDate(property);
     if (result == null) {
       return parseDate(property);
     }
     return result;
   }
 
-  protected Integer getInteger(Property property) {
-    Integer result = metadata.getInt(property);
+  private Integer getInteger(Property property) {
+    Integer result = tikaMetadata.getInt(property);
     if (result == null) {
       BigDecimal value = getBigDecimal(property);
       if (value != null) {
@@ -251,8 +295,8 @@ public class MetaData {
     return result;
   }
 
-  protected Long getLong(Property property) {
-    String result = cleanString(metadata.get(property));
+  private Long getLong(@SuppressWarnings("SameParameterValue") String propertyName) {
+    String result = cleanString(tikaMetadata.get(propertyName));
     try {
       return Long.valueOf(result);
     } catch (Exception e) {
@@ -260,17 +304,8 @@ public class MetaData {
     }
   }
 
-  protected Long getLong(String propertyName) {
-    String result = cleanString(metadata.get(propertyName));
-    try {
-      return Long.valueOf(result);
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  protected BigDecimal getBigDecimal(Property property) {
-    String result = cleanString(metadata.get(property));
+  private BigDecimal getBigDecimal(Property property) {
+    String result = cleanString(tikaMetadata.get(property));
     try {
       return new BigDecimal(result);
     } catch (Exception e) {
@@ -278,8 +313,8 @@ public class MetaData {
     }
   }
 
-  protected Date parseDate(Property property) {
-    String date = metadata.get(property);
+  private Date parseDate(Property property) {
+    String date = tikaMetadata.get(property);
     if (date != null) {
       try {
         return DateUtil.parse(date, "yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -298,7 +333,7 @@ public class MetaData {
     if (result.length > 1) {
       Set<String> uniqueResult = new LinkedHashSet<>();
       Collections.addAll(uniqueResult, result);
-      return uniqueResult.toArray(new String[uniqueResult.size()]);
+      return uniqueResult.toArray(new String[0]);
     }
     return result;
   }
@@ -310,14 +345,14 @@ public class MetaData {
     return value;
   }
 
-  private interface FLV {
+  private static class FLV {
 
-    Property WIDTH = Property.internalText("width");
+    public static final Property WIDTH = Property.internalText("width");
 
-    Property HEIGHT = Property.internalText("height");
+    public static final Property HEIGHT = Property.internalText("height");
 
-    Property DURATION = Property.internalText("duration");
+    public static final Property DURATION = Property.internalText("duration");
 
-    Property FRAMERATE = Property.internalText("framerate");
+    public static final Property FRAMERATE = Property.internalText("framerate");
   }
 }
