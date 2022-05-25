@@ -548,11 +548,10 @@ public class Recurrence implements Serializable {
   }
 
   private OffsetDateTime normalize(final Temporal temporal) {
-    OffsetDateTime dateTime = asOffsetDateTime(temporal);
+    OffsetDateTime dateTime = asOffsetDateTime(temporal).withOffsetSameInstant(ZoneOffset.UTC);
     if (this.startDate != null) {
       return TemporalConverter.applyByType(this.startDate,
-          Conversion.of(LocalDate.class, t ->
-              dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC))),
+          Conversion.of(LocalDate.class, t -> dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC))),
           Conversion.of(OffsetDateTime.class, t -> dateTime.with(t.toOffsetTime())));
     }
     return dateTime;

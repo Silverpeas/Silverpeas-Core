@@ -176,7 +176,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
             eventStartDate.minusMinutes(1) :
             since.withZoneSameInstant(actualZoneId);
     final Date iCalSinceDate = iCal4JDateCodec.encode(sinceDateTime);
-    LocalDate searchPeriodStart = sinceDateTime.toLocalDate();
+    LocalDate searchPeriodStart = sinceDateTime.withZoneSameInstant(ZoneOffset.UTC).toLocalDate();
     int nbNextStartDateComputations = 0;
     do {
       // Taking care about date exceptions
