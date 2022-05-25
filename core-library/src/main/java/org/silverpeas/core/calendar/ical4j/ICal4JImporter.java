@@ -30,7 +30,6 @@ import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.Categories;
@@ -63,7 +62,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
@@ -75,8 +73,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.silverpeas.core.date.TimeZoneUtil.toZoneId;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -107,35 +106,29 @@ public class ICal4JImporter implements ICalendarImporter {
       final Consumer<Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> consumer)
       throws ImportException {
     try {
-      CalendarBuilder builder =
-          new CalendarBuilder(CalendarParserFactory.getInstance().get(),
-              TimeZoneRegistryFactory.getInstance().createRegistry());
-      Calendar calendar = builder.build(getCalendarInputStream(descriptor));
+      final CalendarBuilder builder =
+          new CalendarBuilder(CalendarParserFactory.getInstance().get());
+      final Calendar calendar = builder.build(getCalendarInputStream(descriptor));
       if (calendar.getComponents().isEmpty()) {
         consumer.accept(Stream.empty());
         return;
       }
       calendar.validate();
 
-      Mutable<ZoneId> zoneId = Mutable.of(ZoneId.systemDefault());
-
-      Map<String, List<VEvent>> readEvents = new LinkedHashMap<>();
+      final Map<String, List<VEvent>> readEvents = new LinkedHashMap<>();
       calendar.getComponents().forEach(component -> {
         if (component instanceof VEvent) {
           VEvent vEvent = (VEvent) component;
           String vEventId = vEvent.getUid().getValue();
           List<VEvent> vEvents = readEvents.computeIfAbsent(vEventId, k -> new ArrayList<>());
-          if (vEvent.getRecurrenceId() != null) {
-            vEvents.add(vEvent);
-          } else {
-            vEvents.add(0, vEvent);
-          }
-        } else if (component instanceof VTimeZone) {
-          VTimeZone vTimeZone = (VTimeZone) component;
-          zoneId.set(toZoneId(vTimeZone.getTimeZoneId().getValue()));
+          ofNullable(vEvent.getRecurrenceId()).ifPresentOrElse(
+              r -> vEvents.add(vEvent),
+              () -> vEvents.add(0, vEvent));
         } else {
           SilverLogger.getLogger(this)
-              .debug("iCalendar component ''{0}'' is not handled", component.getName());
+              .debug(() -> component instanceof VTimeZone ?
+                  format("iCalendar VTimeZone '%s' detected", component.getName()) :
+                  format("iCalendar component '%s' is not handled", component.getName()));
         }
       });
       List<Pair<CalendarEvent, List<CalendarEventOccurrence>>> events =
@@ -146,12 +139,12 @@ public class ICal4JImporter implements ICalendarImporter {
         // - the attendees
         // - triggers
         VEvent vEvent = vEvents.remove(0);
-        CalendarEvent event = eventFromICalEvent(zoneId, vEventId, vEvent);
+        CalendarEvent event = eventFromICalEvent(vEventId, vEvent);
 
         // Occurrences
         List<CalendarEventOccurrence> occurrences = new ArrayList<>(vEvents.size());
         vEvents.forEach(v -> {
-          CalendarEventOccurrence occurrence = occurrenceFromICalEvent(zoneId, event, v);
+          CalendarEventOccurrence occurrence = occurrenceFromICalEvent(event, v);
           occurrences.add(occurrence);
         });
 
@@ -195,11 +188,10 @@ public class ICal4JImporter implements ICalendarImporter {
     return descriptor.getInputStream();
   }
 
-  private CalendarEventOccurrence occurrenceFromICalEvent(final Mutable<ZoneId> zoneId,
-      final CalendarEvent event, final VEvent vEvent) {
+  private CalendarEventOccurrence occurrenceFromICalEvent(final CalendarEvent event,
+      final VEvent vEvent) {
     // The original start date
-    Temporal originalStartDate =
-        iCal4JDateCodec.decode(vEvent.getRecurrenceId().getDate(), zoneId.get());
+    Temporal originalStartDate = iCal4JDateCodec.decode(vEvent.getRecurrenceId().getDate());
     // The occurrence
     CalendarEventOccurrence occurrence = CalendarEventOccurrenceBuilder
         .forEvent(event)
@@ -207,16 +199,15 @@ public class ICal4JImporter implements ICalendarImporter {
         .endingAt(originalStartDate.plus(1, ChronoUnit.DAYS))
         .build();
     // The period
-    occurrence.setPeriod(extractPeriod(zoneId, vEvent));
+    occurrence.setPeriod(extractPeriod(vEvent));
     // Component data
     copyICalEventToComponent(vEvent, occurrence.asCalendarComponent());
     return occurrence;
   }
 
-  private CalendarEvent eventFromICalEvent(final Mutable<ZoneId> zoneId, final String vEventId,
-      final VEvent vEvent) {
+  private CalendarEvent eventFromICalEvent(final String vEventId, final VEvent vEvent) {
     // The period
-    Period period = extractPeriod(zoneId, vEvent);
+    Period period = extractPeriod(vEvent);
     CalendarEvent event = CalendarEvent.on(period);
 
     // External Id
@@ -238,7 +229,7 @@ public class ICal4JImporter implements ICalendarImporter {
 
     // Recurrence
     if (vEvent.getProperty(Property.RRULE) != null) {
-      Recurrence recurrence = iCal4JRecurrenceCodec.decode(vEvent, zoneId.get());
+      Recurrence recurrence = iCal4JRecurrenceCodec.decode(vEvent);
       event.recur(recurrence);
     }
 
@@ -291,14 +282,14 @@ public class ICal4JImporter implements ICalendarImporter {
     }
   }
 
-  private Period extractPeriod(final Mutable<ZoneId> zoneId, final VEvent vEvent) {
+  private Period extractPeriod(final VEvent vEvent) {
     final Date startDate = vEvent.getStartDate().getDate();
     Date endDate = vEvent.getEndDate().getDate();
     if (endDate == null && !(startDate instanceof DateTime)) {
       endDate = startDate;
     }
-    Temporal startTemporal = iCal4JDateCodec.decode(startDate, zoneId.get());
-    Temporal endTemporal = iCal4JDateCodec.decode(endDate, zoneId.get());
+    final Temporal startTemporal = iCal4JDateCodec.decode(startDate);
+    Temporal endTemporal = iCal4JDateCodec.decode(endDate);
     if (endTemporal instanceof OffsetDateTime && startTemporal.equals(endTemporal)) {
       endTemporal = endTemporal.plus(1, ChronoUnit.HOURS);
     }

@@ -34,19 +34,16 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.date.TemporalConverter;
-import org.silverpeas.core.date.TimeZoneUtil;
 
 import javax.inject.Singleton;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -200,51 +197,14 @@ public class ICal4JDateCodec {
   /**
    * Decodes an iCal4J Date or DateTime into a Temporal.
    * @param aDate the Date or DateTime to decode.
-   * @param defaultZoneId the default zone id.
-   * @return a temporal instance.
+   * @return a temporal instance. If the temporal contains time data, then UTC timezone is set.
    * @throws SilverpeasRuntimeException if the decoding fails.
    */
-  public final java.time.temporal.Temporal decode(final Date aDate, final ZoneId defaultZoneId) {
+  public final java.time.temporal.Temporal decode(final Date aDate) {
     if (aDate instanceof DateTime) {
-      return decode((DateTime) aDate, defaultZoneId);
+      return OffsetDateTime.ofInstant(aDate.toInstant(), ZoneOffset.UTC);
     } else {
-      return decode(aDate);
+      return LocalDate.ofInstant(aDate.toInstant(), ZoneOffset.UTC);
     }
-  }
-
-  /**
-   * Decodes a iCal4J DateTime into an OffsetDateTime set in UTC.
-   * @param dateTime the datetime to decode.
-   * @param defaultZoneId the default zone id.
-   * @return an OffsetDateTime instance.
-   * @throws SilverpeasRuntimeException if the decoding fails.
-   */
-  public OffsetDateTime decode(final DateTime dateTime, final ZoneId defaultZoneId) {
-    boolean isUtc = dateTime.isUtc();
-    TemporalAccessor temporalAccessor =
-        DateTimeFormatter.ofPattern(isUtc ? ICAL_UTC_PATTERN : ICAL_LOCAL_PATTERN)
-            .parse(dateTime.toString());
-    ZoneId zoneId;
-    if (dateTime.getTimeZone() != null) {
-      zoneId = TimeZoneUtil.toZoneId(dateTime.getTimeZone().getID());
-    } else {
-      zoneId = isUtc ? ZoneOffset.UTC : defaultZoneId;
-    }
-    return LocalDateTime.from(temporalAccessor)
-        .atZone(zoneId)
-        .toOffsetDateTime()
-        .withOffsetSameInstant(ZoneOffset.UTC);
-  }
-
-  /**
-   * Decodes an iCal4J date into a LocalDate.
-   * @param date a date to decode.
-   * @return a LocalDate instance.
-   * @throws SilverpeasRuntimeException if the encoding fails.
-   */
-  public LocalDate decode(final Date date) {
-    TemporalAccessor temporalAccessor =
-        DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).parse(date.toString());
-    return LocalDate.from(temporalAccessor);
   }
 }
