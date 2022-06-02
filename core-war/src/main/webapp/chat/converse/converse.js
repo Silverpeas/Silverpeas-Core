@@ -4770,7 +4770,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.4.0 by @mathia
 
 /***/ }),
 
-/***/ 517:
+/***/ 8593:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -11374,7 +11374,7 @@ CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT'; // Core plugins are whi
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/consts.js
 
-const CORE_PLUGINS = ['converse-adhoc', 'converse-bookmarks', 'converse-bosh', 'converse-caps', 'converse-carbons', 'converse-chat', 'converse-chatboxes', 'converse-disco', 'converse-emoji', 'converse-headlines', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-smacks', 'converse-status', 'converse-vcard'];
+const CORE_PLUGINS = ['converse-adhoc', 'converse-bookmarks', 'converse-bosh', 'converse-caps', 'converse-chat', 'converse-chatboxes', 'converse-disco', 'converse-emoji', 'converse-headlines', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-smacks', 'converse-status', 'converse-vcard'];
 const URL_PARSE_OPTIONS = {
   'start': /(\b|_)(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
 };
@@ -24184,11 +24184,6 @@ function getUniqueId(suffix) {
     return uuid;
   }
 }
-
-u.httpToGeoUri = function (text) {
-  const replacement = 'geo:$1,$2';
-  return text.replace(settings_api.get("geouri_regex"), replacement);
-};
 /**
  * Clears the specified timeout and interval.
  * @method u#clearTimers
@@ -24198,7 +24193,6 @@ u.httpToGeoUri = function (text) {
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */
-
 
 function clearTimers(timeout, interval) {
   clearTimeout(timeout);
@@ -24341,7 +24335,7 @@ function decodeHTMLEntities(str) {
  * @property { String } [credentials_url] - URL from where login credentials can be fetched
  * @property { Boolean } [discover_connection_methods=true]
  * @property { RegExp } [geouri_regex]
- * @property { RegExp } [geouri_replacement='https - //www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
+ * @property { RegExp } [geouri_replacement='https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
  * @property { String } [i18n]
  * @property { String } [jid]
  * @property { Boolean } [keepalive=true]
@@ -27278,7 +27272,7 @@ Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
 Strophe.addNamespace('XHTML', 'http://www.w3.org/1999/xhtml');
-shared_converse.VERSION_NAME = "v9.1.0";
+shared_converse.VERSION_NAME = "v9.1.1";
 Object.assign(shared_converse, Events); // Make converse pluggable
 
 pluggable.enable(shared_converse, '_converse', 'pluggable');
@@ -29951,7 +29945,7 @@ const ChatBox = model_with_contact.extend({
     const is_spoiler = !!this.get('composing_spoiler');
     const origin_id = model_u.getUniqueId();
     const text = (_attrs = attrs) === null || _attrs === void 0 ? void 0 : _attrs.body;
-    const body = text ? model_u.httpToGeoUri(model_u.shortnamesToUnicode(text), shared_converse) : undefined;
+    const body = text ? model_u.shortnamesToUnicode(text) : undefined;
     attrs = Object.assign({}, attrs, {
       'from': shared_converse.bare_jid,
       'fullname': shared_converse.xmppstatus.get('fullname'),
@@ -30878,7 +30872,6 @@ function registerMessageHandlers() {
 }
 /**
  * Handler method for all incoming single-user chat "message" stanzas.
- * @private
  * @param { MessageAttributes } attrs - The message attributes
  */
 
@@ -30931,6 +30924,54 @@ async function handleMessageStanza(stanza) {
 
   core_api.trigger('message', data);
 }
+/**
+ * Ask the XMPP server to enable Message Carbons
+ * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
+ * @param { Boolean } reconnecting
+ */
+
+async function enableCarbons(reconnecting) {
+  var _converse$session;
+
+  if (reconnecting && shared_converse.session.get('carbons_enabled')) {
+    if (shared_converse.session.get('smacks_enabled')) {
+      // No need to re-enable carbons when resuming a XEP-0198 stream
+      return;
+    }
+
+    shared_converse.session.set({
+      'carbons_enabled': false
+    });
+  }
+
+  if ((_converse$session = shared_converse.session) !== null && _converse$session !== void 0 && _converse$session.get('carbons_enabled')) {
+    return;
+  }
+
+  const iq = new utils_Strophe.Builder('iq', {
+    'from': shared_converse.connection.jid,
+    'type': 'set'
+  }).c('enable', {
+    xmlns: utils_Strophe.NS.CARBONS
+  });
+  const result = await core_api.sendIQ(iq, null, false);
+
+  if (result === null) {
+    headless_log.warn(`A timeout occurred while trying to enable carbons`);
+  } else if (chat_utils_u.isErrorStanza(result)) {
+    headless_log.warn('An error occurred while trying to enable message carbons.');
+    headless_log.error(result);
+  } else {
+    shared_converse.session.set({
+      'carbons_enabled': true
+    });
+
+    headless_log.debug('Message carbons have been enabled.');
+  }
+
+  shared_converse.session.save(); // Gather multiple sets into one save
+
+}
 ;// CONCATENATED MODULE: ./src/headless/plugins/chat/index.js
 /**
  * @copyright 2022, the Converse.js contributors
@@ -30944,18 +30985,6 @@ async function handleMessageStanza(stanza) {
 
 
 core_converse.plugins.add('converse-chat', {
-  /* Optional dependencies are other plugins which might be
-   * overridden or relied upon, and therefore need to be loaded before
-   * this plugin. They are called "optional" because they might not be
-   * available, in which case any overrides applicable to them will be
-   * ignored.
-   *
-   * It's possible however to make optional dependencies non-optional.
-   * If the setting "strict_plugin_dependencies" is set to true,
-   * an error will be raised if the plugin is not found.
-   *
-   * NB: These plugins need to have already been loaded via require.js.
-   */
   dependencies: ['converse-chatboxes', 'converse-disco'],
 
   initialize() {
@@ -30972,7 +31001,7 @@ core_converse.plugins.add('converse-chat', {
       'filter_by_resource': false,
       'prune_messages_above': undefined,
       'pruning_behavior': 'unscrolled',
-      'send_chat_markers': ["received", "displayed", "acknowledged"],
+      'send_chat_markers': ['received', 'displayed', 'acknowledged'],
       'send_chat_state_notifications': true
     });
     shared_converse.Message = model_with_contact.extend(message);
@@ -30991,6 +31020,8 @@ core_converse.plugins.add('converse-chat', {
     core_api.listen.on('chatBoxesFetched', autoJoinChats);
     core_api.listen.on('presencesInitialized', registerMessageHandlers);
     core_api.listen.on('clearSession', onClearSession);
+    core_api.listen.on('connected', () => enableCarbons());
+    core_api.listen.on('reconnected', () => enableCarbons(true));
   }
 
 });
@@ -31230,6 +31261,7 @@ const DiscoEntities = Collection.extend({
   fetchEntities() {
     return new Promise((resolve, reject) => {
       this.fetch({
+        ignore_cache: true,
         add: true,
         success: resolve,
 
@@ -31308,16 +31340,13 @@ function addClientFeatures() {
   core_api.disco.own.features.add(disco_utils_Strophe.NS.DISCO_INFO);
   core_api.disco.own.features.add(disco_utils_Strophe.NS.ROSTERX); // Limited support
 
-  if (core_api.settings.get("message_carbons")) {
-    core_api.disco.own.features.add(disco_utils_Strophe.NS.CARBONS);
-  }
+  core_api.disco.own.features.add(disco_utils_Strophe.NS.CARBONS);
   /**
    * Triggered in converse-disco once the core disco features of
    * Converse have been added.
    * @event _converse#addClientFeatures
    * @example _converse.api.listen.on('addClientFeatures', () => { ... });
    */
-
 
   core_api.trigger('addClientFeatures');
   return this;
@@ -31655,6 +31684,7 @@ const {
        * @example _converse.api.disco.entities.create(jid, {'ignore_cache': true});
        */
       create(jid, options) {
+        options.ignore_cache = true;
         return shared_converse.disco_entities.create({
           'jid': jid
         }, options);
@@ -33928,7 +33958,7 @@ const ChatRoomMixin = {
     }
 
     const origin_id = getUniqueId();
-    const body = text ? utils_form.httpToGeoUri(utils_form.shortnamesToUnicode(text), shared_converse) : undefined;
+    const body = text ? utils_form.shortnamesToUnicode(text) : undefined;
     attrs = Object.assign({}, attrs, {
       body,
       is_spoiler,
@@ -36056,13 +36086,13 @@ async function onDirectMUCInvitation(message) {
     contact = contact ? contact.getDisplayName() : from;
 
     if (!reason) {
-      result = confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, room_jid));
+      result = await core_api.confirm(__('%1$s has invited you to join a groupchat: %2$s', contact, room_jid));
     } else {
-      result = confirm(__('%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
+      result = await core_api.confirm(__('%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
     }
   }
 
-  if (result === true) {
+  if (result) {
     const chatroom = await openChatRoom(room_jid, {
       'password': x_el.getAttribute('password')
     });
@@ -37390,77 +37420,6 @@ core_converse.plugins.add('converse-caps', {
   }
 
 });
-;// CONCATENATED MODULE: ./src/headless/plugins/carbons.js
-/**
- * @module converse-carbons
- * @copyright The Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- * @description Implements support for XEP-0280 Message Carbons
- */
-
-
-
-const {
-  u: carbons_u
-} = core_converse.env;
-/**
- * Ask the XMPP server to enable Message Carbons
- * See [XEP-0280](https://xmpp.org/extensions/xep-0280.html#enabling)
- */
-
-async function enableCarbons(reconnecting) {
-  var _converse$session;
-
-  if (reconnecting && shared_converse.session.get('carbons_enabled')) {
-    if (shared_converse.session.get('smacks_enabled')) {
-      // No need to re-enable carbons when resuming a XEP-0198 stream
-      return;
-    }
-
-    shared_converse.session.set({
-      'carbons_enabled': false
-    });
-  }
-
-  if (!core_api.settings.get("message_carbons") || (_converse$session = shared_converse.session) !== null && _converse$session !== void 0 && _converse$session.get('carbons_enabled')) {
-    return;
-  }
-
-  const iq = new Strophe.Builder('iq', {
-    'from': shared_converse.connection.jid,
-    'type': 'set'
-  }).c('enable', {
-    xmlns: Strophe.NS.CARBONS
-  });
-  const result = await core_api.sendIQ(iq, null, false);
-
-  if (result === null) {
-    headless_log.warn(`A timeout occurred while trying to enable carbons`);
-  } else if (carbons_u.isErrorStanza(result)) {
-    headless_log.warn('An error occurred while trying to enable message carbons.');
-    headless_log.error(result);
-  } else {
-    shared_converse.session.set({
-      'carbons_enabled': true
-    });
-
-    headless_log.debug('Message carbons have been enabled.');
-  }
-
-  shared_converse.session.save(); // Gather multiple sets into one save
-
-}
-
-core_converse.plugins.add('converse-carbons', {
-  initialize() {
-    core_api.settings.extend({
-      message_carbons: true
-    });
-    core_api.listen.on('connected', () => enableCarbons());
-    core_api.listen.on('reconnected', () => enableCarbons(true));
-  }
-
-});
 ;// CONCATENATED MODULE: ./src/headless/plugins/chatboxes/chatboxes.js
 
 
@@ -37625,12 +37584,138 @@ core_converse.plugins.add('converse-chatboxes', {
   }
 
 });
-;// CONCATENATED MODULE: ./src/headless/plugins/headlines.js
+;// CONCATENATED MODULE: ./src/headless/plugins/headlines/feed.js
+
+
+class HeadlinesFeed extends model {
+  defaults() {
+    return {
+      'bookmarked': false,
+      'hidden': ['mobile', 'fullscreen'].includes(core_api.settings.get("view_mode")),
+      'message_type': 'headline',
+      'num_unread': 0,
+      'time_opened': this.get('time_opened') || new Date().getTime(),
+      'type': shared_converse.HEADLINES_TYPE
+    };
+  }
+
+  async initialize() {
+    this.set({
+      'box_id': `box-${this.get('jid')}`
+    });
+    this.initUI();
+    this.initMessages();
+    await this.fetchMessages();
+    /**
+     * Triggered once a { @link _converse.HeadlinesFeed } has been created and initialized.
+     * @event _converse#headlinesFeedInitialized
+     * @type { _converse.HeadlinesFeed }
+     * @example _converse.api.listen.on('headlinesFeedInitialized', model => { ... });
+     */
+
+    core_api.trigger('headlinesFeedInitialized', this);
+  }
+
+}
+;// CONCATENATED MODULE: ./src/headless/plugins/headlines/api.js
+
+/* harmony default export */ const headlines_api = ({
+  /**
+   * The "headlines" namespace, which is used for headline-channels
+   * which are read-only channels containing messages of type
+   * "headline".
+   *
+   * @namespace api.headlines
+   * @memberOf api
+   */
+  headlines: {
+    /**
+     * Retrieves a headline-channel or all headline-channels.
+     *
+     * @method api.headlines.get
+     * @param {String|String[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+     * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+     * @param {Boolean} [create=false] - Whether the chat should be created if it's not found.
+     * @returns { Promise<_converse.HeadlinesFeed> }
+     */
+    async get(jids) {
+      let attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      let create = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      async function _get(jid) {
+        let model = await core_api.chatboxes.get(jid);
+
+        if (!model && create) {
+          model = await core_api.chatboxes.create(jid, attrs, shared_converse.HeadlinesFeed);
+        } else {
+          model = model && model.get('type') === shared_converse.HEADLINES_TYPE ? model : null;
+
+          if (model && Object.keys(attrs).length) {
+            model.save(attrs);
+          }
+        }
+
+        return model;
+      }
+
+      if (jids === undefined) {
+        const chats = await core_api.chatboxes.get();
+        return chats.filter(c => c.get('type') === shared_converse.HEADLINES_TYPE);
+      } else if (typeof jids === 'string') {
+        return _get(jids);
+      }
+
+      return Promise.all(jids.map(jid => _get(jid)));
+    }
+
+  }
+});
+;// CONCATENATED MODULE: ./src/headless/plugins/headlines/utils.js
+
+
+
+/**
+ * Handler method for all incoming messages of type "headline".
+ * @param { XMLElement } stanza
+ */
+
+async function onHeadlineMessage(stanza) {
+  if (isHeadline(stanza) || isServerMessage(stanza)) {
+    const from_jid = stanza.getAttribute('from');
+    await core_api.waitUntil('rosterInitialized');
+
+    if (from_jid.includes('@') && !shared_converse.roster.get(from_jid) && !core_api.settings.get("allow_non_roster_messaging")) {
+      return;
+    }
+
+    if (stanza.querySelector('body') === null) {
+      // Avoid creating a chat box if we have nothing to show inside it.
+      return;
+    }
+
+    const chatbox = shared_converse.chatboxes.create({
+      'id': from_jid,
+      'jid': from_jid,
+      'type': shared_converse.HEADLINES_TYPE,
+      'from': from_jid
+    });
+
+    const attrs = await parseMessage(stanza, shared_converse);
+    await chatbox.createMessage(attrs);
+    core_api.trigger('message', {
+      chatbox,
+      stanza,
+      attrs
+    });
+  }
+}
+;// CONCATENATED MODULE: ./src/headless/plugins/headlines/index.js
 /**
  * @module converse-headlines
  * @copyright 2022, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  */
+
 
 
 
@@ -37659,7 +37744,7 @@ core_converse.plugins.add('converse-headlines', {
         } = this.__super__;
 
         if (attrs.type == _converse.HEADLINES_TYPE) {
-          return new _converse.HeadlinesBox(attrs, options);
+          return new _converse.HeadlinesFeed(attrs, options);
         } else {
           return this.__super__.model.apply(this, arguments);
         }
@@ -37669,143 +37754,21 @@ core_converse.plugins.add('converse-headlines', {
   },
 
   initialize() {
-    /* The initialize function gets called as soon as the plugin is
-     * loaded by converse.js's plugin machinery.
-     */
-
     /**
      * Shows headline messages
      * @class
-     * @namespace _converse.HeadlinesBox
+     * @namespace _converse.HeadlinesFeed
      * @memberOf _converse
      */
-    shared_converse.HeadlinesBox = shared_converse.ChatBox.extend({
-      defaults() {
-        return {
-          'bookmarked': false,
-          'hidden': ['mobile', 'fullscreen'].includes(core_api.settings.get("view_mode")),
-          'message_type': 'headline',
-          'num_unread': 0,
-          'time_opened': this.get('time_opened') || new Date().getTime(),
-          'type': shared_converse.HEADLINES_TYPE
-        };
-      },
-
-      async initialize() {
-        this.set({
-          'box_id': `box-${this.get('jid')}`
-        });
-        this.initUI();
-        this.initMessages();
-        await this.fetchMessages();
-        /**
-         * Triggered once a {@link _converse.HeadlinesBox} has been created and initialized.
-         * @event _converse#headlinesBoxInitialized
-         * @type { _converse.HeadlinesBox }
-         * @example _converse.api.listen.on('headlinesBoxInitialized', model => { ... });
-         */
-
-        core_api.trigger('headlinesBoxInitialized', this);
-      }
-
-    });
-
-    async function onHeadlineMessage(stanza) {
-      // Handler method for all incoming messages of type "headline".
-      if (isHeadline(stanza) || isServerMessage(stanza)) {
-        const from_jid = stanza.getAttribute('from');
-        await core_api.waitUntil('rosterInitialized');
-
-        if (from_jid.includes('@') && !shared_converse.roster.get(from_jid) && !core_api.settings.get("allow_non_roster_messaging")) {
-          return;
-        }
-
-        if (stanza.querySelector('body') === null) {
-          // Avoid creating a chat box if we have nothing to show inside it.
-          return;
-        }
-
-        const chatbox = shared_converse.chatboxes.create({
-          'id': from_jid,
-          'jid': from_jid,
-          'type': shared_converse.HEADLINES_TYPE,
-          'from': from_jid
-        });
-
-        const attrs = await parseMessage(stanza, shared_converse);
-        await chatbox.createMessage(attrs);
-        core_api.trigger('message', {
-          chatbox,
-          stanza,
-          attrs
-        });
-      }
-    }
-    /************************ BEGIN Event Handlers ************************/
-
+    shared_converse.HeadlinesFeed = HeadlinesFeed;
 
     function registerHeadlineHandler() {
-      shared_converse.connection.addHandler(message => onHeadlineMessage(message) || true, null, 'message');
+      shared_converse.connection.addHandler(m => onHeadlineMessage(m) || true, null, 'message');
     }
 
     core_api.listen.on('connected', registerHeadlineHandler);
     core_api.listen.on('reconnected', registerHeadlineHandler);
-    /************************ END Event Handlers ************************/
-
-    /************************ BEGIN API ************************/
-
-    Object.assign(core_api, {
-      /**
-       * The "headlines" namespace, which is used for headline-channels
-       * which are read-only channels containing messages of type
-       * "headline".
-       *
-       * @namespace api.headlines
-       * @memberOf api
-       */
-      headlines: {
-        /**
-         * Retrieves a headline-channel or all headline-channels.
-         *
-         * @method api.headlines.get
-         * @param {String|String[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
-         * @param {Boolean} [create=false] - Whether the chat should be created if it's not found.
-         * @returns { Promise<_converse.HeadlinesBox> }
-         */
-        async get(jids) {
-          let attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-          let create = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-          async function _get(jid) {
-            let model = await core_api.chatboxes.get(jid);
-
-            if (!model && create) {
-              model = await core_api.chatboxes.create(jid, attrs, shared_converse.HeadlinesBox);
-            } else {
-              model = model && model.get('type') === shared_converse.HEADLINES_TYPE ? model : null;
-
-              if (model && Object.keys(attrs).length) {
-                model.save(attrs);
-              }
-            }
-
-            return model;
-          }
-
-          if (jids === undefined) {
-            const chats = await core_api.chatboxes.get();
-            return chats.filter(c => c.get('type') === shared_converse.HEADLINES_TYPE);
-          } else if (typeof jids === 'string') {
-            return _get(jids);
-          }
-
-          return Promise.all(jids.map(jid => _get(jid)));
-        }
-
-      }
-    });
-    /************************ END API ************************/
+    Object.assign(core_api, headlines_api);
   }
 
 });
@@ -40005,7 +39968,6 @@ const RosterContacts = Collection.extend({
   /**
    * Fetches the roster contacts, first by trying the browser cache,
    * and if that's empty, then by querying the XMPP server.
-   * @private
    * @returns {promise} Promise which resolves once the contacts have been fetched.
    */
   async fetchRosterContacts() {
@@ -40057,7 +40019,6 @@ const RosterContacts = Collection.extend({
   /**
    * Add a roster contact and then once we have confirmation from
    * the XMPP server we subscribe to that contact's presence updates.
-   * @private
    * @method _converse.RosterContacts#addAndSubscribe
    * @param { String } jid - The Jabber ID of the user being added and subscribed to.
    * @param { String } name - The name of that user
@@ -40075,7 +40036,6 @@ const RosterContacts = Collection.extend({
 
   /**
    * Send an IQ stanza to the XMPP server to add a new roster contact.
-   * @private
    * @method _converse.RosterContacts#sendContactAddIQ
    * @param { String } jid - The Jabber ID of the user being added
    * @param { String } name - The name of that user
@@ -40101,7 +40061,6 @@ const RosterContacts = Collection.extend({
    * Adds a RosterContact instance to _converse.roster and
    * registers the contact on the XMPP server.
    * Returns a promise which is resolved once the XMPP server has responded.
-   * @private
    * @method _converse.RosterContacts#addContactToRoster
    * @param { String } jid - The Jabber ID of the user being added and subscribed to.
    * @param { String } name - The name of that user
@@ -40163,7 +40122,6 @@ const RosterContacts = Collection.extend({
   /**
    * Handle roster updates from the XMPP server.
    * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-   * @private
    * @method _converse.RosterContacts#onRosterPush
    * @param { XMLElement } IQ - The IQ stanza received from the XMPP server.
    */
@@ -40220,7 +40178,6 @@ const RosterContacts = Collection.extend({
 
   /**
    * Fetch the roster from the XMPP server
-   * @private
    * @emits _converse#roster
    * @returns {promise}
    */
@@ -40246,11 +40203,11 @@ const RosterContacts = Collection.extend({
       if (query) {
         const items = contacts_sizzle(`item`, query);
 
-        if (!this.data.get('version')) {
+        if (!this.data.get('version') && this.models.length) {
           // We're getting the full roster, so remove all cached
           // contacts that aren't included in it.
           const jids = items.map(item => item.getAttribute('jid'));
-          this.models.forEach(m => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
+          this.forEach(m => !m.get('requesting') && !jids.includes(m.get('jid')) && m.destroy());
         }
 
         items.forEach(item => this.updateContact(item));
@@ -40278,47 +40235,44 @@ const RosterContacts = Collection.extend({
     core_api.trigger('roster', iq);
   },
 
-  /* Update or create RosterContact models based on the given `item` XML
+  /**
+   * Update or create RosterContact models based on the given `item` XML
    * node received in the resulting IQ stanza from the server.
-   * @private
    * @param { XMLElement } item
    */
   updateContact(item) {
     const jid = item.getAttribute('jid');
     const contact = this.get(jid);
     const subscription = item.getAttribute("subscription");
+
+    if (subscription === "remove") {
+      return contact === null || contact === void 0 ? void 0 : contact.destroy();
+    }
+
     const ask = item.getAttribute("ask");
+    const nickname = item.getAttribute('name');
     const groups = [...new Set(contacts_sizzle('group', item).map(e => e.textContent))];
 
-    if (!contact) {
-      if (subscription === "none" && ask === null || subscription === "remove") {
-        return; // We're lazy when adding contacts.
-      }
-
-      this.create({
-        'ask': ask,
-        'nickname': item.getAttribute("name"),
-        'groups': groups,
-        'jid': jid,
-        'subscription': subscription
-      }, {
-        sort: false
-      });
-    } else {
-      if (subscription === "remove") {
-        return contact.destroy();
-      } // We only find out about requesting contacts via the
+    if (contact) {
+      // We only find out about requesting contacts via the
       // presence handler, so if we receive a contact
       // here, we know they aren't requesting anymore.
-      // see docs/DEVELOPER.rst
-
-
       contact.save({
-        'subscription': subscription,
-        'ask': ask,
-        'nickname': item.getAttribute("name"),
-        'requesting': null,
-        'groups': groups
+        subscription,
+        ask,
+        nickname,
+        groups,
+        'requesting': null
+      });
+    } else {
+      this.create({
+        nickname,
+        ask,
+        groups,
+        jid,
+        subscription
+      }, {
+        sort: false
       });
     }
   },
@@ -40427,13 +40381,9 @@ const RosterContacts = Collection.extend({
     var _presence$querySelect3;
 
     const presence_type = presence.getAttribute('type');
-
-    if (presence_type === 'error') {
-      return true;
-    }
-
-    const jid = presence.getAttribute('from'),
-          bare_jid = contacts_Strophe.getBareJidFromJid(jid);
+    if (presence_type === 'error') return true;
+    const jid = presence.getAttribute('from');
+    const bare_jid = contacts_Strophe.getBareJidFromJid(jid);
 
     if (this.isSelf(bare_jid)) {
       return this.handleOwnPresence(presence);
@@ -41518,8 +41468,6 @@ core_converse.plugins.add('converse-vcard', {
 
  // XEP-0115 Entity Capabilities
 
- // XEP-0280 Message Carbons
-
  // RFC-6121 Instant messaging
 
 
@@ -42422,12 +42370,13 @@ function getHeadingButtons(view, buttons) {
 
   return buttons;
 }
-function removeBookmarkViaEvent(ev) {
+async function removeBookmarkViaEvent(ev) {
   ev.preventDefault();
   const name = ev.target.getAttribute('data-bookmark-name');
   const jid = ev.target.getAttribute('data-room-jid');
+  const result = await core_api.confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name));
 
-  if (confirm(__('Are you sure you want to remove the bookmark "%1$s"?', name))) {
+  if (result) {
     lodash_es_invokeMap(shared_converse.bookmarks.where({
       jid
     }), Model.prototype.destroy);
@@ -43872,7 +43821,7 @@ class MessageActions extends CustomElement {
         `;
   }
 
-  onMessageEditButtonClicked(ev) {
+  async onMessageEditButtonClicked(ev) {
     var _u$ancestor, _u$ancestor$querySele;
 
     ev.preventDefault();
@@ -43882,9 +43831,8 @@ class MessageActions extends CustomElement {
     const unsent_text = (_u$ancestor = message_actions_u.ancestor(this, '.chatbox')) === null || _u$ancestor === void 0 ? void 0 : (_u$ancestor$querySele = _u$ancestor.querySelector('.chat-textarea')) === null || _u$ancestor$querySele === void 0 ? void 0 : _u$ancestor$querySele.value;
 
     if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
-      if (!confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'))) {
-        return;
-      }
+      const result = await core_api.confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'));
+      if (!result) return;
     }
 
     if (currently_correcting !== this.model) {
@@ -48612,7 +48560,7 @@ const UserDetailsModal = base.extend({
     user_details_u.removeClass('fa-spin', refresh_icon);
   },
 
-  removeContact(ev) {
+  async removeContact(ev) {
     var _ev$preventDefault;
 
     ev === null || ev === void 0 ? void 0 : (_ev$preventDefault = ev.preventDefault) === null || _ev$preventDefault === void 0 ? void 0 : _ev$preventDefault.call(ev);
@@ -48621,9 +48569,9 @@ const UserDetailsModal = base.extend({
       return;
     }
 
-    const result = confirm(__("Are you sure you want to remove this contact?"));
+    const result = await core_api.confirm(__("Are you sure you want to remove this contact?"));
 
-    if (result === true) {
+    if (result) {
       // XXX: The `dismissHandler` in bootstrap.native tries to
       // reference the remove button after it's been cleared from
       // the DOM, so we delay removing the contact to give it time.
@@ -50595,9 +50543,9 @@ async function getHeadingStandaloneButton(promise_or_data) {
     `;
 }
 async function clearMessages(chat) {
-  const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
+  const result = await core_api.confirm(__('Are you sure you want to clear the messages from this conversation?'));
 
-  if (result === true) {
+  if (result) {
     await chat.clearMessages();
   }
 }
@@ -51761,7 +51709,7 @@ class ChatView extends BaseChatView {
     /**
      * Triggered once the {@link _converse.ChatBoxView} has been initialized
      * @event _converse#chatBoxViewInitialized
-     * @type { _converse.HeadlinesBoxView }
+     * @type { _converse.ChatBoxView }
      * @example _converse.api.listen.on('chatBoxViewInitialized', view => { ... });
      */
 
@@ -52522,7 +52470,7 @@ function whenNotConnected(o) {
     return $`<converse-register-panel></converse-register-panel>`;
   }
 
-  return $`<converse-login-form id="converse-login-panel" class="controlbox-pane fade-in row no-gutters"></converse-login-form>}`;
+  return $`<converse-login-form id="converse-login-panel" class="controlbox-pane fade-in row no-gutters"></converse-login-form>`;
 }
 
 /* harmony default export */ const controlbox = (el => {
@@ -52540,7 +52488,7 @@ function whenNotConnected(o) {
                 <div class="controlbox-pane">
                     ${o.connected ? $`
                             <converse-user-profile></converse-user-profile>
-                            <converse-headlines-panel class="controlbox-section"></converse-headlines-panel>
+                            <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
                             <div id="chatrooms" class="controlbox-section">
                                 <converse-rooms-list></converse-rooms-list>
                                 <converse-bookmarks></converse-bookmarks>
@@ -53373,7 +53321,7 @@ core_api.elements.define('converse-headlines-heading', HeadlinesHeading);
 
 
 
-class HeadlinesView extends BaseChatView {
+class HeadlinesFeedView extends BaseChatView {
   async initialize() {
     shared_converse.chatboxviews.add(this.jid, this);
 
@@ -53389,9 +53337,9 @@ class HeadlinesView extends BaseChatView {
     await this.model.messages.fetched;
     this.model.maybeShow();
     /**
-     * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
+     * Triggered once the { @link _converse.HeadlinesFeedView } has been initialized
      * @event _converse#headlinesBoxViewInitialized
-     * @type { _converse.HeadlinesBoxView }
+     * @type { _converse.HeadlinesFeedView }
      * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
      */
 
@@ -53428,94 +53376,82 @@ class HeadlinesView extends BaseChatView {
 
 }
 
-core_api.elements.define('converse-headlines', HeadlinesView);
-;// CONCATENATED MODULE: ./src/templates/headline_list.js
+core_api.elements.define('converse-headlines', HeadlinesFeedView);
+;// CONCATENATED MODULE: ./src/plugins/headlines-view/templates/feeds-list.js
 
 
-const tpl_headline_box = o => $`
-    <div class="list-item controlbox-padded d-flex flex-row"
-        data-headline-jid="${o.headlinebox.get('jid')}">
-    <a class="list-item-link open-headline available-room w-100"
-        data-headline-jid="${o.headlinebox.get('jid')}"
-        title="${o.open_title}" href="#">${o.headlinebox.get('jid')}</a>
-    </div>
-`;
 
-/* harmony default export */ const headline_list = (o => $`
-    <div class="list-container list-container--headline ${o.headlineboxes.length ? '' : 'hidden'}">
-        <div class="items-list rooms-list headline-list">
-            ${o.headlineboxes.map(headlinebox => tpl_headline_box(Object.assign({
-  headlinebox
-}, o)))}
+
+const tpls_headlines_feeds_list_item = (el, feed) => {
+  const open_title = __('Click to open this server message');
+
+  return $`
+        <div class="list-item controlbox-padded d-flex flex-row"
+            data-headline-jid="${feed.get('jid')}">
+        <a class="list-item-link open-headline available-room w-100"
+            data-headline-jid="${feed.get('jid')}"
+            title="${open_title}"
+            @click=${ev => el.openHeadline(ev)}
+            href="#">${feed.get('jid')}</a>
         </div>
-    </div>
-`);
-;// CONCATENATED MODULE: ./src/plugins/headlines-view/templates/panel.js
+    `;
+};
 
+/* harmony default export */ const feeds_list = (el => {
+  const feeds = el.model.filter(m => m.get('type') === shared_converse.HEADLINES_TYPE);
 
-/* harmony default export */ const panel = (o => $`
-    <div class="controlbox-section" id="headline">
-        <div class="d-flex controlbox-padded ${o.headlineboxes.length ? '' : 'hidden'}">
-            <span class="w-100 controlbox-heading controlbox-heading--headline">${o.heading_headline}</span>
+  const heading_headline = __('Announcements');
+
+  return $`
+        <div class="controlbox-section" id="headline">
+            <div class="d-flex controlbox-padded ${feeds.length ? '' : 'hidden'}">
+                <span class="w-100 controlbox-heading controlbox-heading--headline">${heading_headline}</span>
+            </div>
         </div>
-    </div>
-    ${headline_list(o)}
-`);
-;// CONCATENATED MODULE: ./src/plugins/headlines-view/panel.js
-function panel_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
+        <div class="list-container list-container--headline ${feeds.length ? '' : 'hidden'}">
+            <div class="items-list rooms-list headline-list">
+                ${feeds.map(feed => tpls_headlines_feeds_list_item(el, feed))}
+            </div>
+        </div>`;
+});
+;// CONCATENATED MODULE: ./src/plugins/headlines-view/feed-list.js
 
 
 
 /**
- * View which renders headlines section of the control box.
+ * Custom element which renders a list of headline feeds
  * @class
- * @namespace _converse.HeadlinesPanel
+ * @namespace _converse.HeadlinesFeedsList
  * @memberOf _converse
  */
 
-class HeadlinesPanel extends ElementView {
-  constructor() {
-    super(...arguments);
-
-    panel_defineProperty(this, "events", {
-      'click .open-headline': 'openHeadline'
-    });
-  }
-
+class HeadlinesFeedsList extends CustomElement {
   initialize() {
     this.model = shared_converse.chatboxes;
-    this.listenTo(this.model, 'add', this.renderIfHeadline);
-    this.listenTo(this.model, 'remove', this.renderIfHeadline);
-    this.listenTo(this.model, 'destroy', this.renderIfHeadline);
-    this.render();
+    this.listenTo(this.model, 'add', m => this.renderIfHeadline(m));
+    this.listenTo(this.model, 'remove', m => this.renderIfHeadline(m));
+    this.listenTo(this.model, 'destroy', m => this.renderIfHeadline(m));
+    this.requestUpdate();
   }
 
-  toHTML() {
-    return panel({
-      'heading_headline': __('Announcements'),
-      'headlineboxes': this.model.filter(m => m.get('type') === shared_converse.HEADLINES_TYPE),
-      'open_title': __('Click to open this server message')
-    });
+  render() {
+    return feeds_list(this);
   }
 
   renderIfHeadline(model) {
-    return model && model.get('type') === shared_converse.HEADLINES_TYPE && this.render();
+    return (model === null || model === void 0 ? void 0 : model.get('type')) === shared_converse.HEADLINES_TYPE && this.requestUpdate();
   }
 
-  openHeadline(ev) {
+  async openHeadline(ev) {
     // eslint-disable-line class-methods-use-this
     ev.preventDefault();
     const jid = ev.target.getAttribute('data-headline-jid');
-
-    const chat = shared_converse.chatboxes.get(jid);
-
-    chat.maybeShow(true);
+    const feed = await core_api.headlines.get(jid);
+    feed.maybeShow(true);
   }
 
 }
-core_api.elements.define('converse-headlines-panel', HeadlinesPanel);
+core_api.elements.define('converse-headlines-feeds-list', HeadlinesFeedsList);
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].use[1]!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[5].use[3]!./src/plugins/headlines-view/styles/headlines.scss
 var styles_headlines = __webpack_require__(5956);
 ;// CONCATENATED MODULE: ./src/plugins/headlines-view/styles/headlines.scss
@@ -53572,7 +53508,9 @@ core_converse.plugins.add('converse-headlines-view', {
   dependencies: ['converse-headlines', 'converse-chatview'],
 
   initialize() {
-    shared_converse.HeadlinesPanel = HeadlinesPanel;
+    shared_converse.HeadlinesFeedsList = HeadlinesFeedsList; // Deprecated
+
+    shared_converse.HeadlinesPanel = HeadlinesFeedsList;
   }
 
 });
@@ -53889,7 +53827,7 @@ function getBoxesWidth(newchat) {
  * to create space.
  * @private
  * @method _converse.ChatBoxViews#trimChats
- * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
+ * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesFeedView } [newchat]
  */
 
 
@@ -54709,6 +54647,9 @@ Object.assign(AutoComplete.prototype, Events);
 class AutoCompleteComponent extends CustomElement {
   static get properties() {
     return {
+      'autofocus': {
+        type: Boolean
+      },
       'getAutoCompleteList': {
         type: Function
       },
@@ -54761,6 +54702,7 @@ class AutoCompleteComponent extends CustomElement {
             <div class="suggestion-box suggestion-box__name">
                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
                 <input
+                    ?autofocus=${this.autofocus}
                     type="text"
                     name="${this.name}"
                     autocomplete="off"
@@ -55593,10 +55535,23 @@ function getAutoCompleteListItem(text, input) {
   });
   return element;
 }
+let fetched_room_jids = [];
+let timestamp = null;
+
+async function fetchListOfRooms() {
+  const response = await fetch('https://search.jabber.network/api/1.0/rooms');
+  const data = await response.json();
+  const popular_mucs = data.items.map(item => item.address);
+  fetched_room_jids = [...new Set(popular_mucs)];
+}
+
 async function getAutoCompleteList() {
-  const models = [...(await core_api.rooms.get()), ...(await core_api.contacts.get())];
-  const jids = [...new Set(models.map(o => muc_views_utils_Strophe.getDomainFromJid(o.get('jid'))))];
-  return jids;
+  if (!timestamp || core_converse.env.dayjs().isAfter(timestamp, 'day')) {
+    await fetchListOfRooms();
+    timestamp = new Date().toISOString();
+  }
+
+  return fetched_room_jids;
 }
 async function fetchCommandForm(command) {
   const node = command.node;
@@ -58516,6 +58471,60 @@ core_converse.plugins.add('converse-notification', {
   }
 
 });
+;// CONCATENATED MODULE: ./node_modules/lodash-es/concat.js
+
+
+
+
+
+/**
+ * Creates a new array concatenating `array` with any additional arrays
+ * and/or values.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Array
+ * @param {Array} array The array to concatenate.
+ * @param {...*} [values] The values to concatenate.
+ * @returns {Array} Returns the new concatenated array.
+ * @example
+ *
+ * var array = [1];
+ * var other = _.concat(array, 2, [3], [[4]]);
+ *
+ * console.log(other);
+ * // => [1, 2, 3, [4]]
+ *
+ * console.log(array);
+ * // => [1]
+ */
+function concat() {
+  var length = arguments.length;
+  if (!length) {
+    return [];
+  }
+  var args = Array(length - 1),
+      array = arguments[0],
+      index = length;
+
+  while (index--) {
+    args[index - 1] = arguments[index];
+  }
+  return _arrayPush(lodash_es_isArray(array) ? _copyArray(array) : [array], _baseFlatten(args, 1));
+}
+
+/* harmony default export */ const lodash_es_concat = (concat);
+
+;// CONCATENATED MODULE: ./src/plugins/omemo/consts.js
+const UNDECIDED = 0;
+const TRUSTED = 1;
+const UNTRUSTED = -1;
+const TAG_LENGTH = 128;
+const KEY_ALGO = {
+  'name': 'AES-GCM',
+  'length': 128
+};
 ;// CONCATENATED MODULE: ./src/utils/file.js
 const MIMETYPES_MAP = {
   'aac': 'audio/aac',
@@ -58596,60 +58605,6 @@ const MIMETYPES_MAP = {
   '3g2': 'video/3gpp2',
   '7z': 'application/x-7z-compressed'
 };
-;// CONCATENATED MODULE: ./src/plugins/omemo/consts.js
-const UNDECIDED = 0;
-const TRUSTED = 1;
-const UNTRUSTED = -1;
-const TAG_LENGTH = 128;
-const KEY_ALGO = {
-  'name': 'AES-GCM',
-  'length': 128
-};
-;// CONCATENATED MODULE: ./node_modules/lodash-es/concat.js
-
-
-
-
-
-/**
- * Creates a new array concatenating `array` with any additional arrays
- * and/or values.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Array
- * @param {Array} array The array to concatenate.
- * @param {...*} [values] The values to concatenate.
- * @returns {Array} Returns the new concatenated array.
- * @example
- *
- * var array = [1];
- * var other = _.concat(array, 2, [3], [[4]]);
- *
- * console.log(other);
- * // => [1, 2, 3, [4]]
- *
- * console.log(array);
- * // => [1]
- */
-function concat() {
-  var length = arguments.length;
-  if (!length) {
-    return [];
-  }
-  var args = Array(length - 1),
-      array = arguments[0],
-      index = length;
-
-  while (index--) {
-    args[index - 1] = arguments[index];
-  }
-  return _arrayPush(lodash_es_isArray(array) ? _copyArray(array) : [array], _baseFlatten(args, 1));
-}
-
-/* harmony default export */ const lodash_es_concat = (concat);
-
 ;// CONCATENATED MODULE: ./src/headless/utils/arraybuffer.js
 
 const {
@@ -59889,8 +59844,9 @@ class Profile extends CustomElement {
 
   async generateOMEMODeviceBundle(ev) {
     ev.preventDefault();
+    const result = await core_api.confirm(__('Are you sure you want to generate new OMEMO keys? ' + 'This will remove your old keys and all previously ' + 'encrypted messages will no longer be decryptable on this device.'));
 
-    if (confirm(__('Are you sure you want to generate new OMEMO keys? ' + 'This will remove your old keys and all previously encrypted messages will no longer be decryptable on this device.'))) {
+    if (result) {
       await core_api.omemo.bundle.generate();
       await this.setAttributes();
       this.requestUpdate();
@@ -59993,6 +59949,7 @@ let user_settings_converse;
 }));
 ;// CONCATENATED MODULE: ./src/plugins/profile/utils.js
 
+
 function getPrettyStatus(stat) {
   if (stat === 'chat') {
     return __('online');
@@ -60008,6 +59965,14 @@ function getPrettyStatus(stat) {
     return __(stat) || __('online');
   }
 }
+async function logOut(ev) {
+  ev === null || ev === void 0 ? void 0 : ev.preventDefault();
+  const result = await core_api.confirm(__("Are you sure you want to log out?"));
+
+  if (result) {
+    core_api.user.logout();
+  }
+}
 ;// CONCATENATED MODULE: ./src/plugins/profile/templates/profile.js
 
 
@@ -60015,10 +59980,10 @@ function getPrettyStatus(stat) {
 
 
 
-function tpl_signout(o) {
+function tpl_signout() {
   const i18n_logout = __('Log out');
 
-  return $`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${o.logout}>
+  return $`<a class="controlbox-heading__btn logout align-self-center" title="${i18n_logout}" @click=${logOut}>
         <converse-icon class="fa fa-sign-out-alt" size="1em"></converse-icon>
     </a>`;
 }
@@ -60065,7 +60030,7 @@ function tpl_user_settings_button(o) {
                 </a>
                 <span class="username w-100 align-self-center">${fullname}</span>
                 ${show_settings_button ? tpl_user_settings_button(el) : ''}
-                ${core_api.settings.get('allow_logout') ? tpl_signout(el) : ''}
+                ${core_api.settings.get('allow_logout') ? tpl_signout() : ''}
             </div>
             <div class="d-flex xmpp-status">
                 <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal" @click=${el.showStatusChangeModal}>
@@ -60076,7 +60041,6 @@ function tpl_user_settings_button(o) {
         </div>`;
 });
 ;// CONCATENATED MODULE: ./src/plugins/profile/statusview.js
-
 
 
 
@@ -60114,16 +60078,6 @@ class statusview_Profile extends CustomElement {
       model: this.model,
       _converse: shared_converse
     }, ev);
-  }
-
-  logout(ev) {
-    // eslint-disable-line class-methods-use-this
-    ev === null || ev === void 0 ? void 0 : ev.preventDefault();
-    const result = confirm(__("Are you sure you want to log out?"));
-
-    if (result === true) {
-      core_api.user.logout();
-    }
   }
 
 }
@@ -61059,7 +61013,7 @@ const OMEMOStore = Model.extend({
       'pubKey': store_u.arrayBufferToBase64(spk.keyPair.pubKey),
       // XXX: The InMemorySignalProtocolStore does not pass
       // in or store the signature, but we need it when we
-      // publish out bundle and this method isn't called from
+      // publish our bundle and this method isn't called from
       // within libsignal code, so we modify it to also store
       // the signature.
       'signature': store_u.arrayBufferToBase64(spk.signature)
@@ -61138,21 +61092,45 @@ const OMEMOStore = Model.extend({
   },
 
   /**
-   * Generate the data used by the X3DH key agreement protocol
-   * that can be used to build a session with a device.
+   * Generates, stores and then returns pre-keys.
+   *
+   * Pre-keys are one half of a X3DH key exchange and are published as part
+   * of the device bundle.
+   *
+   * For a new contact or device to establish an encrypted session, it needs
+   * to use a pre-key, which it chooses randomly from the list of available
+   * ones.
+   */
+  async generatePreKeys() {
+    const amount = shared_converse.NUM_PREKEYS;
+    const {
+      KeyHelper
+    } = libsignal;
+    const keys = await Promise.all(lodash_es_range(0, amount).map(id => KeyHelper.generatePreKey(id)));
+    keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
+    return keys.map(k => ({
+      'id': k.keyId,
+      'key': store_u.arrayBufferToBase64(k.keyPair.pubKey)
+    }));
+  },
+
+  /**
+   * Generate the cryptographic data used by the X3DH key agreement protocol
+   * in order to build a session with other devices.
+   *
+   * By generating a bundle, and publishing it via PubSub, we allow other
+   * clients to download it and start asynchronous encrypted sessions with us,
+   * even if we're offline at that time.
    */
   async generateBundle() {
     // The first thing that needs to happen if a client wants to
     // start using OMEMO is they need to generate an IdentityKey
-    // and a Device ID. The IdentityKey is a Curve25519 [6]
-    // public/private Key pair. The Device ID is a randomly
-    // generated integer between 1 and 2^31 - 1.
+    // and a Device ID.
+    // The IdentityKey is a Curve25519 public/private Key pair.
     const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
-    const bundle = {};
-    const identity_key = store_u.arrayBufferToBase64(identity_keypair.pubKey);
+    const identity_key = store_u.arrayBufferToBase64(identity_keypair.pubKey); // The Device ID is a randomly generated integer between 1 and 2^31 - 1.
+
     const device_id = await generateDeviceID();
-    bundle['identity_key'] = identity_key;
-    bundle['device_id'] = device_id;
     this.save({
       'device_id': device_id,
       'identity_keypair': {
@@ -61163,13 +61141,17 @@ const OMEMOStore = Model.extend({
     });
     const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
     this.storeSignedPreKey(signed_prekey);
+    const prekeys = await this.generatePreKeys();
+    const bundle = {
+      identity_key,
+      device_id,
+      prekeys
+    };
     bundle['signed_prekey'] = {
       'id': signed_prekey.keyId,
       'public_key': store_u.arrayBufferToBase64(signed_prekey.keyPair.pubKey),
       'signature': store_u.arrayBufferToBase64(signed_prekey.signature)
     };
-    const keys = await Promise.all(lodash_es_range(0, shared_converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));
-    keys.forEach(k => this.storePreKey(k.keyId, k.keyPair));
     const devicelist = await core_api.omemo.devicelists.get(shared_converse.bare_jid);
     const device = await devicelist.devices.create({
       'id': bundle.device_id,
@@ -61177,11 +61159,6 @@ const OMEMOStore = Model.extend({
     }, {
       'promise': true
     });
-    const marshalled_keys = keys.map(k => ({
-      'id': k.keyId,
-      'key': store_u.arrayBufferToBase64(k.keyPair.pubKey)
-    }));
-    bundle['prekeys'] = marshalled_keys;
     device.save('bundle', bundle);
   },
 
@@ -61686,7 +61663,7 @@ const REGISTRATION_FORM = 2;
     `;
 });
 ;// CONCATENATED MODULE: ./src/plugins/register/panel.js
-function register_panel_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function panel_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
@@ -61720,11 +61697,11 @@ class RegisterPanel extends ElementView {
   constructor() {
     super(...arguments);
 
-    register_panel_defineProperty(this, "id", "converse-register-panel");
+    panel_defineProperty(this, "id", "converse-register-panel");
 
-    register_panel_defineProperty(this, "className", 'controlbox-pane fade-in');
+    panel_defineProperty(this, "className", 'controlbox-pane fade-in');
 
-    register_panel_defineProperty(this, "events", {
+    panel_defineProperty(this, "events", {
       'submit form#converse-register': 'onFormSubmission',
       'click .button-cancel': 'renderProviderChoiceForm'
     });
@@ -62373,6 +62350,7 @@ const RoomsListModel = Model.extend({
 
 
 
+
 const nickname_input = o => {
   const i18n_nickname = __('Nickname');
 
@@ -62404,7 +62382,10 @@ const nickname_input = o => {
                         <div class="form-group">
                             <label for="chatroom">${o.label_room_address}:</label>
                             ${o.muc_roomid_policy_error_msg ? $`<label class="roomid-policy-error">${o.muc_roomid_policy_error_msg}</label>` : ''}
-                            <input type="text" required="required" name="chatroom" class="form-control roomjid-input" placeholder="${o.chatroom_placeholder}"/>
+                            <converse-autocomplete
+                                .getAutoCompleteList="${getAutoCompleteList}"
+                                placeholder="${o.chatroom_placeholder}"
+                                name="chatroom"/>
                         </div>
                         ${o.muc_roomid_policy_hint ? $`<div class="form-group">${unsafe_html_o(purify_default().sanitize(o.muc_roomid_policy_hint, {
     'ALLOWED_TAGS': ['b', 'br', 'em']
@@ -63056,8 +63037,9 @@ class RoomsList extends CustomElement {
     // eslint-disable-line class-methods-use-this
     ev.preventDefault();
     const name = ev.target.getAttribute('data-room-name');
+    const result = await core_api.confirm(__("Are you sure you want to leave the groupchat %1$s?", name));
 
-    if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
+    if (result) {
       const jid = ev.target.getAttribute('data-room-jid');
       const room = await core_api.rooms.get(jid);
       room.close();
@@ -63495,18 +63477,20 @@ core_converse.plugins.add('converse-rootview', {
 
 
 
-/* harmony default export */ const add_contact = (o => {
-  const i18n_contact_placeholder = __('name@example.org');
-
+/* harmony default export */ const add_contact = (el => {
   const i18n_add = __('Add');
+
+  const i18n_contact_placeholder = __('name@example.org');
 
   const i18n_error_message = __('Please enter a valid XMPP address');
 
+  const i18n_group = __('Group');
+
   const i18n_new_contact = __('Add a Contact');
 
-  const i18n_xmpp_address = __('XMPP Address');
+  const i18n_nickname = __('Name');
 
-  const i18n_nickname = __('Nickname');
+  const i18n_xmpp_address = __('XMPP Address');
 
   return $`
         <div class="modal-dialog" role="document">
@@ -63515,33 +63499,37 @@ core_converse.plugins.add('converse-rootview', {
                     <h5 class="modal-title" id="addContactModalLabel">${i18n_new_contact}</h5>
                     ${modal_header_close_button}
                 </div>
-                <form class="converse-form add-xmpp-contact">
+                <form class="converse-form add-xmpp-contact" @submit=${ev => el.addContactFromForm(ev)}>
                     <div class="modal-body">
                         <span class="modal-alert"></span>
                         <div class="form-group add-xmpp-contact__jid">
                             <label class="clearfix" for="jid">${i18n_xmpp_address}:</label>
                             <div class="suggestion-box suggestion-box__jid">
-                                <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
+                                <ul class="suggestion-box__results suggestion-box__results--below" hidden=""></ul>
                                 <input type="text" name="jid" ?required=${!core_api.settings.get('xhr_user_search_url')}
-                                    value="${o.jid || ''}"
+                                    value="${el.model.get('jid') || ''}"
                                     class="form-control suggestion-box__input"
                                     placeholder="${i18n_contact_placeholder}"/>
                                 <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
                             </div>
                         </div>
+
                         <div class="form-group add-xmpp-contact__name">
                             <label class="clearfix" for="name">${i18n_nickname}:</label>
                             <div class="suggestion-box suggestion-box__name">
                                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
-                                <input type="text" name="name" value="${o.nickname || ''}"
-                                    class="form-control suggestion-box__input"
-                                    placeholder="${i18n_nickname}"/>
+                                <input type="text" name="name" value="${el.model.get('nickname') || ''}"
+                                    class="form-control suggestion-box__input"/>
                                 <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="invalid-feedback">${i18n_error_message}</div>
+
+                        <div class="form-group add-xmpp-contact__group">
+                            <label class="clearfix" for="name">${i18n_group}:</label>
+                            <converse-autocomplete .getAutoCompleteList="${() => el.getGroupsAutoCompleteList()}" name="group"/>
                         </div>
+
+                        <div class="form-group"><div class="invalid-feedback">${i18n_error_message}</div></div>
                         <button type="submit" class="btn btn-primary">${i18n_add}</button>
                     </div>
                 </form>
@@ -63563,9 +63551,6 @@ const {
 const add_contact_u = core_converse.env.utils;
 const AddContactModal = base.extend({
   id: "add-contact-modal",
-  events: {
-    'submit form': 'addContactFromForm'
-  },
 
   initialize() {
     base.prototype.initialize.apply(this, arguments);
@@ -63573,11 +63558,7 @@ const AddContactModal = base.extend({
   },
 
   toHTML() {
-    const label_nickname = core_api.settings.get('xhr_user_search_url') ? __('Contact name') : __('Optional nickname');
-    return add_contact(Object.assign(this.model.toJSON(), {
-      _converse: shared_converse,
-      label_nickname
-    }));
+    return add_contact(this);
   },
 
   afterRender() {
@@ -63591,7 +63572,24 @@ const AddContactModal = base.extend({
     this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
   },
 
+  getGroupsAutoCompleteList() {
+    return ['apple', 'pear', 'banana']; // return [...new Set(_converse.roster.map(i => i.get('gruop')).filter(i => i))];
+  },
+
   initJIDAutoComplete() {
+    if (!core_api.settings.get('autocomplete_add_contact')) {
+      return;
+    }
+
+    const el = this.el.querySelector('.suggestion-box__jid').parentElement;
+    this.jid_auto_complete = new shared_converse.AutoComplete(el, {
+      'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
+      'filter': shared_converse.FILTER_STARTSWITH,
+      'list': [...new Set(shared_converse.roster.map(item => add_contact_Strophe.getDomainFromJid(item.get('jid'))))]
+    });
+  },
+
+  initGroupAutoComplete() {
     if (!core_api.settings.get('autocomplete_add_contact')) {
       return;
     }
@@ -63686,8 +63684,12 @@ const AddContactModal = base.extend({
     return true;
   },
 
-  afterSubmission(form, jid, name) {
-    shared_converse.roster.addAndSubscribe(jid, name);
+  afterSubmission(form, jid, name, group) {
+    if (group && !Array.isArray(group)) {
+      group = [group];
+    }
+
+    shared_converse.roster.addAndSubscribe(jid, name, group);
 
     this.model.clear();
     this.modal.hide();
@@ -63695,8 +63697,8 @@ const AddContactModal = base.extend({
 
   addContactFromForm(ev) {
     ev.preventDefault();
-    const data = new FormData(ev.target),
-          jid = (data.get('jid') || '').trim();
+    const data = new FormData(ev.target);
+    const jid = (data.get('jid') || '').trim();
 
     if (!jid && typeof core_api.settings.get('xhr_user_search_url') === 'string') {
       const input_el = this.el.querySelector('input[name="name"]');
@@ -63706,7 +63708,7 @@ const AddContactModal = base.extend({
     }
 
     if (this.validateSubmission(jid)) {
-      this.afterSubmission(ev.target, jid, data.get('name'));
+      this.afterSubmission(ev.target, jid, data.get('name'), data.get('group'));
     }
   }
 
@@ -63792,6 +63794,36 @@ function shouldShowGroup(group) {
 
   return true;
 }
+function populateContactsMap(contacts_map, contact) {
+  if (contact.get('requesting')) {
+    const name = shared_converse.HEADER_REQUESTING_CONTACTS;
+    contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
+  } else {
+    let contact_groups;
+
+    if (core_api.settings.get('roster_groups')) {
+      contact_groups = contact.get('groups');
+      contact_groups = contact_groups.length === 0 ? [shared_converse.HEADER_UNGROUPED] : contact_groups;
+    } else {
+      if (contact.get('ask') === 'subscribe') {
+        contact_groups = [shared_converse.HEADER_PENDING_CONTACTS];
+      } else {
+        contact_groups = [shared_converse.HEADER_CURRENT_CONTACTS];
+      }
+    }
+
+    for (const name of contact_groups) {
+      contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
+    }
+  }
+
+  if (contact.get('num_unread')) {
+    const name = shared_converse.HEADER_UNREAD;
+    contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
+  }
+
+  return contacts_map;
+}
 ;// CONCATENATED MODULE: ./src/plugins/rosterview/templates/group.js
 
 
@@ -63868,37 +63900,6 @@ function renderContact(contact) {
 
 
 
-
-
-function populateContactsMap(contacts_map, contact) {
-  if (contact.get('ask') === 'subscribe') {
-    const name = shared_converse.HEADER_PENDING_CONTACTS;
-    contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
-  } else if (contact.get('requesting')) {
-    const name = shared_converse.HEADER_REQUESTING_CONTACTS;
-    contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
-  } else {
-    let contact_groups;
-
-    if (core_api.settings.get('roster_groups')) {
-      contact_groups = contact.get('groups');
-      contact_groups = contact_groups.length === 0 ? [shared_converse.HEADER_UNGROUPED] : contact_groups;
-    } else {
-      contact_groups = [shared_converse.HEADER_CURRENT_CONTACTS];
-    }
-
-    for (const name of contact_groups) {
-      contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
-    }
-  }
-
-  if (contact.get('num_unread')) {
-    const name = shared_converse.HEADER_UNREAD;
-    contacts_map[name] ? contacts_map[name].push(contact) : contacts_map[name] = [contact];
-  }
-
-  return contacts_map;
-}
 
 /* harmony default export */ const roster = (el => {
   const i18n_heading_contacts = __('Contacts');
@@ -64010,28 +64011,12 @@ class RosterView extends CustomElement {
 
 }
 core_api.elements.define('converse-roster', RosterView);
-;// CONCATENATED MODULE: ./src/plugins/rosterview/templates/pending_contact.js
-
-
-
-
-const tpl_pending_contact = o => $`<span class="pending-contact-name" title="JID: ${o.jid}">${o.display_name}</span>`;
-
-/* harmony default export */ const pending_contact = (o => {
-  const i18n_remove = __('Click to remove %1$s as a contact', o.display_name);
-
-  return $`
-        ${core_api.settings.get('allow_chat_pending_contacts') ? $`<a class="list-item-link open-chat w-100" href="#" @click=${o.openChat}>${tpl_pending_contact(o)}</a>` : tpl_pending_contact(o)}
-        <a class="list-item-action remove-xmpp-contact far fa-trash-alt" @click=${o.removeContact} title="${i18n_remove}" href="#"></a>`;
-});
 ;// CONCATENATED MODULE: ./src/plugins/rosterview/templates/requesting_contact.js
 
-
-
-const tpl_requesting_contact = o => $`<span class="req-contact-name w-100" title="JID: ${o.jid}">${o.display_name}</span>`;
-
 /* harmony default export */ const requesting_contact = (o => $`
-   ${core_api.settings.get('allow_chat_pending_contacts') ? $`<a class="open-chat w-100" href="#" @click=${o.openChat}>${tpl_requesting_contact(o)}</a>` : tpl_requesting_contact(o)}
+   <a class="open-chat w-100" href="#" @click=${o.openChat}>
+      <span class="req-contact-name w-100" title="JID: ${o.jid}">${o.display_name}</span>
+   </a>
    <a class="accept-xmpp-request list-item-action list-item-action--visible fa fa-check"
       @click=${o.acceptRequest}
       aria-label="${o.desc_accept}" title="${o.desc_accept}" href="#"></a>
@@ -64114,8 +64099,6 @@ const tpl_remove_link = (el, item) => {
 
 
 
-
-const contactview_u = core_converse.env.utils;
 class contactview_RosterContact extends CustomElement {
   static get properties() {
     return {
@@ -64133,30 +64116,7 @@ class contactview_RosterContact extends CustomElement {
   }
 
   render() {
-    const ask = this.model.get('ask');
-    const requesting = this.model.get('requesting');
-    const subscription = this.model.get('subscription');
-    const jid = this.model.get('jid');
-
-    if (ask === 'subscribe' || subscription === 'from') {
-      /* ask === 'subscribe'
-       *      Means we have asked to subscribe to them.
-       *
-       * subscription === 'from'
-       *      They are subscribed to use, but not vice versa.
-       *      We assume that there is a pending subscription
-       *      from us to them (otherwise we're in a state not
-       *      supported by converse.js).
-       *
-       *  So in both cases the user is a "pending" contact.
-       */
-      const display_name = this.model.getDisplayName();
-      return pending_contact(Object.assign(this.model.toJSON(), {
-        display_name,
-        'openChat': ev => this.openChat(ev),
-        'removeContact': ev => this.removeContact(ev)
-      }));
-    } else if (requesting === true) {
+    if (this.model.get('requesting') === true) {
       const display_name = this.model.getDisplayName();
       return requesting_contact(Object.assign(this.model.toJSON(), {
         display_name,
@@ -64164,16 +64124,11 @@ class contactview_RosterContact extends CustomElement {
         'acceptRequest': ev => this.acceptRequest(ev),
         'declineRequest': ev => this.declineRequest(ev),
         'desc_accept': __("Click to accept the contact request from %1$s", display_name),
-        'desc_decline': __("Click to decline the contact request from %1$s", display_name),
-        'allow_chat_pending_contacts': core_api.settings.get('allow_chat_pending_contacts')
+        'desc_decline': __("Click to decline the contact request from %1$s", display_name)
       }));
-    } else if (subscription === 'both' || subscription === 'to' || contactview_u.isSameBareJID(jid, shared_converse.connection.jid)) {
-      return this.renderRosterItem(this.model);
+    } else {
+      return roster_item(this, this.model);
     }
-  }
-
-  renderRosterItem(item) {
-    return roster_item(this, item);
   }
 
   openChat(ev) {
@@ -64183,7 +64138,7 @@ class contactview_RosterContact extends CustomElement {
     this.model.openChat();
   }
 
-  removeContact(ev) {
+  async removeContact(ev) {
     var _ev$preventDefault2;
 
     ev === null || ev === void 0 ? void 0 : (_ev$preventDefault2 = ev.preventDefault) === null || _ev$preventDefault2 === void 0 ? void 0 : _ev$preventDefault2.call(ev);
@@ -64192,9 +64147,8 @@ class contactview_RosterContact extends CustomElement {
       return;
     }
 
-    if (!confirm(__("Are you sure you want to remove this contact?"))) {
-      return;
-    }
+    const result = await core_api.confirm(__("Are you sure you want to remove this contact?"));
+    if (!result) return;
 
     try {
       this.model.removeFromRoster();
@@ -64218,14 +64172,14 @@ class contactview_RosterContact extends CustomElement {
     this.model.authorize().subscribe();
   }
 
-  declineRequest(ev) {
+  async declineRequest(ev) {
     if (ev && ev.preventDefault) {
       ev.preventDefault();
     }
 
-    const result = confirm(__("Are you sure you want to decline this contact request?"));
+    const result = await core_api.confirm(__("Are you sure you want to decline this contact request?"));
 
-    if (result === true) {
+    if (result) {
       this.model.unauthorize().destroy();
     }
 
@@ -64447,7 +64401,6 @@ core_converse.plugins.add('converse-rosterview', {
   initialize() {
     core_api.settings.extend({
       'autocomplete_add_contact': true,
-      'allow_chat_pending_contacts': true,
       'allow_contact_removal': true,
       'hide_offline_users': false,
       'roster_groups': true,
@@ -79133,7 +79086,8 @@ module.exports = webpackAsyncContext;
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
-/******/ 			179: 0
+/******/ 			5040: 0,
+/******/ 			1189: 0
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.j = (chunkId, promises) => {
@@ -79281,7 +79235,7 @@ const converse = {
       __webpack_require__.p = settings.assets_path; // eslint-disable-line no-undef
     }
 
-    __webpack_require__(517);
+    __webpack_require__(8593);
 
     Object.keys(plugins).forEach(name => converse.plugins.add(name, plugins[name]));
     return converse;

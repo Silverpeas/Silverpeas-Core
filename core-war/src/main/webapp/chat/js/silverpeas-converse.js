@@ -313,6 +313,12 @@
         const urlAsDataPromise = sp.base64.urlAsData(chatOptions.userAvatarUrl);
         const refreshUserAvatar = function() {
           return _converse.api.waitUntil('rosterContactsFetched').then(function() {
+            // This method MUST be removed once https://github.com/conversejs/converse.js/issues/2925 is resolved
+            const __updateToolbars = function() {
+              sp.element.querySelectorAll('.chat-toolbar').forEach(function(toolbarView) {
+                toolbarView.requestUpdate();
+              });
+            };
             return _converse.api.vcard.get(chatOptions.jid, true).then(function(vCard) {
               urlAsDataPromise.then(function(data) {
                 const avatarData = data['justData'];
@@ -322,14 +328,18 @@
                   try {
                     _converse.api.vcard.set(chatOptions.jid, vCard).then(function() {
                       sp.log.info('vcard update success');
+                      __updateToolbars();
                     }, function() {
                       sp.log.error('vcard update error', arguments);
+                      __updateToolbars();
                     });
                   } catch (e) {
                     sp.log.error('vcard update error', e);
+                    __updateToolbars();
                   }
                 } else {
                   sp.log.info('vcard is up to date');
+                  __updateToolbars();
                 }
               });
             });
