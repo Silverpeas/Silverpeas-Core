@@ -30803,7 +30803,7 @@ async function handleErrorMessage(stanza) {
 
   const chatbox = await core_api.chatboxes.get(from_jid);
 
-  if (chatbox.get('type') === shared_converse.PRIVATE_CHAT_TYPE) {
+  if (chatbox && chatbox.get('type') === shared_converse.PRIVATE_CHAT_TYPE) {
     chatbox === null || chatbox === void 0 ? void 0 : chatbox.handleErrorMessageStanza(stanza);
   }
 }
@@ -31683,7 +31683,8 @@ const {
        *     If true, fetch all features from the XMPP server instead of restoring them from cache
        * @example _converse.api.disco.entities.create(jid, {'ignore_cache': true});
        */
-      create(jid, options) {
+      create(jid) {
+        let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         options.ignore_cache = true;
         return shared_converse.disco_entities.create({
           'jid': jid
@@ -38589,12 +38590,16 @@ core_converse.plugins.add('converse-mam', {
       }
     });
     core_api.listen.on('enteredNewRoom', muc => muc.features.get('mam_enabled') && fetchNewestMessages(muc));
-    core_api.listen.on('chatReconnected', chat => {
+
+    const __fetchNewestMessages = chat => {
       // XXX: For MUCs, we listen to enteredNewRoom instead
       if (chat.get('type') === shared_converse.PRIVATE_CHAT_TYPE) {
         fetchNewestMessages(chat);
       }
-    });
+    };
+
+    core_api.listen.on('chatReconnected', __fetchNewestMessages);
+    core_api.listen.on('chatBoxInitialized', __fetchNewestMessages);
     core_api.listen.on('afterMessagesFetched', chat => {
       // XXX: We don't want to query MAM every time this is triggered
       // since it's not necessary when the chat is restored from cache.

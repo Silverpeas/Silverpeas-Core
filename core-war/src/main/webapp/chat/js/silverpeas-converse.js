@@ -48,7 +48,7 @@
   function __setupVCard(chatOptions) {
     chatOptions.whitelisted_plugins.push('silverpeas-vcard');
     converse.plugins.add('silverpeas-vcard', {
-      dependencies: ["converse-vcard"],
+      dependencies: ['converse-disco', 'converse-chatboxes', 'converse-muc', 'converse-vcard'],
       initialize : function() {
         const _converse = this._converse;
         const __superGetFn = _converse.api.vcard.get;
