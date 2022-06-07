@@ -894,6 +894,9 @@
 
   $.widget("ui.dialog", $.ui.dialog, {
     open : function() {
+      if (!!$window.opener) {
+        return this._super();
+      }
       const isFS = __displayFullscreenModalBackground && !this._isOpen;
       if (isFS) {
         __adjustPosition(this.options);
@@ -908,6 +911,9 @@
       }
     },
     close : function() {
+      if (!!$window.opener) {
+        return this._super();
+      }
       const isFS = __displayFullscreenModalBackground && this._isOpen;
       if (isFS) {
         __closeFullscreenModalBackground();
@@ -921,6 +927,9 @@
       }
     },
     destroy : function() {
+      if (!!$window.opener) {
+        return this._super();
+      }
       const isFS = __displayFullscreenModalBackground && this._isOpen;
       if (isFS) {
         __closeFullscreenModalBackground();
