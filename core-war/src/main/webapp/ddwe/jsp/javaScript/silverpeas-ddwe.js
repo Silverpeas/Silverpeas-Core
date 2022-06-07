@@ -320,18 +320,38 @@
   }
 
   function __adjustComponentToolbars(editor) {
+    let labelTitleMapping;
     editor.on('component:selected', function(model) {
+      if (!labelTitleMapping) {
+        labelTitleMapping = {};
+        [{a:'arrowUp',c:'fa-arrow-up'},
+          {a:'move',c:'fa-arrows'},
+          {a:'copy',c:'fa-clone'},
+          {a:'delete',c:'fa-trash-o'}].forEach(function(mapping) {
+            labelTitleMapping[model.em.getIcon(mapping.a)] = sp.i18n.get(mapping.c.replace(/[-]/g, '_') + '_Label');
+        });
+      }
       const defaultToolbar = model.get('toolbar');
       defaultToolbar.forEach(function(menu) {
-        const attr = menu.attributes;
-        if (!attr.title && attr['class']) {
-          attr['class'].split(' ').forEach(function(aClass) {
-            const key = aClass.replace(/[-]/g, '_') + '_Label';
-            const label = sp.i18n.get(key);
-            if (label.indexOf(key) < 0) {
-              attr.title = label;
-            }
-          });
+        let attr = menu.attributes;
+        if (!attr) {
+          attr = {
+            'title' : labelTitleMapping[menu.label]
+          };
+          menu.attributes = attr;
+        }
+        if (!attr.title) {
+          if (menu.label) {
+            attr.title = labelTitleMapping[menu.label];
+          } else if (attr['class']) {
+            attr['class'].split(' ').forEach(function(aClass) {
+              const key = aClass.replace(/[-]/g, '_') + '_Label';
+              const label = sp.i18n.get(key);
+              if (label.indexOf(key) < 0) {
+                attr.title = label;
+              }
+            });
+          }
         }
       });
     });
