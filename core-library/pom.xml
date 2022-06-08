@@ -29,7 +29,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>6.4-feature12866</version>
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
@@ -96,6 +96,10 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-exec</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
