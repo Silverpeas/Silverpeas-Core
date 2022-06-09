@@ -25,12 +25,15 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPControl;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.controls.LDAPPagedResultsControl;
+import com.novell.ldap.controls.LDAPPagedResultsResponse;
 import com.novell.ldap.controls.LDAPSortControl;
 import com.novell.ldap.controls.LDAPSortKey;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
@@ -41,13 +44,16 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.SPLIT_BATCH;
 
 /**
@@ -433,42 +439,31 @@ public class LDAPUtility {
 
   static LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
       String varToSort, String[] args) throws AdminException {
-
-    LDAPConnection ld = getConnection(lds);
-    List<LDAPEntry> ldapEntries = new ArrayList<>();
-    LDAPSortKey[] keys = new LDAPSortKey[1];
+    final LDAPConnection ld = getConnection(lds);
+    final List<LDAPEntry> ldapEntries = new ArrayList<>();
     try {
-      LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
-      LDAPSearchConstraints constraints;
-      if (!driverSettings.isSortControlSupported()) {
-        // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
-        constraints = null;
-      } else {
-        keys[0] = new LDAPSortKey(varToSort);
-        // Create a LDAPSortControl object - Fail if cannot sort
-        LDAPSortControl sort = new LDAPSortControl(keys, true);
-        // Set sorted request on server
-        constraints = ld.getSearchConstraints();
-        constraints.setControls(sort);
+      final LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
+      final LDAPSearchConstraints constraints = ld.getSearchConstraints();
+      final List<LDAPControl> ldapControls = new ArrayList<>(2);
+      ldapControls.add(new LDAPPagedResultsControl(constraints.getMaxResults(), false));
+      if (driverSettings.isSortControlSupported()) {
+        ldapControls.add(new LDAPSortControl(new LDAPSortKey(varToSort), false));
       }
-
-      LDAPSearchContext context = new LDAPSearchContext().setVarToSort(varToSort);
-      LDAPSearchQuery query = new LDAPSearchQuery().setScope(scope)
+      constraints.setControls(ldapControls.toArray(new LDAPControl[0]));
+      final LDAPSearchContext context = new LDAPSearchContext().setVarToSort(varToSort);
+      final LDAPSearchQuery query = new LDAPSearchQuery().setScope(scope)
           .setAttrs(args)
           .setConstraints(constraints);
-
-      String[] baseDNs = extractBaseDNs(baseDN);
-      for (String baseDN1 : baseDNs) {
+      final String[] baseDNs = extractBaseDNs(baseDN);
+      for (final String baseDN1 : baseDNs) {
         query.setBaseDN(baseDN1);
         // filter can be changed by search, so use the initial one for each DN
         query.setFilter(filter);
-
         while (query.getFilter() != null) {
           SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
               "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion() +
                   "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter=" +
                   query.getFilter());
-
           internalLdapSearch(ld, query, context, ldapEntries);
         }
       }
@@ -494,10 +489,9 @@ public class LDAPUtility {
   private static void internalLdapSearch(final LDAPConnection ld, final LDAPSearchQuery query,
       final LDAPSearchContext context, final List<LDAPEntry> results) throws LDAPException {
     LDAPEntry entry = null;
+    LDAPSearchResults res = null;
     try {
-      LDAPSearchResults res =
-          ld.search(query.getBaseDN(), query.getScope(), query.getFilter(), query.getAttrs(), false,
-              query.getConstraints());
+      res = ld.search(query.getBaseDN(), query.getScope(), query.getFilter(), query.getAttrs(), false, query.getConstraints());
       while (res.hasMore()) {
         entry = res.next();
         if (context.isNotTheFirst()) {
@@ -531,7 +525,69 @@ public class LDAPUtility {
     } else if (context.isTimeLimitReached() && context.isMaxNbRetryTimeLimitReached()) {
       throw context.getLastException();
     } else {
+      setupNextPagedQuery(query, context, res, results);
+    }
+  }
+
+  /**
+   * If no {@link LDAPPagedResultsResponse} instance exists into response LDAP controls, then a
+   * simple query has been performed.
+   * <p>
+   *   If a such instance exists, then paged result has been attempted on server side. The server
+   *   indicates by {@link LDAPPagedResultsResponse#isCritical()} method if it has succeed.<br/>
+   *   If it has, then the next page is requested if any.<br/>
+   *   Otherwise the LDAP search is performed again without paging control.
+   * </p>
+   * @param query the current query elements.
+   * @param context the current search context.
+   * @param searchResults the LDAP search results.
+   * @param results the extracted LDAP entries.
+   */
+  private static void setupNextPagedQuery(final LDAPSearchQuery query,
+      final LDAPSearchContext context, final LDAPSearchResults searchResults,
+      final List<LDAPEntry> results) {
+    final LDAPSearchConstraints constraints = query.getConstraints();
+    final LDAPPagedResultsResponse pagedResults = ofNullable(searchResults)
+        .map(LDAPSearchResults::getResponseControls)
+        .stream()
+        .flatMap(Arrays::stream)
+        .filter(LDAPPagedResultsResponse.class::isInstance)
+        .map(LDAPPagedResultsResponse.class::cast)
+        .findFirst()
+        .orElse(null);
+    if (pagedResults == null) {
+      // no more result
       query.setFilter(null);
+    } else {
+      // keeping all LDAP controls except the one concerning the paged results
+      List<LDAPControl> ldapControls = Arrays.stream(constraints.getControls())
+          .filter(not(LDAPPagedResultsControl.class::isInstance))
+          .collect(Collectors.toList());
+      if (pagedResults.isCritical()) {
+        // performing again the request without paged result, cleaning all results before
+        final String warn = "Paged result is not handled, retrying without page result control";
+        SilverLogger.getLogger(LDAPUtility.class).warn(warn);
+        SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS, warn);
+        results.clear();
+        // now, LDAPSortControl is critical
+        ldapControls = ldapControls.stream()
+            .map(c -> {
+              if (c instanceof LDAPSortControl) {
+                return new LDAPSortControl(new LDAPSortKey(context.getVarToSort()), true);
+              }
+              return c;
+            })
+            .collect(Collectors.toList());
+      } else {
+        final byte[] cookie = pagedResults.getCookie();
+        if (ArrayUtil.isEmpty(cookie)) {
+          query.setFilter(null);
+        } else {
+          ldapControls.add(
+              new LDAPPagedResultsControl(constraints.getMaxResults(), cookie, false));
+        }
+      }
+      constraints.setControls(ldapControls.toArray(new LDAPControl[0]));
     }
   }
 
