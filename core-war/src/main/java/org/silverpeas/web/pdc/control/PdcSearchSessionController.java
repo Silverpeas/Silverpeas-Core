@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
@@ -70,8 +71,8 @@ import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeExcepti
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
@@ -102,6 +103,7 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -137,7 +139,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final String ALL_DATA_TYPE = "0";
   private static final int DEFAULT_NBRESULTS_PERPAGE = 25;
   private static final String LOCATION_SEPARATOR = ">";
-  private static final int QUOTE_CHAR = (int) '"';
+  private static final int QUOTE_CHAR = '"';
   private static final String USER_PREFIX = "user@";
   private static final String PUBLICATION_RESOURCE = "Publication";
   private static final String VERSIONING_RESOURCE = "Versioning";
@@ -154,10 +156,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private String[] stopWords = null;
   // Container and Content Peas
-  private SearchContext searchContext = null;
+  private final SearchContext searchContext;
   // Current parameters for plain search in PDC
   private QueryParameters queryParameters = null;
-  private List<String> componentList = null;
+  private final ComponentListProvider componentList = new ComponentListProvider();
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
   private List<GlobalSilverResult> globalSR = new ArrayList<>();
@@ -602,7 +604,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  @Nonnull
   private Facet findFacet(final String formName, final String fieldName, final String facetId,
       final Map<String, Facet> fieldFacetsMap) {
     Facet facet = null;
@@ -639,16 +640,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return form.getRecordTemplate().getFieldTemplate(fieldName);
   }
 
-  private String getFieldValue(String formName, String fieldName, String fieldValue) {
+  @SuppressWarnings("unchecked")
+  private <T extends Field> String getFieldValue(String formName, String fieldName, String fieldValue) {
     try {
       FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
-      FieldDisplayer fieldDisplayer =
+      FieldDisplayer<T> fieldDisplayer =
           TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw);
       final PagesContext context = new PagesContext();
       context.setLanguage(getLanguage());
-      Field field = new TextFieldImpl();
+      T field = (T) new TextFieldImpl();
       field.setValue(fieldValue);
       fieldDisplayer.display(out, field, fieldTemplate, context);
       return sw.toString();
@@ -658,16 +660,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return fieldValue;
   }
 
-  private Map<String, String> getFieldValues(String formName, String fieldName, String fieldValue) {
+  @SuppressWarnings("unchecked")
+  private <T extends Field> Map<String, String> getFieldValues(String formName, String fieldName, String fieldValue) {
     Map<String, String> values = new HashMap<>();
     try {
       String[] keys = fieldValue.split(" ");
       FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
-      FieldDisplayer fieldDisplayer =
+      FieldDisplayer<T> fieldDisplayer =
           TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
       final PagesContext context = new PagesContext();
       context.setLanguage(getLanguage());
-      Field field = new TextFieldImpl();
+      T field = (T) new TextFieldImpl();
       for (String key : keys) {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
@@ -1543,14 +1546,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
     final ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().onUser(getUserDetail());
-    if (space != null) {
+    if (isDefined(space)) {
       searchCriteria.onWorkspace(space);
     }
     if (CollectionUtil.isNotEmpty(components)) {
       searchCriteria.onComponentInstances(components);
     }
-    componentList = getOrganisationController().
-        getSearchableComponentsByCriteria(searchCriteria);
+    componentList.setCriteria(searchCriteria);
   }
 
   /**
@@ -2028,17 +2030,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private QueryDescription getQueryDescription(final boolean isOnlyInPdcSearch) {
     QueryDescription query = getQueryParameters().getQueryDescription(getUserId(), "*");
 
-    if (componentList == null) {
-      buildComponentListWhereToSearch(null, (String) null);
-    }
-
-    for (String curComp : componentList) {
-      if (isDataTypeSearch(curComp)) {
-        query.addComponent(curComp);
+    componentList.get().forEach(i -> {
+      if (isDataTypeSearch(i)) {
+        query.addComponent(i);
       }
-    }
+    });
 
-    if (componentList.size() == 1) {
+    if (componentList.get().size() == 1) {
       query.setRequestedFolder(getQueryParameters().getFolder());
     }
 
@@ -2090,7 +2088,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private String getResultURL(GlobalSilverResult result) {
-    String url = "";
+    String url;
     if ("todo".equals(result.getType())) {
       url = URLUtil.getApplicationURL() + URLUtil.getURL(result.getType(), null, null);
     } else {
@@ -2119,10 +2117,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     String limitedToSpace = request.getParameter(XmlSearchForm.EXTRA_FIELD_SPACE);
-    if (StringUtil.isDefined(limitedToSpace)) {
-      getQueryParameters().setSpaceId(limitedToSpace);
-      buildComponentListWhereToSearch(limitedToSpace, null);
-    }
+    getQueryParameters().setSpaceId(limitedToSpace);
+    buildComponentListWhereToSearch(limitedToSpace, null);
 
     PublicationTemplateImpl template;
     String templateFileName = request.getParameter("xmlSearchSelectedForm");
@@ -2171,5 +2167,45 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       pageContext.setBorderPrinted(false);
     }
     return pageContext;
+  }
+
+  /**
+   * The aim of this provider is to avoid performing several times same component search.<br/>
+   * Another advantage of this provider is to retrieve component data only when it is necessary.
+   */
+  private static class ComponentListProvider implements Serializable {
+    private static final long serialVersionUID = -2487146568792525234L;
+
+    private ComponentSearchCriteria criteria = new ComponentSearchCriteria();
+    private final transient MemoizedSupplier<List<String>> list = new MemoizedSupplier<>(
+        () -> OrganizationController.get().getSearchableComponentsByCriteria(criteria));
+
+    private ComponentListProvider() {
+      // no other way to initialize
+    }
+
+    /**
+     * Sets the search criteria.
+     * <p>
+     *   If criteria are same as previous, then previous search is kept.<br/>
+     *   Otherwise, a new component search will be performed when calling {@link #get()} method.
+     * </p>
+     * @param criteria a component search criteria.
+     */
+    public void setCriteria(@Nonnull final ComponentSearchCriteria criteria) {
+      Objects.requireNonNull(criteria);
+      if (!this.criteria.equals(criteria)) {
+        list.clear();
+        this.criteria = criteria;
+      }
+    }
+
+    /**
+     * Gets the component list corresponding to the last criteria set.
+     * @return a list of string representing a component instance identifier.
+     */
+    public List<String> get() {
+      return list.get();
+    }
   }
 }

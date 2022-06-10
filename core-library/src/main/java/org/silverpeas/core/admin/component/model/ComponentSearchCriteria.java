@@ -25,7 +25,13 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Criteria used to search some component instances in Silverpeas. The component instances must be
@@ -33,7 +39,8 @@ import java.util.List;
  *
  * @author mmoquillon
  */
-public class ComponentSearchCriteria {
+public class ComponentSearchCriteria implements Serializable {
+  private static final long serialVersionUID = -8747314498972863730L;
 
   private List<String> componentInstanceIds;
   private String workspaceId;
@@ -45,7 +52,11 @@ public class ComponentSearchCriteria {
   }
 
   public ComponentSearchCriteria onComponentInstances(List<String> instanceIds) {
-    this.componentInstanceIds = instanceIds;
+    this.componentInstanceIds = ofNullable(instanceIds)
+        .stream()
+        .flatMap(Collection::stream)
+        .sorted()
+        .collect(Collectors.toList());
     return this;
   }
 
@@ -76,5 +87,23 @@ public class ComponentSearchCriteria {
 
   public UserDetail getUser() {
     return this.user;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final ComponentSearchCriteria that = (ComponentSearchCriteria) o;
+    return Objects.equals(componentInstanceIds, that.componentInstanceIds) &&
+        Objects.equals(workspaceId, that.workspaceId) && Objects.equals(user, that.user);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(componentInstanceIds, workspaceId, user);
   }
 }
