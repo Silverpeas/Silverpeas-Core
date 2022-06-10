@@ -58,7 +58,7 @@ import javax.ws.rs.core.MediaType;
 @Path(AuthenticationResource.PATH)
 public class AuthenticationResource extends RESTWebService {
 
-  static final String PATH = "authentication";
+  public static final String PATH = "authentication";
 
   @Inject
   private HTTPAuthentication authentication;

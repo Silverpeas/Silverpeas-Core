@@ -61,7 +61,9 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   private static final long serialVersionUID = -5011846708353591604L;
 
   private ServletContext context = ServiceProvider.getService(ServletContext.class);
-  private UserDetail user = null;
+  private UserDetail user;
+  @XmlElement(required = true)
+  private String id;
   @XmlElement(required = true)
   private URI uri;
   @XmlElement
@@ -83,6 +85,28 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   private boolean connected = false;
   @XmlElement(defaultValue = "false")
   private boolean anonymous = false;
+  @XmlElement(required = true)
+  private UserAccessLevel accessLevel;
+  @XmlElement
+  private String domainId;
+  @XmlElement(required = true)
+  private String firstName;
+  @XmlElement(required = true)
+  private String lastName;
+  @XmlElement
+  private String email;
+  @XmlElement
+  private boolean deletedState;
+  @XmlElement
+  private boolean removedState;
+  @XmlElement
+  private boolean deactivatedState;
+  @XmlElement
+  private String specificId;
+  @XmlElement
+  private String login;
+  @XmlElement(defaultValue = "")
+  private String status;
 
   protected UserProfileEntity() {
     user = new UserDetail();
@@ -90,6 +114,18 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   protected UserProfileEntity(UserDetail user) {
     this.user = user;
+    this.id = user.getId();
+    this.specificId = user.getSpecificId();
+    this.accessLevel = user.getAccessLevel();
+    this.domainId =  user.getDomainId();
+    this.firstName = user.getFirstName();
+    this.lastName = user.getLastName();
+    this.email = Encode.forHtml(user.geteMail());
+    this.deletedState = user.isDeletedState();
+    this.deletedState =  user.isRemovedState();
+    this.deactivatedState = user.isDeactivatedState();
+    this.login = user.getLogin();
+    this.status = user.getStatus();
     UserPreferences prefs = getUserPreferences();
     if (prefs != null) {
       this.language = prefs.getLanguage();
@@ -136,57 +172,48 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  @XmlElement(required = true)
   public String getId() {
-    return user.getId();
+    return id;
   }
 
   @Override
-  @XmlElement(required = true)
   public UserAccessLevel getAccessLevel() {
-    return this.user.getAccessLevel();
+    return accessLevel;
   }
 
   @Override
-  @XmlElement
   public String getDomainId() {
-    return this.user.getDomainId();
+    return domainId;
   }
 
   @Override
-  @XmlElement(required = true)
   public String getFirstName() {
-    return this.user.getFirstName();
+    return firstName;
   }
 
   @Override
-  @XmlElement(required = true)
   public String getLastName() {
-    return this.user.getLastName();
+    return lastName;
   }
 
   @Override
-  @XmlElement
   public String geteMail() {
-    return Encode.forHtml(this.user.geteMail());
+    return email;
   }
 
   @Override
-  @XmlElement
   public boolean isDeletedState() {
-    return this.user.isDeletedState();
+    return deletedState;
   }
 
   @Override
-  @XmlElement
   public boolean isRemovedState() {
-    return this.user.isRemovedState();
+    return removedState;
   }
 
   @Override
-  @XmlElement
   public boolean isDeactivatedState() {
-    return this.user.isDeactivatedState();
+    return deactivatedState;
   }
 
   /**
@@ -274,9 +301,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  @XmlElement
   public String getSpecificId() {
-    return this.user.getSpecificId();
+    return specificId;
   }
 
   @Override
@@ -285,9 +311,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  @XmlElement
   public String getLogin() {
-    return this.user.getLogin();
+    return login;
   }
 
   @Override
@@ -296,9 +321,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   @Override
-  @XmlElement(defaultValue = "")
   public String getStatus() {
-    return this.user.getStatus();
+    return status;
   }
 
   public void setStatus(String newStatus) {
