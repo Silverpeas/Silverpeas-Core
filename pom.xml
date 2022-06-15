@@ -30,7 +30,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>silverpeas-project</artifactId>
-    <version>1.5-build220609</version>
+    <version>1.5-build220615</version>
   </parent>
 
   <groupId>org.silverpeas</groupId>
