@@ -67,8 +67,13 @@ public class PasswordPolicyGettingIT extends ResourceGettingTest {
   }
 
   @Test
-  public void getPolicy() {
+  public void getPolicyInJSON() {
     assertEntity(getAt(aResourceURI(), PasswordPolicyEntity.class));
+  }
+
+  @Test
+  public void getPolicyInXML() {
+    assertEntity(getAt(aResourceURI(), MediaType.APPLICATION_XML_TYPE, PasswordPolicyEntity.class));
   }
 
   @Override

@@ -87,7 +87,7 @@ public class PasswordResource extends AbstractPasswordResource {
    */
   @GET
   @Path(PasswordResourceURIs.PASSWORD_POLICY_URI_PART)
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
   public PasswordPolicyEntity getPolicy() {
     try {
       final PasswordPolicyEntity passwordPolicy = PasswordPolicyEntity
