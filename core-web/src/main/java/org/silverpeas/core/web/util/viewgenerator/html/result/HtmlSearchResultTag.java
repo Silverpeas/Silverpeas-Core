@@ -23,10 +23,14 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.result;
 
-
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.publication.model.Location;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
@@ -48,6 +52,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Tag to display result search element (GlobalSilverResult) object. Add extra information from
@@ -383,10 +388,20 @@ public class HtmlSearchResultTag extends TagSupport {
     }
 
     if (StringUtil.isDefined(sLocation)) {
-      result.append("<div class=\"location\">")
-          .append(WebEncodeHelper.javaStringToHtmlString(sLocation)).append("</div>");
+      boolean displayPath = getResources().getSetting("result.displayPath",false);
+      if ("Publication".equals(gsr.getType()) && displayPath)
+      {
+        PublicationPK pubPK = new PublicationPK(gsr.getId(), gsr.getInstanceId());
+        Optional<Location> mainLocation = PublicationService.get().getMainLocation(pubPK);
+        if (!mainLocation.isEmpty()) {
+          NodePK nodePK = new NodePK(mainLocation.get().getId(), mainLocation.get().getInstanceId());
+          sLocation = NodeService.get().getPath(nodePK).format(resources.getLanguage(),true);
+        }
+      }
+      result.append("<div class=\"location\">");
+      result.append(WebEncodeHelper.javaStringToHtmlString(sLocation));
+      result.append("</div>");
     }
-
     result.append("</div>");
 
     result.append("</li>");
