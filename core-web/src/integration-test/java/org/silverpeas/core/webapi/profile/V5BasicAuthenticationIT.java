@@ -24,11 +24,18 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * An integration test to validate the old and deprecated V5 authentication mechanism works with the
- * REST web services.
+ * An integration test to validate the old and deprecated authentication mechanism in Silverpeas V5
+ * works with the REST web services. Currently, 6.2.x (x >= 4) supports in two ways the old Basic
+ * authentication in Silverpeas V5:
+ * <ul>
+ *   <li>the basic authentication string in the correct format as expected by the HTTP
+ *   specification (RFC 7617) in which only the user credentials are encoded in base 64,</li>
+ *   <li>the basic authentication string as expected by Silverpeas V5 in which all the value
+ *   string is encoded in base 64.</li>
+ * </ul>
  */
 @RunWith(Arquillian.class)
-public class V5AuthenticationIT extends RESTWebServiceTest {
+public class V5BasicAuthenticationIT extends RESTWebServiceTest {
 
   private static final String DATA_SET_SCRIPT =
       "/org/silverpeas/core/webapi/profile/create-dataset.sql";
@@ -39,7 +46,7 @@ public class V5AuthenticationIT extends RESTWebServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarForTestClass(V5AuthenticationIT.class)
+    return WarBuilder4WebCore.onWarForTestClass(V5BasicAuthenticationIT.class)
         .addRESTWebServiceEnvironment()
         .addStringTemplateFeatures()
         .testFocusedOn(warBuilder -> {
@@ -59,7 +66,7 @@ public class V5AuthenticationIT extends RESTWebServiceTest {
 
   @Test
   public void authenticateAUserWithGoodCredentialsShouldSucceed() {
-    Response response = authenticate(user.getId(), user.getPassword());
+    Response response = authenticate(false, user.getId(), user.getPassword());
     assertThat(response.getStatusInfo().toEnum(), is(Response.Status.OK));
 
     UserProfileEntity entity = response.readEntity(UserProfileEntity.class);
@@ -69,13 +76,35 @@ public class V5AuthenticationIT extends RESTWebServiceTest {
 
   @Test
   public void authenticateAUserWithInvalidUserIdShouldDontSucceed() {
-    Response response = authenticate("42", user.getPassword());
+    Response response = authenticate(false, "42", user.getPassword());
     assertThat(response.getStatusInfo().toEnum(), is(Response.Status.UNAUTHORIZED));
   }
 
   @Test
   public void authenticateAUserWithInvalidPasswordShouldDontSucceed() {
-    Response response = authenticate(user.getLogin(), "prout");
+    Response response = authenticate(false, user.getLogin(), "prout");
+    assertThat(response.getStatusInfo().toEnum(), is(Response.Status.UNAUTHORIZED));
+  }
+
+  @Test
+  public void fullV5AuthenticationOfAUserWithGoodCredentialsShouldSucceed() {
+    Response response = authenticate(true, user.getId(), user.getPassword());
+    assertThat(response.getStatusInfo().toEnum(), is(Response.Status.OK));
+
+    UserProfileEntity entity = response.readEntity(UserProfileEntity.class);
+    assertThat(entity, notNullValue());
+    assertThat(entity.getId(), is(USER_ID));
+  }
+
+  @Test
+  public void fullV5AuthenticationOfAUserWithInvalidUserIdShouldDontSucceed() {
+    Response response = authenticate(true, "42", user.getPassword());
+    assertThat(response.getStatusInfo().toEnum(), is(Response.Status.UNAUTHORIZED));
+  }
+
+  @Test
+  public void fullV5authenticationOfAUserWithInvalidPasswordShouldDontSucceed() {
+    Response response = authenticate(true, user.getLogin(), "prout");
     assertThat(response.getStatusInfo().toEnum(), is(Response.Status.UNAUTHORIZED));
   }
 
@@ -89,16 +118,23 @@ public class V5AuthenticationIT extends RESTWebServiceTest {
     return DATA_SET_SCRIPT;
   }
 
-  private Response authenticate(final String userId, final String password) {
+  private Response authenticate(boolean fullV5, final String userId, final String password) {
     String thePath = AuthenticationResource.PATH;
     String credentials = userId + ":" + password;
     WebTarget resource = resource();
+    String authValue =
+        fullV5 ? encodesCredentialsAsInV5(credentials) : encodesCredentials(credentials);
     Invocation.Builder resourcePoster = resource.path(thePath).request(MediaType.APPLICATION_JSON);
-    return resourcePoster.header("Authorization", encodesCredentials(credentials)).post(null);
+    return resourcePoster.header("Authorization", authValue).post(null);
   }
 
   private String encodesCredentials(final String credentials) {
-    return "Basic " +
+    return "bAsiC " +
         Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+  }
+
+  private String encodesCredentialsAsInV5(final String credentials) {
+    return Base64.getEncoder()
+        .encodeToString(("BAsIc " + credentials).getBytes(StandardCharsets.UTF_8));
   }
 }

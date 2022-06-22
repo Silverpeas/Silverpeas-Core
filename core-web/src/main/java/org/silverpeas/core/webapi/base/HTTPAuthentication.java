@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
@@ -61,262 +62,290 @@ import static org.silverpeas.core.util.StringUtil.fromBase64;
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.*;
 
 /**
- * An HTTP authentication mechanism for Silverpeas. It implements the authentication mechanism
- * in Silverpeas from an incoming HTTP request. This HTTP request can be as well an explicit
+ * An HTTP authentication mechanism for Silverpeas. It implements the authentication mechanism in
+ * Silverpeas from an incoming HTTP request. This HTTP request can be as well an explicit
  * authentication call as a Silverpeas API consume. The HTTP request is expected either to contain
  * the HTTP header {@code Authorization} valued with the authentication scheme and the user
- * credentials as expected by the IETF RFC 2617 or to target an URI with the query parameter
- * {@code access_token} (see IETF RFC 6750).
+ * credentials as expected by the IETF RFC 2617 or to target an URI with the query parameter {@code
+ * access_token} (see IETF RFC 6750).
  * <p>
- * Actually, Silverpeas supports two HTTP authentication schemes: the {@code Basic} one
- * (covered by the IETF RFC 2617) and the Bearer one (covered by the IETF RFC 6750). The API token
- * of the users must be passed with the {@code Bearer} scheme to access the REST API of
- * Silverpeas.
+ * Actually, Silverpeas supports two HTTP authentication schemes: the {@code Basic} one (covered by
+ * the IETF RFC 2617) and the Bearer one (covered by the IETF RFC 6750). The API token of the users
+ * must be passed with the {@code Bearer} scheme to access the REST API of Silverpeas.
  * </p>
  * <p>
- * The authentication opens a new session when succeeded, otherwise a
- * {@link WebApplicationException} exception is thrown with the status
- * {@link Response.Status#UNAUTHORIZED}.
+ * The authentication opens a new session when succeeded, otherwise a {@link
+ * WebApplicationException} exception is thrown with the status {@link
+ * Response.Status#UNAUTHORIZED}.
  * </p>
- *
  * @author mmoquillon
  */
 @Service
 public class HTTPAuthentication {
 
-    private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic|Bearer) (.*)");
+  private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic|Bearer) (.*)");
 
-    // the first ':' character is the separator according to the RFC 2617 in basic digest
-    // the first term before ':' is made up of the user login followed by the domain identifier prefixed with
-    // '@domain'.
-    // the second term is the user password in plain text
-    private static final Pattern AUTHENTICATION_PATTERN = Pattern.compile("(?i)^[\\s]*([^\\s]+)[\\s]*@domain([0-9]+):(.+)$");
+  // the first ':' character is the separator according to the RFC 2617 in basic digest
+  // the first term before ':' is made up of the user login followed by the domain identifier
+  // prefixed with
+  // '@domain'.
+  // the second term is the user password in plain text
+  private static final Pattern AUTHENTICATION_PATTERN =
+      Pattern.compile("(?i)^[\\s]*([^\\s]+)[\\s]*@domain([0-9]+):(.+)$");
 
-    // the first ':' character is the separator according to the RFC 2617 in basic digest
-    // the first term before ':' is the unique identifier of the user in Silverpeas
-    // the second term is the user password as it is encoded in Silverpeas
-    private static final Pattern V5_AUTHENTICATION_PATTERN = Pattern.compile("(?i)^[\\s]*([\\d]+)[\\s]*:(.+)$");
+  // the first ':' character is the separator according to the RFC 2617 in basic digest
+  // the first term before ':' is the unique identifier of the user in Silverpeas
+  // the second term is the user password as it is encoded in Silverpeas
+  private static final Pattern V5_AUTHENTICATION_PATTERN =
+      Pattern.compile("(?i)^[\\s]*([\\d]+)[\\s]*:(.+)$");
 
-    private static final Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>> schemeHandlers =
-            new EnumMap<>(AuthenticationScheme.class);
+  private static final Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>>
+      schemeHandlers =
+      new EnumMap<>(AuthenticationScheme.class);
 
-    static {
-        schemeHandlers.put(AuthenticationScheme.BASIC, HTTPAuthentication::performBasicAuthentication);
-        schemeHandlers.put(AuthenticationScheme.BEARER, HTTPAuthentication::performTokenBasedAuthentication);
+  static {
+    schemeHandlers.put(AuthenticationScheme.V5_BASIC,
+        HTTPAuthentication::performV5BasicAuthentication);
+    schemeHandlers.put(AuthenticationScheme.BASIC, HTTPAuthentication::performBasicAuthentication);
+    schemeHandlers.put(AuthenticationScheme.BEARER,
+        HTTPAuthentication::performTokenBasedAuthentication);
+  }
+
+  protected HTTPAuthentication() {
+  }
+
+  /**
+   * Authenticates the user behind the incoming HTTP request according to the specified
+   * authentication context.
+   * <p>
+   * The context is defined for the incoming HTTP request and for the HTTP response to send. The
+   * HTTP request contains the elements required to authenticate the user at the source of the
+   * request. The mandatory element is either the {@code Authorization} HTTP header that must be
+   * valued with an authentication scheme and with the credentials of the user or the {@code
+   * access_token} URI query parameter or the {@code access_token} form-encoded body parameter.
+   * </p>
+   * <p>
+   * A {@link WebApplicationException} is thrown with the status {@link
+   * Response.Status#UNAUTHORIZED} in the following case:
+   * </p>
+   * <ul>
+   *   <li>No {@code Authentication} header and no {@code access_token} parameter</li>
+   *   <li>The authentication scheme isn't supported</li>
+   *   <li>the credentials passed in the {@code Authentication} header are invalid</li>
+   *   <li>the user API token passed in the {@code access_token} parameter is invalid</li>
+   *   <li>the user account in Silverpeas isn't valid (blocked, deactivated, ...)</li>
+   * </ul>
+   * <p>
+   * If the authentication process succeeds, then a session is created and returned. For a basic
+   * authentication scheme, the session comes from a session opening in Silverpeas by the
+   * {@link org.silverpeas.core.security.session.SessionManagement} subsystem and its unique
+   * identifier is set in the {@link UserPrivilegeValidation#HTTP_SESSIONKEY} header of the
+   * HTTP response; the session life will span over several HTTP requests and it will be closed
+   * either explicitly or by the default session timeout. For a bearer authentication scheme
+   * and for
+   * an authentication from the {@code access_token} parameter, the
+   * session is just created for the specific incoming request and will expire at the end of it.
+   * </p>
+   * <p>
+   * At the end of the authentication, the context is alimented with the user credentials and with
+   * the authentication scheme that were fetched from the HTTP request. They can then be retrieved
+   * for further operation by the invoker of this method. In the case of an authentication from
+   * the {@code access_token} parameter, the authentication scheme is in the context is set as
+   * a bearer authentication scheme.
+   * </p>
+   * @param context the context of the authentication with the HTTP request and with the HTTP
+   * response.
+   * @return the created session for the request if the authentication succeeds or throws a {@link
+   * WebApplicationException} with as status {@link Response.Status#UNAUTHORIZED}.
+   */
+  public SessionInfo authenticate(final AuthenticationContext context) {
+    try {
+      final Mutable<SessionInfo> session = Mutable.empty();
+      final Optional<AuthenticationScheme> credentialType;
+      final String userCredentials;
+
+      String authorizationValue = context.getHttpServletRequest().getHeader(HTTP_AUTHORIZATION);
+      if (StringUtil.isDefined(authorizationValue)) {
+        final Matcher authorizationMatcher = AUTHORIZATION_PATTERN.matcher(authorizationValue);
+        if (authorizationMatcher.matches() && authorizationMatcher.groupCount() == 2) {
+          credentialType = AuthenticationScheme.from(authorizationMatcher.group(1));
+          userCredentials = authorizationMatcher.group(2);
+        } else {
+          credentialType = Optional.of(AuthenticationScheme.V5_BASIC);
+          userCredentials = fetchUserCredentialsForV5Authentication(authorizationValue);
+        }
+      } else {
+        userCredentials = context.getHttpServletRequest().getParameter(HTTP_ACCESS_TOKEN);
+        credentialType = StringUtil.isDefined(userCredentials) ?
+            Optional.of(AuthenticationScheme.BEARER) :
+            Optional.empty();
+      }
+
+      credentialType.ifPresent(scheme -> {
+        context.setAuthenticationScheme(scheme);
+        context.setUserCredentials(userCredentials);
+        session.set(schemeHandlers.get(scheme).apply(context));
+      });
+      return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
+    } catch (final AuthenticationInternalException ex) {
+      throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
     }
+  }
 
-    protected HTTPAuthentication() {
-    }
+  private static SessionInfo performBasicAuthentication(final AuthenticationContext context) {
+    final String decodedCredentials =
+        new String(fromBase64(context.getUserCredentials()), Charsets.UTF_8).trim();
 
-    /**
-     * Authenticates the user behind the incoming HTTP request according to the specified
-     * authentication context.
-     * <p>
-     * The context is defined for the incoming HTTP request and for the HTTP response to send. The
-     * HTTP request contains the elements required to authenticate the user at the source of the
-     * request. The mandatory element is either the {@code Authorization} HTTP header that must be
-     * valued with an authentication scheme and with the credentials of the user or the
-     * {@code access_token} URI query parameter or the {@code access_token} form-encoded body
-     * parameter.
-     * </p>
-     * <p>
-     * A {@link WebApplicationException} is thrown with the status
-     * {@link Response.Status#UNAUTHORIZED} in the following case:
-     * </p>
-     * <ul>
-     *   <li>No {@code Authentication} header and no {@code access_token} parameter</li>
-     *   <li>The authentication scheme isn't supported</li>
-     *   <li>the credentials passed in the {@code Authentication} header are invalid</li>
-     *   <li>the user API token passed in the {@code access_token} parameter is invalid</li>
-     *   <li>the user account in Silverpeas isn't valid (blocked, deactivated, ...)</li>
-     * </ul>
-     * <p>
-     * If the authentication process succeeds, then a session is created and returned. For a basic
-     * authentication scheme, the session comes from a session opening in Silverpeas by the
-     * {@link org.silverpeas.core.security.session.SessionManagement} subsystem and its unique
-     * identifier is set in the {@link UserPrivilegeValidation#HTTP_SESSIONKEY} header of the
-     * HTTP response; the session life will span over several HTTP requests and it will be closed
-     * either explicitly or by the default session timeout. For a bearer authentication scheme and for
-     * an authentication from the {@code access_token} parameter, the
-     * session is just created for the specific incoming request and will expire at the end of it.
-     * </p>
-     * <p>
-     * At the end of the authentication, the context is alimented with the user credentials and with
-     * the authentication scheme that were fetched from the HTTP request. They can then be retrieved
-     * for further operation by the invoker of this method. In the case of an authentication from
-     * the {@code access_token} parameter, the authentication scheme is in the context is set as
-     * a bearer authentication scheme.
-     * </p>
-     *
-     * @param context the context of the authentication with the HTTP request and with the HTTP
-     *                response.
-     * @return the created session for the request if the authentication succeeds or throws a
-     * {@link WebApplicationException} with as status {@link Response.Status#UNAUTHORIZED}.
-     */
-    public SessionInfo authenticate(final AuthenticationContext context) {
+    // Getting expected parts of credentials
+    final Matcher matcher = AUTHENTICATION_PATTERN.matcher(decodedCredentials);
+    final int credentialPartCount = 3;
+    final int loginPart = 1;
+    final int passwordPart = 3;
+    final int domainIdPart = 2;
+    if (matcher.matches() && matcher.groupCount() == credentialPartCount) {
+      // All expected parts detected, so getting an authentication key
+      AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
+              .withAsPassword(matcher.group(passwordPart))
+              .withAsDomainId(matcher.group(domainIdPart));
+      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
+      String key = authenticator.authenticate(credential);
+      if (!authenticator.isInError(key)) {
         try {
-            final Mutable<SessionInfo> session = Mutable.empty();
-            String authorizationValue = context.getHttpServletRequest().getHeader(HTTP_AUTHORIZATION);
-            if (StringUtil.isDefined(authorizationValue)) {
-                Matcher authorizationMatcher = AUTHORIZATION_PATTERN.matcher(authorizationValue);
-                final int authorizationValuePartCount = 2;
-                final int schemePart = 1;
-                final int credentialsPart = 2;
-                if (!authorizationMatcher.matches() || authorizationMatcher.groupCount() != authorizationValuePartCount) {
-                    throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-                }
-                Optional<AuthenticationScheme> credentialType = AuthenticationScheme.from(authorizationMatcher.group(schemePart));
-                String userCredentials = authorizationMatcher.group(credentialsPart);
-
-                credentialType.ifPresent(scheme -> {
-                    context.setAuthenticationScheme(scheme);
-                    context.setUserCredentials(userCredentials);
-                    session.set(schemeHandlers.get(scheme).apply(context));
-                });
-            } else {
-                authorizationValue = context.getHttpServletRequest().getParameter(HTTP_ACCESS_TOKEN);
-                if (StringUtil.isDefined(authorizationValue)) {
-                    context.setAuthenticationScheme(AuthenticationScheme.BEARER);
-                    context.setUserCredentials(authorizationValue);
-                    session.set(schemeHandlers.get(AuthenticationScheme.BEARER).apply(context));
-                }
-            }
-            return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
-        } catch (final AuthenticationInternalException ex) {
-            throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
+          String userId = Administration.get().getUserIdByAuthenticationKey(key);
+          UserDetail user = UserDetail.getById(userId);
+          return openSession(context, user);
+        } catch (AdminException e) {
+          throw new AuthenticationInternalException(e.getMessage(), e);
         }
+      }
+    } else {
+      context.setUserCredentials(decodedCredentials);
+      return performV5BasicAuthentication(context);
+    }
+    return null;
+  }
+
+  @Deprecated
+  private static SessionInfo performV5BasicAuthentication(final AuthenticationContext context) {
+    final Matcher v5Matcher = V5_AUTHENTICATION_PATTERN.matcher(context.getUserCredentials());
+    final int v5credentialPartCount = 2;
+    final int userIdPart = 1;
+    final int encryptedPasswordPart = 2;
+    if (v5Matcher.matches() && v5Matcher.groupCount() == v5credentialPartCount) {
+      // All expected parts detected, so open a session in Silverpeas
+      SilverLogger.getLogger(HTTPAuthentication.class).warn("V5 basic authentication attempt!!! " +
+          "This authentication is deprecated. This mechanism will be removed in Silverpeas 6.3. " +
+          "Please use the new one in the future");
+      final String userId = v5Matcher.group(userIdPart);
+      final String encryptedPassword = v5Matcher.group(encryptedPasswordPart);
+      UserFull user = OrganizationController.get().getUserFull(userId);
+      if (user != null && user.getPassword().equals(encryptedPassword)) {
+        return openSession(context, user);
+      }
+    }
+    return null;
+  }
+
+  @Deprecated(forRemoval = true)
+  private String fetchUserCredentialsForV5Authentication(final String authValueInBase64) {
+    final byte[] authValueInBytes = Base64.getDecoder().decode(authValueInBase64);
+    final String authValue = new String(authValueInBytes, Charsets.UTF_8);
+    final Matcher authorizationMatcher = AUTHORIZATION_PATTERN.matcher(authValue);
+    if (!authorizationMatcher.matches() || authorizationMatcher.groupCount() != 2) {
+      throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+    }
+    return authorizationMatcher.group(2);
+  }
+
+  private static SessionInfo openSession(final AuthenticationContext context,
+      final UserDetail user) {
+    verifyUserCanLogin(user);
+    final SessionInfo session;
+    if (!UserDetail.isAnonymousUser(user.getId())) {
+      session = getSessionManagement().openSession(user, context.getHttpServletRequest());
+      context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+      context.getHttpServletResponse()
+          .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
+      SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
+      tokenService.setUpSessionTokens(session);
+      Token token = tokenService.getSessionToken(session);
+      context.getHttpServletResponse()
+          .addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
+    } else {
+      session = getSessionManagement().openAnonymousSession(context.getHttpServletRequest());
+    }
+    return session;
+  }
+
+
+  private static SessionInfo performTokenBasedAuthentication(final AuthenticationContext context) {
+    final String token = context.getUserCredentials();
+    final PersistentResourceToken userToken = PersistentResourceToken.getToken(token);
+    final UserReference userRef = userToken.getResource(UserReference.class);
+    if (userRef != null) {
+      final UserDetail user = userRef.getEntity();
+      verifyUserCanLogin(user);
+      final SessionInfo session =
+          getSessionManagement().openSession(user, context.getHttpServletRequest());
+      context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+      return session;
+    }
+    return null;
+  }
+
+  private static void verifyUserCanLogin(final UserDetail user) {
+    if (user != null) {
+      try {
+        AuthenticationUserVerifierFactory.getUserCanLoginVerifier(user).verify();
+      } catch (AuthenticationException e) {
+        SilverLogger.getLogger(HTTPAuthentication.class).error(e);
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+    }
+  }
+
+  public static class AuthenticationContext {
+    private String credentials;
+    private AuthenticationScheme scheme;
+    private final HttpServletResponse response;
+    private final HttpServletRequest request;
+
+    public AuthenticationContext(final HttpServletRequest request,
+        final HttpServletResponse response) {
+      this.request = request;
+      this.response = response;
     }
 
-    private static SessionInfo performBasicAuthentication(final AuthenticationContext context) {
-        final String decodedCredentials = new String(fromBase64(context.getUserCredentials()), Charsets.UTF_8).trim();
-
-        // Getting expected parts of credentials
-        Matcher matcher = AUTHENTICATION_PATTERN.matcher(decodedCredentials);
-        final int credentialPartCount = 3;
-        final int loginPart = 1;
-        final int passwordPart = 3;
-        final int domainIdPart = 2;
-        if (matcher.matches() && matcher.groupCount() == credentialPartCount) {
-            // All expected parts detected, so getting an authentication key
-            AuthenticationCredential credential =
-                    AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
-                            .withAsPassword(matcher.group(passwordPart))
-                            .withAsDomainId(matcher.group(domainIdPart));
-            AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-            String key = authenticator.authenticate(credential);
-            if (!authenticator.isInError(key)) {
-                try {
-                    String userId = Administration.get().getUserIdByAuthenticationKey(key);
-                    UserDetail user = UserDetail.getById(userId);
-                    return openSession(context, user);
-                } catch (AdminException e) {
-                    throw new AuthenticationInternalException(e.getMessage(), e);
-                }
-            }
-        } else {
-            Matcher v5Matcher = V5_AUTHENTICATION_PATTERN.matcher(decodedCredentials);
-            final int v5credentialPartCount = 2;
-            final int userIdPart = 1;
-            final int encryptedPasswordPart = 2;
-            if (v5Matcher.matches() && v5Matcher.groupCount() == v5credentialPartCount) {
-                // All expected parts detected, so open a session in Silverpeas
-                SilverLogger.getLogger(HTTPAuthentication.class).warn("V5 authentication attempt!!! " +
-                        "This authentication is deprecated. This mechanism will be removed in Silverpeas 6.3. " +
-                        "Please use the new one instead in the future");
-                final String userId = v5Matcher.group(userIdPart);
-                final String encryptedPassword = v5Matcher.group(encryptedPasswordPart);
-                UserFull user = OrganizationController.get().getUserFull(userId);
-                if (user != null && user.getPassword().equals(encryptedPassword)) {
-                    return openSession(context, user);
-                }
-            }
-        }
-        return null;
+    public String getUserCredentials() {
+      return credentials;
     }
 
-    private static SessionInfo openSession(final AuthenticationContext context, final UserDetail user) {
-        verifyUserCanLogin(user);
-        final SessionInfo session;
-        if (!UserDetail.isAnonymousUser(user.getId())) {
-            session = getSessionManagement().openSession(user, context.getHttpServletRequest());
-            context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
-            context.getHttpServletResponse().addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
-            SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
-            tokenService.setUpSessionTokens(session);
-            Token token = tokenService.getSessionToken(session);
-            context.getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
-        } else {
-            session = getSessionManagement().openAnonymousSession(context.getHttpServletRequest());
-        }
-        return session;
+    public void setUserCredentials(final String credentials) {
+      this.credentials = credentials;
     }
 
-
-    private static SessionInfo performTokenBasedAuthentication(final AuthenticationContext context) {
-        final String token = context.getUserCredentials();
-        final PersistentResourceToken userToken = PersistentResourceToken.getToken(token);
-        final UserReference userRef = userToken.getResource(UserReference.class);
-        if (userRef != null) {
-            final UserDetail user = userRef.getEntity();
-            verifyUserCanLogin(user);
-            final SessionInfo session = getSessionManagement().openSession(user, context.getHttpServletRequest());
-            context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
-            return session;
-        }
-        return null;
+    public AuthenticationScheme getAuthenticationScheme() {
+      return this.scheme;
     }
 
-    private static void verifyUserCanLogin(final UserDetail user) {
-        if (user != null) {
-            try {
-                AuthenticationUserVerifierFactory.getUserCanLoginVerifier(user).verify();
-            } catch (AuthenticationException e) {
-                SilverLogger.getLogger(HTTPAuthentication.class).error(e);
-                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-            }
-        }
+    public void setAuthenticationScheme(final AuthenticationScheme scheme) {
+      this.scheme = scheme;
     }
 
-    public static class AuthenticationContext {
-        private String credentials;
-        private AuthenticationScheme scheme;
-        private final HttpServletResponse response;
-        private final HttpServletRequest request;
-
-        public AuthenticationContext(final HttpServletRequest request, final HttpServletResponse response) {
-            this.request = request;
-            this.response = response;
-        }
-
-        public String getUserCredentials() {
-            return credentials;
-        }
-
-        public void setUserCredentials(final String credentials) {
-            this.credentials = credentials;
-        }
-
-        public AuthenticationScheme getAuthenticationScheme() {
-            return this.scheme;
-        }
-
-        public void setAuthenticationScheme(final AuthenticationScheme scheme) {
-            this.scheme = scheme;
-        }
-
-        public HttpServletResponse getHttpServletResponse() {
-            return this.response;
-        }
-
-        public HttpServletRequest getHttpServletRequest() {
-            return this.request;
-        }
+    public HttpServletResponse getHttpServletResponse() {
+      return this.response;
     }
 
-    private static class AuthenticationInternalException extends SilverpeasRuntimeException {
-
-        public AuthenticationInternalException(final String message, final Throwable cause) {
-            super(message, cause);
-        }
+    public HttpServletRequest getHttpServletRequest() {
+      return this.request;
     }
+  }
+
+  private static class AuthenticationInternalException extends SilverpeasRuntimeException {
+
+    public AuthenticationInternalException(final String message, final Throwable cause) {
+      super(message, cause);
+    }
+  }
 }

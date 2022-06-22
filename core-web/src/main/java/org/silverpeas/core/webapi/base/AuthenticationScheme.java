@@ -34,6 +34,16 @@ import java.util.Optional;
 public enum AuthenticationScheme {
 
   /**
+   * The basic authentication as processed in Silverpeas V5. It expects all the authentication
+   * string to be encoded in base 64 along with the <code>Basic</code> keyword which identifies the
+   * authentication method. In this old and deprecated authentication, the user login is the
+   * unique identifier of the user in Silverpeas and the password is his encrypted password in
+   * Silverpeas.
+   */
+  @Deprecated(forRemoval = true)
+  V5_BASIC,
+
+  /**
    * The basic authentication expects the user credentials to be passed in a base 64 encoded string.
    * This string must contain both the user identifier and its password separated by a single colon
    * character. It is the default HTTP authentication scheme.
@@ -41,22 +51,21 @@ public enum AuthenticationScheme {
   BASIC,
 
   /**
-   * The Bearer authentication scheme was defined first for the OAuth authentication mechanism
-   * (IETF RFC 6750) and it is now used by any other token-based authentication or authorization
+   * The Bearer authentication scheme was defined first for the OAuth authentication mechanism (IETF
+   * RFC 6750) and it is now used by any other token-based authentication or authorization
    * mechanisms like the JSON Web Token (JWT, IETF RFC 7797).
    * <p>
-   * In this scheme, the token must be a string that must satisfy the following grammar:
-   * ( ALPHA | DIGIT | "-" | "." | "_" | "~" | "+" | "/" )+ "="*
+   * In this scheme, the token must be a string that must satisfy the following grammar: ( ALPHA |
+   * DIGIT | "-" | "." | "_" | "~" | "+" | "/" )+ "="*
    */
   BEARER;
 
   /**
-   * Gets an {@link AuthenticationScheme} from the specified keyword identifying a particular
-   * HTTP authentication scheme.
+   * Gets an {@link AuthenticationScheme} from the specified keyword identifying a particular HTTP
+   * authentication scheme.
    * @param scheme a string containing an HTTP Authentication scheme.
-   * @return an optional {@link AuthenticationScheme} instance matching the specified scheme. If
-   * the given scheme isn't supported by Silverpeas, then nothing is returned (the optional is
-   * empty).
+   * @return an optional {@link AuthenticationScheme} instance matching the specified scheme. If the
+   * given scheme isn't supported by Silverpeas, then nothing is returned (the optional is empty).
    */
   public static Optional<AuthenticationScheme> from(final String scheme) {
     try {
