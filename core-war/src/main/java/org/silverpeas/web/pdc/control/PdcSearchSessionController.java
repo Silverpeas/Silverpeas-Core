@@ -25,6 +25,7 @@ package org.silverpeas.web.pdc.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.component.model.ComponentBehavior;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -45,6 +46,7 @@ import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -53,6 +55,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.SearchResult;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.interests.model.Interests;
@@ -119,6 +122,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = 308264856139476541L;
 
   public static final String SORT_ORDER_ASC = "ASC";
   public static final String SORT_ORDER_DESC = "DESC";
@@ -142,6 +146,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static final int QUOTE_CHAR = '"';
   private static final String USER_PREFIX = "user@";
   private static final String PUBLICATION_RESOURCE = "Publication";
+  private static final String COMMENT_PREFIX = "Comment";
   private static final String VERSIONING_RESOURCE = "Versioning";
   private static final String NODE_RESOURCE = "Node";
   private static final String FILE_RESOURCE = "File";
@@ -1062,6 +1067,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         place = getSpaceLocation(result.getId());
       } else if (COMPONENTS_INDEX.equals(componentId)) {
         place = getLocation(result.getId());
+      } else if (Stream.of(result.getType()).anyMatch(t ->
+          PUBLICATION_RESOURCE.equals(t) ||
+          NODE_RESOURCE.equals(t) ||
+          t.startsWith(COMMENT_PREFIX))) {
+        place = getTopicTrackerResourceLocation(result.getId(), componentId, result.getType());
       } else {
         place = getLocation(componentId);
       }
@@ -1147,6 +1157,33 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return getComponentInstance(instanceId)
         .map(i -> getSpaceLocation(i.getSpaceId()) + " " + LOCATION_SEPARATOR + " " + i.getLabel(getLanguage()))
         .orElseGet(() -> getComponentInstanceLabel(instanceId).orElse(StringUtil.EMPTY));
+  }
+
+  /**
+   * Get the location of a resource of a topic tracker component by taking into account
+   * "result .displayPath" global parameter.
+   * <p>
+   * If the parameter is true, then the absolute path of the resource is computed if it is
+   * hosted by a component instance which {@link ComponentBehavior#TOPIC_TRACKER} is specified
+   * into component XML descriptor.
+   * </p>
+   * @param id identifier of the publication.
+   * @param componentId identifier of the component instance which is hosting the resource.
+   * @param resultType the type of the search result.
+   * @return the path (or full path) of the publication.
+   */
+  private String getTopicTrackerResourceLocation(final String id, final String componentId,
+      final String resultType) {
+    return Optional.of(getSettings().getBoolean("result.displayPath", false))
+        .filter(Boolean.TRUE::equals)
+        .flatMap(b -> {
+          final PdcSearchTopicTrackerResourcePathLoader loader = PdcSearchTopicTrackerResourcePathLoader.get();
+          if (NODE_RESOURCE.equals(resultType)) {
+            return loader.getTopicFullPath(new NodePK(id, componentId), getLanguage());
+          }
+          return loader.getPublicationFullPath(new PublicationPK(id, componentId), getLanguage());
+        })
+        .orElseGet(() -> getLocation(componentId));
   }
 
   private String getSpaceLocation(String id) {
