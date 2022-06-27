@@ -84,13 +84,13 @@ public class BasketSelectionUI {
   }
 
   /**
-   * Permits to handle the display of the shortcut to put fastly elements into basket selection.
+   * Allows to handle the display of the shortcut to put quickly elements into basket selection.
    * <p>
    * This condition is computed one time only per session, at first method access.
    * </p>
    * @return true if it can be displayed, false otherwise.
    */
-  private static boolean displayPutIntoBasketSelectionShortcut() {
+  public static boolean displayPutIntoBasketSelectionShortcut() {
     final SimpleCache cache = CacheServiceProvider.getSessionCacheService().getCache();
     final String key = "displayPutIntoBasketSelectionShortcut@" + User.getCurrentUser().getId();
     return cache.computeIfAbsent(key, Boolean.class,
