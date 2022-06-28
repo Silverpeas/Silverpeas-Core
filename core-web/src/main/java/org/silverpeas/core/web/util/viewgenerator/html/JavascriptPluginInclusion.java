@@ -66,6 +66,7 @@ import static org.silverpeas.core.notification.user.UserNotificationServerEvent.
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.*;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer.bundleVariableName;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer.settingVariableName;
@@ -706,6 +707,8 @@ public class JavascriptPluginInclusion {
 
     xhtml.addElement(scriptContent(settingVariableName("CalendarSettings")
         .add("c.c", stream(calendarSettings.getString("calendar.ui.colors").split(",")), true)
+        .add("c.v.l.d.l", calendarSettings.getString("calendar.views.list.dayHeader.format.left", EMPTY))
+        .add("c.v.l.d.r", calendarSettings.getString("calendar.views.list.dayHeader.format.right", EMPTY))
         .add("c.v.d.e", calendarSettings.getBoolean("calendar.views.day.endHour", true))
         .add("c.v.w.e", calendarSettings.getBoolean("calendar.views.week.endHour", true))
         .add("c.v.m.e", calendarSettings.getBoolean("calendar.views.month.endHour", true))

@@ -714,16 +714,21 @@
       slotLabelFormat : 'HH:mm',
       weekNumbers : true,
       weekNumberTitle : $window.CalendarBundle.get("c.w").substring(0, 1),
-      listDayFormat : 'LL',
+      listDayFormat : $window.CalendarSettings.get('c.v.l.d.l'),
+      listDayAltFormat : $window.CalendarSettings.get('c.v.l.d.r'),
       noEventsMessage : $window.CalendarBundle.get("c.e.n"),
       views : {
         year : {
           displayEventEnd : $window.CalendarSettings.get('c.v.y.e')
-        }, month : {
+        },
+        month : {
           displayEventEnd : $window.CalendarSettings.get('c.v.m.e')
-        }, week : {
-          columnFormat : 'ddd DD', displayEventEnd : $window.CalendarSettings.get('c.v.w.e')
-        }, day : {
+        },
+        week : {
+          columnFormat : 'ddd DD',
+          displayEventEnd : $window.CalendarSettings.get('c.v.w.e')
+        },
+        day : {
           displayEventEnd : $window.CalendarSettings.get('c.v.d.e')
         }
       },
