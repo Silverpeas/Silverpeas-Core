@@ -39,8 +39,8 @@
 <%@ page import="java.util.List"%>
 
 <%
-  MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-      MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  MainSessionController m_MainSessionCtrl = session != null ? (MainSessionController) session.getAttribute(
+      MainSessionController.MAIN_SESSION_CONTROLLER_ATT) : null;
   OrganizationController organizationCtrl = null;
   GraphicElementFactory gef = null;
   String language = null;

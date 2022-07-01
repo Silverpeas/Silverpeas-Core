@@ -67,6 +67,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.time.OffsetDateTime.now;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
@@ -1234,6 +1235,9 @@ public class PublicationDAO extends AbstractDAO {
   public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
+    if (options.isEmpty()) {
+      return emptyList();
+    }
     final PaginationCriterion pagination = new PaginationCriterion(1, 500).setOriginalSizeRequired(false);
     final Map<String, List<Boolean>> statusMapping = new HashMap<>(pagination.getItemCount());
     final List<String> pubIds = JdbcSqlQuery
