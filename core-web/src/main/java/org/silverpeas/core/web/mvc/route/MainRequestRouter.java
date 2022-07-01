@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -55,17 +56,21 @@ public class MainRequestRouter extends HttpServlet {
     if (webContext.charAt(webContext.length() - 1) == '/') {
       webContext = webContext.substring(0, webContext.length() - 1);
     }
+    final String fullAppContext = absolutePrefix + webContext;
 
     // Get the favorite frameset to the current user
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-
-    if (gef.getLookFrame().startsWith("/")) {
-      response.sendRedirect(response.encodeRedirectURL(absolutePrefix + webContext
-          + gef.getLookFrame()));
+    if (session != null) {
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      final String lookFrame = gef.getLookFrame();
+      if (lookFrame.startsWith("/")) {
+        response.sendRedirect(response.encodeRedirectURL(fullAppContext + lookFrame));
+      } else {
+        response.sendRedirect(response.encodeRedirectURL(fullAppContext+ "/admin/jsp/" + lookFrame));
+      }
     } else {
-      response.sendRedirect(response.encodeRedirectURL(absolutePrefix + webContext + "/admin/jsp/"
-          + gef.getLookFrame()));
+      SilverLogger.getLogger(this).warn("It seems that it is not possible to create an HTTP session. Please verify SSL certificates...");
+      response.sendRedirect(response.encodeRedirectURL(fullAppContext + "/admin/jsp/silverpeas-main.jsp"));
     }
   }
 

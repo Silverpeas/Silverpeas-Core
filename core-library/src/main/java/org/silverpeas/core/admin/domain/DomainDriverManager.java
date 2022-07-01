@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -253,31 +254,37 @@ public class DomainDriverManager extends AbstractDomainDriver {
       fetchingDomainUsersTime = currentTimeMillis() - tmpStart;
       nbDomainUsersFetched = domainUsersBySpecificId.size();
       tmpStart = currentTimeMillis();
-      final List<T> users = silverpeasUsers.stream().map(u -> {
-        final T user = domainUsersBySpecificId.get(format("%s@%s", u.getSpecificId(), u.getDomainId()));
-        // Fill silverpeas info of user details
-        user.setLogin(u.getLogin());
-        user.setId(u.getId());
-        user.setSpecificId(u.getSpecificId());
-        user.setDomainId(u.getDomainId());
-        user.setAccessLevel(u.getAccessLevel());
-        user.setCreationDate(u.getCreationDate());
-        user.setSaveDate(u.getSaveDate());
-        user.setVersion(u.getVersion());
-        user.setTosAcceptanceDate(u.getTosAcceptanceDate());
-        user.setLastLoginDate(u.getLastLoginDate());
-        user.setNbSuccessfulLoginAttempts(u.getNbSuccessfulLoginAttempts());
-        user.setLastLoginCredentialUpdateDate(u.getLastLoginCredentialUpdateDate());
-        user.setExpirationDate(u.getExpirationDate());
-        user.setState(u.getState());
-        user.setStateSaveDate(u.getStateSaveDate());
-        user.setNotifManualReceiverLimit(u.getNotifManualReceiverLimit());
-        if (isUserFull) {
-          user.setLoginQuestion(u.getLoginQuestion());
-          user.setLoginAnswer(u.getLoginAnswer());
-        }
-        return user;
-      }).collect(toList());
+      final List<T> users = silverpeasUsers.stream()
+          .map(u -> {
+            final T user = domainUsersBySpecificId.get(format("%s@%s", u.getSpecificId(), u.getDomainId()));
+            if (user == null) {
+              return null;
+            }
+            // Fill silverpeas info of user details
+            user.setLogin(u.getLogin());
+            user.setId(u.getId());
+            user.setSpecificId(u.getSpecificId());
+            user.setDomainId(u.getDomainId());
+            user.setAccessLevel(u.getAccessLevel());
+            user.setCreationDate(u.getCreationDate());
+            user.setSaveDate(u.getSaveDate());
+            user.setVersion(u.getVersion());
+            user.setTosAcceptanceDate(u.getTosAcceptanceDate());
+            user.setLastLoginDate(u.getLastLoginDate());
+            user.setNbSuccessfulLoginAttempts(u.getNbSuccessfulLoginAttempts());
+            user.setLastLoginCredentialUpdateDate(u.getLastLoginCredentialUpdateDate());
+            user.setExpirationDate(u.getExpirationDate());
+            user.setState(u.getState());
+            user.setStateSaveDate(u.getStateSaveDate());
+            user.setNotifManualReceiverLimit(u.getNotifManualReceiverLimit());
+            if (isUserFull) {
+              user.setLoginQuestion(u.getLoginQuestion());
+              user.setLoginAnswer(u.getLoginAnswer());
+            }
+            return user;
+          })
+          .filter(Objects::nonNull)
+          .collect(toList());
       applyingSpDataToDomainUsersTime = currentTimeMillis() - tmpStart;
       return users;
     } catch (SQLException e) {

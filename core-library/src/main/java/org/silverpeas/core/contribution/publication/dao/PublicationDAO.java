@@ -63,6 +63,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO.PUBLICATION_FATHER_TABLE_NAME;
 import static org.silverpeas.core.util.DateUtil.formatDate;
@@ -1339,6 +1340,9 @@ public class PublicationDAO {
   public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
+    if (options.isEmpty()) {
+      return emptyList();
+    }
     final PaginationCriterion pagination = new PaginationCriterion(1, 500).setOriginalSizeRequired(false);
     final Map<String, List<Boolean>> statusMapping = new HashMap<>(pagination.getItemCount());
     final List<String> pubIds = JdbcSqlQuery
