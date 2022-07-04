@@ -620,7 +620,7 @@
     }
 
     return $this.each(function() {
-      var $_this = $(this);
+      const $_this = $(this);
       if (!options.title) {
         options.title = $_this.attr('title');
       }
@@ -642,15 +642,15 @@
 
       // Buttons
       if (options.buttonDisplayed) {
-        var buttons = [];
+        const buttons = [];
         if (options.buttonTextYes) {
           buttons.push({
             text: options.buttonTextYes,
             click: function() {
-              var whenIsOk;
+              let whenIsOk;
               if (options.callback) {
                 // A callback must be processed before closing the dialog
-                var result = options.callback.call($_this);
+                const result = options.callback.call($_this);
                 if (sp.promise.isOne(result)) {
                   // The result of the callback is a promise, the dialog is closed after resolve
                   whenIsOk = result;
@@ -708,16 +708,16 @@
       }
 
       // Width
-      var width = "" + options.width;
-      var maxWidth = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
+      const width = "" + options.width;
+      const maxWidth = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
       if (options.isMaxWidth) {
         $_this.dialog("option", "width", "auto");
       } else {
         $_this.dialog("option", "width", width);
       }
-      var __openPopup = function() {
+      const __showPopup = function() {
         // Dialog opening
-        var $dialog = $_this.dialog('open');
+        const $dialog = $_this.dialog('open');
 
         // Since JQuery upgrade (jquery-1.10.1.min.js), HTML code in title is escaped.
         // The below code surrounds this problem.
@@ -736,22 +736,24 @@
 
         // Min Width
         if (options.minWidth) {
-          var _minWidth = "" + options.minWidth;
+          let _minWidth = "" + options.minWidth;
           _minWidth = (_minWidth !== 'auto') ? _minWidth.replace(/px/, '') + 'px' : _minWidth;
           $_this.dialog("widget").css('min-width', _minWidth);
+          $_this.dialog({position : $_this.dialog('option', 'position')});
         }
 
         // Max Width
         if (options.maxWidth) {
-          var _maxWidth = "" + options.maxWidth;
+          let _maxWidth = "" + options.maxWidth;
           _maxWidth = (_maxWidth !== 'auto') ? _maxWidth.replace(/px/, '') + 'px' : _maxWidth;
           $_this.dialog("widget").css('max-width', _maxWidth);
+          $_this.dialog({position : $_this.dialog('option', 'position')});
         }
       };
       if (sp.promise.isOne(options.openPromise)) {
-        options.openPromise.then(__openPopup);
+        options.openPromise.then(__showPopup);
       } else {
-        __openPopup();
+        __showPopup();
       }
     });
   }
