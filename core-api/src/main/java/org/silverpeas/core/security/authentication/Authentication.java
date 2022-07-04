@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.security.authentication;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -85,16 +86,28 @@ public interface Authentication {
   /**
    * Gets an authentication token for a given user from its specified login and from the domain to
    * which he belongs. This method doesn't perform any authentication, but it only set a new
-   * authentication token for the given user. This method can be used, for example, to let a user
-   * who has forgotten its password of setting a new one without having to be authenticated.
+   * authentication token for the given user. This method can be used, for example, to allow a user
+   * who has forgotten its password to set a new one without having to be authenticated.
    * <p>
-   * To use with caution as this can be security flaw to use this method to bypass any
+   * To use with caution as this can be a security flaw to use this method to bypass any
    * authentication process. It is only for administrative tasks or inner technical tasks requiring
    * an authentication token for them to be completed.
    * </p>
-   * @param credential the credential of the user required to identify his account in Silverpeas.
-   * At least his login and his domain identifier has to be set.
+   * @param credential the credential of the user required to identify his account in Silverpeas. At
+   * least his login and his domain identifier has to be set.
    * @return an authentication key.
    */
-  String getAuthToken(final AuthenticationCredential credential) throws AuthenticationException;
+  String getAuthToken(final AuthenticationCredential credential);
+
+  /**
+   * Gets the user that was previously authenticated and that is identified by the specified
+   * authentication token. The token should be provided by either the authentication process (see
+   * {@link Authentication#authenticate(AuthenticationCredential)}) or simply by a new authentication
+   * token generation (see {@link Authentication#getAuthToken(AuthenticationCredential)})
+   * @param authToken an authentication token provided by the authentication system.
+   * @return the user in Silverpeas identified by the given token.
+   * @throws AuthenticationException if no such token exists or if there is an error while getting
+   * the corresponding user.
+   */
+  User getUserByAuthToken(final String authToken) throws AuthenticationException;
 }

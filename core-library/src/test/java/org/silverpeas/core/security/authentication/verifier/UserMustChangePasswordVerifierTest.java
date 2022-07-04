@@ -25,14 +25,11 @@ package org.silverpeas.core.security.authentication.verifier;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-
-
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.util.Date;
@@ -147,6 +144,7 @@ class UserMustChangePasswordVerifierTest {
     return verifier;
   }
 
+  @SuppressWarnings("SameParameterValue")
   private UserDetail createUser(int withXSuccessfulConnections) {
     UserDetail user = new UserDetail();
     user.setId("0");

@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 
+import javax.annotation.Nonnull;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -74,6 +75,11 @@ public class MyUser implements User {
   @Override
   public boolean isDomainAdminRestricted() {
     return false;
+  }
+
+  @Override
+  public String getToken() {
+    return null;
   }
 
   @Override
@@ -257,7 +263,7 @@ public class MyUser implements User {
   }
 
   @Override
-  public int compareTo(final User o) {
+  public int compareTo(@Nonnull final User o) {
     return 0;
   }
 }

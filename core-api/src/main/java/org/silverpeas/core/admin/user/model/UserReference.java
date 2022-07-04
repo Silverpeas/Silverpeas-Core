@@ -21,19 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.user;
+package org.silverpeas.core.admin.user.model;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.EntityReference;
 
 /**
  * A reference to a given user in Silverpeas, such user being represented by a
- * <code>UserDetail</code> instance.
+ * {@link User} instance.
  *
  * @author mmoquillon
  */
-public class UserReference extends EntityReference<UserDetail> {
+public class UserReference extends EntityReference<User> {
 
   public static UserReference fromUser(final User user) {
     return new UserReference(user.getId());
@@ -44,8 +42,8 @@ public class UserReference extends EntityReference<UserDetail> {
   }
 
   @Override
-  public UserDetail getEntity() {
-    return UserDetail.getById(getId());
+  public User getEntity() {
+    return User.getById(getId());
   }
 
 }

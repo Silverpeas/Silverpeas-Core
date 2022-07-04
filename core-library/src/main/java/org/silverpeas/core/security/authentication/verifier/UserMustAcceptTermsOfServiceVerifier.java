@@ -121,8 +121,9 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
       acceptanceFrequency = globalAcceptanceFrequency;
     }
 
+    UserDetail user = (UserDetail) getUser();
     return acceptanceFrequency.isActivated() && acceptanceFrequency
-        .isAcceptanceDateExpired(getUser().getTosAcceptanceDate());
+        .isAcceptanceDateExpired(user.getTosAcceptanceDate());
   }
 
   /**

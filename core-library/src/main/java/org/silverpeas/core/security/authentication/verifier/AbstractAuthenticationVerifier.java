@@ -50,13 +50,13 @@ class AbstractAuthenticationVerifier {
   private static final String CACHE_KEY_PREFIX =
       AbstractAuthenticationVerifier.class.getSimpleName() + "_userByLoginDomain_";
 
-  private UserDetail user;
+  private User user;
 
   /**
    * Default constructor.
    * @param user a user to set
    */
-  protected AbstractAuthenticationVerifier(UserDetail user) {
+  protected AbstractAuthenticationVerifier(User user) {
     this.user = user;
   }
 
@@ -64,7 +64,7 @@ class AbstractAuthenticationVerifier {
    * Sets the user.
    * @param user the user to set
    */
-  public void setUser(final UserDetail user) {
+  public void setUser(final User user) {
     this.user = user;
   }
 
@@ -72,7 +72,7 @@ class AbstractAuthenticationVerifier {
    * Gets the user.
    * @return the user
    */
-  public UserDetail getUser() {
+  public User getUser() {
     return user;
   }
 

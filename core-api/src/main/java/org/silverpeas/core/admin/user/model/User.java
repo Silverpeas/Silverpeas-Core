@@ -131,6 +131,14 @@ public interface User extends Serializable, Comparable<User> {
   boolean isDomainAdminRestricted();
 
   /**
+   * Gets the API token of the user. Each user in Silverpeas has a token with which he can
+   * access some services or web resources available out of Silverpeas; the token serves to
+   * authenticate and to identify him among those services or web resources in order to use them.
+   * @return the API token of the user.
+   */
+  String getToken();
+
+  /**
    * Gets the user login.
    * @return user login as string.
    */

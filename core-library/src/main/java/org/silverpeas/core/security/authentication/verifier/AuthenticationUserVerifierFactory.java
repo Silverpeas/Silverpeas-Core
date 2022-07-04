@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 
@@ -49,7 +50,7 @@ public class AuthenticationUserVerifierFactory {
    * Removes from request cache the given user.
    * @param user the user behind a login attempt.
    */
-  public static void removeFromRequestCache(UserDetail user) {
+  public static void removeFromRequestCache(User user) {
     AbstractAuthenticationVerifier.removeFromRequestCache(user);
   }
 
@@ -58,7 +59,7 @@ public class AuthenticationUserVerifierFactory {
    * @param user the user behind a login attempt.
    * @return the verifier that checks if the user can log on in relation to its account state
    */
-  public static UserCanLoginVerifier getUserCanLoginVerifier(UserDetail user) {
+  public static UserCanLoginVerifier getUserCanLoginVerifier(User user) {
     return new UserCanLoginVerifier(user);
   }
 
@@ -105,7 +106,7 @@ public class AuthenticationUserVerifierFactory {
    * error
    */
   public static synchronized UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
-      UserDetail user) {
+      User user) {
     return UserCanTryAgainToLoginVerifier.get(user);
   }
 
@@ -115,7 +116,7 @@ public class AuthenticationUserVerifierFactory {
    * @return the verifier that checks if the user must change his password or if the user will soon
    * have to change his password
    */
-  public static UserMustChangePasswordVerifier getUserMustChangePasswordVerifier(UserDetail user) {
+  public static UserMustChangePasswordVerifier getUserMustChangePasswordVerifier(User user) {
     return new UserMustChangePasswordVerifier(user);
   }
 

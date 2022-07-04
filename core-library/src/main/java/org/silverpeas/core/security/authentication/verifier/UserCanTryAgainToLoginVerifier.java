@@ -25,7 +25,7 @@ package org.silverpeas.core.security.authentication.verifier;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -77,7 +77,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * Default constructor.
    * @param user the user behind a login attempt.
    */
-  private UserCanTryAgainToLoginVerifier(final UserDetail user) {
+  private UserCanTryAgainToLoginVerifier(final User user) {
     super(user);
     if (isActivated && !isCacheCleanerInitialized) {
       synchronized (cache) {
@@ -191,12 +191,11 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   /**
    * Clearing the HTTP session.
    */
-  public UserCanTryAgainToLoginVerifier clearSession(HttpServletRequest request) {
+  public void clearSession(HttpServletRequest request) {
     HttpSession session = request.getSession(false);
     if (session != null) {
       session.removeAttribute("WarningMessage");
     }
-    return this;
   }
 
   /**
@@ -204,7 +203,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * @param user the user behind the login attempt.
    * @return an instance of this verifier for the given user.
    */
-  protected static synchronized UserCanTryAgainToLoginVerifier get(UserDetail user) {
+  protected static synchronized UserCanTryAgainToLoginVerifier get(User user) {
     if (user == null) {
       return new UserCanTryAgainToLoginVerifier(null);
     }
@@ -225,7 +224,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * Clear the cache of user connection attempts.
    * @param user the user behind the login attempt.
    */
-  private static synchronized void clearCache(UserDetail user) {
+  private static synchronized void clearCache(User user) {
     if (user != null) {
       cache.remove(key(user));
     }
@@ -236,7 +235,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * @param user the user behind a login attempt.
    * @return the key to use in cache for the given user.
    */
-  private static String key(UserDetail user) {
+  private static String key(User user) {
     return "key(" + user.getLogin() + "#@#" + user.getDomainId() + ")";
   }
 
