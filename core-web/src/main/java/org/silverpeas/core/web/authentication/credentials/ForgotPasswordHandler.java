@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthDomain;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
@@ -94,17 +93,9 @@ public class ForgotPasswordHandler extends FunctionHandler {
     }
   }
 
-  private String getAuthenticationKey(final String login, final String domainId)
-      throws ForgottenPasswordException {
-    try {
+  private String getAuthenticationKey(final String login, final String domainId) {
       return authenticator.getAuthToken(
           AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
-    } catch (AuthenticationException e) {
-      throw new ForgottenPasswordException(
-          "CredentialsServlet.forgotPasswordHandler.doAction()",
-          "forgottenPassword.EX_GET_USER_AUTHENTICATION_KEY",
-          "login=" + login + " ; domainId=" + domainId, e);
-    }
   }
 
 }

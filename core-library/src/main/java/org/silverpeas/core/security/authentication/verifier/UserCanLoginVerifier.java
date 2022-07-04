@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authentication.verifier;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
@@ -47,7 +47,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
    * Default constructor.
    * @param user the user behind a connexion attempt.
    */
-  protected UserCanLoginVerifier(final UserDetail user) {
+  protected UserCanLoginVerifier(final User user) {
     super(user);
   }
 

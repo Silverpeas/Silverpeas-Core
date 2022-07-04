@@ -25,10 +25,8 @@
 package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
@@ -200,10 +198,9 @@ public class HTTPAuthentication {
       AuthenticationResponse result = authenticator.authenticate(credential);
       if (result.getStatus().succeeded()) {
         try {
-          String userId = Administration.get().getUserIdByAuthenticationKey(result.getToken());
-          UserDetail user = UserDetail.getById(userId);
+          User user = authenticator.getUserByAuthToken(result.getToken());
           final SessionInfo session;
-          if (!UserDetail.isAnonymousUser(userId)) {
+          if (!user.isAnonymous()) {
             session = SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());
             context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
             context.getHttpServletResponse()
@@ -217,7 +214,7 @@ public class HTTPAuthentication {
             session = SessionManagementProvider.getSessionManagement().openAnonymousSession(context.getHttpServletRequest());
           }
           return session;
-        } catch (AdminException e) {
+        } catch (AuthenticationException e) {
           throw new AuthenticationInternalException(e.getMessage(), e);
         }
       }
@@ -230,7 +227,7 @@ public class HTTPAuthentication {
     final PersistentResourceToken userToken = PersistentResourceToken.getToken(token);
     final UserReference userRef = userToken.getResource(UserReference.class);
     if (userRef != null) {
-      final UserDetail user = userRef.getEntity();
+      final User user = userRef.getEntity();
       verifyUserCanLogin(user);
       final SessionInfo session =
           SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());
@@ -242,7 +239,7 @@ public class HTTPAuthentication {
     return null;
   }
 
-  private static void verifyUserCanLogin(final UserDetail user) {
+  private static void verifyUserCanLogin(final User user) {
     if (user != null) {
       try {
         AuthenticationUserVerifierFactory.getUserCanLoginVerifier(user).verify();

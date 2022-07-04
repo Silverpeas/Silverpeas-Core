@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
@@ -96,7 +96,7 @@ public class CredentialsServlet extends HttpServlet {
       String function = getFunction(request);
       FunctionHandler handler = handlers.get(function);
       if (handler != null) {
-        UserDetail user = null;
+        User user = null;
         String login = request.getParameter("Login");
         String domainId = request.getParameter("DomainId");
         String destinationPage = "";

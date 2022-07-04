@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
@@ -352,6 +353,17 @@ public class AuthenticationService implements Authentication {
     String authKey = generateTokenFor(credential.getLogin());
     storeAuthenticationKey(credential.getLogin(), credential.getDomainId(), authKey);
     return authKey;
+  }
+
+  @Override
+  public User getUserByAuthToken(final String authToken) throws AuthenticationException {
+    Administration admin = Administration.get();
+    try {
+      String userId = admin.getUserIdByAuthenticationKey(authToken);
+      return admin.getUserDetail(userId);
+    } catch (AdminException e) {
+      throw new AuthenticationException(e);
+    }
   }
 
   /**

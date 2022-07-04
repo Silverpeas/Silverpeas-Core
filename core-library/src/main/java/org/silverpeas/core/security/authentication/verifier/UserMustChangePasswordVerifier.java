@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
@@ -100,7 +101,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    * Default constructor.
    * @param user the user behind a login.
    */
-  protected UserMustChangePasswordVerifier(final UserDetail user) {
+  protected UserMustChangePasswordVerifier(final User user) {
     super(user);
   }
 
@@ -163,14 +164,15 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    */
   private boolean mustForceUserToChangePasswordOnFirstLogin() {
     boolean mustForceUserToChangePasswordOnFirstLogin = false;
-    if (isThatUserMustChangePasswordOnFirstLogin && getUser() != null && !getUser().isAnonymous()) {
-      if (UserFirstLoginStep.PASSWORD_CHANGED.equals(usersFirstLoginStep.get(getUser().getId()))) {
+    UserDetail user = (UserDetail) getUser();
+    if (isThatUserMustChangePasswordOnFirstLogin && user != null && !user.isAnonymous()) {
+      if (UserFirstLoginStep.PASSWORD_CHANGED.equals(usersFirstLoginStep.get(user.getId()))) {
         // User has changed his password just now, the authentication is ok
-        usersFirstLoginStep.remove(getUser().getId());
-      } else if (getUser().getLastLoginDate() == null ||
-          UserFirstLoginStep.CHANGE_PASSWORD.equals(usersFirstLoginStep.get(getUser().getId()))) {
+        usersFirstLoginStep.remove(user.getId());
+      } else if (user.getLastLoginDate() == null ||
+          UserFirstLoginStep.CHANGE_PASSWORD.equals(usersFirstLoginStep.get(user.getId()))) {
         // User must change his password
-        usersFirstLoginStep.put(getUser().getId(), UserFirstLoginStep.CHANGE_PASSWORD);
+        usersFirstLoginStep.put(user.getId(), UserFirstLoginStep.CHANGE_PASSWORD);
         mustForceUserToChangePasswordOnFirstLogin = true;
       }
     }
@@ -182,9 +184,10 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    * @return true if the user will soon be obliged to change his password.
    */
   private boolean mustForceUserToChangePassword() {
-    return !(!isMaxConnectionActivated || getUser() == null || getUser().isAnonymous() ||
-        getUser().getNbSuccessfulLoginAttempts() == 0) &&
-        getUser().getNbSuccessfulLoginAttempts() >= nbMaxConnectionsForForcing;
+    UserDetail user = (UserDetail) getUser();
+    return !(!isMaxConnectionActivated || user == null || user.isAnonymous() ||
+        user.getNbSuccessfulLoginAttempts() == 0) &&
+        user.getNbSuccessfulLoginAttempts() >= nbMaxConnectionsForForcing;
   }
 
   /**
@@ -192,9 +195,10 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    * @return true if the user password has to be changed.
    */
   private boolean proposeToUserToChangePassword() {
-    return !(!isMaxConnectionActivated || !isOffsetConnectionActivated || getUser() == null ||
-        getUser().isAnonymous() || getUser().getNbSuccessfulLoginAttempts() == 0) &&
+    UserDetail user = (UserDetail) getUser();
+    return !(!isMaxConnectionActivated || !isOffsetConnectionActivated || user == null ||
+        user.isAnonymous() || user.getNbSuccessfulLoginAttempts() == 0) &&
         !mustForceUserToChangePassword() &&
-        getUser().getNbSuccessfulLoginAttempts() >= nbMaxConnectionsForProposing;
+        user.getNbSuccessfulLoginAttempts() >= nbMaxConnectionsForProposing;
   }
 }

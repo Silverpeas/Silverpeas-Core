@@ -27,7 +27,6 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -382,7 +381,7 @@ public class UserDetail implements User {
 
   /**
    * Set user domain id
-   * @param domainId the identifier of the user domain.
+   * @param domainId the unique identifier of the user domain he belongs to.
    */
   public void setDomainId(String domainId) {
     this.domainId = domainId;
@@ -450,7 +449,7 @@ public class UserDetail implements User {
 
   /**
    * Set user's email
-   * @param seMail the user email address.
+   * @param seMail the email address of the user.
    */
   public void seteMail(String seMail) {
     this.eMail = Objects.requireNonNullElse(seMail, "");
@@ -472,7 +471,6 @@ public class UserDetail implements User {
    */
   public void setAccessLevel(UserAccessLevel accessLevel) {
     this.accessLevel = Objects.requireNonNullElse(accessLevel, UserAccessLevel.USER);
-
   }
 
   /**
@@ -587,7 +585,7 @@ public class UserDetail implements User {
 
   @Override
   public boolean isAnonymous() {
-    return getId() != null && getId().equals(getAnonymousUserId());
+    return getId() != null && isAnonymousUser(getId());
   }
 
   @Override
@@ -608,6 +606,7 @@ public class UserDetail implements User {
     return anonymousUser;
   }
 
+  @Override
   public String getToken() {
     try {
       UserReference ref = UserReference.fromUser(this);
