@@ -46,12 +46,14 @@ import org.silverpeas.web.directory.model.DirectoryItemList;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.util.StringUtil.split;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.getPaginationPageFrom;
 
 /**
@@ -60,6 +62,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Paginat
 public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySessionController> {
 
   private static final long serialVersionUID = -1683812983096083815L;
+  private static final String USER_ID_PARAM = "UserId";
 
   @Override
   public String getSessionControlBeanName() {
@@ -88,7 +91,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
         List<String> groupIds = processGroups(request);
         String spaceId = request.getParameter("SpaceId");
-        String userId = request.getParameter("UserId");
+        String userId = request.getParameter(USER_ID_PARAM);
         // case of a direct access to directory of contacts of once component
         String componentId = request.getParameter("ComponentId");
 
@@ -132,14 +135,14 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         }
         request.setAttribute("ShowHelp", true);
       } else if ("RemoveUserFromLists".equals(function)) {
-        String userId = request.getParameter("UserId");
+        String userId = request.getParameter(USER_ID_PARAM);
         if (StringUtil.isDefined(userId)) {
           directorySC.removeUserFromLists(User.getById(userId));
         }
         users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
       } else if ("CommonContacts".equals(function)) {
-        String userId = request.getParameter("UserId");
+        String userId = request.getParameter(USER_ID_PARAM);
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if ("searchByKey".equalsIgnoreCase(function)) {
@@ -157,6 +160,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         if (query != null && !query.isEmpty()) {
           if (globalSearch) {
             // case of direct search
+            Optional.ofNullable(request.getParameter("DoNotUseContacts"))
+                .filter(StringUtil::isDefined)
+                .map(StringUtil::getBooleanValue)
+                .ifPresent(directorySC::setDoNotUseContacts);
             directorySC.initSources(!lDomainIds.isEmpty());
           }
           users = directorySC.getUsersByQuery(query, globalSearch);
@@ -209,7 +216,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         } else if (limitedToSourceId.startsWith("group_")){
           users = directorySC.getAllUsersByGroup(limitedToSourceId);
         } else {
-          directorySC.setCurrentDomains(Arrays.asList(limitedToSourceId));
+          directorySC.setCurrentDomains(List.of(limitedToSourceId));
           directorySC.setCurrentDirectory(DirectorySessionController.DIRECTORY_DOMAIN);
           users = directorySC.getAllUsersByDomains();
         }
@@ -351,33 +358,24 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("BreadCrumb", breadCrumb.toString());
   }
 
-  private List<String> processDomains(HttpServletRequest request,
-      DirectorySessionController directorySC) {
-    String domainId = request.getParameter("DomainId");
-    String domainIds = request.getParameter("DomainIds");
-    List<String> lDomainIds = new ArrayList<>();
-    if (StringUtil.isDefined(domainId)) {
-      lDomainIds.add(domainId);
-    } else if (StringUtil.isDefined(domainIds)) {
-      lDomainIds = Arrays.asList(StringUtil.split(domainIds, ','));
+  private List<String> processDomains(HttpRequest request, DirectorySessionController directorySC) {
+    final List<String> allDomainIds = getParameterValues(request, "DomainId", "DomainIds");
+    if (!allDomainIds.isEmpty()) {
+      directorySC.setCurrentDomains(allDomainIds);
     }
-    if (!lDomainIds.isEmpty()) {
-      directorySC.setCurrentDomains(lDomainIds);
-    }
-    return lDomainIds;
+    return allDomainIds;
   }
 
-  private List<String> processGroups(HttpServletRequest request) {
-    String groupId = request.getParameter("GroupId");
-    String groupIds = request.getParameter("GroupIds");
+  private List<String> processGroups(HttpRequest request) {
+    return getParameterValues(request, "GroupId", "GroupIds");
+  }
 
-    List<String> lGroupIds = new ArrayList<>();
-    if (StringUtil.isDefined(groupId)) {
-      lGroupIds.add(groupId);
-    }
-    if (StringUtil.isDefined(groupIds)) {
-      lGroupIds.addAll(Arrays.asList(StringUtil.split(groupIds, ',')));
-    }
-    return lGroupIds;
+  private List<String> getParameterValues(final HttpRequest request, final String... keys) {
+    return Stream.of(keys)
+        .map(request::getParameter)
+        .filter(Objects::nonNull)
+        .flatMap(i -> Arrays.stream(split(i, ',')))
+        .filter(StringUtil::isDefined)
+        .collect(Collectors.toList());
   }
 }

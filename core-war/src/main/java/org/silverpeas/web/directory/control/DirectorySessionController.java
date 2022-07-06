@@ -99,8 +99,10 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
@@ -314,7 +316,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public DirectoryItemList getUsersByQuery(QueryDescription queryDescription,
       boolean globalSearch) throws DirectoryException {
-    if (globalSearch) {
+    if (globalSearch && getCurrentDomains().isEmpty()) {
       setCurrentDirectory(DIRECTORY_DEFAULT);
     }
     if (!getCurrentSort().equals(SORT_PERTINENCE)) {
@@ -699,17 +701,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public List<Domain> getCurrentDomains() {
-    return currentDomains;
+    return currentDomains != null ? currentDomains : emptyList();
   }
 
   public void setCurrentDomains(List<String> domainIds) {
-    currentDomains = new ArrayList<>();
-    for (String domainId : domainIds) {
-      Domain domain = getOrganisationController().getDomain(domainId);
-      if (domain != null) {
-        currentDomains.add(domain);
-      }
-    }
+    currentDomains = Optional.ofNullable(domainIds)
+        .stream()
+        .flatMap(List::stream)
+        .map(getOrganisationController()::getDomain)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
     setCurrentDirectory(DIRECTORY_DOMAIN);
   }
 
@@ -861,7 +862,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public QueryDescription buildSimpleQuery(String query, final boolean globalSearch) {
-    if (globalSearch) {
+    if (globalSearch && getCurrentDomains().isEmpty()) {
       setCurrentDirectory(DIRECTORY_DEFAULT);
     }
     QueryDescription queryDescription = new QueryDescription(query);
@@ -1132,7 +1133,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private List<String> getNotExportableFields(String key) {
     if (User.getCurrentRequester().isAccessAdmin()) {
-      return Collections.emptyList();
+      return emptyList();
     }
     String value = getSettings().getString(key, "");
     return Arrays.asList(StringUtils.split(value, ','));
