@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.persistence.jcr;
 
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -37,6 +38,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessControlException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.text.MessageFormat.format;
 
 /**
  * A JCR session that wraps the actual opened session by adding it the auto-closeable property in
@@ -44,7 +49,8 @@ import java.security.AccessControlException;
  * @author mmoquillon
  */
 public class JcrSession implements AutoCloseable, Session {
-  private Session session;
+  private final Session session;
+  private int count = 1;
 
   protected JcrSession(final Session actualSession) {
     this.session = actualSession;
@@ -52,7 +58,13 @@ public class JcrSession implements AutoCloseable, Session {
 
   @Override
   public void close() {
-    JcrRepositoryConnector.closeSession(this.session);
+    if (count <= 1) {
+      JcrRepositoryConnector.closeSession(this.session);
+    } else {
+      count--;
+      SilverLogger.getLogger(JcrRepositoryConnector.class).debug(() ->
+          "Not closing the JCR session now because it is yet in used");
+    }
   }
 
   public Repository getRepository() {
@@ -248,5 +260,17 @@ public class JcrSession implements AutoCloseable, Session {
 
   public Node getRootNode() throws RepositoryException {
     return session.getRootNode();
+  }
+
+  void sessionAlreadyOpened() throws RepositoryException {
+    count++;
+    if (!isLive()) {
+      final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+      throw new RepositoryException(
+          format("{0} -> {1}", "JCR session into thread cache is no more usable", Stream.of(stackTrace)
+              .map(StackTraceElement::toString)
+              .collect(Collectors.joining("\n\t")))
+      );
+    }
   }
 }
