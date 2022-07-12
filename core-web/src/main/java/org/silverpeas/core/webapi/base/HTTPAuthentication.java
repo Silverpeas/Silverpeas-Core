@@ -84,6 +84,7 @@ import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.*;
 public class HTTPAuthentication {
 
   private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic|Bearer) (.*)");
+  private static final Pattern V5_AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic )?(.*)");
 
   // the first ':' character is the separator according to the RFC 2617 in basic digest
   // the first term before ':' is made up of the user login followed by the domain identifier
@@ -249,13 +250,13 @@ public class HTTPAuthentication {
 
   @Deprecated(forRemoval = true)
   private String fetchUserCredentialsForV5Authentication(final String authValueInBase64) {
-    final byte[] authValueInBytes = Base64.getDecoder().decode(authValueInBase64);
-    final String authValue = new String(authValueInBytes, Charsets.UTF_8);
-    final Matcher authorizationMatcher = AUTHORIZATION_PATTERN.matcher(authValue);
-    if (!authorizationMatcher.matches() || authorizationMatcher.groupCount() != 2) {
+    final byte[] authValueInBytes = Base64.getDecoder().decode(authValueInBase64.trim());
+    final String authValue = new String(authValueInBytes, Charsets.UTF_8).trim();
+    final Matcher authorizationMatcher = V5_AUTHORIZATION_PATTERN.matcher(authValue);
+    if (!authorizationMatcher.matches()) {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
-    return authorizationMatcher.group(2);
+    return authorizationMatcher.group(authorizationMatcher.groupCount());
   }
 
   private static SessionInfo openSession(final AuthenticationContext context,

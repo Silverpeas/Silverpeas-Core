@@ -34,11 +34,11 @@ import java.util.Optional;
 public enum AuthenticationScheme {
 
   /**
-   * The basic authentication as processed in Silverpeas V5. It expects all the authentication
-   * string to be encoded in base 64 along with the <code>Basic</code> keyword which identifies the
-   * authentication method. In this old and deprecated authentication, the user login is the
-   * unique identifier of the user in Silverpeas and the password is his encrypted password in
-   * Silverpeas.
+   * The basic authentication as processed in Silverpeas V5. Only Basic authentication is supported
+   * in V5 and so the keyword "Basic" identifying the authentication method isn't required. It
+   * expects all the authentication string to be encoded in base 64. In this old and deprecated
+   * authentication, the user login is the unique identifier of the user in Silverpeas and the
+   * password is his encrypted password in Silverpeas.
    */
   @Deprecated(forRemoval = true)
   V5_BASIC,

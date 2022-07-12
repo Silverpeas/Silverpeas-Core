@@ -135,6 +135,6 @@ public class V5BasicAuthenticationIT extends RESTWebServiceTest {
 
   private String encodesCredentialsAsInV5(final String credentials) {
     return Base64.getEncoder()
-        .encodeToString(("BAsIc " + credentials).getBytes(StandardCharsets.UTF_8));
+        .encodeToString((credentials).getBytes(StandardCharsets.UTF_8));
   }
 }
