@@ -71,7 +71,6 @@ public final class QueryDescription implements Serializable {
   private LocalDate requestedCreatedAfter = null;
   private LocalDate requestedUpdatedBefore = null;
   private LocalDate requestedUpdatedAfter = null;
-  private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
   private boolean searchByComponentType = false;
@@ -219,14 +218,6 @@ public final class QueryDescription implements Serializable {
    */
   public LocalDate getRequestedCreatedAfter() {
     return requestedCreatedAfter;
-  }
-
-  public String getXmlTitle() {
-    return xmlTitle;
-  }
-
-  public void setXmlTitle(String xmlTitle) {
-    this.xmlTitle = xmlTitle;
   }
 
   public List<FieldDescription> getMultiFieldQuery() {

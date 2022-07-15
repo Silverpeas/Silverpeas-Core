@@ -130,9 +130,12 @@ public class PdcSearchRequestRouterHelper {
    */
   public static QueryParameters saveUserChoices(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
-    String query = request.getParameter("query");
+    final String query = request.getParameter(
+        pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML ?
+            "TitleNotInXMLForm" :
+            "query");
 
-    QueryParameters queryParameters = pdcSC.getQueryParameters();
+    final QueryParameters queryParameters = pdcSC.getQueryParameters();
     queryParameters.setKeywords(query);
 
     if (pdcSC.getSearchType() >= PdcSearchSessionController.SEARCH_ADVANCED) {
