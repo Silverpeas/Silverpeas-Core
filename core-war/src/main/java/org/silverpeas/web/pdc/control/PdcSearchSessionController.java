@@ -1976,7 +1976,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public void clearSearchParameters(boolean clearPages) {
     if (queryParameters != null) {
       queryParameters.clear();
-      queryParameters.setXmlTitle(null);
     }
     removeAllCriterias();
     setSortOrder(PdcSearchSessionController.SORT_ORDER_DESC);
@@ -2110,7 +2109,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 
     String title = request.getParameter("TitleNotInXMLForm");
-    getQueryParameters().setXmlTitle(title);
+    getQueryParameters().setKeywords(title);
 
     PublicationTemplateImpl template;
     String templateFileName = request.getParameter("xmlSearchSelectedForm");
