@@ -23,11 +23,10 @@
  */
 package org.silverpeas.web.pdc;
 
-import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.util.StringUtil;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -47,7 +46,6 @@ public class QueryParameters implements java.io.Serializable {
   private LocalDate afterupdatedate = null;
   private LocalDate beforeupdatedate = null;
   private Map<String, String> xmlQuery = null;
-  private String xmlTitle = null;
   private String folder = null;
 
   // attributes below are used only to display info in the search page
@@ -188,10 +186,6 @@ public class QueryParameters implements java.io.Serializable {
       }
     }
 
-    if (xmlTitle != null) {
-      query.setQuery(xmlTitle);
-    }
-
     return query;
   }
 
@@ -201,14 +195,6 @@ public class QueryParameters implements java.io.Serializable {
 
   public UserDetail getCreatorDetail() {
     return this.creatorDetail;
-  }
-
-  public String getXmlTitle() {
-    return xmlTitle;
-  }
-
-  public void setXmlTitle(String xmlTitle) {
-    this.xmlTitle = xmlTitle;
   }
 
   public boolean isDefined() {

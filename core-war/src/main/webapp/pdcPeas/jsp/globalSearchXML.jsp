@@ -60,10 +60,7 @@ String			title				= "";
 if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
-	title				= query.getXmlTitle();
-	if (title == null || "null".equals(title)) {
-    title = "";
-  }
+	title				= StringUtil.defaultStringIfNotDefined(query.getKeywords());
 }
 
 String pageId = (String) request.getAttribute("PageId");
@@ -81,7 +78,7 @@ if (!StringUtil.isDefined(pageId)) {
 function sendXMLRequest() {
 	if(document.XMLSearchForm != null) {
 		$.progressMessage();
-		$("#TitleNotInXMLForm").val($("#plainText").val());
+		applyPlainTextSearch();
 		document.XMLSearchForm.submit();
 	} else {
     jQuery.popup.error("<%=resource.getString("pdcPeas.choiceForm")%>");
@@ -91,9 +88,13 @@ function chooseTemplate() {
 	var valuePath = document.XMLRestrictForm.xmlSearchSelectedForm.value;
 	if (valuePath.length > 0) {
 		$.progressMessage();
+		applyPlainTextSearch();
     document.XMLRestrictForm.action = "XMLSearchViewTemplate";
 		document.XMLRestrictForm.submit();
 	}
+}
+function applyPlainTextSearch() {
+	$("input[name='TitleNotInXMLForm']").val($("#plainText").val());
 }
 function viewXmlSearch(){
 	$.progressMessage();
@@ -197,6 +198,7 @@ function viewXmlSearch(){
 		<input type="hidden" name="sortOrder" value="<%=sortOrder %>"/>
 		<input type="hidden" name="sortImp" value="<%=sortImp %>"/>
 		<input type="hidden" name="SortResXForm" value="<%=SortResXForm %>"/>
+		<input type="hidden" name="TitleNotInXMLForm" value="<%=title %>"/>
 		    </table>
     </form>
 </view:board>
@@ -205,7 +207,7 @@ function viewXmlSearch(){
 	<% if (form != null) { %>
 		<div id="template">
       <form name="XMLSearchForm" method="post" action="XMLSearch" enctype="multipart/form-data">
-		  <input type="hidden" id="TitleNotInXMLForm" name="TitleNotInXMLForm" value="<%=title%>"/>
+		  <input type="hidden" name="TitleNotInXMLForm" value="<%=title%>"/>
       <%
   		  form.display(out, context, emptyData);
  	    %>
