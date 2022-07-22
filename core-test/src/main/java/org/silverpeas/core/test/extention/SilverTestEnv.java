@@ -83,8 +83,8 @@ import static org.mockito.Mockito.*;
  * </p>
  * <p>
  * Secondly it scans for fields and parameters annotated with {@link TestManagedBean} and
- * {@link TestManagedMock} to register them automatically into the bean container used in tests.
- * If the class of a {@link TestManagedBean} annotated field is qualified by a {@link Qualifier}
+ * {@link TestManagedMock} to register them automatically into the bean container used in tests. If
+ * the class of a {@link TestManagedBean} annotated field is qualified by a {@link Qualifier}
  * annotated annotation, then it is registered under that qualifier also. For any parameter
  * annotated with {@link TestManagedMock}, it is first resolved by looking for an already registered
  * mock in the bean container (otherwise it is mocked and registered as for fields). Any methods
@@ -96,27 +96,28 @@ import static org.mockito.Mockito.*;
  * the bean container or by mocking it.
  * </p>
  * <p>
- *  Finally it looks for a method in the test class that is annotated with {@link RequesterProvider}
- *  to execute it and to set the returned {@link User} instance as the default requester to use
- *  in all the tests of the class.
+ * Finally it looks for a method in the test class that is annotated with {@link RequesterProvider}
+ * to execute it and to set the returned {@link User} instance as the default requester to use in
+ * all the tests of the class.
  * </p>
  * <p>
- *  The ordering of the declaration of the different such annotated fields in the test class is
- *  very important as they are treated sequentially in their declaration ordering. So, any bean that
- *  is required by others beans has to be declared before those others beans.
+ * The ordering of the declaration of the different such annotated fields in the test class is very
+ * important as they are treated sequentially in their declaration ordering. So, any bean that is
+ * required by others beans has to be declared before those others beans.
  * </p>
  * @author mmoquillon
  */
-public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolver, BeforeEachCallback {
+public class SilverTestEnv
+    implements TestInstancePostProcessor, ParameterResolver, BeforeEachCallback {
 
   private static final String SYSTEM = "SYSTEM";
 
   /**
    * Injects in the unit test class all the fields that are annotated with one of the supported
-   * annotations by {@link SilverTestEnv} extension ({@link TestManagedMock}, {@link TestManagedBean},
-   * {@link TestedBean}, ...). Each of such annotated beans will be either mocked or instantiated
-   * with their default constructor and then registered into the bean container used for the unit
-   * tests.
+   * annotations by {@link SilverTestEnv} extension ({@link TestManagedMock},
+   * {@link TestManagedBean}, {@link TestedBean}, ...). Each of such annotated beans will be either
+   * mocked or instantiated with their default constructor and then registered into the bean
+   * container used for the unit tests.
    * <p>
    * <strong>Be caution:</strong> any {@link TestedBean} annotated fields should be declared
    * lastly for their dependencies to have a change to be set with any previous declared
@@ -131,6 +132,16 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       throws Exception {
     reset(TestBeanContainer.getMockedBeanContainer());
     mockCommonBeans(testInstance);
+
+    SystemProperty[] systemProperties =
+        testInstance.getClass().getAnnotationsByType(SystemProperty.class);
+    if (systemProperties.length >= 1) {
+      SystemWrapper system = SystemWrapper.get();
+      for (SystemProperty systemProperty : systemProperties) {
+        system.setProperty(systemProperty.key(), systemProperty.value());
+      }
+    }
+
     TestManagedBeans testManagedBeans =
         testInstance.getClass().getAnnotation(TestManagedBeans.class);
     if (testManagedBeans != null) {
@@ -138,7 +149,8 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
         constructAndRegisterBean(type);
       }
     }
-    TestManagedMocks testManagedMocks = testInstance.getClass().getAnnotation(TestManagedMocks.class);
+    TestManagedMocks testManagedMocks =
+        testInstance.getClass().getAnnotation(TestManagedMocks.class);
     if (testManagedMocks != null) {
       for (Class<?> type : testManagedMocks.value()) {
         Object mock = mock(type);
@@ -177,7 +189,8 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   /**
    * Resolves the parameter referred by the parameter context by valuing it according to its
    * annotation: if annotated with {@link TestManagedBean}, the parameter will be instantiated with
-   * its default constructor; if annotated with {@link TestManagedMock}, the parameter will be mocked.
+   * its default constructor; if annotated with {@link TestManagedMock}, the parameter will be
+   * mocked.
    * @param parameterContext the context of the parameter.
    * @param extensionContext the context of the extension.
    * @return the value of the parameter to inject.
@@ -215,9 +228,9 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
 
   /**
    * Prepares the unit test environment before executing any test. Some beans are mocked by default
-   * ({@link GroupProvider}, {@link UserProvider}, {@link ManagedThreadFactory}, and so on.)
-   * If the unit test defines a method annotated with {@link RequesterProvider}, then it is
-   * invoked to get the user to set as the default requester.
+   * ({@link GroupProvider}, {@link UserProvider}, {@link ManagedThreadFactory}, and so on.) If the
+   * unit test defines a method annotated with {@link RequesterProvider}, then it is invoked to get
+   * the user to set as the default requester.
    * @param context the context of the extension.
    * @throws Exception if an error occurs while preparing the test environement.
    */
@@ -225,7 +238,8 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   public void beforeEach(final ExtensionContext context) throws Exception {
     CacheServiceProvider.clearAllThreadCaches();
     Class<?> test = context.getRequiredTestClass();
-    UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
+    UserProvider mock =
+        TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
     User systemUser = mock(User.class);
     when(systemUser.getId()).thenReturn("-1");
     when(systemUser.getFirstName()).thenReturn(SYSTEM);
@@ -241,7 +255,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
 
   private Method recursivelyFindRequesterProvider(final Class<?> testClass) {
     Method[] methods = testClass.getDeclaredMethods();
-    return  Stream.of(methods)
+    return Stream.of(methods)
         .filter(m -> m.getAnnotation(RequesterProvider.class) != null)
         .filter(m -> User.class.isAssignableFrom(m.getReturnType()))
         .findFirst()
@@ -336,7 +350,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
           if (dependency.getType().equals(Instance.class)) {
             ParameterizedType type = (ParameterizedType) dependency.getGenericType();
             Type beanType = type.getActualTypeArguments()[0];
-            mock = new InstanceImpl<>((Class<?>)beanType);
+            mock = new InstanceImpl<>((Class<?>) beanType);
           } else {
             mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(dependency.getType());
             if (mock == null) {
@@ -350,14 +364,14 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     });
   }
 
-  private  <T> T instantiate(final Class<? extends T> beanType) {
+  private <T> T instantiate(final Class<? extends T> beanType) {
     T bean;
     try {
       Constructor<? extends T> constructor = beanType.getDeclaredConstructor();
       constructor.trySetAccessible();
       bean = constructor.newInstance();
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-        IllegalAccessException e) {
+             IllegalAccessException e) {
       bean = null;
     }
     return bean;
@@ -404,7 +418,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   private void mockUserProvider() {
     UserProvider userProvider = mock(UserProvider.class);
     doCallRealMethod().when(userProvider).getCurrentRequester();
-    when(userProvider.getSystemUser()).thenAnswer( i -> {
+    when(userProvider.getSystemUser()).thenAnswer(i -> {
       User systemUser = mock(User.class);
       when(systemUser.getId()).thenReturn("-1");
       when(systemUser.getLastName()).thenReturn(SYSTEM);
@@ -451,7 +465,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
       when(TestBeanContainer.getMockedBeanContainer()
           .getBeanByType(ManagedThreadPool.class)).thenReturn(managedThreadPool);
     } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
-        InvocationTargetException e) {
+             InvocationTargetException e) {
       throw new SilverpeasRuntimeException(e);
     }
   }
@@ -492,16 +506,16 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
 
       if (!clazz.isInterface()) {
         loopInheritance(clazz.getSuperclass(), c ->
-          Stream.of(typesFinder.apply(c))
-              .filter(t -> Modifier.isAbstract(t.getModifiers()))
-              .filter(t -> t.getTypeParameters().length == 0)
-              .forEach(t -> {
-                try {
-                  registerer.consume(t);
-                } catch (ReflectiveOperationException e) {
-                  throw new SilverpeasRuntimeException(e);
-                }
-              })
+            Stream.of(typesFinder.apply(c))
+                .filter(t -> Modifier.isAbstract(t.getModifiers()))
+                .filter(t -> t.getTypeParameters().length == 0)
+                .forEach(t -> {
+                  try {
+                    registerer.consume(t);
+                  } catch (ReflectiveOperationException e) {
+                    throw new SilverpeasRuntimeException(e);
+                  }
+                })
         );
       }
     } catch (ReflectiveOperationException e) {
