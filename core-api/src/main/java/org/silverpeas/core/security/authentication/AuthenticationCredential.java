@@ -26,6 +26,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ import static java.util.Optional.ofNullable;
 /**
  * A credential is a set of security-related capabilities for a given user, it contains information
  * used to authenticate him.
- *
+ * <p>
  * This credential defines, among the attributes, the password, the login and the domain to which the
  * user belongs. The domain is a repository of users having its own security policy and then its own
  * authentication server. The login is the minimum information used in an authentication; indeed, for
@@ -44,7 +45,7 @@ import static java.util.Optional.ofNullable;
  * policies, only the login and the domain are required to authenticate the user, like in NTLM
  * negotiation. By default, to open a WEB session with Silverpeas, the user has to authenticate
  * himself by using both his login, his password and the domain to which he belongs.
- *
+ * <p>
  * The credential may also contain data that simply enable certain security-related capabilities like,
  * for example, the password change. These capabilities are generally set by the authentication
  * process from the response of the authentication server related to the user domain, once the user
@@ -98,6 +99,7 @@ public class AuthenticationCredential {
    * Gets the user login to use in the authentication.
    * @return the login.
    */
+  @Nonnull
   public String getLogin() {
     return login;
   }

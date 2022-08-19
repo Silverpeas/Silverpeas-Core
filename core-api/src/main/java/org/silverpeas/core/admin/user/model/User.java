@@ -44,7 +44,19 @@ public interface User extends Serializable, Comparable<User> {
   String DEFAULT_AVATAR_PATH = "/directory/jsp/icons/avatar.png";
 
   /**
-   * Gets the detail about the specified user.
+   * Gets a provider of existing users in Silverpeas. The provider defines a set of methods to
+   * get a user by some of his properties.
+   * @return a {@link UserProvider} object.
+   */
+  static UserProvider provider() {
+    return UserProvider.get();
+  }
+
+  /**
+   * Gets the detail about the specified user. This is a shortcode of the following statement:
+   * <pre>{@code
+   *  User.provider().getUser(userId);
+   * }</pre>
    * @param userId the unique identifier of the user to get.
    * @return the detail about the user with the specified identifier or null if no such user exists.
    */
@@ -72,6 +84,8 @@ public interface User extends Serializable, Comparable<User> {
    * If the SYSTEM user MUST NOT be returned in case it does not exist a real user linked to the
    * thread, then use {@link #getCurrentRequester()}.
    * </p>
+   * @implSpec The implementation checks before there is a current requester otherwise it asks for
+   * the system user.
    * @return the {@link User} instance of current user.
    */
   static User getCurrentUser() {
@@ -79,7 +93,11 @@ public interface User extends Serializable, Comparable<User> {
   }
 
   /**
-   * Gets the current user behind a request of treatment processing.
+   * Gets the current user behind a request of treatment processing. This is a shortcode of the
+   * following statement:
+   *  <pre>{@code
+   *   User.provider().getCurrentRequester();
+   * }</pre>
    * @return the {@link User} instance of current requester.
    */
   static User getCurrentRequester() {
@@ -88,7 +106,11 @@ public interface User extends Serializable, Comparable<User> {
 
   /**
    * Gets the main administrator of Silverpeas. It is the root administrator of the platform (the
-   * first administrator created at Silverpeas installation).
+   * first administrator created at Silverpeas installation). This is a shortcode of the
+   * following statement:
+   * <pre>{@code
+   *  User.provider().getMainAdministrator();
+   * }</pre>
    * @return the main administrator of Silverpeas.
    */
   static User getMainAdministrator() {
@@ -98,7 +120,11 @@ public interface User extends Serializable, Comparable<User> {
   /**
    * Gets the system user of Silverpeas. It is a virtual user (that is to say a user without any
    * account in Silverpeas) used in some processes that are triggered by no real users or executed
-   * for one or more users but by the system itself (like batch processes).
+   * for one or more users but by the system itself (like batch processes). This is a shortcode
+   * of the following statement:
+   * <pre>{@code
+   *  User.provider().getSystemUser();
+   * }</pre>
    * @return the system user of Silverpeas.
    */
   static User getSystemUser() {

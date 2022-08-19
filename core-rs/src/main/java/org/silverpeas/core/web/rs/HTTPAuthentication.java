@@ -26,7 +26,7 @@ package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserReference;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
@@ -36,7 +36,6 @@ import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVe
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
@@ -224,10 +223,8 @@ public class HTTPAuthentication {
 
   private static SessionInfo performTokenBasedAuthentication(final AuthenticationContext context) {
     final String token = context.getUserCredentials();
-    final PersistentResourceToken userToken = PersistentResourceToken.getToken(token);
-    final UserReference userRef = userToken.getResource(UserReference.class);
-    if (userRef != null) {
-      final User user = userRef.getEntity();
+    final User user = UserProvider.get().getUserByToken(token);
+    if (user != null) {
       verifyUserCanLogin(user);
       final SessionInfo session =
           SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());

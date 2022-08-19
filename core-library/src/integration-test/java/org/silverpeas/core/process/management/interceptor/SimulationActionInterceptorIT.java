@@ -71,7 +71,8 @@ public class SimulationActionInterceptorIT {
     return WarBuilder4LibCore.onWarForTestClass(SimulationActionInterceptorIT.class)
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
-        .addCommonUserBeans().addAsResource("org/silverpeas/util/logging/")
+        .addAdministrationFeatures()
+        .addAsResource("org/silverpeas/util/logging/")
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.process");
         }).build();

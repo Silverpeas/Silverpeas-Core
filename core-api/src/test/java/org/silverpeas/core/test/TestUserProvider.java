@@ -26,6 +26,8 @@ package org.silverpeas.core.test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 
+import javax.annotation.Nonnull;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +38,7 @@ import static org.mockito.Mockito.when;
  */
 public class TestUserProvider implements UserProvider {
 
-  private User currentRequester;
+  private final User currentRequester;
 
   private TestUserProvider(String currentRequesterId) {
     this.currentRequester = aUser(currentRequesterId);
@@ -46,10 +48,12 @@ public class TestUserProvider implements UserProvider {
     this.currentRequester = currentRequester;
   }
 
+  @SuppressWarnings("unused")
   public static TestUserProvider withAsCurrentRequester(String requesterId) {
     return new TestUserProvider(requesterId);
   }
 
+  @SuppressWarnings("unused")
   public static TestUserProvider withAsCurrentRequester(final User requester) {
     return new TestUserProvider(requester);
   }
@@ -67,6 +71,17 @@ public class TestUserProvider implements UserProvider {
   @Override
   public User getUser(final String userId) {
     return aUser(userId);
+  }
+
+  @Override
+  public User getUserByToken(@Nonnull final String token) {
+    return null;
+  }
+
+  @Override
+  public User getUserByLoginAndDomainId(@Nonnull final String login,
+      @Nonnull final String domainId) {
+    return null;
   }
 
   @Override

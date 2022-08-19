@@ -23,11 +23,19 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserReference;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Provider;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
+
+import javax.annotation.Nonnull;
+import java.util.Objects;
 
 /**
  * Implementation by default of the {@link UserProvider} interface.
@@ -42,6 +50,7 @@ public class DefaultUserProvider implements UserProvider {
     systemUser.setFirstName("");
     systemUser.setLastName("SYSTEM");
     systemUser.setLogin("avatar-system");
+    systemUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
   }
 
   @Override
@@ -50,6 +59,26 @@ public class DefaultUserProvider implements UserProvider {
       return getSystemUser();
     }
     return OrganizationController.get().getUserDetail(userId);
+  }
+
+  @Override
+  public User getUserByToken(@Nonnull final String token) {
+    Objects.requireNonNull(token);
+    final PersistentResourceToken userToken = PersistentResourceToken.getToken(token);
+    final UserReference userRef = userToken.getResource(UserReference.class);
+    return userRef == null ? null : userRef.getEntity();
+  }
+
+  @Override
+  public User getUserByLoginAndDomainId(@Nonnull final String login, @Nonnull final String domainId) {
+    Objects.requireNonNull(login);
+    Objects.requireNonNull(domainId);
+    try {
+      String userId = Administration.get().getUserIdByLoginAndDomain(login, domainId);
+      return getUser(userId);
+    } catch (AdminException e) {
+      return null;
+    }
   }
 
   @Override

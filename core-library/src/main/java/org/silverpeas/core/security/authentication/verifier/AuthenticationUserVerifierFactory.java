@@ -89,12 +89,13 @@ public class AuthenticationUserVerifierFactory {
    */
   public static UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
       AuthenticationCredential credential) {
-    UserDetail user = getUserByCredential(credential);
+    User user = getUserByCredential(credential);
     if (user == null) {
       // Dummy user (but contains user credentials)
-      user = new UserDetail();
-      user.setLogin(credential.getLogin());
-      user.setDomainId(credential.getDomainId());
+      UserDetail dummy = new UserDetail();
+      dummy.setLogin(credential.getLogin());
+      dummy.setDomainId(credential.getDomainId());
+      user = dummy;
     }
     return getUserCanTryAgainToLoginVerifier(user);
   }
