@@ -38,7 +38,7 @@ public interface JcrConstants extends Property {
   /**
    * nt:childNodeDefinition
    */
-  String NT_CHILDNODEDEFINITION = "nt:childNodeDefinition";
+  String NT_CHILD_NODE_DEFINITION = "nt:childNodeDefinition";
   /**
    * nt:file
    */
@@ -50,23 +50,23 @@ public interface JcrConstants extends Property {
   /**
    * nt:frozenNode
    */
-  String NT_FROZENNODE = "nt:frozenNode";
+  String NT_FROZEN_NODE = "nt:frozenNode";
   /**
    * nt:hierarchyNode
    */
-  String NT_HIERARCHYNODE = "nt:hierarchyNode";
+  String NT_HIERARCHY_NODE = "nt:hierarchyNode";
   /**
    * nt:linkedFile
    */
-  String NT_LINKEDFILE = "nt:linkedFile";
+  String NT_LINKED_FILE = "nt:linkedFile";
   /**
    * nt:nodeType
    */
-  String NT_NODETYPE = "nt:nodeType";
+  String NT_NODE_TYPE = "nt:nodeType";
   /**
    * nt:propertyDefinition
    */
-  String NT_PROPERTYDEFINITION = "nt:propertyDefinition";
+  String NT_PROPERTY_DEFINITION = "nt:propertyDefinition";
   /**
    * nt:query
    */
@@ -86,15 +86,15 @@ public interface JcrConstants extends Property {
   /**
    * nt:versionHistory
    */
-  String NT_VERSIONHISTORY = "nt:versionHistory";
+  String NT_VERSION_HISTORY = "nt:versionHistory";
   /**
    * nt:versionLabels
    */
-  String NT_VERSIONLABELS = "nt:versionLabels";
+  String NT_VERSION_LABELS = "nt:versionLabels";
   /**
    * nt:versionedChild
    */
-  String NT_VERSIONEDCHILD = "nt:versionedChild";
+  String NT_VERSIONED_CHILD = "nt:versionedChild";
   /**
    * Prefix for Silverpeas namespace.
    */

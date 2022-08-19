@@ -77,8 +77,8 @@ public class LogAnnotationIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(LogAnnotationIT.class)
-        .addCommonBasicUtilities()
-        .addCommonUserBeans().addAsResource("org/silverpeas/util/logging/")
+        .addAdministrationFeatures()
+        .addAsResource("org/silverpeas/util/logging/")
         .build();
   }
 

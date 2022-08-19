@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -34,7 +34,6 @@ import org.silverpeas.core.util.SettingBundle;
 import java.util.MissingResourceException;
 import java.util.Optional;
 
-import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
 /**
@@ -81,21 +80,16 @@ class AbstractAuthenticationVerifier {
    * @param credential the credentials
    * @return the user with the specified credentials
    */
-  static UserDetail getUserByCredential(AuthenticationCredential credential) {
+  static User getUserByCredential(AuthenticationCredential credential) {
     final String cacheKey = cacheKey(credential.getLogin(), credential.getDomainId());
-    return getRequestCacheService().getCache().computeIfAbsent(cacheKey, UserDetail.class, () -> {
-      try {
-        final String userId = getAdminService().getUserIdByLoginAndDomain(credential.getLogin(),
+    return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class, () -> {
+        final User user = UserProvider.get().getUserByLoginAndDomainId(credential.getLogin(),
             credential.getDomainId());
-        return Optional.ofNullable(userId)
-            .map(UserDetail::getById)
+        return Optional.ofNullable(user)
             .filter(u -> credential.loginIgnoreCase() ?
                 u.getLogin().equalsIgnoreCase(credential.getLogin()) :
                 u.getLogin().equals(credential.getLogin()))
             .orElse(null);
-      } catch (AdminException ignore) {
-        return null;
-      }
     });
   }
 
@@ -125,6 +119,7 @@ class AbstractAuthenticationVerifier {
         "org.silverpeas.authentication.multilang.authentication", language);
     String translation;
     try {
+      //noinspection ConfusingArgumentToVarargsMethod
       translation =
           (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
               messages.getString(key);

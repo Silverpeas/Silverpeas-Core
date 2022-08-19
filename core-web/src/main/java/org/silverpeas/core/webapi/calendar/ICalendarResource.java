@@ -111,13 +111,7 @@ public class ICalendarResource extends RESTWebService {
   @HEAD
   @Path("private/{token}")
   public Response privateExportHead(@PathParam("token") String token) {
-    final PersistentResourceToken calendarToken = PersistentResourceToken.getToken(token);
-    CalendarReference calendarRef = calendarToken.getResource(CalendarReference.class);
-    if (calendarRef == null) {
-      throw new WebApplicationException(NOT_FOUND);
-    }
-    final Calendar calendar = calendarRef.getEntity();
-    assertEntityIsDefined(calendar);
+    Calendar calendar = getCalendarByToken(token);
     return exportHeadOnly(calendar, false);
   }
 
@@ -131,6 +125,11 @@ public class ICalendarResource extends RESTWebService {
   @GET
   @Path("private/{token}")
   public Response privateExport(@PathParam("token") String token) {
+    Calendar calendar = getCalendarByToken(token);
+    return export(calendar, false);
+  }
+
+  private Calendar getCalendarByToken(final String token) {
     final PersistentResourceToken calendarToken = PersistentResourceToken.getToken(token);
     CalendarReference calendarRef = calendarToken.getResource(CalendarReference.class);
     if (calendarRef == null) {
@@ -138,7 +137,7 @@ public class ICalendarResource extends RESTWebService {
     }
     final Calendar calendar = calendarRef.getEntity();
     assertEntityIsDefined(calendar);
-    return export(calendar, false);
+    return calendar;
   }
 
   /**

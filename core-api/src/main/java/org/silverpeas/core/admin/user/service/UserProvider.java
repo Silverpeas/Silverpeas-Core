@@ -29,6 +29,8 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.util.ServiceProvider;
 
+import javax.annotation.Nonnull;
+
 /**
  * In charge of providing users.
  * @author Yohann Chastagnier
@@ -46,9 +48,24 @@ public interface UserProvider {
   /**
    * Gets a user from the specified identifier.
    * @param userId a user identifier as string.
-   * @return a user instance of {@link User}.
+   * @return a user instance of {@link User} or null if no such user exists.
    */
   User getUser(String userId);
+
+  /**
+   * Gets a user from his unique API token.
+   * @param token the API toke of a user.
+   * @return a user instance of {@link User} or null if no such user exists.
+   */
+  User getUserByToken(@Nonnull String token);
+
+  /**
+   * Gets a user from his login and from the domain he belongs to.
+   * @param login the login of the user.
+   * @param domainId the unique identifier of the domain he belongs to.
+   * @return a user instance of {@link User} or null if no such user exists.
+   */
+  User getUserByLoginAndDomainId(@Nonnull String login, @Nonnull String domainId);
 
   /**
    * Gets the user that is behind the current request in Silverpeas.
@@ -76,7 +93,7 @@ public interface UserProvider {
   }
 
   /**
-   * Gets the system user in Silverpeas. A system user is virtuel one under which some userless
+   * Gets the system user in Silverpeas. A system user is virtual one under which some
    * processes are performed like the batches one.
    * @return the system user of Silverpeas (a virtual user, id est without any user account)
    */

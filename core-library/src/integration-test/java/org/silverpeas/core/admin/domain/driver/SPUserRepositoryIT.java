@@ -103,6 +103,7 @@ public class SPUserRepositoryIT {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(SPUserRepositoryIT.class)
         .addDatabaseToolFeatures()
+        .addAdministrationFeatures()
         .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> warBuilder
             .addPackages(true, "org.silverpeas.core.security.authentication.password")
             .addClasses(SPUserRepository.class, SPUserJpaRepository.class, SPUser.class, SPGroup.class))

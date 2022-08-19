@@ -54,7 +54,6 @@ import static junit.framework.TestCase.*;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
- *
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
@@ -412,9 +411,9 @@ public class PublicationDAOIT {
       componentIds.add("kmelia201");
       String status = "Valid";
       Collection<PublicationDetail> result = PublicationDAO.selectPublicationsByCriteria(con,
-              PublicationCriteria
-                  .excludingTrashNodeOnComponentInstanceIds(componentIds)
-                  .ofStatus(status));
+          PublicationCriteria
+              .excludingTrashNodeOnComponentInstanceIds(componentIds)
+              .ofStatus(status));
       assertEquals(result.size(), 2);
 
       status = "Draft";
@@ -681,8 +680,9 @@ public class PublicationDAOIT {
       Date begin = DateUtil.parse("2008/11/01");
       Date end = DateUtil.parse("2008/11/30");
 
-      List<SocialInformation> list100DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
-          user100, begin, end);
+      List<SocialInformationPublication> list100DOA =
+          PublicationDAO.getAllPublicationsIDbyUserid(con,
+              user100, begin, end);
       assertEquals("Must be equal", list100.get(0), list100DOA.get(0));
 
 //who created pub2
@@ -695,8 +695,9 @@ public class PublicationDAOIT {
 
       List<SocialInformation> list101 = new ArrayList<>();
       list101.add(sp2);
-      List<SocialInformation> list101DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
-          user101, begin, end);
+      List<SocialInformationPublication> list101DOA =
+          PublicationDAO.getAllPublicationsIDbyUserid(con,
+              user101, begin, end);
       assertTrue("Must be equal", list101.get(0).equals(list101DOA.get(0)));
 
 //who updated pub1 and pub2

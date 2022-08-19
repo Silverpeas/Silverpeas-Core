@@ -143,13 +143,4 @@ public class Transaction {
     return getStatus() == Status.STATUS_ACTIVE;
   }
 
-  /**
-   * Gets the transaction manager behind this transaction.
-   * @return a {@link TransactionManager} instance.
-   */
-  @SuppressWarnings("unused")
-  public TransactionManager getTransactionManager() {
-    return this.transactionManager;
-  }
-
 }

@@ -68,8 +68,7 @@ public class POPUPMessageBeanRepositoryIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(POPUPMessageBeanRepositoryIT.class)
-        .addDatabaseToolFeatures()
-        .addJpaPersistenceFeatures()
+        .addAdministrationFeatures()
         .addClasses(POPUPMessageBeanFinder.class)
         .testFocusedOn(
             war -> war.addClasses(POPUPMessageBean.class, POPUPMessageBeanRepository.class))

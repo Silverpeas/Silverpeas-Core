@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -60,7 +61,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    * Default constructor.
    * @param user the user behind a login.
    */
-  protected UserMustAcceptTermsOfServiceVerifier(final UserDetail user) {
+  protected UserMustAcceptTermsOfServiceVerifier(final User user) {
     super(user);
   }
 

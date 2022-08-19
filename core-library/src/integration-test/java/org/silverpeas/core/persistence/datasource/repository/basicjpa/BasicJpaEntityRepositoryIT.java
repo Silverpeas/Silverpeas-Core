@@ -93,8 +93,8 @@ public class BasicJpaEntityRepositoryIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(BasicJpaEntityRepositoryIT.class)
-        .addDatabaseToolFeatures()
-        .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> {
+        .addAdministrationFeatures()
+        .testFocusedOn((warBuilder) -> {
           warBuilder.addClasses(BasicJpaEntityServiceTest.class);
           warBuilder.addPackages(true, "org.silverpeas.core.persistence.datasource.repository");
           warBuilder.addAsResource(
