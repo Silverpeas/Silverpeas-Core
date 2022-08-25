@@ -1821,7 +1821,8 @@ version: 2.8.0r4
         * @method show
         */
         show: function () {
-            this.cfg.setProperty("visible", true);
+            if (this.cfg !== null && this.cfg !== undefined)
+                this.cfg.setProperty("visible", true);
         },
 
         /**
@@ -1831,7 +1832,8 @@ version: 2.8.0r4
         * @method hide
         */
         hide: function () {
-            this.cfg.setProperty("visible", false);
+            if (this.cfg !== null && this.cfg !== undefined)
+                this.cfg.setProperty("visible", false);
         },
 
         // BUILT-IN EVENT HANDLERS FOR MODULE //
