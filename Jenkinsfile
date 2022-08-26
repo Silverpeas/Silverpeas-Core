@@ -36,7 +36,7 @@ mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
               env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')) {
             withSonarQubeEnv {
               sh """
-mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core \\
+mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
     -Dsonar.organization=silverpeas \\
     -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
     -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
