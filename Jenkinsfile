@@ -48,7 +48,7 @@ pipeline {
         script {
           withSonarQubeEnv {
             sh """
-                mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core \\
+                mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
                   -Dsonar.organization=silverpeas \\
                   -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
                   -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
