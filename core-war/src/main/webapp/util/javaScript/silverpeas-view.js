@@ -118,6 +118,9 @@
       const service = new ViewService();
       // Getting view
       service.getDocumentView(options.attachmentId, options.componentInstanceId, options.lang).then(function(data) {
+        if (typeof options.onceload === 'function') {
+          data.onceload = options.onceload;
+        }
         if (options.insertMode) {
           __insertView($_this, data);
         } else {
@@ -153,7 +156,8 @@
     $documentViewer.embedPlayer({
       url : view.getViewerUrl(),
       width : view.getWidth(),
-      height : view.getHeight()
+      height : view.getHeight(),
+      onceload : view.onceload
     });
   }
 
@@ -199,7 +203,8 @@
         $documentViewer.embedPlayer({
           url : view.getViewerUrl(),
           width : view.getWidth(),
-          height : view.getHeight()
+          height : view.getHeight(),
+          onceload : view.onceload
         });
         $baseContainer.popup('view', settings);
         resolve();
@@ -339,6 +344,7 @@
       const $title = document.createElement('h3');
       $title.classList.add('title');
       $title.innerText = attachment.title ? attachment.title : attachment.fileName;
+      attachment.$attContainer = $attContainer;
       const $description = document.createElement('p');
       $description.classList.add('description');
       $description.innerText = attachment.description;
@@ -356,12 +362,20 @@
       const $simpleText = document.createElement("div");
       sp.ajaxRequest(webContext + attachment.downloadUrl).send().then(function(request) {
         $simpleText.innerText = request.responseText;
+        setTimeout(function () {
+          attachment.$attContainer.classList.add('loaded');
+        }, 0);
       });
       return $simpleText;
     };
     const __renderImage = function(attachment) {
       const $imageContainer = document.createElement("div");
       const $img = document.createElement("img");
+      const __onload = function() {
+        attachment.$attContainer.classList.add('loaded');
+        $img.removeEventListener('load', __onload);
+      };
+      $img.addEventListener('load', __onload);
       $img.src = webContext + attachment.downloadUrl.replace(/(\/lang\/[a-z]+\/)(name\/)/g, '$1size/600x/$2');
       $imageContainer.appendChild($img);
       return $imageContainer;
@@ -369,7 +383,10 @@
     const __renderMedia = function(attachment) {
       const $mediaContainer = document.createElement("div");
       jQuery($mediaContainer).embedPlayer({
-        url : webContext + attachment.downloadUrl
+        url : webContext + attachment.downloadUrl,
+        onceload : function() {
+          attachment.$attContainer.classList.add('loaded');
+        }
       });
       return $mediaContainer;
     };
@@ -379,7 +396,10 @@
         componentInstanceId: attachment.instanceId,
         attachmentId: attachment.id,
         lang: attachment.lang,
-        insertMode : true
+        insertMode : true,
+        onceload : function() {
+          attachment.$attContainer.classList.add('loaded');
+        }
       });
       return $viewableContainer;
     };
@@ -448,9 +468,32 @@
       }.bind(this));
     };
     if (!__context.options.parentContainer) {
-      whenSilverpeasReady(domInit);
+      whenSilverpeasEntirelyLoaded(domInit);
     } else {
       domInit();
     }
   }
+
+  AttachmentsAsContentViewer.whenAllCurrentAttachmentDisplayed = function(options) {
+    const context = extendsObject({
+      onTimeout : function() {
+        // no processing by default
+      },
+      callback : undefined
+    }, sp.param.singleToObject('callback', options));
+    const timeout = 5000;
+    let timeoutCount = 0;
+    const __watch = function() {
+      const all = sp.element.querySelectorAll('.attachments-as-content .attachment-container');
+      const allLoaded = sp.element.querySelectorAll('.attachments-as-content .attachment-container.loaded');
+      if (all.length !== allLoaded.length && timeoutCount < timeout) {
+        context.onTimeout();
+        timeoutCount += 100;
+        setTimeout(__watch, 100);
+      } else {
+        context.callback();
+      }
+    };
+    setTimeout(__watch, 0);
+  };
 })();

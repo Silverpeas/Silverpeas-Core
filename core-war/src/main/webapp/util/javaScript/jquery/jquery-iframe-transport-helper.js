@@ -63,21 +63,23 @@
    * @private
    */
   function __handleFormSubmit($form, options) {
-    var _self = $form[0];
+    const _self = $form[0];
     $form.submit(function() {
-      var iframeAjaxTransportOptions = {
+      let iframeAjaxTransportOptions = {
         iframe : true,
         files : $(":file", $form)
       };
       if (!options.sendFilesOnly) {
-        var data = $(":not(:file)", $form).serializeArray();
+        const data = $(":not(:file)", $form).serializeArray();
         iframeAjaxTransportOptions = $.extend(iframeAjaxTransportOptions, {
           data : data,
           processData : false
         });
       }
       $.ajax($form.attr('action'), iframeAjaxTransportOptions).complete(function(uploadedFiles) {
-        var jsonObject = $.parseJSON(uploadedFiles.responseText);
+        const jsonObject = typeof uploadedFiles.responseText === 'string'
+            ? $.parseJSON(uploadedFiles.responseText)
+            : uploadedFiles;
         if (jsonObject && typeof jsonObject.iframeMessageKey === 'string' &&
             jsonObject.iframeMessageKey.length > 0) {
           notyRegistredMessages(jsonObject.iframeMessageKey);

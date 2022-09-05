@@ -24,6 +24,10 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.util.StringUtil;
+
+import java.util.Optional;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -53,5 +57,18 @@ public class TagUtil {
       }
     }
     return href;
+  }
+
+  /**
+   * Centralizes the formatting of a string value in order to get a dom id compatible value.
+   * @param value any kind of value.
+   * @return a dom id compatible value.
+   */
+  public static String formatForDomId(Object value) {
+    return Optional.ofNullable(value)
+        .map(Object::toString)
+        .map(StringUtil::normalizeByRemovingAccent)
+        .map(v -> v.replaceAll("[=\\- ]", "_"))
+        .orElse(StringUtil.EMPTY);
   }
 }

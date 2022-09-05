@@ -33,8 +33,8 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.wbe.WbeHostManager;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -43,6 +43,7 @@ import java.io.IOException;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isDisplayableAsContentForComponentInstanceId;
 import static org.silverpeas.core.util.StringUtil.NEWLINE;
+import static org.silverpeas.core.web.util.viewgenerator.html.TagUtil.formatForDomId;
 
 /**
  * @author ehugonnet
@@ -51,6 +52,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   private static final int HTML_BUFFER_CAPACITY = 2048;
   private SimpleDocument attachment;
+  private String afManagerName;
   private boolean useXMLForm;
   private boolean useWebDAV;
   private boolean showMenuNotif;
@@ -65,6 +67,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   public void setAttachment(SimpleDocument attachment) {
     this.attachment = attachment;
+    afManagerName = "_afManager" + formatForDomId(attachment.getForeignId());
   }
 
   public void setUseXMLForm(boolean useXMLForm) {
@@ -356,7 +359,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   StringBuilder prepareMenuItem(StringBuilder buffer, String javascript, String label) {
-    return buffer.append(String.format(MENU_ITEM_TEMPLATE, javascript, label));
+    return buffer.append(String.format(MENU_ITEM_TEMPLATE, afManagerName + "." + javascript, label));
   }
 
   StringBuilder configureCheckout(StringBuilder buffer, String attachmentId, boolean disable) {

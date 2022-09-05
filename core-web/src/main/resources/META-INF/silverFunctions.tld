@@ -383,4 +383,12 @@
       org.silverpeas.core.admin.user.model.SilverpeasRole getHighestOfCurrentUserOn(java.lang.String)
     </function-signature>
   </function>
+  <function>
+    <description>Formats given value in order to be used for id attribute of DOM elements.</description>
+    <name>formatForDomId</name>
+    <function-class>org.silverpeas.core.web.util.viewgenerator.html.TagUtil</function-class>
+    <function-signature>
+      java.lang.String formatForDomId(java.lang.Object))
+    </function-signature>
+  </function>
 </taglib>

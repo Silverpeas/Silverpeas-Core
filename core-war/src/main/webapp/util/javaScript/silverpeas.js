@@ -1466,13 +1466,14 @@ if (typeof window.sp === 'undefined') {
     },
     param : {
       singleToObject : function(defaultName, params) {
-        var paramsType = typeof params;
+        const paramsType = typeof params;
         if (Array.isArray(params)
             || paramsType === 'string'
             || paramsType === 'boolean'
             || paramsType === 'number'
+            || paramsType === 'function'
             || sp.promise.isOne(params)) {
-          var result = {};
+          const result = {};
           result[defaultName] = params;
           return result;
         }

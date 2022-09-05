@@ -105,6 +105,13 @@
     $iframe.setAttribute('webkitallowfullscreen', 'true');
     $iframe.setAttribute('mozallowfullscreen', 'true');
     $iframe.setAttribute('allowfullscreen', 'true');
+    if (typeof config.onceload === 'function') {
+      let __onceLoad = function() {
+        config.onceload();
+        $iframe.removeEventListener('load', __onceLoad);
+      };
+      $iframe.addEventListener('load', __onceLoad);
+    }
     const playerParameters = extendsObject(config.playerParameters, {
       'embedPlayer' : true,
       'width' : config.width,
@@ -117,6 +124,7 @@
         config.url += paramName + '=' + encodeURIComponent(playerParameters[paramName]);
       }
     }
+
     whenSilverpeasEntirelyLoaded(function() {
       $iframe.setAttribute('src', config.url);
       $container[0].appendChild($iframe);
