@@ -90,6 +90,12 @@
 </c:if>
 <c:set var="isHandledSubscriptionConfirmation"
        value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
+<%@ attribute name="completedUrlSuccessCallback" required="false"
+              type="java.lang.String"
+              description="The JS callback on success operation about completed url management." %>
+<c:if test="${empty completedUrlSuccessCallback}">
+  <c:set var="completedUrlSuccessCallback" value="uploadCompleted"/>
+</c:if>
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
@@ -166,7 +172,7 @@
         domSelector : '${domSelector}',
         componentInstanceId : "${componentInstanceId}",
         onCompletedUrl : "${uploadCompletedUrl}",
-        onCompletedUrlSuccess : uploadCompleted,
+        onCompletedUrlSuccess : ${completedUrlSuccessCallback},
         helpContentUrl : "${helpUrl}",
         helpCoverClass : "${helpCoverClass}"
       };

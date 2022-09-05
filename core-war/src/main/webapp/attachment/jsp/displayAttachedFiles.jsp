@@ -182,7 +182,7 @@
   <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
   <c:set var="displayUniversalLinks"><%=URLUtil.displayUniversalLinks()%></c:set>
 
-  <c:set var="domIdSuffix" value="${fn:replace(fn:replace(param.Id, '=', '_'), '-', '_')}"/>
+  <c:set var="domIdSuffix" value="${silfn:formatForDomId(param.Id)}"/>
   <c:set var="Silverpeas_Attachment_ObjectId" value="${param.Id}" scope="session" />
   <c:set var="Silverpeas_Attachment_ComponentId" value="${param.ComponentId}" scope="session" />
   <c:choose>
@@ -223,10 +223,10 @@
 %>
 
 <c:if test="${!empty pageScope.attachments || 'user' != userProfile}">
-<div class="attachments bgDegradeGris attachmentDragAndDrop${fn:replace(param.Id,'=','_')}">
+<div class="attachments bgDegradeGris attachmentDragAndDrop${domIdSuffix}">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
-  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:_afManager${domIdSuffix}.addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
     <ul id="attachmentList" class="attachmentList attachmentList${domIdSuffix}">
       <c:forEach items="${pageScope.attachments}" var="currentAttachment" >
@@ -316,14 +316,14 @@
                       <c:param name="ComponentId" value="${componentId}"/>
                       <c:param name="ObjectType" value="${'Attachment'}"/>
                       <c:param name="XMLFormName" value="${currentAttachment.xmlFormId}"/>
-                    </c:url>' href="#" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
+                    </c:url>' href="javascript:void(0)" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
           </c:if>
           <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
           <c:set var="shouldHideAllVersionsLink" scope="page" value="${silfn:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
           <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.functionalHistory))}" />
           <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
               <span class="linkAllVersions">
-                <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')"><fmt:message key="allVersions" /></a>
+                <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:_afManager${domIdSuffix}.viewPublicVersions('<c:out value="${currentAttachment.id}" />')"><fmt:message key="allVersions" /></a>
               </span>
           </c:if>
           <c:if test="${contextualMenuEnabled}">
@@ -338,7 +338,7 @@
           </c:if>
                 <c:if test="${spinfireViewerEnable && spinfire eq silfn:mimeType(currentAttachment.filename)}">
                   <div id="switchView" name="switchView" style="display: none">
-            <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img alt="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
+            <a href="#" onClick="_afManager${domIdSuffix}.changeView3d('<c:out value="${currentAttachment.id}" />')"><img alt="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
             </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
               <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
                 <param name="ModelName" value="<c:out value="${url}" escapeXml="false"/>">
@@ -361,35 +361,10 @@
     </ul>
 </div>
 </c:if>
-<div id="attachmentModalDialog" style="display: none"> </div>
-<c:if test="${spinfireViewerEnable}">
-  <script type="text/javascript">
-  if (navigator.appName=='Microsoft Internet Explorer') {
-    for (var i = 0; i < document.getElementsByName("switchView").length; i++) {
-      document.getElementsByName("switchView")[i].style.display = '';
-    }
-  }
-
-  function changeView3d(objectId) {
-    if (document.getElementById(objectId).style.display == 'none') {
-      document.getElementById(objectId).style.display = '';
-      eval("iconeView" + objectId).src = '<c:url value="/util/icons/visible3D.gif" />';
-    } else {
-      document.getElementById(objectId).style.display = 'none';
-      eval("iconeView" + objectId).src = '<c:url value="/util/icons/masque3D.gif" />';
-    }
-  }
-  </script>
-</c:if>
 
 <script type="text/javascript">
-  <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
-    <c:param name="ComponentId" value="${componentId}" />
-    <c:param name="fromAlias" value="${fromAlias}"/>
-    <c:param name="Language" value="${contentLanguage}"/>
-  </c:url>
-  var publicVersionsWindow = window;
-  const attachmentEventManager = {
+if (!window.attachmentEventManager) {
+  window.attachmentEventManager = {
     dispatchEvent : function(eventName, data) {
       document.body.dispatchEvent(new CustomEvent(eventName, {
         detail : {
@@ -401,27 +376,81 @@
       }));
     }
   };
-  function viewPublicVersions(docId) {
-      var url = '${allVersionsUrl}&DocId=' + docId;
-      var windowName = "publicVersionsWindow";
-      var windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
-      if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {
-        publicVersionsWindow.close();
-      }
-      publicVersionsWindow = SP_openWindow(url,windowName, "800", "475",
-      "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised");
-    }
 
-  String.prototype.format = function () {
-    var args = arguments;
-    return this.replace(/\{(\d+)\}/g, function (m, n) { return args[n]; });
+  String.prototype.format = function() {
+    const args = arguments;
+    return this.replace(/\{(\d+)\}/g, function(m, n) { return args[n]; });
   };
 
+  jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
+    $.closeProgressMessage();
+  });
+
+  function addAttachment(foreignId) {
+    _afManager${domIdSuffix}.addAttachment(foreignId);
+  }
+
+  function preview(target, attachmentId) {
+    $(target).preview("previewAttachment", {
+      componentInstanceId: '<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />',
+      attachmentId: attachmentId,
+      lang: '${contentLanguage}'
+    });
+    return false;
+  }
+
+  function view(target, attachmentId) {
+    $(target).view("viewAttachment", {
+      componentInstanceId: "<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />",
+      attachmentId: attachmentId,
+      lang: '${contentLanguage}'
+    });
+    return false;
+  }
+}
+
+const _afManager${domIdSuffix} = new function() {
+  const _self = this;
+  const get$containerEl = function() { return jQuery('.attachmentList${domIdSuffix}') };
+  _self.ui = {
+    get$addAttachment : function() { return $(".dialog-attachment-add${domIdSuffix}") },
+    get$updateAttachment : function() { return $(".dialog-attachment-update${domIdSuffix}") },
+    get$deleteAttachment : function() { return $(".dialog-attachment-delete${domIdSuffix}") },
+    get$switchAttachmentState : function() { return $(".dialog-attachment-switch${domIdSuffix}") },
+    get$onlineEditingCustomProtocol : function() { return $(".dialog-attachment-onlineEditing-customProtocol${domIdSuffix}") },
+    get$attachmentCheckin : function() { return $(".dialog-attachment-checkin${domIdSuffix}") }
+  };
+  let publicVersionsWindow = window;
+  <c:if test="${spinfireViewerEnable}">
+  _self.changeView3d = function(objectId) {
+    if (document.getElementById(objectId).style.display === 'none') {
+      document.getElementById(objectId).style.display = '';
+      eval("iconeView" + objectId).src = '<c:url value="/util/icons/visible3D.gif" />';
+    } else {
+      document.getElementById(objectId).style.display = 'none';
+      eval("iconeView" + objectId).src = '<c:url value="/util/icons/masque3D.gif" />';
+    }
+  }
+  </c:if>
+  <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
+    <c:param name="ComponentId" value="${componentId}" />
+    <c:param name="fromAlias" value="${fromAlias}"/>
+    <c:param name="Language" value="${contentLanguage}"/>
+  </c:url>
+  _self.viewPublicVersions = function(docId) {
+    const url = '${allVersionsUrl}&DocId=' + docId;
+    const windowName = "publicVersionsWindow";
+    const windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
+    if (!publicVersionsWindow.closed && publicVersionsWindow.name === "publicVersionsWindow") {
+      publicVersionsWindow.close();
+    }
+    publicVersionsWindow = SP_openWindow(url, windowName, "800", "475", windowParams);
+  }
 
   // Create the tooltips only on document load
   $(document).ready(function() {
     // Use the each() method to gain access to each elements attributes
-    $('a[rel]').each(function() {
+    get$containerEl().find('a[rel]').each(function() {
       const url = $(this).attr('rel');
       if (!url || !url.startsWith(webContext)) {
         return;
@@ -461,13 +490,13 @@
     });
 
     // function to transform insecable string into secable one
-    $(".lineMain a").html(function() {
-      var initialName = $(this).text();
-      var maxLength = 38;
-      var finalName = "";
-      var currentPartLength = 0;
-      for (var i = 0; i < initialName.length; i++) {
-        var currentChar = initialName.charAt(i);
+    get$containerEl().find(".lineMain a").html(function() {
+      const initialName = $(this).text();
+      let maxLength = 38;
+      let finalName = "";
+      let currentPartLength = 0;
+      for (let i = 0; i < initialName.length; i++) {
+        const currentChar = initialName.charAt(i);
         if (currentChar === ' ' || currentChar === '-') {
           currentPartLength = 0;
         }
@@ -483,14 +512,14 @@
   });
 
   <c:if test="${contextualMenuEnabled}" >
-    var pageMustBeReloadingAfterSorting = false;
+    let pageMustBeReloadingAfterSorting = false;
 
-    function checkout(id, oldId, webdav, wbe, edit, download, lang) {
+    _self.checkout = function(id, oldId, webdav, wbe, edit, download, lang) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
         $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(formattedDateTimeData) {
           let openWebBrowserEdition = function() {
-            sp.formRequest(getOnlineEditionLauncherURL(id, lang))
+            sp.formRequest(_getOnlineEditionLauncherURL(id, lang))
                 .withParam('wbe', true)
                 .toTarget('_blank')
                 .submit();
@@ -512,7 +541,7 @@
             if (edit) {
               if (!wbe) {
                 // display alert popin
-                showInformationAboutOnlineEditingWithCustomProtocol(id, lang);
+                _showInformationAboutOnlineEditingWithCustomProtocol(id, lang);
               } else {
                 openWebBrowserEdition();
               }
@@ -531,153 +560,100 @@
         }, 'text');
         pageMustBeReloadingAfterSorting = true;
       }
-    }
+    };
 
-    function checkoutAndDownload(id, oldId, webdav) {
-      checkout(id, oldId, webdav, false, false, true);
-    }
+    _self.checkoutAndDownload = function(id, oldId, webdav) {
+      _self.checkout(id, oldId, webdav, false, false, true);
+    };
 
-    function checkoutAndEdit(id, oldId, lang, wbe) {
-      checkout(id, oldId, true, wbe, true, false, lang);
-    }
+    _self.checkoutAndEdit = function(id, oldId, lang, wbe) {
+      _self.checkout(id, oldId, true, wbe, true, false, lang);
+    };
 
-    function switchState(id, isVersioned, isLastPublicVersion) {
+    _self.switchState = function(id, isVersioned, isLastPublicVersion) {
       <fmt:message key="attachment.switch.warning.simple" var="warningSimple"/>
       <fmt:message key="attachment.switch.warning.versioned" var="warningVersioned"/>
       <fmt:message key="attachment.switchState.toVersioned" var="warningTitleSimple"/>
       <fmt:message key="attachment.switchState.toSimple" var="warningTitleVersioned"/>
-      var $attachmentSwitchVersioned = $("#attachment-switch-versioned");
-      var $attachmentSwitchSimple = $("#attachment-switch-simple");
+      let $switchAttachmentState = _self.ui.get$switchAttachmentState();
+      const $attachmentSwitchVersioned = $switchAttachmentState.find("#attachment-switch-versioned");
+      const $attachmentSwitchSimple = $switchAttachmentState.find("#attachment-switch-simple");
       $attachmentSwitchVersioned.hide();
       $attachmentSwitchSimple.hide();
       if(isVersioned) {
-        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
-        $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
+        $switchAttachmentState.dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
+        $switchAttachmentState.find("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
         if (isLastPublicVersion) {
           $attachmentSwitchSimple.show();
         } else {
-          $("#switch-version-last").prop( "checked", true );
+          $switchAttachmentState.find("#switch-version-last").prop( "checked", true );
         }
       } else {
-        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
-        $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
+        $switchAttachmentState.dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
+        $switchAttachmentState.find("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
         $attachmentSwitchVersioned.show();
       }
-      $("#dialog-attachment-switch").data("id", id).dialog("open");
+      $switchAttachmentState.data("id", id).dialog("open");
       pageMustBeReloadingAfterSorting = true;
-    }
+    };
 
-    function checkin(id, oldId, webdav, forceRelease, isVersioned, webdavContentLanguageLabel) {
+    _self.checkin = function(id, oldId, webdav, forceRelease, isVersioned, webdavContentLanguageLabel) {
+      const $attachmentCheckin = _self.ui.get$attachmentCheckin();
       <c:if test="${_isI18nHandled}">
-      var $checkinWebdavLanguageBlock = $('#webdav-attachment-checkin-language');
+      const $checkinWebdavLanguageBlock = $attachmentCheckin.find('#webdav-attachment-checkin-language');
       if (webdav === true) {
         $checkinWebdavLanguageBlock.show();
-        $('#langCreate', $checkinWebdavLanguageBlock).html(webdavContentLanguageLabel);
+        $checkinWebdavLanguageBlock.find('#langCreate').html(webdavContentLanguageLabel);
       } else {
         $checkinWebdavLanguageBlock.hide();
       }
       </c:if>
-      var $attachmentCheckinBlock = $("#simple_fields_attachment-checkin");
-      var $versionedAttachmentCheckinBlock = $("#versioned_fields_attachment-checkin");
+      const $attachmentCheckinBlock = $attachmentCheckin.find("#simple_fields_attachment-checkin");
+      const $versionedAttachmentCheckinBlock = $attachmentCheckin.find("#versioned_fields_attachment-checkin");
       if(isVersioned === true) {
         $attachmentCheckinBlock.hide();
         $versionedAttachmentCheckinBlock.show();
-      }else {
+      } else {
         $versionedAttachmentCheckinBlock.hide();
         $attachmentCheckinBlock.css('display', 'inline-block');
       }
-      $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
+      $attachmentCheckin.data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
       pageMustBeReloadingAfterSorting = true;
-    }
+    };
 
-    function menuCheckin(id) {
-      var oMenu = eval("oMenu" + id);
-      oMenu.getItem(3).cfg.setProperty("disabled", true);
-      oMenu.getItem(0).cfg.setProperty("disabled", false);
-      oMenu.getItem(1).cfg.setProperty("disabled", false);
-      oMenu.getItem(2).cfg.setProperty("disabled", false);
-      oMenu.getItem(3, 1).cfg.setProperty("disabled", false)
-      oMenu.getItem(2, 1).cfg.setProperty("disabled", false);
-      var $worker = $('#worker' + id);
-      $worker.html("");
-      $worker.css({'visibility':'hidden'});
-      if (pageMustBeReloadingAfterSorting) {
-        reloadIncludingPage();
-      }
-    }
+    _self.addAttachment = function(foreignId) {
+      const $addAttachment = _self.ui.get$addAttachment();
+      $addAttachment.find("form #foreignId").val(foreignId);
+      $addAttachment.dialog("open");
+    };
 
-    function addAttachment(foreignId) {
-      $("#add-attachment-form #foreignId").val(foreignId);
-      $("#dialog-attachment-add").dialog("open");
-    }
+    _self.deleteAttachment = function(id, filename) {
+      let $deleteAttachment = _self.ui.get$deleteAttachment();
+      $deleteAttachment.find("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
+      $deleteAttachment.data("id", id).data("filename", filename).dialog("open");
+    };
 
-    function deleteAttachment(id, filename) {
-      $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
-      $("#dialog-attachment-delete").data("id", id).data("filename", filename).dialog("open");
-    }
-
-    function deleteContent(id, lang) {
-      var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + lang;
-      $.ajax({
-        url: deleteUrl,
-        type: "DELETE",
-        cache: false,
-        success: function(data) {}
-      });
-    }
-
-    function removeAttachment(attachmentId) {
-      var sLanguages = "";
-      var boxItems = document.removeForm.languagesToDelete;
-      if (boxItems != null){
-        //at least one checkbox exists
-        var nbBox = boxItems.length;
-        if ((nbBox == null) && (boxItems.checked)) {
-          sLanguages += boxItems.value + ",";
-        } else {
-          for (var i = 0; i < boxItems.length; i++) {
-            if (boxItems[i].checked){
-              sLanguages += boxItems[i].value + ",";
-            }
-          }
-        }
-      }
-
-      $.post('<c:url value="/Attachment" />', { id:attachmentId, Action:'Delete', languagesToDelete:sLanguages}, function(data){
-        data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
-        if (data == "attachmentRemoved") {
-          $('#attachment_' + attachmentId).remove();
-        } else {
-          if (data == "translationsRemoved") {
-            reloadIncludingPage();
-          }
-        }
-        closeMessage();
-      }, 'text');
-      pageMustBeReloadingAfterSorting = true;
-    }
-
-    function reloadIncludingPage() {
+    _self.reloadIncludingPage = function() {
       <c:choose>
         <c:when test="${! silfn:isDefined(param.CallbackUrl)}">document.location.reload();</c:when>
         <c:otherwise>document.location.href = "<c:url value="${param.CallbackUrl}" />";</c:otherwise>
       </c:choose>
     }
 
-    function updateAttachment(attachmentId, lang) {
-      loadAttachment(attachmentId, lang);
-      $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
+    _self.updateAttachment = function(attachmentId, lang) {
+      _loadAttachmentToUpdate(attachmentId, lang);
+      _self.ui.get$updateAttachment().data('attachmentId', attachmentId).dialog("open");
     }
 
-    function switchDownloadAllowedForReaders(attachmentId, allowed) {
+    _self.switchDownloadAllowedForReaders = function(attachmentId, allowed) {
       __switchActionEnabled(attachmentId, "switchDownloadAllowedForReaders", "allowed", allowed);
     }
 
-    function switchDisplayAsContentEnabled(attachmentId, enabled) {
+    _self.switchDisplayAsContentEnabled = function(attachmentId, enabled) {
       __switchActionEnabled(attachmentId, "switchDisplayAsContentEnabled", "enabled", enabled);
     }
 
-    function switchEditSimultaneouslyEnabled(attachmentId, enabled) {
+    _self.switchEditSimultaneouslyEnabled = function(attachmentId, enabled) {
       __switchActionEnabled(attachmentId, "switchEditSimultaneouslyEnabled", "enabled", enabled);
     }
 
@@ -693,52 +669,44 @@
         dataType : "json",
         data : data,
         success : function() {
-          reloadIncludingPage();
+          _self.reloadIncludingPage();
         }
       });
     }
 
     <c:if test="${useXMLForm}">
-      function EditXmlForm(id, lang) {
-        var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage=' + lang + '&ObjectId=' + id;
+      _self.EditXmlForm = function(id, lang) {
+        const url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage=' + lang + '&ObjectId=' + id;
         SP_openWindow(url, "test", "600", "400", "scrollbars=yes, resizable, alwaysRaised");
       }
     </c:if>
 
-    function closeMessage() {
-      $("#attachmentModalDialog").dialog("close");
-    }
-
-    function displayWarning(attachmentId) {
-      var url = '<c:url value="/attachment/jsp/warning_locked.jsp" />' + '?id=' + attachmentId;
-      $("#attachmentModalDialog").dialog("open").load(url);
-    }
-
     $(document).ready(function() {
-      $("#fileLang").on("change", function (event) {
-        $("#fileLang option:selected").each(function () {
-          loadAttachment($("#attachmentId").val(), $(this).val());
+      _self.ui.get$updateAttachment().find("#fileLang").on("change", function(event) {
+        const $updateAttachment = _self.ui.get$updateAttachment();
+        $updateAttachment.find("#fileLang option:selected").each(function() {
+          _loadAttachmentToUpdate($updateAttachment.find("#attachmentId").val(), $(this).val());
         });
     });
 
-    function verifyVersionType(domRadioSelector) {
-      var lastVersionType = 'public';
+    _self.verifyVersionType = function(domRadioSelector) {
+      let lastVersionType = 'public';
       if (domRadioSelector) {
-        var $radio = $(domRadioSelector);
+        const $radio = $(domRadioSelector);
         if ($radio.length === 2 && $radio.parent().parent().css('display') !== 'none') {
-          var value = $radio.filter(':checked').val();
+          const value = $radio.filter(':checked').val();
           lastVersionType = (!value || value === 'false' || value === '0') ? 'public' : 'work';
         }
       }
       return lastVersionType;
     }
 
-    function _performActionWithContributionModificationManagement(callback, options) {
+    const _performActionWithContributionModificationManagement = function(callback, options) {
       let mustPerform = ${isHandledModificationContext};
       if (mustPerform) {
-        var params = typeof options === 'object' ? options : {};
-        var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
-        mustPerform = verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav;
+        const params = typeof options === 'object' ? options : {};
+        const checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
+        mustPerform = _self.verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav;
         if (mustPerform) {
           jQuery.contributionModificationContext.validateOnUpdate({
             contributionId : {
@@ -765,9 +733,9 @@
       }
       <c:choose>
       <c:when test="${isHandledSubscriptionConfirmation}">
-      var params = typeof options === 'object' ? options : {};
-      var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
-      if (verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav) {
+      const params = typeof options === 'object' ? options : {};
+      const checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
+      if (_self.verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav) {
         $.subscription.confirmNotificationSendingOnUpdate({
           contribution : {
             contributionId : {
@@ -813,59 +781,49 @@
       </c:choose>
     }
 
-    var iframeSendComplete = function() {
-      reloadIncludingPage();
+    const iframeSendComplete = function() {
+      _self.reloadIncludingPage();
     };
 
-    var iframeSendError = function() {
+    const iframeSendError = function() {
       $.closeProgressMessage();
     };
 
-    $('#update-attachment-form').iframeAjaxFormSubmit ({
+    _self.ui.get$updateAttachment().find('form').iframeAjaxFormSubmit ({
       complete : iframeSendComplete,
       error : iframeSendError
     });
 
-    $('#add-attachment-form').iframeAjaxFormSubmit ({
+    _self.ui.get$addAttachment().find('form').iframeAjaxFormSubmit ({
       complete : iframeSendComplete,
       error : iframeSendError
     });
 
-    $('#checkin-attachment-form').iframeAjaxFormSubmit ({
-      complete : function (response) {
-        if (response.status) {
-          menuCheckin(response.id);
-        } else {
-          displayWarning(response.attachmentId);
-        }
-        reloadIncludingPage();
-      }
-    });
-
-    $("#dialog-attachment-delete").dialog({
+    _self.ui.get$deleteAttachment().dialog({
       autoOpen: false,
       open:function() {
-        var filename = $(this).data("filename");
-        $("#button-delete-all").hide();
+        const filename = $(this).data("filename");
+        const $dialog = _self.ui.get$deleteAttachment().parent();
+        $dialog.find("#button-delete-all").hide();
       <c:if test="${_isI18nHandled && not isVersionActive}">
-        var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
+        const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
           url: translationsUrl,
           type: "GET",
           cache: false,
           success: function(data) {
             if (data.length > 1) {
-              $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
-              for(var i = 0 ; i < data.length; i++) {
-                $("#delete-language-" + data[i].lang).show();
+              $dialog.find("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
+              for(let i = 0 ; i < data.length; i++) {
+                $dialog.find("#delete-language-" + data[i].lang).show();
               }
-              $("#attachment-delete-select-lang").show();
-              $("#button-delete-all").show();
+              $dialog.find("#attachment-delete-select-lang").show();
+              $dialog.find("#button-delete-all").show();
             } else {
-              $("#attachment-delete-select-lang").hide();
-              $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
-              $("#button-delete-content").hide();
-              $("#button-delete-all").show();
+              $dialog.find("#attachment-delete-select-lang").hide();
+              $dialog.find("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
+              $dialog.find("#button-delete-content").hide();
+              $dialog.find("#button-delete-all").show();
             }
           },
           error: function(jqXHR, textStatus, errorThrown) {
@@ -882,16 +840,17 @@
           id: "button-delete-content",
           text: "<fmt:message key="GML.delete"/>",
           click: function() {
-            var $this = $(this);
-            var attachmentId = $this.data("id");
+            const $this = $(this);
+            const attachmentId = $this.data("id");
             <c:choose>
               <c:when test="${_isI18nHandled && not isVersionActive}">
             $.progressMessage();
-            var deleteOperations = [];
-            $("input[name='languagesToDelete']").filter(':checked').each(function() {
-              var me = this;
+            const deleteOperations = [];
+            const $dialog = _self.ui.get$deleteAttachment().parent();
+            $dialog.find("input[name='languagesToDelete']").filter(':checked').each(function() {
+              const me = this;
               deleteOperations.push(function($deferred){
-                var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + me.value;
+                const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + me.value;
                 $.ajax({
                   url: deleteUrl,
                   type: "DELETE",
@@ -906,31 +865,31 @@
                 });
               });
             });
-            var _consumeDeleteOperations = function() {
+            const _consumeDeleteOperations = function() {
               if (deleteOperations.length) {
-                var $deferred = $.Deferred();
+                const $deferred = $.Deferred();
                 deleteOperations.shift().call(this, $deferred);
                 $deferred.always(function() {
                   _consumeDeleteOperations();
                 });
               } else {
-                reloadIncludingPage();
+                _self.reloadIncludingPage();
                 $this.dialog("close");
               }
             };
             _consumeDeleteOperations();
-            $("#dialog-attachment-delete").dialog("close");
+            $this.dialog("close");
               </c:when>
               <c:otherwise>
             _performActionWithContributionModificationManagement(function(userResponse) {
               $.progressMessage();
-              var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+              const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
               $.ajax(userResponse.applyOnAjaxOptions({
                 url: deleteUrl,
                 type: "DELETE",
                 cache: false,
                 success: function(data) {
-                  reloadIncludingPage();
+                  _self.reloadIncludingPage();
                   $this.dialog("close");
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -946,17 +905,17 @@
           id: "button-delete-all",
           text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
           click: function() {
-            var $this = $(this);
+            const $this = $(this);
             _performActionWithContributionModificationManagement(function(userResponse) {
               $.progressMessage();
-              var attachmentId = $this.data("id");
-              var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+              const attachmentId = $this.data("id");
+              const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
               $.ajax(userResponse.applyOnAjaxOptions({
                 url: deleteUrl,
                 type: "DELETE",
                 cache: false,
                 success: function(data) {
-                  reloadIncludingPage();
+                  _self.reloadIncludingPage();
                   $this.dialog("close");
                 }
               }));
@@ -971,11 +930,7 @@
       }
     });
 
-      jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
-        $.closeProgressMessage();
-      });
-
-      $("#dialog-attachment-add").dialog({
+      _self.ui.get$addAttachment().dialog({
         autoOpen : false,
         title : "<fmt:message key="attachment.dialog.add" />",
         height : 'auto',
@@ -983,18 +938,18 @@
         modal : true,
         buttons : {
           '<fmt:message key="GML.ok"/>' : function() {
-            var $this = $(this);
-            var filename = $.trim($("#file_create").val().split('\\').pop());
+            const $this = $(this);
+            const $addAttachmentForm = _self.ui.get$addAttachment().find('form');
+            const filename = $.trim($addAttachmentForm.find("#file_create").val().split('\\').pop());
             if (filename === '') {
-              notyError('<fmt:message key="attachment.dialog.error.file.mandatory"/>');
-              return false;
+              return SilverpeasError.add('<fmt:message key="attachment.dialog.error.file.mandatory"/>').show();
             }
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+            let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
             submitUrl = submitUrl + '/' + encodeURIComponent(filename);
             _performActionWithContributionModificationManagement(function() {
               $.progressMessage();
               if ("FormData" in window) {
-                var formData = new FormData($("#add-attachment-form")[0]);
+                const formData = new FormData($addAttachmentForm[0]);
                 $.ajax(submitUrl, {
                   processData : false,
                   contentType : false,
@@ -1002,16 +957,16 @@
                   dataType : "json",
                   data : formData,
                   success : function(data) {
-                    reloadIncludingPage();
+                    _self.reloadIncludingPage();
                     $this.dialog("close");
                   }
                 });
               } else {
-                $('#add-attachment-form').attr('action', submitUrl);
-                $('#add-attachment-form').submit();
+                $addAttachmentForm.attr('action', submitUrl);
+                $addAttachmentForm.submit();
               }
             }, {
-              versionTypeDomRadioSelector : '#dialog-attachment-add input[name="versionType"]'
+              versionTypeDomRadioSelector : '.dialog-attachment-add${domIdSuffix} input[name="versionType"]'
             });
           },
           '<fmt:message key="GML.cancel"/>' : function() {
@@ -1021,7 +976,7 @@
         }
       });
 
-      $("#dialog-attachment-update").dialog({
+      _self.ui.get$updateAttachment().dialog({
         autoOpen : false,
         title : "<fmt:message key="attachment.dialog.update" />",
         height : 'auto',
@@ -1029,10 +984,11 @@
         modal : true,
         buttons : {
           '<fmt:message key="GML.ok"/>' : function() {
-            var $this = $(this);
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+            const $this = $(this);
+            const $updateAttachmentForm = _self.ui.get$updateAttachment().find('form');
+            let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
                 $(this).data('attachmentId');
-            var filename = $.trim($("#file_upload").val().split('\\').pop());
+            const filename = $.trim($updateAttachmentForm.find("#file_upload").val().split('\\').pop());
             if (filename !== '') {
               submitUrl = submitUrl + '/' + encodeURIComponent(filename);
             } else {
@@ -1041,7 +997,7 @@
             _performActionWithContributionModificationManagement(function() {
               $.progressMessage();
               if ("FormData" in window) {
-                var formData = new FormData($("#update-attachment-form")[0]);
+                const formData = new FormData($updateAttachmentForm[0]);
                 $.ajax(submitUrl, {
                   processData : false,
                   contentType : false,
@@ -1049,32 +1005,33 @@
                   dataType : "json",
                   data : formData,
                   success : function(data) {
-                    reloadIncludingPage();
+                    _self.reloadIncludingPage();
                     $this.dialog("close");
                   }
                 });
               } else {
-                $('#update-attachment-form').attr('action', submitUrl);
-                $('#update-attachment-form').submit();
+                $updateAttachmentForm.attr('action', submitUrl);
+                $updateAttachmentForm.submit();
               }
             }, {
-              versionTypeDomRadioSelector : '#dialog-attachment-update input[name="versionType"]'
+              versionTypeDomRadioSelector : '.dialog-attachment-update${domIdSuffix} input[name="versionType"]'
             });
           },
           <c:if test="${_isI18nHandled && not isVersionActive}">
           '<fmt:message key="attachment.dialog.delete.lang"/>' : function() {
-            var $this = $(this);
+            const $this = $(this);
+            const $updateAttachmentForm = _self.ui.get$updateAttachment().find('form');
             jQuery.popup.confirm('<fmt:message key="attachment.suppressionConfirmation" />', function() {
               $.progressMessage();
               $.ajax({
                 url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
-                    $this.data('attachmentId') + '/content/' + $("#fileLang").val(),
+                    $this.data('attachmentId') + '/content/' + $updateAttachmentForm.find("#fileLang").val(),
                 type : "DELETE",
                 contentType : "application/json",
                 dataType : "json",
                 cache : false,
                 success : function(data) {
-                  reloadIncludingPage();
+                  _self.reloadIncludingPage();
                   $this.dialog("close");
                 }
               });
@@ -1090,34 +1047,27 @@
         }
       });
 
-        $(".attachmentList${domIdSuffix}").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
-        $("#attachmentModalDialog").dialog({
-          autoOpen: false,
-          modal: true,
-          title: '<fmt:message key="attachment.dialog.delete" />' ,
-          height: 'auto',
-          width: 550
-        });
+        get$containerEl().sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
 
-        function submitCheckin(submitUrl) {
+        const _submitCheckin = function(submitUrl) {
           $.progressMessage();
-          var $this = $(this);
+          const $this = $(this);
           $.ajax(submitUrl, {
             type : 'POST',
             dataType : "json",
-            data : $("#checkin-attachment-form").serialize(),
+            data : _self.ui.get$attachmentCheckin().find("form").serialize(),
             success : function(result) {
-              reloadIncludingPage();
+              _self.reloadIncludingPage();
               $this.dialog("close");
             },
             error : function(jqXHR, textStatus, errorThrown) {
               alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
-              reloadIncludingPage();
+              _self.reloadIncludingPage();
             }
           });
         }
 
-        $("#dialog-attachment-switch").dialog({
+      _self.ui.get$switchAttachmentState().dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.switch"/>",
         height: 'auto',
@@ -1125,20 +1075,21 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            var $this = $(this);
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $("#dialog-attachment-switch").data('id') + '/switchState';
+            const $this = $(this);
+            let $switchAttachmentState = _self.ui.get$switchAttachmentState();
+            const submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $switchAttachmentState.data('id') + '/switchState';
             $.progressMessage();
             $.ajax(submitUrl, {
               type : 'PUT',
               dataType : "json",
-              data : $("#attachment-switch-form").serialize(),
+              data : $switchAttachmentState.find("form").serialize(),
               success : function(result) {
-                reloadIncludingPage();
+                _self.reloadIncludingPage();
                 $this.dialog("close");
               },
               error : function(jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
-                reloadIncludingPage();
+                _self.reloadIncludingPage();
               }
             });
           },
@@ -1148,7 +1099,7 @@
         }
       });
 
-        $("#dialog-attachment-checkin").dialog({
+      _self.ui.get$attachmentCheckin().dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.checkin"/>",
         height: 'auto',
@@ -1156,38 +1107,40 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            var $webDav = $('#webdav');
-            $webDav.val($("#dialog-attachment-checkin").data('webdav'));
-            $('#force').val($("#dialog-attachment-checkin").data('forceRelease'));
-            $('#checkin_oldId').val($("#dialog-attachment-checkin").data('oldId'));
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-            var $this = $(this);
+            const $attachmentCheckin = _self.ui.get$attachmentCheckin();
+            const $webDav = $attachmentCheckin.find('#webdav');
+            $webDav.val($attachmentCheckin.data('webdav'));
+            $attachmentCheckin.find('#force').val($attachmentCheckin.data('forceRelease'));
+            $attachmentCheckin.find('#checkin_oldId').val($attachmentCheckin.data('oldId'));
+            const submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
+            const $this = $(this);
             _performActionWithContributionModificationManagement(function() {
-              submitCheckin.call($this, submitUrl);
+              _submitCheckin.call($this, submitUrl);
             }, {
-              versionTypeDomRadioSelector : '#dialog-attachment-checkin input[name="private"]',
+              versionTypeDomRadioSelector : '.dialog-attachment-checkin${domIdSuffix} input[name="private"]',
               checkInWebDav : $webDav.val() === 'true'
             });
           },
           '<fmt:message key="attachment.revert"/>': function() {
-              $('#force').val('true');
-              $('#webdav').val('false');
-              var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-              var $this = $(this);
-              submitCheckin.call($this, submitUrl);
+              const $attachmentCheckin = _self.ui.get$attachmentCheckin();
+              $attachmentCheckin.find('#force').val('true');
+              $attachmentCheckin.find('#webdav').val('false');
+              const submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
+              const $this = $(this);
+              _submitCheckin.call($this, submitUrl);
             },
             '<fmt:message key="GML.cancel"/>': function() {
-              var $this = $(this);
-              clearCheckin();
+              const $this = $(this);
+              _clearCheckin();
               $this.dialog("close");
             }
           },
           close: function() {
-            clearCheckin();
+            _clearCheckin();
           }
         });
 
-      $("#dialog-attachment-onlineEditing-customProtocol").dialog({
+      _self.ui.get$onlineEditingCustomProtocol().dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.title"/>",
         height: 'auto',
@@ -1197,7 +1150,7 @@
         buttons: {
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.edit"/>": function() {
             $.cookie(customProtocolCookieName, "IKnowIt", { expires: 3650, path: '/', secure: ${pageContext.request.secure} });
-            openDocViaCustomProtocol($(this).data('docId'), $(this).data('lang'));
+            _openDocViaCustomProtocol($(this).data('docId'), $(this).data('lang'));
             $(this).dialog("close");
           },
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.cancel"/>": function() {
@@ -1206,84 +1159,77 @@
         }
       });
 
-      $('.attachmentList${domIdSuffix}').bind('sortupdate', function(event, ui) {
-        const reg = new RegExp("attachment", "g");
-        let data = $('.attachmentList${domIdSuffix}').sortable('serialize');
-        data += "#";
-        const tableau = data.split(reg);
-        let param = "";
-        for (let i = 0; i < tableau.length; i++) {
-          if (i !== 0) {
-            param += ",";
-          }
-          param += tableau[i].substring(3, tableau[i].length - 1);
-        }
-        sortAttachments('${param.Id}', param);
+      get$containerEl().bind('sortupdate', function(event, ui) {
+        const sortedIds = get$containerEl().sortable('toArray').map(function(id) {
+          return id.replace('attachment_', '');
+        });
+        _sortAttachments('${param.Id}', sortedIds);
       });
 
       });
 
 
-      function sortAttachments(objectId, orderedList) {
-        $.post('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
+      const _sortAttachments = function(objectId, sortedIds) {
+        $.post('<c:url value="/Attachment" />', { orderedList:sortedIds.join(','), Action:'Sort'}, function(data){
           data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
           if (data === "error") {
-            alert("Une erreur s'est produite !");
+            SilverpeasError.add("Une erreur s'est produite !").show();
             return;
           }
-          let sortedIds = orderedList.split(",").filter(function(id) {
-            return id;
-          });
           attachmentEventManager.dispatchEvent('resource-attached-file-sorted', {
             resourceId : objectId,
             sortedAttachedFileIds : sortedIds
           });
         }, 'text');
         if (pageMustBeReloadingAfterSorting) {
-          reloadIncludingPage();
+          _self.reloadIncludingPage();
         }
       }
 
-      function uploadCompleted(s) {
-        reloadIncludingPage();
+      _self.uploadCompleted = function(s) {
+        _self.reloadIncludingPage();
       }
 
   </c:if>
 
-  function displayAttachment(attachment) {
-    $("#fileLang").val(attachment.lang);
-    $('#fileName').text(attachment.fileName);
-    $('#fileTitle').val(attachment.title);
-    $('#fileDescription').val(attachment.description);
+  const _displayAttachmentToUpdate = function(attachment) {
+    const $updateAttachment = _self.ui.get$updateAttachment();
+    $updateAttachment.find("#fileLang").val(attachment.lang);
+    $updateAttachment.find('#fileName').text(attachment.fileName);
+    $updateAttachment.find('#fileTitle').val(attachment.title);
+    $updateAttachment.find('#fileDescription').val(attachment.description);
     if(attachment.versioned === 'true') {
-       $('#fileName_label').text('<fmt:message key="attachment.version.actual" />');
-       $('#file_upload_label').text('<fmt:message key="attachment.version.new" />');
-       $('#versioned_fields_attachment-update').show();
+      $updateAttachment.find('#fileName_label').text('<fmt:message key="attachment.version.actual" />');
+      $updateAttachment.find('#file_upload_label').text('<fmt:message key="attachment.version.new" />');
+      $updateAttachment.find('#versioned_fields_attachment-update').show();
     } else {
-      $('#versioned_fields_attachment-update').hide();
-      $('#fileName_label').text('<fmt:message key="GML.file"/>');
-      $('#file_upload_label').text('<fmt:message key="fichierJoint" />');
+      $updateAttachment.find('#versioned_fields_attachment-update').hide();
+      $updateAttachment.find('#fileName_label').text('<fmt:message key="GML.file"/>');
+      $updateAttachment.find('#file_upload_label').text('<fmt:message key="fichierJoint" />');
     }
-    $('.mandatory').hide();
+    $updateAttachment.find('.mandatory').hide();
   }
 
-  function clearAttachment() {
-    $('#fileName').html('');
-    $('#fileTitle').val('');
-    $('#fileDescription').val('');
-    $('#versioned_fields_attachment-update').hide();
-    $('.mandatory').show();
+  const _clearUpdateAttachmentAndSetId = function(id) {
+    const $updateAttachment = _self.ui.get$updateAttachment();
+    $updateAttachment.find('#fileName').html('');
+    $updateAttachment.find('#fileTitle').val('');
+    $updateAttachment.find('#fileDescription').val('');
+    $updateAttachment.find('#versioned_fields_attachment-update').hide();
+    $updateAttachment.find('.mandatory').show();
+    $updateAttachment.find('#attachmentId').val(id);
   }
 
-  function handleWarningOnTranslations(attachments) {
+  const _handleAttachmentUpdateWarningOnTranslations = function(attachments) {
     try {
-      var $fileLang = $('#fileLang');
-      var $translationWarningPart = $('#translationWarningPart');
-      $('#fileLangText').remove();
+      const $updateAttachment = _self.ui.get$updateAttachment();
+      const $fileLang = $updateAttachment.find('#fileLang');
+      const $translationWarningPart = $updateAttachment.find('#translationWarningPart');
+      $updateAttachment.find('#fileLangText').remove();
       if (attachments.length === 1) {
         $translationWarningPart.hide();
         $fileLang.css('display', 'none');
-        var $fileLangText = $('<span>', {id:'fileLangText'});
+        const $fileLangText = $('<span>', {id:'fileLangText'});
         $fileLang.parent().append($fileLangText.text($('option[value="' + attachments[0].lang + '"]', $fileLang).text()));
       } else {
         $translationWarningPart.show();
@@ -1294,15 +1240,16 @@
     }
   }
 
-  function clearCheckin() {
-    $('#checkin_oldId').val('');
-    $('#force').val('false');
-    $('#webdav').val('false');
-    $('#comment').val('');
+  const _clearCheckin = function() {
+    const $attachmentCheckin = _self.ui.get$attachmentCheckin();
+    $attachmentCheckin.find('#checkin_oldId').val('');
+    $attachmentCheckin.find('#force').val('false');
+    $attachmentCheckin.find('#webdav').val('false');
+    $attachmentCheckin.find('#comment').val('');
   }
 
-  function loadAttachment(id, lang) {
-    var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
+  const _loadAttachmentToUpdate = function(id, lang) {
+    const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
       url: translationsUrl,
       type: "GET",
@@ -1310,12 +1257,11 @@
       dataType: "json",
       cache: false,
       success: function(attachments) {
-        $('#attachmentId').val(id);
-        clearAttachment();
-        handleWarningOnTranslations(attachments);
+        _clearUpdateAttachmentAndSetId(id);
+        _handleAttachmentUpdateWarningOnTranslations(attachments);
         $.each(attachments, function(index, attachment) {
-          if (attachment.lang == lang) {
-            displayAttachment(attachment);
+          if (attachment.lang === lang) {
+            _displayAttachmentToUpdate(attachment);
             return false;
           }
           return true;
@@ -1324,26 +1270,8 @@
     });
   }
 
-  function preview(target, attachmentId) {
-    $(target).preview("previewAttachment", {
-      componentInstanceId: '<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />',
-      attachmentId: attachmentId,
-      lang: '${contentLanguage}'
-    });
-    return false;
-  }
-
-  function view(target, attachmentId) {
-    $(target).view("viewAttachment", {
-      componentInstanceId: "<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />",
-      attachmentId: attachmentId,
-      lang: '${contentLanguage}'
-    });
-    return false;
-  }
-
-  function ShareAttachment(id) {
-    var sharingObject = {
+  _self.ShareAttachment = function(id) {
+    const sharingObject = {
       componentId: "${param.ComponentId}",
       type       : "Attachment",
       id         : id,
@@ -1352,32 +1280,34 @@
     createSharingTicketPopup(sharingObject);
   }
 
-  function notifyAttachment(attachmentId) {
+  _self.notifyAttachment = function(attachmentId) {
     alertUsersAttachment(attachmentId); //dans publication.jsp
   }
 
-  var customProtocolCookieName = "Silverpeas_OnlineEditing_CustomProtocol";
-  function showInformationAboutOnlineEditingWithCustomProtocol(id, lang) {
-    var customProtocolCookieValue = $.cookie(customProtocolCookieName);
-    if (${onlineEditingWithCustomProtocolAlert} && ("IKnowIt" != customProtocolCookieValue)) {
-      $("#dialog-attachment-onlineEditing-customProtocol").data({
-        'docId': id,
-        'lang':lang}).dialog("open");
+  const customProtocolCookieName = "Silverpeas_OnlineEditing_CustomProtocol";
+  function _showInformationAboutOnlineEditingWithCustomProtocol(id, lang) {
+    const customProtocolCookieValue = $.cookie(customProtocolCookieName);
+    if (${onlineEditingWithCustomProtocolAlert} && ("IKnowIt" !== customProtocolCookieValue)) {
+      _self.ui.get$onlineEditingCustomProtocol().data({
+        'docId' : id,
+        'lang' : lang
+      }).dialog("open");
     } else {
-      openDocViaCustomProtocol(id, lang);
+      _openDocViaCustomProtocol(id, lang);
     }
   }
 
-  function getOnlineEditionLauncherURL(docId, lang) {
+  const _getOnlineEditionLauncherURL = function(docId, lang) {
     return "<%=URLUtil.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?id="+docId+"&lang="+lang;
   }
 
-  function openDocViaCustomProtocol(docId, lang) {
-    $.get(getOnlineEditionLauncherURL(docId, lang));
+  const _openDocViaCustomProtocol = function(docId, lang) {
+    $.get(_getOnlineEditionLauncherURL(docId, lang));
   }
+};
 </script>
 
-<div id="dialog-attachment-update" style="display:none">
+<div id="dialog-attachment-update" class="dialog-attachment-update${domIdSuffix}" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
         <c:if test="${_isI18nHandled}">
@@ -1416,7 +1346,7 @@
   </form>
 </div>
 
-<div id="dialog-attachment-add" style="display:none">
+<div id="dialog-attachment-add" class="dialog-attachment-add${domIdSuffix}" style="display:none">
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
@@ -1445,7 +1375,7 @@
   </form>
 </div>
 
-<div id="dialog-attachment-delete" style="display:none">
+<div id="dialog-attachment-delete" class="dialog-attachment-delete${domIdSuffix}" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
     <c:if test="${_isI18nHandled}">
       <div id="attachment-delete-select-lang" style="display:none">
@@ -1458,7 +1388,7 @@
     </c:if>
 </div>
 
-  <div id="dialog-attachment-switch" style="display:none">
+  <div id="dialog-attachment-switch" class="dialog-attachment-switch${domIdSuffix}" style="display:none">
     <p id="attachment-switch-warning-message">dummy</p>
     <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
       <div id="attachment-switch-simple" style="display:none">
@@ -1475,7 +1405,7 @@
     </form>
   </div>
 
- <div id="dialog-attachment-checkin" style="display:none">
+ <div id="dialog-attachment-checkin" class="dialog-attachment-checkin${domIdSuffix}" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8">
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
@@ -1503,13 +1433,13 @@
   </form>
 </div>
 
-<div id="dialog-attachment-onlineEditing-customProtocol" style="display: none">
+<div id="dialog-attachment-onlineEditing-customProtocol" class="dialog-attachment-onlineEditing-customProtocol${domIdSuffix}" style="display: none">
   <fmt:message key="attachment.dialog.onlineEditing.customProtocol.content"/>
 </div>
 
 <view:progressMessage/>
 <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
-  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${fn:replace(param.Id,'=','_')}"
+  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${domIdSuffix}"
                                   highestUserRole="${highestUserRole}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${param.Id}"
@@ -1520,5 +1450,6 @@
                                   isHandledModificationContext="${isHandledModificationContext}"
                                   handledSubscriptionType="${handledSubscriptionType}"
                                   handledSubscriptionResourceId="${handledSubscriptionResourceId}"
-                                  handledSubscriptionLocationId="${handledSubscriptionLocationId}"/>
+                                  handledSubscriptionLocationId="${handledSubscriptionLocationId}"
+                                  completedUrlSuccessCallback="_afManager${domIdSuffix}.uploadCompleted"/>
 </c:if>

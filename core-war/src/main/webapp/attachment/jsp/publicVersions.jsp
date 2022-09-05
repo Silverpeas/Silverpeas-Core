@@ -99,13 +99,14 @@
   <view:browseBar extraInformations="${requestScope.Document.title}" clickable="false"/>
 
   <%
-    final String arrayUrl = UriBuilder.fromPath("ViewAllVersions")
+    UriBuilder uriBuilder = UriBuilder.fromPath("ViewAllVersions")
         .queryParam("DocId", id)
         .queryParam("ComponentId", componentId)
-        .queryParam("fromAlias", fromAlias)
-        .queryParam("Language", contentLanguage)
-        .build().toString();
-    ArrayPane arrayPane = gef.getArrayPane("List", arrayUrl, request, session);
+        .queryParam("fromAlias", fromAlias);
+    if (StringUtil.isDefined(contentLanguage)) {
+      uriBuilder = uriBuilder.queryParam("Language", contentLanguage);
+    }
+    ArrayPane arrayPane = gef.getArrayPane("List", uriBuilder.build().toString(), request, session);
 
 // header of the array
     ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
