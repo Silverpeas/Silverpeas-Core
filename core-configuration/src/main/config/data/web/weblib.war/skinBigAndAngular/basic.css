@@ -704,7 +704,7 @@ font-weight:100;
 
 #menutoggle img{ display:none;}
 
-#topPage .yuimenu, #kmelia .yuimenu, #attachmentList .yuimenu{
+#topPage .yuimenu, #kmelia .yuimenu, .attachmentList .yuimenu{
 padding:6px 0;
 border-radius: 8px 0 8px 8px;
 margin-top:-3px;

@@ -222,13 +222,17 @@
   pageContext.setAttribute("attachments", attachments);
 %>
 
+<fmt:message key="attachment.suppressionConfirmation" var="deleteConfirmMsg" />
+<fmt:message key="attachment.dialog.delete" var="deleteFileMsg"/>
+<fmt:message key="attachment.dialog.delete.lang" var="deleteFileLangMsg"/>
+
 <c:if test="${!empty pageScope.attachments || 'user' != userProfile}">
-<div class="attachments bgDegradeGris attachmentDragAndDrop${domIdSuffix}">
+<div id="attachmentDragAndDrop${domIdSuffix}" class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
-  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:_afManager${domIdSuffix}.addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  <div class="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:_afManager${domIdSuffix}.addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
-    <ul id="attachmentList" class="attachmentList attachmentList${domIdSuffix}">
+    <ul id="attachmentList${domIdSuffix}" class="attachmentList">
       <c:forEach items="${pageScope.attachments}" var="currentAttachment" >
         <%-- Download variable handling --%>
         <c:set var="canUserDownloadFile" value="${true}"/>
@@ -337,7 +341,7 @@
             </c:choose>
           </c:if>
                 <c:if test="${spinfireViewerEnable && spinfire eq silfn:mimeType(currentAttachment.filename)}">
-                  <div id="switchView" name="switchView" style="display: none">
+                  <div name="switchView" style="display: none">
             <a href="#" onClick="_afManager${domIdSuffix}.changeView3d('<c:out value="${currentAttachment.id}" />')"><img alt="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
             </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
               <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
@@ -411,14 +415,14 @@ if (!window.attachmentEventManager) {
 
 const _afManager${domIdSuffix} = new function() {
   const _self = this;
-  const get$containerEl = function() { return jQuery('.attachmentList${domIdSuffix}') };
-  _self.ui = {
-    get$addAttachment : function() { return $(".dialog-attachment-add${domIdSuffix}") },
-    get$updateAttachment : function() { return $(".dialog-attachment-update${domIdSuffix}") },
-    get$deleteAttachment : function() { return $(".dialog-attachment-delete${domIdSuffix}") },
-    get$switchAttachmentState : function() { return $(".dialog-attachment-switch${domIdSuffix}") },
-    get$onlineEditingCustomProtocol : function() { return $(".dialog-attachment-onlineEditing-customProtocol${domIdSuffix}") },
-    get$attachmentCheckin : function() { return $(".dialog-attachment-checkin${domIdSuffix}") }
+  const get$containerEl = function() { return jQuery('#attachmentList${domIdSuffix}') };
+  const _self_ui = {
+    get$addAttachment : function() { return $("#dialog-attachment-add${domIdSuffix}") },
+    get$updateAttachment : function() { return $("#dialog-attachment-update${domIdSuffix}") },
+    get$deleteAttachment : function() { return $("#dialog-attachment-delete${domIdSuffix}") },
+    get$switchAttachmentState : function() { return $("#dialog-attachment-switch${domIdSuffix}") },
+    get$onlineEditingCustomProtocol : function() { return $("#dialog-attachment-onlineEditing-customProtocol${domIdSuffix}") },
+    get$attachmentCheckin : function() { return $("#dialog-attachment-checkin${domIdSuffix}") }
   };
   let publicVersionsWindow = window;
   <c:if test="${spinfireViewerEnable}">
@@ -449,6 +453,16 @@ const _afManager${domIdSuffix} = new function() {
 
   // Create the tooltips only on document load
   $(document).ready(function() {
+
+    jQuery.fn.extend({
+      findByName : function(name) {
+        return this.find("[name='" + name + "']");
+      },
+      findByValue : function(value) {
+        return this.find("[value='" + value + "']");
+      }
+    });
+
     // Use the each() method to gain access to each elements attributes
     get$containerEl().find('a[rel]').each(function() {
       const url = $(this).attr('rel');
@@ -575,22 +589,22 @@ const _afManager${domIdSuffix} = new function() {
       <fmt:message key="attachment.switch.warning.versioned" var="warningVersioned"/>
       <fmt:message key="attachment.switchState.toVersioned" var="warningTitleSimple"/>
       <fmt:message key="attachment.switchState.toSimple" var="warningTitleVersioned"/>
-      let $switchAttachmentState = _self.ui.get$switchAttachmentState();
-      const $attachmentSwitchVersioned = $switchAttachmentState.find("#attachment-switch-versioned");
-      const $attachmentSwitchSimple = $switchAttachmentState.find("#attachment-switch-simple");
+      let $switchAttachmentState = _self_ui.get$switchAttachmentState();
+      const $attachmentSwitchVersioned = $switchAttachmentState.find(".attachment-switch-versioned");
+      const $attachmentSwitchSimple = $switchAttachmentState.find(".attachment-switch-simple");
       $attachmentSwitchVersioned.hide();
       $attachmentSwitchSimple.hide();
       if(isVersioned) {
         $switchAttachmentState.dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
-        $switchAttachmentState.find("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
+        $switchAttachmentState.find(".attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
         if (isLastPublicVersion) {
           $attachmentSwitchSimple.show();
         } else {
-          $switchAttachmentState.find("#switch-version-last").prop( "checked", true );
+          $switchAttachmentState.findByValue("last").prop( "checked", true );
         }
       } else {
         $switchAttachmentState.dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
-        $switchAttachmentState.find("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
+        $switchAttachmentState.find(".attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
         $attachmentSwitchVersioned.show();
       }
       $switchAttachmentState.data("id", id).dialog("open");
@@ -598,18 +612,18 @@ const _afManager${domIdSuffix} = new function() {
     };
 
     _self.checkin = function(id, oldId, webdav, forceRelease, isVersioned, webdavContentLanguageLabel) {
-      const $attachmentCheckin = _self.ui.get$attachmentCheckin();
+      const $attachmentCheckin = _self_ui.get$attachmentCheckin();
       <c:if test="${_isI18nHandled}">
-      const $checkinWebdavLanguageBlock = $attachmentCheckin.find('#webdav-attachment-checkin-language');
+      const $checkinWebdavLanguageBlock = $attachmentCheckin.find('.webdav-attachment-checkin-language');
       if (webdav === true) {
         $checkinWebdavLanguageBlock.show();
-        $checkinWebdavLanguageBlock.find('#langCreate').html(webdavContentLanguageLabel);
+        $checkinWebdavLanguageBlock.find('#langCreate${domIdSuffix}').html(webdavContentLanguageLabel);
       } else {
         $checkinWebdavLanguageBlock.hide();
       }
       </c:if>
-      const $attachmentCheckinBlock = $attachmentCheckin.find("#simple_fields_attachment-checkin");
-      const $versionedAttachmentCheckinBlock = $attachmentCheckin.find("#versioned_fields_attachment-checkin");
+      const $attachmentCheckinBlock = $attachmentCheckin.find(".simple_fields_attachment-checkin");
+      const $versionedAttachmentCheckinBlock = $attachmentCheckin.find(".versioned_fields_attachment-checkin");
       if(isVersioned === true) {
         $attachmentCheckinBlock.hide();
         $versionedAttachmentCheckinBlock.show();
@@ -622,15 +636,13 @@ const _afManager${domIdSuffix} = new function() {
     };
 
     _self.addAttachment = function(foreignId) {
-      const $addAttachment = _self.ui.get$addAttachment();
-      $addAttachment.find("form #foreignId").val(foreignId);
+      const $addAttachment = _self_ui.get$addAttachment();
+      $addAttachment.find("form").findByName('foreignId').val(foreignId);
       $addAttachment.dialog("open");
     };
 
     _self.deleteAttachment = function(id, filename) {
-      let $deleteAttachment = _self.ui.get$deleteAttachment();
-      $deleteAttachment.find("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
-      $deleteAttachment.data("id", id).data("filename", filename).dialog("open");
+      _self_ui.get$deleteAttachment().data("id", id).data("filename", filename).dialog("open");
     };
 
     _self.reloadIncludingPage = function() {
@@ -641,8 +653,11 @@ const _afManager${domIdSuffix} = new function() {
     }
 
     _self.updateAttachment = function(attachmentId, lang) {
-      _loadAttachmentToUpdate(attachmentId, lang);
-      _self.ui.get$updateAttachment().data('attachmentId', attachmentId).dialog("open");
+      const $updateAttachment = _self_ui.get$updateAttachment();
+      $updateAttachment.data('attachmentId', attachmentId);
+      _loadAttachmentToUpdate(attachmentId, lang).then(function() {
+        $updateAttachment.dialog("open");
+      });
     }
 
     _self.switchDownloadAllowedForReaders = function(attachmentId, allowed) {
@@ -682,10 +697,10 @@ const _afManager${domIdSuffix} = new function() {
     </c:if>
 
     $(document).ready(function() {
-      _self.ui.get$updateAttachment().find("#fileLang").on("change", function(event) {
-        const $updateAttachment = _self.ui.get$updateAttachment();
-        $updateAttachment.find("#fileLang option:selected").each(function() {
-          _loadAttachmentToUpdate($updateAttachment.find("#attachmentId").val(), $(this).val());
+      _self_ui.get$updateAttachment().findByName("fileLang").on("change", function(event) {
+        const $updateAttachment = _self_ui.get$updateAttachment();
+        $updateAttachment.findByName("fileLang").find("option:selected").each(function() {
+          _loadAttachmentToUpdate($updateAttachment.findByName("IdAttachment").val(), $(this).val());
         });
     });
 
@@ -789,22 +804,42 @@ const _afManager${domIdSuffix} = new function() {
       $.closeProgressMessage();
     };
 
-    _self.ui.get$updateAttachment().find('form').iframeAjaxFormSubmit ({
+    _self_ui.get$updateAttachment().find('form').iframeAjaxFormSubmit ({
       complete : iframeSendComplete,
       error : iframeSendError
     });
 
-    _self.ui.get$addAttachment().find('form').iframeAjaxFormSubmit ({
+    _self_ui.get$addAttachment().find('form').iframeAjaxFormSubmit ({
       complete : iframeSendComplete,
       error : iframeSendError
     });
 
-    _self.ui.get$deleteAttachment().dialog({
+      function __deleteDocumentEntirely($thisOfDeleteAttachmentDialog) {
+        const attachmentId = $thisOfDeleteAttachmentDialog.data("id");
+        _performActionWithContributionModificationManagement(function(userResponse) {
+          $.progressMessage();
+          const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+          $.ajax(userResponse.applyOnAjaxOptions({
+            url : deleteUrl,
+            type : "DELETE",
+            cache : false,
+            success : function(data) {
+              _self.reloadIncludingPage();
+              $thisOfDeleteAttachmentDialog.dialog("close");
+            }, error : function(jqXHR, textStatus, errorThrown) {
+              alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+            }
+          }));
+        });
+      }
+
+      _self_ui.get$deleteAttachment().dialog({
       autoOpen: false,
       open:function() {
         const filename = $(this).data("filename");
-        const $dialog = _self.ui.get$deleteAttachment().parent();
-        $dialog.find("#button-delete-all").hide();
+        const $dialog = _self_ui.get$deleteAttachment().parent();
+        $dialog.find(".attachment-delete-warning-message").html('${silfn:escapeJs(deleteConfirmMsg)}'.replace(/([ ?]+)$/, ' <b>' + filename + '</b>$1'));
+        $dialog.find("#button-delete-all${domIdSuffix}").hide();
       <c:if test="${_isI18nHandled && not isVersionActive}">
         const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
@@ -813,17 +848,14 @@ const _afManager${domIdSuffix} = new function() {
           cache: false,
           success: function(data) {
             if (data.length > 1) {
-              $dialog.find("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
+              $dialog.find(".attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
               for(let i = 0 ; i < data.length; i++) {
-                $dialog.find("#delete-language-" + data[i].lang).show();
+                $dialog.find(".delete-language-" + data[i].lang).show();
               }
-              $dialog.find("#attachment-delete-select-lang").show();
-              $dialog.find("#button-delete-all").show();
+              $dialog.find(".attachment-delete-select-lang").show();
+              $dialog.find("#button-delete-all${domIdSuffix}").show();
             } else {
-              $dialog.find("#attachment-delete-select-lang").hide();
-              $dialog.find("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
-              $dialog.find("#button-delete-content").hide();
-              $dialog.find("#button-delete-all").show();
+              $dialog.find(".attachment-delete-select-lang").hide();
             }
           },
           error: function(jqXHR, textStatus, errorThrown) {
@@ -837,17 +869,20 @@ const _afManager${domIdSuffix} = new function() {
       modal: true,
       buttons: {
         '<fmt:message key="GML.delete"/>': {
-          id: "button-delete-content",
           text: "<fmt:message key="GML.delete"/>",
           click: function() {
             const $this = $(this);
             const attachmentId = $this.data("id");
             <c:choose>
               <c:when test="${_isI18nHandled && not isVersionActive}">
+            const $dialog = _self_ui.get$deleteAttachment().parent();
+            if ($dialog.find(".attachment-delete-select-lang").css('display') === 'none') {
+              __deleteDocumentEntirely($this);
+              return;
+            }
             $.progressMessage();
             const deleteOperations = [];
-            const $dialog = _self.ui.get$deleteAttachment().parent();
-            $dialog.find("input[name='languagesToDelete']").filter(':checked').each(function() {
+            $dialog.findByName("languagesToDelete").filter(':checked').each(function() {
               const me = this;
               deleteOperations.push(function($deferred){
                 const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + me.value;
@@ -881,45 +916,17 @@ const _afManager${domIdSuffix} = new function() {
             $this.dialog("close");
               </c:when>
               <c:otherwise>
-            _performActionWithContributionModificationManagement(function(userResponse) {
-              $.progressMessage();
-              const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
-              $.ajax(userResponse.applyOnAjaxOptions({
-                url: deleteUrl,
-                type: "DELETE",
-                cache: false,
-                success: function(data) {
-                  _self.reloadIncludingPage();
-                  $this.dialog("close");
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                  alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
-                }
-              }));
-            });
+            __deleteDocumentEntirely($this);
               </c:otherwise>
             </c:choose>
           }
         },
         '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
-          id: "button-delete-all",
+          id: "button-delete-all${domIdSuffix}",
           text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
           click: function() {
             const $this = $(this);
-            _performActionWithContributionModificationManagement(function(userResponse) {
-              $.progressMessage();
-              const attachmentId = $this.data("id");
-              const deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
-              $.ajax(userResponse.applyOnAjaxOptions({
-                url: deleteUrl,
-                type: "DELETE",
-                cache: false,
-                success: function(data) {
-                  _self.reloadIncludingPage();
-                  $this.dialog("close");
-                }
-              }));
-            });
+            __deleteDocumentEntirely($this);
           }
         },
         '<fmt:message key="GML.cancel"/>': function() {
@@ -930,7 +937,7 @@ const _afManager${domIdSuffix} = new function() {
       }
     });
 
-      _self.ui.get$addAttachment().dialog({
+      _self_ui.get$addAttachment().dialog({
         autoOpen : false,
         title : "<fmt:message key="attachment.dialog.add" />",
         height : 'auto',
@@ -939,8 +946,8 @@ const _afManager${domIdSuffix} = new function() {
         buttons : {
           '<fmt:message key="GML.ok"/>' : function() {
             const $this = $(this);
-            const $addAttachmentForm = _self.ui.get$addAttachment().find('form');
-            const filename = $.trim($addAttachmentForm.find("#file_create").val().split('\\').pop());
+            const $addAttachmentForm = _self_ui.get$addAttachment().find('form');
+            const filename = $.trim($addAttachmentForm.findByName("file_upload").val().split('\\').pop());
             if (filename === '') {
               return SilverpeasError.add('<fmt:message key="attachment.dialog.error.file.mandatory"/>').show();
             }
@@ -966,7 +973,7 @@ const _afManager${domIdSuffix} = new function() {
                 $addAttachmentForm.submit();
               }
             }, {
-              versionTypeDomRadioSelector : '.dialog-attachment-add${domIdSuffix} input[name="versionType"]'
+              versionTypeDomRadioSelector : '#dialog-attachment-add${domIdSuffix} input[name="versionType"]'
             });
           },
           '<fmt:message key="GML.cancel"/>' : function() {
@@ -976,19 +983,31 @@ const _afManager${domIdSuffix} = new function() {
         }
       });
 
-      _self.ui.get$updateAttachment().dialog({
+      _self_ui.get$updateAttachment().dialog({
         autoOpen : false,
         title : "<fmt:message key="attachment.dialog.update" />",
         height : 'auto',
         width : 550,
         modal : true,
+    <c:if test="${_isI18nHandled && not isVersionActive}">
+        open : function() {
+          const $updateAttachmentForm = _self_ui.get$updateAttachment()
+          const $delButton = $updateAttachmentForm.parent().find('#attachment-update-delete-lang${domIdSuffix}');
+          const fileLangDisplay = $updateAttachmentForm.findByName('fileLang').css('display') || 'block';
+          if (fileLangDisplay === 'none') {
+            $delButton.hide();
+          } else {
+            $delButton.show();
+          }
+        },
+    </c:if>
         buttons : {
           '<fmt:message key="GML.ok"/>' : function() {
             const $this = $(this);
-            const $updateAttachmentForm = _self.ui.get$updateAttachment().find('form');
+            const $updateAttachmentForm = _self_ui.get$updateAttachment().find('form');
             let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
                 $(this).data('attachmentId');
-            const filename = $.trim($updateAttachmentForm.find("#file_upload").val().split('\\').pop());
+            const filename = $.trim($updateAttachmentForm.findByName("file_upload").val().split('\\').pop());
             if (filename !== '') {
               submitUrl = submitUrl + '/' + encodeURIComponent(filename);
             } else {
@@ -1014,29 +1033,33 @@ const _afManager${domIdSuffix} = new function() {
                 $updateAttachmentForm.submit();
               }
             }, {
-              versionTypeDomRadioSelector : '.dialog-attachment-update${domIdSuffix} input[name="versionType"]'
+              versionTypeDomRadioSelector : '#dialog-attachment-update${domIdSuffix} input[name="versionType"]'
             });
           },
           <c:if test="${_isI18nHandled && not isVersionActive}">
-          '<fmt:message key="attachment.dialog.delete.lang"/>' : function() {
-            const $this = $(this);
-            const $updateAttachmentForm = _self.ui.get$updateAttachment().find('form');
-            jQuery.popup.confirm('<fmt:message key="attachment.suppressionConfirmation" />', function() {
-              $.progressMessage();
-              $.ajax({
-                url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
-                    $this.data('attachmentId') + '/content/' + $updateAttachmentForm.find("#fileLang").val(),
-                type : "DELETE",
-                contentType : "application/json",
-                dataType : "json",
-                cache : false,
-                success : function(data) {
-                  _self.reloadIncludingPage();
-                  $this.dialog("close");
-                }
+          'delete_button' : {
+            id : 'attachment-update-delete-lang${domIdSuffix}',
+            text : '${silfn:escapeJs(deleteFileLangMsg)}',
+            click : function() {
+              const $this = $(this);
+              const $updateAttachmentForm = _self_ui.get$updateAttachment().find('form');
+              jQuery.popup.confirm('${silfn:escapeJs(deleteConfirmMsg)}', function() {
+                $.progressMessage();
+                $.ajax({
+                  url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+                      $this.data('attachmentId') + '/content/' + $updateAttachmentForm.findByName("fileLang").val(),
+                  type : "DELETE",
+                  contentType : "application/json",
+                  dataType : "json",
+                  cache : false,
+                  success : function(data) {
+                    _self.reloadIncludingPage();
+                    $this.dialog("close");
+                  }
+                });
+                $this.dialog("close");
               });
-              $this.dialog("close");
-            });
+            }
           },
           </c:if>
           '<fmt:message key="GML.cancel"/>' : function() {
@@ -1055,7 +1078,7 @@ const _afManager${domIdSuffix} = new function() {
           $.ajax(submitUrl, {
             type : 'POST',
             dataType : "json",
-            data : _self.ui.get$attachmentCheckin().find("form").serialize(),
+            data : _self_ui.get$attachmentCheckin().find("form").serialize(),
             success : function(result) {
               _self.reloadIncludingPage();
               $this.dialog("close");
@@ -1067,7 +1090,7 @@ const _afManager${domIdSuffix} = new function() {
           });
         }
 
-      _self.ui.get$switchAttachmentState().dialog({
+      _self_ui.get$switchAttachmentState().dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.switch"/>",
         height: 'auto',
@@ -1076,7 +1099,7 @@ const _afManager${domIdSuffix} = new function() {
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
             const $this = $(this);
-            let $switchAttachmentState = _self.ui.get$switchAttachmentState();
+            let $switchAttachmentState = _self_ui.get$switchAttachmentState();
             const submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $switchAttachmentState.data('id') + '/switchState';
             $.progressMessage();
             $.ajax(submitUrl, {
@@ -1099,7 +1122,7 @@ const _afManager${domIdSuffix} = new function() {
         }
       });
 
-      _self.ui.get$attachmentCheckin().dialog({
+      _self_ui.get$attachmentCheckin().dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.checkin"/>",
         height: 'auto',
@@ -1107,24 +1130,24 @@ const _afManager${domIdSuffix} = new function() {
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            const $attachmentCheckin = _self.ui.get$attachmentCheckin();
-            const $webDav = $attachmentCheckin.find('#webdav');
+            const $attachmentCheckin = _self_ui.get$attachmentCheckin();
+            const $webDav = $attachmentCheckin.findByName('webdav');
             $webDav.val($attachmentCheckin.data('webdav'));
-            $attachmentCheckin.find('#force').val($attachmentCheckin.data('forceRelease'));
-            $attachmentCheckin.find('#checkin_oldId').val($attachmentCheckin.data('oldId'));
+            $attachmentCheckin.findByName('force').val($attachmentCheckin.data('forceRelease'));
+            $attachmentCheckin.findByName('checkin_oldId').val($attachmentCheckin.data('oldId'));
             const submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
             const $this = $(this);
             _performActionWithContributionModificationManagement(function() {
               _submitCheckin.call($this, submitUrl);
             }, {
-              versionTypeDomRadioSelector : '.dialog-attachment-checkin${domIdSuffix} input[name="private"]',
+              versionTypeDomRadioSelector : '#dialog-attachment-checkin${domIdSuffix} input[name="private"]',
               checkInWebDav : $webDav.val() === 'true'
             });
           },
           '<fmt:message key="attachment.revert"/>': function() {
-              const $attachmentCheckin = _self.ui.get$attachmentCheckin();
-              $attachmentCheckin.find('#force').val('true');
-              $attachmentCheckin.find('#webdav').val('false');
+              const $attachmentCheckin = _self_ui.get$attachmentCheckin();
+              $attachmentCheckin.findByName('force').val('true');
+              $attachmentCheckin.findByName('webdav').val('false');
               const submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
               const $this = $(this);
               _submitCheckin.call($this, submitUrl);
@@ -1140,7 +1163,7 @@ const _afManager${domIdSuffix} = new function() {
           }
         });
 
-      _self.ui.get$onlineEditingCustomProtocol().dialog({
+      _self_ui.get$onlineEditingCustomProtocol().dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.title"/>",
         height: 'auto',
@@ -1193,43 +1216,43 @@ const _afManager${domIdSuffix} = new function() {
   </c:if>
 
   const _displayAttachmentToUpdate = function(attachment) {
-    const $updateAttachment = _self.ui.get$updateAttachment();
-    $updateAttachment.find("#fileLang").val(attachment.lang);
-    $updateAttachment.find('#fileName').text(attachment.fileName);
-    $updateAttachment.find('#fileTitle').val(attachment.title);
-    $updateAttachment.find('#fileDescription').val(attachment.description);
+    const $updateAttachment = _self_ui.get$updateAttachment();
+    $updateAttachment.findByName("fileLang").val(attachment.lang);
+    $updateAttachment.find('.fileName').text(attachment.fileName);
+    $updateAttachment.findByName('fileTitle').val(attachment.title);
+    $updateAttachment.findByName('fileDescription').val(attachment.description);
     if(attachment.versioned === 'true') {
-      $updateAttachment.find('#fileName_label').text('<fmt:message key="attachment.version.actual" />');
-      $updateAttachment.find('#file_upload_label').text('<fmt:message key="attachment.version.new" />');
-      $updateAttachment.find('#versioned_fields_attachment-update').show();
+      $updateAttachment.find('.fileName_label').text('<fmt:message key="attachment.version.actual" />');
+      $updateAttachment.find('.file_upload_label').text('<fmt:message key="attachment.version.new" />');
+      $updateAttachment.find('.versioned_fields_attachment-update').show();
     } else {
-      $updateAttachment.find('#versioned_fields_attachment-update').hide();
-      $updateAttachment.find('#fileName_label').text('<fmt:message key="GML.file"/>');
-      $updateAttachment.find('#file_upload_label').text('<fmt:message key="fichierJoint" />');
+      $updateAttachment.find('.versioned_fields_attachment-update').hide();
+      $updateAttachment.find('.fileName_label').text('<fmt:message key="GML.file"/>');
+      $updateAttachment.find('.file_upload_label').text('<fmt:message key="fichierJoint" />');
     }
     $updateAttachment.find('.mandatory').hide();
   }
 
   const _clearUpdateAttachmentAndSetId = function(id) {
-    const $updateAttachment = _self.ui.get$updateAttachment();
-    $updateAttachment.find('#fileName').html('');
-    $updateAttachment.find('#fileTitle').val('');
-    $updateAttachment.find('#fileDescription').val('');
-    $updateAttachment.find('#versioned_fields_attachment-update').hide();
+    const $updateAttachment = _self_ui.get$updateAttachment();
+    $updateAttachment.find('.fileName').html('');
+    $updateAttachment.findByName('fileTitle').val('');
+    $updateAttachment.findByName('fileDescription').val('');
+    $updateAttachment.find('.versioned_fields_attachment-update').hide();
     $updateAttachment.find('.mandatory').show();
-    $updateAttachment.find('#attachmentId').val(id);
+    $updateAttachment.findByName('IdAttachment').val(id);
   }
 
   const _handleAttachmentUpdateWarningOnTranslations = function(attachments) {
     try {
-      const $updateAttachment = _self.ui.get$updateAttachment();
-      const $fileLang = $updateAttachment.find('#fileLang');
-      const $translationWarningPart = $updateAttachment.find('#translationWarningPart');
-      $updateAttachment.find('#fileLangText').remove();
+      const $updateAttachment = _self_ui.get$updateAttachment();
+      const $fileLang = $updateAttachment.findByName('fileLang');
+      const $translationWarningPart = $updateAttachment.find('.translationWarningPart');
+      $updateAttachment.find('.fileLangText').remove();
       if (attachments.length === 1) {
         $translationWarningPart.hide();
         $fileLang.css('display', 'none');
-        const $fileLangText = $('<span>', {id:'fileLangText'});
+        const $fileLangText = $('<span>', {'class':'fileLangText'});
         $fileLang.parent().append($fileLangText.text($('option[value="' + attachments[0].lang + '"]', $fileLang).text()));
       } else {
         $translationWarningPart.show();
@@ -1241,14 +1264,16 @@ const _afManager${domIdSuffix} = new function() {
   }
 
   const _clearCheckin = function() {
-    const $attachmentCheckin = _self.ui.get$attachmentCheckin();
-    $attachmentCheckin.find('#checkin_oldId').val('');
-    $attachmentCheckin.find('#force').val('false');
-    $attachmentCheckin.find('#webdav').val('false');
-    $attachmentCheckin.find('#comment').val('');
+    const $attachmentCheckin = _self_ui.get$attachmentCheckin();
+    $attachmentCheckin.findByName('checkin_oldId').val('');
+    $attachmentCheckin.findByName('force').val('false');
+    $attachmentCheckin.findByName('webdav').val('false');
+    $attachmentCheckin.findByName('comment').val('');
   }
 
   const _loadAttachmentToUpdate = function(id, lang) {
+    spProgressMessage.show();
+    const deferred = sp.promise.deferred();
     const translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
       url: translationsUrl,
@@ -1266,8 +1291,11 @@ const _afManager${domIdSuffix} = new function() {
           }
           return true;
         });
+        deferred.resolve();
+        spProgressMessage.hide();
       }
     });
+    return deferred.promise;
   }
 
   _self.ShareAttachment = function(id) {
@@ -1288,7 +1316,7 @@ const _afManager${domIdSuffix} = new function() {
   function _showInformationAboutOnlineEditingWithCustomProtocol(id, lang) {
     const customProtocolCookieValue = $.cookie(customProtocolCookieName);
     if (${onlineEditingWithCustomProtocolAlert} && ("IKnowIt" !== customProtocolCookieValue)) {
-      _self.ui.get$onlineEditingCustomProtocol().data({
+      _self_ui.get$onlineEditingCustomProtocol().data({
         'docId' : id,
         'lang' : lang
       }).dialog("open");
@@ -1307,37 +1335,37 @@ const _afManager${domIdSuffix} = new function() {
 };
 </script>
 
-<div id="dialog-attachment-update" class="dialog-attachment-update${domIdSuffix}" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
-    <input type="hidden" name="IdAttachment" id="attachmentId"/>
+<div id="dialog-attachment-update${domIdSuffix}" class="dialog-attachment-update" style="display:none">
+  <form name="update-attachment-form" class="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
+    <input type="hidden" name="IdAttachment"/>
         <c:if test="${_isI18nHandled}">
-          <div id="translationWarningPart">
-            <label class="label-ui-dialog" for="translationWarning"><fmt:message key="attachment.warning.translations.label"/></label>
-            <span class="champ-ui-dialog warning" id="translationWarning"><fmt:message key="attachment.warning.translations"/></span>
+          <div class="translationWarningPart">
+            <label class="label-ui-dialog"><fmt:message key="attachment.warning.translations.label"/></label>
+            <span class="champ-ui-dialog warning translationWarning"><fmt:message key="attachment.warning.translations"/></span>
           </div>
-          <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
-          <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
+          <label for="fileLang${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+          <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang${domIdSuffix}" langCode="${contentLanguage}" includeLabel="false" /></span>
         </c:if>
-        <label id="fileName_label" for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
-        <span id="fileName" class="champ-ui-dialog"></span>
+        <label class="label-ui-dialog fileName_label"><fmt:message key="GML.file" /></label>
+        <span class="champ-ui-dialog fileName"></span>
 
-        <label id="file_upload_label" for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-        <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" />
+        <label for="file_upload${domIdSuffix}" class="label-ui-dialog file_upload_label"><fmt:message key="fichierJoint" /></label>
+        <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload${domIdSuffix}" />
           <span class="mandatory" style="display: none">&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="${mandatoryFieldUrl}" width="5" height="5"/></span></span>
 
-        <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
-        <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
+        <label for="fileTitle${domIdSuffix}" class="label-ui-dialog"><fmt:message key="Title"/></label>
+        <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle${domIdSuffix}" /></span>
 
-        <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-        <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
+        <label for="fileDescription${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+        <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription${domIdSuffix}"></textarea></span>
 
-        <div id="versioned_fields_attachment-update" style="display:none">
-          <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-          <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-          <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
+        <div class="versioned_fields_attachment-update" style="display:none">
+          <label for="versionType-update-${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+          <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType-update-${domIdSuffix}" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+          <input value="1" type="radio" name="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
 
-          <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
-          <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
+          <label for="commentMessage-update-${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
+          <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage-update-${domIdSuffix}"></textarea></span>
         </div>
     <div class="mandatory" style="display: none">
       <span class="label-ui-dialog"><img src="${mandatoryFieldUrl}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/></span>
@@ -1346,27 +1374,29 @@ const _afManager${domIdSuffix} = new function() {
   </form>
 </div>
 
-<div id="dialog-attachment-add" class="dialog-attachment-add${domIdSuffix}" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
-    <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
-    <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
+<div id="dialog-attachment-add${domIdSuffix}" class="dialog-attachment-add" style="display:none">
+  <form name="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
+    <input type="hidden" name="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
+    <input type="hidden" name="indexIt" value="<c:out value="${indexIt}" />" />
     <c:if test="${_isI18nHandled}">
-      <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
-      <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
+      <label for="langCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+      <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate${domIdSuffix}" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
-    <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
-    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" />
+    <label for="file_create${domIdSuffix}" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
+    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create${domIdSuffix}" />
           <span>&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="${mandatoryFieldUrl}" width="5" height="5"/></span></span>
-    <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
-    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
-    <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate"></textarea></span>
+    <label for="fileTitleCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="Title"/></label>
+    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate${domIdSuffix}" /></span>
+    <label for="fileDescriptionCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate${domIdSuffix}"></textarea></span>
     <c:if test="${isVersionActive}">
-      <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-      <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="typeVersionPublic" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-      <input value="1" type="radio" name="versionType" id="typeVersionPrivate"/><fmt:message key="attachment.version_wip.label"/></span>
-      <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
-      <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
+      <label for="versionType-add-${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+      <span class="champ-ui-dialog">
+        <input value="0" type="radio" name="versionType" id="versionType-add-${domIdSuffix}" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+        <input value="1" type="radio" name="versionType"/><fmt:message key="attachment.version_wip.label"/>
+      </span>
+      <label for="commentMessage-add-${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
+      <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage-add-${domIdSuffix}"></textarea></span>
     </c:if>
     <div>
       <span class="label-ui-dialog"><img src="${mandatoryFieldUrl}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/></span>
@@ -1375,71 +1405,72 @@ const _afManager${domIdSuffix} = new function() {
   </form>
 </div>
 
-<div id="dialog-attachment-delete" class="dialog-attachment-delete${domIdSuffix}" style="display:none">
-  <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
+<div id="dialog-attachment-delete${domIdSuffix}" class="dialog-attachment-delete" style="display:none">
+  <span class="attachment-delete-warning-message">${deleteConfirmMsg}</span>
     <c:if test="${_isI18nHandled}">
-      <div id="attachment-delete-select-lang" style="display:none">
-        <div id="languages">
+      <div class="attachment-delete-select-lang" style="display:none">
+        <div class="languages">
           <c:forEach items="<%=I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
-            <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
+            <span class='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
           </c:forEach>
         </div>
       </div>
     </c:if>
 </div>
 
-  <div id="dialog-attachment-switch" class="dialog-attachment-switch${domIdSuffix}" style="display:none">
-    <p id="attachment-switch-warning-message">dummy</p>
-    <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
-      <div id="attachment-switch-simple" style="display:none">
-        <label for="switch-version-major" class="label-ui-dialog"><fmt:message key="attachment.switch.version.major" /></label>
-        <span id="attachment-switch-major" class="champ-ui-dialog"><input value="lastMajor" type="radio" name="switch-version" id="switch-version-major" checked="checked"/></span>
-        <label for="switch-version-last" class="label-ui-dialog"><fmt:message key="attachment.switch.version.last" /></label>
-        <span id="attachment-switch-last" class="champ-ui-dialog"><input value="last" type="radio" name="switch-version" id="switch-version-last"/></span>
+  <div id="dialog-attachment-switch${domIdSuffix}" class="dialog-attachment-switch" style="display:none">
+    <p class="attachment-switch-warning-message">dummy</p>
+    <form name="attachment-switch-form" method="put" accept-charset="UTF-8">
+      <div class="attachment-switch-simple" style="display:none">
+        <label for="switch-version-major${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.switch.version.major" /></label>
+        <span class="champ-ui-dialog attachment-switch-major"><input value="lastMajor" type="radio" name="switch-version" id="switch-version-major${domIdSuffix}" checked="checked"/></span>
+        <label for="switch-version-last${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.switch.version.last" /></label>
+        <span class="champ-ui-dialog attachment-switch-last"><input value="last" type="radio" name="switch-version" id="switch-version-last${domIdSuffix}"/></span>
       </div>
-      <div id="attachment-switch-versioned" style="display:none">
-       <label for="switch-version-comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
-      <span class="champ-ui-dialog"><textarea name="switch-version-comment" cols="60" rows="3" id="switch-version-comment"></textarea></span>
+      <div class="attachment-switch-versioned" style="display:none">
+       <label for="switch-version-comment${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
+      <span class="champ-ui-dialog"><textarea name="switch-version-comment" cols="60" rows="3" id="switch-version-comment${domIdSuffix}"></textarea></span>
       </div>
       <input type="submit" value="Submit" style="display:none" />
     </form>
   </div>
 
- <div id="dialog-attachment-checkin" class="dialog-attachment-checkin${domIdSuffix}" style="display:none">
-  <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
-    <input type="hidden" name="force" id="force" value="false" />
-    <input type="hidden" name="webdav" id="webdav" value="false" />
+ <div id="dialog-attachment-checkin${domIdSuffix}" class="dialog-attachment-checkin" style="display:none">
+  <form name="checkin-attachment-form" method="post" accept-charset="UTF-8">
+    <input type="hidden" name="checkin_oldId" value="-1" />
+    <input type="hidden" name="force" value="false" />
+    <input type="hidden" name="webdav" value="false" />
     <c:if test="${_isI18nHandled}">
-      <div id="webdav-attachment-checkin-language" style="display: none">
+      <div class="webdav-attachment-checkin-language" style="display: none">
         <fmt:message var="tmpLabel" key="attachment.dialog.checkin.webdav.multilang.language.help"/>
-        <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+        <label for="langCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
         <div class="champ-ui-dialog">
-          <span style="vertical-align: middle"><view:langSelect readOnly="${true}" elementId="langCreate" langCode="fr" includeLabel="false"/></span>
+          <span style="vertical-align: middle"><view:langSelect readOnly="${true}" elementName="langCreate" elementId="langCreate${domIdSuffix}" langCode="fr" includeLabel="false"/></span>
           <img style="vertical-align: middle; margin-left: 20px" class="infoBulle" title="${tmpLabel}" src="<c:url value="/util/icons/help.png"/>" alt="info"/>
         </div>
       </div>
     </c:if>
-    <div id="versioned_fields_attachment-checkin" style="display:none">
-      <label for="private" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-      <span class="champ-ui-dialog"><input value="false" type="radio" name="private" id="private" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-        <input value="true" type="radio" name="private" id="private"/><fmt:message key="attachment.version_wip.label"/></span>
-
-      <label for="comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
-      <span class="champ-ui-dialog"><textarea name="comment" cols="60" rows="3" id="comment"></textarea></span>
+    <div class="versioned_fields_attachment-checkin" style="display:none">
+      <label for="public-checkin${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+      <span class="champ-ui-dialog">
+        <input value="false" type="radio" name="private" id="public-checkin${domIdSuffix}" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+        <input value="true" type="radio" name="private"/><fmt:message key="attachment.version_wip.label"/>
+      </span>
+      <label for="comment${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
+      <span class="champ-ui-dialog"><textarea name="comment" cols="60" rows="3" id="comment${domIdSuffix}"></textarea></span>
     </div>
-    <div id="simple_fields_attachment-checkin" style="display:none; text-wrap: none"><fmt:message key="confirm.checkin.message" /></div>
+    <div class="simple_fields_attachment-checkin" style="display:none; text-wrap: none"><fmt:message key="confirm.checkin.message" /></div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
 
-<div id="dialog-attachment-onlineEditing-customProtocol" class="dialog-attachment-onlineEditing-customProtocol${domIdSuffix}" style="display: none">
+<div id="dialog-attachment-onlineEditing-customProtocol${domIdSuffix}" class="dialog-attachment-onlineEditing-customProtocol" style="display: none">
   <fmt:message key="attachment.dialog.onlineEditing.customProtocol.content"/>
 </div>
 
 <view:progressMessage/>
 <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
-  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${domIdSuffix}"
+  <viewTags:attachmentDragAndDrop domSelector="#attachmentDragAndDrop${domIdSuffix}"
                                   highestUserRole="${highestUserRole}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${param.Id}"

@@ -3254,51 +3254,52 @@ a.yuimenuitemlabel-disabled:hover {
   color: #B9B9B9;
 }
 
-ul#attachmentList.ui-sortable {
+ul.attachmentList.ui-sortable {
   position:relative;
   margin:0;
   padding:0;
 }
 
-ul#attachmentList {
+ul.attachmentList {
   list-style-type: none;
   margin-left: 0px;
   padding-left: 0px;
 }
 
-ul#attachmentList li.attachmentListItem {
+ul.attachmentList li.attachmentListItem {
   margin:0;
   padding: 10px 5px 10px 10px;
 }
 
-ul#attachmentList li.ui-state-highlight {
+ul.attachmentList li.ui-state-highlight {
   border: 1px dashed #BFBFBF;
   padding:10px;
   background-image: none;
   background-color: #EAEAEA;
 }
 
-ul#attachmentList li.attachmentListItem .lineSize,
-ul#attachmentList li.attachmentListItem .lineMain {
+ul.attachmentList li.attachmentListItem .lineSize,
+ul.attachmentList li.attachmentListItem .lineMain {
   display: block;
   padding: 1px 0 2px 0;
   line-height:16px;
 }
 
-ul#attachmentList li.attachmentListItem .lineSize {
+ul.attachmentList li.attachmentListItem .lineSize {
   padding-left: 25px;
   position: relative;
 }
 
-ul#attachmentList li.attachmentListItem .lineSize a img {
+ul.attachmentList li.attachmentListItem .lineSize a img {
   position: absolute;
   left: 0;
 }
 
-ul#attachmentList li.attachmentListItem .lineSize img.preview-file ,
-ul#attachmentList li.attachmentListItem .lineSize img.view-file,
-ul#attachmentList li.attachmentListItem .lineSize img.forbidden-download-file {
+ul.attachmentList li.attachmentListItem .lineSize img.preview-file,
+ul.attachmentList li.attachmentListItem .lineSize img.view-file,
+ul.attachmentList li.attachmentListItem .lineSize img.forbidden-download-file {
   margin-right:0px;
+  float:inherit;
 }
 
 img.preview-file,
@@ -3314,31 +3315,25 @@ img.forbidden-download-file {
   cursor:inherit;
 }
 
-ul#attachmentList li.attachmentListItem .lineSize img.preview-file,
-ul#attachmentList li.attachmentListItem .lineSize img.view-file,
-ul#attachmentList li.attachmentListItem .lineSize img.forbidden-download-file {
-  float:inherit;
-}
-
-ul#attachmentList li.attachmentListItem .lineMain .icon {
+ul.attachmentList li.attachmentListItem .lineMain .icon {
   float:left;
   width: 16px;
   height: 16px;
   margin-right:10px;
 }
 
-ul#attachmentList li.attachmentListItem .moreActions {
+ul.attachmentList li.attachmentListItem .moreActions {
   cursor: pointer;
   float:right;
   opacity: 0.65;
 }
 
 
-ul#attachmentList li.attachmentListItem .moreActions:HOVER {
+ul.attachmentList li.attachmentListItem .moreActions:HOVER {
   opacity: 1;
 }
 
-ul#attachmentList li.attachmentListItem .workerInfo {
+ul.attachmentList li.attachmentListItem .workerInfo {
   margin-left: 24px;
   padding-left: 5px;
   margin-top: 2px;
@@ -3346,8 +3341,8 @@ ul#attachmentList li.attachmentListItem .workerInfo {
   color: #CE6F6F;
 }
 
-ul#attachmentList li.attachmentListItem .fileName ,
-ul#attachmentList li.attachmentListItem .description {
+ul.attachmentList li.attachmentListItem .fileName ,
+ul.attachmentList li.attachmentListItem .description {
   margin-left: 24px;
   padding-left: 5px;
   border-left: 3px solid #9BD94A;
@@ -3355,16 +3350,16 @@ ul#attachmentList li.attachmentListItem .description {
   color: #666;
 }
 
-ul#attachmentList li.attachmentListItem .description {
+ul.attachmentList li.attachmentListItem .description {
   margin-top: 2px;
 }
 
-ul#attachmentList li.attachmentListItem .lineMain .version-number,
-ul#attachmentList li.attachmentListItem .linkAllVersions a {
+ul.attachmentList li.attachmentListItem .lineMain .version-number,
+ul.attachmentList li.attachmentListItem .linkAllVersions a {
   color: #666;
 }
 
-ul#attachmentList li.attachmentListItem .linkAllVersions {
+ul.attachmentList li.attachmentListItem .linkAllVersions {
   margin-left: 22px;
   padding-left: 0px;
   margin-top: 2px;
@@ -3373,7 +3368,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions {
   color: #666;
 }
 
-#update-attachment-form #translationWarning {
+.update-attachment-form .translationWarning {
   background: url("/silverpeas/util/icons/alert.gif") 0px 0px no-repeat;
   text-indent: 21px;
   font-weight: bold;
@@ -5081,7 +5076,7 @@ input.search:focus {
 }
 
 #menubar-creation-actions,
-#attachment-creation-actions {
+.attachment-creation-actions {
   background-color:#fff4eb;
   border-top:1px solid #f1790f;
   border-bottom:1px solid #f1790f;
@@ -5091,12 +5086,12 @@ input.search:focus {
   margin:0.5em 0;
 }
 
-#attachment-creation-actions {
+.attachment-creation-actions {
   margin:0;
 }
 
 #menubar-creation-actions .menubar-creation-actions-item,
-#attachment-creation-actions .menubar-creation-actions-item{
+.attachment-creation-actions .menubar-creation-actions-item{
   padding:10px 30px;
   color:#4c4c4c;
   font-size:1em;
@@ -5107,7 +5102,7 @@ input.search:focus {
   white-space:nowrap;
 }
 
-#attachment-creation-actions .menubar-creation-actions-item{
+.attachment-creation-actions .menubar-creation-actions-item{
   padding:6px 20px;
   font-size:0.9em;
   line-height:0.9em;
@@ -5115,19 +5110,19 @@ input.search:focus {
 }
 
 #menubar-creation-actions .menubar-creation-actions-item:hover,
-#attachment-creation-actions .menubar-creation-actions-item:hover {
+.attachment-creation-actions .menubar-creation-actions-item:hover {
   background-color:#F1790F;
   color:#fff;
 }
 
 #menubar-creation-actions .menubar-creation-actions-item img,
-#attachment-creation-actions .menubar-creation-actions-item img {
+.attachment-creation-actions .menubar-creation-actions-item img {
   vertical-align:middle;
   margin:0;
   border:0;
 }
 
-#attachment-creation-actions .menubar-creation-actions-item img {
+.attachment-creation-actions .menubar-creation-actions-item img {
   margin-right:4px;
 }
 
