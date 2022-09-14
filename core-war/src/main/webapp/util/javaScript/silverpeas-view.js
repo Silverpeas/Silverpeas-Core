@@ -189,6 +189,7 @@
       title : view.getTitle(),
       width : view.getWidth(),
       height : view.getHeight(),
+      forceFocusOnCloseButton : true,
       callbackOnClose : function() {
         sp.navigation.unmute();
       }

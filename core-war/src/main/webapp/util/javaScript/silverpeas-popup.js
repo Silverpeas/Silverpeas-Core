@@ -559,7 +559,8 @@
       title: '',
       callback: null,
       alternativeCallback: null,
-      callbackOnClose: null
+      callbackOnClose: null,
+      forceFocusOnCloseButton : false
     };
     if (options) {
       $.extend(settings, options);
@@ -748,6 +749,15 @@
           _maxWidth = (_maxWidth !== 'auto') ? _maxWidth.replace(/px/, '') + 'px' : _maxWidth;
           $_this.dialog("widget").css('max-width', _maxWidth);
           $_this.dialog({position : $_this.dialog('option', 'position')});
+        }
+
+        // Focus
+        if (options.forceFocusOnCloseButton === true) {
+          setTimeout(function() {
+            $_this.parent().find('button.ui-dialog-titlebar-close').each(function() {
+              this.focus();
+            });
+          }, 0);
         }
       };
       if (sp.promise.isOne(options.openPromise)) {
