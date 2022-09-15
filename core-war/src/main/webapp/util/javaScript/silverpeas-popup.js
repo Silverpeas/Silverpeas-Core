@@ -696,6 +696,11 @@
         if (options.callbackOnClose) {
           options.callbackOnClose.call(this);
         }
+        const lastActiveElement = $_this.data('spPopup_lastActiveElement');
+        if (lastActiveElement) {
+          $_this.removeData('spPopup_lastActiveElement');
+          lastActiveElement.focus();
+        }
       });
 
       // Scroll
@@ -755,7 +760,10 @@
         if (options.forceFocusOnCloseButton === true) {
           setTimeout(function() {
             $_this.parent().find('button.ui-dialog-titlebar-close').each(function() {
-              this.focus();
+              if (document.activeElement !== this) {
+                $_this.data('spPopup_lastActiveElement', document.activeElement);
+                this.focus();
+              }
             });
           }, 0);
         }
