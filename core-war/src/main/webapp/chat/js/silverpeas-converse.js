@@ -270,27 +270,21 @@
     }
     chatOptions.whitelisted_plugins.push('silverpeas-minimize-all');
     converse.plugins.add('silverpeas-minimize-all', {
-      dependencies: ["converse-minimize"],
+      dependencies: ["converse-minimize", "silverpeas-commons"],
       initialize : function() {
         const _converse = this._converse;
         const __minimizeAll = function(e) {
           e.stopPropagation();
           e.preventDefault();
-          const __click = function($el) {
-            if($el) {
-              $el.click();
-            }
-          };
           _converse.chatboxviews.getAll().forEach(function(view) {
-            __click(view.querySelector('.toggle-chatbox-button') ||
-                view.querySelector('.close-chatbox-button'));
-          });
-          setTimeout(function() {
-            const minimizedChats = document.querySelector("converse-minimized-chats");
-            if (minimizedChats && !minimizedChats.querySelector(".hidden")) {
-              __click(minimizedChats.querySelector('#toggle-minimized-chats'));
+            const model = view.model;
+            if (typeof model.setChatState === 'function') {
+              _converse.minimize.minimize(model);
+            } else {
+              view.close();
             }
-          }, 0);
+          });
+          converse.env.spUtils.minChats.collapse();
         };
         _converse.api.listen.on('controlBoxInitialized', function() {
           _converse.chatboxviews.get('controlbox').addEventListener('dblclick', __minimizeAll);
