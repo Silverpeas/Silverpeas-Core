@@ -96,4 +96,12 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   List<CalendarEvent> getAllBetween(CalendarEventFilter filter, Instant startDateTime,
       Instant endDateTime);
 
+  /**
+   * Moves the given event from specified calendar to the one the {@link CalendarEvent} instance
+   * refers.
+   * @param event the event instance with previous calendar linking
+   * @param target the calendar into which the event must be moved
+   * @return the updated calendar.
+   */
+  CalendarEvent moveToCalendar(final CalendarEvent event, final Calendar target);
 }

@@ -28,11 +28,14 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventFilter;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,6 +51,12 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
   private static final String CALENDARS_PARAMETER = "calendars";
   private static final String CALENDAR_PARAM = "calendar";
   private static final String CALENDAR_PARAMETER = CALENDAR_PARAM;
+  private static final String MOVE_CALENDAR_JPQL_PATTERN =
+      "update CalendarComponent c " +
+      "set c.calendar = :target, " +
+          "c.lastUpdaterId = :lastUpdaterId, " +
+          "c.lastUpdateDate = :lastUpdateDate " +
+      "where c in (%s)";
 
   @Override
   public CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
@@ -108,6 +117,24 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     parameters.add("startDateTime", startDateTime).add("endDateTime", endDateTime);
     return streamByNamedQuery(namedQuery, parameters, Object[].class)
         .map(o -> (CalendarEvent) o[0]).collect(Collectors.toList());
+  }
+
+  @Override
+  public CalendarEvent moveToCalendar(final CalendarEvent event, final Calendar target) {
+    final OperationContext fromCache = OperationContext.getFromCache();
+    final NamedParameters params = newNamedParameters()
+        .add("target", target)
+        .add("event", event)
+        .add("lastUpdaterId", fromCache.getUser().getId())
+        .add("lastUpdateDate", new Timestamp(new Date().getTime()));
+    final String updateEventQuery = String.format(MOVE_CALENDAR_JPQL_PATTERN,
+        "select e.component from CalendarEvent e where e = :event");
+    updateFromJpqlQuery(updateEventQuery, params);
+    final String updateEventOccurrenceQuery = String.format(MOVE_CALENDAR_JPQL_PATTERN,
+        "select o.component from CalendarEventOccurrence o where o.event = :event");
+    updateFromJpqlQuery(updateEventOccurrenceQuery, params);
+    getEntityManager().clear();
+    return getById(event.getId());
   }
 
   @Override
