@@ -1009,9 +1009,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         result = moveToAnotherCalendar(previousState);
       } else {
         this.updateIntoPersistence();
-        notify(ResourceEvent.Type.UPDATE, previousState, this);
         result = new EventOperationResult().withUpdated(this);
       }
+      result.updated().ifPresent(e -> notify(ResourceEvent.Type.UPDATE, previousState, e));
       if (!OperationContext.statesOf(IMPORT)) {
         CalendarEvent updatedEvent =
             result.created().orElseGet(() -> result.updated().orElse(null));
@@ -1381,16 +1381,15 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private EventOperationResult moveToAnotherCalendar(final CalendarEvent previousState) {
-    // Deletes all persisted occurrences belonging to this event (recreated after from
-    // previousOccurrences list by applyToPersistedOccurrences method)
-    deleteAllOccurrencesFromPersistence();
-    // New event is created on other calendar
-    CalendarEvent newEvent = this.copy();
-    newEvent.component.setSequence(0);
-    newEvent.planOn(this.getCalendar());
-    // Deleting previous event
-    previousState.deleteFromPersistence();
-    return new EventOperationResult().withCreated(newEvent);
+    // Target calendar
+    final Calendar target = this.getCalendar();
+    // Set previous calendar before saving it
+    this.setCalendar(previousState.getCalendar());
+    // Saving updated data
+    updateIntoPersistence();
+    // Then moving it
+    final CalendarEvent movedCalendar = CalendarEventRepository.get().moveToCalendar(this, target);
+    return new EventOperationResult().withUpdated(movedCalendar);
   }
 
   private boolean isDateOrRecurrenceChangedWith(final CalendarEvent previousState) {

@@ -45,6 +45,7 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -447,6 +448,90 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
     assertThat(event.isOnAllDay(), is(true));
     assertThat(event.getStartDate(), is(LocalDate.parse("2016-01-12")));
     assertThat(event.getEndDate(), is(eventEndDate));
+  }
+
+  @Test
+  public void updateTheCalendarOfAPlannedEvent() {
+    final String testedEventId = "ID_E_3";
+    final Temporal startDate = OffsetDateTime.parse("2016-01-08T18:30:00Z");
+    final Temporal endDate = OffsetDateTime.parse("2016-01-22T13:38:00Z");
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event(testedEventId).get();
+    Date lastUpdateDate = event.getLastUpdateDate();
+    assertThat(event.isPlanned(), is(true));
+    assertThat(event.isOnAllDay(), is(false));
+    assertThat(event.getSequence(), is(0L));
+    assertThat(event.getStartDate(), is(startDate));
+    assertThat(event.getEndDate(), is(endDate));
+
+    Calendar targetCalendar = Calendar.getById("ID_3");
+    event.setCalendar(targetCalendar);
+    OperationResult result = event.update();
+
+    assertEventIsOnlyUpdated(result);
+    event = CalendarEvent.getById(testedEventId);
+    assertThat(targetCalendar.event(testedEventId).get(), is(event));
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(event.getCalendar(), is(targetCalendar));
+    assertThat(event.isPlanned(), is(true));
+    assertThat(event.isOnAllDay(), is(false));
+    assertThat(event.getSequence(), is(1L));
+    assertThat(event.getStartDate(), is(startDate));
+    assertThat(event.getEndDate(), is(endDate));
+  }
+
+  @Test
+  public void updateTheCalendarOfARecurrentPlannedEvent() {
+    OperationContext.fromUser("2");
+    final String testedEventId = "ID_E_6";
+    final Temporal startDate = OffsetDateTime.parse("2016-08-01T15:30:00Z");
+    final Temporal endDate = OffsetDateTime.parse("2016-08-01T16:45:00Z");
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event(testedEventId).get();
+    Date lastUpdateDate = event.getLastUpdateDate();
+    User lastUpdater = event.getLastUpdater();
+    assertThat(event.isPlanned(), is(true));
+    assertThat(event.isOnAllDay(), is(false));
+    assertThat(event.getSequence(), is(0L));
+    assertThat(event.getStartDate(), is(startDate));
+    assertThat(event.getEndDate(), is(endDate));
+    List<CalendarEventOccurrence> occurrences = event.getPersistedOccurrences();
+    assertThat(occurrences, hasSize(1));
+    CalendarEventOccurrence occurrence = occurrences.get(0);
+    assertThat(occurrence.getSequence(), is(0L));
+    assertThat(occurrence.getCalendarEvent().getSequence(), is(0L));
+    final Recurrence recurrence = occurrence.getCalendarEvent().getRecurrence();
+    assertThat(recurrence, notNullValue());
+    assertThat(occurrence.getStartDate(), is(OffsetDateTime.parse("2016-08-02T15:30:00Z")));
+    assertThat(occurrence.getEndDate(), is(OffsetDateTime.parse("2016-08-02T16:45:00Z")));
+
+    Calendar targetCalendar = Calendar.getById("ID_3");
+    event.setCalendar(targetCalendar);
+    OperationResult result = event.update();
+
+    assertEventIsOnlyUpdated(result);
+    event = CalendarEvent.getById(testedEventId);
+    assertThat(targetCalendar.event(testedEventId).get(), is(event));
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(event.getLastUpdater(), not(is(lastUpdater)));
+    assertThat(event.getCalendar(), is(targetCalendar));
+    assertThat(event.isPlanned(), is(true));
+    assertThat(event.isOnAllDay(), is(false));
+    assertThat(event.getSequence(), is(0L));
+    assertThat(event.getStartDate(), is(startDate));
+    assertThat(event.getEndDate(), is(endDate));
+    occurrences = event.getPersistedOccurrences();
+    assertThat(occurrences, hasSize(1));
+    occurrence = occurrences.get(0);
+    assertThat(occurrence.asCalendarComponent().getCalendar(), is(targetCalendar));
+    assertThat(occurrence.getSequence(), is(0L));
+    assertThat(occurrence.getCalendarEvent(), is(event));
+    assertThat(occurrence.getCalendarEvent().getSequence(), is(0L));
+    assertThat(occurrence.getCalendarEvent().getRecurrence(), is(recurrence));
+    assertThat(occurrence.getStartDate(), is(OffsetDateTime.parse("2016-08-02T15:30:00Z")));
+    assertThat(occurrence.getEndDate(), is(OffsetDateTime.parse("2016-08-02T16:45:00Z")));
+    assertThat(occurrence.getLastUpdateDate(), is(event.getLastUpdateDate()));
+    assertThat(occurrence.getLastUpdater(), is(event.getLastUpdater()));
   }
 
   @Test
