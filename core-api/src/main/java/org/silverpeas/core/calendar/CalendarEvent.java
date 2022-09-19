@@ -197,7 +197,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
             "            WHERE (occ_cmp.period.startDateTime < :endDateTime AND occ_cmp.period.endDateTime > :startDateTime)" +
             "           )" +
             "ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query = 
+    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query =
         "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
@@ -992,9 +992,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         result = moveToAnotherCalendar(previousState);
       } else {
         this.updateIntoPersistence();
-        notify(ResourceEvent.Type.UPDATE, previousState, this);
         result = new EventOperationResult().withUpdated(this);
       }
+      result.updated().ifPresent(e -> notify(ResourceEvent.Type.UPDATE, previousState, e));
       if (!OperationContext.statesOf(IMPORT)) {
         CalendarEvent updatedEvent =
             result.created().orElseGet(() -> result.updated().orElse(null));
@@ -1354,16 +1354,15 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private EventOperationResult moveToAnotherCalendar(final CalendarEvent previousState) {
-    // Deletes all persisted occurrences belonging to this event (recreated after from
-    // previousOccurrences list by applyToPersistedOccurrences method)
-    deleteAllOccurrencesFromPersistence();
-    // New event is created on other calendar
-    CalendarEvent newEvent = this.clone();
-    newEvent.component.setSequence(0);
-    newEvent.planOn(this.getCalendar());
-    // Deleting previous event
-    previousState.deleteFromPersistence();
-    return new EventOperationResult().withCreated(newEvent);
+    // Target calendar
+    final Calendar target = this.getCalendar();
+    // Set previous calendar before saving it
+    this.setCalendar(previousState.getCalendar());
+    // Saving updated data
+    updateIntoPersistence();
+    // Then moving it
+    final CalendarEvent movedCalendar = CalendarEventRepository.get().moveToCalendar(this, target);
+    return new EventOperationResult().withUpdated(movedCalendar);
   }
 
   private boolean isDateOrRecurrenceChangedWith(final CalendarEvent previousState) {

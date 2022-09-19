@@ -355,10 +355,14 @@
          */
         if (!occurrence.hasBeenModifiedAtEventLevel) {
           occurrence.hasBeenModifiedAtEventLevel = function(other) {
+            const _getCalendarId = function(event) {
+              return event.calendar ? event.calendar.id : event.calendarId;
+            };
             return !sp.object.areEachExistingValuesEqual(
-                [{a : this.visibility, b : other.visibility},
-                  {a : this.content, b : other.content},
-                  {a : this.recurrence, b : other.recurrence}]);
+                [{a : _getCalendarId(this), b : _getCalendarId(other)},
+                 {a : this.visibility, b : other.visibility},
+                 {a : this.content, b : other.content},
+                 {a : this.recurrence, b : other.recurrence}]);
           };
         }
         /**
