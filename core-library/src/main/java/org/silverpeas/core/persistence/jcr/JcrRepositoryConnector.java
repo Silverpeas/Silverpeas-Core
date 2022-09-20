@@ -30,6 +30,7 @@ import org.silverpeas.core.thread.concurrent.ReentrantSemaphore;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
@@ -77,11 +78,9 @@ public class JcrRepositoryConnector {
    * @throws RepositoryException if an error occurs while opening the connection with the
    * repository.
    */
-  public static JcrSession openBasicSession(String login, String domainId, String password)
+  public static JCRSession openBasicSession(String login, String domainId, String password)
       throws RepositoryException {
-    final String userID = MessageFormat.format(USER_ID_PATTERN, login, domainId);
-    final Credentials credentials = new SimpleCredentials(userID, password.toCharArray());
-    return openSession(credentials);
+    return JCRSession.openUserSession(login, domainId, password);
   }
 
   /**
@@ -92,40 +91,8 @@ public class JcrRepositoryConnector {
    * @throws javax.jcr.RepositoryException if an error occurs while opening a system connection with
    * the repository.
    */
-  public static JcrSession openSystemSession() throws RepositoryException {
-    return openSession(JcrSystemCredentialsProvider.getJcrSystemCredentials());
-  }
-
-  private static JcrSession openSession(final Credentials credentials) throws RepositoryException {
-    JcrSession jcrSession = null;
-    try {
-      final SimpleCache cache = CacheServiceProvider.getThreadCacheService().getCache();
-      jcrSession = cache.get(SESSION_KEY_CACHE, JcrSession.class);
-      if (jcrSession == null) {
-        semaphore.acquire();
-        final Repository repository = getRepository();
-        jcrSession = new JcrSession(repository.login(credentials));
-        cache.put(SESSION_KEY_CACHE, jcrSession);
-      } else {
-        jcrSession.sessionAlreadyOpened();
-        SilverLogger.getLogger(JcrRepositoryConnector.class).debug(() ->
-            "JCR session has already been opened");
-      }
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      performCleanup(jcrSession, e);
-    } catch (Exception e) {
-      performCleanup(jcrSession, e);
-    }
-    return jcrSession;
-  }
-
-  private static void performCleanup(final JcrSession jcrSession, final Exception e)
-      throws RepositoryException {
-    if (jcrSession != null) {
-      jcrSession.close();
-    }
-    throw new RepositoryException(e);
+  public static JCRSession openSystemSession() throws RepositoryException {
+    return JCRSession.openSystemSession();
   }
 
   public static void closeSession(Session session) {
@@ -144,10 +111,5 @@ public class JcrRepositoryConnector {
     } finally {
       semaphore.release();
     }
-  }
-
-  private static Repository getRepository() {
-    JcrRepositoryProvider provider = ServiceProvider.getService(JcrRepositoryProvider.class);
-    return provider.getRepository();
   }
 }

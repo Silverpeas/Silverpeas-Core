@@ -219,10 +219,9 @@ public class AuthenticationService implements Authentication {
   private String authenticateByLoginAndPasswordAndDomain(AuthenticationCredential credential)
       throws AuthenticationException {
     // Test data coming from calling page
-    String login = credential.getLogin();
     String password = credential.getPassword();
     String domainId = credential.getDomainId();
-    if (login == null || password == null || domainId == null) {
+    if (password == null || domainId == null) {
       return null;
     }
 
@@ -260,7 +259,7 @@ public class AuthenticationService implements Authentication {
     // Test data coming from calling page
     String login = credential.getLogin();
     String domainId = credential.getDomainId();
-    if (login == null || domainId == null) {
+    if (domainId == null) {
       return null;
     }
     final boolean authenticationOK;
@@ -321,10 +320,9 @@ public class AuthenticationService implements Authentication {
   public void changePasswordAndEmail(AuthenticationCredential credential, String newPassword,
       String email) throws AuthenticationException {
     // Test data coming from calling page
-    String login = credential.getLogin();
     String oldPassword = credential.getPassword();
     String domainId = credential.getDomainId();
-    if (login == null || oldPassword == null || domainId == null || newPassword == null) {
+    if (oldPassword == null || domainId == null || newPassword == null) {
       throw new AuthenticationBadCredentialException(
           "The login, the password or the domain isn't set!");
     }
@@ -444,7 +442,7 @@ public class AuthenticationService implements Authentication {
     // Test data coming from calling page
     String login = credential.getLogin();
     String domainId = credential.getDomainId();
-    if (login == null || domainId == null || newPassword == null) {
+    if (domainId == null || newPassword == null) {
       throw new AuthenticationBadCredentialException(
           "The login, the password or the domain isn't set!");
     }

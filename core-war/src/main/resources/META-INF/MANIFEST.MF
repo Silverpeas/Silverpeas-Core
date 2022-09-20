@@ -6,5 +6,4 @@ Dependencies: org.jboss.as.naming,
   org.apache.cxf.impl meta-inf,
   org.apache.cxf services,
   org.antlr,
-  org.apache.lucene-7,
-  ${jackrabbit}
+  org.apache.lucene-7

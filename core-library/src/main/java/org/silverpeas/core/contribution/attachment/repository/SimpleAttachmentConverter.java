@@ -32,7 +32,8 @@ import javax.jcr.RepositoryException;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
- *
+ * A converter of nodes representing files in the JCR to {@link SimpleAttachment} objects in
+ * Silverpeas.
  * @author ehugonnet
  */
 class SimpleAttachmentConverter extends AbstractJcrConverter {

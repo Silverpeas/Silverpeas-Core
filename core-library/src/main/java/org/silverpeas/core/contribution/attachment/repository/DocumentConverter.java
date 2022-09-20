@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -38,7 +37,6 @@ import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -62,23 +60,24 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- *
+ * A converter of node representing documents to {@link SimpleDocument} or
+ * {@link HistorisedDocument} objects in Silverpeas.
  * @author ehugonnet
  */
 class DocumentConverter extends AbstractJcrConverter {
 
-  private SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
+  private final SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
 
   /**
-   * Builds from the root version node and from a language the object representation of a
-   * versioned document and its history.
+   * Builds from the root version node and from a language the object representation of a versioned
+   * document and its history.
    * @param rootVersionNode the root version node (master).
    * @param lang the aimed content language.
    * @return the instance of a versioned document.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
-  HistorisedDocument buildHistorisedDocument(Node rootVersionNode, String lang)
-  throws RepositoryException {
+  HistorisedDocument buildHistorizedDocument(Node rootVersionNode, String lang)
+      throws RepositoryException {
 
     VersionManager versionManager = rootVersionNode.getSession().getWorkspace().getVersionManager();
     HistorisedDocument historisedDocument =
@@ -119,16 +118,11 @@ class DocumentConverter extends AbstractJcrConverter {
         }
       }
 
-      HistoryDocumentSorter.sortHistory((List) documentHistory);
+      HistoryDocumentSorter.sortHistory(documentHistory);
       historisedDocument.setHistory(documentHistory);
       historisedDocument.setVersionIndex(versionIndex);
-    } catch (RepositoryException ex) {
-      if (ex.getCause() instanceof NoSuchItemStateException ||
-          ex instanceof ItemNotFoundException) {
-        performBrokenHistory(historisedDocument);
-      } else {
-        throw ex;
-      }
+    } catch (PathNotFoundException ex) {
+      performBrokenHistory(historisedDocument);
     }
     return historisedDocument;
   }
@@ -139,14 +133,14 @@ class DocumentConverter extends AbstractJcrConverter {
 
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
     if (isVersionedMaster(node)) {
-      return buildHistorisedDocument(node, lang);
+      return buildHistorizedDocument(node, lang);
     }
     Node parentNode = node.getParent();
     if (parentNode instanceof Version) {
-      // Getting the parent node, the versionned one
+      // Getting the parent node, the versioned one
       Node masterNode = getMasterNodeForVersion((Version) parentNode);
-      // The historised document is built from the parent node
-      HistorisedDocument document = buildHistorisedDocument(masterNode, lang);
+      // The historized document is built from the parent node
+      HistorisedDocument document = buildHistorizedDocument(masterNode, lang);
       // Returning the version
       SimpleDocumentVersion version = document.getVersionIdentifiedBy(node.getIdentifier());
       if (version != null) {
@@ -164,12 +158,11 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   /**
-   * Convert a NodeIteraor into a collection of SimpleDocument.
-   *
+   * Browses the nodes with the specified iterator and converts each of them into to a document.
    * @param iter th NodeIterator to convert.
    * @param language the language of the wanted document.
    * @return a collection of SimpleDocument.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   public SimpleDocumentList<SimpleDocument> convertNodeIterator(NodeIterator iter, String language)
       throws RepositoryException {
@@ -201,7 +194,7 @@ class DocumentConverter extends AbstractJcrConverter {
     SimpleDocument doc = new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
         getIntProperty(node, SLV_PROPERTY_ORDER),
         getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
-         getStringProperty(node, SLV_PROPERTY_OWNER), file);
+        getStringProperty(node, SLV_PROPERTY_OWNER), file);
     doc.setReservation(getDateProperty(node, SLV_PROPERTY_RESERVATION_DATE));
     doc.setAlert(getDateProperty(node, SLV_PROPERTY_ALERT_DATE));
     doc.setExpiry(getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE));
@@ -229,7 +222,8 @@ class DocumentConverter extends AbstractJcrConverter {
       doc.addRolesForWhichDownloadIsForbidden(SilverpeasRole.listFrom(forbiddenDownloadForRoles));
     }
     // Displayable as content
-    ofNullable(getBooleanProperty(node, SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, null)).ifPresent(doc::setDisplayableAsContent);
+    ofNullable(getBooleanProperty(node, SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, null)).ifPresent(
+        doc::setDisplayableAsContent);
 
     // Editable simultaneously
     ofNullable(getBooleanProperty(node, SLV_PROPERTY_EDITABLE_SIMULTANEOUSLY, null))
@@ -280,9 +274,9 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:forbiddenDownloadForRoles] optional property.
-   * @param document
-   * @param documentNode
-   * @throws RepositoryException
+   * @param document the document for which download has to be enabled or disabled
+   * @param documentNode the node representation of the document in the JCR
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void setForbiddenDownloadForRolesOptionalNodeProperty(SimpleDocument document, Node
       documentNode) throws RepositoryException {
@@ -302,16 +296,18 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:displayableAsContent] optional property.
-   * @param document
-   * @param documentNode
-   * @throws RepositoryException
+   * @param document the document for which the rendering of its content has to be enabled or
+   * disabled.
+   * @param documentNode the node representation of the document in the JCR
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void setDisplayableAsContentOptionalNodeProperty(SimpleDocument document, Node
       documentNode) throws RepositoryException {
     if (document.isDisplayableAsContent() != defaultValueOfDisplayableAsContentBehavior()) {
       // Adding the mixin (no impact when it is already existing)
       documentNode.addMixin(SLV_VIEWABLE_MIXIN);
-      documentNode.setProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, document.isDisplayableAsContent());
+      documentNode.setProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT,
+          document.isDisplayableAsContent());
     } else {
       // Removing the mixin
       if (documentNode.hasProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT)) {
@@ -322,9 +318,9 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Adding or removing the [slv:editableSimultaneously] optional property.
-   * @param document
-   * @param documentNode
-   * @throws RepositoryException
+   * @param document the document for which the simultaneous edition has to be enabled or disabled.
+   * @param documentNode the node representation of the document in the JCR
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void setEditableSimultaneouslyOptionalNodeProperty(SimpleDocument document, Node
       documentNode) throws RepositoryException {
@@ -375,10 +371,6 @@ class DocumentConverter extends AbstractJcrConverter {
   public boolean isVersionedMaster(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false) && !node.hasProperty(
         JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
-  }
-
-  public boolean isForm(Node node) throws RepositoryException {
-    return node.getPath().contains('/' + DocumentType.form.getFolderName() + '/');
   }
 
   public String updateVersion(Node node, String lang, boolean isPublic) throws RepositoryException {

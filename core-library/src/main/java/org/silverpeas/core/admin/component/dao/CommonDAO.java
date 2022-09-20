@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,26 +20,30 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
-package org.silverpeas.web.jcrmonitor;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
+package org.silverpeas.core.admin.component.dao;
 
-import java.util.Collection;
-
-import static java.util.Collections.singleton;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.READER;
-import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
+import java.util.List;
 
 /**
- * @author silveryocha
+ * Common DAO to extend by all the DAOs in admin.
+ * @author mmoquillon
  */
-public class JcrMonitorWebRequestContext extends WebComponentRequestContext<JcrMonitorWebController> {
+public abstract class CommonDAO {
 
-  @Override
-  public Collection<SilverpeasRole> getUserRoles() {
-    return singleton(getCurrentRequester().isAccessAdmin() ? ADMIN : READER);
+  protected CommonDAO() {
+  }
+
+  protected static String list2String(List<String> ids) {
+    StringBuilder str = new StringBuilder();
+    for (int i = 0; i < ids.size(); i++) {
+      if (i != 0) {
+        str.append(",");
+      }
+      str.append(ids.get(i));
+    }
+    return str.toString();
   }
 }

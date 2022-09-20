@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
-import org.silverpeas.core.persistence.jcr.JcrSession;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -36,8 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
-
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
 @Service
 public class WebDavDocumentService implements WebdavService {
@@ -48,7 +46,7 @@ public class WebDavDocumentService implements WebdavService {
 
   @Override
   public void updateDocumentContent(SimpleDocument document) {
-    try(JcrSession session = openSystemSession()) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
       webdavRepository.updateAttachmentBinaryContent(session, document);
       session.save();
     } catch (RepositoryException | IOException ex) {
@@ -58,7 +56,7 @@ public class WebDavDocumentService implements WebdavService {
 
   @Override
   public String getContentEditionLanguage(final SimpleDocument document) {
-    try(JcrSession session = openSystemSession()) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
       return webdavRepository.getContentEditionLanguage(session, document);
     } catch (RepositoryException ex) {
       throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
@@ -67,7 +65,7 @@ public class WebDavDocumentService implements WebdavService {
 
   @Override
   public long getContentEditionSize(final SimpleDocument document) {
-    try(JcrSession session = openSystemSession()) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
       return webdavRepository.getContentEditionSize(session, document);
     } catch (RepositoryException ex) {
       throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
@@ -76,7 +74,7 @@ public class WebDavDocumentService implements WebdavService {
 
   @Override
   public Optional<WebdavContentDescriptor> getDescriptor(final SimpleDocument document) {
-    try(JcrSession session = openSystemSession()) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
       return webdavRepository.getDescriptor(session, document);
     } catch (RepositoryException ex) {
       throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
@@ -86,7 +84,7 @@ public class WebDavDocumentService implements WebdavService {
   @Override
   public void updateContentFrom(final SimpleDocument document, final InputStream input)
       throws IOException {
-    try(JcrSession session = openSystemSession()) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
       webdavRepository.updateContentFrom(session, document, input);
     } catch (RepositoryException ex) {
       throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
@@ -96,7 +94,7 @@ public class WebDavDocumentService implements WebdavService {
   @Override
   public void loadContentInto(final SimpleDocument document, final OutputStream output)
       throws IOException {
-    try(JcrSession session = openSystemSession()) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
       webdavRepository.loadContentInto(session, document, output);
     } catch (RepositoryException ex) {
       throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);

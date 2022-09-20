@@ -69,7 +69,7 @@ import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 
 /**
  * A document file attached to a given user contribution. A document file is itself a user
- * contribution whose the content is written in a given language. As such it is then both a
+ * contribution whose content is written in a given language. As such it is then both a
  * localized contribution and its own translation. A localized contribution because it can exist in
  * different languages (rare enough) and a translation by itself because the content of the file is
  * always written in a given language; it is then not a container of several contents, each of them
@@ -143,7 +143,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     this.repositoryPath = simpleDocument.getRepositoryPath();
     this.versionMaster = simpleDocument.getVersionMaster();
     this.versionIndex = simpleDocument.getVersionIndex();
-    this.pk = simpleDocument.getPk().clone();
+    this.pk = simpleDocument.getPk().copy();
     this.foreignId = simpleDocument.getForeignId();
     this.order = simpleDocument.getOrder();
     this.versioned = simpleDocument.isVersioned();
@@ -397,7 +397,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
         webdavContentEditionLanguage = WebdavServiceProvider.getWebdavService()
             .getContentEditionLanguage(getVersionMaster());
       }
-      // If null, it indicates that the document does not exists into webdav repository.
+      // If null, it indicates that the document does not exist into webdav repository.
       // The class attribute is initialized to empty value.
       if (webdavContentEditionLanguage == null) {
         webdavContentEditionLanguage = StringUtil.EMPTY;
@@ -421,7 +421,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
         webdavContentEditionSize = WebdavServiceProvider.getWebdavService()
             .getContentEditionSize(getVersionMaster());
       }
-      // If negative value, it indicates that the document does not exists into webdav repository.
+      // If negative value, it indicates that the document does not exist into webdav repository.
       // The class attribute is initialized to zero.
       if (webdavContentEditionSize < 0) {
         webdavContentEditionSize = 0;
@@ -605,7 +605,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
 
   /**
    * Is this document in read-only? A document is read-only if either it is currently being
-   * editing by another user than the current one, or it isn't edited and it cannot
+   * editing by another user than the current one, or it isn't edited, and it cannot
    * be modified by the current user, or it is currently being editing by another user than the
    * current one. If there is no user behind the scene, then the method behave like the
    * {@link #isEdited()} method.
@@ -752,7 +752,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     if (!webAppContext.endsWith("/")) {
       url.append('/');
     }
-    url.append(ResourceLocator.getGeneralSettingBundle().getString("webdav.respository")).
+    url.append(ResourceLocator.getGeneralSettingBundle().getString("webdav.repository")).
         append('/').
         append(ResourceLocator.getGeneralSettingBundle().getString("webdav.workspace")).
         append('/').
@@ -778,7 +778,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
 
   /**
    * Returns the master of versioned document.
-   * If not versionned, it returns itself.
+   * If not versioned, it returns itself.
    * If versioned, it returns the master of versioned document (the last created or updated in
    * other words).
    * @return the master version of this document.
@@ -910,7 +910,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
         SilverpeasRole.getHighestFrom(getVersionMaster().forbiddenDownloadForRoles);
     if (highestForbiddenRole == null) {
       // In that case, there is no reason to verify user role because it doesn't
-      // exists any restriction for downloading.
+      // exist any restriction for downloading.
       return true;
     }
 
@@ -960,10 +960,9 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
    * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
    * services during the conversion from JCR data to SimpleDocument data.
    * @param allowedRoles one or more silverpeas roles
-   * @return true if roles were not allowed before the call of this method.
    */
-  public boolean addRolesForWhichDownloadIsAllowed(final SilverpeasRole... allowedRoles) {
-    return addRolesForWhichDownloadIsAllowed(Arrays.asList(allowedRoles));
+  public void addRolesForWhichDownloadIsAllowed(final SilverpeasRole... allowedRoles) {
+    addRolesForWhichDownloadIsAllowed(Arrays.asList(allowedRoles));
   }
 
   /**
@@ -1005,6 +1004,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
   /**
    * Indicates if the file described by current {@link SimpleAttachment} is type of archive.
    */
+  @SuppressWarnings("unused")
   public boolean isContentArchive() {
     return FileUtil.isArchive(getAttachmentPath());
   }
@@ -1012,6 +1012,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
   /**
    * Indicates if the file described by current {@link SimpleAttachment} is type of mail.
    */
+  @SuppressWarnings("unused")
   public boolean isContentMail() {
     return FileUtil.isMail(getAttachmentPath());
   }

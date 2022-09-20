@@ -25,7 +25,6 @@ package org.silverpeas.core.util.file;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.SilverpeasRuntimeException;
@@ -51,7 +50,7 @@ public class FileUploadUtil {
   }
 
   private static final ServletFileUpload upload = new ServletFileUpload(
-      new SilverpeasDiskFileItemFactory());
+      new DiskFileItemFactoryProvider().provide());
 
   public static boolean isRequestMultipart(HttpServletRequest request) {
     return ServletFileUpload.isMultipartContent(request);

@@ -31,22 +31,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.jcr.Node;
 import java.util.Calendar;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
@@ -64,7 +62,7 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
 
   @Before
   public void loadJcr() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);
       }
@@ -72,13 +70,8 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of convertNode method, of class SimpleAttachmentConverter.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testConvertNode() throws Exception {
+  public void convertNode() throws Exception {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
@@ -90,7 +83,7 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
     String nodeName = SimpleDocument.FILE_PREFIX + language;
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     Date updateDate = RandomGenerator.getRandomCalendar().getTime();
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);
       SimpleAttachment expResult = SimpleAttachment.builder(language)
           .setFilename(fileName)
@@ -103,7 +96,6 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
           .build();
       expResult.setLastUpdateDate(updateDate);
       expResult.setUpdatedBy(updatedBy);
-      assertThat(expResult.equals(expResult), is(true));
       node.setProperty(SLV_PROPERTY_NAME, fileName);
       node.setProperty(SLV_PROPERTY_CREATOR, creatorId);
       node.setProperty(JCR_LANGUAGE, language);
@@ -125,11 +117,8 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of fillNode method, of class SimpleAttachmentConverter.
-   */
   @Test
-  public void testFillNode() throws Exception {
+  public void fillNode() throws Exception {
     String language = "fr";
     String fileName = "test.pdf";
     String title = "Mon document de test";
@@ -144,7 +133,7 @@ public class SimpleAttachmentConverterIT extends JcrIntegrationIT {
         .setCreationData("0", creationDate)
         .build();
     String nodeName = attachment.getNodeName();
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);
       instance.fillNode(attachment, node);
       session.save();

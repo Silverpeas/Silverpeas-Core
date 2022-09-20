@@ -30,9 +30,9 @@ package org.silverpeas.core.contribution.attachment.model;
 public enum UnlockOption {
   PRIVATE_VERSION(1), WEBDAV(2), UPLOAD(4), FORCE(8);
 
-  private int mask;
+  private final int mask;
 
-  private UnlockOption(int filter) {
+  UnlockOption(int filter) {
     this.mask = filter;
   }
 

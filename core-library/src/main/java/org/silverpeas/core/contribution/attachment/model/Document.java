@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * A document as an attachment to a given contribution and gathering for a same document all of its
  * translations, each of them represented by a different ({@link SimpleDocument} instances. These
- * different translations can be get with the {@link Document#getTranslation(String)} method.
+ * different translations can be got with the {@link Document#getTranslation(String)} method.
  * The properties of a {@link Document} instance are those of the document master that is either the
  * single document file (in the case there is only one translation) or the document file written in
  * the default language of Silverpeas (see {@link I18n#getDefaultLanguage()} or the first
@@ -157,6 +157,7 @@ public class Document implements I18nContribution, LocalizedAttachment {
    * document written in a given language. If no translations exist, otherwise if this document
    * doesn't exist yet, then an empty list is returned.
    */
+  @SuppressWarnings("unused")
   public List<SimpleDocument> getAllTranslations() {
     AttachmentService service = AttachmentService.get();
     SimpleDocumentPK pk = new SimpleDocumentPK(id.getLocalId(), id.getComponentInstanceId());
@@ -215,10 +216,12 @@ public class Document implements I18nContribution, LocalizedAttachment {
     return getMasterDocument().isEdited();
   }
 
+  @SuppressWarnings("unused")
   public boolean isEditedBy(final User user) {
     return getMasterDocument().isEditedBy(user);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSharingAllowedForRolesFrom(final User user) {
     return getMasterDocument().isSharingAllowedForRolesFrom(user);
   }
@@ -237,6 +240,7 @@ public class Document implements I18nContribution, LocalizedAttachment {
     return getMasterDocument().isDownloadAllowedForRolesFrom(user);
   }
 
+  @SuppressWarnings("unused")
   public boolean isDownloadAllowedForRoles(final Set<SilverpeasRole> roles) {
     return getMasterDocument().isDownloadAllowedForRoles(roles);
   }

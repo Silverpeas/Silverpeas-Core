@@ -30,7 +30,7 @@ import org.silverpeas.core.util.URLUtil;
  * <p>
  * The identifier of the component instance provided by this class is the one of the head version.
  * It is the same thing for the provided foreign identifier information.
- * To retrieve the real historised values of the version, please use methods for which the name
+ * To retrieve the real historized values of the version, please use methods for which the name
  * prefix is <b>getRealVersion</b>...
  * @author Yohann Chastagnier
  */
@@ -44,7 +44,7 @@ public class SimpleDocumentVersion extends SimpleDocument {
   /**
    * The default constructor of a simple document version.
    * @param documentVersion the original version.
-   * @param masterVersion
+   * @param masterVersion the current version of the document.
    */
   public SimpleDocumentVersion(final SimpleDocument documentVersion,
       final HistorisedDocument masterVersion) {
@@ -60,11 +60,11 @@ public class SimpleDocumentVersion extends SimpleDocument {
   @Override
   public void setVersionMaster(final SimpleDocument versionMaster) {
     if (!(versionMaster instanceof HistorisedDocument)) {
-      throw new IllegalArgumentException("The master version must be an historised one ...");
+      throw new IllegalArgumentException("The master version must be an historized one ...");
     }
     super.setVersionMaster(versionMaster);
     if (realVersionPk == null) {
-      realVersionPk = getPk().clone();
+      realVersionPk = getPk().copy();
       realVersionForeignId = getForeignId();
     }
     getPk().setComponentName(getVersionMaster().getInstanceId());
@@ -83,7 +83,7 @@ public class SimpleDocumentVersion extends SimpleDocument {
 
   /**
    * Gets the real value of the PK of the version and not the one of the head version.
-   * @return the historised PK value of the historised version.
+   * @return the historized PK value of the historized version.
    */
   public SimpleDocumentPK getRealVersionPk() {
     if (realVersionPk == null) {
@@ -95,7 +95,7 @@ public class SimpleDocumentVersion extends SimpleDocument {
   /**
    * Gets the real value of the foreign identifier of the version and not the one of the head
    * version.
-   * @return the historised foreign identifier value of the historised version.
+   * @return the historized foreign identifier value of the historized version.
    */
   public String getRealVersionForeignId() {
     if (realVersionForeignId == null) {

@@ -59,7 +59,6 @@ import java.util.stream.Stream;
 import static java.util.Collections.*;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.apache.commons.collections.MapUtils.isNotEmpty;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.*;
 
@@ -74,9 +73,9 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
   private static final String DATA_MANAGER_CONTEXT_KEY = "PublicationAccessControllerDataManager";
 
-  private ComponentAccessControl componentAccessController;
+  private final ComponentAccessControl componentAccessController;
 
-  private NodeAccessControl nodeAccessController;
+  private final NodeAccessControl nodeAccessController;
 
   @Inject
   PublicationAccessController(final ComponentAccessControl componentAccessController,
@@ -106,7 +105,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
   @Override
   public Stream<PublicationDetail> filterAuthorizedByUser(final String userId,
       final Collection<PublicationDetail> pubs, final AccessControlContext context) {
-    final DataManager dataManager = getDataManager(context).loadCachesWithLoadedPublications(userId, pubs);
+    final DataManager dataManager =
+        getDataManager(context).loadCachesWithLoadedPublications(userId, pubs);
     return filterAuthorizedByUser(dataManager.getGivenPublicationPks(), userId, context)
         .map(dataManager::getPublicationData);
   }
@@ -115,7 +115,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
   public Stream<PublicationPK> filterAuthorizedByUser(final Collection<PublicationPK> pks,
       final String userId, final AccessControlContext context) {
     final DataManager dataManager = getDataManager(context).loadCaches(userId, pks);
-    return pks.stream().map(dataManager::prepareCheckFor).filter(p -> isUserAuthorized(userId, p, context));
+    return pks.stream().map(dataManager::prepareCheckFor)
+        .filter(p -> isUserAuthorized(userId, p, context));
   }
 
   @Override
@@ -124,13 +125,15 @@ public class PublicationAccessController extends AbstractAccessController<Public
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, PublicationDetail pubDetail, final AccessControlContext context) {
+  public boolean isUserAuthorized(String userId, PublicationDetail pubDetail,
+      final AccessControlContext context) {
     getDataManager(context).loadCachesWithLoadedPublication(pubDetail);
     return isUserAuthorized(userId, pubDetail.getPK(), context);
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, PublicationPK pubPk, final AccessControlContext context) {
+  public boolean isUserAuthorized(String userId, PublicationPK pubPk,
+      final AccessControlContext context) {
     return isUserAuthorizedByContext(userId, pubPk, context, getUserRoles(userId, pubPk, context));
   }
 
@@ -159,26 +162,38 @@ public class PublicationAccessController extends AbstractAccessController<Public
         () -> getComponentExtension(instanceId)
             .canPublicationBePersistedOrDeletedBy(publicationDetail, instanceId, userId,
                 safeHighestUserRole, context));
-    final Supplier<Optional<Location>> mainLocationSupplier = dataManager.getPublicationMainLocationSupplier(pubPk);
+    final Supplier<Optional<Location>> mainLocationSupplier =
+        dataManager.getPublicationMainLocationSupplier(pubPk);
     // Checks
-    if (isPublicationIntoTopicTrackerTrashFolder(context, instanceId, publicationDetail, mainLocationSupplier)) {
+    if (isPublicationIntoTopicTrackerTrashFolder(context, instanceId, publicationDetail,
+        mainLocationSupplier)) {
       // Trash case
-      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-      final boolean rightOnTopicsEnabled = componentDataManager.isRightOnTopicsEnabled(pubPk.getInstanceId());
-      final boolean noSpecificRightsAndCanPutInTrash = !rightOnTopicsEnabled && canPublicationBePersistedOrDeleted.getAsBoolean();
+      final ComponentAccessController.DataManager componentDataManager =
+          ComponentAccessController.getDataManager(context);
+      final boolean rightOnTopicsEnabled =
+          componentDataManager.isRightOnTopicsEnabled(pubPk.getInstanceId());
+      final boolean noSpecificRightsAndCanPutInTrash =
+          !rightOnTopicsEnabled && canPublicationBePersistedOrDeleted.getAsBoolean();
       final boolean specificRightsAndAdminOrAuthorNotUser = rightOnTopicsEnabled
-          && (safeHighestUserRole == SilverpeasRole.ADMIN || publicationDetail.isPublicationEditor(userId));
+          && (safeHighestUserRole == SilverpeasRole.ADMIN ||
+          publicationDetail.isPublicationEditor(userId));
       authorized.set(noSpecificRightsAndCanPutInTrash || specificRightsAndAdminOrAuthorNotUser);
     } else {
       // Verifying simple access
-      authorized.filter(a -> a && publicationDetail != null && !canPublicationBePersistedOrDeleted.getAsBoolean())
-                .ifPresent(a -> authorized.set(publicationDetail.isValid() && publicationDetail.isVisible()));
+      authorized.filter(
+              a -> a && publicationDetail != null && !canPublicationBePersistedOrDeleted.getAsBoolean())
+          .ifPresent(
+              a -> authorized.set(publicationDetail != null && publicationDetail.isValid() &&
+                  publicationDetail.isVisible()));
       // Verifying sharing
       authorized.filter(a -> a && isSharingActionFrom(operations))
                 .ifPresent(a -> {
           final User user = User.getById(userId);
-          final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-          authorized.set(!user.isAnonymous() && !user.isAccessGuest() && componentDataManager.isPublicationSharingEnabledForRole(instanceId, safeHighestUserRole));
+          final ComponentAccessController.DataManager componentDataManager =
+              ComponentAccessController.getDataManager(context);
+          authorized.set(!user.isAnonymous() && !user.isAccessGuest() &&
+              componentDataManager.isPublicationSharingEnabledForRole(instanceId,
+                  safeHighestUserRole));
         });
       // Verifying persist actions
       authorized.filter(a -> a && isPersistActionFrom(operations))
@@ -198,7 +213,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
     return false;
   }
 
-  ComponentInstancePublicationAccessControlExtension getComponentExtension(final String instanceId) {
+  ComponentInstancePublicationAccessControlExtension getComponentExtension(
+      final String instanceId) {
     return ComponentInstancePublicationAccessControlExtension.getByInstanceId(instanceId);
   }
 
@@ -218,29 +234,35 @@ public class PublicationAccessController extends AbstractAccessController<Public
     final String pubId = publicationPK.getId();
     if (isNotCreationContext(pubId, instanceId)) {
       final DataManager dataManager = getDataManager(context);
-      final boolean needPubLoading = !isSearchActionFrom(dataManager.operations) && !dataManager.isLotOfDataMode();
+      final boolean needPubLoading =
+          !isSearchActionFrom(dataManager.operations) && !dataManager.isLotOfDataMode();
       final PublicationDetail pubDetail = needPubLoading
           ? dataManager.loadPublication(publicationPK).getCurrentPublication()
           : null;
       if ((needPubLoading && pubDetail == null)
           || (isTopicTrackerSupported(instanceId, context)
-              && fillTopicTrackerRoles(userRoles, context, userId, publicationPK))) {
-          return;
+          && fillTopicTrackerRoles(userRoles, context, userId, publicationPK))) {
+        return;
       }
     }
-    final Set<SilverpeasRole> componentUserRoles = componentAccessController.getUserRoles(userId, instanceId, context);
+    final Set<SilverpeasRole> componentUserRoles =
+        componentAccessController.getUserRoles(userId, instanceId, context);
     if (componentAccessController.isUserAuthorized(componentUserRoles)) {
       userRoles.addAll(componentUserRoles);
     }
   }
 
-  private boolean isTopicTrackerSupported(final String instanceId, final AccessControlContext context) {
-    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+  private boolean isTopicTrackerSupported(final String instanceId,
+      final AccessControlContext context) {
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
     return componentDataManager.isTopicTrackerSupported(instanceId);
   }
 
-  private boolean isComponentInstanceRemoved(final String instanceId, final AccessControlContext context) {
-    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+  private boolean isComponentInstanceRemoved(final String instanceId,
+      final AccessControlContext context) {
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
     return componentDataManager.isRemoved(instanceId);
   }
 
@@ -269,7 +291,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerNodeRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final PublicationPK pubPK) {
     try {
-      final Optional<Location> mainLocation = getDataManager(context).getPublicationMainLocationSupplier(pubPK).get();
+      final Optional<Location> mainLocation =
+          getDataManager(context).getPublicationMainLocationSupplier(pubPK).get();
       if (mainLocation.isPresent()) {
         if (pubPK.getInstanceId().equals(mainLocation.get().getInstanceId())) {
           // Checking on the instance hosting the publication
@@ -301,9 +324,11 @@ public class PublicationAccessController extends AbstractAccessController<Public
     if (!isPersistActionFrom(operations) &&
         !existsExternalMainLocationLinkedToRemovedComponentInstance(context, pubPk)) {
       try {
-        final Collection<Location> locations = getDataManager(context).getAllPublicationAliases(pubPk);
+        final Collection<Location> locations =
+            getDataManager(context).getAllPublicationAliases(pubPk);
         for (final Location location : locations) {
-          final Set<SilverpeasRole> nodeUserRoles = nodeAccessController.getUserRoles(userId, location, context);
+          final Set<SilverpeasRole> nodeUserRoles =
+              nodeAccessController.getUserRoles(userId, location, context);
           if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
             // In case of alias, only user role is taken into account
             userRoles.add(SilverpeasRole.USER);
@@ -318,8 +343,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
   }
 
   /**
-   * @return true if it exists a main location hosted into a different component instance than
-   * the one of given pubPK and if this component instance is removed, false otherwise
+   * @return true if it exists a main location hosted into a different component instance than the
+   * one of given pubPK and if this component instance is removed, false otherwise
    */
   private boolean existsExternalMainLocationLinkedToRemovedComponentInstance(
       final AccessControlContext context, final PublicationPK pubPk) {
@@ -349,7 +374,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
   static class DataManager {
     private final AccessControlContext context;
     private final Collection<AccessControlOperation> operations;
-    private PublicationService publicationService;
+    private final PublicationService publicationService;
     private MemoizedSupplier<List<Location>> allLocations = null;
     private MemoizedSupplier<Optional<Location>> lastMainLocation = null;
     private PublicationDetail lastPublicationDetail = null;
@@ -369,7 +394,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
       loadPublicationCacheByDetails(singletonList(pub));
     }
 
-    DataManager loadCachesWithLoadedPublications(final String userId, final Collection<PublicationDetail> pubs) {
+    DataManager loadCachesWithLoadedPublications(final String userId,
+        final Collection<PublicationDetail> pubs) {
       loadPublicationCacheByDetails(pubs);
       loadCaches(userId, givenPublicationPks);
       return this;
@@ -381,27 +407,30 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
       lotOfDataMode = true;
       loadPublicationCacheByPks(pks);
-      final Collection<PublicationPK> pubRefs = isNotEmpty(publicationCache) ?
-          publicationCache.entrySet().stream()
-              .map(Map.Entry::getValue)
-              .filter(not(DataManager::isItAClone))
-              .map(PublicationDetail::getPK)
-              .collect(Collectors.toList()) :
-          this.givenPublicationPks;
+      final Collection<PublicationPK> pubRefs =
+          publicationCache != null && !publicationCache.isEmpty() ?
+              publicationCache.values().stream()
+                  .filter(not(DataManager::isItAClone))
+                  .map(PublicationDetail::getPK)
+                  .collect(Collectors.toList()) :
+              this.givenPublicationPks;
       final Set<String> instanceIds = pubRefs.stream()
           .map(PublicationPK::getInstanceId)
           .collect(Collectors.toSet());
-      final NodeAccessController.DataManager nodeDataManager = NodeAccessController.getDataManager(context);
+      final NodeAccessController.DataManager nodeDataManager =
+          NodeAccessController.getDataManager(context);
       nodeDataManager.loadCaches(userId, instanceIds);
       final Set<String> pubIdsForLocations = pubRefs.stream()
           .map(PublicationPK::getId)
           .collect(Collectors.toSet());
-      locationsByPublicationCache = publicationService.getAllLocationsByPublicationIds(pubIdsForLocations);
-      final Set<String> additionalInstanceIdsToLoad = locationsByPublicationCache.entrySet().stream()
-          .flatMap(e -> new ArrayList<>(e.getValue()).stream())
-          .map(Location::getInstanceId)
-          .filter(i -> !instanceIds.contains(i))
-          .collect(Collectors.toSet());
+      locationsByPublicationCache =
+          publicationService.getAllLocationsByPublicationIds(pubIdsForLocations);
+      final Set<String> additionalInstanceIdsToLoad =
+          locationsByPublicationCache.entrySet().stream()
+              .flatMap(e -> new ArrayList<>(e.getValue()).stream())
+              .map(Location::getInstanceId)
+              .filter(i -> !instanceIds.contains(i))
+              .collect(Collectors.toSet());
       if (!additionalInstanceIdsToLoad.isEmpty()) {
         nodeDataManager.completeCaches(userId, additionalInstanceIdsToLoad);
       }
@@ -416,7 +445,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
       if (isSearchActionFrom(operations)) {
         publicationCache = emptyMap();
       } else {
-        final List<PublicationDetail> publications = publicationService.getMinimalDataByIds(givenPublicationPks);
+        final List<PublicationDetail> publications =
+            publicationService.getMinimalDataByIds(givenPublicationPks);
         loadPublicationCloneCache(publications);
       }
     }
@@ -425,10 +455,11 @@ public class PublicationAccessController extends AbstractAccessController<Public
       if (givenPublicationPks != null) {
         return;
       }
-      givenPublicationPks = pubs.stream().map(PublicationDetail::getPK).distinct().collect(Collectors.toList());
+      givenPublicationPks =
+          pubs.stream().map(PublicationDetail::getPK).distinct().collect(Collectors.toList());
       if (isSearchActionFrom(operations)) {
         publicationCache = emptyMap();
-      } else  {
+      } else {
         loadPublicationCloneCache(pubs);
       }
     }
@@ -531,7 +562,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
      * @return the {@link PublicationDetail} instance.
      */
     DataManager loadPublication(final PublicationPK pk) {
-      if(lastPublicationDetail == null || !lastPublicationDetail.getPK().equals(pk)) {
+      if (lastPublicationDetail == null || !lastPublicationDetail.getPK().equals(pk)) {
         PublicationDetail pubDetail = null;
         try {
           pubDetail = getPublicationData(pk);
@@ -550,11 +581,13 @@ public class PublicationAccessController extends AbstractAccessController<Public
       if (publicationCache != null) {
         return publicationCache.get(pk);
       }
-      return publicationService.getMinimalDataByIds(singleton(pk)).stream().findFirst().orElse(null);
+      return publicationService.getMinimalDataByIds(singleton(pk)).stream().findFirst()
+          .orElse(null);
     }
 
     private static boolean isItAClone(final PublicationDetail pubDetail) {
-      return pubDetail != null && !pubDetail.isValid() && pubDetail.haveGotClone() && pubDetail.isClone();
+      return pubDetail != null && !pubDetail.isValid() && pubDetail.haveGotClone() &&
+          pubDetail.isClone();
     }
   }
 }

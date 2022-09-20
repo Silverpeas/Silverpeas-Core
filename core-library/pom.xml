@@ -111,10 +111,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-exec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
     </dependency>
     <dependency>
@@ -126,16 +122,8 @@
       <artifactId>jldap</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.jcr</groupId>
-      <artifactId>access-control</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
+      <artifactId>silverpeas-jcr</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>

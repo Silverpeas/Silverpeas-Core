@@ -26,7 +26,6 @@ package org.silverpeas.core.test.jcr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.attachment.process.SimpleDocumentDummyHandledFileConverter;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
@@ -35,6 +34,8 @@ import org.silverpeas.core.test.extention.SettingBundleStub;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.jcr.impl.RepositorySettings;
 
 /**
  * @author Yohann Chastagnier
@@ -52,17 +53,11 @@ public abstract class JcrIntegrationIT {
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("/" + DATABASE_CREATION_SCRIPT)
       .loadInitialDataSetFrom("/" + DATASET_SCRIPT);
 
-  private ExpectedException expectedException = ExpectedException.none();
-  private JcrContext jcrContext = new JcrContext();
+  private final JcrContext jcrContext = new JcrContext();
 
   @Rule
   public MavenTargetDirectoryRule getMavenTargetDirectory() {
     return mavenTargetDirectory;
-  }
-
-  @Rule
-  public ExpectedException getExpectedException() {
-    return expectedException;
   }
 
   @Rule

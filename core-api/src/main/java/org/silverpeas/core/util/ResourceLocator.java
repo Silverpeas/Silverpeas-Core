@@ -208,7 +208,7 @@ public class ResourceLocator {
 
   /**
    * Gets setting resource that is defined under the specified full qualified name as a
-   * {@link Properties} instance. The properties gathers all the settings used to configure the
+   * {@link Properties} instance. The properties gather all the settings used to configure the
    * behaviour of a Silverpeas functionality. Instead of returning a {@link SettingBundle} or a
    * {@link XmlSettingBundle} a basic {@link Properties} is just returned here; this method is
    * useful for tiers code that requires a {@link Properties} to set up some of their
@@ -235,8 +235,9 @@ public class ResourceLocator {
    * <p>
    * The cache containing the content of the bundles are usually expired at regularly time if a
    * such time was defined in the system properties of Silverpeas. Otherwise, this method should be
-   * explicitly used to reset this cache and then to force the reload of the bundles' content.
+   * explicitly used to reset this cache and then to force the reloading of the bundles' content.
    */
+  @SuppressWarnings("unused")
   public static void resetCache() {
     bundles.clear();
     ResourceBundle.clearCache();

@@ -40,7 +40,6 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
@@ -49,6 +48,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.wbe.StubbedWbeHostManager;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.NodeIterator;
@@ -70,7 +70,6 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_START;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 @RunWith(Arquillian.class)
@@ -93,7 +92,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
 
   @Before
   public void loadJcr() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);
       }
@@ -111,7 +110,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void createDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       InputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
@@ -171,7 +170,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void createDocumentWhenSortingFromYoungestToOldestOnUI() throws Exception {
     attachmentSettings.put("attachment.list.order", "-1");
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       InputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
@@ -230,7 +229,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void deleteDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -259,7 +258,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void findDocumentById() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -284,7 +283,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void findDocumentWithForbiddentDownloadForRolesById() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content =
           new ByteArrayInputStream(ENGLISH_CONTENT);
@@ -312,7 +311,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void findLast() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -346,7 +345,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void getMinMaxIndexes() throws Exception {
     final String foreignId = "node18";
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       // can not get MIN MAX because it does not exist document into JCR for the foreignId
       Optional<Pair<Integer, Integer>> minMax = documentRepository
           .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
@@ -422,7 +421,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       throws Exception {
     attachmentSettings.put("attachment.list.order", "-1");
     final String foreignId = "node18";
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       // can not get MIN MAX because it does not exist document into JCR for the foreignId
       Optional<Pair<Integer, Integer>> minMax = documentRepository
           .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
@@ -494,7 +493,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void updateDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -522,7 +521,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void updateDocumentForbidDownloadToReaderRole() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -553,7 +552,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void saveForbiddenDownloadForRoles() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -579,7 +578,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void saveDisplayableAsContent() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -606,7 +605,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void saveEditableSimultaneouslyOtherDocumentThanAnOpenOfficeCompatible()
       throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -633,7 +632,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void saveEditableSimultaneouslyOpenOfficeCompatibleDocument()
       throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createFrenchSimpleAttachment();
@@ -663,7 +662,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
   public void saveEditableSimultaneouslyOpenOfficeCompatibleDocumentButWbeNotHandled()
       throws Exception {
     wbeManager.handled = false;
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createFrenchSimpleAttachment();
@@ -691,7 +690,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void changeVersionStateOfSimpleDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -732,7 +731,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listDocumentsByForeignId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -772,7 +771,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listDocumentsByForeignIdAndType() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -825,7 +824,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listDocumentsByComponentIdAndType() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -873,7 +872,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listAllDocumentsByComponentId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content =
           new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -913,7 +912,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void selectDocumentsByForeignId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -956,7 +955,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void selectDocumentsByOwnerId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -995,7 +994,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void addContent() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleAttachment attachment = createEnglishSimpleAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node18";
@@ -1023,7 +1022,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void removeContent() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleAttachment attachment = createEnglishSimpleAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node18";
@@ -1091,7 +1090,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listComponentDocumentsByOwner() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1134,7 +1133,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listDocumentsLockedByUser() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1176,7 +1175,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listExpiringDocuments() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1225,7 +1224,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void selectExpiringDocuments() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1275,7 +1274,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listDocumentsToUnlock() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1324,7 +1323,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void selectDocumentsRequiringUnlocking() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1375,7 +1374,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void selectWarningDocuments() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1425,7 +1424,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void moveDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
@@ -1454,7 +1453,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void moveDocumentWithDocumentTypeChange() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1488,7 +1487,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void copyDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
@@ -1522,7 +1521,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void copyReservedDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1636,7 +1635,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void copyDocumentWithDocumentTypeChange() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1676,7 +1675,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void findDocumentByOldSilverpeasId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       long oldSilverpeasId = 236L;
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(236L);
@@ -1726,7 +1725,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void listDocumentsRequiringWarning() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -1782,7 +1781,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
     SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, owner,
         attachment);
     document.setExpiry(today.getTime());
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       documentRepository.createDocument(session, document);
     }
     ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);
@@ -1808,7 +1807,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
     SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, owner,
         attachment);
     document.setExpiry(today.getTime());
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       documentRepository.createDocument(session, document);
     }
     ByteArrayInputStream content = new ByteArrayInputStream(ENGLISH_CONTENT);

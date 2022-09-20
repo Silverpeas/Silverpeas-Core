@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import java.util.Objects;
+
 import static org.silverpeas.core.contribution.attachment.model.UnlockOption.*;
 
 /**
@@ -32,10 +34,10 @@ import static org.silverpeas.core.contribution.attachment.model.UnlockOption.*;
 public class UnlockContext {
 
   private int options = 0;
-  private String attachmentId;
-  private String userId;
-  private String comment;
-  private String lang;
+  private final String attachmentId;
+  private final String userId;
+  private final String comment;
+  private final String lang;
 
 
   public UnlockContext(String attachmentId, String userId, String lang) {
@@ -119,16 +121,15 @@ public class UnlockContext {
     if (this.options != other.options) {
       return false;
     }
-    if ((this.attachmentId == null) ? (other.attachmentId != null)
-        : !this.attachmentId.equals(other.attachmentId)) {
+    if (!Objects.equals(this.attachmentId, other.attachmentId)) {
       return false;
     }
-    if ((this.userId == null) ? (other.userId != null) : !this.userId.equals(other.userId)) {
+    if (!Objects.equals(this.userId, other.userId)) {
       return false;
     }
-    if ((this.comment == null) ? (other.comment != null) : !this.comment.equals(other.comment)) {
+    if (!Objects.equals(this.comment, other.comment)) {
       return false;
     }
-    return this.lang == null ? other.lang == null : this.lang.equals(other.lang);
+    return Objects.equals(this.lang, other.lang);
   }
 }

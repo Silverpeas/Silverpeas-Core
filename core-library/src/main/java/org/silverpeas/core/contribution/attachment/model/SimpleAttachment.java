@@ -338,7 +338,7 @@ public class SimpleAttachment implements Serializable {
 
     /**
      * In the case the content is a form stored in an XML file, sets its unique identifier.
-     * @param formId the unique identifier of a XML form instance in Silverpeas.
+     * @param formId the unique identifier of an XML form instance in Silverpeas.
      * @return itself.
      */
     public Builder setFormId(final String formId) {

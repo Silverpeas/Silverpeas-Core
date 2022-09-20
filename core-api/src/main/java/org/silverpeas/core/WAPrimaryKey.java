@@ -26,7 +26,7 @@ package org.silverpeas.core;
 import java.io.Serializable;
 
 /**
- * The primary key for a entity bean defines:
+ * The primary key for an entity bean defines:
  * <ul>
  * <li>the row id in the database</li>
  * <li>the space</li>
@@ -67,7 +67,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    * @param id the unique identifier value
    * @since 1.0
    */
-  public WAPrimaryKey(String id) {
+  protected WAPrimaryKey(String id) {
     setId(id);
   }
 
@@ -78,7 +78,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    * @param  componentName the component instance identifier
    * @since 1.0
    */
-  public WAPrimaryKey(String id, String space, String componentName) {
+  protected WAPrimaryKey(String id, String space, String componentName) {
     setId(id);
     setSpace(space);
     setComponentName(componentName);
@@ -90,7 +90,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    * @param  componentId the component instance identifier
    * @since 1.0
    */
-  public WAPrimaryKey(String id, String componentId) {
+  protected WAPrimaryKey(String id, String componentId) {
     setId(id);
     setSpace(null);
     setComponentName(componentId);
@@ -103,7 +103,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    * @param pk another primary key from which is taken the space and component instance identifiers.
    * @since 1.0
    */
-  public WAPrimaryKey(String id, WAPrimaryKey pk) {
+  protected WAPrimaryKey(String id, WAPrimaryKey pk) {
     setId(id);
     setSpace(pk.getSpace());
     setComponentName(pk.getComponentName());
@@ -115,7 +115,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
 
   /**
-   * This method must be specialized - Check if an another object is equal to this object
+   * This method must be specialized - Check if another object is equal to this object
    * @param obj the object to compare to this WAPrimaryKey
    * @return true if obj is equals to this object
    * @since 1.0
@@ -237,7 +237,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
     return getComponentName();
   }
 
-  @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
   @Override
   public WAPrimaryKey clone() {
     try {

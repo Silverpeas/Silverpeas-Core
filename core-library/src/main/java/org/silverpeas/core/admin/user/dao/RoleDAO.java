@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.component.dao.CommonDAO;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
 @Repository
-public class RoleDAO {
+public class RoleDAO extends CommonDAO {
 
   private static final String USERROLE_COLUMNS =
       "id,instanceId,name,roleName,description,isInherited,objectId,objecttype";
@@ -51,18 +52,6 @@ public class RoleDAO {
   private static final String WHERE_ID_EQUALS_USERROLEID = " where r.id=gr.userroleid";
   private static final String AND_GROUP_ID_IN = " and gr.groupId IN (";
   private static final String ROLE_INSTANCE_ID = "r.instanceId";
-
-
-  private static String list2String(List<String> ids) {
-    StringBuilder str = new StringBuilder();
-    for (int i = 0; i < ids.size(); i++) {
-      if (i != 0) {
-        str.append(",");
-      }
-      str.append(ids.get(i));
-    }
-    return str.toString();
-  }
 
   private static final String SELECT = "select ";
   private static final String FROM_USER_RELATION =
@@ -192,7 +181,7 @@ public class RoleDAO {
 
   /**
    * Gets several groups and/or one user roles for objects of given identifiers of component
-   * instance (not directly those of of the component).
+   * instance (not directly those of the component).
    * To get only groups roles, specify -1 for userId.
    * To get only user roles, specify null or empty list for groupIds.
    * @param con a connection with the database.

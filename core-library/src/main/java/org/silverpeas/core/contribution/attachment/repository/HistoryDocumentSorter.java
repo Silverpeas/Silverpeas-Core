@@ -26,36 +26,32 @@ package org.silverpeas.core.contribution.attachment.repository;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 /**
- *
+ * A sorter of versioned documents by their version number.
  * @author ehugonnet
  */
-public class HistoryDocumentSorter implements Serializable{
+public class HistoryDocumentSorter implements Serializable {
   private static final long serialVersionUID = 4263157996954433938L;
 
-  private static final Comparator<SimpleDocument> comparator = new Comparator<SimpleDocument>() {
-    @Override
-    public int compare(SimpleDocument doc1, SimpleDocument doc2) {
-      if (doc1.getMajorVersion() == doc2.getMajorVersion()) {
-        if (doc1.getMinorVersion() == doc2.getMinorVersion()) {
-          // This comparison is mandatory because it could exist several history document with
-          // the same major and minor version. Indeed, some of property updates doesn't affect
-          // the version, but they add still a new version in version history. For exemple,
-          // updating the order of display of attachments ...
-          return doc2.getVersionIndex() - doc1.getVersionIndex();
-        }
-        return doc2.getMinorVersion() - doc1.getMinorVersion();
+  private static final Comparator<SimpleDocument> comparator = (doc1, doc2) -> {
+    if (doc1.getMajorVersion() == doc2.getMajorVersion()) {
+      if (doc1.getMinorVersion() == doc2.getMinorVersion()) {
+        // This comparison is mandatory because it could exist several history document with
+        // the same major and minor version. Indeed, some updates of the property doesn't affect
+        // the version, but they add still a new version in version history. For example,
+        // updating the order of display of attachments ...
+        return doc2.getVersionIndex() - doc1.getVersionIndex();
       }
-      return doc2.getMajorVersion() - doc1.getMajorVersion();
+      return doc2.getMinorVersion() - doc1.getMinorVersion();
     }
+    return doc2.getMajorVersion() - doc1.getMajorVersion();
   };
 
-  public static void sortHistory(List<SimpleDocument> docs) {
-    Collections.sort(docs, comparator);
+  public static void sortHistory(List<? extends SimpleDocument> docs) {
+    docs.sort(comparator);
   }
 
   private HistoryDocumentSorter() {

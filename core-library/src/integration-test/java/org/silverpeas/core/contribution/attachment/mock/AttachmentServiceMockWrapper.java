@@ -303,8 +303,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
-    mock.switchComponentBehaviour(componentId, toVersionning);
+  public void switchComponentBehaviour(String componentId, boolean toVersioning) {
+    mock.switchComponentBehaviour(componentId, toVersioning);
   }
 
   @Override

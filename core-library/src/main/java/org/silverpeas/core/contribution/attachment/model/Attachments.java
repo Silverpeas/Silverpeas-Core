@@ -42,7 +42,7 @@ import static org.silverpeas.core.contribution.attachment.util.AttachmentSetting
 
 /**
  * A collection of files attached or in being attached to a contribution in Silverpeas. With this
- * class we can operate on a whole of an contribution's attachments instead of each one of them.
+ * class we can operate on a whole of a contribution's attachments instead of each one of them.
  * @author mmoquillon
  */
 public class Attachments {
@@ -86,7 +86,7 @@ public class Attachments {
   /**
    * Attaches all the files to the specified contribution. The default language of the platform is
    * used to set the language of each of the attachment.
-   * @param contribution the contribution to which the attachments has to be attached.
+   * @param contribution the contribution to which the attachments have to be attached.
    */
   public void attachTo(final Contribution contribution) {
     attachTo(contribution, I18NHelper.DEFAULT_LANGUAGE);
@@ -100,7 +100,7 @@ public class Attachments {
    * expected the attachments are for this instance and hence their localization matches the one of
    * the localized contribution.
    * </p>
-   * @param contribution the contribution to which the attachments has to be attached.
+   * @param contribution the contribution to which the attachments have to be attached.
    */
   public void attachTo(final LocalizedContribution contribution) {
     attachTo(contribution, contribution.getLanguage());

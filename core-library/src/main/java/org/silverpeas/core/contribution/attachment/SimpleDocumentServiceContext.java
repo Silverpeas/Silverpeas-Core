@@ -39,7 +39,7 @@ class SimpleDocumentServiceContext {
   }
 
   /**
-   * Marks that technical update notification MUST be avoid by unlock operation into the context
+   * Marks that technical update notification MUST be avoided by unlock operation into the context
    * of the current request.
    * @param document the concerned {@link SimpleDocument} instance.
    */

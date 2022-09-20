@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 public class SilverpeasJcrInitializationListener implements ServletContextListener {
 
   private static final Predicate<Initialization> FILTER =
-      i -> i.getClass().getSimpleName().contains("SilverpeasJcrSchemaRegistering");
+      i -> i.getClass().getSimpleName().contains("SilverpeasJCRSchemaRegister");
 
   @Override
   public void contextInitialized(final ServletContextEvent sce) {

@@ -40,8 +40,8 @@ public interface WebdavRepository {
    * content language of the attachment.
    * @param session the JCR session.
    * @param attachment the attachment.
-   * @throws RepositoryException
-   * @throws IOException
+   * @throws RepositoryException if an error occurs in the JCR
+   * @throws IOException if the storing of the attached file in the filesystem failed
    */
   void createAttachmentNode(Session session, SimpleDocument attachment)
       throws RepositoryException, IOException;
@@ -53,7 +53,7 @@ public interface WebdavRepository {
    * {@link #deleteAttachmentContentNode(Session, SimpleDocument, String)} method.
    * @param session the JCR session.
    * @param attachment the attachment.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void deleteAttachmentNode(Session session, SimpleDocument attachment) throws RepositoryException;
 
@@ -62,7 +62,7 @@ public interface WebdavRepository {
    * @param session the JCR session.
    * @param attachment the attachment.
    * @param language the aimed language content to delete.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void deleteAttachmentContentNode(Session session, SimpleDocument attachment, String language)
       throws RepositoryException;
@@ -70,10 +70,10 @@ public interface WebdavRepository {
   /**
    * Update the file content of the specified attachment without modifying its metadata.
    * @param session the JCR session.
-   * @param attachment the attachment for which the file content will be updated with the ralated
+   * @param attachment the attachment for which the file content will be updated with the related
    * webdav content.
-   * @throws RepositoryException
-   * @throws IOException
+   * @throws RepositoryException if an error occurs in the JCR
+   * @throws IOException if the writing of the modifications into file in the filesystem failed.
    */
   void updateAttachmentBinaryContent(Session session, SimpleDocument attachment)
       throws RepositoryException, IOException;
@@ -83,8 +83,8 @@ public interface WebdavRepository {
    * it can exist in webdav one, and only one, content language of the attachment.
    * @param session the JCR session.
    * @param attachment the attachment.
-   * @throws RepositoryException
-   * @throws IOException
+   * @throws RepositoryException if an error occurs in the JCR
+   * @throws IOException if the writing of the modifications into file in the filesystem failed.
    */
   void updateNodeAttachment(Session session, SimpleDocument attachment)
       throws RepositoryException, IOException;
@@ -94,8 +94,8 @@ public interface WebdavRepository {
    * @param session the JCR session.
    * @param attachment the attachment to move to another component instance identifier.
    * @param targetComponentInstanceId the identifier of the target component instance.
-   * @throws RepositoryException
-   * @throws IOException
+   * @throws RepositoryException if an error occurs in the JCR
+   * @throws IOException if the move of the attached file in the filesystem failed.
    */
   void moveNodeAttachment(Session session, SimpleDocument attachment,
       String targetComponentInstanceId) throws RepositoryException, IOException;
@@ -129,7 +129,7 @@ public interface WebdavRepository {
    * @param attachment the attachment.
    * @return the content edition language if the specified attachment exists in the webdav
    * repository, null otherwise.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   String getContentEditionLanguage(Session session, SimpleDocument attachment)
       throws RepositoryException;
@@ -142,7 +142,7 @@ public interface WebdavRepository {
    * @param attachment the attachment.
    * @return the content edition size if the specified attachment exists in the webdav
    * repository, -1 otherwise.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   long getContentEditionSize(Session session, SimpleDocument attachment)
       throws RepositoryException;
@@ -169,7 +169,7 @@ public interface WebdavRepository {
    * @param session the JCR session.
    * @param document the aimed document.
    * @param input the data to write.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void updateContentFrom(Session session, SimpleDocument document, InputStream input)
       throws RepositoryException, IOException;
@@ -183,7 +183,7 @@ public interface WebdavRepository {
    * @param session the JCR session.
    * @param document the aimed document.
    * @param output the stream to write into.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   void loadContentInto(Session session, SimpleDocument document, OutputStream output)
       throws RepositoryException, IOException;

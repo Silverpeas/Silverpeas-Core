@@ -27,6 +27,7 @@ package org.silverpeas.core.contribution.attachment.model;
 import org.silverpeas.core.mail.MailContent;
 
 /**
+ * A Document which a mail.
  * @author silveryocha
  */
 public class SimpleDocumentMailAttachedFile implements MailContent.AttachedFile {

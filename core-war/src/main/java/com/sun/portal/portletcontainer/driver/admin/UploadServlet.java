@@ -23,6 +23,8 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.silverpeas.core.util.file.DiskFileItemFactoryProvider;
 import org.silverpeas.web.portlets.portal.DesktopMessages;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
@@ -31,7 +33,6 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 
@@ -100,7 +101,8 @@ public class UploadServlet extends HttpServlet {
 
     HttpSession session = AdminUtils.getClearedSession(request);
 
-    SilverpeasDiskFileItemFactory factory = new SilverpeasDiskFileItemFactory();
+    DiskFileItemFactory factory = new DiskFileItemFactoryProvider().provide();
+
     ServletFileUpload upload = new ServletFileUpload(factory);
     upload.setSizeMax(maxUploadSize);
 

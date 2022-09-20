@@ -28,11 +28,11 @@ import org.silverpeas.core.admin.ProfiledObjectId;
 
 /**
  * A right profile on a component instance or in an object managed by that component instance.
- * It defines all the users and groups that can access a component instance with some well
- * defined privileges. The privileges in Silverpeas are defined by a set of predefined roles and
+ * It defines all the users and groups that can access a component instance with some well-defined
+ * privileges. The privileges in Silverpeas are defined by a set of predefined roles and
  * the given role a profile is related to is indicated by the {@link ProfileInst#getName()} method.
  * When the profile is about a given resource of a component instance,
- * the right accesses are defined for that resource whose the identifier can be get with the
+ * the right accesses are defined for that resource whose identifier can be got with the
  * {@link ProfileInst#getObjectId()} method; by default this method returns
  * {@link ProfiledObjectId#NOTHING} if the right profile is on the component instance itself.
  */
@@ -75,7 +75,7 @@ public class ProfileInst extends BaseRightProfile {
 
   /**
    * Gets the component instance on which is related this profile. The profile is about the
-   * access granted to this component instance with some well defined privileges unless the
+   * access granted to this component instance with some well-defined privileges unless the
    * {@link ProfileInst#getObjectId()} returns other than {@link ProfiledObjectId#NOTHING}.
    * @return the unique identifier of a component instance.
    */
@@ -110,6 +110,7 @@ public class ProfileInst extends BaseRightProfile {
    * actual object get by {@link ProfileInst#getObjectId()} method inherits the right access
    * defines by this profile.
    */
+  @SuppressWarnings("unused")
   public ProfiledObjectId getParentObjectId() {
     return this.parentObjectId;
   }
@@ -130,6 +131,7 @@ public class ProfileInst extends BaseRightProfile {
    * @return true if the profile defines right access of a component instance or false if it defines
    * right access of an object managed by that component instance.
    */
+  @SuppressWarnings("unused")
   public boolean isOnComponentInstance() {
     return this.objectId == ProfiledObjectId.NOTHING;
   }

@@ -31,9 +31,9 @@ public enum DocumentType {
 
   attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video"),
   node("node");
-  private String folderName;
+  private final String folderName;
 
-  private DocumentType(String folder) {
+  DocumentType(String folder) {
     this.folderName = folder;
   }
 

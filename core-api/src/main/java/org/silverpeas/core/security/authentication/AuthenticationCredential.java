@@ -22,14 +22,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.annotation.Defined;
 
 import javax.annotation.Nonnull;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 
@@ -69,7 +73,8 @@ public class AuthenticationCredential {
    * @param login the login of the user to authenticate
    * @return an AuthenticationCredential instance.
    */
-  public static AuthenticationCredential newWithAsLogin(String login) {
+  public static AuthenticationCredential newWithAsLogin(@Defined String login) {
+    StringUtil.requireDefined(login, "The login should be defined!");
     AuthenticationCredential credential = new AuthenticationCredential();
     credential.setLogin(login);
     return credential;
@@ -99,7 +104,7 @@ public class AuthenticationCredential {
    * Gets the user login to use in the authentication.
    * @return the login.
    */
-  @Nonnull
+  @Defined
   public String getLogin() {
     return login;
   }

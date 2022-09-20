@@ -26,7 +26,7 @@ package org.silverpeas.core.util;
 import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
- * An exception thrown from a failure in a treatment of an utility class.
+ * An exception thrown from a failure in a treatment of a utility class.
  * @author mmoquillon
  */
 public class UtilException extends SilverpeasRuntimeException {
@@ -63,7 +63,7 @@ public class UtilException extends SilverpeasRuntimeException {
    * detail message of <tt>(cause==null ? null : cause.toString())</tt>
    * (which typically contains the class and detail message of
    * <tt>cause</tt>).  This constructor is useful for runtime exceptions
-   * that are little more than wrappers for other throwables.
+   * that are little more than wrappers for other throwable cause.
    * @param cause the cause (which is saved for later retrieval by the
    * {@link #getCause()} method).  (A <tt>null</tt> value is
    * permitted, and indicates that the cause is nonexistent or

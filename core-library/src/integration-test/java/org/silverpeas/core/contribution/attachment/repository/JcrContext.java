@@ -34,13 +34,13 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.persistence.jcr.JcrSession;
-import org.silverpeas.core.persistence.jcr.SilverpeasJcrSchemaRegistering;
-import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.jcr.impl.RepositorySettings;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -57,11 +57,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
 /**
  * This class handle a JCR test.<br>
@@ -71,12 +71,16 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
  */
 public class JcrContext implements TestRule {
 
+  private static final String JCR_HOME = "target/";
+  private static final String JCR_CONFIG = "classpath:/silverpeas-oak.properties";
+
   @Override
   public Statement apply(final Statement base, final Description description) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
         try {
+          init();
           base.evaluate();
         } finally {
           clearJcrRepository();
@@ -86,8 +90,14 @@ public class JcrContext implements TestRule {
     };
   }
 
+  private void init() {
+    SystemWrapper systemWrapper = SystemWrapper.get();
+    systemWrapper.setProperty(RepositorySettings.JCR_HOME, JCR_HOME);
+    systemWrapper.setProperty(RepositorySettings.JCR_CONF, JCR_CONFIG);
+  }
+
   private void clearJcrRepository() throws RepositoryException {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       NodeIterator i =  session.getRootNode().getNodes();
       while(i.hasNext()) {
         Node node = i.nextNode();
@@ -126,6 +136,7 @@ public class JcrContext implements TestRule {
    * Common method to assert a document existence.
    * @param uuId the uuId to retrieve the document.
    */
+  @SuppressWarnings("unused")
   public void assertDocumentExists(String uuId) throws Exception {
     SimpleDocument document = getDocumentById(uuId);
     assertThat(document, notNullValue());
@@ -135,6 +146,7 @@ public class JcrContext implements TestRule {
    * Common method to assert a document existence.
    * @param uuId the uuId to retrieve the document.
    */
+  @SuppressWarnings("unused")
   public void assertDocumentDoesNotExist(String uuId) throws Exception {
     SimpleDocument document = getDocumentById(uuId);
     assertThat(document, nullValue());
@@ -174,14 +186,14 @@ public class JcrContext implements TestRule {
       ByteArrayOutputStream content = new ByteArrayOutputStream();
       AttachmentServiceProvider.getAttachmentService()
           .getBinaryContent(content, document.getPk(), language);
-      assertThat(content.toString(org.apache.commons.io.Charsets.UTF_8.name()),
+      assertThat(content.toString(Charsets.UTF_8),
           is(expectedContent));
     }
     return document;
   }
 
   public SimpleDocument getDocumentById(String uuId, String language) throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocument document =
           getDocumentRepository().findDocumentById(session, new SimpleDocumentPK(uuId), language);
       if (StringUtil.isDefined(language) && document != null &&
@@ -196,6 +208,7 @@ public class JcrContext implements TestRule {
     return getDocumentById(uuId, null);
   }
 
+  @SuppressWarnings("SameParameterValue")
   protected SimpleDocument defaultDocument(String instanceId, String foreignId,
       SimpleAttachment file) {
     SimpleDocument document = new SimpleDocument();
@@ -233,6 +246,7 @@ public class JcrContext implements TestRule {
         .build();
   }
 
+  @SuppressWarnings("unused")
   public SimpleAttachment defaultDEContent() {
     return SimpleAttachment.builder("de")
         .setFilename("test.docx")
@@ -252,28 +266,12 @@ public class JcrContext implements TestRule {
     return new Timestamp(offset + (long) (Math.random() * diff));
   }
 
-  /**
-   * Creates an Image Master Node into the JCR
-   * @param document
-   * @param attachment
-   * @param content
-   * @return
-   * @throws Exception
-   */
   public SimpleDocument createAttachmentForTest(SimpleDocument document,
       SimpleAttachment attachment, String content) throws Exception {
     document.setAttachment(attachment);
     return createDocumentIntoJcr(document, content);
   }
 
-  /**
-   * Creates an Image Master Node into the JCR
-   * @param document
-   * @param language
-   * @param content
-   * @return
-   * @throws Exception
-   */
   public SimpleDocument updateAttachmentForTest(SimpleDocument document, String language,
       String content) throws Exception {
     SimpleDocument documentToUpdate = new SimpleDocument(document);
@@ -281,30 +279,19 @@ public class JcrContext implements TestRule {
     return updateDocumentIntoJcr(documentToUpdate, content);
   }
 
-  /**
-   * Creates an Image Master Node into the JCR
-   * @param document
-   * @return
-   * @throws Exception
-   */
+  @SuppressWarnings("unused")
   protected SimpleDocument updateAttachmentForTest(SimpleDocument document) throws Exception {
     SimpleDocument documentToUpdate = new SimpleDocument(document);
     return updateDocumentIntoJcr(documentToUpdate, null);
   }
 
-  /**
-   * Creates a master document NODE into the JCR.
-   * @param document
-   * @return
-   * @throws Exception
-   */
   private SimpleDocument createDocumentIntoJcr(SimpleDocument document, String content)
       throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK createdPk = getDocumentRepository().createDocument(session, document);
       session.save();
       long contentSizeWritten = getDocumentRepository().storeContent(document,
-          new ByteArrayInputStream(content.getBytes(org.apache.commons.io.Charsets.UTF_8)));
+          new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)));
       assertThat(contentSizeWritten, is((long) content.length()));
       SimpleDocument createdDocument =
           getDocumentRepository().findDocumentById(session, createdPk, document.getLanguage());
@@ -315,25 +302,19 @@ public class JcrContext implements TestRule {
     }
   }
 
-  /**
-   * Creates a master document NODE into the JCR.
-   * @param document
-   * @return
-   * @throws Exception
-   */
   private SimpleDocument updateDocumentIntoJcr(SimpleDocument document, String content)
       throws Exception {
     assertThat(document.getPk(), notNullValue());
-    assertThat(document.getId(), not(isEmptyString()));
-    assertThat(document.getInstanceId(), not(isEmptyString()));
+    assertThat(document.getId(), not(is(emptyString())));
+    assertThat(document.getInstanceId(), not(emptyString()));
     assertThat(document.getOldSilverpeasId(), greaterThan(0L));
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
       converter.fillNode(document, documentNode);
       session.save();
       if (content != null) {
         long contentSizeWritten = getDocumentRepository().storeContent(document,
-            new ByteArrayInputStream(content.getBytes(org.apache.commons.io.Charsets.UTF_8)));
+            new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)));
         assertThat(contentSizeWritten, is((long) content.length()));
       }
       SimpleDocument updatedDocument = getDocumentRepository()
@@ -346,10 +327,10 @@ public class JcrContext implements TestRule {
 
   /**
    * Gets the single child node of a node.
-   * If no node exists or sevreal node exists, a failed assertion is performed.
+   * If no node exists or several node exists, a failed assertion is performed.
    * @param node the parent node.
    * @return the single child node.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   public Node getSingleChildNode(Node node) throws Exception {
     assertThat("getTheOnlyOneChildNode - no child node exists", node.hasNodes(), is(true));
@@ -364,17 +345,17 @@ public class JcrContext implements TestRule {
    * Gets the {@link Binary} content of a JCR node property as a {@link String}.
    * @param property the JCR property that must contains a binary content.
    * @return the binary content as a {@link String}.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   public String getBinaryContentAsString(Property property) throws Exception {
-    return new String(getBinaryContent(property), Charsets.UTF_8.name());
+    return new String(getBinaryContent(property), Charsets.UTF_8);
   }
 
   /**
    * Gets the {@link Binary} content of a JCR node property.
    * @param property the JCR property that must contains a binary content.
    * @return the binary content.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   protected byte[] getBinaryContent(Property property) throws Exception {
     ByteArrayOutputStream byteContent = new ByteArrayOutputStream();
@@ -392,8 +373,7 @@ public class JcrContext implements TestRule {
   /**
    * Sets the {@link Binary} content of a JCR node property.
    * @param property the JCR property that must contains a binary content.
-   * @return the binary content.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   public void setBinaryContent(Property property, byte[] content) throws Exception {
     InputStream in = new ByteArrayInputStream(content);
@@ -420,35 +400,36 @@ public class JcrContext implements TestRule {
   }
 
   /**
-   * Lists all entire pathes that exists from the specified node (recursive treatment).
+   * Lists all entire paths that exists from the specified node (recursive treatment).
    * @param parentNode the parent node.
-   * @return the list of entire pathes, null if the specified node does not exist anymore.
-   * @throws RepositoryException
+   * @return the list of entire paths, null if the specified node does not exist anymore.
+   * @throws RepositoryException if an error occurs
    */
-  public List<String> listPathesFrom(Node parentNode) throws RepositoryException {
-    return listPathesFrom(parentNode, -1);
+  public List<String> listPathsFrom(Node parentNode) throws RepositoryException {
+    return listPathsFrom(parentNode, -1);
   }
 
   /**
-   * Lists all entire pathes that exists from the specified node (recursive treatment).
+   * Lists all entire paths that exists from the specified node (recursive treatment).
    * @param parentNode the parent node.
    * @param deep the maximum number sub-nodes to reach.
-   * @return the list of entire pathes, null if the specified node does not exist anymore.
-   * @throws RepositoryException
+   * @return the list of entire paths, null if the specified node does not exist anymore.
+   * @throws RepositoryException if an error occurs
    */
-  protected List<String> listPathesFrom(Node parentNode, int deep) throws RepositoryException {
-    return listPathesFrom(parentNode, deep, 0);
+  @SuppressWarnings("SameParameterValue")
+  protected List<String> listPathsFrom(Node parentNode, int deep) throws RepositoryException {
+    return listPathsFrom(parentNode, deep, 0);
   }
 
   /**
-   * Lists all entire pathes that exists from the specified node (recursive treatment).
+   * Lists all entire paths that exists from the specified node (recursive treatment).
    * @param parentNode the parent node.
    * @param maximumDeep the maximum number of sub-nodes to reach.
    * @param currentDeep the current sub-node position from the initial parent.
-   * @return the list of entire pathes, null if the specified node does not exist anymore.
-   * @throws RepositoryException
+   * @return the list of entire paths, null if the specified node does not exist anymore.
+   * @throws RepositoryException if an error occurs
    */
-  private List<String> listPathesFrom(Node parentNode, int maximumDeep, int currentDeep)
+  private List<String> listPathsFrom(Node parentNode, int maximumDeep, int currentDeep)
       throws RepositoryException {
     try {
       parentNode.getPath();
@@ -460,23 +441,23 @@ public class JcrContext implements TestRule {
       return Collections.emptyList();
     }
     NodeIterator nodeIt = parentNode.getNodes();
-    List<String> pathes = new ArrayList<String>();
-    Set<String> uuidNodePerformed = new HashSet<String>();
+    List<String> paths = new ArrayList<>();
+    Set<String> uuidNodePerformed = new HashSet<>();
     boolean willMaximumDeepBeReached = (maximumDeep >= 0 && (currentDeep + 1) >= maximumDeep);
     while (nodeIt.hasNext()) {
       Node node = nodeIt.nextNode();
       if (node.hasNodes()) {
         if (!willMaximumDeepBeReached) {
-          pathes.addAll(listPathesFrom(node, maximumDeep, currentDeep + 1));
+          paths.addAll(Objects.requireNonNull(listPathsFrom(node, maximumDeep, currentDeep + 1)));
         } else if (!uuidNodePerformed.contains(node.getIdentifier())) {
           uuidNodePerformed.add(node.getIdentifier());
-          pathes.add(node.getPath());
+          paths.add(node.getPath());
         }
       } else if (!uuidNodePerformed.contains(node.getIdentifier())) {
         uuidNodePerformed.add(node.getIdentifier());
-        pathes.add(node.getPath());
+        paths.add(node.getPath());
       }
     }
-    return pathes;
+    return paths;
   }
 }
