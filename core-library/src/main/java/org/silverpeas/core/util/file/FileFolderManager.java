@@ -58,8 +58,8 @@ public class FileFolderManager {
     final Path directory = Paths.get(path);
     if (directory.toFile().isDirectory()) {
       try (final Stream<Path> folders = Files.list(directory)) {
-        result = folders.filter(p -> p.toFile().isDirectory())
-            .map(Path::toFile)
+        result = folders.map(Path::toFile)
+            .filter(File::isDirectory)
             .collect(Collectors.toList());
       } catch (IOException e) {
         throw new UtilException(e);
@@ -82,8 +82,8 @@ public class FileFolderManager {
     final Path directory = Paths.get(path);
     if (directory.toFile().isDirectory()) {
       try (final Stream<Path> folders = Files.list(directory)) {
-        result = folders.filter(p -> p.toFile().isFile())
-            .map(Path::toFile)
+        result = folders.map(Path::toFile)
+            .filter(File::isFile)
             .sorted(new NameFileComparator(IOCase.INSENSITIVE))
             .collect(Collectors.toList());
       } catch (IOException e) {
@@ -98,7 +98,7 @@ public class FileFolderManager {
   /**
    * Returns all the images that are inside the given directory and its subdirectories.
    * Throws an {@link UtilException} if the specified path doesn't
-   * denote a directory or if the recursive listing of all of the images fails.
+   * denote a directory or if the recursive listing of all the images fails.
    * @param path the path of the directory.
    * @return a collection of image files.
    */
@@ -107,9 +107,9 @@ public class FileFolderManager {
     final Path directory = Paths.get(path);
     if (directory.toFile().isDirectory()) {
       try (final Stream<Path> files = Files.walk(directory)) {
-        result = files.filter(p -> Stream.of(ImageUtil.IMAGE_EXTENTIONS)
-            .anyMatch(e -> p.toFile().getName().toLowerCase().endsWith(e.toLowerCase())))
-            .map(Path::toFile)
+        result = files.map(Path::toFile)
+            .filter(file -> Stream.of(ImageUtil.IMAGE_EXTENTIONS)
+                .anyMatch(e -> file.getName().toLowerCase().endsWith(e.toLowerCase())))
             .collect(Collectors.toList());
       } catch (IOException e) {
         throw new UtilException(e);
@@ -124,7 +124,7 @@ public class FileFolderManager {
    * Gets all the web pages that are inside the specified directory and its subdirectories,
    * whatever their type (HTML, ...).
    * Throws an {@link UtilException} if the specified path doesn't
-   * denote a directory or if the recursive listing of all of the web pages fails.
+   * denote a directory or if the recursive listing of all the web pages fails.
    * @param path the path of the directory containing web pages.
    * @return a collection of web pages.
    */
@@ -146,7 +146,7 @@ public class FileFolderManager {
   /**
    * Gets all the HTML web pages that are inside the specified directory and its subdirectories.
    * Throws an {@link UtilException} if the specified path doesn't
-   * denote a directory or if the recursive listing of all of the HTML web pages fails.
+   * denote a directory or if the recursive listing of all the HTML web pages fails.
    * @param path the path of the directory containing web pages.
    * @return a collection of HTML pages.
    */
@@ -190,15 +190,15 @@ public class FileFolderManager {
   public static void createFolder(final File directory) {
     try {
       Files.createDirectories(directory.toPath());
-    } catch (IOException ioex) {
-      throw new UtilException(ioex);
+    } catch (IOException e) {
+      throw new UtilException(e);
     }
   }
 
   /**
    * Moves or rename the specified folder to the new one. If the path and the new path denote the
    * same parent directory, then it means the folder will be renamed to the name ending the
-   * specified <code>newPath</code>. Otherwise the folder located by the given path will be move
+   * specified <code>newPath</code>. Otherwise, the folder located by the given path will be moved
    * to the new path and will be renamed accordingly the name ending the <code>newPath</code>
    * parameter.
    * Throws an {@link UtilException} if the specified path doesn't
@@ -225,6 +225,7 @@ public class FileFolderManager {
    */
   public static void deleteFolder(final String path) {
     try (final Stream<Path> paths = Files.walk(Paths.get(path))) {
+      //noinspection ResultOfMethodCallIgnored
       paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
     } catch (IOException e) {
       SilverLogger.getLogger(FileFolderManager.class).warn(e);
@@ -310,7 +311,7 @@ public class FileFolderManager {
         content = Files.readString(directory.resolve(fileName), Charsets.UTF_8);
       } catch (IOException e) {
         SilverLogger.getLogger(FileFolderManager.class)
-            .debug(directory.resolve(fileName).toString() + "does not exist");
+            .debug(directory.resolve(fileName) + "does not exist");
       }
       return Optional.ofNullable(content);
     } else {

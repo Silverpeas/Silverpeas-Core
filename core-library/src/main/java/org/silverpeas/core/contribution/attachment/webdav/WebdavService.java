@@ -47,7 +47,6 @@ public interface WebdavService {
    * @param document the attachment.
    * @return the content edition language if the specified attachment exists in the webdav
    * repository, null otherwise.
-   * @throws javax.jcr.RepositoryException
    */
   String getContentEditionLanguage(SimpleDocument document);
 
@@ -58,7 +57,6 @@ public interface WebdavService {
    * @param document the attachment.
    * @return the content edition size if the specified attachment exists in the webdav
    * repository, -1 otherwise.
-   * @throws javax.jcr.RepositoryException
    */
   long getContentEditionSize(SimpleDocument document);
 

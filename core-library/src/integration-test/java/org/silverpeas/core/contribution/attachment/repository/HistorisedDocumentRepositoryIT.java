@@ -40,7 +40,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
-import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
@@ -49,6 +48,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -76,14 +76,13 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 @RunWith(Arquillian.class)
 public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia73";
-  private DocumentRepository documentRepository = new DocumentRepository();
+  private final DocumentRepository documentRepository = new DocumentRepository();
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -94,7 +93,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
 
   @Before
   public void loadJcr() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);
       }
@@ -109,7 +108,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testCreateDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -139,7 +138,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testDeleteDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -176,7 +175,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testFindDocumentById() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
@@ -202,7 +201,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testFindLast() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
@@ -235,7 +234,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void testGetMinMaxIndexes() throws Exception {
     final String foreignId = "node78";
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       // can not get MIN MAX because it does not exist document into JCR for the foreignId
       Optional<Pair<Integer, Integer>> minMax = documentRepository
           .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
@@ -308,7 +307,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testUpdateDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
@@ -357,7 +356,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentsByForeignId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
@@ -400,7 +399,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSelectDocumentsByForeignId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -443,7 +442,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSelectDocumentsByOwnerId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -489,7 +488,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testAddContent() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node78";
@@ -520,7 +519,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testRemoveContent() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node78";
@@ -592,7 +591,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentsByOwner() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
@@ -641,7 +640,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testListExpiringDocuments() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
@@ -703,7 +702,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSelectExpiringDocuments() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
@@ -761,7 +760,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentsToUnlock() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
@@ -823,7 +822,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSelectDocumentsRequiringUnlocking() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -888,7 +887,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSelectWarningDocuments() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -941,7 +940,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testMoveDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1052,7 +1051,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testMoveDocumentWithCheckOutStateAtTrue() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1163,7 +1162,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testMoveDocumentChangingFunctionalVersion() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1324,7 +1323,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testMoveDocumentWithoutChangingFunctionalVersion() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1483,7 +1482,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testMoveDocumentWithHugeHistory() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -1782,7 +1781,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void testMoveDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath("")));
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -2137,7 +2136,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testCopyDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -2219,7 +2218,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testCopyReservedDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -2360,7 +2359,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testCopyDocumentChangingFunctionalVersion() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -2501,7 +2500,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testCopyDocumentWithoutChangingFunctionalVersion() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -2640,7 +2639,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testCopyDocumentWithHugeHistory() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -2919,7 +2918,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
   @Test
   public void testCopyDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath("")));
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
@@ -3288,7 +3287,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testFindDocumentByOldSilverpeasId() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       long oldSilverpeasId = 2048L;
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(2048L);
@@ -3339,7 +3338,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testListDocumentsRequiringWarning() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
@@ -3400,7 +3399,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSaveForbiddenDownloadForRoles() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
       Context of this test
@@ -3543,7 +3542,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSaveDisplayableAsContent() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
       Context of this test
@@ -3684,7 +3683,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testSaveEditableSimultaneously() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
       Context of this test
@@ -3828,7 +3827,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testHistoryAndVersions() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
       Context of this test
@@ -4002,7 +4001,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
    */
   @Test
   public void testChangeVersionStateOfVersionedDocument() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));

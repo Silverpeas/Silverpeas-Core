@@ -23,45 +23,39 @@
  */
 package org.silverpeas.web.jobmanager;
 
-public class JobManagerService {
+import java.io.Serializable;
 
-  private String id = null;
-  private String label = null;
-  private int level = 0;
-  private String url = null;
-  private String[] idSubServices = null;
-  private boolean isActif = false;
+public class JobManagerService implements Serializable {
+
+  private final String id;
+  private final String label;
+  private final int level;
+  private final String url;
+  private final String[] idSubServices;
+  private boolean isActive;
   public static final int LEVEL_SERVICE = 0;
   public static final int LEVEL_OPERATION = 1;
 
-  /**
-   * @param id
-   * @param label
-   * @param level
-   * @param url
-   * @param idSubServices
-   * @param isActif
-   */
-  public JobManagerService(String id, String label, int level, String url,
-      String[] idSubServices, boolean isActif) {
+ public JobManagerService(String id, String label, int level, String url,
+      String[] idSubServices, boolean isActive) {
     this.id = id;
     this.label = label;
     this.level = level;
     this.url = url;
     this.idSubServices = (idSubServices != null ? idSubServices.clone() : null);
-    this.isActif = isActif;
+    this.isActive = isActive;
   }
 
-  public void setActif(boolean a) {
-    isActif = a;
+  public void setActive(boolean a) {
+    isActive = a;
   }
 
   public String getLabel() {
     return label;
   }
 
-  public boolean isActif() {
-    return isActif;
+  public boolean isActive() {
+    return isActive;
   }
 
   public int getLevel() {
@@ -80,7 +74,7 @@ public class JobManagerService {
     return url;
   }
 
-  public String getDefautIdSubService() {
+  public String getDefaultIdSubService() {
     return idSubServices[0];
   }
 }

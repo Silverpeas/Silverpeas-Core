@@ -38,6 +38,9 @@ import java.util.regex.Pattern;
 
 import static java.util.Optional.ofNullable;
 
+/**
+ * Utility class providing useful operations on {@link String}.
+ */
 public class StringUtil extends StringUtils {
 
   public static final String EMPTY = StringUtils.EMPTY;
@@ -48,9 +51,12 @@ public class StringUtil extends StringUtils {
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
   private static final String EMAIL_PATTERN
       = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
-  private static final String HOUR_PATTERN = "^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$";
+  private static final String HOUR_PATTERN = "^([0-1]?\\d|2[0-4]):([0-5]\\d)(:[0-5]\\d)?$";
 
-
+  /**
+   * Gets an empty string as a constant (reusable empty string).
+   * @return an empty string.
+   */
   public static String emptyString() {
     return EMPTY;
   }
@@ -68,12 +74,11 @@ public class StringUtil extends StringUtils {
    * StringUtils.startsWithIgnoreCase("abcdef", "abc") = true
    * StringUtils.startsWithIgnoreCase("ABCDEF", "abc") = true
    * </pre>
-   *
-   * @see java.lang.String#startsWith(String)
-   * @param str  the text to check, may be null
+   * @param str the text to check, may be null
    * @param prefix the text to find, may be null
-   * @return {@code true} if the CharSequence starts with the prefix, case-insensitive, or
-   *  both {@code null}
+   * @return {@code true} if the CharSequence starts with the prefix, case-insensitive, or both
+   * {@code null}
+   * @see java.lang.String#startsWith(String)
    */
   public static boolean startsWithIgnoreCase(final String str, final String prefix) {
     return StringUtils.startsWithIgnoreCase(str, prefix);
@@ -84,8 +89,7 @@ public class StringUtil extends StringUtils {
    * containing the provided list of elements.</p>
    *
    * <p>No delimiter is added before or after the list.
-   * Null objects or empty strings within the array are represented by
-   * empty strings.</p>
+   * Null objects or empty strings within the array are represented by empty strings.</p>
    *
    * <pre>
    * StringUtils.join(null, *)               = null
@@ -95,9 +99,8 @@ public class StringUtil extends StringUtils {
    * StringUtils.join(["a", "b", "c"], null) = "abc"
    * StringUtils.join([null, "", "a"], ';')  = ";;a"
    * </pre>
-   *
-   * @param array  the array of values to join together, may be null
-   * @param separator  the separator character to use
+   * @param array the array of values to join together, may be null
+   * @param separator the separator character to use
    * @return the joined String, {@code null} if null array input
    * @since 2.0
    */
@@ -106,13 +109,38 @@ public class StringUtil extends StringUtils {
   }
 
   /**
+   * <p>Joins the elements of the provided array into a single String
+   * containing the provided list of elements.</p>
+   *
+   * <p>No delimiter is added before or after the list.
+   * A {@code null} separator is the same as an empty String (""). Null objects or empty strings
+   * within the array are represented by empty strings.</p>
+   *
+   * <pre>
+   * StringUtils.join(null, *)                = null
+   * StringUtils.join([], *)                  = ""
+   * StringUtils.join([null], *)              = ""
+   * StringUtils.join(["a", "b", "c"], "--")  = "a--b--c"
+   * StringUtils.join(["a", "b", "c"], null)  = "abc"
+   * StringUtils.join(["a", "b", "c"], "")    = "abc"
+   * StringUtils.join([null, "", "a"], ',')   = ",,a"
+   * </pre>
+   * @param array the array of values to join together, may be null
+   * @param delimiter the separator character to use, null treated as ""
+   * @return the joined String, {@code null} if null array input
+   */
+  public static String join(Object[] array, String delimiter) {
+    return StringUtils.join(array, delimiter);
+  }
+
+  /**
    * <p>Abbreviates a String using ellipses. This will turn
    * "Now is the time for all good men" into "...is the time for..."</p>
    *
    * <p>Works like {@code abbreviate(String, int)}, but allows you to specify
-   * a "left edge" offset.  Note that this left edge is not necessarily going to
-   * be the leftmost character in the result, or the first character following the
-   * ellipses, but it will appear somewhere in the result.
+   * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost
+   * character in the result, or the first character following the ellipses, but it will appear
+   * somewhere in the result.
    *
    * <p>In no case will it return a String of length greater than
    * {@code maxWidth}.</p>
@@ -142,49 +170,49 @@ public class StringUtil extends StringUtils {
     return StringUtils.abbreviate(str, offset, maxWidth);
   }
 
-  public static boolean isDefined(String parameter) {
-    return (parameter != null && !parameter.trim().isEmpty() &&
-        !"null".equalsIgnoreCase(parameter));
-  }
-
-  public static boolean isNotDefined(String parameter) {
-    return !isDefined(parameter);
-  }
-
-  public static void requireDefined(final String name) {
-    if (isNotDefined(name)) {
-      throw new AssertionError(name + " isn't defined!");
-    }
-  }
-
-  public static String requireDefined(final String object, final String message) {
-    if (isNotDefined(object)) {
-      throw new AssertionError(message);
-    }
-    return object;
+  /**
+   * Is the specified string is well-defined?
+   * @param str a string to check.
+   * @return true if the given string isn't null, nor empty and doesn't contain any space
+   * characters. False otherwise. The "null" string is considered as a non-defined string.
+   */
+  public static boolean isDefined(String str) {
+    return (str != null && !str.trim().isEmpty() &&
+        !"null".equalsIgnoreCase(str));
   }
 
   /**
-   * <p>Counts how many times the substring appears in the larger string.</p>
-   *
-   * <p>A {@code null} or empty ("") String input returns {@code 0}.</p>
-   *
-   * <pre>
-   * StringUtils.countMatches(null, *)       = 0
-   * StringUtils.countMatches("", *)         = 0
-   * StringUtils.countMatches("abba", null)  = 0
-   * StringUtils.countMatches("abba", "")    = 0
-   * StringUtils.countMatches("abba", "a")   = 2
-   * StringUtils.countMatches("abba", "ab")  = 1
-   * StringUtils.countMatches("abba", "xxx") = 0
-   * </pre>
-   *
-   * @param str  the text to check, may be null
-   * @param subStr  the subtext to count, may be null
-   * @return the number of occurrences, 0 if either CharSequence is {@code null}
+   * Is the specified string is not defined?
+   * @param str the string to check.
+   * @return true if the string is either null, an empty string, or a string containing only space
+   * characters. False otherwise. The "null" string is considered as a non-defined string.
+   * @implNote it is the reverse of the {@link StringUtil#isDefined(String)} method.
+   * @see StringUtil#isDefined(String)
    */
-  public static int countMatches(final String str, final String subStr) {
-    return StringUtils.countMatches(str, subStr);
+  public static boolean isNotDefined(String str) {
+    return !isDefined(str);
+  }
+
+  /**
+   * Requires the specified string to be defined, otherwise an {@link AssertionError} is thrown.
+   * @param str the string to check.
+   */
+  public static void requireDefined(final String str) {
+    if (isNotDefined(str)) {
+      throw new AssertionError(str + " isn't defined!");
+    }
+  }
+
+  /**
+   * Requires the specified string to be defined, otherwise an {@link AssertionError} is thrown with
+   * the given message.
+   * @param str the string to check.
+   * @param message the message to pass if the string doesn't satisfy the requirement.
+   */
+  public static void requireDefined(final String str, final String message) {
+    if (isNotDefined(str)) {
+      throw new AssertionError(message);
+    }
   }
 
   /**
@@ -200,12 +228,11 @@ public class StringUtil extends StringUtils {
    * StringUtils.startsWith("abcdef", "abc") = true
    * StringUtils.startsWith("ABCDEF", "abc") = false
    * </pre>
-   *
-   * @see java.lang.String#startsWith(String)
-   * @param str  the CharSequence to check, may be null
+   * @param str the CharSequence to check, may be null
    * @param prefix the prefix to find, may be null
-   * @return {@code true} if the CharSequence starts with the prefix, case sensitive, or
-   *  both {@code null}
+   * @return {@code true} if the CharSequence starts with the prefix, case-sensitive, or both
+   * {@code null}
+   * @see java.lang.String#startsWith(String)
    */
   public static boolean startsWith(final CharSequence str, final CharSequence prefix) {
     return StringUtils.startsWith(str, prefix);
@@ -228,10 +255,9 @@ public class StringUtil extends StringUtils {
    * StringUtils.splitByWholeSeparator("ab:cd:ef", ":")       = ["ab", "cd", "ef"]
    * StringUtils.splitByWholeSeparator("ab-!-cd-!-ef", "-!-") = ["ab", "cd", "ef"]
    * </pre>
-   *
-   * @param str  the String to parse, may be null
-   * @param separator  String containing the String to be used as a delimiter,
-   *  {@code null} splits on whitespace
+   * @param str the String to parse, may be null
+   * @param separator String containing the String to be used as a delimiter, {@code null} splits on
+   * whitespace
    * @return an array of parsed Strings, {@code null} if null String was input
    */
   public static String[] splitByWholeSeparator(final String str, final String separator) {
@@ -243,8 +269,8 @@ public class StringUtil extends StringUtils {
    * This is an alternative to using StringTokenizer.</p>
    *
    * <p>The separator is not included in the returned String array.
-   * Adjacent separators are treated as one separator.
-   * For more control over the split use the StrTokenizer class.</p>
+   * Adjacent separators are treated as one separator. For more control over the split use the
+   * StrTokenizer class.</p>
    *
    * <p>A {@code null} input String returns {@code null}.</p>
    *
@@ -256,9 +282,8 @@ public class StringUtil extends StringUtils {
    * StringUtils.split("a:b:c", '.')    = ["a:b:c"]
    * StringUtils.split("a b c", ' ')    = ["a", "b", "c"]
    * </pre>
-   *
-   * @param str  the String to parse, may be null
-   * @param separatorChar  the character used as the delimiter
+   * @param str the String to parse, may be null
+   * @param separatorChar the character used as the delimiter
    * @return an array of parsed Strings, {@code null} if null String input
    * @since 2.0
    */
@@ -271,8 +296,8 @@ public class StringUtil extends StringUtils {
    * This is an alternative to using StringTokenizer.</p>
    *
    * <p>The separator is not included in the returned String array.
-   * Adjacent separators are treated as one separator.
-   * For more control over the split use the StrTokenizer class.</p>
+   * Adjacent separators are treated as one separator. For more control over the split use the
+   * StrTokenizer class.</p>
    *
    * <p>A {@code null} input String returns {@code null}.
    * A {@code null} separatorChars splits on whitespace.</p>
@@ -285,10 +310,8 @@ public class StringUtil extends StringUtils {
    * StringUtils.split("abc  def", " ") = ["abc", "def"]
    * StringUtils.split("ab:cd:ef", ":") = ["ab", "cd", "ef"]
    * </pre>
-   *
-   * @param str  the String to parse, may be null
-   * @param separatorChars  the characters used as the delimiters,
-   *  {@code null} splits on whitespace
+   * @param str the String to parse, may be null
+   * @param separatorChars the characters used as the delimiters, {@code null} splits on whitespace
    * @return an array of parsed Strings, {@code null} if null String input
    */
   public static String[] split(final String str, final String separatorChars) {
@@ -308,7 +331,6 @@ public class StringUtil extends StringUtils {
    * StringUtils.capitalize("cAt") = "CAt"
    * StringUtils.capitalize("'cat'") = "'cat'"
    * </pre>
-   *
    * @param str the String to capitalize, may be null
    * @return the capitalized String, {@code null} if null String input
    * @see #uncapitalize(String)
@@ -330,7 +352,6 @@ public class StringUtil extends StringUtils {
    * StringUtils.uncapitalize("Cat") = "cat"
    * StringUtils.uncapitalize("CAT") = "cAT"
    * </pre>
-   *
    * @param str the String to uncapitalize, may be null
    * @return the uncapitalized String, {@code null} if null String input
    * @see #capitalize(String)
@@ -343,8 +364,8 @@ public class StringUtil extends StringUtils {
    * Normalizes the given string (which must be encoded into UTF-8) in order that the result
    * contains only unified chars.
    * <p>Indeed, according to the environment of the user, sometimes it is sent data with
-   * combined characters which will make the server have a bad behavior, like throw an error on
-   * file download.</p>
+   * combined characters which will make the server have a bad behavior, like throw an error on file
+   * download.</p>
    * @param string the string to normalize. There is no guarantee when the string is not encoded
    * into UTF8.
    * @return the normalized string.
@@ -367,7 +388,7 @@ public class StringUtil extends StringUtils {
   public static String normalizeByRemovingAccent(final String string) {
     String normalized = string;
     if (normalized != null) {
-      // separating all of the accent marks from the characters
+      // separating all the accent marks from the characters
       normalized = Normalizer.normalize(normalized, Normalizer.Form.NFD);
       // removing accent
       normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
@@ -385,8 +406,8 @@ public class StringUtil extends StringUtils {
    * StringUtil.defaultStringIfNotDefined("    ") = ""
    * StringUtil.defaultStringIfNotDefined("bat")  = "bat"
    * </pre>
-   * @param string the String to check, may be null, blank or filled by spaces
-   * if the input is {@code not defined}, may be null, blank or filled by spaces
+   * @param string the String to check, may be null, blank or filled by spaces if the input is
+   * {@code not defined}, may be null, blank or filled by spaces
    * @return the passed in String, or the default if it was {@code null}
    * @see StringUtil#isNotDefined(String)
    * @see StringUtils#defaultString(String, String)
@@ -407,8 +428,8 @@ public class StringUtil extends StringUtils {
    * StringUtil.defaultStringIfNotDefined("bat", "NULL")  = "bat"
    * </pre>
    * @param string the String to check, may be null, blank or filled by spaces
-   * @param defaultString the default String to return
-   * if the input is {@code not defined}, may be null, blank or filled by spaces
+   * @param defaultString the default String to return if the input is {@code not defined}, may be
+   * null, blank or filled by spaces
    * @return the passed in String, or the default if it was {@code null}
    * @see StringUtil#isNotDefined(String)
    * @see StringUtils#defaultString(String, String)
@@ -436,6 +457,11 @@ public class StringUtil extends StringUtils {
     return ofNullable(string).filter(StringUtil::isDefined);
   }
 
+  /**
+   * Is the specified value encodes an {@link Integer}?
+   * @param value the textual representation of an integer.
+   * @return true if the given value represents an integer. False otherwise.
+   */
   public static boolean isInteger(String value) {
     try {
       Integer.parseInt(value);
@@ -445,6 +471,13 @@ public class StringUtil extends StringUtils {
     }
   }
 
+  /**
+   * Decodes the specified textual value as an integer.
+   * @param value the textual value to decode.
+   * @param defaultValue the default value to use if the value doesn't encode an integer.
+   * @return either the integer representation of the value or the given default value if it isn't
+   * an integer representation.
+   */
   public static int asInt(String value, int defaultValue) {
     int integer;
     try {
@@ -455,6 +488,11 @@ public class StringUtil extends StringUtils {
     return integer;
   }
 
+  /**
+   * Is the specified value encodes a {@link Long}?
+   * @param value the textual representation of a long integer.
+   * @return true if the given value represents a long integer. False otherwise.
+   */
   public static boolean isLong(String value) {
     try {
       Long.parseLong(value);
@@ -464,6 +502,12 @@ public class StringUtil extends StringUtils {
     }
   }
 
+  /**
+   * Decodes the specified textual value as a float real.
+   * @param value the textual value to decode.
+   * @return either the float real representation of the value or 0 if it isn't a float real
+   * representation.
+   */
   public static float asFloat(String value) {
     if (StringUtil.isFloat(value)) {
       return Float.parseFloat(value);
@@ -476,6 +520,11 @@ public class StringUtil extends StringUtils {
     return 0f;
   }
 
+  /**
+   * Is the specified value encodes a {@link Float}?
+   * @param value the textual representation of a float real.
+   * @return true if the given value represents a float real. False otherwise.
+   */
   public static boolean isFloat(String value) {
     try {
       Float.parseFloat(value);
@@ -486,7 +535,7 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * @param text the from which the quotes must be escaped (replaced by spaces in fact).
+   * @param text the text from which the quotes must be escaped (replaced by spaces in fact).
    * @return a String with all quotes replaced by spaces
    */
   public static String escapeQuote(String text) {
@@ -494,8 +543,7 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Replaces
-   *
+   * Replaces all quotes by spaces.
    * @param name the original filename.
    * @return a String with all quotes replaced by spaces
    */
@@ -516,11 +564,10 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Format a string by extending the principle of the the method format() of the class
+   * Format a string by extending the principle of the method format() of the class
    * java.text.MessageFormat to string arguments. For instance, the string '{key}' contained in the
    * original string to format will be replaced by the value corresponding to this key contained
    * into the values map.
-   *
    * @param label The string to format
    * @param values The values to insert into the string
    * @return The formatted string, filled with values of the map.
@@ -572,8 +619,7 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Replace parts of a text by an one replacement string. The text to replace is specified by a
-   * regex.
+   * Replace parts of a text by a replacement string. The text to replace is specified by a regex.
    * @param source the original text
    * @param regex the regex that permits to identify parts of text to replace
    * @param replacement the replacement text
@@ -616,10 +662,24 @@ public class StringUtil extends StringUtils {
     return result;
   }
 
+  /**
+   * Is the specified text represents a time in the format expected by Silverpeas.
+   * @param time the textual representation of a time.
+   * @return true if the specified parameter represents a time formatted in the format expected by
+   * Silverpeas.
+   * @see StringUtil#HOUR_PATTERN for the expected format of the time.
+   */
   public static boolean isValidHour(final String time) {
     return isDefined(time) && Pattern.matches(HOUR_PATTERN, time);
   }
 
+  /**
+   * Converts the given text into the specified charset. If the charset isn't supported, then an
+   * {@link UnsupportedEncodingException} exception is thrown.
+   * @param toConvert the text to convert.
+   * @param encoding the charset into which the text has to be converted.
+   * @return the converted text.
+   */
   public static String convertToEncoding(String toConvert, String encoding) {
     try {
       return new String(toConvert.getBytes(Charset.defaultCharset()), encoding);
@@ -630,7 +690,6 @@ public class StringUtil extends StringUtils {
 
   /**
    * Evaluate the expression and return true if expression equals "true", "yes", "y", "1" or "oui".
-   *
    * @param expression the expression to be evaluated
    * @return true if expression equals "true", "yes", "y", "1" or "oui".
    */
@@ -642,10 +701,9 @@ public class StringUtil extends StringUtils {
 
   /**
    * Indicates if two Strings are equals, managing null.
-   *
    * @param s1 the first String.
    * @param s2 the second String.
-   * @return true ifthe two Strings are equals.
+   * @return true if the two Strings are equals.
    */
   public static boolean areStringEquals(String s1, String s2) {
     if (s1 == null) {
@@ -656,7 +714,6 @@ public class StringUtil extends StringUtils {
 
   /**
    * Encodes the specified binary data into a text of Base64 characters.
-   *
    * @param binaryData the binary data to convert in Base64-based String.
    * @return a String representation of the binary data in Base64 characters.
    */
@@ -666,7 +723,6 @@ public class StringUtil extends StringUtils {
 
   /**
    * Decodes the specified text with Base64 characters in binary.
-   *
    * @param base64Text the text in Base64.
    * @return the binary representation of the text.
    */
@@ -675,32 +731,8 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * <p>Splits the provided text into an array, using whitespace as the separator. Whitespace is
-   * defined by {@link Character#isWhitespace(char)}.</p>
-   *
-   * <p>The separator is not included in the returned String array. Adjacent separators are treated
-   * as one separator. For more control over the split use the StrTokenizer class.</p>
-   *
-   * <p>A {@code null} input String returns {@code null}.</p>
-   *
-   * <pre>
-   * StringUtils.split(null)       = null
-   * StringUtils.split("")         = empty list
-   * StringUtils.split("abc def")  = ["abc", "def"]
-   * StringUtils.split("abc  def") = ["abc", "def"]
-   * StringUtils.split(" abc ")    = ["abc"]
-   * </pre>
-   *
-   * @param str the String to parse, may be null
-   * @return an array of parsed Strings, {@code null} if null String input
-   */
-  public static Iterable<String> splitString(String str) {
-    return Arrays.asList(StringUtils.split(str));
-  }
-
-  /**
-   * <p>Splits the provided text into an array, separator specified. This is an alternative to using
-   * StringTokenizer.</p>
+   * <p>Splits the provided text into an array, separator specified. This is an alternative to
+   * using StringTokenizer.</p>
    *
    * <p>The separator is not included in the returned String array. Adjacent separators are treated
    * as one separator. For more control over the split use the StrTokenizer class.</p>
@@ -715,7 +747,6 @@ public class StringUtil extends StringUtils {
    * StringUtils.split("a:b:c", '.')    = ["a:b:c"]
    * StringUtils.split("a b c", ' ')    = ["a", "b", "c"]
    * </pre>
-   *
    * @param str the String to parse, may be null
    * @param separatorChar the character used as the delimiter
    * @return an array of parsed Strings, {@code null} if null String input
@@ -737,7 +768,7 @@ public class StringUtil extends StringUtils {
         boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
         boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
         if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
-          res.insert(k+i, '\\');
+          res.insert(k + i, '\\');
           k++;
         }
       }
@@ -745,10 +776,23 @@ public class StringUtil extends StringUtils {
     return res.toString();
   }
 
+  /**
+   * Is the actual value is like the expected one? Case-sensitivity isn't taken into account in the
+   * like-matching.
+   * @param actualValue the actual value to compare.
+   * @param expectedValue the expected value the actual one has to match.
+   * @return true if the actual value is like the expected one. False otherwise.
+   */
   public static boolean likeIgnoreCase(final String actualValue, String expectedValue) {
     return new Like(actualValue, expectedValue, true).test();
   }
 
+  /**
+   * Is the actual value is like the expected one? Case-sensitivity of the values matters.
+   * @param actualValue the actual value to compare.
+   * @param expectedValue the expected value the actual one has to match.
+   * @return true if the actual value is like the expected one. False otherwise.
+   */
   public static boolean like(final String actualValue, String expectedValue) {
     return new Like(actualValue, expectedValue, false).test();
   }
@@ -912,8 +956,8 @@ public class StringUtil extends StringUtils {
        */
       protected int expectedIdx = 0;
       /**
-       * Is the matching between the expected and the actual texts is ok at the current state of
-       * the scanning.
+       * Is the matching between the expected and the actual texts is ok at the current state of the
+       * scanning.
        */
       protected boolean matches = true;
 

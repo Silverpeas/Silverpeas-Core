@@ -58,7 +58,7 @@ public class ResourceLocatorTest {
   public void useGeneralSettingShouldSucceed() {
     SettingBundle bundle = ResourceLocator.getGeneralSettingBundle();
     assertThat(bundle, is(notNullValue()));
-    assertThat(bundle.getString("webdav.respository"), is("repository"));
+    assertThat(bundle.getString("webdav.repository"), is("repository"));
   }
 
   @Test

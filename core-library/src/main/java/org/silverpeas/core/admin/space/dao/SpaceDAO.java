@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.space.dao;
 
+import org.silverpeas.core.admin.component.dao.CommonDAO;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.annotation.Repository;
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public class SpaceDAO {
+public class SpaceDAO extends CommonDAO {
 
   private static final String SPACE_COLUMNS =
       "id,domainFatherId,name,description,spaceStatus,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
@@ -123,17 +124,6 @@ public class SpaceDAO {
       }
     }
     return spaceIds;
-  }
-
-  private static String list2String(List<String> ids) {
-    StringBuilder str = new StringBuilder();
-    for (int i = 0; i < ids.size(); i++) {
-      if (i != 0) {
-        str.append(',');
-      }
-      str.append(ids.get(i));
-    }
-    return str.toString();
   }
 
   private SpaceInstLight fetchSpace(ResultSet rs) throws SQLException {

@@ -55,9 +55,9 @@ public class ScheduledReservedFile implements Initialization {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
   private static final String ATTACHMENT_NOTIF_NAME = "attachment.notifName";
-  private SettingBundle settings =
+  private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
-  private LocalizationBundle generalMessage =
+  private final LocalizationBundle generalMessage =
       ResourceLocator.getLocalizationBundle("org.silverpeas.multilang.generalMultilang");
 
   @Override

@@ -440,7 +440,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addPublicationTemplateFeatures();
     addImageToolFeatures();
     addWbeManagementFeatures();
-    addMavenDependencies("org.silverpeas.jcr:access-control");
+    addMavenDependencies("org.silverpeas.jcr:silverpeas-jcr");
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrRepositoryProvider.class)) {
       addClasses(FormException.class, JcrIntegrationIT.class, JcrContext.class,
@@ -449,7 +449,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.contribution.attachment");
       addClasses(VolatileResourceCleaner.class);
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
-      addAsResource("silverpeas-jcr.cnd");
       applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }
 

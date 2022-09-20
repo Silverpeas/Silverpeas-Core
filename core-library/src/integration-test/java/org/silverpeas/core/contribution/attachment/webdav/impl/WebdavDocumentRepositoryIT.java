@@ -30,10 +30,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -55,7 +55,6 @@ import static javax.jcr.Property.*;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
@@ -69,7 +68,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testCreateAttachmentNode() throws Exception {
+  public void createAttachmentNode() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -88,13 +87,13 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
 
       Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
       assertWebdavContent(session, document, "Whaou !", relativeWebdavJcrPath);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       webdavRepository.createAttachmentNode(session, document);
 
       assertWebdavContent(session, document, "Whaou !", relativeWebdavJcrPath);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       document.setAttachment(getJcr().defaultFRContent());
@@ -103,13 +102,13 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.createAttachmentNode(session, document);
 
       assertWebdavContent(session, document, "Whaou FR!", document.getWebdavJcrPath());
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content"));
     });
   }
 
   @Test
-  public void testUpdateAttachmentNode() throws Exception {
+  public void updateAttachmentNode() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -127,14 +126,14 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.updateNodeAttachment(session, document);
 
       Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
       assertWebdavContent(session, document, "Whaou !", relativeWebdavJcrPath);
 
       webdavRepository.updateNodeAttachment(session, document);
 
       assertWebdavContent(session, document, "Whaou !", relativeWebdavJcrPath);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       document.setAttachment(getJcr().defaultFRContent());
@@ -143,13 +142,13 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.updateNodeAttachment(session, document);
 
       assertWebdavContent(session, document, "Whaou FR!", document.getWebdavJcrPath());
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content"));
     });
   }
 
   @Test
-  public void testUpdateAttachment() throws Exception {
+  public void updateAttachment() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -216,7 +215,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testMoveAttachmentNode() throws Exception {
+  public void moveAttachmentNode() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -260,31 +259,31 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.createAttachmentNode(session, document);
 
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       webdavRepository.moveNodeAttachment(session, document, document.getInstanceId());
 
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       webdavRepository.moveNodeAttachment(session, document, null);
 
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       webdavRepository.moveNodeAttachment(session, document, "");
 
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       webdavRepository.moveNodeAttachment(session, document, "targetInstanceId");
 
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode),
+      assertThat(getJcr().listPathsFrom(webdavNode),
           contains("/webdav/attachments/targetInstanceId/" + document.getId() +
               "/en/test.pdf/jcr:content"));
 
@@ -294,7 +293,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       getJcr().assertContent(document.getId(), "fr", "FR content");
       getJcr().assertContent(document.getId(), "en", "Whaou !");
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), containsInAnyOrder(
+      assertThat(getJcr().listPathsFrom(webdavNode), containsInAnyOrder(
           "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content",
           "/webdav/attachments/targetInstanceId/" + document.getId() +
               "/en/test.pdf/jcr:content"));
@@ -302,7 +301,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test(expected = ItemExistsException.class)
-  public void testMoveAttachmentNodeToExistingNode() throws Exception {
+  public void moveAttachmentNodeToExistingNode() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -313,13 +312,13 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.createAttachmentNode(session, document);
 
       Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
       webdavRepository.moveNodeAttachment(session, document, "targetInstanceId");
 
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode),
+      assertThat(getJcr().listPathsFrom(webdavNode),
           contains("/webdav/attachments/targetInstanceId/" + document.getId() +
               "/en/test.pdf/jcr:content"));
 
@@ -327,7 +326,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       document = getJcr().updateAttachmentForTest(document, "fr", "FR content");
       webdavRepository.createAttachmentNode(session, document);
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), containsInAnyOrder(
+      assertThat(getJcr().listPathsFrom(webdavNode), containsInAnyOrder(
           "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content",
           "/webdav/attachments/targetInstanceId/" + document.getId() +
               "/en/test.pdf/jcr:content"));
@@ -337,7 +336,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testDeleteAttachmentContentNode() throws Exception {
+  public void deleteAttachmentContentNode() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment frDocumentContent = getJcr().defaultFRContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -389,7 +388,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testDeleteAttachmentNode() throws Exception {
+  public void deleteAttachmentNode() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment frDocumentContent = getJcr().defaultFRContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -443,51 +442,51 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       document = getJcr().assertContent(document.getId(), "en", "Whaou !");
       webdavRepository.createAttachmentNode(session, document);
       assertWebdavContent(session, document, "Whaou !", relativeWebdavJcrPath);
-      // Adding an other node for "kmelia26"
+      // Adding another node for "kmelia26"
       Node kmelia26Node = getJcr().getRelativeNode(rootNode, "webdav/attachments/kmelia26");
       kmelia26Node.addNode("en", NT_FOLDER).addNode("Test", NT_FOLDER);
-      assertThat(getJcr().listPathesFrom(kmelia26Node), containsInAnyOrder(
+      assertThat(getJcr().listPathsFrom(kmelia26Node), containsInAnyOrder(
               "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content",
               "/webdav/attachments/kmelia26/en/Test")
       );
 
       // Delete EN language
       webdavRepository.deleteAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(kmelia26Node),
+      assertThat(getJcr().listPathsFrom(kmelia26Node),
           containsInAnyOrder("/webdav/attachments/kmelia26/en/Test"));
 
       // Delete Test (no id and no language)
       document.setFilename("Test");
       webdavRepository.deleteAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(kmelia26Node),
+      assertThat(getJcr().listPathsFrom(kmelia26Node),
           containsInAnyOrder("/webdav/attachments/kmelia26/en/Test"));
 
       document.setLanguage("fr");
       webdavRepository.deleteAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(kmelia26Node),
+      assertThat(getJcr().listPathsFrom(kmelia26Node),
           containsInAnyOrder("/webdav/attachments/kmelia26/en/Test"));
 
       document.setFilename("xxxxx");
       document.setLanguage("en");
       document.setId(null);
       webdavRepository.deleteAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(kmelia26Node),
+      assertThat(getJcr().listPathsFrom(kmelia26Node),
           containsInAnyOrder("/webdav/attachments/kmelia26/en/Test"));
 
       document.setFilename("Test");
       document.setLanguage("fr");
       webdavRepository.deleteAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(kmelia26Node),
+      assertThat(getJcr().listPathsFrom(kmelia26Node),
           containsInAnyOrder("/webdav/attachments/kmelia26/en/Test"));
 
       document.setLanguage("en");
       webdavRepository.deleteAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(kmelia26Node), nullValue());
+      assertThat(getJcr().listPathsFrom(kmelia26Node), nullValue());
     });
   }
 
   @Test
-  public void testGetContentEditionLanguageAndSizeAndDescriptor() throws Exception {
+  public void getContentEditionLanguageAndSizeAndDescriptor() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -504,7 +503,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       frDocumentFromEnCopy.setLanguage("fr");
       assertNoWebdavDesc(session, webdavRepository, frDocumentFromEnCopy);
       // no identifier FR
-      frDocumentFromEnCopy.setPK(frDocumentFromEnCopy.getPk().clone());
+      frDocumentFromEnCopy.setPK(frDocumentFromEnCopy.getPk().copy());
       frDocumentFromEnCopy.setId(null);
       assertNoWebdavDesc(session, webdavRepository, frDocumentFromEnCopy);
       // no identifier DE
@@ -522,7 +521,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       document = getJcr().assertContent(document.getId(), "en", "EN content");
       webdavRepository.createAttachmentNode(session, document);
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
       // content EN exists
       final WebdavContentDescriptor enDesc =
@@ -549,7 +548,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument frDocument = getJcr().assertContent(document.getId(), "fr", "FR content");
       SimpleDocument enDocument = getJcr().assertContent(document.getId(), "en", "EN content");
       webdavRepository.createAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content"));
       // content FR exists
       final WebdavContentDescriptor frDesc2 =
@@ -565,7 +564,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       document.setAttachment(getJcr().defaultENContent());
       getJcr().updateAttachmentForTest(document, "en", "EN content updated");
       webdavRepository.createAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
       final WebdavContentDescriptor frDesc3 =
           assertWebdavDesc(session, webdavRepository, frDocument, "en", 18L, beforeDate3);
@@ -574,7 +573,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testReadAndWriteContentEdition() throws Exception {
+  public void readAndWriteContentEdition() throws Exception {
     execute((session, webdavRepository) -> {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
@@ -598,7 +597,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       document = getJcr().assertContent(document.getId(), "en", "EN content");
       webdavRepository.createAttachmentNode(session, document);
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
       // content EN exists
       final WebdavContentDescriptor docDesc =
@@ -697,7 +696,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testGetDocumentIdentifierNode() throws Exception {
+  public void getDocumentIdentifierNode() throws Exception {
     execute((session, webdavRepository) -> {
 
       // No attachment identifier
@@ -718,7 +717,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       // Attachment is registred into webdav
       webdavRepository.createAttachmentNode(session, document);
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
       Node documentIdentifierNode = webdavRepository.getDocumentIdentifierNode(session, document);
       assertThat(documentIdentifierNode, notNullValue());
@@ -728,7 +727,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testGetDocumentContentLanguageNode() throws Exception {
+  public void getDocumentContentLanguageNode() throws Exception {
     execute((session, webdavRepository) -> {
 
       // No attachment identifier
@@ -761,7 +760,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       // Attachment is registred into webdav
       webdavRepository.createAttachmentNode(session, document);
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+      assertThat(getJcr().listPathsFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
       Node documentIdentifierNode =
           webdavRepository.getDocumentContentLanguageNode(session, document, null);
@@ -781,7 +780,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testAddFolder() throws Exception {
+  public void addFolder() throws Exception {
     execute((session, webdavRepository) -> {
       String nodeNameForTest = "a_node_for_test";
       Node rootTestNode = session.getRootNode().addNode("test");
@@ -790,7 +789,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.addFolder(rootTestNode, nodeNameForTest + "_2");
       webdavRepository.addFolder(rootTestNode, nodeNameForTest + "_3");
       webdavRepository.addFolder(rootTestNode, nodeNameForTest + "_4");
-      assertThat(getJcr().listPathesFrom(rootTestNode),
+      assertThat(getJcr().listPathsFrom(rootTestNode),
           containsInAnyOrder("/test/a_node_for_test", "/test/a_node_for_test_2",
               "/test/a_node_for_test_3", "/test/a_node_for_test_4")
       );
@@ -798,7 +797,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testAddExclusiveFolder() throws Exception {
+  public void addExclusiveFolder() throws Exception {
     execute((session, webdavRepository) -> {
       String nodeNameForTest = "a_node_for_test";
       Node rootTestNode = session.getRootNode().addNode("test");
@@ -807,12 +806,12 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavRepository.addExclusiveFolder(rootTestNode, nodeNameForTest + "_2");
       webdavRepository.addExclusiveFolder(rootTestNode, nodeNameForTest + "_3");
       webdavRepository.addExclusiveFolder(rootTestNode, nodeNameForTest + "_4");
-      assertThat(getJcr().listPathesFrom(rootTestNode), contains("/test/a_node_for_test_4"));
+      assertThat(getJcr().listPathsFrom(rootTestNode), contains("/test/a_node_for_test_4"));
     });
   }
 
   @Test
-  public void testIsNodeLocked() throws Exception {
+  public void isNodeLocked() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -946,7 +945,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testAddFile() throws Exception {
+  public void addFile() throws Exception {
     execute((session, webdavRepository) -> {
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
@@ -963,14 +962,14 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(nodeForTest.hasNodes(), is(false));
 
       Node fileNameNode = webdavRepository.addFile(nodeForTest, document);
-      assertThat(getJcr().listPathesFrom(nodeForTest), contains("/a_node_for_test/test.pdf/jcr:content"));
+      assertThat(getJcr().listPathsFrom(nodeForTest), contains("/a_node_for_test/test.pdf/jcr:content"));
 
       // Existence
       assertThat(fileNameNode.getPath(), is("/a_node_for_test/test.pdf"));
       // No user editor has been specified
       assertThat(fileNameNode.canAddMixin(SLV_OWNABLE_MIXIN), is(true));
       assertThat(fileNameNode.hasProperty(SLV_PROPERTY_OWNER), is(false));
-      // Single child node must exists
+      // Single child node must exist
       Node contentFileNode = getJcr().getSingleChildNode(fileNameNode);
       assertThat(contentFileNode.getPath(), is("/a_node_for_test/test.pdf/jcr:content"));
       assertThat(contentFileNode.getProperty(JCR_MIMETYPE).getString(),
@@ -990,7 +989,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       getJcr().assertContent(document.getId(), "en", "A super mega content !");
       document.edit("26");
       webdavRepository.addFile(nodeForTest, document);
-      assertThat(getJcr().listPathesFrom(nodeForTest),
+      assertThat(getJcr().listPathsFrom(nodeForTest),
           contains("/a_node_for_test/newEnFileName/jcr:content"));
       fileNameNode = getJcr().getSingleChildNode(nodeForTest);
 
@@ -1000,7 +999,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(fileNameNode.canAddMixin(SLV_OWNABLE_MIXIN), is(true));
       assertThat(fileNameNode.hasProperty(SLV_PROPERTY_OWNER), is(true));
       assertThat(fileNameNode.getProperty(SLV_PROPERTY_OWNER).getString(), is("26"));
-      // Single child node must exists
+      // Single child node must exist
       contentFileNode = getJcr().getSingleChildNode(fileNameNode);
       assertThat(contentFileNode.getPath(), is("/a_node_for_test/newEnFileName/jcr:content"));
       assertThat(contentFileNode.getProperty(JCR_MIMETYPE).getString(),
@@ -1023,7 +1022,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   private void execute(WebdavTest test) throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       test.execute(session, ServiceProvider.getService(WebdavDocumentRepository.class));
     }
   }
@@ -1034,7 +1033,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
    * @param document the document to assert into the webdav space.
    * @param documentContent the document content to verify.
    * @param relativeWebdavJcrPath the relative path into webdav space.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   protected void assertWebdavContent(Session session, SimpleDocument document,
       String documentContent, String relativeWebdavJcrPath) throws Exception {
@@ -1047,7 +1046,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
     // No user editor has been specified
     assertThat(webdavDocumentNode.canAddMixin(SLV_OWNABLE_MIXIN), is(true));
     assertThat(webdavDocumentNode.hasProperty(SLV_PROPERTY_OWNER), is(false));
-    // Single child node must exists
+    // Single child node must exist
     Node contentFileNode = getJcr().getSingleChildNode(webdavDocumentNode);
     assertThat(contentFileNode.getPath(), is("/" + relativeWebdavJcrPath + "/jcr:content"));
     assertThat(contentFileNode.getProperty(JCR_MIMETYPE).getString(),
@@ -1064,7 +1063,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
    * Assertion of a JCR webdav content ...
    * @param session the current JCR session.
    * @param document the document to assert into the webdav space.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   protected void assertWebdavDocumentDoesNotExist(Session session, SimpleDocument document)
       throws Exception {
@@ -1076,7 +1075,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
    * @param session the current JCR session.
    * @param document the document to assert into the webdav space.
    * @return the aimed {@link Node}.
-   * @throws Exception
+   * @throws Exception if an error occurs
    */
   protected Node getWebdavDocumentIdNode(Session session, SimpleDocument document)
       throws Exception {

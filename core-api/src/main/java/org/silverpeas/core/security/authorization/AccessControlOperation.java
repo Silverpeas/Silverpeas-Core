@@ -35,13 +35,13 @@ import java.util.Set;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 30/12/13
  */
 public enum AccessControlOperation {
   UNKNOWN, CREATION, MODIFICATION, DELETION, DOWNLOAD, SHARING, SEARCH;
 
-  protected static final Set<AccessControlOperation> PERSIST_ACTIONS =
+  static final Set<AccessControlOperation> PERSIST_ACTIONS =
       EnumSet.of(CREATION, MODIFICATION, DELETION);
 
   @JsonValue

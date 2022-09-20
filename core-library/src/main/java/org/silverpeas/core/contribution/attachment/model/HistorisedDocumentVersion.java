@@ -27,12 +27,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * This class permits to get an historised document behaviour not from the master version but
- * from a frozen version of the document.
- * The history is accorded to the specified version.
- * To obtain the master version, please use {@link #getVersionMaster()} method.
- * To check if the current instance is indexed on master version,
- * please use {@link #isVersionMaster()} method.
+ * This class permits to get a historized document behaviour not from the master version but from a
+ * frozen version of the document. The history is accorded to the specified version. To obtain the
+ * master version, please use {@link #getVersionMaster()} method. To check if the current instance
+ * is indexed on master version, please use {@link #isVersionMaster()} method.
  * @author Yohann Chastagnier
  */
 public class HistorisedDocumentVersion extends HistorisedDocument {
@@ -40,12 +38,12 @@ public class HistorisedDocumentVersion extends HistorisedDocument {
 
   /**
    * Default constructor.
-   * @param version the simple document version from which the historised document is indexed.
+   * @param version the simple document version from which the historized document is indexed.
    */
   public HistorisedDocumentVersion(SimpleDocumentVersion version) {
     super(version);
     setVersionMaster(version.getVersionMaster());
-    setHistory(new ArrayList<SimpleDocumentVersion>(version.getVersionMaster().getHistory()));
+    setHistory(new ArrayList<>(version.getVersionMaster().getHistory()));
     Iterator<SimpleDocumentVersion> historyIt = getHistory().iterator();
     while (historyIt.hasNext()) {
       SimpleDocumentVersion currentVersion = historyIt.next();

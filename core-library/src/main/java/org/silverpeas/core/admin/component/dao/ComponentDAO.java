@@ -37,12 +37,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ComponentDAO {
+public class ComponentDAO extends CommonDAO {
 
   private static final String INSTANCE_COLUMNS =
       "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime,removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang,isInheritanceBlocked";
@@ -164,36 +163,14 @@ public class ComponentDAO {
     }
   }
 
-  private static String list2String(List<String> ids) {
-    StringBuilder str = new StringBuilder();
-    for (int i = 0; i < ids.size(); i++) {
-      if (i != 0) {
-        str.append(",");
-      }
-      str.append(ids.get(i));
-    }
-    return str.toString();
-  }
-
-  public static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
-      int userId) throws SQLException {
-    return getAllAvailableComponentIds(con, groupIds, userId, null);
-  }
-
   public static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
       int userId, String componentName) throws SQLException {
-    Set<String> componentIds = new HashSet<>();
-    componentIds.addAll(getAllPublicComponentIds(con));
+    Set<String> componentIds = new HashSet<>(getAllPublicComponentIds(con));
 
     // Public component instance ids must be filtered in case when a component name filter is
     // defined.
     if (StringUtil.isDefined(componentName)) {
-      Iterator<String> componentIdsIt = componentIds.iterator();
-      while (componentIdsIt.hasNext()) {
-        if (!componentIdsIt.next().startsWith(componentName)) {
-          componentIdsIt.remove();
-        }
-      }
+      componentIds.removeIf(s -> !s.startsWith(componentName));
     }
 
     if (groupIds != null && !groupIds.isEmpty()) {
@@ -284,15 +261,9 @@ public class ComponentDAO {
   }
 
   public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
-      int userId, int spaceId) throws SQLException {
-    return getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId, null);
-  }
-
-  public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
       int userId, int spaceId, String componentName) throws SQLException {
     // get available components
-    Set<ComponentInstLight> componentsSet = new HashSet<>();
-    componentsSet.addAll(getPublicComponentsInSpace(con, spaceId));
+    Set<ComponentInstLight> componentsSet = new HashSet<>(getPublicComponentsInSpace(con, spaceId));
     if (groupIds != null && !groupIds.isEmpty()) {
       componentsSet.addAll(getAvailableComponentsInSpace(con, groupIds, spaceId, componentName));
     }

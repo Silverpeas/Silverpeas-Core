@@ -91,7 +91,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override
   public void moveNodeAttachment(final Session session, final SimpleDocument attachment,
-      final String targetComponentInstanceId) throws RepositoryException, IOException {
+      final String targetComponentInstanceId) throws RepositoryException {
     if (attachment.getPk() != null && StringUtil.isDefined(targetComponentInstanceId) &&
         !attachment.getInstanceId().equals(targetComponentInstanceId)) {
       Node nodeToMove = getDocumentIdentifierNode(session, attachment);
@@ -140,7 +140,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   /**
    * Gets the webdav document node from the specified attachment.
-   * It can retrieve all sub nodes from the one which contains the attachment JCR identfier.
+   * It can retrieve all sub nodes from the one which contains the attachment JCR identifier.
    * @param session the JCR session.
    * @param attachment the attachment from which the webdav document identifier JCR node is
    * searched.
@@ -173,9 +173,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
       RepositoryException {
     Node rootNode = session.getRootNode();
     try {
-      /**
-       Two cases here because of the analysis of {@link SimpleDocument#getWebdavJcrPath()}...
-       */
+      /* Two cases here because of the analysis of {@link SimpleDocument#getWebdavJcrPath()}... */
       Node fileNode = getDocumentIdentifierNode(session, attachment);
       if (fileNode == null) {
         fileNode = rootNode.getNode(attachment.getWebdavJcrPath());
@@ -204,7 +202,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param parentNodeOfDeletedOne a deleted node.
    */
   private void purgeWebdavFromNode(Node parentNodeOfDeletedOne) throws RepositoryException {
-    //noinspection UnnecessaryLocalVariable
+    //noinspection
     Node currentNode = parentNodeOfDeletedOne;
     if (currentNode != null) {
       while (!currentNode.hasNodes() &&
@@ -259,12 +257,12 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param parent the parent node
    * @param name the name of the new node
    * @return the created node.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   protected Node addFolder(Node parent, String name) throws RepositoryException {
     try {
       return parent.getNode(name);
-    } catch (PathNotFoundException pnfex) {
+    } catch (PathNotFoundException e) {
       return parent.addNode(name, NT_FOLDER);
     }
   }
@@ -278,7 +276,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param parent the parent node
    * @param name the name of the new node
    * @return the created or already existing node.
-   * @throws RepositoryException
+   * @throws RepositoryException if an error occurs in the JCR
    */
   protected Node addExclusiveFolder(Node parent, String name) throws RepositoryException {
     try {
@@ -290,7 +288,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
         }
       }
       return parent.getNode(name);
-    } catch (PathNotFoundException pnfex) {
+    } catch (PathNotFoundException e) {
       return parent.addNode(name, NT_FOLDER);
     }
   }
@@ -301,8 +299,8 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param folder the folder node containing the file node.
    * @param attachment the attachment for the file.
    * @return the created node.
-   * @throws RepositoryException
-   * @throws IOException
+   * @throws RepositoryException if an error occurs in the JCR
+   * @throws IOException if an error occurs while adding the file in the filesystem
    */
   protected Node addFile(Node folder, SimpleDocument attachment) throws RepositoryException,
       IOException {

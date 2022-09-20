@@ -44,7 +44,7 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
   /**
    * Creates an empty profile of rights access.
    */
-  public BaseRightProfile() {
+  protected BaseRightProfile() {
     // Nothing to do
   }
 
@@ -53,7 +53,8 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
    * unique.
    * @param profile the rights profile to copy.
    */
-  public BaseRightProfile(final BaseRightProfile profile) {
+  @SuppressWarnings("CopyConstructorMissesField")
+  protected BaseRightProfile(final BaseRightProfile profile) {
     name = profile.name;
     description = profile.description;
     label = profile.label;
@@ -82,7 +83,7 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
   /**
    * Sets a name to this profile. The name of the profile defines by convention the privileges
    * that are granted to the users and groups defined in this profile. In Silverpeas, the privileges
-   * are defined by convention in different predefined roles and it is the name of this role that
+   * are defined by convention in different predefined roles, and it is the name of this role that
    * should be set here.
    * @param sName the name of the role referred by this profile.
    */
@@ -93,7 +94,7 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
   /**
    * Gets the name of this profile. The name of the profile defines by convention the privileges
    * that are granted to the users and groups defined in this profile. In Silverpeas, the privileges
-   * are defined by convention in different predefined roles and it is the name of this role that
+   * are defined by convention in different predefined roles, and it is the name of this role that
    * is returned here.
    * @return the name of the role referred by this profile.
    */
@@ -127,7 +128,7 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
 
   /**
    * Gets a short description of this profile.
-   * @return a profile description.
+   * @return the profile description.
    */
   public String getDescription() {
     return description;
@@ -153,7 +154,7 @@ public abstract class BaseRightProfile implements RightProfile, Serializable {
 
   /**
    * Gets the number of groups that are concerned by this profile
-   * @return
+   * @return the number of groups.
    */
   public int getNumGroup() {
     return groups.size();

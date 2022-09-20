@@ -32,10 +32,10 @@ import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavDocumentRepository;
-import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.Node;
@@ -43,7 +43,6 @@ import javax.jcr.Node;
 import static javax.jcr.Property.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_OWNABLE_MIXIN;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_PROPERTY_OWNER;
 
@@ -61,7 +60,7 @@ public class WebdavServiceIT extends JcrIntegrationIT {
   }
 
   @Test(expected = AttachmentException.class)
-  public void testUpdateDocumentContentFromUnexeitingWebdavDocument() throws Exception {
+  public void updateDocumentContentFromUnexeitingWebdavDocument() throws Exception {
     SimpleAttachment enDocumentContent = getJcr().defaultENContent();
     SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
     document = getJcr().createAttachmentForTest(document, enDocumentContent, "Whaou !");
@@ -70,7 +69,7 @@ public class WebdavServiceIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testUpdateDocumentContent() throws Exception {
+  public void updateDocumentContent() throws Exception {
     SimpleAttachment enDocumentContent = getJcr().defaultENContent();
     SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
     document = getJcr().createAttachmentForTest(document, enDocumentContent, "Whaou !");
@@ -94,7 +93,7 @@ public class WebdavServiceIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testGetContentEditionLanguage() throws Exception {
+  public void getContentEditionLanguage() throws Exception {
     SimpleAttachment frDocumentContent = getJcr().defaultFRContent();
     SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
     document = getJcr().createAttachmentForTest(document, frDocumentContent, "FR content");
@@ -112,16 +111,9 @@ public class WebdavServiceIT extends JcrIntegrationIT {
     assertThat(webdavService.getContentEditionLanguage(document), is("en"));
   }
 
-  /**
-   * Assertion of a JCR webdav content ...
-   * @param document
-   * @param documentContent
-   * @param relativeWebdavJcrPath
-   * @throws Exception
-   */
   protected void assertWebdavContent(SimpleDocument document, String documentContent,
       String relativeWebdavJcrPath) throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       Node rootNode = session.getRootNode();
       Node webdavDocumentNode = getJcr().getRelativeNode(rootNode, document.getWebdavJcrPath());
       assertThat(webdavDocumentNode, notNullValue());
@@ -130,7 +122,7 @@ public class WebdavServiceIT extends JcrIntegrationIT {
       // No user editor has been specified
       assertThat(webdavDocumentNode.canAddMixin(SLV_OWNABLE_MIXIN), is(true));
       assertThat(webdavDocumentNode.hasProperty(SLV_PROPERTY_OWNER), is(false));
-      // Single child node must exists
+      // Single child node must exist
       Node contentFileNode = getJcr().getSingleChildNode(webdavDocumentNode);
       assertThat(contentFileNode.getPath(), is("/" + relativeWebdavJcrPath + "/jcr:content"));
       assertThat(contentFileNode.getProperty(JCR_MIMETYPE).getString(),
@@ -144,27 +136,18 @@ public class WebdavServiceIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Creates a document in document repository and in webdav repository.
-   * @param document
-   * @throws Exception
-   */
   protected void setDocumentIntoWebdav(SimpleDocument document) throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       ServiceProvider.getService(WebdavDocumentRepository.class)
           .createAttachmentNode(session, document);
       session.save();
     }
   }
 
-  /**
-   * Set a content into webdav.
-   * @param document
-   * @param content
-   * @throws Exception
-   */
-  protected void setWebdavBinaryContent(SimpleDocument document, String content) throws Exception {
-    try (JcrSession session = openSystemSession()) {
+  protected void setWebdavBinaryContent(SimpleDocument document, @SuppressWarnings(
+      "SameParameterValue")
+  String content) throws Exception {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       Node webdavJcrNode =
           getJcr().getRelativeNode(session.getRootNode(), document.getWebdavJcrPath());
       getJcr().setBinaryContent(webdavJcrNode.getNode(JCR_CONTENT).getProperty(JCR_DATA),

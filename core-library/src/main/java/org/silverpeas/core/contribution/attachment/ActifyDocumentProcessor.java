@@ -39,7 +39,6 @@ import java.io.IOException;
 
 /**
  * A processor of documents with 3D images or CAD for the Actify tool.
- *
  * The CAD documents imported in Silverpeas are treated by this processor so that Actify can convert
  * them into the 3D format. This 3D documents produced by Actify are then imported by Silverpeas.
  *
@@ -50,7 +49,7 @@ public class ActifyDocumentProcessor {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
-  private SilverLogger logger = SilverLogger.getLogger(this);
+  private final SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * Is the support of CAD documents processing is enabled? If it is enabled, the Actify tool must

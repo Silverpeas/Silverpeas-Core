@@ -69,7 +69,7 @@
 <ul class="sp_menuAdmin">
   <c:forEach var="serviceItem" items="${serviceItems}">
     <c:choose>
-      <c:when test="${not serviceItem.actif}">
+      <c:when test="${not serviceItem.active}">
         <li>
           <a href="javascript:void(0)" onclick="spAdminWindow.loadService(${serviceItem.id})">
             <span><fmt:message key="${serviceItem.label}"/></span>
@@ -88,7 +88,7 @@
   <div class="sp_sousMenuAdmin">
     <c:forEach var="operationItem" items="${operationItems}">
       <c:choose>
-        <c:when test="${not operationItem.actif}">
+        <c:when test="${not operationItem.active}">
           <a href="javascript:void(0)" onclick="spAdminWindow.loadOperation(${operationItem.id})">
             <fmt:message key="${operationItem.label}"/>
           </a>

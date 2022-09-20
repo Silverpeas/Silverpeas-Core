@@ -27,12 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a document that is versioned. It exposes all data of a versioned
- * document from the master version to the first version.
- * To obtain the master version, please use {@link #getVersionMaster()} method (must return the
- * same instance as the one of "this").
- * To check if the current instance is indexed on master version,
- * please use {@link #isVersionMaster()} method.
+ * This class represents a document that is versioned. It exposes all data of a versioned document
+ * from the master version to the first version. To obtain the master version, please use
+ * {@link #getVersionMaster()} method (must return the same instance as the one of "this"). To check
+ * if the current instance is indexed on master version, please use {@link #isVersionMaster()}
+ * method.
  * @author ehugonnet
  */
 public class HistorisedDocument extends SimpleDocument {
@@ -41,7 +40,8 @@ public class HistorisedDocument extends SimpleDocument {
   private List<SimpleDocumentVersion> history;
   private List<SimpleDocumentVersion> functionalHistory;
 
-  public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order, SimpleAttachment file) {
+  public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order,
+      SimpleAttachment file) {
     super(pk, foreignId, order, true, file);
   }
 
@@ -70,8 +70,11 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   /**
-   * Returns technical history (as the JCR)
-   * @return
+   * Gets the technical history of the document versions (as they are stored in the JCR). In the
+   * JCR, for a versioned item, each change drives to a new version, whatever the change is a
+   * technical one (for example, disable the download of the document) or a functional one (the
+   * content has been modified). This method returns the whole history of versions of the document.
+   * @return the all the versions committed for this document.
    */
   public List<SimpleDocumentVersion> getHistory() {
     return history;
@@ -80,8 +83,8 @@ public class HistorisedDocument extends SimpleDocument {
   /**
    * Gets from the history the version identified by the given identifier.
    * @param id the identifier of the searched version.
-   * @return the version of the simple document which the identifier is the one specified,
-   * null otherwise.
+   * @return the version of the simple document which the identifier is the one specified, null
+   * otherwise.
    */
   public SimpleDocumentVersion getVersionIdentifiedBy(String id) {
     for (SimpleDocumentVersion version : history) {
@@ -93,8 +96,9 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   /**
-   * Returns functional history based on versions and indexes.
-   * @return
+   * Gets the functional history based on the versions and the indexes of this document. The
+   * returned versions refer each of them the result of modification of its content.
+   * @return the different functional versions of this document.
    */
   public List<SimpleDocumentVersion> getFunctionalHistory() {
     if (functionalHistory == null && history != null) {
@@ -129,7 +133,6 @@ public class HistorisedDocument extends SimpleDocument {
 
   /**
    * Returns the more recent public version of this document - null if none exists.
-   *
    * @return the more recent public version of this document - null if none exists.
    */
   @Override

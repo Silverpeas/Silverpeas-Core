@@ -44,12 +44,12 @@ import java.util.List;
  * related to a given user domain. This service is identified by a unique name. The authentication
  * is delegated to an implementation of the Authentication abstract class that knows how to perform
  * the authentication with the remote service.
- *
+ * <p>
  * An external authentication service can be backed by one or more remote authentication servers.
  * So, the authentication with each server is then performed by a different Authentication instance
  * of the same type; each Authentication instance is mapped with a given server behind the external
  * authentication service.
- *
+ * <p>
  * The correct implementation of the Authentication abstract class is loaded from the properties
  * mapped to an authentication service name. Each service name identifies uniquely an external
  * security service (SQL database, LDAP, NTLM, ...)

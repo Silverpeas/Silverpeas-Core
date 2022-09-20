@@ -27,8 +27,10 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.StringUtil;
 
+import java.util.Objects;
+
 /**
- *
+ * the unique identifier of a document.
  * @author ehugonnet
  */
 public class SimpleDocumentPK extends ResourceReference {
@@ -76,11 +78,10 @@ public class SimpleDocumentPK extends ResourceReference {
       return false;
     }
     final SimpleDocumentPK other = (SimpleDocumentPK) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+    if (!Objects.equals(this.id, other.id)) {
       return false;
     }
-    return this.componentName == null ? other.componentName == null :
-        this.componentName.equals(other.componentName);
+    return Objects.equals(this.componentName, other.componentName);
   }
 
   @Override
@@ -94,15 +95,15 @@ public class SimpleDocumentPK extends ResourceReference {
 
   @Override
   public String toString() {
-    final int capacity = 100;
-    StringBuilder buffer = new StringBuilder(capacity);
-    buffer.append("SimpleDocumentPK{id = ").append(getId()).append(", componentName = ").
-        append(getComponentName()).append(", oldSilverpeasId=").append(oldSilverpeasId).append('}');
-    return buffer.toString();
+    return "SimpleDocumentPK{id = " + getId() + ", componentName = " +
+        getComponentName() + ", oldSilverpeasId=" + oldSilverpeasId + '}';
   }
 
-  @Override
-  public SimpleDocumentPK clone() {
-    return (SimpleDocumentPK) super.clone();
+  public SimpleDocumentPK copy() {
+    SimpleDocumentPK pk = new SimpleDocumentPK(getId());
+    pk.setOldSilverpeasId(getOldSilverpeasId());
+    pk.setSpace(getSpace());
+    pk.setComponentName(getComponentName());
+    return pk;
   }
 }

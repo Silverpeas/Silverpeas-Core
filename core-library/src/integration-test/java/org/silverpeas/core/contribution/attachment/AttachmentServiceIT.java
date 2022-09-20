@@ -39,7 +39,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
-import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
@@ -47,9 +46,9 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
+import org.silverpeas.jcr.JCRSession;
 
 import javax.inject.Inject;
-import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -58,8 +57,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -68,7 +65,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 /**
@@ -97,7 +93,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
 
   @Before
   public void setUpJcr() throws Exception {
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       if (!session.getRootNode()
           .hasNode(instanceId)) {
@@ -147,12 +143,12 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     List<String> pathParts = new ArrayList<>();
     pathParts.add(instanceId);
     Collections.addAll(pathParts, pathes);
-    return getJcrNode(pathParts.toArray(new String[pathParts.size()]));
+    return getJcrNode(pathParts.toArray(new String[0]));
   }
 
   private NodeResult getJcrNode(String... pathes) {
     Node node;
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       node = session.getNode('/' + StringUtils.join(pathes, '/'));
       return new NodeResult(node.getPath(), node.getNodes().getSize());
     } catch (PathNotFoundException e) {
@@ -186,7 +182,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of addContent method, of class AttachmentService.
    */
   @Test
-  public void testUpdateStreamContent() throws UnsupportedEncodingException {
+  public void updateStreamContent() {
     String currentLang = "fr";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -203,7 +199,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of addContent method, of class AttachmentService.
    */
   @Test
-  public void testAddNewStreamContent() throws UnsupportedEncodingException {
+  public void addNewStreamContent() {
     String currentLang = "fr";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -226,7 +222,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of addContent method, of class AttachmentService.
    */
   @Test
-  public void testAddFileContent() throws URISyntaxException, IOException {
+  public void addFileContent() throws IOException {
     File file = getDocumentNamed("/LibreOffice.odt");
     String currentLang = "fr";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
@@ -249,7 +245,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of addContent method, of class AttachmentService.
    */
   @Test
-  public void testUpdateFileContent() throws URISyntaxException, IOException {
+  public void updateFileContent() throws IOException {
     File file = getDocumentNamed("/LibreOffice.odt");
     String currentLang = "fr";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
@@ -263,7 +259,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of getBinaryContent method, of class AttachmentService.
    */
   @Test
-  public void testGetBinaryContentIntoFile() throws IOException {
+  public void getBinaryContentIntoFile() throws IOException {
     File file = File.createTempFile("AttachmentServiceTest", "docx");
     SimpleDocumentPK pk = existingEnDoc;
     String lang = "en";
@@ -277,7 +273,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of getBinaryContent method, of class AttachmentService.
    */
   @Test
-  public void testGetBinaryContentIntoOutputStream() {
+  public void getBinaryContentIntoOutputStream() {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     SimpleDocumentPK pk = existingEnDoc;
     String lang = "en";
@@ -351,7 +347,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of addXmlForm method, of class AttachmentService.
    */
   @Test
-  public void testAddXmlForm() {
+  public void addXmlForm() {
     String language = "fr";
     String xmlFormName = "15";
     SimpleDocument result = instance.searchDocumentById(existingFrDoc, language);
@@ -371,7 +367,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of cloneDocument method, of class AttachmentService.
    */
   @Test
-  public void testCloneDocument() throws IOException {
+  public void cloneDocument() throws IOException {
     String language = "fr";
     String foreignCloneId = "node59";
     SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
@@ -392,7 +388,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of cloneDocument method, of class AttachmentService.
    */
   @Test
-  public void testMoveDocument() throws IOException {
+  public void moveDocument() {
     String language = "fr";
     String foreignId = "73";
     SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
@@ -413,7 +409,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test
-  public void testCreateAttachmentFromInputStream() {
+  public void createAttachmentFromInputStream() {
     Date creationDate = RandomGenerator.getRandomCalendar()
         .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -438,7 +434,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test
-  public void testCreateIndexedAttachmentFromInputStream() {
+  public void createIndexedAttachmentFromInputStream() {
     Date creationDate = RandomGenerator.getRandomCalendar()
         .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -463,7 +459,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test
-  public void testCreateAttachmentFromInputStreamWithCallback() {
+  public void createAttachmentFromInputStreamWithCallback() {
     Date creationDate = RandomGenerator.getRandomCalendar()
         .getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -488,7 +484,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test
-  public void testCreateAttachmentIndexedCallbackFromFile() throws URISyntaxException {
+  public void createAttachmentIndexedCallbackFromFile() {
     File file = getDocumentNamed("/LibreOffice.odt");
     Date creationDate = RandomGenerator.getRandomCalendar()
         .getTime();
@@ -513,7 +509,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test
-  public void testCreateAttachmentNotIndexedFromFile() throws URISyntaxException {
+  public void createAttachmentNotIndexedFromFile() {
     File file = getDocumentNamed("/LibreOffice.odt");
     Date creationDate = RandomGenerator.getRandomCalendar()
         .getTime();
@@ -538,7 +534,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test
-  public void testCreateAttachmentFromFile() throws Exception {
+  public void createAttachmentFromFile() {
     File file = getDocumentNamed("/LibreOffice.odt");
     Date creationDate = RandomGenerator.getRandomCalendar()
         .getTime();
@@ -563,7 +559,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of deleteAttachment method, of class AttachmentService.
    */
   @Test
-  public void testDeleteAllDocuments() {
+  public void deleteAllDocuments() {
     assertThat(getComponentJcrNode(), notNullValue());
     SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
     SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
@@ -581,7 +577,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of deleteAllAttachments method, of class AttachmentService.
    */
   @Test
-  public void testDeleteAllAttachments() throws Exception {
+  public void deleteAllAttachments() {
     File file = getDocumentNamed("/LibreOffice.odt");
     assertThat(getComponentJcrNode(), notNullValue());
     assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
@@ -622,7 +618,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of copyAllAttachments method, of class AttachmentService.
    */
   @Test
-  public void testCopyAllAttachments() throws Exception {
+  public void copyAllAttachments() {
     File file = getDocumentNamed("/LibreOffice.odt");
     assertThat(getComponentJcrNode(), notNullValue());
     assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
@@ -659,8 +655,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       assertThat(copiedDocument, notNullValue());
       assertThat(copiedDocument.getInstanceId(), is(foreignInstanceId));
       assertThat(copiedDocument.getForeignId(), is("newResourcePK"));
-      assertThat(copiedDocument.getId(), not(isOneOf(documentEn.getId(), documentEn.getId(),
-          otherDocumentSameResourceDocumentFr.getId())));
+      assertThat(copiedDocument.getId(), not(is(oneOf(documentEn.getId(), documentEn.getId(),
+          otherDocumentSameResourceDocumentFr.getId()))));
       assertThat(copiedDocument.getOldSilverpeasId(),
           greaterThan(otherDocumentSameResourceDocumentFr.getOldSilverpeasId()));
     }
@@ -685,7 +681,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of moveAllAttachments method, of class AttachmentService.
    */
   @Test
-  public void testMoveAllAttachments() throws Exception {
+  public void moveAllAttachments() {
     File file = getDocumentNamed("/LibreOffice.odt");
     assertThat(getComponentJcrNode(), notNullValue());
     assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
@@ -722,7 +718,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       assertThat(movedDocument.getInstanceId(), is(instanceId));
       assertThat(movedDocument.getForeignId(), is("newResourcePK"));
       assertThat(movedDocument.getId(),
-          isOneOf(documentFr.getId(), otherDocumentSameResourceDocumentFr.getId()));
+          is(oneOf(documentFr.getId(), otherDocumentSameResourceDocumentFr.getId())));
       assertThat(movedDocument.getOldSilverpeasId(),
           lessThanOrEqualTo(otherDocumentSameResourceDocumentFr.getOldSilverpeasId()));
     }
@@ -746,7 +742,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of moveAllAttachments method, of class AttachmentService.
    */
   @Test
-  public void testMoveAllAttachmentsIntoAnotherComponentId() throws Exception {
+  public void moveAllAttachmentsIntoAnotherComponentId() {
     File file = getDocumentNamed("/LibreOffice.odt");
     assertThat(getComponentJcrNode(), notNullValue());
     assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
@@ -783,7 +779,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       assertThat(movedDocument.getInstanceId(), is(foreignInstanceId));
       assertThat(movedDocument.getForeignId(), is("newResourcePK"));
       assertThat(movedDocument.getId(),
-          isOneOf(documentFr.getId(), otherDocumentSameResourceDocumentFr.getId()));
+          is(oneOf(documentFr.getId(), otherDocumentSameResourceDocumentFr.getId())));
       assertThat(movedDocument.getOldSilverpeasId(),
           lessThanOrEqualTo(otherDocumentSameResourceDocumentFr.getOldSilverpeasId()));
     }
@@ -814,7 +810,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of deleteAttachment method, of class AttachmentService.
    */
   @Test
-  public void testDeleteAttachment() {
+  public void deleteAttachment() {
     String lang = "en";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, lang);
     assertThat(document, is(notNullValue()));
@@ -828,7 +824,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of deleteAttachment method, of class AttachmentService.
    */
   @Test
-  public void testDeleteIndexedAttachment() {
+  public void deleteIndexedAttachment() {
     String lang = "en";
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, lang);
     assertThat(document, is(notNullValue()));
@@ -842,7 +838,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    * Test of removeContent method, of class AttachmentService.
    */
   @Test
-  public void testRemoveContent() {
+  public void removeContent() {
     SimpleDocument document = instance.searchDocumentById(existingFrDoc, "fr");
     checkFrenchSimpleDocument(document);
     File pathToVerify = new File(document.getAttachmentPath()).getParentFile();
@@ -862,17 +858,10 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     checkEnglishSimpleDocument(document);
   }
 
-  /**
-   * Test of reorderAttachments and createAttachment methods, of class AttachmentService.
-   *
-   * @throws LoginException
-   * @throws RepositoryException
-   * @throws IOException
-   */
   @Test
-  public void testReorderAttachmentsAndCreateAttachment() throws RepositoryException, IOException {
+  public void reorderAttachmentsAndCreateAttachment() throws RepositoryException, IOException {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();
@@ -1002,19 +991,12 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of reorderAttachments and createAttachment methods, of class AttachmentService.
-   *
-   * @throws LoginException
-   * @throws RepositoryException
-   * @throws IOException
-   */
   @Test
-  public void testReorderAttachmentsAndCreateAttachmentWhenSortedFromYoungestToOldestOnUI()
+  public void reorderAttachmentsAndCreateAttachmentWhenSortedFromYoungestToOldestOnUI()
       throws RepositoryException, IOException {
     attachmentSettings.put("attachment.list.order", "-1");
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();
@@ -1144,11 +1126,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of searchDocumentById method, of class AttachmentService.
-   */
   @Test
-  public void testSearchAttachmentById() {
+  public void searchAttachmentById() {
     SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
     checkFrenchSimpleDocument(result);
     assertThat(existingFrDoc.getOldSilverpeasId(), greaterThan(0L));
@@ -1162,13 +1141,10 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     checkFrenchSimpleDocument(result);
   }
 
-  /**
-   * Test of listDocumentsByForeignKey method, of class AttachmentService.
-   */
   @Test
-  public void testSearchAttachmentsByExternalObject() throws RepositoryException, IOException {
+  public void searchAttachmentsByExternalObject() throws RepositoryException, IOException {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
-    try (JcrSession session = openSystemSession()) {
+    try (JCRSession session = JCRSession.openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();
@@ -1248,11 +1224,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of updateAttachment method, of class AttachmentService.
-   */
   @Test
-  public void testUpdateAttachment() {
+  public void updateAttachment() {
     SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
     checkFrenchSimpleDocument(result);
     Date alertDate = RandomGenerator.getRandomCalendar().getTime();
@@ -1282,11 +1255,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(result.getContentType(), is(MimeTypes.BZ2_ARCHIVE_MIME_TYPE));
   }
 
-  /**
-   * Test of updateAttachment method, of class AttachmentService.
-   */
   @Test
-  public void testUpdateAttachmentForbidRoles() {
+  public void updateAttachmentForbidRoles() {
     SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
     assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
 
@@ -1314,11 +1284,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(result.getForbiddenDownloadForRoles(), nullValue());
   }
 
-  /**
-   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
-   */
   @Test
-  public void testSwitchAllowingDownloadForReaders() {
+  public void switchAllowingDownloadForReaders() {
     SimpleDocument documentUpdated = instance.searchDocumentById(existingFrDoc, null);
     assertThat(documentUpdated.getForbiddenDownloadForRoles(), nullValue());
 
@@ -1337,11 +1304,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(result.getForbiddenDownloadForRoles(), nullValue());
   }
 
-  /**
-   * Test of listDocumentsRequiringWarning method, of class AttachmentService.
-   */
   @Test
-  public void testListDocumentsRequiringWarning() {
+  public void listDocumentsRequiringWarning() {
     ByteArrayInputStream content =
         new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -1416,11 +1380,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(docs, contains(warningDoc1, warningDoc3));
   }
 
-  /**
-   * Test of listExpiringDocuments method, of class AttachmentService.
-   */
   @Test
-  public void testListExpiringDocuments() {
+  public void listExpiringDocuments() {
     ByteArrayInputStream content =
         new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -1495,11 +1456,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(docs, contains(expiringDoc1, expiringDoc3));
   }
 
-  /**
-   * Test of listDocumentsToUnlock method, of class AttachmentService.
-   */
   @Test
-  public void testListDocumentsToUnlock() {
+  public void listDocumentsToUnlock() {
     ByteArrayInputStream content =
         new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -1575,11 +1533,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(docs, contains(docToUnlock2, docToUnlock3));
   }
 
-  /**
-   * Test of listDocumentsToUnlock method, of class AttachmentService.
-   */
   @Test
-  public void testListDocumentLockedByUser() {
+  public void listDocumentLockedByUser() {
     ByteArrayInputStream content =
         new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);

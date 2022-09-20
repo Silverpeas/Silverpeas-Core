@@ -70,29 +70,29 @@ public class ProfileInstManager {
   }
 
   /**
-   * Create a new Profile instance in database
-   * @param profileInst
-   * @param fatherCompLocalId
-   * @return
-   * @throws AdminException
+   * Create a new user access profile instance into the database.
+   * @param profileInst the profile instance ot persist.
+   * @param fatherCompLocalId the unique identifier of the resource on which the profile is about.
+   * @return the unique identifier of the profile once persisted.
+   * @throws AdminException if an error occurs while creating the profile instance.
    */
   public String createProfileInst(ProfileInst profileInst, int fatherCompLocalId)
       throws AdminException {
     try {
       // Create the spaceProfile node
       UserRoleRow newRole = UserRoleRow.makeFrom(profileInst);
-      newRole.unsetId(); // new profile Id is to be defined
+      newRole.unsetId(); // new profile id is to be defined
       newRole.setInstanceId(fatherCompLocalId);
       organizationSchema.userRole().createUserRole(newRole);
       String sProfileNodeId = idAsString(newRole.getId());
 
       // Update the CSpace with the links TProfile-TGroup
-      for(String groupId : profileInst.getAllGroups()) {
+      for (String groupId : profileInst.getAllGroups()) {
         organizationSchema.userRole().addGroupInUserRole(idAsInt(groupId), idAsInt(sProfileNodeId));
       }
 
       // Update the CSpace with the links TProfile-TUser
-      for(String userId : profileInst.getAllUsers()) {
+      for (String userId : profileInst.getAllUsers()) {
         organizationSchema.userRole().addUserInUserRole(idAsInt(userId), idAsInt(sProfileNodeId));
       }
 
@@ -105,7 +105,8 @@ public class ProfileInstManager {
   /**
    * Get Profile information from database with the given id and creates a new Profile instance
    * @param sProfileId identifier of the profile.
-   * @param includeRemovedUsersAndGroups true to take into account removed groups and removed users.
+   * @param includeRemovedUsersAndGroups true to take into account removed groups and removed
+   * users.
    * @return the corresponding {@link ProfileInst} if any, null otherwise.
    * @throws AdminException if an error occurred.
    */
@@ -141,8 +142,8 @@ public class ProfileInstManager {
     }
     if (userRole.getObjectId() > 0) {
       String oid = String.valueOf(userRole.getObjectId());
-      ProfiledObjectType otype = ProfiledObjectType.fromCode(userRole.getObjectType());
-      profileInst.setObjectId(new ProfiledObjectId(otype, oid));
+      ProfiledObjectType objectType = ProfiledObjectType.fromCode(userRole.getObjectType());
+      profileInst.setObjectId(new ProfiledObjectId(objectType, oid));
     }
     return profileInst;
   }
@@ -181,9 +182,9 @@ public class ProfileInstManager {
   }
 
   /**
-   * Deletes profile instance from Silverpeas
-   * @param profileInst
-   * @throws AdminException
+   * Deletes the specified profile instance.
+   * @param profileInst the profile instance to delete.
+   * @throws AdminException if an error occurs while deleting the profile instance in Silverpeas.
    */
   public void deleteProfileInst(ProfileInst profileInst) throws AdminException {
     try {
@@ -195,10 +196,11 @@ public class ProfileInstManager {
   }
 
   /**
-   * Update profile instance.
-   * The method take into account the Node Rights of users or groups.
-   * @param profileInstNew
-   * @throws AdminException
+   * Updates the specified profile instance. The method takes into account the access rights on
+   * nodes of the users or groups of users in the profile.
+   * @param profileInstNew the profile instance from which its persisted counterpart will be updated
+   * in the database.
+   * @throws AdminException if an error occurs while updating the profile instance.
    */
   public String updateProfileInst(ProfileInst profileInstNew) throws AdminException {
     ProfileInst profileInst = getProfileInst(profileInstNew.getId(), false);
@@ -244,7 +246,8 @@ public class ProfileInstManager {
     for (String userId : alOldProfileUser) {
       if (!alNewProfileUser.contains(userId)) {
         // delete the link between the profile and the user
-        organizationSchema.userRole().removeUserFromUserRole(idAsInt(userId), idAsInt(profileInst.getId()));
+        organizationSchema.userRole()
+            .removeUserFromUserRole(idAsInt(userId), idAsInt(profileInst.getId()));
       }
     }
   }
@@ -261,22 +264,23 @@ public class ProfileInstManager {
       }
     }
 
-      // Remove from the profile the groups that are no more in the new state of the profile
-      for (String groupId : alOldProfileGroup) {
-        if (!alNewProfileGroup.contains(groupId)) {
-          // delete the link between the profile and the group
-          organizationSchema.userRole().removeGroupFromUserRole(
-              idAsInt(groupId), idAsInt(profileInst.getId()));
-        }
+    // Remove from the profile the groups that are no more in the new state of the profile
+    for (String groupId : alOldProfileGroup) {
+      if (!alNewProfileGroup.contains(groupId)) {
+        // delete the link between the profile and the group
+        organizationSchema.userRole().removeGroupFromUserRole(
+            idAsInt(groupId), idAsInt(profileInst.getId()));
       }
+    }
   }
 
   /**
-   * Get all the profiles Id for the given user and groups
-   * @param sUserId
-   * @param groupIds
-   * @return
-   * @throws AdminException
+   * Gets the identifiers of all the profiles related to the specified user and to the groups of
+   * users.
+   * @param sUserId the unique identifier of a user.
+   * @param groupIds a list of identifiers of groups of users.
+   * @return an array with the identifiers of the profiles matching the request.
+   * @throws AdminException if an error occurs while getting the profile identifiers.
    */
   public String[] getProfileIdsOfUser(String sUserId, List<String> groupIds) throws AdminException {
     Connection con = null;
@@ -290,7 +294,7 @@ public class ProfileInstManager {
         roleIds.add(Integer.toString(role.getId()));
       }
 
-      return roleIds.toArray(new String[roleIds.size()]);
+      return roleIds.toArray(new String[0]);
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
@@ -300,11 +304,12 @@ public class ProfileInstManager {
   }
 
   /**
-   * Get all the component object profile Ids for the given user and/or groups
-   * @param sUserId
-   * @param groupIds
-   * @return
-   * @throws AdminException
+   * Gets the identifiers of all the profiles of a component related to the given user and/or groups
+   * of users.
+   * @param sUserId the unique identifier of a user.
+   * @param groupIds a list of unique identifiers of groups of users.
+   * @return an array with the identifiers of the profiles matching the request.
+   * @throws AdminException if an error occurs while getting the profiles of a component.
    */
   public String[] getAllComponentObjectProfileIdsOfUser(String sUserId, List<String> groupIds)
       throws AdminException {
@@ -320,7 +325,7 @@ public class ProfileInstManager {
         roleIds.add(Integer.toString(role.getId()));
       }
 
-      return roleIds.toArray(new String[roleIds.size()]);
+      return roleIds.toArray(new String[0]);
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
@@ -332,7 +337,8 @@ public class ProfileInstManager {
   public String[] getProfileNamesOfUser(final String userId, final List<String> groupIds,
       final int componentLocalId) throws AdminException {
     try (final Connection con = DBUtil.openConnection()) {
-      return roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), singleton(componentLocalId)).stream()
+      return roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), singleton(componentLocalId))
+          .stream()
           .map(UserRoleRow::getRoleName)
           .distinct()
           .toArray(String[]::new);
@@ -347,17 +353,17 @@ public class ProfileInstManager {
     try (final Connection con = DBUtil.openConnection()) {
       return roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), componentLocalIds).stream()
           .collect(groupingBy(UserRoleRow::getInstanceId,
-                   mapping(UserRoleRow::getRoleName, toSet())));
+              mapping(UserRoleRow::getRoleName, toSet())));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(PROFILES_OF_USER, userId), e);
     }
   }
 
   /**
-   * Get all the profiles Id for the given group
-   * @param sGroupId
-   * @return
-   * @throws AdminException
+   * Gets the identifiers of all the profiles related to the specified group of users.
+   * @param sGroupId the unique identifier of a group of user.
+   * @return an array with the identifiers of the profiles matching the request.
+   * @throws AdminException if an error occurs while getting the profiles.
    */
   public String[] getProfileIdsOfGroup(String sGroupId) throws AdminException {
     Connection con = null;
@@ -373,7 +379,7 @@ public class ProfileInstManager {
         roleIds.add(Integer.toString(role.getId()));
       }
 
-      return roleIds.toArray(new String[roleIds.size()]);
+      return roleIds.toArray(new String[0]);
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("profiles of group", sGroupId), e);
@@ -383,10 +389,10 @@ public class ProfileInstManager {
   }
 
   /**
-   * Get all the node profiles Id for the given group
-   * @param groupId
-   * @return
-   * @throws AdminException
+   * Gets the identifiers all the profiles of nodes related to the given group of users.
+   * @param groupId the unique identifier of a group.
+   * @return an array with the identifiers of the profiles matching the request.
+   * @throws AdminException if an error occurs while getting the profiles matching the request.
    */
   public String[] getAllComponentObjectProfileIdsOfGroup(String groupId) throws AdminException {
     Connection con = null;
@@ -401,7 +407,7 @@ public class ProfileInstManager {
         roleIds.add(Integer.toString(role.getId()));
       }
 
-      return roleIds.toArray(new String[roleIds.size()]);
+      return roleIds.toArray(new String[0]);
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("profiles of group", groupId), e);
@@ -410,16 +416,10 @@ public class ProfileInstManager {
     }
   }
 
-  /**
-   * Convert String Id to int Id
-   */
   private int idAsInt(String id) {
     return StringUtil.asInt(id, -1);
   }
 
-  /**
-   * Convert int Id to String Id
-   */
   private static String idAsString(int id) {
     return Integer.toString(id);
   }

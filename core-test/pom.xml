@@ -44,9 +44,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-      <scope>provided</scope>
+      <groupId>org.silverpeas.jcr</groupId>
+      <artifactId>silverpeas-jcr</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

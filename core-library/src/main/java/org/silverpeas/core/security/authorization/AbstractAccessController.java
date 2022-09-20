@@ -72,12 +72,12 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
   }
 
   /**
-   * This method must fill user roles into the given container by taking in account the other
-   * parameters.
-   * @param userRoles
-   * @param context
-   * @param userId
-   * @param object
+   * Fills in the specified set the roles the user plays for the given resource in Silverpeas
+   * according to the specified access context.
+   * @param userRoles the set to fill in.
+   * @param context the context defining the type of access with some additional parameters.
+   * @param userId the unique identifier of the user.
+   * @param object the resource in Silverpeas accessed by the user.
    */
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, T object) {
@@ -85,12 +85,6 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * Build a unique key for user role cache.
-   * @param userId
-   * @param object
-   * @return
-   */
   private String buildUserRoleCacheKey(AccessControlContext context, String userId, T object) {
     StringBuilder cacheKey = new StringBuilder(getClass().getName()).append("@#@");
     cacheKey.append("USERID").append(userId).append("@#@");

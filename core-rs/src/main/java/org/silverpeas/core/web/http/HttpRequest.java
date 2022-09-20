@@ -147,10 +147,10 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> compliant
-   * multipart/form-data stream and returns the item whose the type is a file and the name matches
+   * multipart/form-data stream and returns the item whose type is a file and the name matches
    * the specified one.
    * @param name the name of the file item to fetch.
-   * @return the file item whose the name matches the specified one or null if no such data exists
+   * @return the file item whose name matches the specified one or null if no such data exists
    * in the multipart stream.
    */
   public FileItem getFile(String name) {
@@ -159,7 +159,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> compliant
-   * multipart/form-data stream and returns the item whose the type is a file. If there is several
+   * multipart/form-data stream and returns the item whose type is a file. If there is several
    * items that represent a file, then only the first one is returned.
    * @return the file item representing a file in the multipart stream or null if no such data
    * exists in the multipart stream.
