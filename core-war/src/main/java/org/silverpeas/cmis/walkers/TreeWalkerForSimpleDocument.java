@@ -63,6 +63,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -102,6 +103,9 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
   @Inject
   private OrganizationController organizationController;
 
+  @Inject
+  private UserSubscriptionNotificationSendingHandler userNotificationHandler;
+
   @Override
   protected CmisObject createObjectData(final CmisProperties properties,
       final ContentStream contentStream, final String language) {
@@ -109,8 +113,9 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
     try {
       File contentFile = loader.loadFile(contentStream);
       SimpleDocument document = createSimpleDocumentFrom(properties, language);
+      userNotificationHandler.skipNotificationSend();
       SimpleDocument created =
-          attachmentService.createAttachment(document, contentFile, properties.isIndexed(), false);
+          attachmentService.createAttachment(document, contentFile, properties.isIndexed(), true);
       if (isVersioningEnabled(created.getInstanceId())) {
         // in the case the application has versioning enabled, then by default checkout the newly
         // created document to pursue its edition.
@@ -172,8 +177,7 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
       }
       File content = loader.loadFile(contentStream);
       SimpleAttachment attachment = translation.getAttachment();
-      if (!properties.getContentMimeType()
-          .equals(attachment.getContentType())) {
+      if (!properties.getContentMimeType().equals(attachment.getContentType())) {
         throw new CmisStreamNotSupportedException(
             "Expected content type " + attachment.getContentType());
       }
@@ -197,6 +201,7 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
         }
 
         attachment.setSize(content.length());
+        attachment.setUpdatedBy(User.getCurrentRequester().getId());
 
         updateDocumentContent(document, translation, content);
       }
@@ -217,7 +222,8 @@ public class TreeWalkerForSimpleDocument extends AbstractCmisObjectsTreeWalker {
         throw new CmisStorageException(e.getMessage());
       }
     } else {
-      attachmentService.updateAttachment(translation, content, true, false);
+      userNotificationHandler.skipNotificationSend();
+      attachmentService.updateAttachment(translation, content, true, true);
     }
   }
 

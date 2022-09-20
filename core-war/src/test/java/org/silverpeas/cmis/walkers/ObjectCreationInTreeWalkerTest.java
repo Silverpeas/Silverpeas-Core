@@ -166,7 +166,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(document.getTypeId(), is(TypeId.SILVERPEAS_DOCUMENT));
     assertThat(document.getTitle(), is("History Of Smalltalk"));
     assertThat(document.getName(), is("HistoryOfSmalltalk.pdf"));
-    assertThat(document.getDescription(), is("How smalltak has been created"));
+    assertThat(document.getDescription(), is("How smalltalk has been created"));
     assertThat(document.getCreator(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(document.getSize(), is(889449L));
@@ -200,7 +200,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(updatedDocument.getTypeId(), is(TypeId.SILVERPEAS_DOCUMENT));
     assertThat(updatedDocument.getTitle(), is("History Of Smalltalk"));
     assertThat(updatedDocument.getName(), is("HistoryOfSmalltalk.pdf"));
-    assertThat(updatedDocument.getDescription(), is("How smalltak has been created"));
+    assertThat(updatedDocument.getDescription(), is("How smalltalk has been created"));
     assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(updatedDocument.getSize(), not(is(previousSize)));
@@ -316,7 +316,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(updatedDocument.getTypeId(), is(TypeId.SILVERPEAS_DOCUMENT));
     assertThat(updatedDocument.getTitle(), is("History Of Smalltalk"));
     assertThat(updatedDocument.getName(), is("HistoryOfSmalltalk.pdf"));
-    assertThat(updatedDocument.getDescription(), is("How smalltak has been created"));
+    assertThat(updatedDocument.getDescription(), is("How smalltalk has been created"));
     assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(updatedDocument.getSize(), not(is(previousSize)));
@@ -359,7 +359,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     assertThat(updatedDocument.getTypeId(), is(TypeId.SILVERPEAS_DOCUMENT));
     assertThat(updatedDocument.getTitle(), is("History Of Smalltalk"));
     assertThat(updatedDocument.getName(), is("HistoryOfSmalltalk.pdf"));
-    assertThat(updatedDocument.getDescription(), is("How smalltak has been created"));
+    assertThat(updatedDocument.getDescription(), is("How smalltalk has been created"));
     assertThat(updatedDocument.getLastModifier(), is(User.getCurrentRequester()
         .getDisplayedName()));
     assertThat(updatedDocument.getSize(), not(is(previousSize)));
@@ -380,7 +380,7 @@ class ObjectCreationInTreeWalkerTest extends CMISEnvForTests {
     CmisProperties cmisProperties = new CmisProperties();
     cmisProperties.setObjectTypeId(TypeId.SILVERPEAS_DOCUMENT)
         .setName("History Of Smalltalk")
-        .setDescription("How smalltak has been created")
+        .setDescription("How smalltalk has been created")
         .setDefaultProperties()
         .setContent(null, MimeTypes.PDF_MIME_TYPE, 1629872L, "HistoryOfSmalltalk.pdf");
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();

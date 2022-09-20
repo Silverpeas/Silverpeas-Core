@@ -99,6 +99,7 @@ import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.util.MavenTestEnv;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.inject.Named;
@@ -481,6 +482,12 @@ public abstract class CMISEnvForTests {
         any(File.class), anyBoolean(), anyBoolean())).then((Answer<SimpleDocument>) invocation -> {
       SimpleDocument document = invocation.getArgument(0);
       document.getPk().setId("1000");
+      if (document.getLastUpdateDate() == null) {
+        document.setLastUpdateDate(document.getCreationDate());
+      }
+      if (StringUtil.isNotDefined(document.getUpdatedBy())) {
+        document.setUpdatedBy(document.getCreatedBy());
+      }
       ContributionIdentifier pubId = ContributionIdentifier.from(document.getInstanceId(),
           document.getForeignId(), PublicationDetail.getResourceType());
       getInTreeAndApply(pubId.asString(), n -> n.addChild(document));
