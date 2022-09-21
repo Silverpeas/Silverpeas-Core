@@ -873,7 +873,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     localized.add(0, createIsHiddenParam(existingComponent));
     if (JobStartPagePeasSettings.isPublicParameterEnable) {
-      localized.add(0, createIsPublicParam(existingComponent));
+      localized.add(0, createIsPublicParam(component, existingComponent));
     }
 
     return localized;
@@ -1321,9 +1321,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return new LocalizedParameter(hiddenParam, getLanguage());
   }
 
-  private LocalizedParameter createIsPublicParam(ComponentInst component) {
+  private LocalizedParameter createIsPublicParam(final WAComponent descriptor, ComponentInst component) {
     String isPublic = "no";
-    if (component != null && component.isPublic()) {
+    if ((component == null && descriptor.isPublicByDefault()) ||
+        (component != null && component.isPublic())) {
       isPublic = "yes";
     }
     Parameter publicParam = new Parameter();

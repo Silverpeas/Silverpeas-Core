@@ -31,6 +31,11 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
+<c:set var="component" value="${requestScope.WAComponent}"/>
+<jsp:useBean id="component" type="org.silverpeas.core.admin.component.model.WAComponent"/>
+
+<c:set var="checkedAttr"> checked="checked"</c:set>
+
 <%!
 
 void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resource, JspWriter out) throws java.io.IOException {
@@ -125,7 +130,6 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 %>
 
 <%
-WAComponent 	component 			= (WAComponent) request.getAttribute("WAComponent");
 AllComponentParameters 	parameters 			= (AllComponentParameters) request.getAttribute("Parameters");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
@@ -275,8 +279,8 @@ out.println(window.printBefore());
       <li class="field entireWidth">
         <label class="txtlibform"><%=resource.getString("JSPP.inheritanceBlockedComponent") %></label>
         <div class="champs">
-          <input class="radio" type="radio" name="InheritanceBlocked" value="true"/> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
-          <input class="radio newline" type="radio" name="InheritanceBlocked" value="false" checked="checked" /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+          <input class="radio" type="radio" name="InheritanceBlocked" value="true"${component.inheritSpaceRightsByDefault ? '' : checkedAttr} /> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
+          <input class="radio newline" type="radio" name="InheritanceBlocked" value="false"${component.inheritSpaceRightsByDefault ? checkedAttr : ''}  /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
         </div>
       </li>
     <% } %>

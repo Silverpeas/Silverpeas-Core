@@ -45,6 +45,7 @@ import java.util.Map;
  *       &lt;sequence&gt;
  *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
  *         &lt;element name=&quot;help&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;spaceMapping&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -52,7 +53,7 @@ import java.util.Map;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ProfileDescription", propOrder = { "label", "help" })
+@XmlType(name = "ProfileDescriptionType", propOrder = { "label", "help", "spaceProfileMapping" })
 @XmlSeeAlso( { Profile.class })
 public class ProfileDescription {
 
@@ -62,6 +63,8 @@ public class ProfileDescription {
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected Map<String, String> help;
+  @XmlElement(name = "spaceMapping", nillable = true)
+  protected ComponentSpaceProfileMapping spaceProfileMapping;
 
   /**
    * Gets the value of the label property.
@@ -99,5 +102,21 @@ public class ProfileDescription {
    */
   public void setHelp(Map<String, String> value) {
     this.help = value;
+  }
+
+  /**
+   * Gets the value of the spaceMapping property.
+   * @return possible object is {@link ComponentSpaceProfileMapping}.
+   */
+  public ComponentSpaceProfileMapping getSpaceProfileMapping() {
+    return spaceProfileMapping;
+  }
+
+  /**
+   * Gets the value of the spaceMapping property.
+   * @param value allowed object is {@link ComponentSpaceProfileMapping }
+   */
+  public void setSpaceProfileMapping(final ComponentSpaceProfileMapping value) {
+    this.spaceProfileMapping = value;
   }
 }

@@ -31,9 +31,11 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.admin.component.model.ComponentSpaceProfileMapping;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
@@ -78,7 +80,7 @@ class WAComponentRegistryTest {
   }
 
   @Test
-  void testLoadComponent() {
+  void testLoadAlmanachComponent() {
     Optional<WAComponent> result = registry.getWAComponent("almanach");
     assertThat(result.isPresent(), is(true));
 
@@ -87,6 +89,8 @@ class WAComponentRegistryTest {
     assertThat(almanach.getDescription(), hasKey("fr"));
     assertThat(almanach.getDescription(), hasKey("en"));
     assertThat(almanach.isPortlet(), is(true));
+    assertThat(almanach.isInheritSpaceRightsByDefault(), is(true));
+    assertThat(almanach.isPublicByDefault(), is(false));
     assertThat(almanach.isVisible(), is(true));
     assertThat(almanach.isVisibleInPersonalSpace(), is(false));
     assertThat(almanach.getSuite().get("fr"), is("02 Gestion Collaborative"));
@@ -99,6 +103,47 @@ class WAComponentRegistryTest {
     }
     assertThat(paramWithOption, is(notNullValue()));
     assertThat(paramWithOption.getOptions().size(), is(4));
+    final List<Profile> profiles = almanach.getProfiles();
+    assertThat(profiles.size(), is(3));
+    Profile profile = profiles.get(0);
+    assertThat(profile.getName(), is("admin"));
+    assertThat(profile.getHelp("en"), nullValue());
+    assertThat(profile.getSpaceProfileMapping(), nullValue());
+  }
+
+  @Test
+  void testLoadTestComponent() {
+    Optional<WAComponent> result = registry.getWAComponent("testComponent");
+    assertThat(result.isPresent(), is(true));
+
+    WAComponent component = result.get();
+    assertThat(component.getName(), is("testComponent"));
+    assertThat(component.getDescription(), hasKey("fr"));
+    assertThat(component.getDescription(), hasKey("en"));
+    assertThat(component.isPortlet(), is(true));
+    assertThat(component.isInheritSpaceRightsByDefault(), is(false));
+    assertThat(component.isPublicByDefault(), is(true));
+    assertThat(component.isVisible(), is(true));
+    assertThat(component.isVisibleInPersonalSpace(), is(false));
+    assertThat(component.getSuite().get("fr"), is("10 Tests unitaires"));
+    assertThat(component.getParameters(), empty());
+    final List<Profile> profiles = component.getProfiles();
+    assertThat(profiles.size(), is(3));
+    Profile profile = profiles.get(0);
+    assertThat(profile.getName(), is("admin"));
+    assertThat(profile.getHelp("en"), nullValue());
+    ComponentSpaceProfileMapping spaceMapping = profile.getSpaceProfileMapping();
+    assertThat(spaceMapping, notNullValue());
+    assertThat(spaceMapping.getProfiles().size(), is(1));
+    assertThat(spaceMapping.getProfiles().get(0).getValue(), is("admin"));
+    profile = profiles.get(2);
+    assertThat(profile.getName(), is("user"));
+    assertThat(profile.getHelp("en"), is("Reader (read only)"));
+    spaceMapping = profile.getSpaceProfileMapping();
+    assertThat(spaceMapping, notNullValue());
+    assertThat(spaceMapping.getProfiles().size(), is(2));
+    assertThat(spaceMapping.getProfiles().get(0).getValue(), is("writer"));
+    assertThat(spaceMapping.getProfiles().get(1).getValue(), is("reader"));
   }
 
   @Test
@@ -192,6 +237,8 @@ class WAComponentRegistryTest {
     component.getLabel().put("fr", label);
     component.getDescription().put("fr", "Le nouveau workflow");
     component.getSuite().put("fr", "80 Nouvelles applications");
+    component.setPublicByDefault(true);
+    component.setInheritSpaceRightsByDefault(false);
     component.setVisible(true);
     component.setPortlet(false);
 
@@ -199,7 +246,7 @@ class WAComponentRegistryTest {
     Optional<WAComponent> result = registry.getWAComponent(componentName);
     assertThat(result.isPresent(), is(true));
     assertThat(result.get().getLabel().get("fr"), is(label));
-    assertThat(registry.getAllWAComponents().size(), is(5));
+    assertThat(registry.getAllWAComponents().size(), is(6));
     assertThat(Files.exists(expectedDescriptor), is(true));
     assertThat(streamComponentDescriptors(componentName).count(), is(1L));
 
