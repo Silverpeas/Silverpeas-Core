@@ -54,8 +54,8 @@ import java.util.Optional;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = {"name", "behaviors", "label", "description",
-    "suite", "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
-    "groupsOfParameters", "parameters"})
+    "suite", "inheritSpaceRightsByDefault", "publicByDefault", "visible", "visibleInPersonalSpace",
+    "portlet", "router", "profiles", "groupsOfParameters", "parameters"})
 public class WAComponent extends AbstractSilverpeasComponent {
 
   @XmlTransient
@@ -73,6 +73,8 @@ public class WAComponent extends AbstractSilverpeasComponent {
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected Map<String, String> suite;
+  protected boolean inheritSpaceRightsByDefault = true;
+  protected boolean publicByDefault = false;
   protected boolean visible;
   protected boolean visibleInPersonalSpace = false;
   protected boolean portlet;
@@ -219,6 +221,36 @@ public class WAComponent extends AbstractSilverpeasComponent {
    */
   public void setSuite(Map<String, String> value) {
     this.suite = value;
+  }
+
+  /**
+   * Gets the value of the inheritSpaceRights property.
+   */
+  @Override
+  public boolean isInheritSpaceRightsByDefault() {
+    return inheritSpaceRightsByDefault;
+  }
+
+  /**
+   * Sets the value of the inheritSpaceRights property.
+   */
+  public void setInheritSpaceRightsByDefault(final boolean inheritSpaceRightsByDefault) {
+    this.inheritSpaceRightsByDefault = inheritSpaceRightsByDefault;
+  }
+
+  /**
+   * Gets the value of the publicByDefault property.
+   */
+  @Override
+  public boolean isPublicByDefault() {
+    return publicByDefault;
+  }
+
+  /**
+   * Sets the value of the publicByDefault property.
+   */
+  public void setPublicByDefault(final boolean publicByDefault) {
+    this.publicByDefault = publicByDefault;
   }
 
   /**

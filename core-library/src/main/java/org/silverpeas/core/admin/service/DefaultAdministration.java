@@ -103,8 +103,10 @@ import java.util.stream.Stream;
 import static java.text.MessageFormat.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
+import static java.util.Objects.nonNull;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
 import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGroupDescriptor.synchronizingDomainFrom;
@@ -210,7 +212,7 @@ class DefaultAdministration implements Administration {
   private void setup() {
     // Load silverpeas admin resources
     SettingBundle resources = ResourceLocator.getSettingBundle("org.silverpeas.admin.admin");
-    roleMapping = new AppRoleMappingManager();
+    roleMapping = new AppRoleMappingManager(componentRegistry);
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
     senderEmail = resources.getString("SenderEmail");
     senderName = resources.getString("SenderName");
@@ -6094,9 +6096,11 @@ class DefaultAdministration implements Administration {
    * For example, a 'manager' at space level can be mapped to 'user' at component child.
    */
   private static class AppRoleMappingManager {
+    private final WAComponentRegistry componentRegistry;
     private final SettingBundle commonMapping;
 
-    private AppRoleMappingManager() {
+    private AppRoleMappingManager(final WAComponentRegistry componentRegistry) {
+      this.componentRegistry = componentRegistry;
       commonMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
     }
 
@@ -6107,10 +6111,24 @@ class DefaultAdministration implements Administration {
      * @return a string representing a role.
      */
     private String spaceRoleToComponentOne(final String spaceRole, final String componentName) {
-      final String roleKey = componentName + "_" + spaceRole;
-      return getOptionalSettingBundle("org.silverpeas." + componentName + ".roleMapping")
-          .map(s -> s.getString(roleKey, null))
-          .orElseGet(() -> commonMapping.getString(roleKey, null));
+      return componentRegistry.getWAComponent(componentName)
+          .stream()
+          .map(WAComponent::getProfiles)
+          .flatMap(l -> l.stream()
+              .filter(p -> nonNull(p.getSpaceProfileMapping()))
+              .filter(p -> p.getSpaceProfileMapping()
+                  .getProfiles()
+                  .stream()
+                  .map(org.silverpeas.core.admin.component.model.SpaceProfile::getValue)
+                  .anyMatch(s -> s.equals(spaceRole)))
+              .map(Profile::getName))
+          .findFirst()
+          .orElseGet(() -> {
+            final String roleKey = componentName + "_" + spaceRole;
+            return getOptionalSettingBundle("org.silverpeas." + componentName + ".roleMapping")
+                .map(s -> s.getString(roleKey, null))
+                .orElseGet(() -> commonMapping.getString(roleKey, null));
+          });
     }
   }
 }

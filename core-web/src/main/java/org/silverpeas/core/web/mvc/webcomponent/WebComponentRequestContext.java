@@ -314,12 +314,7 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
   }
 
   /**
-   * Handled the navigation to the html editor.
-   * @param objectId
-   * @param objectType
-   * @param returnPath
-   * @param indexIt
-   * @return
+   * Handles the navigation to the html editor.
    */
   public Navigation redirectToHtmlEditor(String objectId, final String objectType,
       String returnPath, boolean indexIt) {
@@ -327,22 +322,19 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
   }
 
   /**
-   * Handled the navigation to the html editor.
-   * @param contributionManagementContext
-   * @param objectId
-   * @param objectType
-   * @param returnPath
-   * @param indexIt
-   * @return
+   * Handles the navigation to the html editor.
+   */
+  public Navigation redirectToHtmlEditor(WysiwygRouting.WysiwygRoutingContext wysiwygContext) {
+    return redirectToHtmlEditor(null, wysiwygContext);
+  }
+
+  /**
+   * Handles the navigation to the html editor.
    */
   public Navigation redirectToHtmlEditor(
       ContributionManagementContext contributionManagementContext, String objectId,
       final String objectType, String returnPath, boolean indexIt) {
-    try {
-      getRequest().setAttribute("contributionManagementContext", contributionManagementContext);
-
-      WysiwygRouting routing = new WysiwygRouting();
-      WysiwygRouting.WysiwygRoutingContext context =
+      final WysiwygRouting.WysiwygRoutingContext context =
           new WysiwygRouting.WysiwygRoutingContext().withSpaceLabel(getSpaceLabel())
               .withComponentLabel(getComponentInstanceLabel()).withContributionId(
               ContributionIdentifier.from(getComponentInstanceId(), objectId, objectType))
@@ -351,8 +343,18 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
                   URLUtil.getURL(getComponentName(), "useless", getComponentInstanceId()) +
                   returnPath)
               .withIndexation(indexIt);
+      return redirectToHtmlEditor(contributionManagementContext, context);
+  }
 
-      return redirectTo(routing.getWysiwygEditorPath(context, getRequest()));
+  /**
+   * Handles the navigation to the html editor.
+   */
+  public Navigation redirectToHtmlEditor(
+      ContributionManagementContext contributionManagementContext,
+      WysiwygRouting.WysiwygRoutingContext wysiwygContext) {
+    try {
+      getRequest().setAttribute("contributionManagementContext", contributionManagementContext);
+      return redirectTo(new WysiwygRouting().getWysiwygEditorPath(wysiwygContext, getRequest()));
     } catch (RoutingException e) {
       throw new SilverpeasRuntimeException(e);
     }

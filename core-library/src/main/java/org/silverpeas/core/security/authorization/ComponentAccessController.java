@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.util.MemoizedSupplier;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,6 +46,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
@@ -153,7 +155,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
         return;
       }
 
-      if (fillUserRolesFromComponentInstance(userId, componentId, context, userRoles)) {
+      if (getComponentExtension(componentId).fillUserRolesFromComponentInstance(dataManager, user, componentId, context, userRoles)) {
         return;
       }
 
@@ -177,41 +179,20 @@ public class ComponentAccessController extends AbstractAccessController<String>
     }
   }
 
-  private boolean fillUserRolesFromComponentInstance(final String userId, final String componentId,
-      final AccessControlContext context, final Set<SilverpeasRole> userRoles) {
-    final DataManager dataManager = getDataManager(context);
-    final Optional<SilverpeasComponentInstance> optionalInstance = dataManager.getComponentInstance(componentId);
-    if (optionalInstance.isEmpty()) {
-      return true;
-    }
-
-    final Set<AccessControlOperation> operations = context.getOperations();
-    final SilverpeasComponentInstance componentInstance = optionalInstance.get();
-    if (componentInstance.isPersonal()) {
-      userRoles.addAll(componentInstance.getSilverpeasRolesFor(User.getById(userId)));
-      if (AccessControlOperation.isPersistActionFrom(operations) ||
-          AccessControlOperation.isDownloadActionFrom(operations) ||
-          AccessControlOperation.isSharingActionFrom(operations)) {
-        userRoles.remove(SilverpeasRole.USER);
-      }
-      return true;
-    }
-
-    if (componentInstance.isPublic() || dataManager.isPublicFilesEnabled(componentId)) {
-      userRoles.add(SilverpeasRole.USER);
-    }
-    return false;
+  ComponentInstanceAccessControlExtension getComponentExtension(final String instanceId) {
+    return ComponentInstanceAccessControlExtension.getByInstanceId(instanceId);
   }
 
   /**
    * Data manager.
    */
-  static class DataManager {
+  public static class DataManager {
     private static final List<String> HANDLED_PARAM_NAMES = Arrays
         .asList(RIGHTS_ON_TOPICS_PARAM_NAME, "usePublicationSharing", "useFileSharing",
             "useFolderSharing", "coWriting", "publicFiles");
     private final OrganizationController controller;
     private final RemovedSpaceAndComponentInstanceChecker removedChecker;
+    private final Map<String, Set<String>> manageableSpaceIdsCache = new HashMap<>(1);
     private Map<String, Optional<SilverpeasComponentInstance>> componentInstancesCache = new HashMap<>(1);
     private Map<String, Boolean> isPublicationSharingEnabledForRoleCache = new HashMap<>(1);
     private Map<String, Boolean> isFileSharingEnabledForRoleCache = new HashMap<>(1);
@@ -316,6 +297,11 @@ public class ComponentAccessController extends AbstractAccessController<String>
         return availableComponentCache.contains(componentId);
       }
       return controller.isComponentAvailableToUser(componentId, userId);
+    }
+
+    public Set<String> getManageableSpaceIds(final String userId) {
+      return manageableSpaceIdsCache.computeIfAbsent(userId,
+          s -> Stream.of(controller.getUserManageableSpaceIds(s)).collect(Collectors.toSet()));
     }
 
     String[] getUserProfiles(final String componentId, final String userId) {

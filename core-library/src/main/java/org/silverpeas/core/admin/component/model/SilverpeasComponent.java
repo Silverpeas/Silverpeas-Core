@@ -124,6 +124,20 @@ public interface SilverpeasComponent {
   }
 
   /**
+   * Gets the value of the inheritSpaceRights property.
+   */
+  default boolean isInheritSpaceRightsByDefault() {
+    return true;
+  }
+
+  /**
+   * Gets the value of the publicByDefault property.
+   */
+  default boolean isPublicByDefault() {
+    return false;
+  }
+
+  /**
    * Gets the value of the visible property.
    */
   boolean isVisible();
