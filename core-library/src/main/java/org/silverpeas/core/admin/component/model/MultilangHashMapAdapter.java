@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Adapter taking {@link Multilang} values to put them into a {@link HashMap}.
  * @author ehugonnet
  */
 public class MultilangHashMapAdapter extends XmlAdapter<Multilang, Map<String, String>> {
@@ -45,7 +46,7 @@ public class MultilangHashMapAdapter extends XmlAdapter<Multilang, Map<String, S
 
   @Override
   public Multilang marshal(Map<String, String> content) throws Exception {
-    List<Message> messages = new ArrayList<Message>(content.size());
+    List<Message> messages = new ArrayList<>(content.size());
     for (Map.Entry<String, String> entry : content.entrySet()) {
       Message message = new Message();
       message.setLang(entry.getKey());

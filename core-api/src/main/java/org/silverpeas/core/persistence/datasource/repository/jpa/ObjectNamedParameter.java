@@ -24,9 +24,10 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 /**
+ * The parameter to pass to a JPA query is an object.
  * @author Yohann Chastagnier
  */
-public class ObjectNamedParameter extends NamedParameter<Object, Object> {
+public class ObjectNamedParameter extends NamedParameter<Object> {
 
   private final Object value;
 

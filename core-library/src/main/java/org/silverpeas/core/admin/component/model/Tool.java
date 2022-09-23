@@ -35,11 +35,15 @@ import java.util.Optional;
 
 /**
  * <p>
- * A tool represents an application that is available in Silverpeas personal space.
+ * A tool represents a Personal Application Component. It is an application dedicated to be
+ * instantiated for each user in their personal space.
  * <p>
- * The tools available in Silverpeas are loaded by the {@code org.silverpeas.core.admin.component
- * .ToolRegistry} registry. They can be the accessed either by the registry itself or by the Tool
- * class (it delegates the access to the registry).
+ * The tools available in Silverpeas are loaded by the
+ * {@code org.silverpeas.core.admin.component .ToolRegistry} registry, among of them from their XML
+ * descriptor. They can be the accessed either by the registry itself or by the Tool class (it
+ * delegates the access to the registry). The XML descriptor of a personal application component is
+ * defined by the following XSD: <a href="https://www.silverpeas.org/xsd/component.xsd">
+ * https://www.silverpeas.org/xsd/component.xsd</a>.
  */
 public class Tool extends AbstractSilverpeasComponent {
 
@@ -112,6 +116,7 @@ public class Tool extends AbstractSilverpeasComponent {
     return Collections.emptyList();
   }
 
+  @SuppressWarnings("unused")
   public List<GroupOfParameters> getSortedGroupsOfParameters() {
     getGroupsOfParameters().sort(new GroupOfParametersSorter());
     return getGroupsOfParameters();

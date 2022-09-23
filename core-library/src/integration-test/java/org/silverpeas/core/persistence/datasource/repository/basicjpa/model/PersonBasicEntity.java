@@ -34,7 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +43,8 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "test_persons")
-@NamedQuery(name = "getPersonsByNameCustom", query = "from PersonBasicEntity p where p.lastName = :name")
+@NamedQuery(name = "getPersonsByNameCustom",
+    query = "select p from PersonBasicEntity p where p.lastName = :name")
 public class PersonBasicEntity extends BasicJpaEntity<PersonBasicEntity, UuidIdentifier>
     implements Serializable {
 

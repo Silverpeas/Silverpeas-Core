@@ -32,8 +32,8 @@ import java.util.List;
  */
 public class LocalizedComponent {
 
-  private String lang;
-  private WAComponent realComponent;
+  private final String lang;
+  private final WAComponent realComponent;
 
   public LocalizedComponent(WAComponent component, String lang) {
     this.realComponent = component;
@@ -95,6 +95,7 @@ public class LocalizedComponent {
     return realComponent.isVisible();
   }
 
+  @SuppressWarnings("unused")
   public boolean isVisibleInPersonalSpace() {
     return realComponent.isVisibleInPersonalSpace();
   }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "https://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,24 +20,32 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
-package org.silverpeas.core.persistence.datasource.repository.jpa;
 
+package org.silverpeas.core.admin.space;
 
 /**
- * @author Yohann Chastagnier
+ * Defines the different types of home page a collaborative space can have in Silverpeas.
+ * @author mmoquillon
  */
-public abstract class NamedParameter<T> {
+public enum SpaceHomePageType {
 
-  private final String name;
-
-  protected NamedParameter(final String name) {
-    this.name = name;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public abstract T getValue();
+  /**
+   * Standard home page. The default one.
+   */
+  STANDARD,
+  /**
+   * The home page is the main page of a component instance, meaning a redirection to the
+   * application instance's main page.
+   */
+  COMPONENT_INST,
+  /**
+   * The home page is container of portlets.
+   */
+  PORTLET,
+  /**
+   * The home page is an HTML page.
+   */
+  HTML_PAGE
 }

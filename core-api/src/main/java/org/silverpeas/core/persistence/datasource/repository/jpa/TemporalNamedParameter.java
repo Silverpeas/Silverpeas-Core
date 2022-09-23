@@ -26,9 +26,10 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 import javax.persistence.TemporalType;
 
 /**
+ * The parameter to pass to a JPA query is a temporal one.
  * @author Yohann Chastagnier
  */
-public abstract class TemporalNamedParameter<D> extends NamedParameter<D, D> {
+public abstract class TemporalNamedParameter<D> extends NamedParameter<D> {
 
   private final D value;
   private final TemporalType temporalType;

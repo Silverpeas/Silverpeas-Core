@@ -29,26 +29,26 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for behavior.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="behavior"&gt;
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="topicTracker"/&gt;
- *     &lt;enumeration value="workflow"/&gt;
- *   &lt;/restriction&gt;
- * &lt;/simpleType&gt;
- * </pre>
+ * A behavior a WA component instance support. Such behavior denotes a transverse mechanism in
+ * Silverpeas with which the functionalities of a component instance can be enriched.
  * 
  */
-@XmlType(name = "behavior")
+@XmlType(name = "BehaviorType")
 @XmlEnum
 public enum ComponentBehavior {
 
+  /**
+   * The component instance supports the categorization of the contributions it manages within
+   * a tree of topics. These topics are manageable by the instance.
+   */
   @XmlEnumValue("topicTracker")
   TOPIC_TRACKER("topicTracker"),
+
+  /**
+   * The component instance defines a workflow, that is a pipeline of processes. With such behavior,
+   * the workflow won't be taken in charge directly by the component instances management of
+   * Silverpeas but by another and dedicated application component named Process Manager.
+   */
   @XmlEnumValue("workflow")
   WORKFLOW("workflow");
   private final String value;
@@ -61,6 +61,7 @@ public enum ComponentBehavior {
     return value;
   }
 
+  @SuppressWarnings("unused")
   public static ComponentBehavior fromValue(String v) {
     for (ComponentBehavior c : ComponentBehavior.values()) {
       if (c.value.equals(v)) {

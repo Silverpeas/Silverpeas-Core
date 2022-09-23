@@ -32,23 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>Java class for behavior.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="behavior" type="{http://silverpeas.org/xml/ns/component}behavior" maxOccurs="unbounded"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
- *
- *
+ * Specific behavior of a WA component. Such behavior denotes a specific and transverse mechanism in
+ * Silverpeas. When a WA component support a behavior, then Silverpeas bootstraps for each instance
+ * of this component the related mechanism. For a glance of the behaviors available in Silverpeas,
+ * see {@link ComponentBehavior} enum.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -64,10 +51,9 @@ public class ComponentBehaviors {
    * Gets the value of the behavior property.
    *
    * <p>
-   * This accessor method returns a reference to the live list,
-   * not a snapshot. Therefore any modification you make to the
-   * returned list will be present inside the JAXB object.
-   * This is why there is not a <CODE>set</CODE> method for the behavior property.
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore, any
+   * modification you make to the returned list will be present inside the JAXB object. This is why
+   * there is not a <CODE>set</CODE> method for the behavior property.
    *
    * <p>
    * For example, to add a new item, do as follows:
@@ -77,14 +63,11 @@ public class ComponentBehaviors {
    *
    *
    * <p>
-   * Objects of the following type(s) are allowed in the list
-   * {@link ComponentBehavior }
-   *
-   *
+   * Objects of the following type(s) are allowed in the list {@link ComponentBehavior }
    */
   public List<ComponentBehavior> getBehavior() {
     if (behavior == null) {
-      behavior = new ArrayList<ComponentBehavior>();
+      behavior = new ArrayList<>();
     }
     return this.behavior;
   }

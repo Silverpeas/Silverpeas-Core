@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
@@ -48,6 +49,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +60,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * The base class for testing REST web services in Silverpeas. This base class wraps all the
- * mechanisms required to prepare the environment for testing web services with RESTEasy and CDI
- * in the context of Silverpeas.
+ * mechanisms required to prepare the environment for testing web services with RESTEasy and CDI in
+ * the context of Silverpeas.
  */
 public abstract class RESTWebServiceTest {
 
@@ -71,18 +73,18 @@ public abstract class RESTWebServiceTest {
 
   /**
    * The HTTP header parameter in an incoming request that carries the user session key value as it
-   * is defined in the Silverpeas REST web service API. the session key is obtained once the user
-   * is authenticated amongst the REST-based Web API.
+   * is defined in the Silverpeas REST web service API. the session key is obtained once the user is
+   * authenticated amongst the REST-based Web API.
    */
   private static final String SESSION_KEY_HTTP_HEADER = "X-Silverpeas-Session";
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
-      "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
-      "/org/silverpeas/web/environment/create-table-space-component.sql",
-      "/org/silverpeas/web/environment/create-table-profile.sql",
-      "/org/silverpeas/web/environment/create-table-token.sql",
-      "/org/silverpeas/web/environment/create-table-notification.sql", getTableCreationScript())
+          "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
+          "/org/silverpeas/web/environment/create-table-space-component.sql",
+          "/org/silverpeas/web/environment/create-table-profile.sql",
+          "/org/silverpeas/web/environment/create-table-token.sql",
+          "/org/silverpeas/web/environment/create-table-notification.sql", getTableCreationScript())
       .loadInitialDataSetFrom(getDataSetScript());
 
   @Before
@@ -91,8 +93,8 @@ public abstract class RESTWebServiceTest {
   }
 
   /**
-   * Gets the SQL script file in the classpath that contains statements to create table(s)
-   * specific to this test.
+   * Gets the SQL script file in the classpath that contains statements to create table(s) specific
+   * to this test.
    * @return the path in the classpath of a SQL script file (or empty if no such SQL script).
    */
   protected String getTableCreationScript() {
@@ -111,16 +113,14 @@ public abstract class RESTWebServiceTest {
   /**
    * Gets the component instances to take into account in tests. Theses component instances will be
    * considered as existing. Others than those will be rejected with an HTTP error 404 (NOT FOUND).
-   *
    * @return an array with the identifier of the component instances to take into account in tests.
-   * The array cannot be null but it can be empty.
+   * The array cannot be null, but it can be empty.
    */
   public abstract String[] getExistingComponentInstances();
 
   /**
    * Gets tools to take into account in tests. These tools will be considered as existing. Others
    * than those will be rejected with an HTTP error 404 (NOT FOUND).
-   *
    * @return an array with the identifier of tools to take into account in tests. The array cannot
    * be null, but it can be empty.
    */
@@ -134,11 +134,22 @@ public abstract class RESTWebServiceTest {
    * @return the {@link WebTarget} instance.
    */
   public WebTarget resource() {
-    return ClientBuilder.newClient().target(getBaseURI() + "test-" + this.getClass().getSimpleName() + "/services/");
+    return ClientBuilder.newClient()
+        .target(getBaseURI() + "test-" + this.getClass().getSimpleName() + "/services/");
   }
 
   protected URI getBaseURI() {
     return URI.create("http://localhost:8080/");
+  }
+
+  /**
+   * Gets a URI builder initialized with the base URI at which are exposed by default all the REST
+   * web resources in Silverpeas. This is to be used for checking URIs in returned entities in the
+   * tests.
+   * @return an initialized {@link UriBuilder}
+   */
+  protected UriBuilder getWebResourceBaseURIBuilder() {
+    return UriBuilder.fromUri(getBaseURI()).path("silverpeas").path("services");
   }
 
   public SilverpeasEnvironmentTest getSilverpeasEnvironmentTest() {
@@ -147,16 +158,13 @@ public abstract class RESTWebServiceTest {
 
   /**
    * <p>
-   * Gets (and initializes if necessary) the token key of the given user.<br>
-   * The user must exist into database (use {@link SilverpeasEnvironmentTest#createDefaultUser()}
-   * to add
-   * a user, and use {@link #getSilverpeasEnvironmentTest()} to get the silverpeas environment
-   * manager instance).
+   * Gets (and initializes if necessary) the token key of the given user.<br> The user must exist
+   * into database (use {@link SilverpeasEnvironmentTest#createDefaultUser()} to add a user, and use
+   * {@link #getSilverpeasEnvironmentTest()} to get the silverpeas environment manager instance).
    * </p>
    * <p>
    * For example: <pre>getTokenKeyOf(get().createUser());</pre>
    * </p>
-   *
    * @param theUser the user to authenticate.
    * @return the key of the opened session.
    */
@@ -165,16 +173,28 @@ public abstract class RESTWebServiceTest {
   }
 
   /**
-   * Denies the access to the silverpeas resources to all users.</br>
-   * It sets no public both the dummy component and all the existing component instances on
-   * which the test is working.
+   * Denies the access to the silverpeas resources to all users. It sets no public both the dummy
+   * component and all the existing component instances on which the test is working. All the user
+   * roles are removed from all the component instances as well as from all of their parent spaces.
    */
   public void denyAuthorizationToUsers() {
     Stream.of(getExistingComponentInstances()).forEach(i -> {
-      final ComponentInst inst = OrganizationController.get().getComponentInst(i);
-      if (inst != null && inst.isPublic()) {
-        inst.setPublic(false);
+      final OrganizationController organization = OrganizationController.get();
+      final ComponentInst inst = organization.getComponentInst(i);
+      if (inst != null) {
+        if (inst.isPublic()) {
+          inst.setPublic(false);
+        }
         getSilverpeasEnvironmentTest().updateComponent(inst);
+        getSilverpeasEnvironmentTest().removeAllProfiles(inst);
+
+        String spaceId = inst.getSpaceId();
+        SpaceInst space;
+        do {
+          space = organization.getSpaceInstById(spaceId);
+          getSilverpeasEnvironmentTest().removeAllProfiles(space);
+          spaceId = space.getDomainFatherId();
+        } while (!space.isRoot());
       }
     });
     final ComponentInst component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
@@ -188,7 +208,8 @@ public abstract class RESTWebServiceTest {
   @SuppressWarnings("unused")
   public void denySpaceAuthorizationToUsers() {
     throw new NotImplementedException(
-        "Migration : the implementation of denySpaceAuthorizationToUsers is not yet performed...");
+        "Migration : the implementation of denySpaceAuthorizationToUsers is not yet performed.." +
+            ".");
   }
 
   /**
@@ -200,9 +221,9 @@ public abstract class RESTWebServiceTest {
    * the tested web service.
    * <p></p>
    * <p>
-   *   Warning: the authentication is performed by the corresponding REST-based web service
-   *   and as such this one is required to be included in the deployment archive as well as all of
-   *   its dependencies.
+   * Warning: the authentication is performed by the corresponding REST-based web service and as
+   * such this one is required to be included in the deployment archive as well as all of its
+   * dependencies.
    * </p>
    * @param user the user to authenticate.
    * @return the opened user session identifier.
@@ -211,18 +232,19 @@ public abstract class RESTWebServiceTest {
     AuthId authId = AuthId.basicAuth(user.getLogin(), user.getDomainId(), "sasa");
     Invocation.Builder authentication =
         setUpHTTPRequest("authentication", MediaType.APPLICATION_JSON, authId);
-    Response authResponse =
-        authentication.buildPost(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE))
-            .invoke();
-    assertThat(authResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
-    String sessionKey = authResponse.getHeaderString(UserPrivilegeValidation.HTTP_SESSIONKEY);
-    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-    SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
-    SessionCacheService cacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    cacheService.setCurrentSessionCache(sessionInfo.getCache());
+    try (Response authResponse =
+             authentication.buildPost(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE))
+                 .invoke()) {
+      assertThat(authResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
+      String sessionKey = authResponse.getHeaderString(UserPrivilegeValidation.HTTP_SESSIONKEY);
+      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
+      SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+      SessionCacheService cacheService =
+          (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+      cacheService.setCurrentSessionCache(sessionInfo.getCache());
 
-    return sessionKey;
+      return sessionKey;
+    }
   }
 
   protected WebTarget applyQueryParameters(String parameterQueryPart, WebTarget resource) {

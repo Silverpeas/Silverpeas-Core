@@ -33,23 +33,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * User: Yohann Chastagnier Date: 20/11/13
  */
 @Entity
 @Table(name = "test_animals")
-@NamedQueries({@NamedQuery(name = "getAnimalsByType", query = "from Animal a where a.type = :type"),
-    @NamedQuery(name = "getAnimalsByName", query = "from Animal a where a.name = :name"),
-    @NamedQuery(name = "updateAnimalName",
-        query = "update Animal a set a.name = :name, " +
-            "a.lastUpdaterId = :lastUpdaterId, a.lastUpdateDate = :lastUpdateDate, " +
-            "a.version = :version where a.id = :id"),
-    @NamedQuery(name = "deleteAnimalsByType", query = "delete from Animal a where a.type = :type")})
+@NamedQuery(name = "getAnimalsByType",
+    query = "select a from Animal a where a.type = :type")
+@NamedQuery(name = "getAnimalsByName",
+    query = "select a from Animal a where a.name = :name")
+@NamedQuery(name = "updateAnimalName",
+    query = "update Animal a set a.name = :name, a.lastUpdaterId = :lastUpdaterId, a" +
+        ".lastUpdateDate = :lastUpdateDate, a.version = :version where a.id = :id")
+@NamedQuery(name = "deleteAnimalsByType",
+    query = "delete from Animal a where a.type = :type")
 public class Animal extends SilverpeasJpaEntity<Animal, UniqueLongIdentifier> implements
     Serializable {
 
   @Column(name = "type", nullable = false)
-  private String type;
+  @Enumerated(EnumType.STRING)
+  private AnimalType type;
 
   @Column(name = "name", nullable = false)
   private String name;
@@ -62,11 +64,11 @@ public class Animal extends SilverpeasJpaEntity<Animal, UniqueLongIdentifier> im
   private List<Equipment> equipments;
 
   public AnimalType getType() {
-    return AnimalType.valueOf(type);
+    return type;
   }
 
   public Animal setType(final AnimalType type) {
-    this.type = type.name();
+    this.type = type;
     return this;
   }
 

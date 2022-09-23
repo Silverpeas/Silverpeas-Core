@@ -24,19 +24,20 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 /**
+ * The parameter to pass to a JPA query is an enum value.
  * @author Yohann Chastagnier
  */
-public class EnumNamedParameter extends NamedParameter<Enum<?>, String> {
+public class EnumNamedParameter extends NamedParameter<Enum<?>> {
 
   private final Enum<?> value;
 
-  EnumNamedParameter(final String name, final Enum value) {
+  EnumNamedParameter(final String name, final Enum<?> value) {
     super(name);
     this.value = value;
   }
 
   @Override
-  public String getValue() {
-    return value.name();
+  public Enum<?> getValue() {
+    return value;
   }
 }

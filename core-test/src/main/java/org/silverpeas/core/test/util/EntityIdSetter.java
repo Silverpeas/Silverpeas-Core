@@ -24,44 +24,94 @@
 package org.silverpeas.core.test.util;
 
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
+import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 /**
  * A convenient object to generate a unique identifier for an entity and to set it. It is dedicated
- * to unit tests
+ * to unit tests.
  * @author mmoquillon
  */
 public class EntityIdSetter {
 
   private final EntityIdentifier generator;
 
+  /**
+   * Constructs a new setter of entity identifiers whose type is the specified one.
+   * @param idType the type of the entity identifier.
+   */
   public EntityIdSetter(final Class<? extends EntityIdentifier> idType) {
     try {
-      Constructor<? extends EntityIdentifier> constructor = idType.getDeclaredConstructor();
-      constructor.setAccessible(true);
-      this.generator = constructor.newInstance();
-    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-        IllegalAccessException e) {
+      MethodHandles.Lookup lookup = MethodHandles.lookup();
+      MethodHandles.Lookup
+          privateLookup = MethodHandles.privateLookupIn(idType, lookup);
+      MethodType constructorType = MethodType.methodType(void.class);
+      MethodHandle constructor = privateLookup.findConstructor(idType, constructorType);
+      this.generator = (EntityIdentifier) constructor.invoke();
+    } catch (Throwable e) {
       throw new IllegalArgumentException(e);
     }
   }
 
-  public static <T extends AbstractJpaEntity> T setIdTo(final T entity,
+  /**
+   * Sets the identifier of the specified entity with a random value of given entity identifier
+   * type.
+   * @param entity the entity whose identifier has to be set.
+   * @param idType the type of the entity identifier.
+   * @param <T> the concrete type of the entity.
+   * @return the entity itself with its identifier set.
+   */
+  public static <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity,
       final Class<? extends EntityIdentifier> idType) {
     EntityIdSetter setter = new EntityIdSetter(idType);
     return setter.setIdTo(entity);
   }
 
-  public <T extends AbstractJpaEntity> T setIdTo(final T entity) {
+  /**
+   * Sets the identifier of the specified entity with a random value of the underlying entity
+   * identifier type.
+   * @param entity the entity whose identifier has to be set.
+   * @param <T> the concrete type of the entity.
+   * @return the entity itself with its identifier set.
+   */
+  public <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity) {
     try {
-      Method setter = AbstractJpaEntity.class.getDeclaredMethod("setId", String.class);
-      setter.setAccessible(true);
+      MethodHandles.Lookup lookup = MethodHandles.lookup();
+      MethodHandles.Lookup
+          privateLookup = MethodHandles.privateLookupIn(AbstractJpaEntity.class, lookup);
+      MethodType methodType = MethodType.methodType(IdentifiableEntity.class, String.class);
+      MethodHandle setter =
+          privateLookup.findVirtual(AbstractJpaEntity.class, "setId", methodType);
       setter.invoke(entity, this.generator.generateNewId().asString());
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+    } catch (Throwable e) {
+      throw new IllegalArgumentException(e);
+    }
+    return entity;
+  }
+
+  /**
+   * Sets the identifier of the specified entity with the specified value which has to be of the
+   * underlying entity identifier type. The serialized value passed as argument isn't of the
+   * expected identifier type, then an exception is thrown.
+   * @param entity the entity whose identifier has to be set.
+   * @param id the value of the identifier as a {@link String}
+   * @param <T> the concrete type of the entity.
+   * @return the entity itself with its identifier set.
+   */
+  public <T extends AbstractJpaEntity<?, ?>> T setIdTo(final T entity, final String id) {
+    try {
+      MethodHandles.Lookup lookup = MethodHandles.lookup();
+      MethodHandles.Lookup
+          privateLookup = MethodHandles.privateLookupIn(AbstractJpaEntity.class, lookup);
+      MethodType methodType = MethodType.methodType(IdentifiableEntity.class, String.class);
+      MethodHandle setter =
+          privateLookup.findVirtual(AbstractJpaEntity.class, "setId", methodType);
+      setter.invoke(entity, this.generator.fromString(id).asString());
+    } catch (Throwable e) {
       throw new IllegalArgumentException(e);
     }
     return entity;

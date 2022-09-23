@@ -25,7 +25,7 @@
 
 -->
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
     <message lang="fr">Almanach</message>
@@ -56,6 +56,9 @@
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -66,6 +69,10 @@
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -76,6 +83,9 @@
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>

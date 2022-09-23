@@ -73,6 +73,7 @@ public class ComponentSearchCriteria implements Serializable {
     return this.workspaceId != null;
   }
 
+  @SuppressWarnings("unused")
   public boolean hasCriterionOnUser() {
     return this.user != null;
   }

@@ -43,7 +43,7 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
 
   private static final String INSTANCE_SUFFIX = "_PCI";
   private static final Pattern INSTANCE_IDENTIFIER_PATTERN =
-      Pattern.compile("^([a-zA-Z]+)([0-9]+)" + INSTANCE_SUFFIX + "$");
+      Pattern.compile("^([a-zA-Z]+)(\\d+)" + INSTANCE_SUFFIX + "$");
   private static final int USER_ID_INDEX = 2;
   private static final int COMPONENT_NAME_INDEX = 1;
 

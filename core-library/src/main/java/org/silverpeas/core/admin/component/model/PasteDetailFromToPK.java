@@ -33,11 +33,11 @@ public abstract class PasteDetailFromToPK<F extends ResourceReference, T extends
 
   private T toPK;
 
-  public PasteDetailFromToPK() {
+  protected PasteDetailFromToPK() {
 
   }
 
-  public PasteDetailFromToPK(String userId) {
+  protected PasteDetailFromToPK(String userId) {
     setUserId(userId);
   }
 

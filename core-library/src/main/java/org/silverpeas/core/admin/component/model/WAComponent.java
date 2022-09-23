@@ -36,7 +36,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,12 +44,21 @@ import java.util.Optional;
 /**
  * <p>
  * WAComponent stands for Web Application Component and it represents an application that is
- * available in Silverpeas and that can be instantiated to a {@code ComponentInst} object.
+ * available in Silverpeas and that can be instantiated to a {@link ComponentInst} object into
+ * collaborative spaces ({@link org.silverpeas.core.admin.space.model.Space}). The instances of
+ * these applications can be then accessed by the users in Silverpeas according to their access
+ * rights. The access rights are provided by the set of user profiles defined by the application
+ * itself; a user profile being a mix between a role and some privileges on the application instance
+ * it is applied.
+ * </p>
  * <p>
  * The Web Application components available in Silverpeas are loaded by the
- * {@code org.silverpeas.core.admin.component.WAComponentRegistry} registry. They can be the accessed
- * either by the registry itself or by the WAComponent class (it delegates the access to the
- * registry).
+ * {@code org.silverpeas.core.admin.component.WAComponentRegistry} registry from their XML
+ * descriptor. They can be the accessed either by the registry itself or by the WAComponent class
+ * (it delegates the access to the registry). The XML descriptor of an application component is
+ * defined by the following XSD: <a href="https://www.silverpeas.org/xsd/component.xsd">
+ * https://www.silverpeas.org/xsd/component.xsd</a>.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = {"name", "behaviors", "label", "description",
@@ -59,7 +67,7 @@ import java.util.Optional;
 public class WAComponent extends AbstractSilverpeasComponent {
 
   @XmlTransient
-  private ParameterSorter sorter = new ParameterSorter();
+  private final ParameterSorter sorter = new ParameterSorter();
 
   @XmlElement(required = true)
   protected String name;
@@ -135,11 +143,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
 
   /**
    * Gets the different behaviors this component satisfies.
-   *
-   * @return
-   *     possible object is
-   *     {@link ComponentBehaviors }
-   *
+   * @return possible object is {@link ComponentBehaviors }
    */
   public ComponentBehaviors getBehaviors() {
     return behaviors;
@@ -147,11 +151,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
 
   /**
    * Sets all the behaviors this component has to satisfy.
-   *
-   * @param value
-   *     allowed object is
-   *     {@link ComponentBehaviors }
-   *
+   * @param value allowed object is {@link ComponentBehaviors }
    */
   public void setBehaviors(ComponentBehaviors value) {
     this.behaviors = value;
@@ -208,6 +208,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
     return suite;
   }
 
+  @SuppressWarnings("unused")
   public String getSuite(String lang) {
     if (getSuite().containsKey(lang)) {
       return getSuite().get(lang);
@@ -280,6 +281,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * Sets the value of the visibleInPersonalSpace property.
    * @param value allowed object is {@link Boolean }
    */
+  @SuppressWarnings("unused")
   public void setVisibleInPersonalSpace(boolean value) {
     this.visibleInPersonalSpace = value;
   }
@@ -315,7 +317,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Gets the value of the profiles property.
+   * Gets the user profiles defined for this application.
    * @return list of {@link Profile }
    */
   public List<Profile> getProfiles() {
@@ -335,7 +337,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Sets the value of the profiles property.
+   * Sets explicitly a new list of user profiles to this application.
    * @param profiles list of {@link Profile}
    */
   public void setProfiles(List<Profile> profiles) {
@@ -343,7 +345,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Gets the value of the parameters property.
+   * Gets all the instance parameters of this application.
    * @return list of {@link Parameter}
    */
   @Override
@@ -355,7 +357,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Sets the value of the parameters property.
+   * Sets explicitly the instance parameters to this application.
    * @param parameters list of {@link Parameter}
    */
   public void setParameters(List<Parameter> parameters) {
@@ -375,7 +377,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
 
   @Override
   public List<Parameter> getSortedParameters() {
-    Collections.sort(getParameters(), sorter);
+    getParameters().sort(sorter);
     return this.parameters;
   }
 
@@ -388,7 +390,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   public List<GroupOfParameters> getSortedGroupsOfParameters() {
-    Collections.sort(getGroupsOfParameters(), new GroupOfParametersSorter());
+    getGroupsOfParameters().sort(new GroupOfParametersSorter());
     return this.groupsOfParameters;
   }
 

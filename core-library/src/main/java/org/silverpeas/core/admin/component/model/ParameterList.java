@@ -44,15 +44,14 @@ public class ParameterList extends ArrayList<Parameter> {
   public void setValues(List<Parameter> parameters) {
     for (Parameter parameterToMerge : parameters) {
       Parameter parameter = getParameterByName(parameterToMerge.getName());
-      if (parameter == null) {
-        // Le parametre existe en base mais plus dans le xmlComponent
-
-      } else {
+      if (parameter != null) {
+        // The parameter exists both in the database and in the XML descriptor
         parameter.setValue(parameterToMerge.getValue());
       }
     }
   }
 
+  @SuppressWarnings("unused")
   public List<Parameter> getVisibleParameters() {
     List<Parameter> parameters = new ArrayList<>();
     for (Parameter parameter : this) {
@@ -63,6 +62,7 @@ public class ParameterList extends ArrayList<Parameter> {
     return parameters;
   }
 
+  @SuppressWarnings("unused")
   public List<Parameter> getHiddenParameters() {
     List<Parameter> parameters = new ArrayList<>();
     for (Parameter parameter : this) {

@@ -41,6 +41,8 @@ import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalBasicEntity;
+import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalTypeBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
@@ -108,9 +110,9 @@ public class SilverpeasJpaEntityRepositoryIT {
           "2013-11-21 09:57:30.003", "10", 0L)
       .values(3L, "bird", "Titi", "person_2", "2013-11-21 09:57:30.003", "10",
           "2013-11-21 09:57:30.003", "10", 0L)
-      .values(1000L, "type", "name", "person_1000", "2013-11-21 09:57:30.003", "10",
+      .values(1000L, "cat", "name", "person_1000", "2013-11-21 09:57:30.003", "10",
           "2013-11-21 09:57:30.003", "10", 0L)
-      .values(1001L, "type", "name", "person_1001", "2013-11-21 09:57:30.003", "10",
+      .values(1001L, "dog", "name", "person_1001", "2013-11-21 09:57:30.003", "10",
           "2013-11-21 09:57:30.003", "10", 0L)
       .build();
   private static final Operation EQUIPEMENT_SET_UP = Operations.insertInto("test_equipments")
@@ -765,12 +767,13 @@ public class SilverpeasJpaEntityRepositoryIT {
 
   @Test
   public void deleteAnimalsByType() {
-    Animal animal = jpaEntityServiceTest.getAnimalById("1");
-    assertThat(animal, notNullValue());
-    assertThat(jpaEntityServiceTest.deleteAnimalsByType(animal.getType()), is(1L));
-    assertThat(jpaEntityServiceTest.deleteAnimalsByType(animal.getType()), is(0L));
+    var animals = jpaEntityServiceTest.getAnimalsByType(AnimalType.cat);
+    assertThat(animals, not(empty()));
+    assertThat(animals.size(), is(2));
+    assertThat(jpaEntityServiceTest.deleteAnimalsByType(AnimalType.cat), is(2L));
+    assertThat(jpaEntityServiceTest.deleteAnimalsByType(AnimalType.cat), is(0L));
     assertThat(jpaEntityServiceTest.deleteAnimalsByType(AnimalType.frog), is(0L));
-    Animal animalReloaded = jpaEntityServiceTest.getAnimalById(animal.getId());
+    Animal animalReloaded = jpaEntityServiceTest.getAnimalById(animals.get(0).getId());
     assertThat(animalReloaded, nullValue());
   }
 

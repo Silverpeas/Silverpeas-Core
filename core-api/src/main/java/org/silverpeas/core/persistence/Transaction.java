@@ -87,6 +87,7 @@ public class Transaction {
    * @see javax.transaction.Status
    * @return the current transaction's status.
    */
+  @SuppressWarnings("unused")
   public static int getTransactionStatus() {
     return getTransaction().getStatus();
   }
@@ -146,6 +147,7 @@ public class Transaction {
    * Gets the transaction manager behind this transaction.
    * @return a {@link TransactionManager} instance.
    */
+  @SuppressWarnings("unused")
   public TransactionManager getTransactionManager() {
     return this.transactionManager;
   }

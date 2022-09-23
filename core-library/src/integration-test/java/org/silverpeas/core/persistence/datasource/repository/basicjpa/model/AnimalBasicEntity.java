@@ -23,11 +23,8 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.basicjpa.model;
 
-import org.hibernate.LazyInitializationException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.basicjpa.repository.EquipmentBasicEntityRepository;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -40,20 +37,21 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "test_animals")
-@NamedQueries({@NamedQuery(name = "getAnimalsByTypeCustom", query =
-    "from AnimalBasicEntity a where a.type = " + ":type"),
-    @NamedQuery(name = "getAnimalsByNameCustom", query =
-        "from AnimalBasicEntity a where a.name = " + ":name"),
-    @NamedQuery(name = "updateAnimalNameCustom",
-        query = "update AnimalBasicEntity a set a.name = :name where a.id = :id"),
-    @NamedQuery(name = "deleteAnimalsByTypeCustom", query = "delete from AnimalBasicEntity a " +
-        "where a.type = :type")})
+@NamedQuery(name = "getAnimalsByTypeCustom",
+    query = "select a from AnimalBasicEntity a where a.type = :type")
+@NamedQuery(name = "getAnimalsByNameCustom",
+    query = "select a from AnimalBasicEntity a where a.name = :name")
+@NamedQuery(name = "updateAnimalNameCustom",
+    query = "update AnimalBasicEntity a set a.name = :name where a.id = :id")
+@NamedQuery(name = "deleteAnimalsByTypeCustom",
+    query = "delete from AnimalBasicEntity a where a.type = :type")
 public class AnimalBasicEntity
     extends BasicJpaEntity<AnimalBasicEntity, UniqueLongIdentifier>
     implements Serializable {
 
   @Column(name = "type", nullable = false)
-  private String type;
+  @Enumerated(EnumType.STRING)
+  private AnimalTypeBasicEntity type;
 
   @Column(name = "name", nullable = false)
   private String name;
@@ -66,11 +64,11 @@ public class AnimalBasicEntity
   private List<EquipmentBasicEntity> equipments;
 
   public AnimalTypeBasicEntity getType() {
-    return AnimalTypeBasicEntity.valueOf(type);
+    return type;
   }
 
   public AnimalBasicEntity setType(final AnimalTypeBasicEntity type) {
-    this.type = type.name();
+    this.type = type;
     return this;
   }
 

@@ -76,7 +76,8 @@ class WAComponentRegistryTest {
 
   @AfterEach
   void clear() throws Exception {
-    streamComponentDescriptors(NEW_WORKFLOW_COMPONENT_NAME).map(Path::toFile).forEach(FileUtils::deleteQuietly);
+    streamComponentDescriptors(NEW_WORKFLOW_COMPONENT_NAME).map(Path::toFile)
+        .forEach(FileUtils::deleteQuietly);
   }
 
   @Test
@@ -108,7 +109,10 @@ class WAComponentRegistryTest {
     Profile profile = profiles.get(0);
     assertThat(profile.getName(), is("admin"));
     assertThat(profile.getHelp("en"), nullValue());
-    assertThat(profile.getSpaceProfileMapping(), nullValue());
+    assertThat(profile.getSpaceProfileMapping(), notNullValue());
+    assertThat(profile.getSpaceProfileMapping().getProfiles().size(), is(1));
+    assertThat(profile.getSpaceProfileMapping().getProfiles().get(0).getValue(),
+        is(profile.getName()));
   }
 
   @Test
@@ -227,7 +231,8 @@ class WAComponentRegistryTest {
   @Test
   void testSaveWorkflow() throws Exception {
     final String componentName = NEW_WORKFLOW_COMPONENT_NAME;
-    final Path expectedDescriptor = Paths.get(getWorkflowRepoPath().toString(), componentName + ".xml");
+    final Path expectedDescriptor =
+        Paths.get(getWorkflowRepoPath().toString(), componentName + ".xml");
     assertThat(Files.exists(expectedDescriptor), is(false));
     assertThat(streamComponentDescriptors(componentName).count(), is(0L));
     String label = "Nouveau Workflow";
@@ -261,7 +266,9 @@ class WAComponentRegistryTest {
   }
 
   private Stream<Path> streamComponentDescriptors(final String componentName) throws IOException {
-    return Files.list(getWorkflowRepoPath()).filter(p -> p.getFileName().toString().contains(componentName));
+    //noinspection resource
+    return Files.list(getWorkflowRepoPath())
+        .filter(p -> p.getFileName().toString().contains(componentName));
   }
 
   private static class OptionComparator implements Comparator<Option> {

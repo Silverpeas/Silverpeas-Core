@@ -32,26 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>Java class for Space Mapping.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="" type="{http://silverpeas.org/xml/ns/component}SpaceProfileType" maxOccurs="unbounded"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
- *
- *
+ * The mapping between a given user profile of an application component with some user
+ * profiles of a space. The mapping will be applied between the instance of the application and its
+ * parent space.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "spaceMapping", propOrder = {
+@XmlType(name = "", propOrder = {
     "profiles"
 })
 public class ComponentSpaceProfileMapping {

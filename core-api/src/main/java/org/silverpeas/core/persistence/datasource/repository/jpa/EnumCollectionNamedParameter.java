@@ -27,21 +27,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * The parameter to pass to a JPA query is a collection of enum values.
  * @author Yohann Chastagnier
  */
-public class EnumCollectionNamedParameter extends NamedParameter<Set<Enum>, Set<String>> {
+public class EnumCollectionNamedParameter extends NamedParameter<Set<String>> {
 
-  private final Set<Enum> values;
+  private final Set<Enum<?>> values;
 
-  EnumCollectionNamedParameter(final String name, final Set<Enum> values) {
+  EnumCollectionNamedParameter(final String name, final Set<Enum<?>> values) {
     super(name);
     this.values = values;
   }
 
   @Override
   public Set<String> getValue() {
-    Set<String> stringValues = new HashSet<String>();
-    for (Enum anEnum : values) {
+    Set<String> stringValues = new HashSet<>();
+    for (Enum<?> anEnum : values) {
       stringValues.add(anEnum.name());
     }
     return stringValues;

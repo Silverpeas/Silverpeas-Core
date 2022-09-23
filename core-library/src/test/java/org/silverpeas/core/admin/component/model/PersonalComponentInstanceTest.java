@@ -27,7 +27,6 @@ package org.silverpeas.core.admin.component.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
-import org.silverpeas.core.admin.component.PersonalComponentRegistryTest;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -46,12 +45,12 @@ import static org.mockito.Mockito.when;
 
 /**
  * This class of unit tests deals with the resources (component xml descriptors) handled from
- * {@link PersonalComponentRegistryTest}.
+ * {@link PersonalComponentRegistry}.
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
 @TestManagedBeans(PublicationTemplateManager.class)
-public class PersonalComponentInstanceTest {
+class PersonalComponentInstanceTest {
 
   private static final String USER_CALENDAR_PERSONAL_COMPONENT_NAME = "userCalendar";
 
@@ -61,7 +60,7 @@ public class PersonalComponentInstanceTest {
   }
 
   @Test
-  public void getInstanceFromExistingUserAndPersonalComponentShouldWork() {
+  void getInstanceFromExistingUserAndPersonalComponentShouldWork() {
     User user = putInContextMockedUserWithId("26");
     PersonalComponent personalComponent =
         PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).orElse(null);
@@ -78,7 +77,7 @@ public class PersonalComponentInstanceTest {
   }
 
   @Test
-  public void getInstanceFromUnknownUserButExistingPersonalComponentShouldThrowAnError() {
+  void getInstanceFromUnknownUserButExistingPersonalComponentShouldThrowAnError() {
     assertThrows(IllegalArgumentException.class, () -> {
       User user = putInContextMockedUserWithId("26");
       PersonalComponentInstance.from(user, null);
@@ -86,7 +85,7 @@ public class PersonalComponentInstanceTest {
   }
 
   @Test
-  public void getInstanceFromExistingUserButUnknownPersonalComponentShouldThrowAnError() {
+  void getInstanceFromExistingUserButUnknownPersonalComponentShouldThrowAnError() {
     assertThrows(IllegalArgumentException.class, () -> {
       PersonalComponent personalComponent =
           PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).orElse(null);
@@ -95,7 +94,7 @@ public class PersonalComponentInstanceTest {
   }
 
   @Test
-  public void getInstanceFromValidInstanceIdentifierShouldWork() {
+  void getInstanceFromValidInstanceIdentifierShouldWork() {
     String validInstanceId = USER_CALENDAR_PERSONAL_COMPONENT_NAME + "26_PCI";
     User user = putInContextMockedUserWithId("26");
     Optional<PersonalComponentInstance> optionalInstance =
@@ -108,12 +107,12 @@ public class PersonalComponentInstanceTest {
   }
 
   @Test
-  public void getInstanceFromNotDefinedInstanceIdentifierShouldThrowError() {
+  void getInstanceFromNotDefinedInstanceIdentifierShouldThrowError() {
     assertThrows(IllegalArgumentException.class, () -> PersonalComponentInstance.from("  "));
   }
 
   @Test
-  public void getInstanceFromInstanceIdentifierLinkingNoPersonalComponentShouldReturnNoInstance() {
+  void getInstanceFromInstanceIdentifierLinkingNoPersonalComponentShouldReturnNoInstance() {
     String notValidInstanceId = "unknown_26_PCI";
     putInContextMockedUserWithId("26");
     Optional<PersonalComponentInstance> optionalInstance =
@@ -122,13 +121,13 @@ public class PersonalComponentInstanceTest {
   }
 
   @Test
-  public void getInstanceFromInstanceIdentifierLinkingNoUserShouldReturnNoInstance() {
+  void getInstanceFromInstanceIdentifierLinkingNoUserShouldReturnNoInstance() {
     String notValidInstanceId = USER_CALENDAR_PERSONAL_COMPONENT_NAME + "26_PCI";
     assertThat(PersonalComponentInstance.from(notValidInstanceId).isPresent(), is(false));
   }
 
   @Test
-  public void getInstanceFromInstanceIdentifierWithBadSuffixShouldWork() {
+  void getInstanceFromInstanceIdentifierWithBadSuffixShouldWork() {
     String validInstanceId = USER_CALENDAR_PERSONAL_COMPONENT_NAME + "26_PCI";
     String notValidInstanceId1 = USER_CALENDAR_PERSONAL_COMPONENT_NAME + "26_PC";
     String notValidInstanceId2 = USER_CALENDAR_PERSONAL_COMPONENT_NAME + "26_PCA";

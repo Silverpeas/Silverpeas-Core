@@ -60,9 +60,7 @@ public class SilverpeasObjectsTree {
   private int customLocalIdCount = 100;
 
   public void clear() {
-    cache.forEach((id, treeNode) -> {
-      treeNode.getChildren().clear();
-    });
+    cache.forEach((id, treeNode) -> treeNode.getChildren().clear());
     rootSpaces.clear();
     cache.clear();
   }
@@ -194,6 +192,7 @@ public class SilverpeasObjectsTree {
     return parentNode.addChild(publication);
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   public TreeNode addDocument(int localId, String pubId, String name, String description) {
     TreeNode parentNode = cache.get(pubId);
     int order = parentNode.getChildren().size() + 1;

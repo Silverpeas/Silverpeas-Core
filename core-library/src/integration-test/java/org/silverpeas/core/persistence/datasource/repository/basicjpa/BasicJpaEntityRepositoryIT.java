@@ -70,8 +70,8 @@ public class BasicJpaEntityRepositoryIT {
       .values(1L, "cat", "Blacky", "person_1")
       .values(2L, "dog", "Bagels", "person_2")
       .values(3L, "bird", "Titi", "person_2")
-      .values(1000L, "type", "name", "person_1000")
-      .values(1001L, "type", "name", "person_1001")
+      .values(1000L, "cat", "name", "person_1000")
+      .values(1001L, "dog", "name", "person_1001")
       .build();
   public static final Operation EQUIPEMENT_SET_UP = Operations.insertInto("test_equipments")
       .columns("id", "name", "animalId")
@@ -452,15 +452,16 @@ public class BasicJpaEntityRepositoryIT {
 
   @Test
   public void deleteAnimalsByType() {
-    AnimalBasicEntity animalBasicEntity = basicJpaEntityServiceTest.getAnimalById("1");
-    assertThat(animalBasicEntity, notNullValue());
-    assertThat(basicJpaEntityServiceTest.deleteAnimalsByType(animalBasicEntity.getType()),
-        is(1L));
-    assertThat(basicJpaEntityServiceTest.deleteAnimalsByType(animalBasicEntity.getType()),
+    var animalBasicEntities = basicJpaEntityServiceTest.getAnimalsByType(AnimalTypeBasicEntity.cat);
+    assertThat(animalBasicEntities, not(empty()));
+    assertThat(animalBasicEntities.size(), is(2));
+    assertThat(basicJpaEntityServiceTest.deleteAnimalsByType(AnimalTypeBasicEntity.cat),
+        is(2L));
+    assertThat(basicJpaEntityServiceTest.deleteAnimalsByType(AnimalTypeBasicEntity.cat),
         is(0L));
     assertThat(basicJpaEntityServiceTest.deleteAnimalsByType(AnimalTypeBasicEntity.frog), is(0L));
     AnimalBasicEntity animalBasicEntityReloaded =
-        basicJpaEntityServiceTest.getAnimalById(animalBasicEntity.getId());
+        basicJpaEntityServiceTest.getAnimalById(animalBasicEntities.get(0).getId());
     assertThat(animalBasicEntityReloaded, nullValue());
   }
 

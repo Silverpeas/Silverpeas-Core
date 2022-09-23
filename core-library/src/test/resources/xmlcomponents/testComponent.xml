@@ -26,7 +26,7 @@
 -->
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>testComponent</name>
   <label>
     <message lang="fr">Composant de test</message>

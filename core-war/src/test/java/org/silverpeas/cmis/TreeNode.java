@@ -25,19 +25,14 @@
 package org.silverpeas.cmis;
 
 import org.silverpeas.core.Identifiable;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.cmis.model.Application;
-import org.silverpeas.core.cmis.model.ContributionFolder;
 import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.Space;
-import org.silverpeas.core.contribution.attachment.model.Document;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.Attachment;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -68,6 +63,7 @@ public class TreeNode {
    * @param cache the cache of nodes backed by the tree.
    * @param object the value of the node.
    */
+  @SuppressWarnings("unused")
   TreeNode(Map<String, TreeNode> cache, final LocalizedResource object) {
     this(cache, object, null);
   }
@@ -161,6 +157,7 @@ public class TreeNode {
    * Is this node a root one? A node is a root of a tree if it has no parent.
    * @return true if this node is a root one, false otherwise.
    */
+  @SuppressWarnings("unused")
   public boolean isRoot() {
     return getParent() == null;
   }

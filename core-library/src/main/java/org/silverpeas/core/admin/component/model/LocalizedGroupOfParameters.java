@@ -28,8 +28,8 @@ package org.silverpeas.core.admin.component.model;
  */
 public class LocalizedGroupOfParameters {
 
-  private String lang;
-  private GroupOfParameters group;
+  private final String lang;
+  private final GroupOfParameters group;
 
   public LocalizedGroupOfParameters(GroupOfParameters group, String lang) {
     this.group = group;

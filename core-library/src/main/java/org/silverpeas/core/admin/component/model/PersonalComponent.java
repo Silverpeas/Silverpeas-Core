@@ -36,7 +36,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +74,7 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
   @XmlTransient
-  private ParameterSorter sorter = new ParameterSorter();
+  private final ParameterSorter sorter = new ParameterSorter();
 
   /**
    * Gets the PersonalComponent instance with the specified name.
@@ -176,7 +175,7 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Sets the value of the parameters property.
+   * Sets explicitly the instance parameters to this personal component.
    * @param parameters list of {@link Parameter}
    */
   public void setParameters(List<Parameter> parameters) {
@@ -191,7 +190,7 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
 
   @Override
   public List<Parameter> getSortedParameters() {
-    Collections.sort(getParameters(), sorter);
+    getParameters().sort(sorter);
     return this.parameters;
   }
 
@@ -203,8 +202,9 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
     return groupsOfParameters;
   }
 
+  @SuppressWarnings("unused")
   public List<GroupOfParameters> getSortedGroupsOfParameters() {
-    Collections.sort(getGroupsOfParameters(), new GroupOfParametersSorter());
+    getGroupsOfParameters().sort(new GroupOfParametersSorter());
     return this.groupsOfParameters;
   }
 }

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Lib
  * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describin
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licen
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -51,7 +51,7 @@ import java.net.URI;
  *   <li>The path is {@code /silverpeas/services/toto/kmelia32/content/bidule}</li>
  *   <li>The query parameters are taken from the parsing of {@code ?p=3&u=10}</li>
  *   <li>The path parameters are all nodes in the URI that matches with an parameter in the
- *   @{@link javax.ws.javax.ws.rs.Path} annotations of the web resource</li>
+ *  {@link javax.ws.rs.Path} annotations of the web resource</li>
  * </ul>
  * @author mmoquillon
  */
@@ -68,6 +68,7 @@ public class WebResourceUri {
     this.uriInfo = uriInfo;
   }
 
+  @SuppressWarnings("unused")
   public WebResourceUri(final String webResourcePath, final HttpServletRequest request) {
     this(webResourcePath, request, null);
   }
@@ -87,6 +88,7 @@ public class WebResourceUri {
    * All sequences of escaped octets are decoded.
    * @return the base path of the requested web resource.
    */
+  @SuppressWarnings("unused")
   public URI getWebResourcePath() {
     return SilverpeasWebResource.getBasePathBuilder().path(webResourcePath).build();
   }
@@ -184,7 +186,7 @@ public class WebResourceUri {
 
   /**
    * Get the absolute path of the request. This includes everything preceding the path (host, port
-   * etc) but excludes query parameters.
+   * etc.) but excludes query parameters.
    * @return the absolute path of the request.
    */
   public URI getAbsolutePath() {
@@ -193,7 +195,7 @@ public class WebResourceUri {
 
   /**
    * Get the absolute path of the request in the form of a {@link UriBuilder}. This includes
-   * everything preceding the path (host, port, etc) but excludes query parameters.
+   * everything preceding the path (host, port, etc.) but excludes query parameters.
    * <p>
    * The returned {@link UriBuilder} gives possibility to enrich the path to build a customized URI
    * for a web entity.
@@ -207,7 +209,7 @@ public class WebResourceUri {
   /**
    * Get the base URI of all Web resources in Silverpeas. URIs of REST web services are all relative
    * to this base URI.
-   * @return the base URI of all of the web resources in Silverpeas (REST web services).
+   * @return the base URI of all the web resources in Silverpeas (REST web services).
    */
   public URI getBaseUri() {
     return getBaseUriBuilder().build();
@@ -216,8 +218,8 @@ public class WebResourceUri {
   /**
    * Get the base URI of all Web resources in Silverpeas in the form of a {@link UriBuilder}.
    * URIs of root REST web services are all relative to this base URI.
-   * @return the {@link UriBuilder} initialized with the base URI of all of the web resources in
-   * Silverpeas (REST web services) as an URI builder.
+   * @return the {@link UriBuilder} initialized with the base URI of all the web resources in
+   * Silverpeas (REST web services) as a URI builder.
    */
   public UriBuilder getBaseUriBuilder() {
     return SilverpeasWebResource.getBaseUriBuilder(request);
@@ -228,6 +230,7 @@ public class WebResourceUri {
    * decoded.
    * @return an unmodifiable map of parameter names and values.
    */
+  @SuppressWarnings("unused")
   public MultivaluedMap<String, String> getPathParameters() {
     return uriInfo.getPathParameters();
   }

@@ -30,20 +30,8 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * <p>
- * Java class for MessageType complex type.
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType name=&quot;MessageType&quot;&gt;
- *   &lt;simpleContent&gt;
- *     &lt;extension base=&quot;&lt;http://www.w3.org/2001/XMLSchema&gt;string&quot;&gt;
- *       &lt;attribute name=&quot;lang&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; /&gt;
- *     &lt;/extension&gt;
- *   &lt;/simpleContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * A textual message written in a given language. It is used to encode either a displayable text
+ * or a technical name of a component.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MessageType", propOrder = { "value" })
@@ -55,7 +43,7 @@ public class Message {
   protected String lang;
 
   /**
-   * Gets the value of the value property.
+   * Gets the text of the message.
    * @return possible object is {@link String }
    */
   public String getValue() {
@@ -63,7 +51,7 @@ public class Message {
   }
 
   /**
-   * Sets the value of the value property.
+   * Sets explicitly the text of this message.
    * @param value allowed object is {@link String }
    */
   public void setValue(String value) {
@@ -71,7 +59,7 @@ public class Message {
   }
 
   /**
-   * Gets the value of the lang property.
+   * Gets the ISO-639-1 code of the language in which the text.
    * @return possible object is {@link String }
    */
   public String getLang() {
@@ -79,7 +67,7 @@ public class Message {
   }
 
   /**
-   * Sets the value of the lang property.
+   * Sets the ISO-639-1 code of the language in which the text is written.
    * @param value allowed object is {@link String }
    */
   public void setLang(String value) {
