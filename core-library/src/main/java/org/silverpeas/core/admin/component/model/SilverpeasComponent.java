@@ -48,7 +48,7 @@ public interface SilverpeasComponent {
       return Optional.empty();
     }
     Optional<? extends SilverpeasComponent> component = WAComponent.getByName(componentName);
-    if (!component.isPresent()) {
+    if (component.isEmpty()) {
       component = PersonalComponent.getByName(componentName);
     }
     return Optional.ofNullable(component.orElse(null));
@@ -66,7 +66,7 @@ public interface SilverpeasComponent {
     }
     Optional<? extends SilverpeasComponent> component =
         WAComponent.getByInstanceId(componentInstanceId);
-    if (!component.isPresent()) {
+    if (component.isEmpty()) {
       component = PersonalComponent.getByInstanceId(componentInstanceId);
     }
     return Optional.ofNullable(component.orElse(null));
@@ -143,7 +143,7 @@ public interface SilverpeasComponent {
   boolean isVisible();
 
   /**
-   * Gets the value of the parameters property.
+   * Gets the instance parameters of the Silverpeas component.
    * @return list of {@link Parameter}
    */
   List<Parameter> getParameters();
@@ -159,6 +159,7 @@ public interface SilverpeasComponent {
    * Gets same parameters as {@link #getParameters()}, sorted by order and name.
    * @return sorted parameters.
    */
+  @SuppressWarnings("unused")
   List<Parameter> getSortedParameters();
 
   /**

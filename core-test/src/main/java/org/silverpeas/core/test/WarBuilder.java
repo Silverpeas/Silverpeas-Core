@@ -54,19 +54,19 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
- * This class permits to setup an integration test
+ * This class permits to set up an integration test
  * @author Yohann Chastagnier
  */
 public abstract class WarBuilder<T extends WarBuilder<T>>
     implements Builder<WebArchive>, CommonWebArchive<T> {
 
   /**
-   * Path to the WEB-INF inside of the Archive.
+   * Path of the WEB-INF directory in the archive.
    */
   private static final ArchivePath PATH_WEB_INF = ArchivePaths.create("WEB-INF");
 
   /**
-   * Path to the classes inside of the Archive.
+   * Path of the classes in the archive.
    */
   private static final ArchivePath PATH_CLASSES = ArchivePaths.create(PATH_WEB_INF, "classes");
 
@@ -136,7 +136,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * descriptor so that the entities and repositories are taken in charge by the persistence layer.
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
-   * @throws IllegalArgumentException if no version if found for one of the specified Maven
+   * @throws IllegalArgumentException if no version is found for one of the specified Maven
    * dependencies.
    */
   public WarBuilder<T> createMavenDependenciesWithPersistence(String... mavenDependencies) {
@@ -194,6 +194,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * @param mavenDependencies the canonical maven dependencies to add.
    * @return the instance of the configurator.
    */
+  @SuppressWarnings("UnusedReturnValue")
   public WarBuilder<T> addMavenDependenciesWithoutTransitivity(String... mavenDependencies) {
     Collections.addAll(this.mavenDependenciesWithoutTransitivity, mavenDependencies);
     return this;

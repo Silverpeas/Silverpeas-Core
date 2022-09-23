@@ -59,8 +59,9 @@ public class GroupOfParameters {
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
 
+  @SuppressWarnings("unused")
   public GroupOfParameters() {
-
+    // dedicated to the XML unmarshaller
   }
 
   public GroupOfParameters(final GroupOfParameters groupOfParameters) {
@@ -157,7 +158,7 @@ public class GroupOfParameters {
   }
 
   /**
-   * Gets the value of the parameters property.
+   * Gets the list of instance parameters of this group.
    * @return list of {@link Parameter}
    */
   public List<Parameter> getParameters() {
@@ -168,7 +169,7 @@ public class GroupOfParameters {
   }
 
   /**
-   * Sets the value of the parameters property.
+   * Sets explicitly the parameters of this group.
    * @param parameters list of {@link Parameter}
    */
   public void setParameters(List<Parameter> parameters) {

@@ -34,23 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>
- * Java class for ParameterOptionType complex type.
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType name=&quot;ParameterOptionType&quot;&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *       &lt;sequence&gt;
- *         &lt;element name=&quot;name&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;value&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * An option is a possible value with which an instance parameter can be valued.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ParameterOptionType", propOrder = { "name", "value" })

@@ -30,10 +30,12 @@ public class ComponentI18N extends BeanTranslation {
 
   private static final long serialVersionUID = 6602701543647924879L;
 
+  @SuppressWarnings("unused")
   protected ComponentI18N() {
     super();
   }
 
+  @SuppressWarnings("unused")
   public ComponentI18N(final ComponentI18N translation) {
     super(translation);
   }

@@ -234,10 +234,12 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     this.removerName = removerName;
   }
 
+  @SuppressWarnings("unused")
   public String getUpdaterName() {
     return updaterName;
   }
 
+  @SuppressWarnings("unused")
   public void setUpdaterName(String updaterName) {
     this.updaterName = updaterName;
   }

@@ -24,8 +24,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>demandeCongesSimple</name>
   <label>
     <message lang="fr">Demande de congés simplifiée</message>
@@ -52,6 +53,10 @@
         <message lang="fr">Collaborateur</message>
         <message lang="en">Employee</message>
       </help>
+      <spaceMapping>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
     <profile name="Responsable">
       <label>
@@ -62,6 +67,9 @@
         <message lang="fr">Responsable</message>
         <message lang="en">Manager</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+      </spaceMapping>
     </profile>
     <profile name="supervisor">
       <label>
@@ -72,6 +80,9 @@
         <message lang="fr">Superviseur</message>
         <message lang="en">Supervisor</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>

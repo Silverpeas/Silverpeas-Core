@@ -60,7 +60,6 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -83,8 +82,8 @@ import static org.silverpeas.cmis.SilverpeasObjectsTree.LANGUAGE;
 import static org.silverpeas.cmis.util.CmisDateConverter.millisToCalendar;
 
 /**
- * Unit tests about the walking of the CMIS objects tree whose each node is mapped to a given
- * object in Silverpeas and whose the tree is mapped itself to the organizational schema of the
+ * Unit tests about the walking of the CMIS objects tree in which each node is mapped to a given
+ * object in Silverpeas and whose tree is mapped itself to the organizational schema of the
  * Silverpeas resources (spaces, component instances, ...). The tests checks both the CMIS objects
  * tree is correctly mapped to an organizational schema of Silverpeas resources and the CMIS data
  * of the CMIS objects matches correctly the underlying represented Silverpeas objects.
@@ -556,6 +555,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
   void getFoldersOnlySubtreeOfASpace() {
     final String spaceId = "WA1";
     final TreeNode spaceNode = organization.findTreeNodeById(spaceId);
+    assertThat(spaceNode, notNullValue());
 
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludePathSegment(true)
@@ -910,6 +910,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(getLabel(pub, language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(pub.getDescription(language)));
+    //noinspection removal
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
         is(pub.getCreator().getDisplayedName()));
     assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
@@ -962,6 +963,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
         is(BaseTypeId.CMIS_DOCUMENT.value()));
     assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
         is(TypeId.SILVERPEAS_DOCUMENT.value()));
+    //noinspection ConstantConditions
     assertThat(props.get(PropertyIds.IS_IMMUTABLE).getFirstValue(), is(false));
     assertThat(props.get(PropertyIds.IS_LATEST_VERSION).getFirstValue(), is(true));
     assertThat(props.get(PropertyIds.IS_MAJOR_VERSION).getFirstValue(), is(true));
@@ -1000,7 +1002,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
       return getLabel((PublicationDetail) resource, language);
     }
     if (resource instanceof Attachment) {
-      return getLabel((Attachment) resource, language);
+      return getLabel((Attachment) resource);
     }
     return resource.getTranslation(language).getName();
   }
@@ -1021,7 +1023,7 @@ class ObjectMappingInTreeWalkerTest extends CMISEnvForTests {
     return Publication.SYMBOL + " " + publicationDetail.getName(language);
   }
 
-  private String getLabel(final Attachment attachment, String language) {
+  private String getLabel(final Attachment attachment) {
     return attachment.getFilename();
   }
 

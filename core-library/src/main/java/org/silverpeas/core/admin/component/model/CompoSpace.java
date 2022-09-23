@@ -62,10 +62,12 @@ public class CompoSpace {
     return spaceLabel;
   }
 
+  @SuppressWarnings("unused")
   public void setSpaceLevel(int level) {
     spaceLevel = level;
   }
 
+  @SuppressWarnings("unused")
   public int getSpaceLevel() {
     return spaceLevel;
   }

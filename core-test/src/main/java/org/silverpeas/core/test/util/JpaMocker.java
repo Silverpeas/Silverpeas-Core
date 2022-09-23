@@ -64,10 +64,10 @@ public class JpaMocker {
    * @param savedEntity the mutable container used to store any entity saved.
    * @param <T> the concrete type of the repository to mock.
    * @param <E> the concrete type of the entity that is stored into the repository.
-   * @return the mock of the repository.
+   * @return a mocked repository.
    */
   @SuppressWarnings("unchecked")
-  public <T extends AbstractJpaEntityRepository<E>, E extends AbstractJpaEntity> T mockRepository(
+  public <T extends AbstractJpaEntityRepository<E>, E extends AbstractJpaEntity<E, ?>> T mockRepository(
       final Class<T> repoType, final Mutable<E> savedEntity) {
     T repository = mock(repoType);
     Class<E> entityType =
@@ -88,7 +88,7 @@ public class JpaMocker {
    * @param entityType the actual class of the entity.
    * @param <T> the type of the entity
    */
-  public <T extends Entity> void mockJPA(final Mutable<T> savedEntity, Class<T> entityType) {
+  public <T extends Entity<T, ?>> void mockJPA(final Mutable<T> savedEntity, Class<T> entityType) {
     EntityManagerProvider entityManagerProvider = mock(EntityManagerProvider.class);
     EntityManager entityManager = mock(EntityManager.class);
     when(entityManagerProvider.getEntityManager()).thenReturn(entityManager);
@@ -96,7 +96,7 @@ public class JpaMocker {
     // the identifier passed as argument matches the entity that was saved.
     when(entityManager.find(eq(entityType), any(UuidIdentifier.class))).thenAnswer(invocation -> {
       UuidIdentifier id = invocation.getArgument(1);
-      Entity entity = null;
+      Entity<T, ?> entity = null;
       if (savedEntity.isPresent()) {
         entity = savedEntity.get().getId().equals(id.asString()) ? savedEntity.get() : null;
       }

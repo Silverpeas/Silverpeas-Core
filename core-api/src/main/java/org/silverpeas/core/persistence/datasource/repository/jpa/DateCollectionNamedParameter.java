@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Set;
 
 /**
+ * The parameter to pass to a JPA query is a collection of date.
  * @author Yohann Chastagnier
  */
 public class DateCollectionNamedParameter extends TemporalNamedParameter<Set<Date>> {

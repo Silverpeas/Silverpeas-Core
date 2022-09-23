@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Lib
  * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describin
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licen
+ * You should have received a copy of the GNU Affero General Public Licence
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -55,7 +55,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * The class of the Silverpeas REST web services. It provides all of the common features required by
+ * The class of the Silverpeas REST web services. It provides all the common features required by
  * the web services in Silverpeas like the user privilege checking.
  */
 @ComponentInstMustExistIfSpecified
@@ -127,11 +127,22 @@ public abstract class RESTWebService implements ProtectedWebResource {
     if (StringUtil.isDefined(componentId)) {
       path += componentId;
     }
-    return new WebResourceUri(path, getHttpServletRequest(), uriInfo);
+    return createWebResourceUri(path);
   }
 
   /**
-   * Gets the base path of the web resource relative to the root path of all of the web resources
+   * Creates a {@link WebResourceUri} instance from the specified relative path of a web resource.
+   * It is dedicated to be used by {@link RESTWebService#initWebResourceUri()} but it can be used
+   * to create a custom {@link WebResourceUri} object to craft custom URIs.
+   * @param webResourcePath the relative base path of a web resource.
+   * @return a {@link WebResourceUri} instance.
+   */
+  protected WebResourceUri createWebResourceUri(final String webResourcePath) {
+    return new WebResourceUri(webResourcePath, getHttpServletRequest(), uriInfo);
+  }
+
+  /**
+   * Gets the base path of the web resource relative to the root path of all the web resources
    * in Silverpeas as given by {@link SilverpeasWebResource#getBasePath()}.
    * @return the relative path that identifies this REST web service among all other REST web
    * services.
@@ -196,7 +207,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * user isn't already identified by this web service, then an identification is performed before
    * through an authentication operation followed by an authorization validation. If the
    * identification or the authorization fails, then a WebApplicationException is thrown with
-   * respectively a HTTP status code UNAUTHORIZED (401) or FORBIDEN (403). If the preferences can be
+   * respectively an HTTP status code UNAUTHORIZED (401) or FORBIDDEN (403). If the preferences can be
    * retrieved, then null is returned.
    *
    * @return the user preference or null if its preferences can be retrieved.
@@ -276,9 +287,8 @@ public abstract class RESTWebService implements ProtectedWebResource {
       WebTreatment<R> webTreatment) {
     WebProcess<R> process = new WebProcess<>(webTreatment);
     final String httpMethod = getHttpRequest().getMethod().toUpperCase();
-    if ("GET".equals(httpMethod)) {
-      // No lowest role as the access of the component has been already computed
-    } else {
+    if (!"GET".equals(httpMethod)) {
+      // case of side effect, processing can be done only under the correct lower role
       process.lowestAccessRole(SilverpeasRole.WRITER);
     }
     return process;
@@ -298,7 +308,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
      * Default constructor.
      * @param webTreatment a treatment to process.
      */
-    protected WebProcess(final WebTreatment<R> webTreatment) {
+    WebProcess(final WebTreatment<R> webTreatment) {
       this.webTreatment = webTreatment;
     }
 
@@ -317,7 +327,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
      * .WebTreatment} instance.
      * One of the aim of this mechanism is to centralize the exception catching and also to avoid
      * redundant coding around web exceptions.
-     * If a lowest role access is defined, the user must verify it.
+     * If the lowest role access is defined, the user must verify it.
      * If the user isn't authenticated, a 401 HTTP code is returned.
      * If a problem occurs when processing the request, a 503 HTTP code is returned.
      * @return the value computed by the specified web treatment.
@@ -347,24 +357,24 @@ public abstract class RESTWebService implements ProtectedWebResource {
   }
 
   /**
-   * Convenient method to build an URI from the request's absolute path and the specified
+   * Convenient method to build a URI from the request's absolute path and the specified
    * identifiers. Each identifier will be added to the absolute path as a path node in the
    * returned URI.
    * @param id one or more identifiers identifying uniquely the current requested web resource.
-   * @return an URI identifying uniquely in the Web the current requested resource.
+   * @return a URI identifying uniquely in the Web the current requested resource.
    */
   protected URI identifiedBy(final String... id) {
     return identifiedBy(getUri().getAbsolutePathBuilder(), id);
   }
 
   /**
-   * Convenient method to build an URI from the a base URI represented by the specified
+   * Convenient method to build a URI from the base URI represented by the specified
    * {@link UriBuilder} and from the specified identifiers. Each identifier will be added to the
    * base URI as a path node in the returned URI.
    * @param base a {@link UriBuilder} instance representing the base URI from which the resulted
    * URI will be computed.
-   * @param id one or more identifiers identifying the uniquely the current requested web resource.
-   * @return an URI identifying uniquely in the Web the current requested resource.
+   * @param id one or more identifiers identifying uniquely the current requested web resource.
+   * @return a URI identifying uniquely in the Web the current requested resource.
    */
   protected URI identifiedBy(final UriBuilder base, final String... id) {
     Stream.of(id).forEach(base::path);

@@ -39,7 +39,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * This class handles component file filters (authorized or forbidden files).
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 17/12/12
  */
 public class ComponentFileFilterParameter {
@@ -50,12 +50,12 @@ public class ComponentFileFilterParameter {
       ComponentInstanceParameterName.forbiddenFileExtension.getDefaultValue();
 
   /* Source component */
-  private SilverpeasComponentInstance component;
-  /* By default, the authorizations are given priority over forbiddens */
+  private final SilverpeasComponentInstance component;
+  /* By default, the authorizations are given priority over forbidden */
   private boolean isAuthorization = true;
   /* Defined file filters */
   private String fileFilters = null;
-  /* By default, the authorizations are given priority over forbiddens */
+  /* By default, the authorizations are given priority over forbidden */
   private boolean isFileFilterGloballySet = false;
   /* Collection of MIME-TYPE authorized or forbidden */
   private Collection<String> mimeTypes = null;
@@ -70,8 +70,8 @@ public class ComponentFileFilterParameter {
 
   /**
    * Getting component file filter from component instance.
-   * @param component
-   * @return
+   * @param component the component instance
+   * @return the file filter
    */
   public static ComponentFileFilterParameter from(final SilverpeasComponentInstance component) {
     return new ComponentFileFilterParameter(component).initialize();
@@ -79,7 +79,7 @@ public class ComponentFileFilterParameter {
 
   /**
    * Gets MIME-TYPES authorized or not.
-   * @return
+   * @return a collection of mime-types
    */
   private Collection<String> getMimeTypes() {
     return mimeTypes;
@@ -87,11 +87,11 @@ public class ComponentFileFilterParameter {
 
   /**
    * Initialize component file filter variables. By default, the authorizations are given priority
-   * over forbiddens.
+   * over forbidden.
    */
   private ComponentFileFilterParameter initialize() {
     if (mimeTypes == null) {
-      mimeTypes = new HashSet<String>();
+      mimeTypes = new HashSet<>();
 
       /* Excluding or including files ? */
 
@@ -147,9 +147,9 @@ public class ComponentFileFilterParameter {
     fileFilters = "";
     if (isDefined(definedFileFilters)) {
       fileFilters =
-          definedFileFilters.trim().replaceAll("[\\* ;,]+[\\.]", ",").replaceAll("[, ]+", ", ")
+          definedFileFilters.trim().replaceAll("[* ;,]+[.]", ",").replaceAll("[, ]+", ", ")
               .replaceAll("^, ", "");
-      for (String fileFilter : fileFilters.split("[,]")) {
+      for (String fileFilter : fileFilters.split(",")) {
         mimeTypes.add(FileUtil.getMimeType("file." + fileFilter.trim()));
       }
     }
@@ -157,7 +157,7 @@ public class ComponentFileFilterParameter {
 
   /**
    * Gets the component instance.
-   * @return
+   * @return the component instance.
    */
   public SilverpeasComponentInstance getComponent() {
     return component;
@@ -165,7 +165,7 @@ public class ComponentFileFilterParameter {
 
   /**
    * Indicates if getMimeTypes returns authorized or forbidden files.
-   * @return
+   * @return true for authorized files, false for forbidden files.
    */
   public boolean isAuthorization() {
     return isAuthorization;
@@ -173,7 +173,7 @@ public class ComponentFileFilterParameter {
 
   /**
    * Gets the current file filter.
-   * @return
+   * @return the current filter filename.
    */
   public String getFileFilters() {
     return fileFilters;
@@ -181,7 +181,7 @@ public class ComponentFileFilterParameter {
 
   /**
    * Indicates if the file filter is set globally.
-   * @return
+   * @return true if the file filter is set globally, false otherwise.
    */
   public boolean isFileFilterGloballySet() {
     return isFileFilterGloballySet;
@@ -189,8 +189,8 @@ public class ComponentFileFilterParameter {
 
   /**
    * Checks if the given file is authorized. If parameter is null, it is considered as forbidden.
-   * @param file
-   * @return
+   * @param file the file
+   * @return true if the specified file is authorized, false otherwise.
    */
   public boolean isFileAuthorized(final File file) {
     return file != null && isMimeTypeAuthorized(FileUtil.getMimeType(file.getPath()));
@@ -198,7 +198,7 @@ public class ComponentFileFilterParameter {
 
   /**
    * Throwing the component file filter exception (RuntimeException) if file is forbidden.
-   * @param file
+   * @param file the file
    */
   public void verifyFileAuthorized(final File file) {
     if (!isFileAuthorized(file)) {
@@ -213,8 +213,8 @@ public class ComponentFileFilterParameter {
   /**
    * Checks if the given mime type is authorized. If parameter is null, it is considered as
    * forbidden.
-   * @param mimeType
-   * @return
+   * @param mimeType the mime-type
+   * @return true if the mime-type is authorized, false otherwise.
    */
   public boolean isMimeTypeAuthorized(final String mimeType) {
     if (!getMimeTypes().isEmpty()) {

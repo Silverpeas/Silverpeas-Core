@@ -103,7 +103,6 @@ import java.util.stream.Stream;
 import static java.text.MessageFormat.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
-import static java.util.Objects.nonNull;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -113,7 +112,6 @@ import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGr
 import static org.silverpeas.core.admin.service.DefaultAdministration.CheckoutGroupDescriptor.synchronizingOneGroupWithSuperGroupId;
 import static org.silverpeas.core.util.ArrayUtil.contains;
 import static org.silverpeas.core.util.CollectionUtil.intersection;
-import static org.silverpeas.core.util.ResourceLocator.getOptionalSettingBundle;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
@@ -392,7 +390,7 @@ class DefaultAdministration implements Administration {
       SpaceInstLight space = getSpaceInstLight(spaceInst.getLocalId());
       addSpaceInTreeCache(space, true);
 
-      // indexation de l'espace
+      // indexation of the space
 
       createSpaceIndex(space);
 
@@ -433,7 +431,7 @@ class DefaultAdministration implements Administration {
 
       cache.opRemoveSpace(spaceInst);
       treeCache.removeSpace(driverSpaceId);
-      // desindexation de l'espace
+      // unindex the space
       deleteSpaceIndex(spaceInst);
       return spaceId;
     } catch (Exception e) {
@@ -447,8 +445,8 @@ class DefaultAdministration implements Administration {
     String[] subSpaceIds = getAllSubSpaceIdsWithoutCache(spaceId);
 
     // Delete subspaces
-    for (String subSpaceid : subSpaceIds) {
-      deleteSpaceInstById(userId, subSpaceid, true);
+    for (String subSpaceId : subSpaceIds) {
+      deleteSpaceInstById(userId, subSpaceId, true);
     }
 
     // Delete subspaces already in bin
@@ -510,7 +508,7 @@ class DefaultAdministration implements Administration {
 
     // delete the subspace profiles
     List<SpaceInst> subSpaces = spaceInst.getSubSpaces();
-    for (SpaceInst subSpace: subSpaces) {
+    for (SpaceInst subSpace : subSpaces) {
       deleteSpaceProfilesOnSpaceLogicalDeletion(subSpace);
     }
   }
@@ -531,11 +529,11 @@ class DefaultAdministration implements Administration {
 
       // Get the space and put it in the cache
       SpaceInst spaceInst = getSpaceInstById(driverSpaceId);
-      // set superspace profiles to space
+      // set super space profiles to space
       if (useProfileInheritance && !spaceInst.isInheritanceBlocked() && !spaceInst.isRoot()) {
         updateSpaceInheritance(spaceInst, false);
       }
-      // indexation de l'espace
+      // index the space
       createSpaceIndex(driverSpaceId);
       // reset space and eventually subspace
       cache.opAddSpace(spaceInst);
@@ -555,7 +553,6 @@ class DefaultAdministration implements Administration {
 
   /**
    * Get the space instance with the given space id
-   *
    * @param spaceId client space id
    * @return Space information as SpaceInst object
    */
@@ -603,7 +600,7 @@ class DefaultAdministration implements Administration {
 
   private String[] getAllSubSpaceIdsWithoutCache(String domainFatherId) throws AdminException {
     try {
-      // get all sub space ids
+      // get all space children ids
       String[] asDriverSpaceIds = spaceManager.getAllSubSpaceIds(getDriverSpaceId(domainFatherId));
       // Convert all the driver space ids in client space ids
       return getClientSpaceIds(asDriverSpaceIds);
@@ -632,7 +629,7 @@ class DefaultAdministration implements Administration {
       spaceLight.setInheritanceBlocked(spaceInstNew.isInheritanceBlocked());
       treeCache.updateSpace(spaceLight);
 
-      // indexation de l'espace
+      // indexation of the space
 
       createSpaceIndex(spaceLight);
       return spaceInstNew.getId();
@@ -671,7 +668,6 @@ class DefaultAdministration implements Administration {
    * Update the inheritance mode between a subSpace and its space. If inheritanceBlocked is true
    * then all inherited space profiles are removed. If inheritanceBlocked is false then all subSpace
    * profiles are removed and space profiles are inherited.
-   *
    * @param space a space instance
    * @param inheritanceBlocked is inheritance is blocked?
    * @throws AdminException if an error occurs
@@ -681,7 +677,7 @@ class DefaultAdministration implements Administration {
     try {
       final SpaceInst parentSpace;
       if (inheritanceBlocked) {
-        // 1 - suppression des droits hérités de l'espace
+        // 1 - delete the rights inherited from the space
         List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
         for (SpaceProfileInst profile : inheritedProfiles) {
           deleteSpaceProfileInst(profile.getId());
@@ -689,8 +685,8 @@ class DefaultAdministration implements Administration {
         // Parent space is itself
         parentSpace = getSpaceInstById(space.getId());
       } else {
-        // Héritage des droits de l'espace
-        // 1 - suppression des droits spécifiques du sous espace
+        // Inheritance of the space rights
+        // 1 - delete the rights specific to the child space
         List<SpaceProfileInst> profiles = space.getProfiles();
         for (SpaceProfileInst profile : profiles) {
           if (profile != null && !profile.isManager()) {
@@ -701,7 +697,7 @@ class DefaultAdministration implements Administration {
         parentSpace = null;
       }
       if (!space.isRoot()) {
-        // 2 - affectation des droits de l'espace au sous espace
+        // 2 - setting of the rights from the parent space to the child space
         setSpaceProfilesToSubSpace(space, parentSpace, true);
       }
     } catch (AdminException e) {
@@ -1084,7 +1080,7 @@ class DefaultAdministration implements Administration {
       ComponentInstLight component = getComponentInstLight(componentId);
       treeCache.addComponent(component, getDriverSpaceId(spaceInstFather.getId()));
 
-      // indexation du composant
+      // indexation of the component
       createComponentIndex(component);
 
       return componentId;
@@ -1109,14 +1105,12 @@ class DefaultAdministration implements Administration {
 
   /**
    * Deletes the given component instance in Silverpeas
-   *
    * @param userId the unique identifier of the user requesting the deletion.
    * @param componentId the client identifier of the component instance (for a kmelia instance of id
    * 666, the client identifier of the instance is kmelia666)
    * @param definitive is the component instance deletion is definitive? If not, the component
    * instance is moved into the bin.
-   * @throws AdminException if an error occurs while deleting the
-   * component instance.
+   * @throws AdminException if an error occurs while deleting the component instance.
    */
   @Override
   public String deleteComponentInst(String userId, String componentId, boolean definitive)
@@ -1151,7 +1145,7 @@ class DefaultAdministration implements Administration {
         componentManager.sendComponentToBasket(componentInst, userId);
       } else {
         try (Connection connection = DBUtil.openConnection()) {
-          // Uninstantiate the components
+          // dispose the components
           String componentName = componentInst.getName();
 
           ComponentInstancePreDestruction.get(componentName)
@@ -1187,7 +1181,7 @@ class DefaultAdministration implements Administration {
       }
 
       return componentId;
-    } catch (SQLException|ContentManagerException e) {
+    } catch (SQLException | ContentManagerException e) {
       throw new AdminException(failureOnDeleting(COMPONENT, componentId), e);
     }
   }
@@ -1222,7 +1216,7 @@ class DefaultAdministration implements Administration {
       cache.opUpdateComponent(component);
       treeCache.updateComponent(getComponentInstLight(component.getId()));
 
-      // indexation du composant
+      // indexation of the component
       createComponentIndex(componentClientId);
 
       return componentClientId;
@@ -1235,7 +1229,6 @@ class DefaultAdministration implements Administration {
    * Update the inheritance mode between a component and its space. If inheritanceBlocked is true
    * then all inherited space profiles are removed. If inheritanceBlocked is false then all
    * component profiles are removed and space profiles are inherited.
-   *
    * @param component a component instance
    * @param inheritanceBlocked is the inheritance blocked?
    * @throws AdminException if an error occurs.
@@ -1244,18 +1237,18 @@ class DefaultAdministration implements Administration {
       throws AdminException {
     try {
       if (inheritanceBlocked) {
-        // suppression des droits hérités de l'espace
+        // deletion of the rights inherited from the space
         List<ProfileInst> inheritedProfiles = component.getInheritedProfiles();
         for (ProfileInst profile : inheritedProfiles) {
           deleteProfileInst(profile.getId());
         }
       } else {
-        // suppression des droits du composant
+        // deletion of the component rights
         List<ProfileInst> profiles = component.getProfiles();
         for (ProfileInst profile : profiles) {
           deleteProfileInst(profile.getId());
         }
-        // affectation des droits de l'espace
+        // setting of the rights from the space
         setSpaceProfilesToComponent(component, null);
       }
     } catch (AdminException e) {
@@ -1300,7 +1293,6 @@ class DefaultAdministration implements Administration {
 
   /**
    * Set space profile to a subspace. There is no persistence. The subspace object is enriched.
-   *
    * @param subSpace the object to set profiles
    * @param space the object to get profiles
    * @param role the name of the profile
@@ -1563,7 +1555,7 @@ class DefaultAdministration implements Administration {
     try {
 
       int sDriverComponentId = getDriverComponentId(componentId);
-      // Convert the client space Id in driver space Id
+      // Convert the client space id to driver space id
       int sDriverSpaceId = getDriverSpaceId(spaceId);
 
       ComponentInst componentInst = getComponentInst(componentId);
@@ -1572,7 +1564,7 @@ class DefaultAdministration implements Administration {
       componentManager.moveComponentInst(sDriverSpaceId, sDriverComponentId);
       componentInst.setDomainFatherId(String.valueOf(sDriverSpaceId));
 
-      // set space profiles to component if it not use its own rights
+      // set space profiles to component if it doesn't use its own rights
       if (!componentInst.isInheritanceBlocked()) {
         setSpaceProfilesToComponent(componentInst, null);
       }
@@ -1719,7 +1711,7 @@ class DefaultAdministration implements Administration {
         componentIds.stream().collect(toMap(this::getDriverComponentId, i -> i));
     final List<String> groups = getAllGroupsOfUser(userId);
     return profiledObjectManager.getUserProfileNames(profiledObjectIds, localComponentIds.keySet(),
-        Integer.parseInt(userId), groups)
+            Integer.parseInt(userId), groups)
         .entrySet()
         .stream()
         .collect(toMap(
@@ -1908,7 +1900,8 @@ class DefaultAdministration implements Administration {
   @Override
   public String deleteSpaceProfileInst(String sSpaceProfileId, String userId)
       throws AdminException {
-    SpaceProfileInst spaceProfileInst = spaceProfileManager.getSpaceProfileInst(sSpaceProfileId, true);
+    SpaceProfileInst spaceProfileInst =
+        spaceProfileManager.getSpaceProfileInst(sSpaceProfileId, true);
     if (spaceProfileInst == null) {
       return sSpaceProfileId;
     }
@@ -1953,7 +1946,7 @@ class DefaultAdministration implements Administration {
           // Spreading the specific rights
           final SpaceProfileInst spaceSpecificProfile =
               spaceProfileManager.getSpaceProfileInstByName(
-              spaceId, newSpaceProfile.getName());
+                  spaceId, newSpaceProfile.getName());
           if (spaceSpecificProfile != null) {
             final SpaceProfileInst profileToSpread = new SpaceProfileInst();
             profileToSpread.setName(newSpaceProfile.getName());
@@ -1995,7 +1988,8 @@ class DefaultAdministration implements Administration {
         }
         spreadSpaceProfile(spaceId, profileToSpread);
       }
-      cache.opUpdateSpaceProfile(spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId(), false));
+      cache.opUpdateSpaceProfile(
+          spaceProfileManager.getSpaceProfileInst(newSpaceProfile.getId(), false));
 
       return spaceProfileNewId;
     } catch (Exception e) {
@@ -2009,22 +2003,11 @@ class DefaultAdministration implements Administration {
 
   private List<String> componentRole2SpaceRoles(String componentRole, String componentName) {
     List<String> roles = new ArrayList<>();
-
-    String role = spaceRole2ComponentRole(SilverpeasRole.ADMIN.toString(), componentName);
-    if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.ADMIN.toString());
-    }
-    role = spaceRole2ComponentRole(SilverpeasRole.PUBLISHER.toString(), componentName);
-    if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.PUBLISHER.toString());
-    }
-    role = spaceRole2ComponentRole(SilverpeasRole.WRITER.toString(), componentName);
-    if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.WRITER.toString());
-    }
-    role = spaceRole2ComponentRole(SilverpeasRole.READER.toString(), componentName);
-    if (role != null && role.equalsIgnoreCase(componentRole)) {
-      roles.add(SilverpeasRole.READER.toString());
+    for (var role : InheritableSpaceRoles.getAllRoles()) {
+      String mappedRole = spaceRole2ComponentRole(role.getName(), componentName);
+      if (mappedRole != null && mappedRole.equalsIgnoreCase(componentRole)) {
+        roles.add(role.getName());
+      }
     }
     return roles;
   }
@@ -2249,7 +2232,8 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public List<GroupDetail> deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException {
+  public List<GroupDetail> deleteGroupById(String sGroupId, boolean onlyInSilverpeas)
+      throws AdminException {
     // Get group information
     GroupDetail group = getGroup(sGroupId);
     if (group == null) {
@@ -2993,7 +2977,7 @@ class DefaultAdministration implements Administration {
       String sDomainId = loginDomain.get(DOMAIN_ID_PARAM);
 
       DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
-      // Get the user Id or import it if the domain accept it
+      // Get the user id or import it if the domain accept it
       sUserId = synchroGetUserId(isAppInMaintenance, sLogin, sDomainId, synchroDomain);
       // Synchronize the user if the domain needs it
       doSynchronizeUser(sUserId, synchroDomain, isAppInMaintenance);
@@ -3049,7 +3033,7 @@ class DefaultAdministration implements Administration {
   public String[] getUserSpaceIds(String sUserId) throws AdminException {
     List<String> spaceIds = new ArrayList<>();
 
-    // getting all components availables
+    // getting all available components
     List<String> componentIds = getAllowedComponentIds(sUserId);
     for (String componentId : componentIds) {
       List<SpaceInstLight> spaces = treeCache.getComponentPath(componentId);
@@ -3093,7 +3077,7 @@ class DefaultAdministration implements Administration {
   @Override
   public String[] getUserRootSpaceIds(String sUserId) throws AdminException {
     try {
-      // getting all components availables
+      // getting all available components
       final List<String> componentIds = getAllowedComponentIds(sUserId);
       return getRootSpaceIds(componentIds);
     } catch (Exception e) {
@@ -3114,7 +3098,7 @@ class DefaultAdministration implements Administration {
   @Override
   public String[] getUserSubSpaceIds(String sUserId, String spaceId) throws AdminException {
     try {
-      // getting all components availables
+      // getting all available components
       final List<String> componentIds = getAllowedComponentIds(sUserId);
       return getSubSpaceIds(componentIds, spaceId, true);
     } catch (Exception e) {
@@ -3227,7 +3211,8 @@ class DefaultAdministration implements Administration {
    * @param componentsId list of components' id (base to get authorized spaces)
    * @param space a space candidate to be in authorized spaces list
    */
-  private void addAuthorizedSpace(Set<Integer> spaces, Set<String> componentsId, SpaceInstLight space) {
+  private void addAuthorizedSpace(Set<Integer> spaces, Set<String> componentsId,
+      SpaceInstLight space) {
     if (!SpaceInst.STATUS_REMOVED.equals(space.getStatus()) &&
         !spaces.contains(space.getLocalId())) {
       int spaceId = space.getLocalId();
@@ -3384,7 +3369,7 @@ class DefaultAdministration implements Administration {
           alManageableSpaceIds.add(asManageableSpaceId);
         }
 
-        // calculate manageable space's childs
+        // calculate manageable space's children
         childSpaceIds = spaceManager.getAllSubSpaceIds(spaceId);
         // add them in result
         for (String childSpaceId : childSpaceIds) {
@@ -3427,7 +3412,7 @@ class DefaultAdministration implements Administration {
             alDriverManageableSpaceIds.add(asManageableSpaceId);
           }
 
-          // calculate manageable space's childs
+          // calculate manageable space's children
           childSpaceIds = spaceManager.getAllSubSpaceIds(asManageableSpaceId);
 
           // add them in result
@@ -3757,7 +3742,7 @@ class DefaultAdministration implements Administration {
       for (ComponentInstLight componentInst : components) {
         // Create new instance of CompoSpace
         CompoSpace compoSpace = new CompoSpace();
-        // Set the component Id
+        // Set the component id
         compoSpace.setComponentId(componentInst.getId());
         // Set the component label
         if (StringUtil.isDefined(componentInst.getLabel())) {
@@ -3786,11 +3771,11 @@ class DefaultAdministration implements Administration {
   @Override
   public String[] getCompoId(String sComponentName) throws AdminException {
     try {
-      // Build the list of instanciated components with given componentName
+      // Build the list of instantiated components with given componentName
       String[] matchingComponentIds =
           componentManager.getAllCompoIdsByComponentName(sComponentName);
 
-      // check TreeCache to know if component is not removed neither into a removed space
+      // check TreeCache to know if component is not removed nor is into a removed space
       List<String> shortIds = new ArrayList<>();
       for (String componentId : matchingComponentIds) {
         Optional<ComponentInstLight> component =
@@ -3813,7 +3798,7 @@ class DefaultAdministration implements Administration {
       final List<ComponentInstLight> components = new ArrayList<>();
       for (Integer id : componentIds) {
         ComponentInst component = getComponentInst(id, null);
-        // check TreeCache to know if component is not removed neither into a removed space
+        // check TreeCache to know if component is not removed nor is into a removed space
         Optional<ComponentInstLight> componentLight = treeCache.getComponent(component.getId());
         componentLight.filter(c -> !c.isRemoved()).ifPresent(components::add);
       }
@@ -3963,10 +3948,10 @@ class DefaultAdministration implements Administration {
       return new UserDetail[0];
     }
     String[] usersIds = theGroup.getUserIds();
-    if (usersIds == null || usersIds.length <= 0) {
+    if (usersIds == null || usersIds.length == 0) {
       return new UserDetail[0];
     }
-    if (sUserLastNameFilter == null || sUserLastNameFilter.length() <= 0) {
+    if (sUserLastNameFilter == null || sUserLastNameFilter.length() == 0) {
       return getUserDetails(usersIds);
     }
     String upperFilter = sUserLastNameFilter.toUpperCase();
@@ -4128,7 +4113,8 @@ class DefaultAdministration implements Administration {
             "Ajout de " + newUsers.size() + " utilisateur(s)");
         if (!newUsers.isEmpty()) {
           SynchroGroupReport.debug("admin.synchronizeGroup()",
-              () -> "Ajout de l'utilisateur d'ID " + String.join(", ", newUsers) + " dans le groupe d'ID " +
+              () -> "Ajout de l'utilisateur d'ID " + String.join(", ", newUsers) +
+                  " dans le groupe d'ID " +
                   groupId);
           groupManager.addUsersInGroup(newUsers, groupId);
         }
@@ -4529,7 +4515,7 @@ class DefaultAdministration implements Administration {
                   throw new AdminException(
                       "Fail to synchronize domain " + sDomainId + ". Report: " + sReport, e);
                 } finally {
-                  SynchroDomainReport.stopSynchro();// Fin de synchro avec la Popup d'affichage
+                  SynchroDomainReport.stopSynchro();// Synchro ending with a popup
                   // Reset the cache
                   cache.resetCache();
                 }
@@ -4992,8 +4978,8 @@ class DefaultAdministration implements Administration {
       allSilverpeasGroups.stream()
           // search for group in distant datasource
           .filter(s -> distantGroups.stream().noneMatch(d ->
-                  d.getSpecificId().equals(s.getSpecificId()) ||
-                      (shouldFallbackGroupNames && d.getName().equals(s.getSpecificId()))))
+              d.getSpecificId().equals(s.getSpecificId()) ||
+                  (shouldFallbackGroupNames && d.getName().equals(s.getSpecificId()))))
           // not already removed
           .filter(not(GroupDetail::isRemovedState))
           // if found, do nothing, else delete
@@ -5026,7 +5012,8 @@ class DefaultAdministration implements Administration {
         groupSynchroScheduler.removeFromContext(g);
         cache.opRemoveGroup(g);
         context.getRemovedGroups().put(g.getId(), g);
-        context.appendToReport(format("removing group {0} (id:{1})\n", g.getName(), g.getSpecificId()));
+        context.appendToReport(
+            format("removing group {0} (id:{1})\n", g.getName(), g.getSpecificId()));
         SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
             "GroupDetail " + g.getName() + " removed (SpecificId:" + g.getSpecificId() + ")");
       });
@@ -5040,11 +5027,11 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Checks for new groups resursively
+   * Checks for new groups recursively
    */
-  // Au 1er appel : (domainId,silverpeasGroups,distantRootGroups,
+  // In first call: (domainId,silverpeasGroups,distantRootGroups,
   // allDistantGroups(vide), userIds, null)
-  // No need to refresh cache : the cache is reset at the end of the synchronization
+  // No need to refresh cache: the cache is reset at the end of the synchronization
   private void checkOutGroups(final SyncOfGroupsContext context,
       final CheckoutGroupDescriptor descriptor) throws AdminException {
     // Add new groups or existing ones to update from distant data source
@@ -5065,8 +5052,10 @@ class DefaultAdministration implements Administration {
             "avant maj du groupe " + specificId + ", recherche de ses groupes parents");
         final GroupDetail silverpeasGroup = foundGroup.get();
         if (silverpeasGroup.isRemovedState()) {
-          silverpeasId = restoreGroupDuringSynchronization(context, descriptor, distantGroup, silverpeasGroup);
-        } else if (mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup, silverpeasGroup)) {
+          silverpeasId =
+              restoreGroupDuringSynchronization(context, descriptor, distantGroup, silverpeasGroup);
+        } else if (mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup,
+            silverpeasGroup)) {
           silverpeasId = updateGroupDuringSynchronization(context, specificId, silverpeasGroup);
         } else {
           silverpeasId = silverpeasGroup.getId();
@@ -5091,7 +5080,8 @@ class DefaultAdministration implements Administration {
       final GroupDetail updatedRestoreData = getGroup(silverpeasGroup.getId());
       silverpeasGroup.setState(updatedRestoreData.getState());
       silverpeasGroup.setStateSaveDate(updatedRestoreData.getStateSaveDate());
-      if (mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup, silverpeasGroup)) {
+      if (mergeDistantGroupIntoSilverpeasGroup(context, descriptor, distantGroup,
+          silverpeasGroup)) {
         groupManager.updateGroup(silverpeasGroup, false);
       }
       final String groupId = silverpeasGroup.getId();
@@ -5167,7 +5157,8 @@ class DefaultAdministration implements Administration {
   }
 
   @Nullable
-  private String addGroupDuringSynchronization(final SyncOfGroupsContext context, final String specificId,
+  private String addGroupDuringSynchronization(final SyncOfGroupsContext context,
+      final String specificId,
       final GroupDetail group) {
     String silverpeasId = null;
     try {
@@ -5178,7 +5169,7 @@ class DefaultAdministration implements Administration {
         SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
             "ajout groupe " + group.getName() + ID_IS + silverpeasId + ") OK");
       } else {
-        // le name groupe non renseigné
+        // the group name not defined
         context.appendToReport(format("problem adding group id: {0}", specificId));
       }
     } catch (AdminException aeAdd) {
@@ -5197,11 +5188,12 @@ class DefaultAdministration implements Administration {
       if (StringUtil.isDefined(result)) {
         context.getUpdatedGroups().put(group.getId(), group);
         silverpeasId = group.getId();
-        context.appendToReport(format("updating group {0} (id:{1})\n", group.getName(), specificId));
+        context.appendToReport(
+            format("updating group {0} (id:{1})\n", group.getName(), specificId));
         SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
             "maj groupe " + group.getName() + ID_IS + silverpeasId + ") OK");
       } else {
-        // le name groupe non renseigné
+        // the group name not defined
         SilverLogger.getLogger(this)
             .error("Full Synchro: error while updating group {0}", specificId);
         context.appendToReport(format("problem updating group id : {0}\n", specificId));
@@ -5243,7 +5235,7 @@ class DefaultAdministration implements Administration {
       SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
           "le groupe " + specificId + " n'a pas de père");
     } else {
-      // sécurité
+      // security
       final String superGroupId = descriptor.getSuperGroupId();
       group.setSuperGroupId(superGroupId);
       if (superGroupId != null) {
@@ -5333,9 +5325,9 @@ class DefaultAdministration implements Administration {
       final SilverpeasComponentInstance instance, final UserDetailsSearchCriteria searchCriteria) {
     final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
     return Optional.of(instance.getSilverpeasRolesFor(user)
-        .stream()
-        .map(SilverpeasRole::getName)
-        .collect(toList()))
+            .stream()
+            .map(SilverpeasRole::getName)
+            .collect(toList()))
         .filter(r -> listOfRoleNames.isEmpty() || !intersection(r, listOfRoleNames).isEmpty())
         .filter(r -> !searchCriteria.isCriterionOnUserIdsSet() ||
             contains(searchCriteria.getCriterionOnUserIds(), user.getId()))
@@ -5706,7 +5698,6 @@ class DefaultAdministration implements Administration {
   /**
    * Gets all the profile instances defined for the specified resource in the specified component
    * instance.
-   *
    * @param resourceId the unique identifier of a resource managed in a component instance.
    * @param instanceId the unique identifier of the component instance.
    * @return a list of profile instances.
@@ -5726,7 +5717,7 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the space profiles Id for the given user without group transitivity.
+   * Get all the space profiles identifier for the given user without group transitivity.
    */
   private String[] getDirectSpaceProfileIdsOfUser(String sUserId) throws AdminException {
     try {
@@ -5737,7 +5728,7 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the space profiles Id for the given group
+   * Get all the space profiles identifier for the given group
    */
   private String[] getDirectSpaceProfileIdsOfGroup(String groupId) throws AdminException {
     try {
@@ -5748,8 +5739,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component profile ids for the given user without group transitivity.
-   * (component object profiles are not retrieved)
+   * Get all the component profile ids for the given user without group transitivity. (component
+   * object profiles are not retrieved)
    */
   private String[] getDirectComponentProfileIdsOfUser(String sUserId) throws AdminException {
     try {
@@ -5760,8 +5751,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component profile ids for the given group.
-   * (component object profiles are not retrieved)
+   * Get all the component profile ids for the given group. (component object profiles are not
+   * retrieved)
    */
   private String[] getDirectComponentProfileIdsOfGroup(String groupId) throws AdminException {
     try {
@@ -5772,8 +5763,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component object profile ids for the given user.
-   * (direct component profiles are not retrieved)
+   * Get all the component object profile ids for the given user. (direct component profiles are not
+   * retrieved)
    */
   private String[] getComponentObjectProfileIdsOfUserType(String userId) throws AdminException {
     try {
@@ -5785,8 +5776,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component object profile ids for the given group.
-   * (direct component profiles are not retrieved)
+   * Get all the component object profile ids for the given group. (direct component profiles are
+   * not retrieved)
    */
   private String[] getComponentObjectProfileIdsOfGroupType(String sGroupId) throws AdminException {
     try {
@@ -5803,7 +5794,7 @@ class DefaultAdministration implements Administration {
   private void addTargetProfiles(RightAssignationContext context, String[] sourceSpaceProfileIds,
       String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) throws AdminException {
 
-    //Add space rights (and sub-space and components, by inheritance)
+    //Add space rights (and children spaces and components, by inheritance)
     for (String spaceProfileId : sourceSpaceProfileIds) {
       SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
       if (currentSourceSpaceProfile != null) {
@@ -5857,7 +5848,7 @@ class DefaultAdministration implements Administration {
       final String[] spaceProfileIdsToDeleteForTarget, final String[] componentProfileIdsForTarget)
       throws AdminException {
 
-    // Delete space rights (and sub-space and components, by inheritance) for target
+    // Delete space rights (and children spaces and components, by inheritance) for target
     for (String spaceProfileId : spaceProfileIdsToDeleteForTarget) {
       SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
       SpaceInstLight spaceInst =
@@ -6092,30 +6083,33 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * This manager is in charge of providing the role mapping between a space and a component.
-   * For example, a 'manager' at space level can be mapped to 'user' at component child.
+   * This manager is in charge of providing the role mapping between a space and a component. For
+   * example, a 'manager' at space level can be mapped to 'user' at component child.
    */
   private static class AppRoleMappingManager {
     private final WAComponentRegistry componentRegistry;
-    private final SettingBundle commonMapping;
 
     private AppRoleMappingManager(final WAComponentRegistry componentRegistry) {
       this.componentRegistry = componentRegistry;
-      commonMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
     }
 
     /**
-     * Gets the mapped component role from space role.
+     * Gets the role in the component that is mapped with the specified space role. By convention,
+     * whether there is no explicit mapping defined in the component descriptor, the role in the
+     * component is mapped to the role in the space on their name (they have the same
+     * name).
      * @param spaceRole the role at space level.
      * @param componentName the name of the aimed component.
-     * @return a string representing a role.
+     * @return the name of the role in the component that is mapped with the specified space role
+     * name. Or null if no such mapping exists, even by taking into account the default mapping
+     * rule.
      */
+    @Nullable
     private String spaceRoleToComponentOne(final String spaceRole, final String componentName) {
       return componentRegistry.getWAComponent(componentName)
           .stream()
           .map(WAComponent::getProfiles)
           .flatMap(l -> l.stream()
-              .filter(p -> nonNull(p.getSpaceProfileMapping()))
               .filter(p -> p.getSpaceProfileMapping()
                   .getProfiles()
                   .stream()
@@ -6123,12 +6117,7 @@ class DefaultAdministration implements Administration {
                   .anyMatch(s -> s.equals(spaceRole)))
               .map(Profile::getName))
           .findFirst()
-          .orElseGet(() -> {
-            final String roleKey = componentName + "_" + spaceRole;
-            return getOptionalSettingBundle("org.silverpeas." + componentName + ".roleMapping")
-                .map(s -> s.getString(roleKey, null))
-                .orElseGet(() -> commonMapping.getString(roleKey, null));
-          });
+          .orElse(null);
     }
   }
 }

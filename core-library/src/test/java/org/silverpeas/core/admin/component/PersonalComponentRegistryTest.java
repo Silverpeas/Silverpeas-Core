@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class PersonalComponentRegistryTest {
+class PersonalComponentRegistryTest {
 
   private PersonalComponentRegistry registry;
 
@@ -55,13 +55,13 @@ public class PersonalComponentRegistryTest {
   }
 
   @Test
-  public void getAllPersonalComponentShouldWork() {
+  void getAllPersonalComponentShouldWork() {
     assertThat(registry.getAllPersonalComponents().size(), is(2));
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Test
-  public void getUserCalendarPersonalComponentShouldWork() {
+  void getUserCalendarPersonalComponentShouldWork() {
     Optional<PersonalComponent> result = registry.getPersonalComponent("userCalendar");
     assertThat(result.isPresent(), is(true));
 
@@ -82,7 +82,7 @@ public class PersonalComponentRegistryTest {
   }
 
   @Test
-  public void getUnknownPersonalComponentShouldReturnOptionalEmptyResult() {
+  void getUnknownPersonalComponentShouldReturnOptionalEmptyResult() {
     Optional<PersonalComponent> result = registry.getPersonalComponent("unknown");
     assertThat(result.isPresent(), is(false));
   }

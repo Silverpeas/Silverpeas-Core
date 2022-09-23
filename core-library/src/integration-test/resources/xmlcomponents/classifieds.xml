@@ -24,8 +24,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>classifieds</name>
   <label>
     <message lang="fr">Petites annonces</message>
@@ -34,10 +35,10 @@
   </label>
   <description>
     <message lang="fr">Les annonces peuvent être classées par thématiques.
-		La structure des annonces est personnalisable. Elles peuvent être modérées. Les
-		utilisateurs peuvent laisser des commentaires et s’abonner aux thématiques de
-		leurs choix.
-	</message>
+      La structure des annonces est personnalisable. Elles peuvent être modérées. Les
+      utilisateurs peuvent laisser des commentaires et s’abonner aux thématiques de
+      leurs choix.
+    </message>
     <message lang="en">Classified adds are organized by categories and types</message>
     <message lang="de">Kleinanzeigen organisiert nach Art und Kategorie</message>
   </description>
@@ -58,39 +59,51 @@
       <help>
         <message lang="fr">Les gestionnaires modèrent et valident les annonces.</message>
         <message lang="en">Administrators manage and validate adds.</message>
-		<message lang="de">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Annonceurs</message>
         <message lang="en">Authors</message>
-		<message lang="de">Autor</message>
+        <message lang="de">Autor</message>
       </label>
       <help>
         <message lang="fr">Les annonceurs créent des annonces.</message>
         <message lang="en">Authors create classified adds.</message>
-	<message lang="de">Autor</message>
+        <message lang="de">Autor</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
-	<profile name="reader">
-     <label>
-       <message lang="fr">Lecteurs</message>
-       <message lang="en">Readers</message>
-     </label>
-     <help>
-       <message lang="fr">Les lecteurs consultent les petites annonces et peuvent laisser des commentaires.</message>
-       <message lang="en">Readers consult classified adds and can leave comments.</message>
-     </help>
-   </profile>
+    <profile name="reader">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs consultent les petites annonces et peuvent laisser des
+          commentaires.
+        </message>
+        <message lang="en">Readers consult classified adds and can leave comments.</message>
+      </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
+    </profile>
   </profiles>
   <parameters>
-	<parameter>
+    <parameter>
       <name>homePage</name>
       <label>
         <message lang="fr">Page d'accueil</message>
         <message lang="en">Homepage</message>
-		<message lang="de">Home page</message>
+        <message lang="de">Home page</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -133,7 +146,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'activer la possibilité de personnaliser l'entête de la page d'accueil</message>
+        <message lang="fr">Permet d'activer la possibilité de personnaliser l'entête de la page
+          d'accueil
+        </message>
         <message lang="en">Enables ability to customize welcome page header</message>
       </help>
     </parameter>
@@ -142,7 +157,7 @@
       <label>
         <message lang="fr">Formulaire XML</message>
         <message lang="en">XML Form</message>
-		<message lang="de">XML Formular</message>
+        <message lang="de">XML Formular</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -169,9 +184,12 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Sur la page principale, les annonces sont regroupées selon ces catégories</message>
-        <message lang="en">On the main page, classifieds are grouped according to these categories</message>
-		<message lang="de">Erstes Suchfeld</message>
+        <message lang="fr">Sur la page principale, les annonces sont regroupées selon ces
+          catégories
+        </message>
+        <message lang="en">On the main page, classifieds are grouped according to these categories
+        </message>
+        <message lang="de">Erstes Suchfeld</message>
       </help>
     </parameter>
     <parameter>
@@ -179,7 +197,7 @@
       <label>
         <message lang="fr">Champs recherche 2</message>
         <message lang="en">Search field 2</message>
-		<message lang="de">Suchfeld 2</message>
+        <message lang="de">Suchfeld 2</message>
       </label>
       <order>5</order>
       <mandatory>false</mandatory>
@@ -190,7 +208,7 @@
       <help>
         <message lang="fr">Ce second critère est le second champ dédié aux abonnements</message>
         <message lang="en">This second criteria is devoted to subscriptions</message>
-		<message lang="de">Zweites Suchfeld</message>
+        <message lang="de">Zweites Suchfeld</message>
       </help>
     </parameter>
     <parameter>
@@ -206,9 +224,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</message>
-        <message lang="en">Draft mode enables you to work on a classified whilst being invisible to other users.</message>
-        <message lang="de">Eine Kleinanzeigen im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
+        <message lang="fr">Le mode brouillon permet de travailler sur une annonce sans que personne
+          d'autre ne puisse la voir.
+        </message>
+        <message lang="en">Draft mode enables you to work on a classified whilst being invisible to
+          other users.
+        </message>
+        <message lang="de">Eine Kleinanzeigen im Entwurfs-Modus ist nur für den Autor sichtbar, so
+          kann er daran arbeiten.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -224,7 +248,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'activer la validation des annonces par les gestionnaires</message>
+        <message lang="fr">Permet d'activer la validation des annonces par les gestionnaires
+        </message>
         <message lang="en">Enables validation of classified ads by the managers</message>
         <message lang="de">Ermöglicht die Validierung von Kleinanzeigen von den Managern</message>
       </help>
@@ -241,7 +266,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'activer la possibilité de laisser des commentaires sur une annonce</message>
+        <message lang="fr">Permet d'activer la possibilité de laisser des commentaires sur une
+          annonce
+        </message>
         <message lang="en">Enables ability to post comments on adds</message>
       </help>
     </parameter>
@@ -258,7 +285,8 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de spécifier un délai d'expiration spécifique à cette instance</message>
+        <message lang="fr">Permet de spécifier un délai d'expiration spécifique à cette instance
+        </message>
         <message lang="en">Allow a specific setup of expiration delay for this instance</message>
       </help>
     </parameter>

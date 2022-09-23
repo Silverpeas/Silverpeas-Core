@@ -64,7 +64,7 @@ public abstract class AbstractSilverpeasComponent implements SilverpeasComponent
 
   /**
    * Gets defined parameters indexed by their names.
-   * @return
+   * @return a dictionary with all the parameters indexed by their name.
    */
   protected Map<String, Parameter> getIndexedParametersByName() {
     List<Parameter> definedParameters = getParameters();

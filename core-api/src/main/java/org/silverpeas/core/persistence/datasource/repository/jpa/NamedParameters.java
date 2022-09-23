@@ -38,7 +38,7 @@ import java.util.Map;
  * This class permits to handle as a friendly way the named parameters of a query.
  * <p>
  * Use {@link #add} method to add a named parameter (its name, its value and
- * optionaly a temporal type).
+ * optionally a temporal type).
  * <p>
  * Use {@link #applyTo} to apply the named parameter to the query. This method returns the query
  * passed, so that query methods can be called directly in one line of code.
@@ -48,13 +48,13 @@ import java.util.Map;
 public class NamedParameters implements Parameters {
 
   private String lastParameterName;
-  final Map<String, NamedParameter<?, ?>> namedParameters;
+  final Map<String, NamedParameter<?>> parametersPerName;
 
   /**
    * Default constructor.
    */
   NamedParameters() {
-    namedParameters = new LinkedHashMap<>();
+    parametersPerName = new LinkedHashMap<>();
   }
 
   /**
@@ -70,8 +70,8 @@ public class NamedParameters implements Parameters {
    * @param parameterName the name of the parameter.
    * @return the parameter or null if no such parameter exists.
    */
-  public NamedParameter getParameter(final String parameterName) {
-    return namedParameters.get(parameterName);
+  public NamedParameter<?> getParameter(final String parameterName) {
+    return parametersPerName.get(parameterName);
   }
 
   /**
@@ -96,29 +96,29 @@ public class NamedParameters implements Parameters {
   public NamedParameters add(final String name, final Object value,
       final TemporalType temporalType) {
     if (value instanceof Object[] && ((Object[]) value)[0] instanceof Date && temporalType != null) {
-      namedParameters.put(name,
+      parametersPerName.put(name,
           new DateCollectionNamedParameter(name, CollectionUtil.asSet((Date[]) value),
               temporalType));
-    } else if (value instanceof Collection && !((Collection) value).isEmpty() &&
-        ((Collection) value).iterator().next() instanceof Date && temporalType != null) {
-      namedParameters.put(name,
-          new DateCollectionNamedParameter(name, new HashSet<Date>((Collection) value),
+    } else if (value instanceof Collection && !((Collection<?>) value).isEmpty() &&
+        ((Collection<?>) value).iterator().next() instanceof Date && temporalType != null) {
+      parametersPerName.put(name,
+          new DateCollectionNamedParameter(name, new HashSet<>((Collection<? extends Date>) value),
               temporalType)
       );
     } else if (value instanceof Date && temporalType != null) {
-      namedParameters.put(name, new DateNamedParameter(name, (Date) value, temporalType));
+      parametersPerName.put(name, new DateNamedParameter(name, (Date) value, temporalType));
     } else if (value instanceof Object[] && ((Object[]) value).length > 0 &&
         ((Object[]) value)[0] instanceof Enum) {
-      namedParameters
-          .put(name, new EnumCollectionNamedParameter(name, CollectionUtil.asSet((Enum[]) value)));
-    } else if (value instanceof Collection && !((Collection) value).isEmpty() &&
-        ((Collection) value).iterator().next() instanceof Enum) {
-      namedParameters.put(name,
-          new EnumCollectionNamedParameter(name, new HashSet<>((Collection) value)));
+      parametersPerName
+          .put(name, new EnumCollectionNamedParameter(name, CollectionUtil.asSet((Enum<?>[]) value)));
+    } else if (value instanceof Collection && !((Collection<?>) value).isEmpty() &&
+        ((Collection<?>) value).iterator().next() instanceof Enum) {
+      parametersPerName.put(name,
+          new EnumCollectionNamedParameter(name, new HashSet<>((Collection<Enum<?>>) value)));
     } else if (value instanceof Enum) {
-      namedParameters.put(name, new EnumNamedParameter(name, (Enum) value));
+      parametersPerName.put(name, new EnumNamedParameter(name, (Enum<?>) value));
     } else {
-      namedParameters.put(name, new ObjectNamedParameter(name, value));
+      parametersPerName.put(name, new ObjectNamedParameter(name, value));
     }
     lastParameterName = name;
     return this;
@@ -131,7 +131,7 @@ public class NamedParameters implements Parameters {
    * @return the JPQL query enriched with the parameters.
    */
   public <E extends Query> E applyTo(final E query) {
-    for (final NamedParameter<?, ?> namedParameter : namedParameters.values()) {
+    for (final NamedParameter<?> namedParameter : parametersPerName.values()) {
       if (namedParameter instanceof DateNamedParameter) {
         final DateNamedParameter dateParameter = (DateNamedParameter) namedParameter;
         query.setParameter(dateParameter.getName(), dateParameter.getValue(),

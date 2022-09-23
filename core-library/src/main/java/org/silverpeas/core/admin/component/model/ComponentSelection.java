@@ -35,7 +35,7 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
   private static final long serialVersionUID = 4750709802063183409L;
   public static final DataFlavor ComponentDetailFlavor = new DataFlavor(ComponentInst.class,
       "Component");
-  private ComponentInst componentInst;
+  private final ComponentInst componentInst;
 
   /**
    * @param component the component selected.
@@ -47,29 +47,29 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
   }
 
   /**
-   * Returns the data transfered.
+   * Returns the transferred data.
    * @param parFlavor the DataFlavor.
-   * @return the dta copied.
-   * @throws UnsupportedFlavorException
+   * @return the data copied.
+   * @throws UnsupportedFlavorException if the flavor isn't supported by the selection.
    */
   @Override
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
-    Object transferedData;
+    Object transferredData;
     try {
-      transferedData = super.getTransferData(parFlavor);
+      transferredData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
       if (ComponentDetailFlavor.equals(parFlavor)) {
-        transferedData = componentInst;
+        transferredData = componentInst;
       } else {
         throw e;
       }
     }
-    return transferedData;
+    return transferredData;
   }
 
   /**
-   * Returns the IndexEntry for the component being copeid.
+   * Returns the IndexEntry for the component being copied.
    * @return an IndexEntry for this component
    */
   @Override
@@ -81,7 +81,7 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
   }
 
   /**
-   * Tranforms the dat into a SilverpeasKeyData.
+   * Transforms the data into a SilverpeasKeyData.
    */
   @Override
   public SilverpeasKeyData getKeyData() {

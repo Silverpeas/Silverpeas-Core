@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
 /**

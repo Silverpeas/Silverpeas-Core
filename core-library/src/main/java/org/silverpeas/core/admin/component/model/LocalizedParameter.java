@@ -36,8 +36,8 @@ import java.util.List;
  */
 public class LocalizedParameter {
 
-  private String lang;
-  private Parameter realParameter;
+  private final String lang;
+  private final Parameter realParameter;
   private List<LocalizedOption> localizedOptions;
 
   public LocalizedParameter(Parameter parameter, String lang) {
@@ -88,6 +88,7 @@ public class LocalizedParameter {
     return realParameter.getOrder();
   }
 
+  @SuppressWarnings("unused")
   public String getPersonalSpaceValue() {
     return realParameter.getPersonalSpaceValue();
   }
@@ -124,6 +125,7 @@ public class LocalizedParameter {
     return realParameter.isMandatory();
   }
 
+  @SuppressWarnings("unused")
   public boolean isNeverUpdatable() {
     return realParameter.isNeverUpdatable();
   }

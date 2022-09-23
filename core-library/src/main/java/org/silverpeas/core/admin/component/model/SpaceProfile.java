@@ -30,68 +30,20 @@ import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 
 /**
- * <p>Java class for profile of spaceMapping element.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- *  &lt;xs:simpleType name=&quot;SpaceProfileType&quot; final=&quot;restriction&quot;&gt;
- *     &lt;xs:annotation&gt;
- *       &lt;xs:documentation&gt;
- *         A space has its own pre-defined user profiles. When a component instance is added within a
- *         given space, the roles of the users in this instance can then be inherited from the parent
- *         space. Because the user profiles of the application can be different from those of a space,
- *         it is necessary to define a mapping between the profiles of the space with those of the
- *         application.
- *       &lt;/xs:documentation&gt;
- *       &lt;xs:documentation&gt;
- *         By default, a space is visible to all users defined at least in a given user profile of an
- *         application instance in that space.
- *       &lt;/xs:documentation&gt;
- *     &lt;/xs:annotation&gt;
- *     &lt;xs:restriction base=&quot;xs:string&quot;&gt;
- *       &lt;xs:enumeration value=&quot;admin&quot;&gt;
- *         &lt;xs:annotation&gt;
- *           &lt;xs:documentation&gt;
- *             The space administrator. He can manage the details of a space and as such he can add or
- *             remove any application instances.
- *           &lt;/xs:documentation&gt;
- *         &lt;/xs:annotation&gt;
- *       &lt;/xs:enumeration&gt;
- *       &lt;xs:enumeration value=&quot;publisher&quot;&gt;
- *         &lt;xs:annotation&gt;
- *           &lt;xs:documentation&gt;
- *             The publisher. He can add/remove/edit/move contributions in the application instances in
- *             the space. When supported, he&#39;s in charge also of the validation of the contributions
- *             proposed by users in lower user profile.
- *           &lt;/xs:documentation&gt;
- *         &lt;/xs:annotation&gt;
- *       &lt;/xs:enumeration&gt;
- *       &lt;xs:enumeration value=&quot;writer&quot;&gt;
- *         &lt;xs:annotation&gt;
- *           &lt;xs:documentation&gt;
- *             The writer. He can add/remove/edit his own contributions in the application instances.
- *             With some instances, he can also participate in the edition of the contributions of
- *             others users.
- *           &lt;/xs:documentation&gt;
- *         &lt;/xs:annotation&gt;
- *       &lt;/xs:enumeration&gt;
- *       &lt;xs:enumeration value=&quot;reader&quot;&gt;
- *         &lt;xs:annotation&gt;
- *           &lt;xs:documentation&gt;
- *             The reader. He has only read-only access to the application instances of the space.
- *           &lt;/xs:documentation&gt;
- *         &lt;/xs:annotation&gt;
- *       &lt;/xs:enumeration&gt;
- *     &lt;/xs:restriction&gt;
- *   &lt;/xs:simpleType&gt;
- * </pre>
- *
+ * A user profile of a collaborative space. Such profile should be one of the specified ones in
+ * {@link InheritableSpaceRoles}.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SpaceProfileType")
 public class SpaceProfile implements Serializable {
   private static final long serialVersionUID = -8829429520356692137L;
+
+  public SpaceProfile() {
+  }
+
+  public SpaceProfile(final String profileName) {
+    this.value = profileName;
+  }
 
   @XmlValue
   private String value;

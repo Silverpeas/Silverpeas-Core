@@ -61,7 +61,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   private static final long serialVersionUID = 1L;
   private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
-      Pattern.compile("^([a-zA-Z-_]+)([0-9]+)$");
+      Pattern.compile("^([a-zA-Z-_]+)(\\d+)$");
 
   public static final String STATUS_REMOVED = "R";
   @XmlAttribute
@@ -193,10 +193,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return StringUtil.isDefined(id) ? Integer.parseInt(id) : -1;
   }
 
-  public String getLocalIdAsString() {
-    return id;
-  }
-
   /**
    * This method is a hack (technical debt)
    *
@@ -325,8 +321,8 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   /**
-   * Gets the specific right profiles of this component instance (that is to say all the non
-   * inherited profiles)
+   * Gets the specific right profiles of this component instance (that is to say all the
+   * non-inherited profiles)
    * @return the specific right profiles of this component instance;
    */
   public List<ProfileInst> getProfiles() {

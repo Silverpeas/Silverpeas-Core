@@ -79,11 +79,11 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   public static final String DEFAULT_SPACE_ID = "-20";
   private static final long serialVersionUID = 4695928610067045964L;
   // First page possible types
-  public static final int FP_TYPE_STANDARD = 0; // Page d'acueil standard
-  public static final int FP_TYPE_COMPONENT_INST = 1; // Composant (dans ce cas
+  public static final int FP_TYPE_STANDARD = SpaceHomePageType.STANDARD.ordinal(); // Page d'accueil standard
+  public static final int FP_TYPE_COMPONENT_INST = SpaceHomePageType.COMPONENT_INST.ordinal(); // Composant (dans ce cas
   // : firstPageExtraParam = composant instance ID)
-  public static final int FP_TYPE_PORTLET = 2; // Portlets
-  public static final int FP_TYPE_HTML_PAGE = 3; // Page HTML
+  public static final int FP_TYPE_PORTLET = SpaceHomePageType.PORTLET.ordinal(); // Portlets
+  public static final int FP_TYPE_HTML_PAGE = SpaceHomePageType.HTML_PAGE.ordinal(); // Page HTML
   public static final String STATUS_REMOVED = "R";
   public static final String QUOTA_STORAGE_PREFIX_KEY = SpaceInst.class + "@DataStorageQuota@";
   public static final String QUOTA_STORAGE_REACHED_PREFIX_KEY = SpaceInst.class + "@ReachedDataStorageQuota@";
@@ -96,7 +96,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /* Unique identifier of the father of the space */
   private String domainFatherId;
 
-  /* User Id of the creator of the space */
+  /* User id of the creator of the space */
   private String creatorUserId;
 
   /* First page type of the space */
@@ -150,7 +150,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * copied as it should be unique.
    * @param si the collaboration space to copy.
    */
-  @SuppressWarnings("IncompleteCopyConstructor")
+  @SuppressWarnings({"IncompleteCopyConstructor", "CopyConstructorMissesField"})
   public SpaceInst(final SpaceInst si) {
     super(si);
     setDescription(si.getDescription());
@@ -363,6 +363,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    *
    * @param componentInst component instance to be removed
    */
+  @SuppressWarnings("unused")
   public void deleteComponentInst(ComponentInst componentInst) {
     data.safeWrite((p, s, c) ->
         c.removeIf(i -> i.getId().equals(componentInst.getId())));
@@ -481,6 +482,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * Remove all space profiles from space profiles list (WARNING : space profiles will not be
    * removed from database, only from that spaceInst object !!!)
    */
+  @SuppressWarnings("unused")
   public void removeAllSpaceProfilesInst() {
     data.safeWrite((p, s, c) -> p.clear());
   }
@@ -526,8 +528,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   /**
-   * Gets the specific right profiles of this space instance (that is to say all the non
-   * inherited profiles)
+   * Gets the specific right profiles of this space instance (that is to say all the
+   * non-inherited profiles)
    * @return the specific right profiles of this space instance;
    */
   public List<SpaceProfileInst> getProfiles() {

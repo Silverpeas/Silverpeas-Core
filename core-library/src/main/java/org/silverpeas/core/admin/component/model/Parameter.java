@@ -43,60 +43,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * <p>
- * Java class for ParameterType complex type.
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType name=&quot;ParameterType&quot;&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *       &lt;sequence&gt;
- *         &lt;element name=&quot;name&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;order&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}int&quot;/&gt;
- *         &lt;element name=&quot;mandatory&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
- *         &lt;element name=&quot;value&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *         &lt;element name=&quot;options&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;&gt;
- *           &lt;complexType&gt;
- *             &lt;complexContent&gt;
- *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *                 &lt;sequence&gt;
- *                   &lt;element name=&quot;option&quot; type=&quot;{http://silverpeas.org/xml/ns/component}ParameterOptionType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
- *                 &lt;/sequence&gt;
- *               &lt;/restriction&gt;
- *             &lt;/complexContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
- *         &lt;element name=&quot;type&quot;&gt;
- *           &lt;simpleType&gt;
- *             &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
- *               &lt;enumeration value=&quot;checkbox&quot;/&gt;
- *               &lt;enumeration value=&quot;select&quot;/&gt;
- *               &lt;enumeration value=&quot;xmltemplates&quot;/&gt;
- *               &lt;enumeration value=&quot;text&quot;/&gt;
- *               &lt;enumeration value=&quot;radio&quot;/&gt;
- *             &lt;/restriction&gt;
- *           &lt;/simpleType&gt;
- *         &lt;/element&gt;
- *         &lt;element name=&quot;size&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}int&quot; minOccurs=&quot;0&quot;/&gt;
- *         &lt;element name=&quot;updatable&quot;&gt;
- *           &lt;simpleType&gt;
- *             &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
- *               &lt;enumeration value=&quot;always&quot;/&gt;
- *               &lt;enumeration value=&quot;creation&quot;/&gt;
- *               &lt;enumeration value=&quot;never&quot;/&gt;
- *             &lt;/restriction&gt;
- *           &lt;/simpleType&gt;
- *         &lt;/element&gt;
- *         &lt;element name=&quot;help&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;personalSpaceValue&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; minOccurs=&quot;0&quot;/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * Instance parameter defined for an application component. An instance parameter is a
+ * parameter used to configure the behavior of an instance of the application. The description
+ * of the parameter indicates how it should be rendered to the administrators, how it can be
+ * valued, and, optionally, what are these possible values.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ParameterType", propOrder = { "name", "label", "order", "mandatory", "value",
@@ -241,19 +191,17 @@ public class Parameter {
   }
 
   /**
-   * Gets the value of the options property.
+   * Gets the possible options of this parameter.
    * <p>
-   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore, any
    * modification you make to the returned list will be present inside the JAXB object. This is why
-   * there is not a <CODE>set</CODE> method for the options property.
+   * there is not a <CODE>set</CODE> method for the options.
    * <p>
    * For example, to add a new item, do as follows:
-   *
    * <pre>
    * getOptions().add(newItem);
    * </pre>
    * <p>
-   * Objects of the following type(s) are allowed in the list {@link Parameter#getOptions()}
    */
   public List<Option> getOptions() {
     if (isXmlTemplate() && CollectionUtil.isEmpty(options)) {
@@ -353,6 +301,7 @@ public class Parameter {
     return warning;
   }
 
+  @SuppressWarnings("unused")
   public String getWarning(String lang) {
     if (getWarning().containsKey(lang)) {
       return getWarning().get(lang);
@@ -380,6 +329,7 @@ public class Parameter {
    * Sets the value of the personalSpaceValue property.
    * @param value allowed object is {@link String }
    */
+  @SuppressWarnings("unused")
   public void setPersonalSpaceValue(String value) {
     this.personalSpaceValue = value;
   }

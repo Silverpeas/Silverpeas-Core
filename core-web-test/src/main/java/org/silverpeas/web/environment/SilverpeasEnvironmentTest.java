@@ -27,6 +27,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -83,13 +84,12 @@ public class SilverpeasEnvironmentTest {
   /**
    * Adds a user.
    */
-  public SilverpeasEnvironmentTest addUser(UserDetail userDetail) {
+  public void addUser(UserDetail userDetail) {
     try {
       Administration.get().addUser(userDetail);
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
-    return this;
   }
 
   /**
@@ -122,14 +122,46 @@ public class SilverpeasEnvironmentTest {
   /**
    * Updates the database with the given component instance.
    * @param componentInst the {@link ComponentInst} instance
-   * @return the manager of test environment itself.
    */
-  public SilverpeasEnvironmentTest updateComponent(ComponentInst componentInst) {
+  public void updateComponent(ComponentInst componentInst) {
     try {
       Administration.get().updateComponentInst(componentInst);
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
-    return this;
+  }
+
+  /**
+   * Removes all the user profiles set for the specified component instance. So, nobody will be
+   * authorized to access and to modify the contributions managed by the component instance.
+   * @param componentInst the component instance.
+   */
+  public void removeAllProfiles(ComponentInst componentInst) {
+    try {
+      Administration admin = Administration.get();
+      var profiles = componentInst.getAllProfilesInst();
+      for (var profile: profiles) {
+        admin.deleteProfileInst(profile.getId(), "0");
+      }
+    } catch (AdminException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  /**
+   * Removes all the user profiles set for the specified space instance. So, nobody will be
+   * authorized to access the space and the component instances in it.
+   * @param spaceInst the space instance.
+   */
+  public void removeAllProfiles(SpaceInst spaceInst) {
+    try {
+      Administration admin = Administration.get();
+      var profiles = spaceInst.getAllSpaceProfilesInst();
+      for (var profile: profiles) {
+        admin.deleteSpaceProfileInst(profile.getId(), "0");
+      }
+    } catch (AdminException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 }

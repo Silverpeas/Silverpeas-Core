@@ -56,6 +56,9 @@
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -66,6 +69,10 @@
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -76,6 +83,9 @@
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>

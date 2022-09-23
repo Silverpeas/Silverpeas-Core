@@ -30,25 +30,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * <p>
- * Java class for multilang complex type.
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType name=&quot;multilang&quot;&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *       &lt;sequence&gt;
- *         &lt;element name=&quot;message&quot; type=&quot;{http://silverpeas.org/xml/ns/component}MessageType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * A message translated in several languages, each of them supported by Silverpeas.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "multilang", propOrder = { "message" })
+@XmlType(name = "L10nType", propOrder = { "message" })
 public class Multilang {
 
   protected List<Message> message;
@@ -56,7 +41,7 @@ public class Multilang {
   /**
    * Gets the value of the message property.
    * <p>
-   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore, any
    * modification you make to the returned list will be present inside the JAXB object. This is why
    * there is not a <CODE>set</CODE> method for the message property.
    * <p>
@@ -70,7 +55,7 @@ public class Multilang {
    */
   public List<Message> getMessage() {
     if (message == null) {
-      message = new ArrayList<Message>();
+      message = new ArrayList<>();
     }
     return this.message;
   }

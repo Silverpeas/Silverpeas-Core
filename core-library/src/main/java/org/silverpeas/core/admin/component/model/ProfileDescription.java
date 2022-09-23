@@ -33,24 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>
- * Java class for ProfileDescription complex type.
- * <p>
- * The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
- * &lt;complexType name=&quot;ProfileDescription&quot;&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *       &lt;sequence&gt;
- *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;help&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;spaceMapping&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * Description of a user profile. It defines the common properties of such profile. A profile
+ * defines the access rights of a user in an application instance according to the role he plays.
+ * The user profile is then a mix between a role and some privileges. The profile name is the role
+ * name.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ProfileDescriptionType", propOrder = { "label", "help", "spaceProfileMapping" })
@@ -106,7 +92,8 @@ public class ProfileDescription {
 
   /**
    * Gets the value of the spaceMapping property.
-   * @return possible object is {@link ComponentSpaceProfileMapping}.
+   * @return possible object is {@link ComponentSpaceProfileMapping} or null if no mapping is
+   * defined.
    */
   public ComponentSpaceProfileMapping getSpaceProfileMapping() {
     return spaceProfileMapping;

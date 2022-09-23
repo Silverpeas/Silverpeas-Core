@@ -32,21 +32,23 @@ import javax.persistence.Query;
  * It represents the repositories taken in charge the persistence of the business entities in
  * Silverpeas in a basic way, that is to say without any of the added features from the new
  * Silverpeas persistence mechanism (creation and update date, ...). Theses entities were already
- * yet here before the new Silverpeas Persistence API and they were managed according to the SQL
+ * yet here before the new Silverpeas Persistence API, and they were managed according to the SQL
  * old school way (J2EE BMP way). The repository is here to manage such entities in order to
  * facilitate the migration from the BMP approach to the new JPA one.
- *
+ * <p>
  * The managed entities can be a contribution, a contribution's content or
  * a transverse application bean (user, domain, ...) whose the persistence was managed in the old
  * SQL way.
- *
+ * </p>
+ * <p>
  * This interface is dedicated to be implemented by abstract repositories that providing each an
  * implementation of the persistence technology used to manage the persistence of the entities
  * in a data source.
+ * </p>
  * @param <E> specify the class name of the entity which is handled by the repository entity.
  * @author ebonnet
  */
-public class BasicJpaEntityRepository<E extends BasicJpaEntity>
+public class BasicJpaEntityRepository<E extends BasicJpaEntity<E, ?>>
     extends AbstractJpaEntityRepository<E> implements WithSaveAndFlush<E> {
 
   @Override

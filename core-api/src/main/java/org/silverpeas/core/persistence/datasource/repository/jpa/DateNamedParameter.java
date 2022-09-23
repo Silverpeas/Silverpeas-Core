@@ -27,6 +27,7 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 /**
+ * The parameter to pass to a JPA query is a date.
  * @author Yohann Chastagnier
  */
 public class DateNamedParameter extends TemporalNamedParameter<Date> {
