@@ -47,6 +47,8 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.SafeContentRedirect;
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxy;
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
@@ -67,13 +69,16 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -3241648887903159985L;
+  private static final String ADMIN_ROLE = "admin";
   private ServletContext context;
   private static final Logger logger = Logger.getLogger("org.silverpeas.web.portlets.portal",
       "org.silverpeas.portlets.PCDLogMessages");
@@ -506,7 +511,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
       portletWindowData.setRemove(false);
       portletWindowData.setRole(null);
     } else {
-      portletWindowData.setRole("admin");
+      portletWindowData.setRole(ADMIN_ROLE);
     }
 
     return portletWindowData;
@@ -572,8 +577,8 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
         if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
           return null;
         }
-        SpaceInst spaceStruct =
-            getOrganizationController().getSpaceInstById(spaceId);
+        final SpaceHomepageProxy spaceStruct = SpaceHomepageProxyManager.get()
+            .getProxyOf(getOrganizationController().getSpaceInstById(spaceId));
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           return null;
@@ -600,20 +605,32 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
   }
 
   private boolean isSpaceBackOffice(final HttpServletRequest request) {
-    return (isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request
-        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    final String spaceId = getSpaceId(request);
+    return (isDefined(spaceId) && ADMIN_ROLE.equalsIgnoreCase(request
+        .getParameter(WindowInvokerConstants.DRIVER_ROLE)) && isUserSpaceAdmin(spaceId));
   }
 
   private boolean isSpaceFrontOffice(final HttpServletRequest request) {
-    String spaceId = getSpaceId(request);
-    return (isDefined(spaceId) && !isDefined(request.getParameter(
-        WindowInvokerConstants.DRIVER_ROLE)));
+    final String spaceId = getSpaceId(request);
+    final String role = request.getParameter(WindowInvokerConstants.DRIVER_ROLE);
+    return (isDefined(spaceId) &&
+        (!isDefined(role) || (ADMIN_ROLE.equalsIgnoreCase(role) && !isUserSpaceAdmin(spaceId))));
+  }
+
+  protected boolean isUserSpaceAdmin(final String spaceId) {
+    final User currentRequester = User.getCurrentRequester();
+    return currentRequester.isAccessAdmin() || (isDefined(spaceId) &&
+        Stream.of(OrganizationController.get().getUserManageableSpaceIds(currentRequester.getId()))
+            .map(this::prefixSpaceId)
+            .anyMatch(prefixSpaceId(spaceId)::equals));
   }
 
   private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
     OrganizationController organizationCtrl = getOrganizationController();
-    SpaceInst spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
+    SpaceHomepageProxy spaceStruct = ofNullable(organizationCtrl.getSpaceInstById(spaceId))
+        .map(SpaceHomepageProxyManager.get()::getProxyOf)
+        .orElse(null);
 
     if (spaceStruct != null) {
       MainSessionController m_MainSessionCtrl = getMainSessionController(request);
@@ -649,7 +666,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailableToUser(componentId, userId)) {
-          return URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main?FromSpaceHomepage=true";
+          return URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main?FromSpaceHomepage=true&FromSpaceHomepageProxy=" + spaceStruct.isEffective();
         } else {
           // component does not exist anymore or component is not available to current user
           // so default page is used

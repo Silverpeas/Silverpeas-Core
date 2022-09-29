@@ -42,6 +42,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNav
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -148,6 +149,10 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
     redirectVariables.put(variableName, variableValue);
   }
 
+  public ZoneId getZoneId() {
+    return controller.getZoneId();
+  }
+
   public LocalizationBundle getMultilang() {
     return controller.getMultilang();
   }
@@ -170,6 +175,10 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
 
   public String getComponentName() {
     return controller.getComponentName();
+  }
+
+  public String getInstanceParameterValue(final String parameterName) {
+    return controller.getComponentParameterValue(parameterName);
   }
 
   public String getSpaceId() {

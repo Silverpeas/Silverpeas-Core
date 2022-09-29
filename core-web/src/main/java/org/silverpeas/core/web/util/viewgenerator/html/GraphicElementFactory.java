@@ -672,7 +672,8 @@ public class GraphicElementFactory implements Serializable {
         .orElse(null);
     final String requestURI = request.getRequestURI();
     final boolean isFromSpaceHomePage = request.getParameterAsBoolean("FromSpaceHomepage");
-    final boolean isComponentMainPage = requestURI.endsWith("/Main") && !requestURI.endsWith("/jsp/Main");
+    final boolean isComponentMainPage = (requestURI.endsWith("/Main") && !requestURI.endsWith("/jsp/Main"))
+        || request.getParameterAsBoolean("ComponentMainPage");
     final boolean isPortletMainPage = requestURI.toLowerCase().contains("/portlet");
     final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     cache.put(REQUEST_IS_SPACE_HOME_PAGE, isFromSpaceHomePage);

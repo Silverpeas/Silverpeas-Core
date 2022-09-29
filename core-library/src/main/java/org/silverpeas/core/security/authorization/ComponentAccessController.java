@@ -32,7 +32,6 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.MemoizedSupplier;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

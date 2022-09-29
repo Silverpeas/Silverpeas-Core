@@ -78,7 +78,7 @@
       noElementSelectedMsg : '${silfn:escapeJs(noElementSelectedMsg)}'
     })}}
     </div>
-    <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" minWidth="650">
+    <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" v-bind:minWidth="650">
       <div class="publication-basket-selector-container">
         <p v-if="!basketElements.length">${emptyBasketLabel}</p>
         <silverpeas-fade-transition-group duration-type="fast" class="basket-element-list">

@@ -80,6 +80,7 @@ public abstract class WebComponentController<T extends WebComponentRequestContex
    */
   protected void beforeRequestProcessing(T context) {
     context.getRequest().setAttribute("currentUser", context.getUser());
+    context.getRequest().setAttribute("currentUserZoneId", context.getZoneId());
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
     context.getRequest().setAttribute("highestUserRole", context.getHighestUserRole());
   }

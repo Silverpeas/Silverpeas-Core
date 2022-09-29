@@ -176,8 +176,8 @@ if (!String.prototype.endsWith) {
   };
 }
 
-if (!String.prototype.replaceAll) {
-  String.prototype.replaceAll = function(search, replacement) {
+if (!String.prototype.replaceAllByRegExpAsString) {
+  String.prototype.replaceAllByRegExpAsString = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
   };
@@ -716,6 +716,8 @@ if (!window.SilverpeasAjaxConfig) {
         // case when ajaxRequest.send(...) is called with a JSON object parameter
         // (on which JSON.stringify is performed before calling this method)
         this.parameters = params;
+      } else if (params instanceof FormData) {
+        this.parameters = params;
       } else {
         this.parameters = (params) ? extendsObject(false, this.parameters, params) : {};
       }
@@ -824,7 +826,10 @@ if (!window.SilverpeasAjaxConfig) {
     },
     send : function(content) {
       if (this.method.startsWith('P')) {
-        if (typeof content === 'object') {
+        if (content instanceof FormData) {
+          this.withHeader('Accept', 'application/json, text/plain, */*');
+          this.withParams(content);
+        } else if (typeof content === 'object') {
           this.withHeader('Accept', 'application/json, text/plain, */*');
           this.withHeader('Content-Type', 'application/json; charset=UTF-8');
           this.withParams(JSON.stringify(content));
@@ -877,11 +882,11 @@ if (typeof window.silverpeasAjax === 'undefined') {
     if (typeof options === 'string') {
       options = {url : options};
     }
-    var params;
+    let params;
     if (typeof options.getUrl !== 'function') {
       params = extendsObject({"method" : "GET", url : '', headers : {}}, options);
     } else {
-      var ajaxConfig = options;
+      const ajaxConfig = options;
       params = {
         url : ajaxConfig.getUrl(),
         method : ajaxConfig.getMethod(),
@@ -892,10 +897,10 @@ if (typeof window.silverpeasAjax === 'undefined') {
       }
       if (ajaxConfig.getMethod().startsWith('P')) {
         params.data = ajaxConfig.getParams();
-        if (!ajaxConfig.getHeaders()['Content-Type']) {
+        if (!(params.data instanceof FormData) && !ajaxConfig.getHeaders()['Content-Type']) {
           if (typeof params.data === 'object') {
-            var formData = new FormData();
-            for (var key in params.data) {
+            const formData = new FormData();
+            for (let key in params.data) {
               formData.append(key, params.data[key]);
             }
             params.data = formData;
@@ -1551,6 +1556,33 @@ if (typeof window.sp === 'undefined') {
       }
     },
     object : new function() {
+      this.asEnum = function(initValues) {
+        const _values = [];
+        Array.prototype.push.apply(_values, initValues)
+        return new function() {
+          this.valueAt = function(ordinal) {
+            return this.valueOf(_values[ordinal]);
+          };
+          this.valueOf = function(value) {
+            return this[value];
+          };
+          this.values = function() {
+            return _values;
+          };
+          _values.forEach(function(value, index) {
+            this[value] = {
+              name : function() {
+                return value;
+              },
+              ordinal : function() {
+                return index;
+              }
+            };
+            Object.freeze(this[value]);
+          }.bind(this));
+          Object.freeze(_values);
+        };
+      };
       this.isEmpty = function (o) {
         for (var k in o) {
           return k === undefined;

@@ -154,6 +154,10 @@ public class NavBarManager {
     spaces.set(createSpaceObjects(stream(spaceIds), false));
   }
 
+  public boolean hasBeenInitialized() {
+    return user != null;
+  }
+
   // Spaces functions
   // ----------------
   public Collection<DisplaySorted> getAvailableSpaces() {

@@ -70,8 +70,9 @@ public class NamedParameters implements Parameters {
    * @param parameterName the name of the parameter.
    * @return the parameter or null if no such parameter exists.
    */
-  public NamedParameter<?> getParameter(final String parameterName) {
-    return parametersPerName.get(parameterName);
+  @SuppressWarnings("unchecked")
+  public <T> NamedParameter<T> getParameter(final String parameterName) {
+    return (NamedParameter<T>) parametersPerName.get(parameterName);
   }
 
   /**

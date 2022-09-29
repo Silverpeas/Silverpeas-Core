@@ -208,13 +208,17 @@
           'type' : String,
           'default' : ''
         },
-        'minWidth' : {
+        'dialogClass' : {
           'type' : String,
-          'default' : '500px'
+          'default' : ''
+        },
+        'minWidth' : {
+          'type' : Number,
+          'default' : 500
         },
         'maxWidth' : {
-          'type' : String,
-          'default' : '800px'
+          'type' : Number,
+          'default' : 800
         },
         'openPromise' : {
           'type' : Promise,
@@ -241,6 +245,7 @@
           Vue.nextTick(function() {
             this.jqDialog = jQuery(this.$refs.container);
             this.jqDialog.popup(this.type, extendsObject({
+              dialogClass : this.dialogClass,
               title : this.title,
               minWidth : this.minWidth,
               maxWidth : this.maxWidth,
@@ -253,6 +258,178 @@
         }
       }
     }));
+
+  /**
+   * Common implementation for components which have to display a popin from body layout to the top
+   * fo the layout.
+   *
+   * 1) Add it to a component or a vue instance by attribute mixins. For example:
+   * <pre>
+   *    Vue.component('my-component', {
+   *      ...
+   *      mixins : [VuejsTopPopinMixin]
+   *      ...
+   *    });
+   * </pre>
+   *
+   * 2) Register into data a variable dedicated to the popin api instance. For example:
+   * <pre>
+   *    Vue.component('my-component', {
+   *      ...
+   *      data : function() {
+   *        return {
+   *          topPopin : undefined
+   *        };
+   *      }
+   *      ...
+   *    });
+   * </pre>
+   *
+   * 3) Initialize the popin api from "created" hook by calling the method 'registerTopPopinApiName'
+   * with the name of the variable defined in step 2. For example:
+   * <pre>
+   *    Vue.component('my-component', {
+   *      ...
+   *      created : function() {
+   *        ...
+   *        this.registerTopPopinApiName('topPopin');
+   *        ...
+   *      }
+   *      ...
+   *    });
+   * </pre>
+   *
+   * 4) Opening by calling method open on the defined top popin api. For example:
+   * <pre>
+   *   ...
+   *   const popinSettings = extendsObject({
+   *     title : this.messages.acceptCharterTitle,
+   *     minWidth : 680
+   *   }, params);
+   *   this.topPopinApi.open('acceptation', popinSettings, function(ctx) {
+   *     return __promiseCharterContentWith(ctx, this.community);
+   *   }.bind(this));
+   *   ...
+   * </pre>
+   * The method open has 3 parameters:
+   * <pre>
+   *   type: the type of the popin (cf. silverpeas-popup plugin)
+   *   popinSettings : the settings dedicated to the popin (cf. silverpeas-popup plugin)
+   *   renderFct : a function in charge to provide the HTML (a root DOM element). This method has
+   *               one parameter called ctx which is an object with several attributes: {
+   *                  $W : the instance of the top window,
+   *                  $Doc : the instance of document from top window,
+   *                  $rootContainer : the instance of the root container of the popin,
+   *                  popinSettings : an object about the settings of the popin (cf. silverpeas-popup plugin)
+   *               }
+   * </pre>
+   */
+  const __uniqueID = new function() {
+    let count = 0;
+    this.newId = function() {
+      return count++;
+    };
+  };
+  window.VuejsTopPopinMixin = {
+    methods : {
+      registerTopPopinApiName : function(popinApiName) {
+        const $W = top.window;
+        const $Doc = top.window.document;
+        const rootDomId = 'topPopin-' + __uniqueID.newId() + '-' + popinApiName;
+        const __cleanDom = function() {
+          const $rootContainer = $Doc.querySelector('#' + rootDomId);
+          if ($rootContainer) {
+            $rootContainer.remove();
+          }
+        };
+        this[popinApiName] = {
+          jqDialog : undefined,
+          spPopinProps : undefined,
+          open : function(type, popinSettings, renderFct) {
+            this.spPopinProps = extendsObject({
+              'type' : 'validation',
+              'title' : '',
+              'dialogClass' : '',
+              'minWidth' : 500,
+              'maxWidth' : 800,
+              'maxHeight' : jQuery($W).height() * 0.8,
+              'openPromise' : undefined,
+              'jsSrcUrls' : [],
+              'cssHrefUrls' : []
+            }, popinSettings);
+            sp.navigation.mute();
+            // Initializing the resulting html container
+            __cleanDom();
+            const $rootContainer = $Doc.createElement('div');
+            $rootContainer.setAttribute('id', rootDomId);
+            $rootContainer.setAttribute('class', 'silverpeas-top-popin');
+            $Doc.body.appendChild($rootContainer);
+            // Promised Content
+            const htmlContent = renderFct({
+              $W : $W,
+              $Doc : $Doc,
+              $rootContainer : $rootContainer,
+              popinSettings : this.spPopinProps
+            });
+            if (htmlContent) {
+              $rootContainer.appendChild(htmlContent);
+            }
+            if (this.spPopinProps.jsSrcUrls) {
+              this.spPopinProps.jsSrcUrls.forEach(function(params) {
+                const url = extendsObject({
+                  src : undefined,
+                  deferred : sp.promise.deferred()
+                }, sp.param.singleToObject('src', params));
+                const $script = $Doc.createElement('script');
+                $script.addEventListener('load', function() {
+                  url.deferred.resolve();
+                });
+                $script.setAttribute('src', url.src);
+                $script.setAttribute('type', 'text/javascript');
+                $script.setAttribute('language', 'Javascript');
+                $rootContainer.appendChild($script);
+              });
+            }
+            if (this.spPopinProps.cssHrefUrls) {
+              this.spPopinProps.cssHrefUrls.forEach(function(params) {
+                const url = extendsObject({
+                  href : undefined,
+                  deferred : sp.promise.deferred()
+                }, sp.param.singleToObject('href', params));
+                const $css = $Doc.createElement('link');
+                $css.addEventListener('load', function() {
+                  url.deferred.resolve();
+                });
+                $css.setAttribute('href', url.href);
+                $css.setAttribute('type', 'text/css');
+                $css.setAttribute('rel', 'stylesheet');
+                $rootContainer.appendChild($css);
+              });
+            }
+            const _callbackOnClose = popinSettings.callbackOnClose;
+            this.spPopinProps.callbackOnClose = function() {
+              sp.navigation.unmute();
+              setTimeout(function() {
+                this.close();
+              }.bind(this), 0);
+              if (typeof _callbackOnClose === 'function') {
+                _callbackOnClose();
+              }
+            }.bind(this);
+            this.jqDialog = $W.jQuery($rootContainer);
+            this.jqDialog.popup(type, this.spPopinProps);
+          },
+          close : function() {
+            if (this.jqDialog) {
+              this.jqDialog.popup('destroy');
+              this.jqDialog = undefined;
+            }
+            __cleanDom();
+          }
+        };
+      },
+    }
+  };
 
   /**
    * silverpeas-attached-popin handles the display of a popin attached to an HTML element.
@@ -738,7 +915,19 @@
             'type': String,
             'required': true
           },
+          labelId: {
+            'type': String,
+            'default': ''
+          },
           name: {
+            'type': String,
+            'default': ''
+          },
+          title: {
+            'type': String,
+            'default': ''
+          },
+          placeholder: {
             'type': String,
             'default': ''
           },
@@ -774,10 +963,108 @@
                 if (mandatoryError) {
                   this.rootFormApi.errorMessage().add(
                       this.formatMessage(this.rootFormMessages.mandatory,
-                          this.getLabelByForAttribute(this.id)));
+                          this.getLabelByForAttribute(this.labelId ? this.labelId : this.id)));
                 }
               }
               return !mandatoryError;
+            }
+          });
+        },
+        mounted : function() {
+          this.updateAttribute('title');
+          this.updateAttribute('placeholder');
+        },
+        methods : {
+          updateAttribute : function(attrName) {
+            const $input = this.$el.querySelector('input');
+            const attrValue = this[attrName];
+            if (attrValue) {
+              $input.setAttribute(attrName, attrValue);
+            } else {
+              $input.removeAttribute(attrName);
+            }
+          }
+        },
+        watch : {
+          'title' : function() {
+            this.updateAttribute('title');
+          },
+          'placeholder' : function() {
+            this.updateAttribute('placeholder');
+          }
+        }
+      }));
+
+  Vue.component('silverpeas-url-input',
+      commonAsyncComponentRepository.get('url-input', {
+        mixins : [VuejsFormInputMixin],
+        model : {
+          prop : 'value',
+          event : 'input'
+        },
+        props : {
+          id: {
+            'type': String,
+            'required': true
+          },
+          labelId: {
+            'type': String,
+            'default': ''
+          },
+          name: {
+            'type': String,
+            'default': ''
+          },
+          title: {
+            'type': String,
+            'default': ''
+          },
+          placeholder: {
+            'type': String,
+            'default': ''
+          },
+          inputClass: {
+            'type': String,
+            'default': ''
+          },
+          size: {
+            'type': Number,
+            'default': 60
+          },
+          maxlength: {
+            'type': Number,
+            'default': 150
+          },
+          disabled: {
+            'type': Boolean,
+            'default': false
+          },
+          mandatory : {
+            'type': Boolean,
+            'default': false
+          },
+          value : {
+            'type': String
+          }
+        },
+        created : function() {
+          this.extendApiWith({
+            validateFormInput : function() {
+              let urlError = true;
+              try {
+                StringUtil.isDefined(this.value) && new URL(this.value);
+                urlError = false;
+              } catch (error) {
+                urlError = true;
+              }
+              if (this.rootFormApi) {
+                if (urlError) {
+                  this.rootFormApi.errorMessage().add(
+                      this.formatMessage(this.rootFormMessages.mustContainsURLMessage,
+                          this.getLabelByForAttribute(this.id)));
+                }
+              }
+              return !urlError;
             }
           });
         }
@@ -794,6 +1081,10 @@
           id: {
             'type': String,
             'required': true
+          },
+          labelId: {
+            'type': String,
+            'default': ''
           },
           name: {
             'type': String,
@@ -836,12 +1127,12 @@
                 if (mandatoryError) {
                   this.rootFormApi.errorMessage().add(
                       this.formatMessage(this.rootFormMessages.mandatory,
-                          this.getLabelByForAttribute(this.id)));
+                          this.getLabelByForAttribute(this.labelId ? this.labelId : this.id)));
                 }
                 if (maxLengthError) {
                   this.rootFormApi.errorMessage().add(
                       this.formatMessage(this.rootFormMessages.nbMax,
-                          [this.getLabelByForAttribute(this.id), this.maxlength]));
+                          [this.getLabelByForAttribute(this.labelId ? this.labelId : this.id), this.maxlength]));
                 }
               }
               return !mandatoryError && !maxLengthError;

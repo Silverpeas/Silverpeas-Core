@@ -139,7 +139,7 @@
      */
     error: function(message, params) {
       var options = params;
-      message = message.replaceAll('\n', '<br/>');
+      message = message.replaceAllByRegExpAsString('\n', '<br/>');
       var $error = $('<div>').append($('<p>').append(message));
       if (typeof params === 'function') {
         options = {
@@ -228,14 +228,14 @@
     window.sp.popup = $.popup;
   }
 
-  var __getLabel = function(key) {
+  const __getLabel = function(key) {
     return sp.i18n.get(key);
   };
 
   /**
    * The different methods on messages handled by the plugin.
    */
-  var methods = {
+  const methods = {
     /**
      * Destroy the current popup
      */
@@ -393,6 +393,30 @@
       settings = $.extend(__buildInternalSettings({
         buttonTextYes: __getLabel('GML.validate'),
         buttonTextNo: __getLabel('GML.cancel'),
+        isMaxWidth: true
+      }), settings);
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+    /**
+     * The modal acceptation dialog.
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the title of the dialog box,
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
+     * - callbackOnClose : the callback on dialog box closing.
+     */
+    acceptation: function(options) {
+
+      // Common settings
+      let settings = __extendCommonSettings(options);
+
+      // Internal settings
+      settings = $.extend(__buildInternalSettings({
+        buttonTextYes: __getLabel('GML.accept'),
+        buttonTextNo: __getLabel('GML.refuse'),
         isMaxWidth: true
       }), settings);
 

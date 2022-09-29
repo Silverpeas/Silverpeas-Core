@@ -85,7 +85,8 @@ public class JavascriptPluginInclusion {
   private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
   private static final String ADMIN_PATH = getApplicationURL() + "/admin/jsp/javaScript/";
   private static final String JAVASCRIPT_PATH = getApplicationURL() + "/util/javaScript/";
-  private static final String SERVICE_PATH = JAVASCRIPT_PATH + "services/";
+  private static final String SERVICES_PATH_PART = "services/";
+  private static final String SERVICE_PATH = JAVASCRIPT_PATH + SERVICES_PATH_PART;
   private static final String FLASH_PATH = getApplicationURL() + "/util/flash/";
   private static final String STYLESHEET_PATH = getApplicationURL() + "/util/styleSheets/";
   private static final String FP_VIEWER_BASE = getApplicationURL() + "/media/jsp/fp";
@@ -94,7 +95,7 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_CSS_PATH = STYLESHEET_PATH + "jquery/";
   private static final String ANGULARJS_PATH = JAVASCRIPT_PATH + "angularjs/";
   private static final String ANGULARJS_I18N_PATH = ANGULARJS_PATH + "i18n/";
-  private static final String ANGULARJS_SERVICES_PATH = ANGULARJS_PATH + "services/";
+  private static final String ANGULARJS_SERVICES_PATH = ANGULARJS_PATH + SERVICES_PATH_PART;
   private static final String ANGULARJS_DIRECTIVES_PATH = ANGULARJS_PATH + "directives/";
   private static final String ANGULARJS_CONTROLLERS_PATH = ANGULARJS_PATH + "controllers/";
   private static final String ANGULAR_JS = "angular.min.js";
@@ -845,9 +846,18 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  static ElementContainer includeAdminSpaceHomepage(final ElementContainer xhtml) {
+    includeAdminServices(xhtml);
+    final String vueJsComponentPath = getApplicationURL() + "/jobStartPagePeas/jsp/javascript/vuejs/components/";
+    xhtml.addElement(link(vueJsComponentPath + "silverpeas-admin-space-homepage.css"));
+    xhtml.addElement(script(vueJsComponentPath + "silverpeas-admin-space-homepage.js"));
+    return xhtml;
+  }
+
   static ElementContainer includeAdminServices(final ElementContainer xhtml) {
-    xhtml.addElement(script(ADMIN_PATH + "silverpeas-admin-space-services.js"));
-    xhtml.addElement(script(ADMIN_PATH + "silverpeas-admin-instance-services.js"));
+    final String servicePath = ADMIN_PATH + SERVICES_PATH_PART;
+    xhtml.addElement(script(servicePath + "silverpeas-admin-space-services.js"));
+    xhtml.addElement(script(servicePath + "silverpeas-admin-instance-services.js"));
     return xhtml;
   }
 

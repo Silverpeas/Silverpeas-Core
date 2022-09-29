@@ -68,7 +68,7 @@
 					<p title="${member.status}">${silfn:escapeHtml(member.status)}</p>
 				</div>
 
-				<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
+				<a href="javascript:void(0)" title="<fmt:message key="ToContact" />" class="contact-user notification"
            onclick="sp.messager.open(null, {recipientUsers: ${member.id}, recipientEdition: false});">
 					<img src="${context}/util/icons/email.gif"
 						alt="<fmt:message key="ToContact" />"
@@ -95,7 +95,7 @@
 					<p title="${contact.status}">${contact.status}</p>
 				</div>
 
-				<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
+				<a href="javascript:void(0)" title="<fmt:message key="ToContact" />" class="contact-user notification"
            onclick="sp.messager.open(null, {recipientUsers: ${contact.id}, recipientEdition: false});">
 					<img src="${context}/util/icons/email.gif"
 						alt="<fmt:message key="ToContact" />"

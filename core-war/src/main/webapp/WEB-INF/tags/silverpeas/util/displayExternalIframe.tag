@@ -19,7 +19,7 @@
   ~ GNU Affero General Public License for more details.
   ~
   ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
@@ -29,7 +29,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@ attribute name="url" required="true"
               type="java.lang.String"
@@ -38,19 +37,9 @@
               type="java.lang.String"
               description="The IFrame name" %>
 <c:if test="${empty iframeName}">
-  <c:set var="iframeName" value="SpExternalFullIFrameContainer"/>
+  <c:set var="iframeName" value="SpExternalIFrameContainer"/>
 </c:if>
-<style type="text/css">
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
-
-  iframe {
-    display: block;
-    border: none;
-    width: 100%;
-    height: 100%;
-  }
-</style>
-<viewTags:displayExternalIframe url="${url}" iframeName="${iframeName}"/>
+<c:set var="sandbox" value="<%=SecuritySettings.getIFrameSandboxTagAttribute()%>"/>
+<iframe src="${url}" name="${iframeName}"
+        marginwidth="0" marginheight="0" frameborder="0" scrolling="auto"
+        webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen="true" ${sandbox}></iframe>

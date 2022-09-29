@@ -60,7 +60,7 @@ public class AdminCache {
   private boolean useUserDetailCache = true;
   private Map<String, UserDetail> userDetailCache = new ConcurrentHashMap<>();
   private boolean useManageableSpaceIdsCache = true;
-  private Map<String, Integer[]> manageableSpaceIdsCache = new ConcurrentHashMap<>();
+  private Map<String, String[]> manageableSpaceIdsCache = new ConcurrentHashMap<>();
   private boolean useAvailCompoIdsCache = true;
   private Map<String, Map<String, String[]>> availCompoIdsCache = new ConcurrentHashMap<>();
   private boolean useProfileIdsCache = true;
@@ -274,7 +274,7 @@ public class AdminCache {
     manageableSpaceIdsCache.clear();
   }
 
-  public void putManageableSpaceIds(String userId, Integer[] spaceIds) {
+  public void putManageableSpaceIds(String userId, String[] spaceIds) {
     if (useCache && useManageableSpaceIdsCache) {
       manageableSpaceIdsCache.put(userId, spaceIds);
     }
@@ -286,7 +286,7 @@ public class AdminCache {
     }
   }
 
-  public Optional<Integer[]> getManageableSpaceIds(String userId) {
+  public Optional<String[]> getManageableSpaceIds(String userId) {
     if (useCache && useManageableSpaceIdsCache) {
       return Optional.ofNullable(manageableSpaceIdsCache.get(userId));
     } else {

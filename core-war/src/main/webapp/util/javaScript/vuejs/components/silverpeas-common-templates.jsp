@@ -35,6 +35,7 @@
 <fmt:message var="cancelLabel" key="GML.cancel"/>
 <c:set var="theFieldLabel"><fmt:message key='GML.thefield'/></c:set>
 <c:set var="mandatoryMessage">${theFieldLabel} {0} <fmt:message key='GML.MustBeFilled'/></c:set>
+<c:set var="mustContainsURLMessage">${theFieldLabel} {0} <fmt:message key='GML.MustContainsURL'/></c:set>
 <c:set var="mustBeDifferentFromMessage">${theFieldLabel} {0} <fmt:message key='GML.MustBeDifferentFrom'/> {1}</c:set>
 <c:set var="mustBePositiveIntegerMessage">${theFieldLabel} {0} <fmt:message key='GML.MustContainsPositiveNumber'/></c:set>
 <c:set var="nbMaxMessage">${theFieldLabel} {0} <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="{1}"/></fmt:message></c:set>
@@ -49,6 +50,7 @@
     <div v-sp-init>
       {{addMessages({
       mandatory : '${silfn:escapeJs(mandatoryMessage)}',
+      mustContainsURLMessage : '${silfn:escapeJs(mustContainsURLMessage)}',
       mustBeDifferentFrom : '${silfn:escapeJs(mustBeDifferentFromMessage)}',
       mustBePositiveInteger : '${silfn:escapeJs(mustBePositiveIntegerMessage)}',
       nbMax : '${silfn:escapeJs(nbMaxMessage)}',
@@ -202,9 +204,10 @@
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="text-input">
-  <div>
-    <input type="text" class="silverpeas-text-input"
-           v-bind:id="id" v-bind:name="name" v-bind:class="inputClass" v-bind:size="size"
+  <div class="silverpeas-text-input">
+    <input type="text"
+           v-bind:id="id" v-bind:name="name"
+           v-bind:class="inputClass" v-bind:size="size"
            v-bind:maxlength="maxlength" v-bind:disabled="disabled"
            v-bind:value="value" v-on:input="$emit('input', $event.target.value)"/>
     <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
@@ -212,10 +215,19 @@
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->
+<silverpeas-component-template name="url-input">
+  <silverpeas-text-input class="silverpeas-url-input"
+         v-bind:id="id" v-bind:label-id="labelId" v-bind:name="name"
+         v-bind:title="title" v-bind:placeholder="placeholder"
+         v-bind:class="inputClass" v-bind:size="size"
+         v-bind:maxlength="maxlength" v-bind:disabled="disabled" v-bind:mandatory="mandatory"
+         v-bind:value="value" v-on:input="$emit('input', $event)"></silverpeas-text-input>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
 <silverpeas-component-template name="multiline-text-input">
-  <div>
-    <textarea class="silverpeas-multiline-text-input"
-              v-bind:cols="cols" v-bind:rows="rows"
+  <div class="silverpeas-multiline-text-input">
+    <textarea v-bind:cols="cols" v-bind:rows="rows"
               v-bind:id="id" v-bind:name="name" v-bind:class="inputClass"
               v-bind:maxlength="maxlength" v-bind:disabled="disabled"
               v-bind:value="value" v-on:input="$emit('input', $event.target.value)"></textarea>
