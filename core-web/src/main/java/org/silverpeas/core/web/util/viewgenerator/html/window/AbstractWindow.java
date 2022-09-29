@@ -41,6 +41,8 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxy;
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
@@ -324,7 +326,8 @@ public abstract class AbstractWindow implements Window {
       // verify if current component is used as space homepage
       if (getGEF().isCurrentRequestFromSpaceHomepage() && StringUtil.isDefined(currentSpaceId) &&
           StringUtil.isDefined(currentComponentId)) {
-        SpaceInst space = OrganizationController.get().getSpaceInstById(currentSpaceId);
+        final SpaceHomepageProxy space = SpaceHomepageProxyManager.get()
+            .getProxyOf(OrganizationController.get().getSpaceInstById(currentSpaceId));
         if (space.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST &&
             currentComponentId.equals(space.getFirstPageExtraParam())) {
           getOperationPane().setType(OperationPaneType.space);

@@ -344,7 +344,7 @@ public class WebComponentManager {
     WebComponentManager webComponentManager =
         managedWebComponentRouters.get(webComponentController.getClass().getName());
 
-    // Exucuting the treatments associated to the path
+    // Executing the treatments associated to the path
     try {
       return webComponentManager
           .executePath(webComponentController, path, webComponentRequestContext);

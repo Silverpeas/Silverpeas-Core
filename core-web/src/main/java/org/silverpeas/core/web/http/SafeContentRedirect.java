@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.http;
 
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -68,7 +70,7 @@ public abstract class SafeContentRedirect {
       request.setAttribute("IsInternalLink", true);
       request.setAttribute("IsPermalink", isPermalink(url));
     }
-    request.setAttribute("URL", url);
+    request.setAttribute("URL", SpaceHomepageProxyManager.get().setParameterForUrlRedirect(url));
     return "/util/jsp/safeContentRedirection.jsp";
   }
 }

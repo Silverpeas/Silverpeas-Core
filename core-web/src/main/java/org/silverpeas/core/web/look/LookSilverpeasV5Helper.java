@@ -47,6 +47,8 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxy;
+import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
@@ -733,7 +735,8 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
       throws UnsupportedEncodingException {
-    SpaceInst spaceStruct = getOrganisationController().getSpaceInstById(spaceId);
+    final SpaceHomepageProxy spaceStruct = SpaceHomepageProxyManager.get()
+        .getProxyOf(getOrganisationController().getSpaceInstById(spaceId));
     // Page d'accueil de l'espace = Composant
     if (isComponentAsSpaceHome(spaceStruct) &&
         getOrganisationController().isComponentAvailableToUser(spaceStruct.getFirstPageExtraParam(),
@@ -767,7 +770,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return null;
   }
 
-  private boolean isComponentAsSpaceHome(final SpaceInst spaceStruct) {
+  private boolean isComponentAsSpaceHome(final SpaceHomepageProxy spaceStruct) {
     return spaceStruct != null &&
         (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST) &&
         spaceStruct.getFirstPageExtraParam() != null &&

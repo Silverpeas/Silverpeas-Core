@@ -53,7 +53,7 @@
       confirmDeleteMsg : '${silfn:escapeJs(confirmDeleteMsg)}'
     })}}
     </div>
-    <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" minWidth="650">
+    <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" v-bind:minWidth="650">
       <div class="image-selector-container">
         <div class="selected-image">
           <h2 class="section-title">{{isSelectedSrcSameAsInitial ? "${silfn:escapeJs(currentUrlSectionTitle)}" : "${silfn:escapeJs(nextUrlSectionTitle)}"}}</h2>

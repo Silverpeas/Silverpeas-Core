@@ -309,7 +309,7 @@ public class UserManager {
       if (userIds.isEmpty()) {
         return ArrayUtil.emptyStringArray();
       }
-      return userIds.toArray(new String[userIds.size()]);
+      return userIds.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users with access level ", accessLevel.getName()),
           e);
@@ -351,7 +351,7 @@ public class UserManager {
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<Integer> spaceIds = spaceDAO.getManageableSpaceIds(connection, sUserId, groupIds);
-      return spaceIds.toArray(new Integer[spaceIds.size()]);
+      return spaceIds.toArray(new Integer[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
     }
@@ -789,7 +789,7 @@ public class UserManager {
 
   private void delayedNotificationOfUserDeletion(final UserDetail user) {
     try {
-      DelayedNotificationDelegate.executeUserDeleting(Integer.valueOf(user.getId()));
+      DelayedNotificationDelegate.executeUserDeleting(Integer.parseInt(user.getId()));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
       SynchroDomainReport.warn(USERMANAGER_SYNCHRO_REPORT + ".delayedNotificationOfUserDeletion()",

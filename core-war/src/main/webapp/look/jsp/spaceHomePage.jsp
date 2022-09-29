@@ -37,6 +37,7 @@
 <%@page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
 <%@page import="java.util.List" %>
 <%@page import="org.silverpeas.core.web.look.LookHelper" %>
+<%@page import="org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -66,6 +67,8 @@
       .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
   gef.setSpaceIdForCurrentRequest(homepage.getSpace().getId());
 %>
+
+<c:set var="spaceHomepageProxy" value="<%=SpaceHomepageProxyManager.get().getProxyBySpaceId(homepage.getSpace().getId())%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -252,6 +255,18 @@
 <view:window>
   <!--INTEGRATION HOME SPACE -->
   <div id="portletPages" class="rightContent">
+
+    <c:if test="${not empty spaceHomepageProxy.thinWidget}">
+      <div id="topWidget" class="secteur-container">
+        <c:if test="${not empty spaceHomepageProxy.thinWidget.title}">
+          <h4>${spaceHomepageProxy.thinWidget.title}</h4>
+        </c:if>
+        <div id="topWidget-content" class="rich-content">
+            ${spaceHomepageProxy.thinWidget.content}
+        </div>
+      </div>
+    </c:if>
+
     <% if (admins != null && !admins.isEmpty()) { %>
     <!-- gestionnaires -->
     <div class="portlet" id="spaceManager">
@@ -322,6 +337,7 @@
     <% } %>
   </div>
   <div class="principalContent">
+
     <h1 class="spaceName"><%=Encode.forHtml(space.getName(helper.getLanguage())) %>
     </h1>
 

@@ -26,8 +26,10 @@ package com.sun.portal.portletcontainer.driver.admin;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -57,6 +60,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class AdminServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7492755183604919041L;
+  private static final String SPACE_PREFIX = "space";
   private ServletContext context;
 
   @Override
@@ -167,14 +171,12 @@ public class AdminServlet extends HttpServlet {
 
     if (isDefined(spaceId)) {
       // Display the space homepage
-      if (!spaceId.startsWith("space")) {
-        spaceId = "space" + spaceId;
-      }
+      spaceId = prefixSpaceId(spaceId);
 
       // If the home page of the space is the standard one, then spaceId is unset
       SpaceInst spaceStruct =
           OrganizationControllerProvider.getOrganisationController()
-              .getSpaceInstById(spaceId.replace("space", ""));
+              .getSpaceInstById(spaceId.replace(SPACE_PREFIX, ""));
       if (spaceStruct == null || spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
         spaceId = null;
       }
@@ -183,8 +185,31 @@ public class AdminServlet extends HttpServlet {
   }
 
   private boolean isSpaceBackOffice(HttpServletRequest request) {
-    return (isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request
-        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    final String spaceId = getSpaceId(request);
+    return (isDefined(spaceId) && "admin".equalsIgnoreCase(request
+        .getParameter(WindowInvokerConstants.DRIVER_ROLE)) && isUserSpaceAdmin(spaceId));
+  }
+
+  protected boolean isUserSpaceAdmin(final String spaceId) {
+    final User currentRequester = User.getCurrentRequester();
+    return currentRequester.isAccessAdmin() || (isDefined(spaceId) &&
+        Stream.of(OrganizationController.get().getUserManageableSpaceIds(currentRequester.getId()))
+            .map(this::prefixSpaceId)
+            .anyMatch(prefixSpaceId(spaceId)::equals));
+  }
+
+  private String prefixSpaceId(String spaceId) {
+    String id = spaceId;
+    if (isDefined(id)) {
+      // Display the space homepage
+      if (id.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+        id = id.substring(SpaceInst.SPACE_KEY_PREFIX.length());
+      }
+      if (!id.startsWith(SPACE_PREFIX)) {
+        id = SPACE_PREFIX + id;
+      }
+    }
+    return id;
   }
 
   private void createPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,

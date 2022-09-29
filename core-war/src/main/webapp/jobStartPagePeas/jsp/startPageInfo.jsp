@@ -23,16 +23,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.web.token.SynchronizerTokenService"%>
 <%@page import="org.silverpeas.web.jobstartpage.JobStartPagePeasSettings"%>
 <%@page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
-<%@page import="org.silverpeas.core.util.UnitUtil" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.core.admin.space.SpaceHomePageType" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="space" value="${requestScope.Space}" />
@@ -40,8 +40,9 @@
 
 <%@ include file="check.jsp" %>
 
+<fmt:message key="JSPP.ModifyStartPage" var="modifyStartPageLabel"/>
+
 <%
-  String      key             = (String) request.getAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY);
 	int	 			maintenanceState 	= (Integer) request.getAttribute("MaintenanceState");
 	String	 		m_SpaceId 			= (String) request.getAttribute("currentSpaceId");
 	Integer 		m_firstPageType 	= (Integer)request.getAttribute("FirstPageType");
@@ -67,14 +68,9 @@
   // Data storage quota
   boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
   boolean isDataStorageQuotaFull = isDataStorageQuotaActivated && space.isDataStorageQuotaReached();
-  String dataStorageQuotaCount = "";
-  String dataStorageQuotaMaxCount = "";
   if (isDataStorageQuotaActivated) {
     if (QuotaLoad.UNLIMITED.equals(space.getDataStorageQuota().getLoad())) {
       isDataStorageQuotaActivated = false;
-    } else {
-      dataStorageQuotaCount = UnitUtil.formatMemSize(space.getDataStorageQuota().getCount());
-      dataStorageQuotaMaxCount = UnitUtil.formatMemSize(space.getDataStorageQuota().getMaxCount());
     }
   }
 
@@ -98,7 +94,7 @@
 
   if (m_SpaceExtraInfos.isAdmin()) {
 	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onclick=updateSpace()");
-	operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('ModifyJobStartPage', 740, 600)");
+    operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=spaceHomepageVm.api.open()");
     if (isUserAdmin || m_SubSpace != null) {
       operationPane.addOperation(resource.getIcon("JSPP.SpaceOrder"),resource.getString("JSPP.SpaceOrder"),"javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)");
     }
@@ -156,7 +152,9 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
-<view:includePlugin name="popup"/>
+  <c:if test="<%=m_SpaceExtraInfos.isAdmin()%>">
+    <view:includePlugin name="adminspacehomepage"/>
+  </c:if>
 <style type="text/css">
 .txtlibform {
 	white-space: nowrap;
@@ -298,6 +296,17 @@ out.println(tabbedPane.print());
         updateDate="${space.lastUpdateDate}" updatedBy="${space.lastUpdater}"/>
   </div>
 
+  <c:if test="<%=m_SpaceExtraInfos.isAdmin()%>">
+    <div id="spaceHomepage">
+      <silverpeas-admin-space-homepage-popin
+          v-on:api="api = $event"
+          v-on:validated="save($event)"
+          v-bind:title="'${silfn:escapeJs(modifyStartPageLabel)}'"
+          v-bind:space-id="spaceId"
+          v-bind:homepage="homepage"></silverpeas-admin-space-homepage-popin>
+    </div>
+  </c:if>
+
   <div class="principalContent">
     <div id="principal-content-adminSpace">
       <div id="gauges-content-adminSpace">
@@ -369,6 +378,41 @@ out.println(tabbedPane.print());
 <%
 out.println(window.printAfter());
 %>
+<c:if test="<%=m_SpaceExtraInfos.isAdmin()%>">
+  <c:set var="spaceHomepageTypes" value="<%=SpaceHomePageType.values()%>"/>
+  <script type="text/javascript">
+    window.spaceHomepageVm = new Vue({
+      el : '#spaceHomepage',
+      data : function() {
+        return {
+          api : undefined,
+          spaceId : '${space.id}',
+          homepage : {
+            'type' : '${spaceHomepageTypes[space.firstPageType]}',
+            'value' : '${silfn:escapeJs(space.firstPageExtraParam)}',
+          }
+        }
+      },
+      methods : {
+        save : function(newData) {
+          const spaceHomepageForm = new FormData();
+          spaceHomepageForm.set("type", newData.type);
+          spaceHomepageForm.set("value", newData.value);
+          sp.ajaxRequest("SaveHomepageChoice")
+            .byPostMethod()
+            .sendAndPromiseJsonResponse(spaceHomepageForm)
+            .then(function() {
+              this.homepage.type = newData.type;
+              this.homepage.value = newData.value;
+              newData.deferredSave.resolve();
+            }.bind(this), function() {
+              newData.deferredSave.reject();
+            }.bind(this));
+        }
+      }
+    });
+  </script>
+</c:if>
 <view:progressMessage/>
 <div id="pasteOptionsDialog" style="display:none">
 <form name="pasteForm" action="Paste" method="GET">

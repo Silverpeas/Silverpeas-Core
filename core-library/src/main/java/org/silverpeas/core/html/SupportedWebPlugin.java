@@ -55,6 +55,10 @@ public interface SupportedWebPlugin {
     /**
      * Silverpeas admin services (AdminSpaceService and AdminComponentInstanceService).
      */
+    public static final SupportedWebPlugin ADMIN_SPACE_HOMEPAGE = () -> "ADMINSPACEHOMEPAGE";
+    /**
+     * Silverpeas admin services (AdminSpaceService and AdminComponentInstanceService).
+     */
     public static final SupportedWebPlugin ADMINSERVICES = () -> "ADMINSERVICES";
     /**
      * Silverpeas plugin to play videos and sounds.

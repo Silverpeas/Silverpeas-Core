@@ -3390,47 +3390,31 @@ class DefaultAdministration implements Administration {
 
   @Override
   public String[] getUserManageableSpaceIds(String sUserId) throws AdminException {
-    final Integer[] result;
-    ArrayList<String> alManageableSpaceIds = new ArrayList<>();
-    ArrayList<Integer> alDriverManageableSpaceIds = new ArrayList<>();
+    final String[] result;
     try {
       // Get user manageable space ids from cache
-      Optional<Integer[]> optionalSpaceIds = cache.getManageableSpaceIds(sUserId);
-      if (optionalSpaceIds.isEmpty()) {
-        // Get user manageable space ids from database
-
-        List<String> groupIds = getAllGroupsOfUser(sUserId);
-        final Integer[] manageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
-
-        // Inherits manageability rights for space children
-        String[] childSpaceIds;
-        for (Integer asManageableSpaceId : manageableSpaceIds) {
-          // add manageable space id in result
-          String asManageableSpaceIdAsString = String.valueOf(asManageableSpaceId);
-          if (!alManageableSpaceIds.contains(asManageableSpaceIdAsString)) {
-            alManageableSpaceIds.add(asManageableSpaceIdAsString);
-            alDriverManageableSpaceIds.add(asManageableSpaceId);
-          }
-
-          // calculate manageable space's children
-          childSpaceIds = spaceManager.getAllSubSpaceIds(asManageableSpaceId);
-
-          // add them in result
-          for (String childSpaceId : childSpaceIds) {
-            if (!alManageableSpaceIds.contains(childSpaceId)) {
-              alManageableSpaceIds.add(childSpaceId);
-              alDriverManageableSpaceIds.add(getDriverSpaceId(childSpaceId));
-            }
-          }
+      final Optional<String[]> cachedSpaceIds = cache.getManageableSpaceIds(sUserId);
+      if (cachedSpaceIds.isEmpty()) {
+        final List<String> groupIds = getAllGroupsOfUser(sUserId);
+        // Get space ids on which the user is specifically indicated as manager
+        final Integer[] directSpacedIds = userManager.getManageableSpaceIds(sUserId, groupIds);
+        final List<SpaceInst> consumer = new ArrayList<>();
+        for(Integer directSpaceId : directSpacedIds) {
+          consumer.add(getSpaceInstById(String.valueOf(directSpaceId)));
         }
-
-        // Put user manageable space ids in cache
-        result = alDriverManageableSpaceIds.toArray(new Integer[0]);
+        // Identifying all managed space ids
+        final Set<String> allSpaces = new HashSet<>();
+        while (!consumer.isEmpty()) {
+          final SpaceInst current = consumer.remove(0);
+          allSpaces.add(String.valueOf(current.getLocalId()));
+          consumer.addAll(current.getSubSpaces());
+        }
+        result = allSpaces.toArray(new String[0]);
         cache.putManageableSpaceIds(sUserId, result);
       } else {
-        result = optionalSpaceIds.get();
+        result = cachedSpaceIds.get();
       }
-      return stream(result).map(String::valueOf).toArray(String[]::new);
+      return result;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
     }

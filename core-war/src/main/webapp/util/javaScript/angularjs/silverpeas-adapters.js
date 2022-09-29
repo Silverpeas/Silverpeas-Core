@@ -61,7 +61,17 @@
     function _error(data, status, headers) {
       if (!performMessage(headers) && status) {
         if (status > 0) {
-          console.error("Error: " + status + "[ " + data + " ]");
+          let error = status;
+          let messages = data;
+          if (typeof data === 'object') {
+            if (data.errorMessage) {
+              messages = data.errorMessage;
+            }
+            if (data.status && data.status.code && data.status.message) {
+              error = data.status.code + ', ' + data.status.message;
+            }
+          }
+          console.error("Error: " + "[ " + error + " ]" + "[ " + messages + " ]");
         } else {
           // Maybe a request closed before the end, from the user navigation
         }
@@ -74,7 +84,11 @@
       if (this.sessionKey) {
         config.headers = extendsObject({'X-Silverpeas-Session' : this.sessionKey}, config.headers);
       }
-      if (typeof data === 'object') {
+      if (data instanceof FormData) {
+        config.headers =
+            extendsObject({'Content-Type' : undefined}, config.headers);
+        config.data = data;
+      } else if (typeof data === 'object') {
         config.headers =
             extendsObject({'Content-Type' : 'application/json; charset=UTF-8'}, config.headers);
         config.data = data;

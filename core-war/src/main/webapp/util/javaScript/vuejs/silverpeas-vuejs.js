@@ -248,7 +248,7 @@ window.VuejsI18nTemplateMixin = {
           if (styles.underline) {
             value = '<u>' + value + '</u>'
           }
-          result = result.replaceAll('[{]' + i + '[}]', value);
+          result = result.replaceAllByRegExpAsString('[{]' + i + '[}]', value);
         }
       }
       return result;
@@ -418,10 +418,16 @@ window.VuejsFormInputMixin = {
 window.VuejsProgressMessageMixin = {
   methods : {
     showProgressMessage : function() {
-      spProgressMessage.show();
+      const api = window.spProgressMessage
+          ? window.spProgressMessage
+          : top.spProgressMessage;
+      api.show();
     },
     hideProgressMessage : function() {
-      spProgressMessage.hide();
+      const api = window.spProgressMessage
+          ? window.spProgressMessage
+          : top.spProgressMessage;
+      api.hide();
     }
   }
 };
