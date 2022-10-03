@@ -77,6 +77,7 @@ import static org.mockito.Mockito.when;
  * Integration tests on the reminders
  * @author mmoquillon
  */
+@SuppressWarnings("NewClassNamingConvention")
 @RunWith(Arquillian.class)
 public class ReminderIT {
 
@@ -512,7 +513,7 @@ public class ReminderIT {
   @Priority(APPLICATION + 10)
   public static class StubbedPersonalizationService extends DefaultPersonalizationService {
 
-    private PersonalizationService mock = mock(PersonalizationService.class);
+    private final PersonalizationService mock = mock(PersonalizationService.class);
 
     static PersonalizationService getMock() {
       return ((StubbedPersonalizationService) ServiceProvider
