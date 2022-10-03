@@ -364,6 +364,8 @@ public class ReminderIT {
     assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
+    // once triggered, it can take time for the scheduler to update the scheduling state of the job
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isNotScheduled(reminder));
     assertThat(reminder.isScheduled(), is(false));
     final DateTimeReminder afterTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
     assertThat(afterTriggered, notNullValue());
