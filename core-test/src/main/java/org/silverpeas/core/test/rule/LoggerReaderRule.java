@@ -93,11 +93,15 @@ public class LoggerReaderRule implements TestRule {
         .findFirst()
         .orElse(new SimpleFormatter()));
     handler.setLevel(level);
-    rootLogger.addHandler(handler);
+    if (rootLogger != null) {
+      rootLogger.addHandler(handler);
+    }
   }
 
   protected synchronized void afterEvaluate() {
-    rootLogger.removeHandler(handler);
+    if (rootLogger != null) {
+      rootLogger.removeHandler(handler);
+    }
   }
 
   public Reader getReader() {
