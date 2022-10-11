@@ -24,12 +24,6 @@
 /*****************/
 /** QapTcha CSS **/
 /*****************/
-#QapTcha {
-    float: left;
-    margin-left: 5px;
-    margin-top: -20px;
-    width: 300px;
-}
 #QapTcha .clr {
     clear: both;
 }

@@ -23,11 +23,28 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserRegistrationService;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Navigation case : user has not an account yet and submits registration form.
@@ -42,16 +59,20 @@ public class RegisterHandler extends FunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
-    String firstName = request.getParameter("firstName");
-    String lastName = request.getParameter("lastName");
-    String email = request.getParameter("email");
-    String token = request.getParameter(REGISTRATION_TOKEN);
+    HttpRequest req = HttpRequest.decorate(request);
+    String firstName = req.getParameter("firstName");
+    String lastName = req.getParameter("lastName");
+    String email = req.getParameter("email");
     String domainId = settings.userSelfRegistrationDomainId();
 
     if (settings.isUserSelfRegistrationEnabled()) {
       try {
         UserRegistrationService service = UserRegistrationService.get();
-        service.registerUser(firstName, lastName, email, domainId);
+        String userId = service.registerUser(firstName, lastName, email, domainId);
+
+        processDataOfExtraTemplate(userId, req);
+
+        saveAvatar(req, UserFull.getById(userId).getAvatarFileName());
       } catch (AdminException e) {
         return "/admin/jsp/registrationFailed.jsp";
       }
@@ -62,5 +83,52 @@ public class RegisterHandler extends FunctionHandler {
           firstName, lastName, email);
       return "";
     }
+  }
+
+  private void processDataOfExtraTemplate(String userId, HttpRequest request) {
+    PagesContext context = getTemplateContext(userId);
+    context.setDomainId(settings.userSelfRegistrationDomainId());
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    PublicationTemplate template = templateManager.getDirectoryTemplate();
+    if (template != null) {
+      try {
+        templateManager.saveData(template.getFileName(), context, request.getFileItems());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+        MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
+      }
+    }
+  }
+
+  private PagesContext getTemplateContext(String userId) {
+    return PagesContext.getDirectoryContext(userId, userId, I18NHelper.DEFAULT_LANGUAGE);
+  }
+
+  private String saveAvatar(HttpRequest request, String nameAvatar) {
+    List<FileItem> parameters = request.getFileItems();
+    FileItem file = FileUploadUtil.getFile(parameters, "avatar");
+    if (file != null && StringUtil.isDefined(file.getName())) {
+      String extension = FileRepositoryManager.getFileExtension(file.getName());
+      if (extension != null && extension.equalsIgnoreCase("jpeg")) {
+        extension = "jpg";
+      }
+
+      if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
+          equalsIgnoreCase(extension)) {
+        MessageNotifier.addError("L'image fournie n'a pas la bonne extension !");
+        return "";
+      }
+      try (InputStream fis = file.getInputStream()) {
+        SilverpeasFile image = SilverpeasFileProvider.newFile(getImagePath(nameAvatar));
+        image.writeFrom(fis);
+      } catch (IOException e) {
+        MessageNotifier.addError("L'image fournie n'a pas pu être enregistrée !");
+      }
+    }
+    return nameAvatar;
+  }
+
+  private String getImagePath(String fileName) {
+    return FileRepositoryManager.getAvatarPath() + File.separatorChar + fileName;
   }
 }

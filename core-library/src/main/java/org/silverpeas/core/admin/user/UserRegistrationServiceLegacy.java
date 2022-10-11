@@ -227,4 +227,5 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
     Administration admin = AdministrationServiceProvider.getAdminService();
     admin.updateUser(userDetail);
   }
+
 }

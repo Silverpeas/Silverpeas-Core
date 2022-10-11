@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -37,6 +41,12 @@ public class NewRegistrationHandler extends FunctionHandler {
     String destination = "";
     renewSecurityToken(request);
     if (settings.isUserSelfRegistrationEnabled()) {
+      PagesContext context = new PagesContext();
+      context.setDomainId(settings.userSelfRegistrationDomainId());
+      PublicationTemplate template = PublicationTemplateManager.getInstance()
+          .getDirectoryTemplate(context);
+      request.setAttribute("ExtraTemplate", template);
+
       destination = "/admin/jsp/newRegistration.jsp";
     }
     return destination;
