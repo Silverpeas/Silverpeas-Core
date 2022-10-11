@@ -121,7 +121,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     for (String mavenDependency : mavenDependencies) {
       String[] dep = mavenDependency.split(":");
       String version = getVersion(dep);
-      addMavenDependencies(mavenDependency + ":" + version);
+      addMavenDependencies(dep[0] + ":" + dep[1] + ":" + version);
     }
     return this;
   }
@@ -143,7 +143,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     for (String mavenDependency : mavenDependencies) {
       String[] dep = mavenDependency.split(":");
       String version = getVersion(dep);
-      addMavenDependenciesWithPersistence(mavenDependency + ":" + version);
+      addMavenDependenciesWithPersistence(dep[0] + ":" + dep[1] + ":" + version);
     }
     return this;
   }
