@@ -327,3 +327,11 @@ a.submit span span, a.submitWithOneDomain span span {
 #content-terms-of-service * {
   text-align: left;
 }
+
+#self-registration #identity-template legend {
+  display: none;
+}
+
+#self-registration #identity-template li {
+  list-style-type: none;
+}

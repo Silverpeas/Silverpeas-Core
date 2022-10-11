@@ -6,14 +6,14 @@ import org.apache.ecs.html.Legend;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import static org.silverpeas.core.web.mvc.controller.MainSessionController
     .MAIN_SESSION_CONTROLLER_ATT;
@@ -84,16 +84,20 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
   private PagesContext getFormContext() {
     MainSessionController session = (MainSessionController) getJspContext().getAttribute(
         MAIN_SESSION_CONTROLLER_ATT, PageContext.SESSION_SCOPE);
+    PagesContext pageContext = PagesContext.getDirectoryContext(null, null,
+        I18NHelper.DEFAULT_LANGUAGE);
     if (session != null) {
-      PagesContext pageContext = PagesContext.getDirectoryContext(userId, session.getUserId(),
+      pageContext = PagesContext.getDirectoryContext(userId, session.getUserId(),
           session.getFavoriteLanguage());
       if (StringUtil.isNotDefined(userId)) {
         // creation case
         pageContext.setDomainId(domainId);
       }
-      return pageContext;
+    } else {
+      RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
+      pageContext.setDomainId(registrationSettings.userSelfRegistrationDomainId());
     }
-    throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+    return pageContext;
   }
 
 }

@@ -1,24 +1,19 @@
 <%--
-
     Copyright (C) 2000 - 2022 Silverpeas
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
     published by the Free Software Foundation, either version 3 of the
     License, or (at your option) any later version.
-
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "https://www.silverpeas.org/legal/floss_exception.html"
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Affero General Public License for more details.
-
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -38,106 +33,28 @@
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 <view:includePlugin name="virtualkeyboard"/>
 <view:includePlugin name="popup"/>
-<style type="text/css">
-.titre {
-    left: 375px;
-}
-
-.submit {
-	width: 95px;
-    background-color: transparent;
-    border: 0;
-}
-</style>
 
 <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
-
+<style type="text/css">
+	.cadre * {text-align:left;}
+	
+</style>
 <!-- jQuery files -->
-<script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>" type="text/javascript" charset="utf-8"></script>
-<script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
+  <view:script src="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>
+  <view:script src="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>
+  <view:script src="/util/javaScript/checkForm.js"/>
 <script type="text/javascript">
-
-//whitespace characters
-var whitespace = " \t\n\r";
-
-
-// Check whether string s is empty.
-function isEmpty(s) {
-	return ((s === null) || (s === undefined) || (s.length === 0));
-}
-
-//Returns true if string s is empty or
-//whitespace characters only.
-function isWhitespace (s) {
-
-	var i;
-
- // Is s empty?
- if (isEmpty(s)) return true;
-
- // Search through string's characters one by one
- // until we find a non-whitespace character.
- // When we do, return false; if we don't, return true.
- for (i = 0; i < s.length; i++) {
-     // Check that current character isn't whitespace.
-     var c = s.charAt(i);
-     if (whitespace.indexOf(c) === -1) return false;
- }
-
- // All characters are whitespace.
- return true;
-}
-
-//WORKAROUND FUNCTION FOR NAVIGATOR 2.0.2 COMPATIBILITY.
-//
-// The below function *should* be unnecessary.  In general,
-// avoid using it.  Use the standard method indexOf instead.
-//
-// However, because of an apparent bug in indexOf on
-// Navigator 2.0.2, the below loop does not work as the
-// body of stripInitialWhitespace:
-//
-// while ((i < s.length) && (whitespace.indexOf(s.charAt(i)) != -1))
-//   i++;
-//
-// ... so we provide this workaround function charInString
-// instead.
-//
-// charInString (CHARACTER c, STRING s)
-//
-// Returns true if single character c (actually a string)
-// is contained within string s.
-function charInString (c, s) {
-	for (i = 0; i < s.length; i++) {
-		if (s.charAt(i) === c) return true;
-  }
-  return false;
-}
-
-// Removes initial (leading) whitespace characters from s.
-// Global variable whitespace (see above)
-// defines which characters are considered whitespace.
-function stripInitialWhitespace (s) {
-	var i = 0;
-    while ((i < s.length) && charInString (s.charAt(i), whitespace))
-       i++;
-
-    return s.substring (i, s.length);
-}
-
 function checkIsNotEmpty(text) {
   return new Promise(function(resolve, reject) {
     resolve(!isWhitespace(text));
   });
 }
-
 function checkEmailIsCorrectlyFormatted(src) {
   return new Promise(function(resolve, reject) {
     var regex = /^[a-z0-9A-Z\_\.\-]{1,}[\@@]{1}[a-z0-9A-Z\_\.\-]*[a-z0-9A-Z]{1}[\.]{1}[a-zA-Z]{2,6}$/;
     resolve(!isEmpty(src) && src.match(regex) != null);
   });
 }
-
 function checkEmailDoesNotExist(email) {
   return new Promise(function(resolve, reject) {
     $.get("<c:url value="/MailExists"/>?email=" + escape(email),
@@ -147,20 +64,48 @@ function checkEmailDoesNotExist(email) {
       });
   });
 }
+function checkAvatar() {
+  return new Promise(function(resolve, reject) {
+    var image = $("#avatar").val();
+    resolve(isWhitespace(image) || isAnImageExtension(image));
+  });
+}
 
-function checkForm()
-{
+function isAnImageExtension(filename) {
+  var indexPoint = filename.lastIndexOf(".");
+  // on verifie qu il existe une extension au nom du fichier
+  if (indexPoint !== -1) {
+    // le fichier contient une extension. On recupere l extension
+    var ext = filename.substring(indexPoint + 1).toLowerCase();
+    return (ext === "gif") || (ext === "jpeg") || (ext === "jpg") || (ext === "png");
+  }
+  return false;
+}
+
+function saveNewUser() {
+  if ($("#identity-template").length) {
+    checkForm(function() {
+      ifCorrectFormExecute(function() {
+        document.getElementById("EDform").submit();
+      });
+    });
+  } else {
+    checkForm(function() {
+      document.getElementById("EDform").submit();
+    });
+  }
+}
+
+function checkForm(callback) {
     var form = document.getElementById("EDform");
     var lastName = stripInitialWhitespace(form.elements["lastName"].value);
     var firstName = stripInitialWhitespace(form.elements["firstName"].value);
     var email = stripInitialWhitespace(form.elements["email"].value);
-
     function checkResult(result, errorMessage) {
       if (!result) {
         SilverpeasError.add(errorMessage);
       }
     }
-
     checkIsNotEmpty(firstName)
         .then(function(result) {
           checkResult(result, "<fmt:message key='registration.firstNameRequired'/>\n");
@@ -168,33 +113,35 @@ function checkForm()
         })
         .then(function(result) {
           checkResult(result, "<fmt:message key='registration.lastNameRequired'/>\n");
-          return checkIsNotEmpty(email)
+          return checkIsNotEmpty(email);
         })
         .then(function(result) {
           checkResult(result, "<fmt:message key='registration.emailRequired'/>\n");
+          return checkAvatar();
+        })
+        .then(function(result) {
+          checkResult(result, "<fmt:message key='registration.avatar.bad'/>\n");
           return checkEmailIsCorrectlyFormatted(email);
         })
         .then(function(result) {
           checkResult(result, "<fmt:message key='registration.emailBadSyntax'/>\n");
-          return checkEmailDoesNotExist(email)
+          return checkEmailDoesNotExist(email);
         })
         .then(function(result) {
           checkResult(result, "<fmt:message key='registration.alreadyRegistered'/>\n");
           if (!SilverpeasError.show()) {
             form.action='<c:url value="/CredentialsServlet/Register" />';
-            form.submit();
+            callback.call(this);
           }
         });
 }
-
 function checkSubmit(ev)
 {
 	var touche = ev.keyCode;
 	if (touche === 13) {
-      checkForm();
+      saveNewUser();
     }
 }
-
 $(document).ready(function(){
 		// More complex call
 		$('#QapTcha').QapTcha({
@@ -206,30 +153,43 @@ $(document).ready(function(){
 </script>
 
 </view:sp-head-part>
-<view:sp-body-part>
-      <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
-        <div id="top"></div> <!-- Backgroud fonce -->
-        <div class="page"> <!-- Centrage horizontal des elements (960px) -->
+<view:sp-body-part id="self-registration">
+      <form id="EDform" action="javascript:saveNewUser();" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+        <div id="top"></div> 
+        <div class="page">
           <div class="titre"><fmt:message key="registration.title"/></div>
-            <div id="background"> <!-- image de fond du formulaire -->
+            <div id="background">
                 <div class="cadre">
-                    <p style="text-align: center">
-			<span>
-				<fmt:message key="registration.noSilverpeasAccount"/><br/>
-				<fmt:message key="registration.completeProfile"/>
-                        </span><br/><br/>
-					</p>
+                    <div class="registrationText">
+						<p class="noSilverpeasAccount"><fmt:message key="registration.noSilverpeasAccount"/></p>
+						<p class="noSilverpeasAccount"><fmt:message key="registration.completeProfile"/></p>
+					</div>
 
-                    <p><label for="firstName"><span><fmt:message key="registration.firstname" /></span><input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/></label></p>
-                    <p><label for="lastName"><span><fmt:message key="registration.lastname" /></span><input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/></label></p>
-                    <p><label for="email"><span><fmt:message key="registration.email" /></span><input type="text" name="email" id="email" value="${userProfile.email}"/></label></p>
+          <div class="form-registration">
+						<div class="form-registration-firstName">
+							<label for="firstName"><fmt:message key="registration.firstname" /></label>
+							<input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/>
+						</div>
+						<div class="form-registration-lastName">
+							<label for="lastName"><fmt:message key="registration.lastname" /></label>
+							<input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/>
+						</div>
+						<div class="form-registration-email">
+							<label for="email"><fmt:message key="registration.email" /></label>
+							<input type="text" name="email" id="email" value="${userProfile.email}"/>
+						</div>
+            <div class="form-registration-avatar">
+              <label for="avatar"><fmt:message key="registration.avatar" /></label>
+              <input type="file" name="avatar" id="avatar" />
+            </div>
+					</div>
 
-				<p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
+          <view:directoryExtraForm userId="unknown" edition="true"/>
+
 					<div id="QapTcha"></div>
-                    <p><input type="image" class="submit" src='<c:url value="/images/bt-ok.png" />' alt="register"/></p>
-
+					<a href="#" class="btn-registrer submit" onclick="saveNewUser()">
+						  <span><span><fmt:message key="registration.title" /></span></span>   
+					</a>
                 </div>
             </div>
             <div id="copyright"><fmt:message key="GML.trademark" /></div>

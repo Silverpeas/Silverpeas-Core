@@ -1110,14 +1110,19 @@ public class JavascriptPluginInclusion {
       final String language) {
     LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationManager.multilang.notificationManagerBundle", language);
-    final int userManualNotificationUserReceiverLimitValue =
-        User.getCurrentRequester().getUserManualNotificationUserReceiverLimitValue();
+    int userManualNotificationUserReceiverLimitValue = 0;
+    boolean domainRestricted = false;
+    if (User.getCurrentRequester() != null) {
+      userManualNotificationUserReceiverLimitValue = User.getCurrentRequester()
+          .getUserManualNotificationUserReceiverLimitValue();
+      domainRestricted = User.getCurrentRequester().isDomainRestricted();
+    }
     includeSelectize(xhtml);
     includePopup(xhtml);
     includeQTip(xhtml, language);
     xhtml.addElement(scriptContent(settingVariableName("UserGroupListSettings")
         .add("u.m.n.u.r.l.v", userManualNotificationUserReceiverLimitValue)
-        .add("d.r", User.getCurrentRequester().isDomainRestricted())
+        .add("d.r", domainRestricted)
         .add("d.nb", OrganizationController.get().getAllDomains().length)
         .produce()));
     xhtml.addElement(scriptContent(bundleVariableName("UserGroupListBundle")
