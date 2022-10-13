@@ -122,7 +122,7 @@ class GroupSynchronizationRule {
       Pattern.compile("(?i)^\\s*ds_domain[s]?\\s*=\\s*(.+)\\s*$");
 
   private static final Pattern COMPLEMENTARY_DATA_PATTERN =
-      Pattern.compile("(?i)^\\s*dc_(\\S+)\\s*=\\s*(.+)\\s*$");
+      Pattern.compile("(?i)^\\s*dc_([^\\s=]+)\\s*=\\s*(.+)\\s*$");
 
   private static final Pattern GROUP_RULE_DATA_PATTERN =
       Pattern.compile("(?i)^\\s*dr_groups(withsubgroups)?\\s*=\\s*(.+)\\s*$");
