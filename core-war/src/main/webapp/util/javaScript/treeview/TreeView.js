@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 
@@ -196,7 +196,7 @@ TreeView.prototype.nodes_valide = function ( )  {
 **************************************************************/
 
 
-/*---------------Display control - Affichage du contrôle------------------------*/
+/*---------------Display control - Affichage du contrï¿½le------------------------*/
 
 TreeView.prototype.display = function ( )  {
 	the_root = this.root ( );
@@ -213,13 +213,13 @@ TreeView.prototype.display2 = function ( )  {
 
 
 
-/*---------------Design control - Construction du contrôle----------------------*/
+/*---------------Design control - Construction du contrï¿½le----------------------*/
 
 TreeView.prototype.built_control = function ( node ) {
 	try {
 	var node_is_root = ( 0 == node.E_Num ) ;
 
-	// CREATION DE LA BASE DU CONTRÔLE ET DE LA RACINE
+	// CREATION DE LA BASE DU CONTRï¿½LE ET DE LA RACINE
 	if ( node_is_root ) {
 
 		document.write ( "<div id='TreeView_" + this.id + "'></div>" )
@@ -298,7 +298,7 @@ TreeView.prototype.built_control = function ( node ) {
 		// PRELOADER
 		if ( this.preloader_position == "bottom" ) this.built_preloader ( )
 
-		// CREATION DE LA BASE D'UN ITEM DU CONTRÔLE
+		// CREATION DE LA BASE D'UN ITEM DU CONTRï¿½LE
 		} else {
 			var childrens_node = document.createElement ( "ul" )
 			childrens_node.id = this.id + "_childrens_Folder_" + node.E_Num
@@ -344,7 +344,7 @@ TreeView.prototype.built_childrens = function ( parentNode , node ) {
 					break		// Fils = dossier avec fils
 				case 6:	this.built_last_node_file ( parentNode , node )
 					break		// Fils = fichier
-				default : alert(" Cas indéfini : " + cas )
+				default : alert(" Cas indï¿½fini : " + cas )
 				}
 
 			// PRECHARGEMENT
@@ -703,7 +703,7 @@ TreeView.prototype.built_preloader = function ( ) {
 	}
 
 
-// Features Add - Ajout de fonctionnalités
+// Features Add - Ajout de fonctionnalitï¿½s
 TreeView.prototype.add_feature = function ( TreeViewID , node, children_label ) {
 	try {
 	var E_Num = node.E_Num
@@ -840,7 +840,7 @@ TreeView.prototype.objet = function ( id ) { try {	return document.getElementByI
 TreeView.prototype.all_exist = function ( )  { return !( navigator.appName.indexOf ( "Microsoft" , 0) == -1 ) ; }
 
 
-/*----------------------- Alternate Reduce all folder & Collapse all folder  - Réduit tous les dossier ------------------------------*/
+/*----------------------- Alternate Reduce all folder & Collapse all folder  - Rï¿½duit tous les dossier ------------------------------*/
 
 TreeView.prototype.switch_all_display = function ( )  {
 	try {
@@ -866,7 +866,7 @@ TreeView.prototype.switch_all_display = function ( )  {
 
 
 
-/*----------------------- Reduce all folder - Réduit tous les dossier ------------------------------*/
+/*----------------------- Reduce all folder - Rï¿½duit tous les dossier ------------------------------*/
 
 TreeView.prototype.reduce_all = function ( )  {
 	try {
@@ -1024,7 +1024,7 @@ display_folder = function ( TreeViewID , folderID ) {
 
 
 
-/*----------------------Ouvre le lien d'un élément du contrôle-------------------*/
+/*----------------------Ouvre le lien d'un ï¿½lï¿½ment du contrï¿½le-------------------*/
 
 goto_link = function ( TreeViewID , E_Num , link_target , lien ) {
 	try {

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 
@@ -140,10 +140,10 @@ TreeViewElements.prototype.trier = function ( tableau ) {
 TreeViewElements.prototype.validate = function ( ) {
 	if (this.elements.length>0) {
 		if (!this.type_OK()) alert("TreeViewElements : element.Type incorrecte !");
-		if (!this.a_une_racine()) alert("TreeViewElements : pas de racine définie !");
-		if (!this.unicite_racine()) alert("TreeViewElements : plusieurs racines définie !");
-		if (!this.elements_ont_pere()) alert("TreeViewElements : Des éléments n'ont pas de père !");
-		} else alert("TreeViewElements : Aucun élément défini !");
+		if (!this.a_une_racine()) alert("TreeViewElements : pas de racine dï¿½finie !");
+		if (!this.unicite_racine()) alert("TreeViewElements : plusieurs racines dï¿½finie !");
+		if (!this.elements_ont_pere()) alert("TreeViewElements : Des ï¿½lï¿½ments n'ont pas de pï¿½re !");
+		} else alert("TreeViewElements : Aucun ï¿½lï¿½ment dï¿½fini !");
 	}
 
 
@@ -151,7 +151,7 @@ TreeViewElements.prototype.type_OK = function ( ) {
 	for ( m=0 ; m<this.elements.length ; m++ ) {
 		l_element = this.elements[m];
 		if (!( l_element.Type == "dossier" || l_element.Type == "fichier" )) {
-			alert("TreeViewElements : Type élément '"+l_element.Type+"' incorrecte !");
+			alert("TreeViewElements : Type ï¿½lï¿½ment '"+l_element.Type+"' incorrecte !");
 			return false;
 			}
 		}
@@ -177,9 +177,9 @@ TreeViewElements.prototype.unicite_racine = function ( ) {
 		if ( l_element.E_Num == l_element.E_E_Num ) nb_E_Num_egal_a_E_E_Num++;
 		if ( l_element.E_Num==0 ) nb_E_Num_egal_a_0++;
 		}
-	if ( nb_E_Num_egal_a_E_E_Num==0 ) alert("TreeViewElements.validate\nPas de racine définie. \n Une racine à pour attribut identifiant Id=0 et pour père Id_Pere=0.");
-	if ( nb_E_Num_egal_a_E_E_Num>1 ) alert("TreeViewElements.validate\nPlusieurs éléments ont pour père soit-même.");
-	if ( nb_E_Num_egal_a_0>1 ) alert("TreeViewElements.validate\nPlusieurs élément ont pour attribut Id=0.");
+	if ( nb_E_Num_egal_a_E_E_Num==0 ) alert("TreeViewElements.validate\nPas de racine dï¿½finie. \n Une racine ï¿½ pour attribut identifiant Id=0 et pour pï¿½re Id_Pere=0.");
+	if ( nb_E_Num_egal_a_E_E_Num>1 ) alert("TreeViewElements.validate\nPlusieurs ï¿½lï¿½ments ont pour pï¿½re soit-mï¿½me.");
+	if ( nb_E_Num_egal_a_0>1 ) alert("TreeViewElements.validate\nPlusieurs ï¿½lï¿½ment ont pour attribut Id=0.");
 	return true;
 	}
 
@@ -193,7 +193,7 @@ TreeViewElements.prototype.elements_ont_pere = function ( ) {
 			un_element = this.elements[j];
 			if (l_element.E_E_Num==un_element.E_Num) trouve = true;
 			}
-		if (!trouve) alert("TreeViewElements.validate\nPas de père trouvé pour l'élément E_Num="+l_element.E_Num);
+		if (!trouve) alert("TreeViewElements.validate\nPas de pï¿½re trouvï¿½ pour l'ï¿½lï¿½ment E_Num="+l_element.E_Num);
 		}
 	return true;
 	}

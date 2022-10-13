@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://silverpeas.org/xml/ns/component", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.silverpeas.core.admin.component.model;
