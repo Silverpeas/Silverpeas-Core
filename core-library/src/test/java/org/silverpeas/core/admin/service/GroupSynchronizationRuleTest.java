@@ -42,11 +42,15 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,6 +63,7 @@ import static org.mockito.Mockito.when;
 import static org.silverpeas.core.admin.service.GroupSynchronizationRule.from;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.*;
 import static org.silverpeas.core.util.CollectionUtil.union;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * @author Yohann Chastagnier
@@ -69,8 +74,9 @@ class GroupSynchronizationRuleTest {
 
   private static final String GROUP_ID = "26";
 
-  private static final String PROPERTY_VALUE_VILLE_ROM = "ville=Romans sur Isère";
-  private static final String PROPERTY_VALUE_VILLE_VAL = "ville=Va(le)nce";
+  private static final Map<String, String> PROPERTY_VALUE_VILLE_ROM = Map.of("ville", "Romans sur Isère");
+  private static final Map<String, String> PROPERTY_VALUE_VILLE_VAL = Map.of("ville", "Va(le)nce");
+  private static final Map<String, String> PROPERTY_COMPLEXE_VALUE = Map.of("value", "l=VIB,ou=Site,ou=Bot-FR,o=Bot");
 
   private static final Domain SHARED_DOMAIN = initializeDomain(null);
   private static final Domain DOMAIN_A = initializeDomain("10");
@@ -85,6 +91,7 @@ class GroupSynchronizationRuleTest {
   private static final UserDetail DOMAIN_A_USER_2 = initializeUser("1101", DOMAIN_A, USER, PROPERTY_VALUE_VILLE_VAL);
   private static final UserDetail DOMAIN_A_USER_3 = initializeUser("1102", DOMAIN_A, USER, PROPERTY_VALUE_VILLE_VAL);
   private static final UserDetail DOMAIN_A_USER_4 = initializeUser("1103", DOMAIN_A, USER, PROPERTY_VALUE_VILLE_VAL);
+  private static final UserDetail DOMAIN_A_USER_5 = initializeUser("1104", DOMAIN_A, USER, PROPERTY_COMPLEXE_VALUE);
 
   private static final Group DOMAIN_A_GROUP_0 = initializeGroup("group0_A");
   private static final Group DOMAIN_A_GROUP_1 = initializeGroup("group1_A", DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_1);
@@ -95,17 +102,18 @@ class GroupSynchronizationRuleTest {
   private static final UserDetail DOMAIN_B_USER_SPACE_ADMIN_1 = initializeUser("2010", DOMAIN_B, SPACE_ADMINISTRATOR,PROPERTY_VALUE_VILLE_VAL);
   private static final UserDetail DOMAIN_B_USER_1 = initializeUser("2100", DOMAIN_B, USER, PROPERTY_VALUE_VILLE_VAL);
   private static final UserDetail DOMAIN_B_USER_2 = initializeUser("2101", DOMAIN_B, USER, PROPERTY_VALUE_VILLE_ROM);
+  private static final UserDetail DOMAIN_B_USER_3 = initializeUser("2102", DOMAIN_B, USER, PROPERTY_COMPLEXE_VALUE);
 
   private static final Group DOMAIN_B_GROUP_0 = initializeGroup("group0_B", DOMAIN_B_USER_SPACE_ADMIN_1);
 
   private static final List<UserDetail> DOMAIN_A_USERS = Arrays
       .asList(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
           DOMAIN_A_USER_SPACE_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1,
-          DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4);
+          DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5);
 
   private static final List<UserDetail> DOMAIN_B_USERS = Arrays
       .asList(DOMAIN_B_USER_ADMIN_1, DOMAIN_B_USER_SPACE_ADMIN_1, DOMAIN_B_USER_1,
-          DOMAIN_B_USER_2);
+          DOMAIN_B_USER_2, DOMAIN_B_USER_3);
 
   private static final List<UserDetail> ALL_USERS =
       union(DOMAIN_A_USERS, DOMAIN_B_USERS);
@@ -199,20 +207,22 @@ class GroupSynchronizationRuleTest {
         .then(invocation -> {
           String propertyName = (String) invocation.getArguments()[0];
           String propertyValue = (String) invocation.getArguments()[1];
-          String specificSuffix = "_" + propertyName + "=" + propertyValue;
-          List<UserDetail> users = new ArrayList<>(DOMAIN_A_USERS);
-          users.removeIf(user -> !user.getSpecificId().endsWith(specificSuffix));
-          return users.toArray(new UserDetail[users.size()]);
+          return DOMAIN_A_USERS.stream()
+              .map(u -> Pair.of(u, getUserSpecificPropertyValues(u)))
+              .filter(p -> p.getSecond().getOrDefault(propertyName, EMPTY).equals(propertyValue))
+              .map(Pair::getFirst)
+              .toArray(UserDetail[]::new);
         });
 
     when(domainDriverB.getUsersBySpecificProperty(anyString(), anyString()))
         .then(invocation -> {
           String propertyName = (String) invocation.getArguments()[0];
           String propertyValue = (String) invocation.getArguments()[1];
-          String specificSuffix = "_" + propertyName + "=" + propertyValue;
-          List<UserDetail> users = new ArrayList<>(DOMAIN_B_USERS);
-          users.removeIf(user -> !user.getSpecificId().endsWith(specificSuffix));
-          return users.toArray(new UserDetail[users.size()]);
+          return DOMAIN_B_USERS.stream()
+              .map(u -> Pair.of(u, getUserSpecificPropertyValues(u)))
+              .filter(p -> p.getSecond().getOrDefault(propertyName, EMPTY).equals(propertyValue))
+              .map(Pair::getFirst)
+              .toArray(UserDetail[]::new);
         });
 
     when(userManager.getUsersBySpecificIdsAndDomainId(anyList(), anyString()))
@@ -297,22 +307,22 @@ class GroupSynchronizationRuleTest {
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5)));
 
     userIds = from(group4Rule(DOMAIN_B, "DS_AccessLevel = *")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "DS_AccessLevel = *")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
   }
 
   @Test
@@ -335,16 +345,16 @@ class GroupSynchronizationRuleTest {
   void getUserIdsFromUserAccessLevelRuleShouldReturnSimpleUsers() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "DS_AccessLevel =U")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5)));
 
     userIds = from(group4Rule(DOMAIN_B, "DS_AccessLevel   = U")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "   DS_AccessLevel =   U   ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "   DS_AccessLevel =   ZKW   ")).getUserIds();
     assertThat(userIds, Matchers.empty());
@@ -363,31 +373,31 @@ class GroupSynchronizationRuleTest {
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "DS_domains = 20")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "DS_domains=10,20")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "DS_domains = 10 , 20   ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
   }
 
   @SuppressWarnings("unchecked")
@@ -462,10 +472,38 @@ class GroupSynchronizationRuleTest {
   }
 
   @Test
+  void getUserIdsFromSpecificPropertyRuleWithComplexeValuesShouldReturnUsersWhichVerifyTheCondition() {
+    assertThrows(GroupSynchronizationRule.GroundRuleError.class, () -> {
+      from(group4Rule(DOMAIN_A, "  DC_ value= l=VIB,ou=Site,ou=Bot-FR,o=Bot  ")).getUserIds();
+    });
+
+    List<String> userIds =
+        from(group4Rule(DOMAIN_A, "  DC_value  = l=VIB,ou=Site,ou=Bot-FR,o=Bot  ")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(DOMAIN_A_USER_5)));
+
+    userIds =
+        from(group4Rule(DOMAIN_A, "  DC_value \t = l=VIB,ou=Site,ou=Bot-FR,o=Bot  ")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(DOMAIN_A_USER_5)));
+
+    userIds = from(group4Rule(DOMAIN_B, "DC_value=l=VIB,ou=Site,ou=Bot-FR,o=Bot")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(DOMAIN_B_USER_3)));
+
+    userIds = from(group4Rule(SHARED_DOMAIN, "DC_value=l=VIB,ou=Site,ou=Bot-FR,o=Bot")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(
+        extractUserIds( DOMAIN_A_USER_5, DOMAIN_B_USER_3)));
+  }
+
+  @Test
   void getUserIdsFromCombinationRuleWithoutClause() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "  ( DC_ville= Romans sur Isère )  ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
+
+    userIds = from(group4Rule(DOMAIN_A, "  ( DC_ville= l=VIB,ou=Site,ou=Bot-FR,o=Bot )  ")).getUserIds();
+    assertThat(userIds, empty());
+
+    userIds = from(group4Rule(DOMAIN_A, "  ( DC_value= l=VIB,ou=Site,ou=Bot-FR,o=Bot )  ")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(DOMAIN_A_USER_5)));
 
     userIds = from(group4Rule(DOMAIN_B, "(DC_ville=Romans sur Isère)")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
@@ -515,6 +553,17 @@ class GroupSynchronizationRuleTest {
         DOMAIN_A_USER_1, DOMAIN_B_USER_2)));
 
     userIds =
+        from(group4Rule(SHARED_DOMAIN, "  (&(DS_AccessLevel=U)(DC_value=l=VIB,ou=Site,ou=Bot-FR,o=Bot))"))
+            .getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(
+        DOMAIN_A_USER_5, DOMAIN_B_USER_3)));
+
+    userIds =
+        from(group4Rule(SHARED_DOMAIN, "  (&(DS_AccessLevel=A)(DC_value=l=VIB,ou=Site,ou=Bot-FR,o=Bot))"))
+            .getUserIds();
+    assertThat(userIds, empty());
+
+    userIds =
         from(group4Rule(DOMAIN_A, "  (&(DC_ville=Bidule) (DS_AccessLevel=A) )"))
             .getUserIds();
     assertThat(userIds, empty());
@@ -543,7 +592,7 @@ class GroupSynchronizationRuleTest {
 
     userIds = from(group4Rule(DOMAIN_B, "  (|(DS_AccessLevel=U)(DC_ville=Romans sur Isère))")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds =
         from(group4Rule(SHARED_DOMAIN, "  (|(DS_AccessLevel=A)(DC_ville=Romans sur Isère))")).getUserIds();
@@ -558,8 +607,8 @@ class GroupSynchronizationRuleTest {
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1,
         DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds =
         from(group4Rule(DOMAIN_A, "  (|(DC_ville=Bidule) (DS_AccessLevel=A) )"))
@@ -573,36 +622,39 @@ class GroupSynchronizationRuleTest {
     List<String> userIds =
         from(group4Rule(DOMAIN_A, " ( ! (    DC_ville= Va\\(le\\)nce  ) ) ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
+        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1, DOMAIN_A_USER_5)));
 
     userIds = from(group4Rule(DOMAIN_B, "(!(DC_ville=Romans sur Isère))")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1)));
+        DOMAIN_B_USER_1,
+        DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "( ! (    DC_ville= Va\\(le\\)nce  ) ) ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1,
-        DOMAIN_B_USER_2)));
+        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1, DOMAIN_A_USER_5,
+        DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "(!(DC_ville=Romans sur Isère))")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1,
-        DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
+        DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1)));
+        DOMAIN_B_USER_1,
+        DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "!(DC_ville=Romans sur Isère)")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
         DOMAIN_A_USER_SPACE_ADMIN_1,
-        DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
+        DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
-        DOMAIN_B_USER_1)));
+        DOMAIN_B_USER_1,
+        DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "!(DC_ville=Bidule)")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(ALL_USERS)));
@@ -612,7 +664,7 @@ class GroupSynchronizationRuleTest {
   void negateOperatorCanNotBeUsedDirectlyIntoSimpleSilverpeasRule() {
     List<String> userIds = from(group4Rule(DOMAIN_A, "(!(DC_ville=Va\\(le\\)nce))")).getUserIds();
     assertThat(userIds, containsInAnyOrder(
-        extractUserIds(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
+        extractUserIds(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1, DOMAIN_A_USER_5)));
     assertThrows(GroupSynchronizationRule.GroundRuleError.class,
         () -> from(group4Rule(DOMAIN_A, "((!DC_ville= Va\\(le\\)nce))")).getUserIds());
   }
@@ -675,16 +727,16 @@ class GroupSynchronizationRuleTest {
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1,
         DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
 
     userIds = from(group4Rule(SHARED_DOMAIN,
         "!(&(|(DS_AccessLevel=A)(DS_AccessLevel=S))(DC_ville=Va\\(le\\)nce))")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1,
         DOMAIN_A_USER_SPACE_ADMIN_2,
-        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
-        DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+        DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4, DOMAIN_A_USER_5,
+        DOMAIN_B_USER_1, DOMAIN_B_USER_2, DOMAIN_B_USER_3)));
   }
 
   private static String[] extractUserIds(UserDetail ... users) {
@@ -720,13 +772,20 @@ class GroupSynchronizationRuleTest {
    * @return the initialized instance.
    */
   private static UserDetail initializeUser(String id, Domain domain,
-      UserAccessLevel accessLevel, String propertyValue) {
+      UserAccessLevel accessLevel, Map<String, String> propertyValue) {
     UserDetail userDetail = new UserDetail();
     userDetail.setId(id);
     userDetail.setDomainId(domain.getId());
     userDetail.setAccessLevel(accessLevel);
-    userDetail.setSpecificId(id + "_" + propertyValue);
+    final Map<String, String> specificIdForJson = new HashMap<>(propertyValue);
+    specificIdForJson.put("id", id);
+    userDetail.setSpecificId(JSONCodec.encode(specificIdForJson));
     return userDetail;
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static Map<String, String> getUserSpecificPropertyValues(final UserDetail user) {
+    return (Map) JSONCodec.decode(user.getSpecificId(), Map.class);
   }
 
   /**
