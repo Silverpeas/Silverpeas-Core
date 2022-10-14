@@ -256,15 +256,8 @@ public class ReplacementResource extends RESTWebService {
   }
 
   private boolean isRequesterSupervisor() {
-    boolean isSupervisor;
-    try {
-      isSupervisor =
-          Stream.of(userManager.getUsersInRole(SilverpeasRole.SUPERVISOR.getName(), workflowId))
-          .anyMatch(u -> u.getUserId().equals(getUser().getId()));
-    } catch (WorkflowException e) {
-      isSupervisor = false;
-    }
-    return isSupervisor;
+    return Stream.of(userManager.getUsersInRole(SilverpeasRole.SUPERVISOR.getName(), workflowId))
+        .anyMatch(u -> u.getUserId().equals(getUser().getId()));
   }
 
   private final Predicate<Replacement<?>> onTheRequester =

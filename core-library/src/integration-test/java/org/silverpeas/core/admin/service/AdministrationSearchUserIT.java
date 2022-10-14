@@ -1273,14 +1273,14 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
   @Test
   public void verifyingTechnicalChangeOnAddAllUsersInProfileAlsoUsedBySearchUserIdsByProfile()
       throws AdminException {
-    List<String> userIds = admin.searchUserIdsByProfile(asList("320", "32"));
+    List<String> userIds = admin.searchUserIdsByProfile(asList("320", "32"), false);
     assertThat(userIds, containsInAnyOrder(
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID,
         USER_SQLU11_2011_ID_VALID,
         USER_SQLU4_2004_ID_VALID, USER_SQLU9_2009_ID_VALID
     ));
-    userIds = admin.searchUserIdsByProfile(asList("320", "32", "310", "31"));
+    userIds = admin.searchUserIdsByProfile(asList("320", "32", "310", "31"), false);
     assertThat(userIds, containsInAnyOrder(
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
         USER_SPU10_1010_ID_VALID, USER_SPU14_1014_ID_VALID,
@@ -1290,6 +1290,21 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         USER_SQLU1_2001_ID_VALID,
         USER_SQLU10_2010_ID_VALID, USER_SQLU11_2011_ID_VALID, USER_SQLU14_2014_ID_VALID,
         USER_SQLU4_2004_ID_VALID, USER_SQLU9_2009_ID_VALID
+    ));
+    // REMOVED OR NOT
+    userIds = admin.searchUserIdsByProfile(List.of("200"), false);
+    assertThat(userIds, containsInAnyOrder(
+        USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
+        USER_SPU2_1002_ID_BLOCKED,
+        USER_SPU4_1004_ID_VALID,
+        USER_SPU5_1005_ID_VALID
+    ));
+    userIds = admin.searchUserIdsByProfile(List.of("200"), true);
+    assertThat(userIds, containsInAnyOrder(
+        USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID, USER_SPU11_1011_ID_REMOVED,
+        USER_SPU2_1002_ID_BLOCKED,
+        USER_SPU4_1004_ID_VALID,
+        USER_SPU5_1005_ID_VALID
     ));
   }
 

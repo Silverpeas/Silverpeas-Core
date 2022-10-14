@@ -176,6 +176,18 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   @Override
   @XmlElement
+  public boolean isBlockedState() {
+    return this.user.isBlockedState();
+  }
+
+  @Override
+  @XmlElement
+  public boolean isExpiredState() {
+    return this.user.isExpiredState();
+  }
+
+  @Override
+  @XmlElement
   public boolean isDeletedState() {
     return this.user.isDeletedState();
   }

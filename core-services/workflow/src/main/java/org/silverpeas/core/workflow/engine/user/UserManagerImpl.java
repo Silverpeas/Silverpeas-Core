@@ -23,21 +23,24 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
 import org.silverpeas.core.workflow.engine.exception.UnknownUserException;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.SUPERVISOR;
 
 /**
  * A UserManager implementation built upon the silverpeas user management system.
@@ -72,34 +75,32 @@ public class UserManagerImpl implements UserManager {
     return users;
   }
 
-  /**
-   * Returns all the users having a given role relative to a processModel.
-   * @param roleName
-   * @param modelId
-   * @return
-   * @throws WorkflowException
-   */
   @Override
-  public User[] getUsersInRole(String roleName, String modelId) throws WorkflowException {
-    UserDetail[] userDetails;
-    try {
-      // the modelId is the peasId.
-      final ComponentInst peas = getAdminService().getComponentInst(modelId);
-      userDetails = getOrganisationController().getUsers(peas.getDomainFatherId(), modelId, roleName);
-    } catch (AdminException e) {
-      throw new WorkflowException("UserManagerImpl.getUserInRole",
-          "workflowEngine.EXP_UNKNOWN_ROLE", e);
-    }
-    if (userDetails == null) {
-      userDetails = new UserDetail[0];
-    }
-    return asUsers(userDetails);
+  public User[] getUsersInRole(String roleName, String modelId) {
+    // the modelId is the peasId.
+    final boolean includeRemovedUsers = !SUPERVISOR.getName().equals(roleName) &&
+        existsAtLeastOneValidReplacementAtNow(roleName, modelId);
+    return Stream
+        .of(getOrganisationController()
+            .getUsersIdsByRoleNames(modelId, List.of(roleName), includeRemovedUsers))
+        .map(UserDetail::getById)
+        .map(UserImpl::new)
+        .toArray(User[]::new);
   }
 
   @Override
-  public User[] getUsersInGroup(String groupId) {
-    final UserDetail[] userDetails = getOrganisationController().getAllUsersOfGroup(groupId);
-    return asUsers(userDetails);
+  public User[] getUsersInGroup(String groupId, final String modelId) {
+    final UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria().onGroupIds(groupId);
+    if (existsAtLeastOneValidReplacementAtNow(modelId)) {
+      criteria.includeRemovedUsers();
+    } else {
+      criteria.onUserStatesToExclude(UserState.REMOVED);
+    }
+    return getOrganisationController().searchUsers(criteria)
+        .stream()
+        .map(UserDetail.class::cast)
+        .map(UserImpl::new)
+        .toArray(User[]::new);
   }
 
   /**
@@ -111,13 +112,6 @@ public class UserManagerImpl implements UserManager {
       throw new UnknownUserException("UserManagerImpl.getUserDetail", userId);
     }
     return userDetail;
-  }
-
-  /**
-   * Make a User[] from a UserDetail[].
-   */
-  private User[] asUsers(UserDetail[] userDetails) {
-    return Stream.of(userDetails).map(UserImpl::new).toArray(User[]::new);
   }
 
   /**
@@ -143,5 +137,23 @@ public class UserManagerImpl implements UserManager {
           + user.getUserId() + ", info name : " + relation);
     }
     return getUser(info.getValue());
+  }
+
+  private static boolean existsAtLeastOneValidReplacementAtNow(final String roleName,
+      final String modelId) {
+    return Replacement.getAll(modelId)
+        .stream()
+        .filterCurrentAt(LocalDate.now())
+        .filterOnAtLeastOneRole(roleName)
+        .findFirst()
+        .isPresent();
+  }
+
+  private static boolean existsAtLeastOneValidReplacementAtNow(final String modelId) {
+    return Replacement.getAll(modelId)
+        .stream()
+        .filterCurrentAt(LocalDate.now())
+        .findFirst()
+        .isPresent();
   }
 }

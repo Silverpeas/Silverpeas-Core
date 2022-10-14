@@ -24,11 +24,11 @@
 package org.silverpeas.core.web.selection;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +42,7 @@ public class SelectionUsersGroups {
   public static final int USER = 0;
   public static final int GROUP = 1;
 
+  private boolean includeRemovedUsers = false;
   private String domainId = null;
   private String componentId = null;
   private String objectId = null;
@@ -68,6 +69,18 @@ public class SelectionUsersGroups {
         profileIds.add(profileInst.getId());
       }
     }
+  }
+
+  /**
+   * Should the selection include removed users?
+   * @return true to include removed users, false otherwise.
+   */
+  public boolean isIncludeRemovedUsers() {
+    return includeRemovedUsers;
+  }
+
+  public void setIncludeRemovedUsers(final boolean includeRemovedUsers) {
+    this.includeRemovedUsers = includeRemovedUsers;
   }
 
   /**

@@ -224,7 +224,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    * Init the user panel.
    */
   public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles,
-      final boolean showDeactivated, final boolean selectedUserLimit) {
+      final boolean includeRemovedUsers, final boolean showDeactivated, final boolean selectedUserLimit) {
     String applicationContext = URLUtil.getApplicationURL();
     String hostUrl = applicationContext + "/RselectionPeasWrapper/jsp/close";
 
@@ -253,6 +253,9 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     }
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
+    if (includeRemovedUsers) {
+      sug.setIncludeRemovedUsers(true);
+    }
     if (StringUtil.isDefined(instanceId)) {
       sug.setComponentId(instanceId);
       if (roles != null && !roles.isEmpty()) {

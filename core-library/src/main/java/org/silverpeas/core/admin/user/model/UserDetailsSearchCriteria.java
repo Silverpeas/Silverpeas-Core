@@ -29,8 +29,6 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
@@ -39,11 +37,10 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * A conjonction of criteria in the search of user details.
  */
-public class UserDetailsSearchCriteria implements SearchCriteria {
+public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
 
   public static final String[] ANY_GROUPS = Constants.ANY;
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
-  private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
 
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
@@ -57,7 +54,6 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   private static final String LAST_NAME = "lastName";
   private static final String PAGINATION = "pagination";
   private static final String ROLE_GROUPS = "groupIdsInRole";
-  private final Map<String, Object> criteria = new HashMap<>();
 
   @Override
   public UserDetailsSearchCriteria onName(String name) {
@@ -156,10 +152,12 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onUserStatesToExclude(final UserState... userStates) {
-    if (isNotEmpty(userStates)) {
-      criteria.put(USER_STATES_TO_EXCLUDE, userStates);
-    }
-    return this;
+    return (UserDetailsSearchCriteria) super.onUserStatesToExclude(userStates);
+  }
+
+  @Override
+  public UserDetailsSearchCriteria includeRemovedUsers() {
+    return (UserDetailsSearchCriteria) super.includeRemovedUsers();
   }
 
   @Override
@@ -234,10 +232,6 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnAccessLevelsSet() {
     return criteria.containsKey(USER_ACCESS_LEVELS);
-  }
-
-  public boolean isCriterionOnUserStatesToExcludeSet() {
-    return criteria.containsKey(USER_STATES_TO_EXCLUDE);
   }
 
   public boolean isCriterionOnNameSet() {
@@ -327,14 +321,6 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
    */
   public UserAccessLevel[] getCriterionOnAccessLevels() {
     return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
-  }
-
-  /**
-   * Gets user states to exclude criterion.
-   * @return the access level criterion.
-   */
-  public UserState[] getCriterionOnUserStatesToExclude() {
-    return (UserState[]) criteria.get(USER_STATES_TO_EXCLUDE);
   }
 
   /**

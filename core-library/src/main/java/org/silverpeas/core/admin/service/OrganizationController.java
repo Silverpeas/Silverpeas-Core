@@ -636,6 +636,16 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames);
 
   /**
+   * Return userIds according to a list of profile names
+   * @param componentId the instance id
+   * @param profileNames the list which contains the profile names
+   * @param includeRemovedUsersAndGroups users in removed state are taken into account
+   * @return a string array of user id
+   */
+  String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames,
+      final boolean includeRemovedUsersAndGroups);
+
+  /**
    * Gets the users playing the specified roles for the given protected resource in the specified
    * component instance.
    * @param componentId the unique identifier of a component instance.
@@ -644,6 +654,17 @@ public interface OrganizationController extends java.io.Serializable {
    */
   String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId,
       List<String> profileNames);
+
+  /**
+   * Gets the users playing the specified roles for the given protected resource in the specified
+   * component instance.
+   * @param componentId the unique identifier of a component instance.
+   * @param profileNames the list which contains the profile names
+   * @param includeRemovedUsersAndGroups users in removed state are taken into account
+   * @return an array with the user identifiers.
+   */
+  String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId,
+      List<String> profileNames, final boolean includeRemovedUsersAndGroups);
 
   /**
    * Gets the domain with the specified identifier.

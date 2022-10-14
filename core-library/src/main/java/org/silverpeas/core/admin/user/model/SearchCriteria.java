@@ -147,6 +147,17 @@ public interface SearchCriteria {
   SearchCriteria onUserStatesToExclude(UserState... userStates);
 
   /**
+   * Forces to take into account removed users.
+   * <p>
+   *   This method has priority over the {@link #onUserStatesToExclude(UserState...)} one.
+   *   It means that if {@link #includeRemovedUsers()} is called then {@link UserState#REMOVED}
+   *   state is removed from result of {@link #onUserStatesToExclude(UserState...)} method call.
+   * </p>
+   * @return the criteria enriched with a criterion on the user states.
+   */
+  SearchCriteria includeRemovedUsers();
+
+  /**
    * Appends a criterion on a resources pagination. The pagination is a mechanism to distribute the
    * resources to fetch in one or more pages of same size and to navigate among theses different
    * available pages.

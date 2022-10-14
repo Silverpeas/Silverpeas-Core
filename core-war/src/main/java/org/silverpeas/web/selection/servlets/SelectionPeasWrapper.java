@@ -86,6 +86,7 @@ public class SelectionPeasWrapper extends
     boolean selectedUserLimit = request.getParameterAsBoolean("selectedUserLimit");
     String instanceId = request.getParameter("instanceId");
     List<String> roles = request.getParameterAsList("roles");
+    boolean includeRemovedUsers = request.getParameterAsBoolean("includeRemovedUsers");
     boolean showDeactivated = request.getParameterAsBoolean("showDeactivated");
 
     controller.setSelectable(request.getParameter("selectable"));
@@ -106,8 +107,8 @@ public class SelectionPeasWrapper extends
         controller.setSelectedUserId(request.getParameter("selectedUser"));
       }
     }
-    return controller.initSelectionPeas(selectionMultiple, instanceId, roles, showDeactivated,
-        selectedUserLimit);
+    return controller.initSelectionPeas(selectionMultiple, instanceId, roles, includeRemovedUsers,
+        showDeactivated, selectedUserLimit);
   }
 
   public String closeUserGroupPanel(final HttpRequest request,
