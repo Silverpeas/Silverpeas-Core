@@ -443,21 +443,20 @@ public class LDAPUtility {
     final List<LDAPEntry> ldapEntries = new ArrayList<>();
     try {
       final LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
-      final LDAPSearchConstraints constraints = ld.getSearchConstraints();
-      final List<LDAPControl> ldapControls = new ArrayList<>(2);
-      ldapControls.add(new LDAPPagedResultsControl(constraints.getMaxResults(), false));
-      if (driverSettings.isSortControlSupported()) {
-        ldapControls.add(new LDAPSortControl(new LDAPSortKey(varToSort), false));
-      }
-      constraints.setControls(ldapControls.toArray(new LDAPControl[0]));
-      final LDAPSearchContext context = new LDAPSearchContext().setVarToSort(varToSort);
-      final LDAPSearchQuery query = new LDAPSearchQuery().setScope(scope)
-          .setAttrs(args)
-          .setConstraints(constraints);
       final String[] baseDNs = extractBaseDNs(baseDN);
       for (final String baseDN1 : baseDNs) {
+        final LDAPSearchConstraints constraints = ld.getSearchConstraints();
+        final List<LDAPControl> ldapControls = new ArrayList<>(2);
+        ldapControls.add(new LDAPPagedResultsControl(constraints.getMaxResults(), false));
+        if (driverSettings.isSortControlSupported()) {
+          ldapControls.add(new LDAPSortControl(new LDAPSortKey(varToSort), false));
+        }
+        constraints.setControls(ldapControls.toArray(new LDAPControl[0]));
+        final LDAPSearchContext context = new LDAPSearchContext().setVarToSort(varToSort);
+        final LDAPSearchQuery query = new LDAPSearchQuery().setScope(scope)
+            .setAttrs(args)
+            .setConstraints(constraints);
         query.setBaseDN(baseDN1);
-        // filter can be changed by search, so use the initial one for each DN
         query.setFilter(filter);
         while (query.getFilter() != null) {
           SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
