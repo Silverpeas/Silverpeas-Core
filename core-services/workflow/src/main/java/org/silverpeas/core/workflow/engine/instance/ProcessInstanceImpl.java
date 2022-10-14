@@ -356,7 +356,7 @@ public class ProcessInstanceImpl
    * Set a state inactive for this instance
    * @param state State to be desactivated
    */
-  public void removeActiveState(State state) throws WorkflowException {
+  public void removeActiveState(State state) {
     this.removeActiveState(state.getName());
   }
 
@@ -401,7 +401,7 @@ public class ProcessInstanceImpl
    * @param state
    */
   @Override
-  public void addTimeout(State state) throws WorkflowException {
+  public void addTimeout(State state) {
     if (CollectionUtil.isEmpty(activeStates)) {
       return;
     }
@@ -420,7 +420,7 @@ public class ProcessInstanceImpl
    * @param state
    */
   @Override
-  public void removeTimeout(State state) throws WorkflowException {
+  public void removeTimeout(State state) {
     boolean found = false;
     if (activeStates == null || activeStates.isEmpty()) {
       return;
@@ -443,15 +443,14 @@ public class ProcessInstanceImpl
    * @param user user to add
    * @param state state for which the user can make an action
    * @param role role name under which the user can make an action
-   * @throws WorkflowException
    */
   @Override
-  public void addWorkingUser(User user, State state, String role) throws WorkflowException {
+  public void addWorkingUser(User user, State state, String role) {
     this.addWorkingUser(user, getStateName(state), role, null);
   }
 
   @Override
-  public void addWorkingUser(Actor actor, State state) throws WorkflowException {
+  public void addWorkingUser(Actor actor, State state) {
     addWorkingUser(actor.getUser(), getStateName(state), actor.getUserRoleName(), actor.getGroupId());
   }
 
@@ -498,7 +497,7 @@ public class ProcessInstanceImpl
    * @param role role name under which the user could make an action
    */
   @Override
-  public void removeWorkingUser(User user, State state, String role) throws WorkflowException {
+  public void removeWorkingUser(User user, State state, String role) {
     this.removeWorkingUser(user, state.getName(), role);
   }
 
@@ -539,14 +538,13 @@ public class ProcessInstanceImpl
    * @param user user to add
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
-   * @throws WorkflowException
    */
-  public void addInterestedUser(User user, State state, String role) throws WorkflowException {
+  public void addInterestedUser(User user, State state, String role) {
     this.addInterestedUser(user, state.getName(), role, null);
   }
 
   @Override
-  public void addInterestedUser(Actor actor, State state) throws WorkflowException {
+  public void addInterestedUser(Actor actor, State state) {
     this.addInterestedUser(actor.getUser(), state.getName(), actor.getUserRoleName(), actor.
         getGroupId());
   }
@@ -592,9 +590,8 @@ public class ProcessInstanceImpl
    * @param user user to remove
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
-   * @throws WorkflowException
    */
-  public void removeInterestedUser(User user, State state, String role) throws WorkflowException {
+  public void removeInterestedUser(User user, State state, String role) {
     this.removeInterestedUser(user, state.getName(), role);
   }
 
@@ -1191,7 +1188,7 @@ public class ProcessInstanceImpl
   }
 
   @Override
-  public void removeWorkingUsers(State state) throws WorkflowException {
+  public void removeWorkingUsers(State state) {
     Iterator<WorkingUser> itWkUsers = workingUsers.iterator();
     while (itWkUsers.hasNext()) {
       WorkingUser wkUser = itWkUsers.next();
@@ -1213,7 +1210,7 @@ public class ProcessInstanceImpl
   }
 
   @Override
-  public void removeInterestedUsers(State state) throws WorkflowException {
+  public void removeInterestedUsers(State state) {
     Iterator<InterestedUser> itIntUsers = interestedUsers.iterator();
     while (itIntUsers.hasNext()) {
       InterestedUser intUser = itIntUsers.next();
@@ -1282,7 +1279,7 @@ public class ProcessInstanceImpl
    * @param state
    * @return LockingUser
    */
-  public LockingUser getLockingUser(String state) throws WorkflowException {
+  public LockingUser getLockingUser(String state) {
     for (LockingUser lockingUser : lockingUsers) {
       if (state.equals(lockingUser.getState())) {
         return lockingUser;
@@ -1399,7 +1396,7 @@ public class ProcessInstanceImpl
   /**
    * Unlock this instance for the engine
    */
-  public void unLock() throws WorkflowException {
+  public void unLock() {
     // Test if the instance is locked
     if (isLockedByAdmin()) {
       setLockedByAdmin(false);
@@ -1462,15 +1459,15 @@ public class ProcessInstanceImpl
     this.timeoutStatus = timeoutStatus ? 1 : 0;
   }
 
-  public List<User> getUsersInRole(String role) throws WorkflowException {
+  public List<User> getUsersInRole(String role) {
     UserManager userManager = WorkflowHub.getUserManager();
     User[] usersInRole = userManager.getUsersInRole(role, modelId);
     return Arrays.asList(usersInRole);
   }
 
-  public List<User> getUsersInGroup(String groupId) throws WorkflowException {
+  public List<User> getUsersInGroup(String groupId) {
     UserManager userManager = WorkflowHub.getUserManager();
-    User[] usersInGroup = userManager.getUsersInGroup(groupId);
+    User[] usersInGroup = userManager.getUsersInGroup(groupId, modelId);
     return Arrays.asList(usersInGroup);
   }
 

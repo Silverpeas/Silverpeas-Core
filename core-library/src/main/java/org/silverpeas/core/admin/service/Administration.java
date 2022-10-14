@@ -1391,7 +1391,8 @@ public interface Administration {
   // For SelectionPeas
   // -------------------------------------------------------------------------
 
-  List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException;
+  List<String> searchUserIdsByProfile(final List<String> profileIds,
+      final boolean includeRemovedUsersAndGroups) throws AdminException;
 
   SilverpeasList<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria)
       throws AdminException;

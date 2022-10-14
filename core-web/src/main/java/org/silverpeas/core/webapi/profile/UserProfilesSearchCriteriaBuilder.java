@@ -213,6 +213,8 @@ public class UserProfilesSearchCriteriaBuilder {
         allExcludedStates = new UserState[] {UserState.REMOVED};
       }
       searchCriteria.onUserStatesToExclude(allExcludedStates);
+    } else {
+      searchCriteria.includeRemovedUsers();
     }
     return searchCriteria;
   }

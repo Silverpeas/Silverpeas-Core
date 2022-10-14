@@ -30,8 +30,6 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -39,10 +37,9 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * A conjunction of criteria in the search of user groups.
  */
-public class GroupsSearchCriteria implements SearchCriteria {
+public class GroupsSearchCriteria extends AbstractSearchCriteria {
 
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
-  private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
   private static final String GROUP_ID = "groupId";
   private static final String USER_ID = "userId";
   private static final String SUPERGROUP_ID = "parentId";
@@ -54,7 +51,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
   private static final String ROOT_GROUP = "mustBeRoot";
   private static final String NAME = "name";
   private static final String PAGINATION = "pagination";
-  private Map<String, Object> criteria = new HashMap<>();
 
   @Override
   public GroupsSearchCriteria onName(String name) {
@@ -144,11 +140,13 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   @Override
-  public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
-    if (isNotEmpty(userStates)) {
-      criteria.put(USER_STATES_TO_EXCLUDE, userStates);
-    }
-    return null;
+  public GroupsSearchCriteria onUserStatesToExclude(final UserState... userStates) {
+    return (GroupsSearchCriteria) super.onUserStatesToExclude(userStates);
+  }
+
+  @Override
+  public GroupsSearchCriteria includeRemovedUsers() {
+    return (GroupsSearchCriteria) super.includeRemovedUsers();
   }
 
   /**
@@ -191,10 +189,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnAccessLevelsSet() {
     return criteria.containsKey(USER_ACCESS_LEVELS);
-  }
-
-  public boolean isCriterionOnUserStatesToExcludeSet() {
-    return criteria.containsKey(USER_STATES_TO_EXCLUDE);
   }
 
   public boolean isCriterionOnMixedDomainIdSet() {
@@ -302,14 +296,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   public UserAccessLevel[] getCriterionOnAccessLevels() {
     return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
-  }
-
-  /**
-   * Gets user states to exclude criterion.
-   * @return the access level criterion.
-   */
-  public UserState[] getCriterionOnUserStatesToExclude() {
-    return (UserState[]) criteria.get(USER_STATES_TO_EXCLUDE);
   }
 
   /**

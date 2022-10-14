@@ -1245,7 +1245,11 @@ public class JavascriptPluginInclusion {
             "GML.confirmation.deleteAll",
             "GML.modify",
             "GML.action.select",
-            "GML.list.changed.message")
+            "GML.list.changed.message",
+            "GML.user.account.state.BLOCKED.short",
+            "GML.user.account.state.DEACTIVATED.short",
+            "GML.user.account.state.EXPIRED.short",
+            "GML.user.account.state.DELETED.short")
         .add("n.m.r.l.m.w", bundle
             .getStringWithParams("notif.manual.receiver.limit.message.warning",
                 userManualNotificationUserReceiverLimitValue))

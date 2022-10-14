@@ -478,8 +478,20 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public String[] getUsersIdsByRoleNames(final String componentId, final List<String> profileNames,
+      final boolean includeRemovedUsersAndGroups) {
+    return new String[0];
+  }
+
+  @Override
   public String[] getUsersIdsByRoleNames(final String componentId, final ProfiledObjectId objectId,
       final List<String> profileNames) {
+    return new String[0];
+  }
+
+  @Override
+  public String[] getUsersIdsByRoleNames(final String componentId, final ProfiledObjectId objectId,
+      final List<String> profileNames, final boolean includeRemovedUsersAndGroups) {
     return new String[0];
   }
 
