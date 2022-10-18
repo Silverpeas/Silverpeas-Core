@@ -3,6 +3,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.FieldSet;
 import org.apache.ecs.html.Legend;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -15,8 +16,9 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import static org.silverpeas.core.web.mvc.controller.MainSessionController
-    .MAIN_SESSION_CONTROLLER_ATT;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * Created by Nicolas on 14/09/2017.
@@ -82,11 +84,11 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
   }
 
   private PagesContext getFormContext() {
-    MainSessionController session = (MainSessionController) getJspContext().getAttribute(
-        MAIN_SESSION_CONTROLLER_ATT, PageContext.SESSION_SCOPE);
     PagesContext pageContext = PagesContext.getDirectoryContext(null, null,
         I18NHelper.DEFAULT_LANGUAGE);
-    if (session != null) {
+    if (ofNullable(User.getCurrentRequester()).filter(not(User::isAnonymous)).isPresent()) {
+      MainSessionController session = (MainSessionController) getJspContext().getAttribute(
+          MAIN_SESSION_CONTROLLER_ATT, PageContext.SESSION_SCOPE);
       pageContext = PagesContext.getDirectoryContext(userId, session.getUserId(),
           session.getFavoriteLanguage());
       if (StringUtil.isNotDefined(userId)) {
