@@ -23,84 +23,96 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ include file="../../headLog.jsp" %>
 
 <fmt:setLocale value="<%=userLanguage%>" />
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication" />
+
+<fmt:message key="authentication.logon.newRegistration.qaptcha.lock" var="qaptchaLockMsg"/>
+<fmt:message key="authentication.logon.newRegistration.qaptcha.unlock" var="qaptchaUnlockMsg"/>
+<fmt:message key="authentication.logon.newRegistration.qaptcha.error" var="qaptchaErrorMsg"/>
+
 <view:sp-page>
 <view:sp-head-part minimalSilverpeasScriptEnv="true">
-<link rel="icon" href="<%=favicon%>" />
-<link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
-<view:includePlugin name="virtualkeyboard"/>
-<view:includePlugin name="popup"/>
+  <link rel="icon" href="<%=favicon%>" />
+  <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
+  <view:includePlugin name="virtualkeyboard"/>
+  <view:includePlugin name="popup"/>
 
-<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
-<style type="text/css">
-	.cadre * {text-align:left;}
-	
-</style>
-<!-- jQuery files -->
+  <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
+  <style type="text/css">
+    .cadre * {
+      text-align: left;
+    }
+  </style>
+  <!-- jQuery files -->
   <view:script src="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>
   <view:script src="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>
   <view:script src="/util/javaScript/checkForm.js"/>
-<script type="text/javascript">
-function checkIsNotEmpty(text) {
-  return new Promise(function(resolve, reject) {
-    resolve(!isWhitespace(text));
-  });
-}
-function checkEmailIsCorrectlyFormatted(src) {
-  return new Promise(function(resolve, reject) {
-    var regex = /^[a-z0-9A-Z\_\.\-]{1,}[\@@]{1}[a-z0-9A-Z\_\.\-]*[a-z0-9A-Z]{1}[\.]{1}[a-zA-Z]{2,6}$/;
-    resolve(!isEmpty(src) && src.match(regex) != null);
-  });
-}
-function checkEmailDoesNotExist(email) {
-  return new Promise(function(resolve, reject) {
-    $.get("<c:url value="/MailExists"/>?email=" + escape(email),
-        function(data) {
-          console.info("Check if " + email + " exists: " + data);
-          resolve(data.indexOf('MailExists') == -1);
-      });
-  });
-}
-function checkAvatar() {
-  return new Promise(function(resolve, reject) {
-    var image = $("#avatar").val();
-    resolve(isWhitespace(image) || isAnImageExtension(image));
-  });
-}
-
-function isAnImageExtension(filename) {
-  var indexPoint = filename.lastIndexOf(".");
-  // on verifie qu il existe une extension au nom du fichier
-  if (indexPoint !== -1) {
-    // le fichier contient une extension. On recupere l extension
-    var ext = filename.substring(indexPoint + 1).toLowerCase();
-    return (ext === "gif") || (ext === "jpeg") || (ext === "jpg") || (ext === "png");
-  }
-  return false;
-}
-
-function saveNewUser() {
-  if ($("#identity-template").length) {
-    checkForm(function() {
-      ifCorrectFormExecute(function() {
-        document.getElementById("EDform").submit();
-      });
-    });
-  } else {
-    checkForm(function() {
-      document.getElementById("EDform").submit();
+  <script type="text/javascript">
+  function checkIsNotEmpty(text) {
+    return new Promise(function(resolve, reject) {
+      resolve(!isWhitespace(text));
     });
   }
-}
+  function checkEmailIsCorrectlyFormatted(src) {
+    return new Promise(function(resolve, reject) {
+      const regex = /^[a-z0-9A-Z\_\.\-]{1,}[\@@]{1}[a-z0-9A-Z\_\.\-]*[a-z0-9A-Z]{1}[\.]{1}[a-zA-Z]{2,6}$/;
+      resolve(!isEmpty(src) && src.match(regex) != null);
+    });
+  }
+  function checkEmailDoesNotExist(email) {
+    return new Promise(function(resolve, reject) {
+      $.get("<c:url value="/MailExists"/>?email=" + escape(email),
+          function(data) {
+            console.info("Check if " + email + " exists: " + data);
+            resolve(data.indexOf('MailExists') === -1);
+        });
+    });
+  }
+  function checkAvatar() {
+    return new Promise(function(resolve, reject) {
+      const image = $("#avatar").val();
+      resolve(isWhitespace(image) || isAnImageExtension(image));
+    });
+  }
 
-function checkForm(callback) {
-    var form = document.getElementById("EDform");
-    var lastName = stripInitialWhitespace(form.elements["lastName"].value);
-    var firstName = stripInitialWhitespace(form.elements["firstName"].value);
-    var email = stripInitialWhitespace(form.elements["email"].value);
+  function isAnImageExtension(filename) {
+    const indexPoint = filename.lastIndexOf(".");
+    // on verifie qu il existe une extension au nom du fichier
+    if (indexPoint !== -1) {
+      // le fichier contient une extension. On recupere l extension
+      const ext = filename.substring(indexPoint + 1).toLowerCase();
+      return (ext === "gif") || (ext === "jpeg") || (ext === "jpg") || (ext === "png");
+    }
+    return false;
+  }
+
+  function get$form() {
+    return jQuery(document.getElementById("EDform"));
+  }
+
+  function saveNewUser() {
+    if ($("#identity-template").length) {
+      checkForm(function() {
+        ifCorrectFormExecute(function() {
+          get$form().submit();
+        });
+      });
+    } else {
+      checkForm(function() {
+        get$form().submit();
+      });
+    }
+  }
+
+  function checkForm(callback) {
+    const form = document.getElementById("EDform");
+    const lastName = stripInitialWhitespace(form.elements["lastName"].value);
+    const firstName = stripInitialWhitespace(form.elements["firstName"].value);
+    const email = stripInitialWhitespace(form.elements["email"].value);
+
     function checkResult(result, errorMessage) {
       if (!result) {
         SilverpeasError.add(errorMessage);
@@ -134,71 +146,82 @@ function checkForm(callback) {
             callback.call(this);
           }
         });
-}
-function checkSubmit(ev)
-{
-	var touche = ev.keyCode;
-	if (touche === 13) {
+  }
+  function checkSubmit(ev) {
+    const keyCode = ev.keyCode;
+    if (keyCode === 13) {
       saveNewUser();
     }
-}
-$(document).ready(function(){
-		// More complex call
-		$('#QapTcha').QapTcha({
-			autoSubmit : false,
-			autoRevert : true,
-			PHPfile : '<c:url value="/Qaptcha"/>'
-		});
-});
-</script>
+  }
+  $(document).ready(function(){
+      // More complex call
+    const qaptchaOptions = {
+      txtLock : '${silfn:escapeJs(qaptchaLockMsg)}',
+      txtUnlock : '${silfn:escapeJs(qaptchaUnlockMsg)}',
+      alertMsg : '${silfn:escapeJs(qaptchaErrorMsg)}',
+      autoSubmit : false,
+      autoRevert : true,
+      PHPfile : '<c:url value="/Qaptcha"/>'
+    };
+    $('#QapTcha').QapTcha(qaptchaOptions);
+    setTimeout(function() {
+      const $form = get$form();
+      $form.unbind('submit');
+      $form.submit(function() {
+        SilverpeasError.add(qaptchaOptions.alertMsg).show();
+        return false;
+      });
+    }, 0);
+  });
+  </script>
 
 </view:sp-head-part>
 <view:sp-body-part id="self-registration">
-      <form id="EDform" action="javascript:saveNewUser();" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
-        <div id="top"></div> 
-        <div class="page">
-          <div class="titre"><fmt:message key="registration.title"/></div>
-            <div id="background">
-                <div class="cadre">
-                    <div class="registrationText">
-						<p class="noSilverpeasAccount"><fmt:message key="registration.noSilverpeasAccount"/></p>
-						<p class="noSilverpeasAccount"><fmt:message key="registration.completeProfile"/></p>
-					</div>
+  <form id="EDform" action="javascript:saveNewUser();" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+    <div id="top"></div>
+    <div class="page">
+      <div class="titre"><fmt:message key="registration.title"/></div>
+        <div id="background">
+            <div class="cadre">
+                <div class="registrationText">
+        <p class="noSilverpeasAccount"><fmt:message key="registration.noSilverpeasAccount"/></p>
+        <p class="noSilverpeasAccount"><fmt:message key="registration.completeProfile"/></p>
+      </div>
 
-          <div class="form-registration">
-						<div class="form-registration-firstName">
-							<label for="firstName"><fmt:message key="registration.firstname" /></label>
-							<input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/>
-						</div>
-						<div class="form-registration-lastName">
-							<label for="lastName"><fmt:message key="registration.lastname" /></label>
-							<input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/>
-						</div>
-						<div class="form-registration-email">
-							<label for="email"><fmt:message key="registration.email" /></label>
-							<input type="text" name="email" id="email" value="${userProfile.email}"/>
-						</div>
-            <div class="form-registration-avatar">
-              <label for="avatar"><fmt:message key="registration.avatar" /></label>
-              <input type="file" name="avatar" id="avatar" />
-            </div>
-					</div>
-
-          <view:directoryExtraForm userId="unknown" edition="true"/>
-
-					<div id="QapTcha"></div>
-					<a href="#" class="btn-registrer submit" onclick="saveNewUser()">
-						  <span><span><fmt:message key="registration.title" /></span></span>   
-					</a>
-                </div>
-            </div>
-            <div id="copyright"><fmt:message key="GML.trademark" /></div>
+      <div class="form-registration">
+        <div class="form-registration-firstName">
+          <label for="firstName"><fmt:message key="registration.firstname" /></label>
+          <input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/>
         </div>
-        </form>
+        <div class="form-registration-lastName">
+          <label for="lastName"><fmt:message key="registration.lastname" /></label>
+          <input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/>
+        </div>
+        <div class="form-registration-email">
+          <label for="email"><fmt:message key="registration.email" /></label>
+          <input type="text" name="email" id="email" value="${userProfile.email}"/>
+        </div>
+        <div class="form-registration-avatar">
+          <label for="avatar"><fmt:message key="registration.avatar" /></label>
+          <input type="file" name="avatar" id="avatar" />
+        </div>
+      </div>
 
-		<script type="text/javascript">
-      document.querySelector("input").focus();
-		</script>
+      <view:directoryExtraForm userId="unknown" edition="true"/>
+
+      <div id="QapTcha"></div>
+      <a href="#" class="btn-registrer submit" onclick="saveNewUser()">
+          <span><span><fmt:message key="registration.title" /></span></span>
+      </a>
+            </div>
+        </div>
+        <div id="copyright"><fmt:message key="GML.trademark" /></div>
+    </div>
+  </form>
+
+  <script type="text/javascript">
+    document.querySelector("input").focus();
+  </script>
 
 </view:sp-body-part>
 </view:sp-page>

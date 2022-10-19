@@ -84,8 +84,7 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
   }
 
   private PagesContext getFormContext() {
-    PagesContext pageContext = PagesContext.getDirectoryContext(null, null,
-        I18NHelper.DEFAULT_LANGUAGE);
+    final PagesContext pageContext;
     if (ofNullable(User.getCurrentRequester()).filter(not(User::isAnonymous)).isPresent()) {
       MainSessionController session = (MainSessionController) getJspContext().getAttribute(
           MAIN_SESSION_CONTROLLER_ATT, PageContext.SESSION_SCOPE);
@@ -96,6 +95,11 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
         pageContext.setDomainId(domainId);
       }
     } else {
+      final String userLanguage = ofNullable(getJspContext().getAttribute("userLanguage", PageContext.REQUEST_SCOPE))
+          .filter(String.class::isInstance)
+          .map(String.class::cast)
+          .orElse(I18NHelper.DEFAULT_LANGUAGE);
+      pageContext = PagesContext.getDirectoryContext(null, null, userLanguage);
       RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
       pageContext.setDomainId(registrationSettings.userSelfRegistrationDomainId());
     }
