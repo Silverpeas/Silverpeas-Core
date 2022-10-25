@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
@@ -31,7 +30,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
@@ -65,9 +63,6 @@ import java.util.Optional;
     "suite", "inheritSpaceRightsByDefault", "publicByDefault", "visible", "visibleInPersonalSpace",
     "portlet", "router", "profiles", "groupsOfParameters", "parameters"})
 public class WAComponent extends AbstractSilverpeasComponent {
-
-  @XmlTransient
-  private final ParameterSorter sorter = new ParameterSorter();
 
   @XmlElement(required = true)
   protected String name;
@@ -376,22 +371,11 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public List<Parameter> getSortedParameters() {
-    getParameters().sort(sorter);
-    return this.parameters;
-  }
-
-  @Override
   public List<GroupOfParameters> getGroupsOfParameters() {
     if (groupsOfParameters == null) {
       groupsOfParameters = new ArrayList<>();
     }
     return groupsOfParameters;
-  }
-
-  public List<GroupOfParameters> getSortedGroupsOfParameters() {
-    getGroupsOfParameters().sort(new GroupOfParametersSorter());
-    return this.groupsOfParameters;
   }
 
   @Override

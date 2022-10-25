@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.ToolRegistry;
 
 import java.util.Collection;
@@ -106,19 +105,7 @@ public class Tool extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public List<Parameter> getSortedParameters() {
-    getParameters().sort(new ParameterSorter());
-    return getParameters();
-  }
-
-  @Override
   public List<GroupOfParameters> getGroupsOfParameters() {
     return Collections.emptyList();
-  }
-
-  @SuppressWarnings("unused")
-  public List<GroupOfParameters> getSortedGroupsOfParameters() {
-    getGroupsOfParameters().sort(new GroupOfParametersSorter());
-    return getGroupsOfParameters();
   }
 }

@@ -163,6 +163,12 @@ public interface SilverpeasComponent {
   List<Parameter> getSortedParameters();
 
   /**
+   * Gets same parameters as {@link #getGroupsOfParameters()}, sorted by order and name.
+   * @return sorted groups of parameters.
+   */
+  List<GroupOfParameters> getSortedGroupsOfParameters();
+
+  /**
    * Gets same parameters as {@link #getParameters()} but filled into structured object {@link
    * ParameterList}.
    * @return parameters contained into {@link ParameterList} instance.

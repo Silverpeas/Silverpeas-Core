@@ -24,14 +24,12 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
@@ -73,8 +71,6 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
   @XmlElementWrapper(name = "parameters")
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
-  @XmlTransient
-  private final ParameterSorter sorter = new ParameterSorter();
 
   /**
    * Gets the PersonalComponent instance with the specified name.
@@ -189,22 +185,10 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public List<Parameter> getSortedParameters() {
-    getParameters().sort(sorter);
-    return this.parameters;
-  }
-
-  @Override
   public List<GroupOfParameters> getGroupsOfParameters() {
     if (groupsOfParameters == null) {
       groupsOfParameters = new ArrayList<>();
     }
     return groupsOfParameters;
-  }
-
-  @SuppressWarnings("unused")
-  public List<GroupOfParameters> getSortedGroupsOfParameters() {
-    getGroupsOfParameters().sort(new GroupOfParametersSorter());
-    return this.groupsOfParameters;
   }
 }
