@@ -47,6 +47,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlTransient;
@@ -81,6 +82,17 @@ public abstract class AbstractSilverpeasComponent implements SilverpeasComponent
       }
     }
     return indexedParametersByName;
+  }
+
+  @Override
+  public List<Parameter> getSortedParameters() {
+    getParameters().sort(new ParameterSorter());
+    return getParameters();
+  }
+
+  public List<GroupOfParameters> getSortedGroupsOfParameters() {
+    getGroupsOfParameters().sort(new GroupOfParametersSorter());
+    return getGroupsOfParameters();
   }
 }
   
