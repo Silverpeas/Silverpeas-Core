@@ -42,6 +42,7 @@
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -49,7 +50,7 @@
 <%
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-    String language = request.getLocale().getLanguage();
+    String language = SilverpeasWebUtil.get().getUserLanguage(request);
     MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
     LocalizationBundle multilang = ResourceLocator
         .getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);

@@ -36,6 +36,7 @@
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.authentication.credentials.RegistrationSettings" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil" %>
 
 <%
   response.setDateHeader("Expires", -1);
@@ -46,22 +47,16 @@
 <%
   String m_context = request.getContextPath();
   RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
+  String userLanguage = SilverpeasWebUtil.get().getUserLanguage(request);
 
 // Get the authentication settings
   SettingBundle authenticationSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.authentication.settings.authenticationSettings");
   LocalizationBundle homePageBundle =
       ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle",
-          request.getLocale().getLanguage());
+          userLanguage);
 
 // Get the logo to print
-  String userLanguage = (String) request.getAttribute("userLanguage");
-  if (StringUtil.isNotDefined(userLanguage) && User.getCurrentRequester() != null) {
-    userLanguage = User.getCurrentRequester().getUserPreferences().getLanguage();
-  }
-  if (StringUtil.isNotDefined(userLanguage)) {
-    userLanguage = request.getLocale().getLanguage();
-  }
   SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
    LocalizationBundle generalMultilang =

@@ -88,14 +88,14 @@
           },
           loadBasketElements : function() {
             this.loadQueue.push(function() {
-              this.service.getBasketSelectionElements(BasketService.Filters.dataTransfer).then(function(basketElements) {
+              return this.service.getBasketSelectionElements(BasketService.Filters.dataTransfer).then(function(basketElements) {
                 this.updateWith(basketElements);
               }.bind(this));
             }.bind(this));
           },
           deleteBasketElement : function(basketElement) {
             this.loadQueue.push(function() {
-              this.service.deleteEntry(basketElement).then(function(elements) {
+              return this.service.deleteEntry(basketElement).then(function(elements) {
                 if (elements.length === 0) {
                   this.close();
                 }

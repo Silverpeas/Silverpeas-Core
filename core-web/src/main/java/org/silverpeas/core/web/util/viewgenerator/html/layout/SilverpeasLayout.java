@@ -24,21 +24,14 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.layout;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * Centralizing common data providing.
@@ -51,26 +44,8 @@ abstract class SilverpeasLayout extends BodyTagSupport {
     this.init();
   }
 
-  private Optional<MainSessionController> getMainSessionController() {
-    final HttpSession session = ((HttpServletRequest) pageContext.getRequest()).getSession(false);
-    return session != null
-        ? ofNullable((MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT))
-        : empty();
-  }
-
   String getUserLanguage() {
-    return getMainSessionController()
-        .map(MainSessionController::getFavoriteLanguage)
-        .orElseGet(() -> {
-          String userLanguage = (String) pageContext.getRequest().getAttribute("language");
-          if (isNotDefined(userLanguage)) {
-            userLanguage = (String) pageContext.getRequest().getAttribute("userLanguage");
-          }
-          if (isNotDefined(userLanguage) && pageContext.getRequest().getLocale() != null) {
-            userLanguage = pageContext.getRequest().getLocale().getLanguage();
-          }
-          return DisplayI18NHelper.verifyLanguage(userLanguage);
-        });
+    return SilverpeasWebUtil.get().getUserLanguage((HttpServletRequest) pageContext.getRequest());
   }
 
   String getComponentId() {

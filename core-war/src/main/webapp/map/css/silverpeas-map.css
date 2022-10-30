@@ -1,0 +1,324 @@
+/*
+ * Copyright (C) 2000 - 2022 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#container {
+  position: relative;
+  width: 100%;
+  margin: auto;
+}
+
+#container #map {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+}
+
+#container #filters {
+  position: absolute;
+}
+
+.right-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+
+.ol-marker {
+  z-index : 1;
+}
+
+.ol-top-marker {
+  z-index : 2;
+}
+
+.ol-top-marker.current {
+  z-index: 3;
+}
+
+.ol-top-marker:hover {
+  z-index: 4;
+}
+
+.map-marker {
+  width: auto;
+  height: 20px;
+  border: 1px solid #595959;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background-color: #ececec;
+  padding: 2px 5px 0 5px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.map-marker a {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
+  opacity: 0.85;
+}
+
+.map-marker .pointer {
+  position: absolute;
+  left: -1px;
+  bottom: -3px;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  opacity: 0.8;
+  border-width: 3px 0 3px 6px;
+  border-style: dashed dashed dashed solid;
+  border-color: transparent transparent transparent #595959;
+}
+
+.mapping-filters {
+  text-align: center;
+  margin: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #666666;
+  background-color: #efefef;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+.mapping-filters .category {
+  opacity: 1;
+  margin: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mapping-filters .category.disabled {
+  opacity: 0.5;
+  color: black;
+}
+
+.mapping-filters .min-max {
+  position: absolute;
+  top : 10px;
+  right : 10px;
+}
+
+.mapping-layers {
+  position: absolute;
+  right: 0;
+  bottom: 35px;
+  text-align: center;
+  margin: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #666666;
+  background-color: #efefef;
+  opacity: 0.8;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.mapping-layers .not-selected {
+  opacity: 0.5;
+}
+
+.mapping-layers .layer {
+  text-align: left;
+}
+
+.mapping-layers .layer span {
+  cursor: pointer;
+}
+
+.map-tip-marker {
+  width: auto;
+  height: auto;
+  background-color: #FFF;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 7px 1px rgba(0, 0, 0, 0.3);
+  vertical-align: middle;
+  position: relative;
+  z-index: 10;
+}
+
+.map-tip-marker-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  height: 16px;
+  width: 16px;
+  display: block;
+  background: #FFF url(../../util/icons/qtip-closed.gif) 0 0 no-repeat;
+}
+
+.map-tip-marker-button:hover {
+  color: #333;
+}
+
+.map-tip-marker-content {
+  max-height: 500px;
+  max-width: 750px;
+  overflow: auto;
+  margin-top: 16px;
+}
+
+.info-window {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  display: table;
+  border: 1px #cccac8;
+}
+
+.info-window div {
+  vertical-align: top;
+}
+
+.info-window .bloc {
+  display: table;
+}
+
+.info-window .row {
+  display: table-row;
+}
+
+.info-window .cell {
+  display: table-cell;
+}
+
+.info-window .label,
+.info-window .label-multiline {
+  width: 160px;
+  padding-left: 10px;
+  padding-right: 5px;
+  color: #767676;
+}
+
+.info-window .resources .label {
+  width: 100px;
+}
+
+.info-window .horizontal-separator-margin {
+  height: 1px;
+}
+
+.info-window .vertical-separator-margin {
+  width: 5px;
+}
+
+.info-window .vertical-separator {
+  border-left: 3px dotted #D6D6D6;
+  width: 2px;
+}
+
+.info-window .title {
+  font-weight: 100;
+  text-align: center;
+  border-bottom: 3px dotted #D6D6D6;
+  border-top: 3px dotted #D6D6D6;
+  color: #008BD0;
+  font-size: 18px;
+  display: block;
+  background-color: #EFEFEF;
+  width: 96%
+}
+
+.info-window .data a {
+  background-color: #008BD0;
+  color: #FFF;
+  font-style: normal !important;
+  font-weight: 100;
+  padding: 0 3px;
+  text-decoration: none;
+}
+
+.info-window .data a:hover {
+  background-color: #f9b700;
+}
+
+.info-window p {
+  line-height: 18px;
+  padding: 0;
+  margin: 0;
+}
+
+.info-window .img {
+  max-width: 150px;
+  max-height: 200px;
+  border: 1px solid #cccac8;
+  margin: 6px 0 6px 0;
+}
+
+.info-window .cell:first-child {
+  max-width: 680px;
+}
+
+.info-window div.avatar {
+  width: 100px
+}
+
+.info-window img.avatar {
+  max-width: 75px;
+  max-height: 100px;
+  border: 1px solid #cccac8;
+  margin: 6px 0 6px 0;
+}
+
+.info-window .data {
+  font-weight: normal;
+  /*white-space: nowrap;*/
+  margin-left: 5px;
+}
+
+.info-window .data .email {
+  display: none;
+}
+
+.info-window .resources .data {
+  padding-right: 10px;
+}
+
+.info-window .data-multiline {
+  font-weight: normal;
+  padding-left: 10px;
+  padding-right: 5px;
+  max-width: 250px;
+}
+
+.info-window div.label-multiline,
+.info-window div.data-multiline {
+  display: table;
+  width: 100%;
+}
+
+.info-window .data-multiline img {
+  max-width: 250px;
+}
+
+.info-window .vertical-centered {
+  vertical-align: middle;
+}
+
+.info-window .horizontal-centered {
+  text-align: left;
+}

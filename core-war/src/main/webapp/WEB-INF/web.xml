@@ -717,6 +717,10 @@
     <servlet-class>org.silverpeas.core.web.proxy.ProxyServlet</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>IncludePlugin</servlet-name>
+    <servlet-class>org.silverpeas.core.web.util.servlet.IncludePlugin</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>VisioRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.chat.VisioServlet</servlet-class>
   </servlet>
@@ -1176,6 +1180,10 @@
   <servlet-mapping>
     <servlet-name>Proxy</servlet-name>
     <url-pattern>/proxy/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>IncludePlugin</servlet-name>
+    <url-pattern>/plugin/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>VisioRequestRouter</servlet-name>

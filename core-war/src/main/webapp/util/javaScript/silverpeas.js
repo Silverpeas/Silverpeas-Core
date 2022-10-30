@@ -1545,6 +1545,10 @@ if (typeof window.sp === 'undefined') {
           params.callback.call(element);
         }
         const start = window.performance.now();
+        $element.style.opacity = 0;
+        if ($element.style.display === 'none') {
+          $element.style.display = '';
+        }
         window.requestAnimationFrame(function __fadeIn(now) {
           const progress = now - start;
           let opacity = progress / options.duration;
@@ -1663,6 +1667,21 @@ if (typeof window.sp === 'undefined') {
       whenAllResolved : function(promises) {
         return Promise.all(promises);
       },
+      whenAllResolvedOrRejected : function(promises) {
+        let chain = sp.promise.resolveDirectlyWith();
+        promises.forEach(function(promise) {
+          chain = chain.then(function() {
+            return new Promise(function(resolve) {
+              promise.then(function() {
+                resolve();
+              }, function() {
+                resolve();
+              })
+            });
+          })
+        });
+        return chain;
+      },
       resolveDirectlyWith : function(data) {
         return Promise.resolve(data);
       },
@@ -1674,7 +1693,18 @@ if (typeof window.sp === 'undefined') {
          * Returning a new queue instance
          */
         return new function() {
-          const deferredList = [];
+          const __debug = function() {
+            if (sp.log.debugActivated) {
+              const msg = ['sp.promise.queue'];
+              Array.prototype.push.apply(msg, arguments);
+              sp.log.debug.apply(this, msg);
+            }
+          }
+          let __chained = sp.promise.resolveDirectlyWith();
+          let registered = 0;
+          this.nbRegistered = function() {
+            return registered;
+          };
           /**
            * Pushes into queue the given callback.
            * If callback returns a promise, then the next callback is processed
@@ -1685,26 +1715,41 @@ if (typeof window.sp === 'undefined') {
            * @returns {*} the promise after successful callback processing.
            */
           this.push = function(callback) {
-            const currentIndex = deferredList.length - 1;
-            deferredList.push(sp.promise.deferred());
-            const nextDeferred = deferredList[currentIndex + 1];
-            let __currentPromise;
-            if (currentIndex >= 0) {
-              __currentPromise = deferredList[currentIndex].promise;
-            } else {
-              __currentPromise = sp.promise.resolveDirectlyWith();
-            }
-            return __currentPromise.then(function() {
-              const result = callback();
-              const nextPromise = function() {
-                nextDeferred.resolve();
-                return result;
+            return new Promise(function(resolve, reject) {
+              registered++;
+              __debug('Pushing in queue a process, count = ' + registered);
+              const __process = function() {
+                return new Promise(function(resolveChain) {
+                  const nextInChain = function() {
+                    registered--;
+                    __debug('Enabling next process, count = ' + registered);
+                    resolveChain();
+                  };
+                  try {
+                    __debug('Processing a process...');
+                    const result = callback();
+                    if (sp.promise.isOne(result)) {
+                      __debug('\treturning a promise');
+                      result.then(function() {
+                        resolve(result);
+                        nextInChain();
+                      }, function() {
+                        reject(result);
+                        nextInChain();
+                      });
+                    } else {
+                      __debug('\tnot returning a promise');
+                      resolve(result);
+                      nextInChain();
+                    }
+                  } catch (e) {
+                    __debug(e);
+                    reject(e);
+                    nextInChain();
+                  }
+                });
               };
-              if (sp.promise.isOne(result)) {
-                return result.then(nextPromise, nextPromise);
-              } else {
-                return nextPromise();
-              }
+              __chained = __chained.then(__process);
             });
           };
         };
@@ -1987,6 +2032,65 @@ if (typeof window.sp === 'undefined') {
        */
       parseHtmlString : function (htmlAsString) {
         return new DOMParser().parseFromString(htmlAsString, 'text/html');
+      },
+      /**
+       * Includes Silverpeas's registered plugins into DOM.
+       * @param pluginName
+       * @returns {Promise<unknown>} when inserted.
+       */
+      includePlugin : function(pluginName) {
+        function createScriptFrom(node, resolve, reject) {
+          const nodeName = node.nodeName.toLowerCase();
+          const $script = document.createElement(nodeName);
+          let alreadyExistsSelector = nodeName + "[";
+          if (node.href) {
+            $script.href = node.href;
+            alreadyExistsSelector += "href='" + node.href;
+          } else if (node.src) {
+            $script.src = node.src;
+            alreadyExistsSelector += "src='" + node.src;
+          } else {
+            $script.innerText = node.innerText;
+            alreadyExistsSelector += "unknown='unknown";
+          }
+          $script.type = node.type;
+          $script.rel = node.rel;
+          $script.onload = resolve;
+          $script.onerror = function() {
+            reject(new Error("Cannot insert " + nodeName));
+          };
+          alreadyExistsSelector += "']";
+          return {$script : $script, alreadyExistsSelector : alreadyExistsSelector};
+        }
+        return new Promise(function(resolve, reject) {
+          sp.ajaxRequest(webContext + '/plugin/' + pluginName).send().then(function(request) {
+            const newDom = sp.dom.parseHtmlString(request.responseText).querySelector('head');
+            const $dom = (document.body || document.documentElement);
+            let nodes = [];
+            Array.prototype.push.apply(nodes, newDom.childNodes);
+            let chainedPromises = sp.promise.resolveDirectlyWith();
+            nodes.forEach(function(node) {
+              const nodeName = node.nodeName.toLowerCase();
+              if (nodeName === 'link' || nodeName === 'style' || nodeName === 'script') {
+                chainedPromises = chainedPromises.then(function() {
+                  return new Promise(function (resolve, reject) {
+                    const result = createScriptFrom(node, resolve, reject);
+                    if (!document.querySelector(result.alreadyExistsSelector) &&
+                        !document.querySelector(result.alreadyExistsSelector.replace(/http.?:\/\/[^/]+/g, ''))) {
+                      $dom.appendChild(result.$script);
+                      if (!node.src && !node.href) {
+                        resolve();
+                      }
+                    } else {
+                      resolve();
+                    }
+                  });
+                });
+              }
+            });
+            chainedPromises.then(resolve, reject);
+          });
+        });
       }
     },
     form : {

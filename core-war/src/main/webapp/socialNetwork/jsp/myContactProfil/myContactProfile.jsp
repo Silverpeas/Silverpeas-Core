@@ -30,6 +30,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -37,7 +38,7 @@
 <%
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-    String language = request.getLocale().getLanguage();
+    String language = SilverpeasWebUtil.get().getUserLanguage(request);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
     UserDetail userDetail = (UserDetail) request.getAttribute("UserDetail");
     String view = (String) request.getAttribute("View");

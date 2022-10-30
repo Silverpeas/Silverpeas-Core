@@ -96,5 +96,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(PANES, (x, l) -> includePanes(x));
     add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
     add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
+    add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
+    add(MAP, (x, l) -> JavascriptPluginInclusion.includeMap(x));
   }
 }

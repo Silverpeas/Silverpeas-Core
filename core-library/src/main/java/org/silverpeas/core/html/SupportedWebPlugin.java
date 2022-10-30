@@ -272,5 +272,9 @@ public interface SupportedWebPlugin {
      * Silverpeas plugin to manage a virtual keyboard.
      */
     public static final SupportedWebPlugin VIRTUALKEYBOARD = () -> "VIRTUALKEYBOARD";
+    /**
+     * Silverpeas plugin to manage a map.
+     */
+    public static final SupportedWebPlugin MAP = () -> "MAP";
   }
 }

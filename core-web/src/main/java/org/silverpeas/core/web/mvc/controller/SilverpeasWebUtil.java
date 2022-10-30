@@ -30,13 +30,20 @@ package org.silverpeas.core.web.mvc.controller;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * @author ehugonnet
@@ -46,6 +53,10 @@ public class SilverpeasWebUtil {
 
   @Inject
   private OrganizationController organizationController;
+
+  public static SilverpeasWebUtil get() {
+    return ServiceProvider.getSingleton(SilverpeasWebUtil.class);
+  }
 
   protected SilverpeasWebUtil() {
   }
@@ -145,5 +156,27 @@ public class SilverpeasWebUtil {
       }
     }
     return contentLanguage;
+  }
+
+  /**
+   * Gets the user favorite language from elements of the given request.
+   * @param request an instance of {@link HttpServletRequest}.
+   * @return a string representing the favorite language of the user behind the session or the
+   * language of WEB browser (or default language).
+   */
+  public String getUserLanguage(HttpServletRequest request) {
+    return ofNullable(User.getCurrentRequester())
+        .filter(not(User::isAnonymous))
+        .map(r -> r.getUserPreferences().getLanguage())
+        .orElseGet(() -> {
+          String userLanguage = (String) request.getAttribute("language");
+          if (isNotDefined(userLanguage)) {
+            userLanguage = (String) request.getAttribute("userLanguage");
+          }
+          if (isNotDefined(userLanguage) && request.getLocale() != null) {
+            userLanguage = request.getLocale().getLanguage();
+          }
+          return DisplayI18NHelper.verifyLanguage(userLanguage);
+        });
   }
 }

@@ -40,7 +40,7 @@
 <%
   LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.authentication.multilang.authentication",
-      request.getLocale().getLanguage());
+      SilverpeasWebUtil.get().getUserLanguage(request));
 
   pageContext.setAttribute("authenticationBundle", authenticationBundle);
 

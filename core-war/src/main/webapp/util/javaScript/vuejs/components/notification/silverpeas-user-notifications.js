@@ -294,7 +294,7 @@
         },
         loadNotifications : function() {
           this.loadQueue.push(function() {
-            this.inboxUserNotificationService.getAllPaginated(this.nbPages).then(function(notifications) {
+            return this.inboxUserNotificationService.getAllPaginated(this.nbPages).then(function(notifications) {
               notifications.forEach(function(notification) {
                 notification.oldRead = notification.read;
                 if (!notification.read) {

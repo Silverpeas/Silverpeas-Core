@@ -26,6 +26,9 @@
  * Silverpeas plugin build upon JQuery to manage the context of contribution modifications.
  * Several confirmations could be asked to the user before sending the new data to the server.
  */
+
+//# sourceURL=/util/jsp/javaScript/silverpeas-contribution-modification-context.js
+
 (function($) {
 
   $.contributionModificationContext = {

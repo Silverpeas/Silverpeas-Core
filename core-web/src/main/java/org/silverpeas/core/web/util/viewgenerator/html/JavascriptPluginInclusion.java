@@ -947,6 +947,48 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Includes all the scripts and stylesheets that made up the Silverpeas Map display.
+   * @param xhtml the Web document as container of HTML elements.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeMap(final ElementContainer xhtml) {
+    final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.map.settings.map");
+    final JavascriptSettingProducer settingBundle = settingVariableName("MapSettings");
+    final String mapDir = getApplicationURL() + "/map/";
+    xhtml.addElement(link(mapDir + "ol/css/ol-min.css"));
+    xhtml.addElement(script(mapDir + "ol/ol-min.js"));
+    xhtml.addElement(scriptContent(settingBundle
+        .add("ip.c.c", JSONCodec.encode(settings.getList("view.infoPoint.category.colors", new String[0], ",")))
+        .add("v.z.min", settings.getInteger("view.zoom.min", 5))
+        .add("v.z.max", settings.getInteger("view.zoom.max", 20))
+        .add("v.z.d", settings.getInteger("view.zoom.default", 10))
+        .add("v.c.d.lon", settings.getFloat("view.coordinates.default.lon", 5.7167f))
+        .add("v.c.d.lat", settings.getFloat("view.coordinates.default.lat", 45.1667f))
+        .add("xyz.p", settings.getString("jsonXyzProviders", EMPTY))
+        .add("bm.p", settings.getString("jsonBmProvider", EMPTY))
+        .add("c.d.e", settings.getBoolean("clusters.default.enabled", false))
+        .add("c.d.d", settings.getInteger("clusters.default.distance", 40))
+        .add("c.d.c", settings.getString("clusters.default.color", "#7eb73b"))
+        .add("c.d.o", settings.getFloat("clusters.default.opacity", 1f))
+        .add("c.d.tc", settings.getString("clusters.default.textColor", "#fff"))
+        .add("c.d.tox", settings.getInteger("clusters.default.textOffsetX", 0))
+        .add("c.d.toy", settings.getInteger("clusters.default.textOffsetY", 0))
+        .add("c.d.ts", settings.getFloat("clusters.default.textScale", 1f))
+        .add("c.d.tfs", settings.getString("clusters.default.textFontStyle", EMPTY))
+        .produce()));
+    xhtml.addElement(link(mapDir + "css/silverpeas-map.css"));
+    xhtml.addElement(script(mapDir + "js/services/silverpeas-map-address-service.js"));
+    xhtml.addElement(script(mapDir + "js/services/silverpeas-map-user-service.js"));
+    xhtml.addElement(script(mapDir + "js/vuejs/silverpeas-map-common.js"));
+    xhtml.addElement(script(mapDir + "js/vuejs/silverpeas-map-form-common.js"));
+    xhtml.addElement(script(mapDir + "js/vuejs/components/silverpeas-map-common.js"));
+    xhtml.addElement(script(mapDir + "js/vuejs/components/silverpeas-map-form-common.js"));
+    xhtml.addElement(script(mapDir + "js/silverpeas-map.js"));
+    xhtml.addElement(script(mapDir + "js/silverpeas-map-form.js"));
+    return xhtml;
+  }
+
+  /**
    * Includes a dynamic loading of Silverpeas subscription JQuery Plugin.
    * @param xhtml the container into which the plugin loading code will be added.
    * @return the completed parent container.

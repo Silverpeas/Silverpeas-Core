@@ -25,11 +25,9 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.apache.ecs.ElementContainer;
 import org.silverpeas.core.html.WebPlugin;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -47,7 +45,6 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
  */
 public class IncludeJSPluginTag extends SimpleTagSupport {
 
-  private static final String MAIN_SESSION_CONTROLLER = "SilverSessionController";
   private String plugin;
 
   public String getName() {
@@ -79,27 +76,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   }
 
   protected String getLanguage() {
-    final String language;
-    MainSessionController controller = getSessionAttribute(MAIN_SESSION_CONTROLLER);
-    if (controller != null) {
-      language = controller.getFavoriteLanguage();
-    } else if (StringUtil.isDefined(getRequestAttribute("userLanguage"))) {
-      language = getRequestAttribute("userLanguage");
-    } else {
-      final PageContext pageContext = (PageContext) getJspContext();
-      final HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-      if (request.getLocale() != null) {
-        language = DisplayI18NHelper.verifyLanguage(request.getLocale().getLanguage());
-      } else {
-        language = DisplayI18NHelper.getDefaultLanguage();
-      }
-    }
-    return language;
-  }
-
-  @SuppressWarnings("unchecked")
-  protected <T> T getRequestAttribute(String name) {
-    return (T) getJspContext().getAttribute(name, PageContext.REQUEST_SCOPE);
+    final PageContext pageContext = (PageContext) getJspContext();
+    final HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+    return SilverpeasWebUtil.get().getUserLanguage(request);
   }
 
   @SuppressWarnings("unchecked")
