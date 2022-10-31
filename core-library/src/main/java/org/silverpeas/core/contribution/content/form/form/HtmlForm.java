@@ -209,53 +209,52 @@ public class HtmlForm extends AbstractForm {
    */
   private void printField(PrintWriter out, String fieldName, PagesContext pc) {
     try {
-      Field field = record.getField(fieldName);
       String currentFieldName = fieldName;
-      if (field != null) {
-        boolean fieldFound = false;
-        boolean workflowPrintForm = false;
-        if (currentFieldName.indexOf('.') != -1) {
-          // fieldName can be as 'folder.nature' (case of workflow printForm)
-          currentFieldName = currentFieldName.substring(currentFieldName.indexOf('.') + 1,
-              currentFieldName.length());
-          workflowPrintForm = true;
-        }
-        for (FieldTemplate fieldTemplate : getFieldTemplates()) {
-          if (fieldTemplate != null
-              && fieldTemplate.getFieldName().equalsIgnoreCase(currentFieldName)) {
-            if (workflowPrintForm) {
-              ((GenericFieldTemplate) fieldTemplate).setDisplayerName("simpletext");
-              ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
-            }
-            FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
-            if (fieldDisplayer != null) {
-              if (!fieldTemplate.isRepeatable()) {
-                field = getSureField(fieldTemplate, record, 0);
-                fieldDisplayer.display(out, field, fieldTemplate, pc);
-              } else {
-                boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName()) &&
-                    !fieldTemplate.isReadOnly();
-                int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
-                out.println("<ul class=\"repeatable-field-list field_"+fieldName+"\">");
-                for (int occ = 0; occ < maxOccurrences; occ++) {
-                  field = getSureField(fieldTemplate, record, occ);
-                  if (pagesContext.isDesignMode() || isWriting || occ == 0 || !field.isNull()) {
-                    if (occ != 0) {
-                      ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
-                    }
-                    out.println("<li class=\"repeatable-field-list-element" + occ + "\">");
-                    fieldDisplayer.display(out, field, fieldTemplate, pc);
-                    out.println("</li>");
-                  }
-                }
-                out.println("</ul>");
-              }
-            }
-            fieldFound = true;
-            break;
+      boolean fieldFound = false;
+      boolean workflowPrintForm = false;
+      if (currentFieldName.indexOf('.') != -1) {
+        // fieldName can be as 'folder.nature' (case of workflow printForm)
+        currentFieldName = currentFieldName.substring(currentFieldName.indexOf('.'));
+        workflowPrintForm = true;
+      }
+      for (FieldTemplate fieldTemplate : getFieldTemplates()) {
+        if (fieldTemplate != null
+            && fieldTemplate.getFieldName().equalsIgnoreCase(currentFieldName)) {
+          if (workflowPrintForm) {
+            ((GenericFieldTemplate) fieldTemplate).setDisplayerName("simpletext");
+            ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
           }
+          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+          if (fieldDisplayer != null) {
+            if (!fieldTemplate.isRepeatable()) {
+              Field field = getSureField(fieldTemplate, record, 0);
+              fieldDisplayer.display(out, field, fieldTemplate, pc);
+            } else {
+              boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName()) &&
+                  !fieldTemplate.isReadOnly();
+              int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+              out.println("<ul class=\"repeatable-field-list field_"+fieldName+"\">");
+              for (int occ = 0; occ < maxOccurrences; occ++) {
+                Field field = getSureField(fieldTemplate, record, occ);
+                if (pagesContext.isDesignMode() || isWriting || occ == 0 || !field.isNull()) {
+                  if (occ != 0) {
+                    ((GenericFieldTemplate) fieldTemplate).setMandatory(false);
+                  }
+                  out.println("<li class=\"repeatable-field-list-element" + occ + "\">");
+                  fieldDisplayer.display(out, field, fieldTemplate, pc);
+                  out.println("</li>");
+                }
+              }
+              out.println("</ul>");
+            }
+          }
+          fieldFound = true;
+          break;
         }
-        if (!fieldFound) {
+      }
+      if (!fieldFound) {
+        Field field = record.getField(fieldName);
+        if (field != null) {
           out.print(field.getValue(pc.getLanguage()));
         }
       }
