@@ -352,6 +352,15 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that returns true if the given URL is internal to Silverpeas.
+    </description>
+    <name>isPermalink</name>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
+    <function-signature>
+      boolean isPermalink(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that returns the images attached to the path for the website application.</description>
     <name>webSiteImages</name>
     <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
