@@ -144,8 +144,8 @@ public class LoginServlet extends SilverpeasHttpServlet {
         && !request.getParameterAsBoolean(LOGOUT_PARAM)) {
       loginPage = ssoLoginPage.get();
       response.sendRedirect(response.encodeRedirectURL(loginPage));
-    } else if (isAnonymousAccessActivated() && !request.isWithinAnonymousUserSession() &&
-        !request.isWithinUserSession()) {
+    } else if (isNotDefined(errorCode) && isAnonymousAccessActivated() &&
+        !request.isWithinAnonymousUserSession() && !request.isWithinUserSession()) {
 
       // first access to the platform
       UserDetail anonymousUser = UserDetail.getAnonymousUser();
