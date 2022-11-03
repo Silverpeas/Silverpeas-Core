@@ -75,7 +75,8 @@ public class UserDetail implements User {
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   private static final String DEFAULT_AVATAR_PROPERTY = "login";
   private static final String AVATAR_PROPERTY =
-      ResourceLocator.getGeneralSettingBundle().getString("avatar.property", DEFAULT_AVATAR_PROPERTY);
+      ResourceLocator.getGeneralSettingBundle()
+          .getString("avatar.property", DEFAULT_AVATAR_PROPERTY);
   private static final String AVATAR_EXTENSION =
       ResourceLocator.getGeneralSettingBundle().getString("avatar.extension", "jpg");
   private static final String AVATAR_BASEURI = "/display/avatar/";
@@ -102,6 +103,7 @@ public class UserDetail implements User {
   private UserState state = UserState.from(null);
   private Date stateSaveDate = null;
   private Integer notifManualReceiverLimit;
+  private UserPreferences preferences = null;
 
   /**
    * Gets a {@link UserDetail} form of the specified user.
@@ -417,7 +419,8 @@ public class UserDetail implements User {
       } else {
         language = DisplayI18NHelper.getDefaultLanguage();
       }
-      final LocalizationBundle generalBundle = ResourceLocator.getGeneralLocalizationBundle(language);
+      final LocalizationBundle generalBundle =
+          ResourceLocator.getGeneralLocalizationBundle(language);
       result = generalBundle.getString("GML.Anonymous");
     }
     return result;
@@ -738,14 +741,18 @@ public class UserDetail implements User {
 
   @Override
   public UserPreferences getUserPreferences() {
-    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getId());
+    if (preferences == null) {
+      preferences =
+          PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getId());
+    }
+    return preferences;
   }
 
   /**
    * Indicates if the current user is in relation with a user represented by the given identifier.
    * @param userId the identifier of user which the current user is potentially in relation with.
-   * @return true if the current user is in relation with the user represented by
-   * the given identifier, false otherwise.
+   * @return true if the current user is in relation with the user represented by the given
+   * identifier, false otherwise.
    */
   public boolean isInRelationWith(String userId) {
     RelationShipService relation = RelationShipService.get();
@@ -842,8 +849,7 @@ public class UserDetail implements User {
   }
 
   /**
-   * Sets the maximum user receivers the user can notify manually.
-   * If the given value is:
+   * Sets the maximum user receivers the user can notify manually. If the given value is:
    * <ul>
    * <li>null or less than/equal to -1 or equal to the default server limitation value, then it is
    * considered that the default server value will be taken into account</li>
@@ -863,8 +869,7 @@ public class UserDetail implements User {
   }
 
   /**
-   * Sets the maximum user receivers the user can notify manually from the persistence
-   * context.<br>
+   * Sets the maximum user receivers the user can notify manually from the persistence context.<br>
    * This method must only be used be the administration persistence services.
    * @param notifManualReceiverLimit the maximum user receivers the user can notify manually from
    * the persistence context.
