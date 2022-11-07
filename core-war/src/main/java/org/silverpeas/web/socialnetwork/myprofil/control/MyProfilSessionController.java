@@ -24,15 +24,22 @@
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
 import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.notification.user.SimpleUserNotification;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
@@ -45,6 +52,8 @@ import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -55,10 +64,13 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.admin.user.constant.UserState.*;
 
 /**
  * @author Bensalem Nabil
@@ -240,6 +252,62 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public void unlinkSocialNetworkFromSilverpeas(SocialNetworkID networkId) {
     SocialNetworkService.getInstance().removeExternalAccount(getUserId(), networkId);
+  }
+
+  public boolean deleteMyAccount(HttpRequest request) {
+    String message = request.getParameter("message");
+    boolean forgetMe = request.getParameterAsBoolean("forgetMe");
+
+    User currentUser = User.getCurrentRequester();
+
+    Administration admin = Administration.get();
+    try {
+      admin.deleteUser(getUserId());
+    } catch (AdminException e) {
+      MessageNotifier.addError(getMultilang().getString("myProfile.actions.deleteAccount.error"));
+      return false;
+    }
+
+    // notify all admins and domain admins
+    if (StringUtil.isDefined(message)) {
+      message = "\"".concat(message).concat("\"");
+    }
+    notifyAdminsToDeletion(message);
+
+    if (forgetMe) {
+      try {
+        admin.blankDeletedUsers(currentUser.getDomainId(), Arrays.asList(getUserId()));
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return true;
+  }
+
+  private void notifyAdminsToDeletion(final String message) {
+    final OrganizationController organizationController = OrganizationController.get();
+    User currentUser = User.getCurrentRequester();
+    final Domain domain = organizationController.getDomain(currentUser.getDomainId());
+    UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria()
+        .onUserStatesToExclude(BLOCKED, DEACTIVATED, REMOVED)
+        .onAccessLevels(UserAccessLevel.ADMINISTRATOR);
+    final List<User> admins = organizationController.searchUsers(criteria);
+    criteria = new UserDetailsSearchCriteria()
+        .onDomainIds(currentUser.getDomainId())
+        .onUserStatesToExclude(BLOCKED, DEACTIVATED, REMOVED)
+        .onAccessLevels(UserAccessLevel.DOMAIN_ADMINISTRATOR);
+    admins.addAll(organizationController.searchUsers(criteria));
+
+    SimpleUserNotification.fromSystem()
+        .toUsers(admins)
+        .withTitle(l -> bundle(l).getStringWithParams("myProfile.deleteAccount.notif.subject", currentUser.getDisplayedName()))
+        .andMessage(l -> bundle(l).getStringWithParams("myProfile.deleteAccount.notif.body", currentUser.getDisplayedName(), domain.getName(), message))
+        .send();
+  }
+
+  private LocalizationBundle bundle(final String locale) {
+    return ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.social.multilang.socialNetworkBundle", locale);
   }
 
   private void processDataOfExtraTemplate(HttpRequest request) {

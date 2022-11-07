@@ -65,6 +65,8 @@
 <c:set var="nbContacts" value="${requestScope.ContactsNumber}" />
 <c:set var="contacts" value="${requestScope.Contacts}" />
 <c:set var="currentUser" value="${requestScope.UserFull}" />
+<c:set var="userSelfDeletionAccountEnabled" value="${requestScope.UserSelfDeletionAccountEnabled}"/>
+<fmt:message key="myProfile.actions.deleteAccount.confirm" var="deleteAccountConfirm"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -231,11 +233,21 @@ $(document).ready(function(){
     $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
 
     $("#newStatus").html("<%=WebEncodeHelper.javaStringToJsString(userFull.getStatus())%>");
+
 });
 
 function hideImageFile() {
   $("#avatarDialog #ImageFile").hide();
   document.photoForm.removeImageFile.value = "yes";
+}
+
+function deleteAccount() {
+  $('#removeAccountDialog').popup('confirmation', {
+    title : "${deleteAccountConfirm}", callback : function() {
+      document.removeAccountForm.submit();
+      return true;
+    }
+  });
 }
 </script>
 </head>
@@ -267,6 +279,28 @@ function hideImageFile() {
     </div>
     <br clear="all" />
 	</div>
+
+  <c:if test="${userSelfDeletionAccountEnabled}">
+  <div id="removeMyAccount">
+    <a class="sp_button" href="javascript:deleteAccount()"><fmt:message key="myProfile.actions.deleteAccount"/></a>
+  </div>
+
+  <div id="removeAccountDialog" style="display: none">
+    <form name="removeAccountForm" action="DELETE_MY_ACCOUNT" method="post">
+      <div>
+        <div class="removeAccount-Message">
+          <label for="message"><fmt:message key="myProfile.deleteAccount.message" /></label>
+          <textarea name="message" id="message" cols="70" rows="5"></textarea>
+        </div>
+        <div class="removeAccount-forgetMe">
+          <label><fmt:message key="myProfile.deleteAccount.forgetMe" /> : </label>
+          <input type="radio" id="forgetMe1" name="forgetMe" value="no" checked="checked">&nbsp;<label for="forgetMe1"><fmt:message key="GML.no" /></label>
+          <input type="radio" id="forgetMe2" name="forgetMe" value="yes"><label for="forgetMe2">&nbsp;<fmt:message key="GML.yes" /></label>
+        </div>
+      </div>
+    </form>
+  </div>
+  </c:if>
 
 	<div id="statusDialog">
 		<form>

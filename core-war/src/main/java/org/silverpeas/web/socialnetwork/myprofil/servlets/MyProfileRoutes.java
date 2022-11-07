@@ -27,7 +27,7 @@ public enum MyProfileRoutes {
 
   Main, MyInfos, MySettings, MyInvitations, MySentInvitations, LinkToSVP, UnlinkFromSVP,
   AddLinkToSVP, PublishStatus, DoPublishStatus, UpdatePhoto, UpdateMyInfos, UpdateMySettings,
-  MyWall, MyFeed, MyNetworks;
+  MyWall, MyFeed, MyNetworks, DELETE_MY_ACCOUNT;
 
   public boolean isMyInfos() {
     return this == MyInfos;

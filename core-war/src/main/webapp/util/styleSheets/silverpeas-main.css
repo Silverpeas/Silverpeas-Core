@@ -2834,6 +2834,7 @@ caption {
 #publicProfileFiche .info {
   padding:8px;
   height:100%;
+  width: calc( 100% - 18px );
 }
 #myProfileFiche .info .userType,
 #publicProfileFiche .info .userType {
@@ -2907,6 +2908,18 @@ caption {
 #myProfile #myProfileFiche .profilPhotoContact img {
   height:62px;
   border: 0px;
+}
+
+#myProfile #removeMyAccount a {
+  width: calc( 100% - 2em );
+  margin: 0;
+  padding: 0.5em 1em;
+}
+
+#myProfile #removeAccountDialog label {
+  font-weight: 500;
+  display: inline-block;
+  padding: 1em 0;
 }
 /*- [ myProfile END ] --------------------------- */
 
