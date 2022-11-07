@@ -23,7 +23,9 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
 import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.personalization.UserMenuDisplay;
@@ -106,6 +108,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
         request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
         request.setAttribute("View", "MyInfos");
+        setUserSettingsIntoRequest(request, myProfilSC);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdatePhoto) {
         saveAvatar(request, snUserFull.getUserFull().getAvatarFileName());
@@ -174,6 +177,17 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       } else if ("MyPubs".equalsIgnoreCase(function)) {
         request.setAttribute("type", SocialInformationType.PUBLICATION);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
+      } else if (route == DELETE_MY_ACCOUNT) {
+        if (isUserSelfDeletionAccountEnabled()) {
+          boolean deletionOK = myProfilSC.deleteMyAccount(request);
+          if (deletionOK) {
+            destination = "/Logout";
+          } else {
+            destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+          }
+        } else {
+          throwHttpForbiddenError();
+        }
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -319,6 +333,14 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     } else {
       request.setAttribute("MenuDisplay", false);
     }
+    request.setAttribute("UserSelfDeletionAccountEnabled", isUserSelfDeletionAccountEnabled());
+  }
+
+  private boolean isUserSelfDeletionAccountEnabled() {
+    RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
+    return registrationSettings.isUserSelfRegistrationEnabled() &&
+        registrationSettings.userSelfRegistrationDomainId()
+            .equals(User.getCurrentUser().getDomainId());
   }
 
   private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc) {
