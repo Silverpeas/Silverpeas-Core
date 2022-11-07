@@ -24,9 +24,10 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <c:set var="componentId" value="${param.componentId}"/>
 <c:set var="resourceId"  value="${param.resourceId}"/>
-<c:set var="readOnly"    value="${param.edited}"/>
+<c:set var="readOnly"    value="${silfn:booleanValue(param.readOnly)}"/>
 
 <view:attachmentPane componentId="${componentId}" resourceId="${resourceId}" readOnly="${readOnly}"/>
