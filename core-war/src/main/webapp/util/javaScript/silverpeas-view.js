@@ -291,6 +291,8 @@
 
   const DISPLAY_AS_CONTENT_COMPONENT_NAMES = ViewSettings.get("dac.cns");
 
+  const AttachmentsAsContentViewerCacheOfProcessedContribution = {};
+
   window.AttachmentsAsContentViewer = function(options) {
     const __context = {
       options : extendsObject({
@@ -327,6 +329,14 @@
       sp.log.debug("Not activated for component name " + componentName);
       return;
     }
+
+    const cId = sp.contribution.id.from(options.componentInstanceId,
+        __context.options.resourceType, __context.options.resourceId).asString();
+    if (AttachmentsAsContentViewerCacheOfProcessedContribution[cId]) {
+      sp.log.debug("Contribution " + cId + " already processed (useful when used from AngularJS context)");
+      return;
+    }
+    AttachmentsAsContentViewerCacheOfProcessedContribution[cId] = true;
 
     const __loadAttachments = function() {
       return sp.ajaxRequest(webContext + "/services/documents/" +
