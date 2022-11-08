@@ -40,8 +40,7 @@ pipeline {
       when {
         expression {
           env.BRANCH_NAME.startsWith('PR') &&
-              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas') &&
-              !version.startsWith(env.STABLE_BRANCH.replace('.x', ''))
+              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')
         }
       }
       steps {
