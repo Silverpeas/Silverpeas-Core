@@ -315,6 +315,11 @@ public class ChatUser extends UserDetail {
   }
 
   @Override
+  public boolean isPlayingAdminRole(final String instanceId) {
+    return user.isPlayingAdminRole(instanceId);
+  }
+
+  @Override
   public UserState getState() {
     return user.getState();
   }

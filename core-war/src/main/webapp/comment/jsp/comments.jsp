@@ -23,12 +23,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.StringUtil"%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="resourceType" value="${param.type}"/>
 <c:set var="resourceId" value="${param.id}"/>
@@ -42,4 +43,7 @@
 
 </view:board>
 
-<view:comments userId="${userId}" componentId="${componentId}" resourceType="${resourceType}" resourceId="${resourceId}" indexed="${indexation}"/>
+<viewTags:displayComments componentId="${componentId}"
+                          resourceType="${resourceType}"
+                          resourceId="${resourceId}"
+                          indexed="${silfn:booleanValue(indexation)}"/>

@@ -264,6 +264,14 @@ public interface User extends Serializable, Comparable<User> {
   boolean isAccessUnknown();
 
   /**
+   * Indicates if the user plays the administrator role in the specified component instance.
+   * @param instanceId the unique identifier of a component instance in Silverpeas.
+   * @return true if the user has an admin access on the platform or if he plays the administrator
+   * role in the given component instance. False otherwise.
+   */
+  boolean isPlayingAdminRole(final String instanceId);
+
+  /**
    * Please use {@link User#isValidState()} to retrieve user validity information. Please use {@link
    * User#isDeletedState()} to retrieve user deletion information. Please use {@link
    * User#isBlockedState()} to retrieve user blocked information. Please use {@link
