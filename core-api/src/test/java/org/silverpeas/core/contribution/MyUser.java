@@ -177,6 +177,10 @@ public class MyUser implements User {
   }
 
   @Override
+  public boolean isPlayingAdminRole(final String instanceId) {
+    return isAccessAdmin();
+  }
+  @Override
   public UserState getState() {
     return UserState.VALID;
   }

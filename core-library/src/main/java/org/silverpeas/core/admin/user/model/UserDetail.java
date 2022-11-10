@@ -553,6 +553,16 @@ public class UserDetail implements User {
   }
 
   @Override
+  public boolean isPlayingAdminRole(final String instanceId) {
+    String[] profiles = OrganizationController.get().getUserProfiles(getId(), instanceId);
+    boolean isAdmin = isAccessAdmin();
+    if (profiles != null && profiles.length > 0) {
+      isAdmin |= Arrays.asList(profiles).contains(SilverpeasRole.ADMIN.getName());
+    }
+    return isAdmin;
+  }
+
+  @Override
   public boolean isActivatedState() {
     return !isAnonymous() && !isDeletedState() && !isRemovedState() && !isDeactivatedState();
   }
