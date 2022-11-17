@@ -33,11 +33,8 @@
 
 <c:set var="resourceType" value="${param.type}"/>
 <c:set var="resourceId" value="${param.id}"/>
-<c:set var="userId" value="${param.userid}"/>
 <c:set var="componentId" value="${param.component_id}"/>
-<c:set var="profile" value="${param.profile}"/>
 <c:set var="indexation" value="${param.IndexIt}"/>
-<c:url var="url" value="/services/comments/${componentId}/${resourceId}"/>
 
 <view:board>
 

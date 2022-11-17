@@ -1,3 +1,5 @@
+// noinspection HtmlRequiredAltAttribute,RequiredAttributes,JSUnresolvedVariable
+
 /*
  * Copyright (C) 2000 - 2022 Silverpeas
  *
@@ -24,7 +26,7 @@
 
 (function($) {
 
-  var __getLabel = function(key) {
+  const __getLabel = function(key) {
     return sp.i18n.get(key);
   };
 
@@ -59,13 +61,13 @@
       this.target = target;
     },
     initialize: function() {
-      var self = this;
+      const self = this;
       User.get('me').then(function(me) {
         self.currentUser = me;
         self.currentUser.hasRelationWith = function(aUser) {
           return aUser.relationships().then(function(contacts) {
-            for (var i = 0; i < contacts.length; i++) {
-              var contact = contacts[i];
+            for (let i = 0; i < contacts.length; i++) {
+              let contact = contacts[i];
               if (me.id === contact.id) {
                 return true;
               }
@@ -76,8 +78,8 @@
 
         self.currentUser.getInvitationWith = function(aUser) {
           return self.currentUser.myInvitationsPromise.then(function(invitations) {
-            for (var i = 0; i < invitations.length; i++) {
-              var invitation = invitations[i];
+            for (let i = 0; i < invitations.length; i++) {
+              let invitation = invitations[i];
               if (invitation.receiverId.toString() === aUser.id || invitation.senderId.toString() === aUser.id) {
                 return invitation;
               }
@@ -87,12 +89,12 @@
         };
 
         self.currentUser.onMyInvitations = function() {
-          var promises = [];
+          const promises = [];
           promises.push(silverpeasAjax(sp.ajaxRequest(webContext + '/services/invitations/inbox')));
           promises.push(silverpeasAjax(sp.ajaxRequest(webContext + '/services/invitations/outbox')));
           return self.currentUser.myInvitationsPromise =
               sp.promise.whenAllResolved(promises).then(function(requests) {
-                var invitations = [];
+                const invitations = [];
                 requests.forEach(function(request) {
                   Array.prototype.push.apply(invitations, request.responseAsJson());
                 });
@@ -105,8 +107,8 @@
     }
   };
 
-  var currentTarget = null;
-  var settingHandlersDone = false;
+  let currentTarget = null;
+  let settingHandlersDone = false;
 
   /**
    * Open the Silverpeas chat WEB page.
@@ -121,8 +123,8 @@
    * Returns the HTML element with which the user status information is displayed.
    */
   function connectionStatus(user) {
-    var onlineStatus;
-    var onlineStatusAlt;
+    let onlineStatus;
+    let onlineStatusAlt;
     if (user.connected) {
       onlineStatus = webContext + '/util/icons/online.gif';
       onlineStatusAlt = __getLabel('connected');
@@ -142,8 +144,8 @@
    * messages, to send an invitation, ...)
    */
   function interactionWith(user) {
-    var disabledCss = '', interactionBox = $('<div>').addClass('userzoom-tooltip-interaction');
-    var interactionActions = $('<div>').addClass('userzoom-tooltip-interaction-action');
+    let disabledCss = '', interactionBox = $('<div>').addClass('userzoom-tooltip-interaction');
+    let interactionActions = $('<div>').addClass('userzoom-tooltip-interaction-action');
     if (!user.connected) {
       disabledCss = ' disabled';
     }
@@ -154,7 +156,7 @@
     append($('<a>', {
       href: '#'
     }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(__getLabel('ToContact'))).click(function() {
-      sp.messager.open(null, {recipientUsers: user.id, recipientEdition: false});
+      sp.messager.open('', {recipientUsers: user.id, recipientEdition: false});
       $.userZoom.clear();
     }));
     if (user.chatEnabled) {
@@ -167,9 +169,9 @@
     }
     interactionBox.append($('<div>').addClass('userzoom-tooltip-arrow'));
 
-    var appendRelationActions = function(contact) {
+    const appendRelationActions = function(contact) {
       if (contact) {
-        var $link = $('<a>', {href : '#'}).addClass('userzoom-tooltip-interaction-action-relation');
+        let $link = $('<a>', {href : '#'}).addClass('userzoom-tooltip-interaction-action-relation');
         $link.addClass('delete-relation');
         $link.append($('<span>').append(__getLabel('relation.delete'))).relationShip(
             'deleteRelation', {user : contact});
@@ -177,14 +179,14 @@
       }
     };
 
-    var appendInvitationActions = function(invitation) {
-      var $link = $('<a>', {href : '#'}).addClass('userzoom-tooltip-interaction-action-invitation');
+    const appendInvitationActions = function(invitation) {
+      let $link = $('<a>', {href : '#'}).addClass('userzoom-tooltip-interaction-action-invitation');
       if (!invitation) {
         $link.addClass('invitation');
         $link.append($('<span>').append(__getLabel('invitation.send'))).relationShip(
             'sendInvitation', {user : user});
       } else {
-        if ($.userZoom.currentUser.id == invitation.receiverId) {
+        if ($.userZoom.currentUser.id === invitation.receiverId) {
           $link.addClass('view-invitation');
           $link.append($('<span>').append(__getLabel('invitation.view'))).relationShip(
               'viewInvitation', {invitation : invitation});
@@ -214,21 +216,21 @@
    * Adjusts the position of the given tooltip associated to the specified target.
    */
   function __adjustingPositions(aTooltip, target) {
-    var picto = $('.userzoom-infoConnection img', target);
-    var tooltipEdgeXOffset = __getCachedArrowCss("right") + picto.width();
-    var tooltipEdgeYOffset = __getCachedArrowCss("height");
+    let picto = $('.userzoom-infoConnection img', target);
+    let tooltipEdgeXOffset = __getCachedArrowCss("right") + picto.width();
+    let tooltipEdgeYOffset = __getCachedArrowCss("height");
     aTooltip.position({
       of : target,
       at : 'right-' + tooltipEdgeXOffset + ' bottom+' + tooltipEdgeYOffset,
       my : 'left top',
       collision : 'flip'
     });
-    var targetPosition = target.offset(), tooltipPosition = aTooltip.offset();
-    var position = (targetPosition.top > tooltipPosition.top ? 'above' : 'below');
-    var isTooltipArrowOnRight = targetPosition.left > tooltipPosition.left;
-    var toolTipClass = position + (isTooltipArrowOnRight ? ' right' : ' left');
+    let targetPosition = target.offset(), tooltipPosition = aTooltip.offset();
+    let position = (targetPosition.top > tooltipPosition.top ? 'above' : 'below');
+    let isTooltipArrowOnRight = targetPosition.left > tooltipPosition.left;
+    let toolTipClass = position + (isTooltipArrowOnRight ? ' right' : ' left');
     if (isTooltipArrowOnRight) {
-      var paddingAndMarginLeftOffset = Number(target.css('padding-left').replace(/[^0-9]/g, '')) +
+      let paddingAndMarginLeftOffset = Number(target.css('padding-left').replace(/[^0-9]/g, '')) +
           Number(target.css('margin-left').replace(/[^0-9]/g, ''));
       aTooltip.position({
         of : target,
@@ -246,13 +248,13 @@
    * @private
    */
   function __getCachedArrowCss(css) {
-    var $dataContainer = $(document);
-    var dataCssKey = 'tooltip-arrow-' + css + '-value';
-    var cachedArrowCssValue = $dataContainer.data(dataCssKey);
+    let $dataContainer = $(document);
+    let dataCssKey = 'tooltip-arrow-' + css + '-value';
+    let cachedArrowCssValue = $dataContainer.data(dataCssKey);
     if (typeof cachedArrowCssValue === 'undefined') {
       try {
-        var $arrow = $('<div>', {"class" : "userzoom-tooltip-arrow", "style" : "display:none"});
-        var $hiddenForComputing = $('<div>', {"class" : "above"}).append($arrow);
+        let $arrow = $('<div>', {"class" : "userzoom-tooltip-arrow", "style" : "display:none"});
+        let $hiddenForComputing = $('<div>', {"class" : "above"}).append($arrow);
         $(document.body).append($hiddenForComputing);
         cachedArrowCssValue = $arrow.css(css).replace(/[^0-9]/g, '');
       } catch (e) {
@@ -285,7 +287,7 @@
     }
 
     return this.each(function() {
-      var profile = user, $this = $(this);
+      let profile = user, $this = $(this);
       $this.data('userZoom', new Date());
       if (!(profile.fullName && profile.lastName && profile.avatar && profile.status !== null &&
               profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
@@ -309,8 +311,8 @@
     if (typeof isIn === 'undefined') {
       isIn = true;
     }
-    var nextState = isIn ? {opacity : "-=0.5"} : {opacity : "+=0.5"};
-    var currentDisplayed = ($.userZoom.target && $.userZoom.target === target);
+    let nextState = isIn ? {opacity : "-=0.5"} : {opacity : "+=0.5"};
+    let currentDisplayed = ($.userZoom.target && $.userZoom.target === target);
     if (currentDisplayed && isIn) {
       return;
     }
@@ -347,7 +349,7 @@
    * @private
    */
   function __isRenderingInProgress(target) {
-    var isRenderInProgress = target.data('rendering_in_progress');
+    let isRenderInProgress = target.data('rendering_in_progress');
     return (typeof isRenderInProgress !== 'undefined' && isRenderInProgress);
   }
 
@@ -358,7 +360,7 @@
    * - it is removed when the mouse moves away the tooltip.
    */
   function render(target, user) {
-    var status = connectionStatus(user);
+    let status = connectionStatus(user);
     target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).hover(function() {
       if (__isRenderingInProgress(target)) {
         return;
@@ -366,7 +368,7 @@
       __markRenderingInProgress(target);
       __animate(target);
       setTimeout(function() {
-        var $currentTarget = $(currentTarget);
+        let $currentTarget = $(currentTarget);
         if (!$(currentTarget).hasClass('userToZoom')) {
          $currentTarget = $(currentTarget).parents("span.userToZoom");
         }
@@ -376,7 +378,7 @@
           return;
         }
         $.userZoom.currentUser.onMyInvitations().then(function() {
-          var element = tooltip(target, user);
+          let element = tooltip(target, user);
           $.userZoom.set(target, element);
           __markRenderingDone(target);
         });
@@ -387,7 +389,7 @@
     if (!settingHandlersDone) {
       $(document).mousedown(function(event) {
         if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
-          var eventTarget = $(event.target);
+          let eventTarget = $(event.target);
           if (!eventTarget.hasClass('userzoom-tooltip') &&
               eventTarget.parents('.userzoom-tooltip').length === 0) {
             $.userZoom.clear();
@@ -406,7 +408,7 @@
    * and with an interaction tool to communicate with him through Silverpeas.
    */
   function tooltip(target, user) {
-    var userinfo = $('<div>').addClass('userzoom-tooltip').
+    let userinfo = $('<div>').addClass('userzoom-tooltip').
             append($('<div>').addClass('userzoom-tooltip-profilPhoto profilPhoto').
                     append($('<a>', {
                       href: user.webPage
@@ -433,7 +435,7 @@ function activateUserZoom() {
   activateRelationShip();
   jQuery(document).ready(function() {
     jQuery('.userToZoom').each(function() {
-      var $this = jQuery(this);
+      let $this = jQuery(this);
       if (!$this.data('userZoom')) {
         $this.userZoom({
           id : $this.attr('rel')
@@ -444,7 +446,7 @@ function activateUserZoom() {
 }
 
 /**
- * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+ * Using "jQuery" instead of "$" at this level prevents of getting conflicts with another
  * javascript plugin.
  */
 activateUserZoom();
