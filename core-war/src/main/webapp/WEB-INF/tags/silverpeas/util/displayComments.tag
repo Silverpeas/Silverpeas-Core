@@ -29,12 +29,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib prefix="plugins" tagdir="/WEB-INF/tags/silverpeas/plugins" %>
-
-<c:set var="language" value="${requestScope.resources.language}"/>
-<fmt:setLocale value="${language}"/>
-
-<view:setBundle basename="org.silverpeas.util.comment.multilang.comment"/>
 
 <c:set var="user" value="${silfn:currentUser()}"/>
 
@@ -60,155 +54,50 @@
 <view:settings settings="org.silverpeas.util.comment.Comment" key="AdminAllowedToUpdate"
                defaultValue="true" var="canBeUpdated"/>
 
-<c:set var="canBeUpdated" value="${canBeUpdated || user.isPlayingAdminRole(componentId)}"/>
+<c:set var="canBeUpdated" value="${silfn:booleanValue(canBeUpdated) and user.isPlayingAdminRole(componentId)}"/>
 <c:if test="${silfn:isNotDefined(indexed)}">
   <c:set var="indexed" value="true"/>
 </c:if>
 <c:if test="${silfn:isNotDefined(callback)}">
-  <c:set var="callback" value="undefined"/>
+  <c:set var="callback">function(){}</c:set>
 </c:if>
 
-<style>
-  <!--
-  -->
-</style>
-
-<div id="commentaires" class="commentaires">
-</div>
+<silverpeas-comments class="comments-block"
+                     resource-id='${resourceId}'
+                     resource-type='${resourceType}'
+                     component-id='${componentId}'
+                     v-bind:indexed='${indexed}'
+                     v-bind:user='user'
+                     v-on:change='onChange'>
+</silverpeas-comments>
 
 <view:script src="/util/javaScript/checkForm.js"/>
 <view:script src="/util/javaScript/jquery/autoresize.jquery.min.js"/>
-<view:script src="/util/javaScript/silverpeas-comment.js"/>
-<!--
-  <div id="edition-box">
-    <p class="title">Ajouter un commentaire</p>
-    <div class="avatar"><img
-        src="/silverpeas/display/avatar/x140/miguel.moquillon@silverpeas.com.jpg"></div>
-    <textarea class="text" style="resize: none; overflow-y: hidden; height: 46.2px;"></textarea>
-    <div class="buttons">
-      <button class="button">Valider</button>
-    </div>
-  </div>
-  <div id="comments-update-box" style="display: none;">
-    <div class="mandatoryField"><textarea class="text"
-                                          style="resize: none; overflow-y: hidden;"></textarea><span>&nbsp;</span><img
-        src="/silverpeas/util/icons/mandatoryField.gif"
-        alt="/silverpeas/util/icons/mandatoryField.gif">
-      <div class="legende"><img src="/silverpeas/util/icons/mandatoryField.gif"
-                                alt="/silverpeas/util/icons/mandatoryField.gif"><span>&nbsp;:&nbsp;Obligatoire</span>
-      </div>
-    </div>
-  </div>
-  <div id="list-box">
-    <div id="comment3079" class="oneComment">
-      <div>
-        <div class="action"><img src="/silverpeas/util/icons/update.gif"
-                                 alt="Modifier"><span>&nbsp;</span><img
-            src="/silverpeas/util/icons/delete.gif" alt="Supprimer"></div>
-        <div class="avatar"><img
-            src="/silverpeas/display/avatar/x140/david.lesimple@silverpeas.com.jpg"></div>
-        <p class="author"><span>David Lesimple</span><span class="date"> - 09/10/2017</span></p>
-        <pre class="text">moi aussi..</pre>
-      </div>
-    </div>
-    <div id="comment3074" class="oneComment">
-      <div>
-        <div class="action"><img src="/silverpeas/util/icons/update.gif"
-                                 alt="Modifier"><span>&nbsp;</span><img
-            src="/silverpeas/util/icons/delete.gif" alt="Supprimer"></div>
-        <div class="avatar"><img
-            src="/silverpeas/display/avatar/x140/miguel.moquillon@silverpeas.com.jpg">
-        </div>
-        <p class="author">Miguel Moquillon<span class="date"> - 06/10/2017</span></p>
-        <pre class="text">oui moi aussi:<br>"Publication créée et commentée dans la foulée a été publié."</pre>
-      </div>
-    </div>
-    <div id="comment3073" class="oneComment">
-      <div>
-        <div class="action"><img src="/silverpeas/util/icons/update.gif"
-                                 alt="Modifier"><span>&nbsp;</span><img
-            src="/silverpeas/util/icons/delete.gif" alt="Supprimer"></div>
-        <div class="avatar"><img
-            src="/silverpeas/display/avatar/x140/sebastien.vuillet@silverpeas.com.jpg">
-        </div>
-        <p class="author"><span>Sébastien Vuillet</span><span class="date"> - 06/10/2017</span></p>
-        <pre class="text">Moi oui !<br></pre>
-      </div>
-    </div>
-    <div id="comment3072" class="oneComment">
-      <div>
-        <div class="action"><img src="/silverpeas/util/icons/update.gif"
-                                 alt="Modifier"><span>&nbsp;</span><img
-            src="/silverpeas/util/icons/delete.gif" alt="Supprimer"></div>
-        <div class="avatar"><img
-            src="/silverpeas/display/avatar/x140/yohann.chastagnier@silverpeas.com.jpg">
-        </div>
-        <p class="author"><span>Yohann Chastagnier</span><span class="date"> - 06/10/2017</span></p>
-        <pre
-            class="text">Est-ce que quelqu'un a reçu une notification concernant ce commentaire ?</pre>
-      </div>
-    </div>
-  </div>
-</div>
--->
+<view:script src="/util/javaScript/vuejs/components/comments/silverpeas-comments.js"/>
+<view:includePlugin name="userZoom"/>
 
 <script type="text/javascript">
-  (function() {
-    let $comments = $('#commentaires');
-    $comments.comment({
-      uri : '${webContext}/services/comments/${componentId}/${resourceType}/${resourceId}',
-      author : {
-        avatar : '${webContext}${user.smallAvatar}',
-        id : '${user.id}',
-        anonymous : ${user.anonymous}
-      },
-      update : {
-        activated : function(comment) {
-          return  comment.author.id === '${user.id}' || ${canBeUpdated};
-        }, icon : '${webContext}/util/icons/update.gif', altText : '<fmt:message key="GML.update"/>'
-      },
-      deletion : {
-        activated : function(comment) {
-          return comment.author.id === '${user.id}' || ${canBeUpdated};
-        },
-        confirmation : '<fmt:message key="comment.suppressionConfirmation"/>',
-        icon : '${webContext}/util/icons/delete.gif',
-        altText : '<fmt:message key="GML.delete"/>'
-      },
-      updateBox : {
-        title : '<fmt:message key="comment.comment"/>'
-      },
-      editionBox : {
-        title : '<fmt:message key="comment.add"/>', ok : '<fmt:message key="GML.validate"/>'
-      },
-      validate : function(text) {
-        if (text === null || text === undefined || $.trim(text).length === 0) {
-          notyError('<fmt:message key="comment.pleaseFill_single"/>');
-        } else if (!isValidTextArea(text)) {
-          notyError('<fmt:message key="comment.champsTropLong"/>');
-        } else {
-          return true;
+  whenSilverpeasReady(function() {
+    new Vue({
+      el : '.comments-block',
+      data: function() {
+        return {
+          user: {
+            id: '${user.id}',
+            firstName: '${user.firstName}',
+            lastName: '${user.lastName}',
+            fullName: '${user.firstName} ${user.lastName}',
+            avatar: '${webContext}${user.smallAvatar}',
+            anonymous: ${user.anonymous},
+            guestAccess: ${user.accessGuest},
+            admin: ${user.isPlayingAdminRole(componentId)},
+            canUpdateAll: ${canBeUpdated}
+          }
         }
-        return false;
       },
-      mandatory : '${webContext}/util/icons/mandatoryField.gif',
-      mandatoryText : '<fmt:message key="GML.requiredField"/>',
-      callback: ${callback}
-    });
-
-    <c:if test="${!user.anonymous && !user.accessGuest}">
-    $comments.comment('edition', function() {
-      return {
-        author: {id: '${user.id}' },
-        componentId: '${componentId}',
-        resourceId: '${resourceId}',
-        resourceType: '${resourceType}',
-        indexed: ${indexed}
+      methods: {
+        onChange: ${callback}
       }
     });
-    </c:if>
-
-    $comments.comment('list');
-
-  })();
+  });
 </script>
