@@ -115,14 +115,16 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     String selectedValues = "";
+    String defaultValue = "";
+
     List<String> valuesFromDB = new ArrayList<>();
     String keys = "";
     String values = "";
     StringBuilder html = new StringBuilder();
     int cols = 1;
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
@@ -156,6 +158,14 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       cols = 1;
     }
 
+    String defaultParam = parameters.getOrDefault("default", "");
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
+      defaultValue = defaultParam;
+
+    if (!StringUtil.isDefined(values)) {
+      values = defaultValue;
+    }
+
     // if either keys or values is not filled
     // take the same for keys and values
     if ("".equals(keys) && !"".equals(values)) {
@@ -168,7 +178,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
     StringTokenizer stValues = new StringTokenizer(values, "##");
 
-    int nbTokens = getNbHtmlObjectsDisplayed(template, PagesContext);
+    int nbTokens = getNbHtmlObjectsDisplayed(template, pageContext);
 
     if (stKeys.countTokens() != stValues.countTokens()) {
       SilverLogger.getLogger(this)
@@ -195,15 +205,23 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
         if (template.isDisabled() || template.isReadOnly()) {
           html.append(" disabled=\"disabled\" ");
         }
-        if (valuesFromDB.contains(optKey)) {
+        boolean mustBeChecked = false;
+        if (valuesFromDB.isEmpty() && !pageContext.isIgnoreDefaultValues() && (
+            optKey.equals(defaultValue) | optValue.equals(defaultValue)))
+          mustBeChecked = true;
+
+        if (valuesFromDB.contains(optKey))
+          mustBeChecked = true;
+
+        if (mustBeChecked)
           html.append(" checked=\"checked\" ");
-        }
+
         html.append("/>&nbsp;").append(optValue);
 
         // last checkBox
         if (i == nbTokens - 1) {
           if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-              !template.isHidden() && PagesContext.useMandatory()) {
+              !template.isHidden() && pageContext.useMandatory()) {
             html.append(Util.getMandatorySnippet());
           }
         }

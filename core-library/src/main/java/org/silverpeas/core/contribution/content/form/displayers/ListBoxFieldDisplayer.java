@@ -90,16 +90,20 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     String value = "";
     String keys = "";
     String values;
     StringBuilder html = new StringBuilder();
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
     String cssClass = null;
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
+
+    String defaultParam = parameters.getOrDefault("default", "");
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
+      value = defaultParam;
 
     if (field != null && !field.isNull()) {
       value = field.getValue(language);
@@ -158,10 +162,9 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
         optValue = stValues.nextToken();
 
         html.append("<option ");
-        if (optKey.equals(value)) {
-          html.append("selected=\"selected\" ");
+        if (optKey.equals(value) || optValue.equals(value)) {
+          html.append(" selected ");
         }
-
         html.append("value=\"").append(optKey).append("\">").append(optValue).append("</option>\n");
       }
     }
@@ -169,7 +172,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     html.append("</select>\n");
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
-        isHidden() && PagesContext.useMandatory()) {
+        isHidden() && pageContext.useMandatory()) {
       html.append(Util.getMandatorySnippet());
     }
 

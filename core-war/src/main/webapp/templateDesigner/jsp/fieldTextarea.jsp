@@ -28,31 +28,39 @@
 
 <%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
-	function isCorrectForm()
-	{
-	checkFieldName();
-	return checkErrors();
-	}
+  function isCorrectForm()
+  {
+    checkFieldName();
+    return checkErrors();
+  }
 </script>
 <%
-	String rows = "";
-	String cols = "";
+  String rows = "";
+  String cols = "";
+  String defaultValue = "";
 
-	if (field != null) {
-		if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
-			rows = parameters.get(TextAreaFieldDisplayer.PARAM_ROWS);
-		}
+  if (field != null) {
+    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_ROWS)) {
+      rows = parameters.get(TextAreaFieldDisplayer.PARAM_ROWS);
+    }
 
-		if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
-			cols = parameters.get(TextAreaFieldDisplayer.PARAM_COLS);
-		}
-	}
+    if (parameters.containsKey(TextAreaFieldDisplayer.PARAM_COLS)) {
+      cols = parameters.get(TextAreaFieldDisplayer.PARAM_COLS);
+    }
+
+    if (parameters.containsKey("default")) {
+      defaultValue = parameters.get("default");
+    }
+  }
 %>
 <%@ include file="includeTopField.jsp" %>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.rows")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_ROWS%>" value="<%=rows%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.rows")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_ROWS%>" value="<%=rows%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.cols")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_COLS%>" value="<%=cols%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.cols")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_COLS%>" value="<%=cols%>" size="5" maxLength="3"/></td>
+</tr>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.default")%> :</td><td><textarea name="Param_default"><%=defaultValue%></textarea></td>
 </tr>
 <%@ include file="includeBottomField.jsp" %>

@@ -33,7 +33,7 @@
 	padding-right: 30px;
 }
 </style>
-<script type="text/javascript">
+<script language="javascript">
 	function isCorrectForm() {
 	checkFieldName();
 	return checkErrors();
@@ -56,8 +56,9 @@
 	String zoom = "";
 	String mapType = "";
 	String enlarge = "";
+  String defaultValue = "";
 
-	if (field != null) {
+if (field != null) {
 		String paramMap = parameters.get(MapFieldDisplayer.PARAM_MAP);
 		if ("true".equals(paramMap)) {
 			map = "checked=\"checked\"";
@@ -82,11 +83,15 @@
 		if ("true".equals(parameters.get(MapFieldDisplayer.PARAM_ENLARGE))) {
 			enlarge = "checked=\"checked\"";
 		}
-	}
+
+    if (parameters.containsKey("default")) {
+      defaultValue = parameters.get("default");
+    }
+}
 %>
 <%@ include file="includeTopField.jsp" %>
 <tr>
-	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.map")%> :</td><td><input type="checkbox" name="Param_<%=MapFieldDisplayer.PARAM_MAP %>" value="true" <%=map %> onclick="toggleMapOptions(this)"/></td>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer.map.map")%> :</td><td><input type="checkbox" name="Param_<%=MapFieldDisplayer.PARAM_MAP %>" value="true" <%=map %> onclick="toggleMapOptions(this)"/></td>
 </tr>
 <tr class="map-param">
 	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer.map.kind")%> :</td>
@@ -100,15 +105,18 @@
 	</td>
 </tr>
 <tr class="map-param">
-	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.width")%> :</td><td><input type="text" name="Param_<%=MapFieldDisplayer.PARAM_WIDTH %>" value="<%=width%>" size="5" maxLength="4"/></td>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer.map.width")%> :</td><td><input type="text" name="Param_<%=MapFieldDisplayer.PARAM_WIDTH %>" value="<%=width%>" size="5" maxLength="4"/></td>
 </tr>
 <tr class="map-param">
-	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.height")%> :</td><td><input type="text" name="Param_<%=MapFieldDisplayer.PARAM_HEIGHT %>" value="<%=height%>" size="5" maxLength="4"/></td>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer.map.height")%> :</td><td><input type="text" name="Param_<%=MapFieldDisplayer.PARAM_HEIGHT %>" value="<%=height%>" size="5" maxLength="4"/></td>
 </tr>
 <tr class="map-param">
-	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.zoom")%> :</td><td><input type="text" name="Param_<%=MapFieldDisplayer.PARAM_ZOOM %>" value="<%=zoom%>" size="5" maxLength="4"/> <%=resource.getString("templateDesigner.displayer.map.zoom.help") %></td>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer.map.zoom")%> :</td><td><input type="text" name="Param_<%=MapFieldDisplayer.PARAM_ZOOM %>" value="<%=zoom%>" size="5" maxLength="4"/> <%=resource.getString("templateDesigner.displayer.map.zoom.help") %></td>
 </tr>
 <tr class="map-param">
-	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.link")%> :</td><td><input type="checkbox" name="Param_<%=MapFieldDisplayer.PARAM_ENLARGE %>" value="true" <%=enlarge %>/></td>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.displayer.map.link")%> :</td><td><input type="checkbox" name="Param_<%=MapFieldDisplayer.PARAM_ENLARGE %>" value="true" <%=enlarge %>/></td>
+</tr>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.default")%> :</td><td><input type="text" name="Param_default" value="<%=defaultValue%>"/></td>
 </tr>
 <%@ include file="includeBottomField.jsp" %>

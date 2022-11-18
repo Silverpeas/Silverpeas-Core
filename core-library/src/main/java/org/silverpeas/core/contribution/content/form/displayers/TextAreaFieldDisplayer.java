@@ -67,7 +67,7 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     String value = "";
     String rows = "8";
     String cols = "100";
@@ -75,14 +75,14 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
     String cssClass = null;
 
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
-    Map<String, String> parameters = template.getParameters(PagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
-
-    }
+    String defaultParam = parameters.getOrDefault("default", "");
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
+      value = defaultParam;
 
     if (!field.isNull()) {
-      value = field.getValue(PagesContext.getLanguage());
+      value = field.getValue(pageContext.getLanguage());
     }
 
     if (parameters.containsKey("class")) {
@@ -121,7 +121,7 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
     }
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-        && !template.isHidden() && PagesContext.useMandatory()) {
+        && !template.isHidden() && pageContext.useMandatory()) {
       html += Util.getMandatorySnippet();
     }
 

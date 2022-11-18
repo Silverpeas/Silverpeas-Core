@@ -27,10 +27,23 @@
 
 <%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
-	function isCorrectForm() {
-	checkFieldName();
-	return checkErrors();
-	}
+  function isCorrectForm() {
+    checkFieldName();
+    return checkErrors();
+  }
 </script>
+<%
+  String defaultValue = "";
+
+  if (field != null) {
+    if (parameters.containsKey("default")) {
+      defaultValue = parameters.get("default");
+    }
+  }
+%>
+
 <%@ include file="includeTopField.jsp" %>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.default")%> :</td><td><input type="text" name="Param_default" value="<%=defaultValue%>"/></td>
+</tr>
 <%@ include file="includeBottomField.jsp" %>

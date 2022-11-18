@@ -33,6 +33,7 @@
 Form 				 formUpdate = (Form) request.getAttribute("Form");
 DataRecord 			data 		= (DataRecord) request.getAttribute("Data");
 PagesContext		context	= (PagesContext) request.getAttribute("context");
+context.setDesignMode(true);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

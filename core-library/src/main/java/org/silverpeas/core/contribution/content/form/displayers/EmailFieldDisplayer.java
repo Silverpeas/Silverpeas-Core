@@ -63,9 +63,6 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
     String language = pageContext.getLanguage();
     String label = template.getLabel(language);
 
-    if (!template.getTypeName().equals(TextField.TYPE)) {
-
-    }
     if (template.isMandatory() && pageContext.useMandatory()) {
       StringBuilder script = new StringBuilder(10000);
 
@@ -93,10 +90,11 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
-    String defaultValue = (parameters.containsKey("default") ? parameters.get("default") : "");
-    if (pageContext.isIgnoreDefaultValues()) {
-      defaultValue = "";
-    }
+    String defaultValue = "";
+    String defaultParam = parameters.getOrDefault("default", "");
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
+      defaultValue = defaultParam;
+
     String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
     if (pageContext.isBlankFieldsUse()) {
       value = "";
