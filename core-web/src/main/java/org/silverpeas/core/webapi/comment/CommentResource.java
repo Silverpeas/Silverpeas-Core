@@ -54,7 +54,7 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * A REST Web resource representing a given comment. It is a web service that provides an access to
+ * A REST Web resource representing a given comment. It is a web service that provides access to
  * a comment referenced by its URL.
  */
 @RequestScoped
@@ -83,7 +83,7 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Gets the JSON representation of the specified existing comment. If the comment doesn't exist, a
-   * 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the
+   * 404 HTTP code is returned. If the user isn't authenticated, a 401 HTTP code is returned. If the
    * user isn't authorized to access the comment, a 403 is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
    * @param onCommentId the unique identifier of the comment.
@@ -108,12 +108,12 @@ public class CommentResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of all the comments on refered the resource. If the user isn't
-   * authentified, a 401 HTTP code is returned. If the user isn't authorized to access the comment,
+   * Gets the JSON representation of all the comments on referred the resource. If the user isn't
+   * authenticated, a 401 HTTP code is returned. If the user isn't authorized to access the comment,
    * a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
    * @return the response to the HTTP GET request with the JSON representation of the comments on
-   * the refered resource.
+   * the referred resource.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -135,7 +135,7 @@ public class CommentResource extends RESTWebService {
    * Creates a new comment from its JSON representation and returns it with its URI identifying it
    * in Silverpeas. The unique identifier of the comment isn't taken into account, so if the comment
    * already exist, it is then cloned with a new identifier (thus with a new URI). If the user isn't
-   * authentified, a 401 HTTP code is returned. If the user isn't authorized to save the comment, a
+   * authenticated, a 401 HTTP code is returned. If the user isn't authorized to save the comment, a
    * 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param commentToSave the comment to save in Silverpeas.
    * @return the response to the HTTP POST request with the JSON representation of the saved
@@ -170,7 +170,7 @@ public class CommentResource extends RESTWebService {
   /**
    * Updates the comment from its JSON representation and returns it once updated. If the comment to
    * update doesn't match with the requested one, a 400 HTTP code is returned. If the comment
-   * doesn't exist, a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is
+   * doesn't exist, a 404 HTTP code is returned. If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to save the comment, a 403 is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
    * @param commentId the unique identifier of the comment to update.
@@ -208,8 +208,8 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Deletes the specified existing comment. If the comment doesn't exist, nothing is done, so that
-   * the HTTP DELETE request remains indempotent as defined in the HTTP specification.. If the user
-   * isn't authentified, a 401 HTTP code is returned. If the user isn't authorized to access the
+   * the HTTP DELETE request remains idempotent as defined in the HTTP specification. If the user
+   * isn't authenticated, a 401 HTTP code is returned. If the user isn't authorized to access the
    * comment, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
    * @param onCommentId the unique identifier of the comment to delete.

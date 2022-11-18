@@ -103,7 +103,7 @@
       $confirm.popup('confirmation', options);
     },
     /**
-     * Shows a validate popup with the specified message and the popup parameters.
+     * Shows a validatation popup with the specified message and the popup parameters.
      * @param message the message to display in the popup.
      * @param params the parameters to parametrize the popup window.
      */

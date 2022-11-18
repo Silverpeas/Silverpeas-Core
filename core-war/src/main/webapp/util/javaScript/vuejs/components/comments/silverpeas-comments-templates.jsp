@@ -26,9 +26,17 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="language" value="${requestScope.resources.language}"/>
+<c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<c:set var="lookHelper" value="${sessionScope.Silverpeas_LookHelper}"/>
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.util.comment.multilang.comment"/>
+<view:setBundle basename="org.silverpeas.lookSilverpeasV5.multilang.lookBundle" var="lookBundle"/>
+
+<view:settings settings="org.silverpeas.util.comment.Comment" key="AnonymousViewMode"
+               defaultValue="normal" var="anonymousViewMode"/>
+<view:settings settings="org.silverpeas.authentication.settings.authenticationSettings"
+               key="newRegistrationEnabled"
+               defaultValue="false" var="selfRegistrationEnabled"/>
 
 <fmt:message var="commentNewTitle" key="comment.add"/>
 <fmt:message var="commentUpdateTitle" key="comment.comment"/>
@@ -37,75 +45,120 @@
 <fmt:message var="commentDeletionConfirmation" key="comment.suppressionConfirmation"/>
 <fmt:message var="commentErrorSingleCharAtLeast" key="comment.pleaseFill_single"/>
 <fmt:message var="commentErrorFieldTooLong" key="comment.champsTropLong"/>
+<fmt:message var="textNoComment" key="comment.noComment"/>
+<fmt:message var="textComment" key="comment.comment"/>
+<fmt:message var="textComments" key="comment.comments"/>
 <fmt:message var="textMandatory" key="GML.requiredField"/>
+<c:choose>
+  <c:when test="${selfRegistrationEnabled}">
+    <fmt:message var="loginAction" key="lookSilverpeasV5.loginOrRegister" bundle="${lookBundle}"/>
+  </c:when>
+  <c:otherwise>
+    <fmt:message var="loginAction" key="lookSilverpeasV5.login" bundle="${lookBundle}"/>
+  </c:otherwise>
+</c:choose>
 
 <c:url var="deletionIcon" value="/util/icons/delete.gif"/>
 <c:url var="updateIcon" value="/util/icons/update.gif"/>
+<c:url var="loginUrl" value="/Login"/>
 
-<!--
+<!-- ###############################################################################################
 List of comments on a contribution in which is included an edition block if the current user has
 enough rights to add a new comment.
-The user can update or delete its own comments. The update opens a popup to modify the text of
-the comment.
--->
+The user can update or delete its own comments and, in the case he's an administrator, the ones of
+other users. The update opens a popup to modify the text of the comment.
+################################################################################################ -->
 <silverpeas-component-template name="comments">
   <div id="commentaires" class="commentaires">
+
     <div v-sp-init>
       {{ addMessages({
       commentDeletionConfirmation : '${silfn:escapeJs(commentDeletionConfirmation)}',
       commentErrorSingleCharAtLeast : '${silfn:escapeJs(commentErrorSingleCharAtLeast)}',
-      commentErrorFieldTooLong : '${silfn:escapeJs(commentErrorFieldTooLong)}'
+      commentErrorFieldTooLong : '${silfn:escapeJs(commentErrorFieldTooLong)}',
+      loginAction : '${silfn:escapeJs(loginAction)}',
+      textNoComment : '${silfn:escapeJs(textNoComment)}',
+      textComment : '${silfn:escapeJs(textComment)}',
+      textComments : '${silfn:escapeJs(textComments)}',
+      anonymousViewMode : '${silfn:escapeJs(anonymousViewMode)}'
     }) }}
     </div>
 
-    <silverpeas-comment-edition
-        v-on:comment-adding="createComment"
-        v-bind:current-user="user"
-        v-model="commentText"
-        v-if="!user.anonymous && !user.guestAccess">
-    </silverpeas-comment-edition>
+    <div v-if="!user.anonymous || messages.anonymousViewMode === 'normal'"
+         class="commentsList">
 
+      <silverpeas-comment-edition
+          v-on:comment-adding="createComment"
+          v-bind:current-user="user"
+          v-model="commentText"
+          v-if="!user.anonymous && !user.guestAccess">
+      </silverpeas-comment-edition>
 
+      <div class="connection" v-if="user.anonymous">
+        <div class="buttons">
+          <button class="button logOn" onclick="top.location.href='${loginUrl}'">
+            {{ messages.loginAction }}
+          </button>
+        </div>
+      </div>
 
-    <silverpeas-popin title="${commentUpdateTitle}"
-                      type="validation"
-                      v-on:api="updatePopin = $event"
-                      v-bind:minWidth="650">
-      <div id="comments-update-box">
-        <div class="mandatoryField">
+      <silverpeas-popin title="${commentUpdateTitle}"
+                        type="validation"
+                        v-on:api="updatePopin = $event"
+                        v-bind:minWidth="650">
+        <div id="comments-update-box">
+          <div class="mandatoryField">
           <textarea id="comment-update-text"
                     class="text"
                     v-model="updatedCommentText">
           </textarea>
-          <span>&nbsp;</span>
-          <view:image src="/util/icons/mandatoryField.gif" alt="${textMandatory}"/>
-          <div class="legende">
+            <span>&nbsp;</span>
             <view:image src="/util/icons/mandatoryField.gif" alt="${textMandatory}"/>
-            <span>&nbsp;:&nbsp;${textMandatory}</span>
+            <div class="legende">
+              <view:image src="/util/icons/mandatoryField.gif" alt="${textMandatory}"/>
+              <span>&nbsp;:&nbsp;${textMandatory}</span>
+            </div>
           </div>
         </div>
-      </div>
-    </silverpeas-popin>
+      </silverpeas-popin>
 
-    <silverpeas-fade-transition-group id="list-box"
-                                      v-if="comments.length"
-                                      tag="div">
-      <silverpeas-comment v-for="comment in comments"
-                          v-bind:key="comment.id"
-                          v-bind:current-user="user"
-                          v-bind:comment="comment"
-                          v-bind:readonly="false"
-                          v-on:comment-update="updateComment"
-                          v-on:comment-deletion="deleteComment">
-      </silverpeas-comment>
-    </silverpeas-fade-transition-group>
+      <silverpeas-fade-transition-group id="list-box"
+                                        v-if="comments.length"
+                                        tag="div">
+        <silverpeas-comment v-for="comment in comments"
+                            v-bind:key="comment.id"
+                            v-bind:current-user="user"
+                            v-bind:comment="comment"
+                            v-bind:readonly="false"
+                            v-on:comment-update="updateComment"
+                            v-on:comment-deletion="deleteComment">
+        </silverpeas-comment>
+      </silverpeas-fade-transition-group>
+
+    </div>
+
+    <div v-if="user.anonymous && messages.anonymousViewMode === 'counter'">
+
+      <div class="commentsCount">
+        <span>{{ infoNbOfComments }}</span>
+      </div>
+
+      <div class="connection" v-if="user.anonymous">
+        <div class="buttons">
+          <button class="button logOn" onclick="top.location.href='${loginUrl}'">
+            {{ messages.loginAction }}
+          </button>
+        </div>
+      </div>
+
+    </div>
 
   </div>
 </silverpeas-component-template>
 
-<!--
+<!-- ###############################################################################################
 Edition block of a new comment.
--->
+################################################################################################ -->
 <silverpeas-component-template name="comment-edition">
   <div id="edition-box">
     <p class="title"><fmt:message key="comment.add"/></p>
@@ -125,6 +178,10 @@ Edition block of a new comment.
   </div>
 </silverpeas-component-template>
 
+<!-- ###############################################################################################
+A comment with its content, the date it has been authored and the name of the author.
+According to the rights of the current user, the comment can be updated and deleted.
+################################################################################################ -->
 <silverpeas-component-template name="comment">
   <div v-bind:id="'comment' + comment.id" class="oneComment">
     <div>
@@ -141,7 +198,7 @@ Edition block of a new comment.
         <img v-bind:src="comment.author.avatar" alt="avatar">
       </div>
       <p class="author">
-        <span class="name" v-bind:class="{ userToZoom : displayUserZoom}"
+        <span class="name" v-bind:class="{ userToZoom : displayUserZoom }"
               v-bind:rel="comment.author.id">{{ comment.author.fullName }}</span>
         <span class="date"> - {{ comment.creationDate }}</span>
       </p>
