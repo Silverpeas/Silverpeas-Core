@@ -329,7 +329,6 @@
                     resourceType : item.contribution.contributionId.type,
                     resourceId : item.contribution.contributionId.localId,
                     text : userNoteValue,
-                    textForHtml : userNoteValue,
                     indexed : item.contribution.indexable
                   });
             });

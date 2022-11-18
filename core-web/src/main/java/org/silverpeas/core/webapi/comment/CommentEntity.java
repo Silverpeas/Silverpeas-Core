@@ -24,16 +24,14 @@
 package org.silverpeas.core.webapi.comment;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
-import org.silverpeas.core.web.rs.WebEntity;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.owasp.encoder.Encode;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -43,10 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -82,9 +77,6 @@ public class CommentEntity implements WebEntity {
   private String text;
   @XmlElement(required = true)
   @NotNull
-  private String textForHtml;
-  @XmlElement(required = true)
-  @NotNull
   private UserProfileEntity author;
   private String currentUserLanguage;
   @XmlElement(required = true, defaultValue = "")
@@ -96,8 +88,7 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Creates a new comment entity from the specified comment.
-   *
-   * @param comment the comment to entitify.
+   * @param comment the comment to convert into a web entity.
    * @return the entity representing the specified comment.
    */
   public static CommentEntity fromComment(final Comment comment) {
@@ -105,32 +96,7 @@ public class CommentEntity implements WebEntity {
   }
 
   /**
-   * Creates several new comment entities from the specified comments.
-   *
-   * @param comments the comments to entitify.
-   * @return a list of entities representing each of then one of the specified comments.
-   */
-  public static List<CommentEntity> fromComments(final Comment... comments) {
-    return fromComments(Arrays.asList(comments));
-  }
-
-  /**
-   * Creates several new comment entities from the specified list of comments.
-   *
-   * @param comments the list of comments to entitify.
-   * @return a list of entities representing each of then one of the specified comments.
-   */
-  public static List<CommentEntity> fromComments(final List<Comment> comments) {
-    List<CommentEntity> entities = new ArrayList<>();
-    for (Comment comment : comments) {
-      entities.add(fromComment(comment));
-    }
-    return entities;
-  }
-
-  /**
    * Gets the comment business objet this entity represent.
-   *
    * @return a comment instance.
    */
   public Comment toComment() {
@@ -147,7 +113,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
-   *
    * @param uri the web entity URI.
    * @return itself.
    */
@@ -162,7 +127,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the URI of this comment entity.
-   *
    * @return the URI with which this entity can be access through the Web.
    */
   @Override
@@ -172,7 +136,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the unique identifier of the comment.
-   *
    * @return the comment identifier.
    */
   public String getId() {
@@ -182,7 +145,6 @@ public class CommentEntity implements WebEntity {
   /**
    * Gets the identifier of the Silverpeas component instance to which the commented content
    * belongs.
-   *
    * @return the silverpeas component instance identifier.
    */
   public String getComponentId() {
@@ -191,7 +153,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the type of the resource that is commented by this.
-   *
    * @return the commented resource type.
    */
   public String getResourceType() {
@@ -200,7 +161,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the identifier of the resource that is commented by this.
-   *
    * @return the commented resource identifier.
    */
   public String getResourceId() {
@@ -209,7 +169,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the user that has written this comment.
-   *
    * @return the author of the comment.
    */
   public UserProfileEntity getAuthor() {
@@ -218,7 +177,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the text of the comment.
-   *
    * @return the text of the comment.
    */
   public String getText() {
@@ -226,17 +184,7 @@ public class CommentEntity implements WebEntity {
   }
 
   /**
-   * Gets the text encoded for HTLML of the comment.
-   *
-   * @return the text encoded for HTML of the comment.
-   */
-  public String getTextForHtml() {
-    return textForHtml;
-  }
-
-  /**
    * Gets the current user language.
-   *
    * @return the language of the current user.
    */
   public String getCurrentUserLanguage() {
@@ -245,7 +193,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Sets a currentUserLanguage to this entity.
-   *
    * @param currentUserLanguage the language of the current user.
    * @return itself.
    */
@@ -265,7 +212,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the date at which the comment was created.
-   *
    * @return the creation date of the comment.
    */
   public String getCreationDate() {
@@ -274,7 +220,6 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Gets the date at which the comment was lastly updated.
-   *
    * @return the modification date of the comment.
    */
   public String getModificationDate() {
@@ -283,23 +228,10 @@ public class CommentEntity implements WebEntity {
 
   /**
    * Is this comment indexed? By default, the comment isn't indexed by the system.
-   *
    * @return true if the comment is indexed, false otherwise.
    */
   public boolean isIndexed() {
     return indexed;
-  }
-
-  /**
-   * Changes the text of this comment by the specified one.
-   *
-   * @param aText the new text.
-   * @return itself.
-   */
-  public CommentEntity newText(final String aText) {
-    this.text = aText;
-    this.textForHtml = Encode.forHtml(aText);
-    return this;
   }
 
   protected CommentEntity(final Comment comment) {
@@ -308,13 +240,13 @@ public class CommentEntity implements WebEntity {
     this.resourceType = comment.getResourceType();
     this.resourceId = comment.getResourceReference().getLocalId();
     this.text = comment.getMessage();
-    this.textForHtml = Encode.forHtml(comment.getMessage());
-    this.author = UserProfileEntity.fromUser((UserDetail) comment.getCreator());
+    this.author = UserProfileEntity.fromUser(comment.getCreator());
     //we don't even know the language of the current user (the currentUserLanguage attribute has
     // not been yet initialized
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.modificationDate =
         encodeToDisplayDate(comment.getLastUpdateDate(), I18NHelper.DEFAULT_LANGUAGE);
+    this.indexed = comment.isIndexable();
   }
 
   @Override
@@ -330,7 +262,7 @@ public class CommentEntity implements WebEntity {
         Objects.equals(id, that.id) && Objects.equals(componentId, that.componentId) &&
         Objects.equals(resourceType, that.resourceType) &&
         Objects.equals(resourceId, that.resourceId) && Objects.equals(text, that.text) &&
-        Objects.equals(textForHtml, that.textForHtml) && Objects.equals(author, that.author) &&
+        Objects.equals(author, that.author) &&
         Objects.equals(currentUserLanguage, that.currentUserLanguage) &&
         Objects.equals(creationDate, that.creationDate) &&
         Objects.equals(modificationDate, that.modificationDate);
@@ -338,37 +270,33 @@ public class CommentEntity implements WebEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, componentId, resourceType, resourceId, text, textForHtml, author,
+    return Objects.hash(uri, id, componentId, resourceType, resourceId, text, author,
         currentUserLanguage, creationDate, modificationDate, indexed);
   }
 
+  @SuppressWarnings("unused")
   protected CommentEntity() {
+    // for JSON/XML serializer
   }
 
   /**
-   * Encodes the specified date into a date to display by taking into account the user prefered
+   * Encodes the specified date into a date to display by taking into account the user preferred
    * language. If the specified date isn't defined, then a display date of today is returned.
-   *
-   * @param date     the date to encode.
+   * @param date the date to encode.
    * @param language the language to use to encode the display date.
    * @return the resulting display date.
    */
   private static String encodeToDisplayDate(java.util.Date date, String language) {
     String displayDate;
-    if (date != null) {
-      displayDate = DateUtil.getOutputDate(date, language);
-    } else {
-      displayDate = DateUtil.getOutputDate(new Date(), language);
-    }
+    displayDate = DateUtil.getOutputDate(Objects.requireNonNullElseGet(date, Date::new), language);
     return displayDate;
   }
 
   /**
    * Decodes the specified display date into a date as it is defining in a Comment instance. If the
    * display date isn't defined, then the today date is returned.
-   *
    * @param displayDate the display date to decode.
-   * @param language    the language in which the date is encoded.
+   * @param language the language in which the date is encoded.
    * @return the resulting decoded date.
    */
   private static java.util.Date decodeFromDisplayDate(String displayDate, String language) {

@@ -33,6 +33,8 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.exception.TokenException;
@@ -61,6 +63,7 @@ import java.text.Collator;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserManualNotificationRecipientLimit;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled;
@@ -554,12 +557,12 @@ public class UserDetail implements User {
 
   @Override
   public boolean isPlayingAdminRole(final String instanceId) {
-    String[] profiles = OrganizationController.get().getUserProfiles(getId(), instanceId);
-    boolean isAdmin = isAccessAdmin();
-    if (profiles != null && profiles.length > 0) {
-      isAdmin |= Arrays.asList(profiles).contains(SilverpeasRole.ADMIN.getName());
+    if (isAccessAdmin()) {
+      return true;
     }
-    return isAdmin;
+    Set<SilverpeasRole> roles =
+        ComponentAccessControl.get().getUserRoles(getId(), instanceId, AccessControlContext.init());
+    return roles.contains(SilverpeasRole.ADMIN);
   }
 
   @Override

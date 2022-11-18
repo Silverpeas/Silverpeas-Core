@@ -70,6 +70,10 @@
           };
         },
         created : function() {
+          sp.ajaxRequest(webContext +
+              '/services/bundles/settings/org/silverpeas/util/comment/Comment')
+              .send()
+
           this.url = webContext + '/services/comments/' + this.componentId + '/' +
               this.resourceType + '/' + this.resourceId;
           this.loadComments();
@@ -115,8 +119,7 @@
                 resourceId : this.resourceId,
                 resourceType : this.resourceType,
                 indexed : this.indexed,
-                text : this.commentText,
-                textForHtml : this.commentText
+                text : this.commentText
               }
               sp.ajaxRequest(this.url)
                   .byPostMethod()
@@ -177,6 +180,17 @@
           },
         },
         computed : {
+          infoNbOfComments: function() {
+            let msg;
+            if (this.comments.length === 0) {
+              msg = this.messages.textNoComment;
+            } else if (this.comments === 1) {
+              msg = '1' + this.messages.textComment;
+            } else {
+              msg = this.comments.length + ' ' + this.messages.textComments;
+            }
+            return msg;
+          }
         }
       }));
 

@@ -3441,8 +3441,21 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
   border:0;
   height:1px;
   color:#CECECE;
-
 }
+
+.commentaires .commentsCount {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.commentaires .commentsCount span {
+  font-family: Arial;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
 .commentaires .oneComment, .commentaires #edition-box {
   background-color:#F0F0F0;
   border:1px solid #CECECE;
@@ -3573,6 +3586,7 @@ select.mandatoryField {
 
 select.mandatoryField option {
   font-style: normal;
+  font
   color:#000;
 }
 
