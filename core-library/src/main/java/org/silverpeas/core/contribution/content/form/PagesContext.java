@@ -110,6 +110,7 @@ public class PagesContext implements Serializable {
     setExtraSearchFieldSpace(pc.isExtraSearchFieldSpace());
     setMultiFormInPage(pc.isMultiFormInPage());
     setShowMandatorySnippet(pc.isShowMandatorySnippet());
+    setDesignMode(pc.isDesignMode());
   }
 
   public PagesContext(String formIndex, String language) {

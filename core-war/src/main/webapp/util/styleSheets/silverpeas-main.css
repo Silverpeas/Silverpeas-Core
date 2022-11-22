@@ -7527,3 +7527,9 @@ input.dateToPick,
   width: 28px;
   height: 18px;
 }
+
+/************ Form Field templateDesigner */
+#popupHelperContainer .txtlibform {
+  width: 110px;
+  height: 20px;
+}

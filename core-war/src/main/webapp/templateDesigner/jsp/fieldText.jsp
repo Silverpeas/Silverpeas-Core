@@ -30,41 +30,50 @@
 <%@ include file="includeParamsField.jsp" %>
 
 <script language="javascript">
-	function isCorrectForm() {
-	checkFieldName();
-	return checkErrors();
-	}
+  function isCorrectForm() {
+    checkFieldName();
+    return checkErrors();
+  }
 </script>
 <%
-	String size = "";
-	String maxLength = "";
-	String suggestionsChecked = "";
+  String size = "";
+  String maxLength = "";
+  String suggestionsChecked = "";
+  String defaultValue = "";
 
-	if (field != null) {
-		if (parameters.containsKey(TextField.PARAM_MAXLENGTH)) {
-			maxLength = parameters.get(TextField.PARAM_MAXLENGTH);
-		}
+  if (field != null) {
+    if (parameters.containsKey(TextField.PARAM_MAXLENGTH)) {
+      maxLength = parameters.get(TextField.PARAM_MAXLENGTH);
+    }
 
-		if (parameters.containsKey("size")) {
-			size = parameters.get("size");
-		}
+    if (parameters.containsKey("size")) {
+      size = parameters.get("size");
+    }
 
-		if (parameters.containsKey("suggestions")) {
-			String suggestions = parameters.get("suggestions");
-			if (StringUtil.getBooleanValue(suggestions)) {
-				suggestionsChecked = "checked";
-			}
-		}
-	}
+    if (parameters.containsKey("suggestions")) {
+      String suggestions = parameters.get("suggestions");
+      if (StringUtil.getBooleanValue(suggestions)) {
+        suggestionsChecked = "checked";
+      }
+    }
+
+    if (parameters.containsKey("default")) {
+      defaultValue = parameters.get("default");
+    }
+  }
 %>
 <%@ include file="includeTopField.jsp" %>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_size" value="<%=size%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_size" value="<%=size%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.maxLength")%> :</td><td><input type="text" name="Param_<%=TextField.PARAM_MAXLENGTH %>" value="<%=maxLength%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.maxLength")%> :</td><td><input type="text" name="Param_<%=TextField.PARAM_MAXLENGTH %>" value="<%=maxLength%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.suggestions")%> :</td><td><input type="checkbox" name="Param_suggestions" value="true" <%=suggestionsChecked%>/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.suggestions")%> :</td><td><input type="checkbox" name="Param_suggestions" value="true" <%=suggestionsChecked%>/></td>
 </tr>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.default")%> :</td><td><input type="text" name="Param_default" value="<%=defaultValue%>"/></td>
+</tr>
+
 <%@ include file="includeBottomField.jsp" %>

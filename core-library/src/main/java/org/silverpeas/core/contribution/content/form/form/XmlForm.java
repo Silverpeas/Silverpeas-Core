@@ -98,6 +98,7 @@ public class XmlForm extends AbstractForm {
 
     // content language is the one of the record
     pageContext.setContentLanguage(record.getLanguage());
+    pageContext.setIgnoreDefaultValues(false);
 
     String mode = "";
     if (pageContext.isDesignMode()) {
