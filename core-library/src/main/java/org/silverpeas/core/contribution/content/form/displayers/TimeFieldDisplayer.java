@@ -156,8 +156,13 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       final Map<String, String> parameters) {
     String defaultParam = parameters.getOrDefault("default", "");
     String defaultValue = "";
-    if ("now".equalsIgnoreCase(defaultParam) && !pageContext.isIgnoreDefaultValues()) {
-      defaultValue = DateUtil.formatTime(new Date());
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) &&
+        !pageContext.isIgnoreDefaultValues() && !defaultParam.isEmpty()) {
+      if ("now".equalsIgnoreCase(defaultParam)) {
+        defaultValue = DateUtil.formatTime(new Date());
+      } else {
+        defaultValue = defaultParam;
+      }
     }
     String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
     if (pageContext.isBlankFieldsUse()) {
