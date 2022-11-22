@@ -67,23 +67,17 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String value;
+    String defaultValue = "";
     String html = "";
 
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
 
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
-
-    }
-
-    String defaultValue =
-        (parameters.containsKey("default") ? parameters.get("default") : "");
-    if (pageContext.isIgnoreDefaultValues()) {
-      defaultValue = "";
-    }
-    value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+    String defaultParam = parameters.getOrDefault("default", "");
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
+      defaultValue = defaultParam;
+    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
     if (pageContext.isBlankFieldsUse()) {
       value = "";
     }

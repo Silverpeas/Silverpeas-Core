@@ -36,6 +36,7 @@ function isCorrectForm() {
 	String size = "";
 	String maxLength = "";
 	String suggestionsChecked = "";
+  String defaultValue = "";
 
 	if (field != null) {
 		if (parameters.containsKey("maxLength")) {
@@ -52,16 +53,24 @@ function isCorrectForm() {
 				suggestionsChecked = "checked";
 			}
 		}
-	}
+
+    if (parameters.containsKey("default")) {
+      defaultValue = parameters.get("default");
+    }
+
+  }
 %>
 <%@ include file="includeTopField.jsp" %>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_size" value="<%=size%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_size" value="<%=size%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.maxLength")%> :</td><td><input type="text" name="Param_maxLength" value="<%=maxLength%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.maxLength")%> :</td><td><input type="text" name="Param_maxLength" value="<%=maxLength%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.suggestions")%> :</td><td><input type="checkbox" name="Param_suggestions" value="true" <%=suggestionsChecked%>/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.suggestions")%> :</td><td><input type="checkbox" name="Param_suggestions" value="true" <%=suggestionsChecked%>/></td>
+</tr>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.default")%> :</td><td><input type="text" name="Param_default" value="<%=defaultValue%>"/></td>
 </tr>
 <%@ include file="includeBottomField.jsp" %>

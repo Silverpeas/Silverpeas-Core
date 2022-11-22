@@ -112,16 +112,11 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     String values = "";
     String html = "";
     int cols = 1;
-    String defaultValue = "";
     String language = pageContext.getLanguage();
     String cssClass = null;
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
-
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-
-    }
 
     if (!field.isNull()) {
       value = field.getValue(language);
@@ -152,13 +147,9 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
       cols = 1;
     }
 
-    if (parameters.containsKey("default") && !pageContext.isIgnoreDefaultValues()) {
-      defaultValue = parameters.get("default");
-    }
-
-    if (!StringUtil.isDefined(value)) {
+    String defaultValue = parameters.getOrDefault("default", "");
+    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
       value = defaultValue;
-    }
 
     if (pageContext.isBlankFieldsUse()) {
       value = "";
