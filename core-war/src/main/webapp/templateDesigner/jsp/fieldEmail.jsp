@@ -27,31 +27,40 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp" %>
-<script language="javascript">
-function isCorrectForm() {
-	checkFieldName();
-	return checkErrors();
-}
+<script type="application/javascript">
+  function isCorrectForm() {
+    checkFieldName();
+    return checkErrors();
+  }
 </script>
 <%
-	String size = "";
-	String mailto = "";
+  String size = "";
+  String mailto = "";
+  String defaultValue = "";
 
-	if (field != null) {
-		if ("true".equalsIgnoreCase(parameters.get(EmailFieldDisplayer.PARAM_MAILTO))) {
-			mailto = "checked=\"checked\"";
-		}
+  if (field != null) {
+    if ("true".equalsIgnoreCase(parameters.get(EmailFieldDisplayer.PARAM_MAILTO))) {
+      mailto = "checked=\"checked\"";
+    }
 
-		if (parameters.containsKey(EmailFieldDisplayer.PARAM_SIZE)) {
-			size = parameters.get(EmailFieldDisplayer.PARAM_SIZE);
-		}
-	}
+    if (parameters.containsKey(EmailFieldDisplayer.PARAM_SIZE)) {
+      size = parameters.get(EmailFieldDisplayer.PARAM_SIZE);
+    }
+
+    if (parameters.containsKey("default")) {
+      defaultValue = parameters.get("default");
+    }
+  }
 %>
 <%@ include file="includeTopField.jsp" %>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_<%=EmailFieldDisplayer.PARAM_SIZE %>" value="<%=size%>" size="5" maxLength="3"/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_<%=EmailFieldDisplayer.PARAM_SIZE %>" value="<%=size%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
-<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.email.mailto")%> :</td><td><input type="checkbox" name="Param_<%=EmailFieldDisplayer.PARAM_MAILTO %>" value="true" <%=mailto%>/></td>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.email.mailto")%> :</td><td><input type="checkbox" name="Param_<%=EmailFieldDisplayer.PARAM_MAILTO %>" value="true" <%=mailto%>/></td>
 </tr>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.displayer.default")%> :</td><td><input type="text" name="Param_default" value="<%=defaultValue%>"/></td>
+</tr>
+
 <%@ include file="includeBottomField.jsp" %>

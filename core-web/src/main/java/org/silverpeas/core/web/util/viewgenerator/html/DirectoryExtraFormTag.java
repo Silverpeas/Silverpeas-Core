@@ -90,6 +90,7 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
       if (StringUtil.isNotDefined(userId)) {
         // creation case
         pageContext.setDomainId(domainId);
+        pageContext.setCreation(true);
       }
       return pageContext;
     }

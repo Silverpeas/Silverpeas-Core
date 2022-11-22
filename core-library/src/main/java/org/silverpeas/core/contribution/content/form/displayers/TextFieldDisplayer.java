@@ -74,10 +74,6 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
       return;
     }
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
-
-    }
-
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
@@ -100,12 +96,9 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
       }
     }
 
-    String defaultValue =
-        (parameters.containsKey("default") ? parameters.get("default") : "");
-    if (pageContext.isIgnoreDefaultValues()) {
-      defaultValue = "";
-    }
+    String defaultValue = getDefaultValue(template, pageContext);
     String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+
     if (pageContext.isBlankFieldsUse()) {
       value = "";
     }

@@ -39,7 +39,7 @@
 	}
 %>
 
-<script type="text/javascript">
+<script type="application/javascript">
 	function isCorrectForm() {
 	checkFieldName();
 	if (isWhitespace($('#Param_scope').val())) {

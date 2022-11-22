@@ -168,8 +168,13 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
       final String language, final Map<String, String> parameters) {
     String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
     String defaultValue = "";
-    if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues()) {
-      defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
+    if (!pagesContext.isIgnoreDefaultValues() && (pagesContext.isCreation() || pagesContext.isDesignMode()))
+    {
+      if ("now".equalsIgnoreCase(defaultParam)) {
+        defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
+      }
+      else
+        defaultValue = defaultParam;
     }
 
     String value = (!field.isNull() ? field.getValue(language) : defaultValue);

@@ -62,6 +62,7 @@ import org.silverpeas.core.util.StringUtil;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ehugonnet
@@ -106,5 +107,12 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
       out.println("      errorNb++;\n");
       out.println("   }\n");
     }
+  }
+
+  protected String getDefaultValue(final FieldTemplate template, final PagesContext pageContext) {
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+    String defaultParam = parameters.getOrDefault("default", "");
+    return ((pageContext.isCreation() || pageContext.isDesignMode()) &&
+        !pageContext.isIgnoreDefaultValues()) ? defaultParam : "";
   }
 }
