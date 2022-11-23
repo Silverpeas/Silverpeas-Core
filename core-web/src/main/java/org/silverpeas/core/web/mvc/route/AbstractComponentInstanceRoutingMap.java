@@ -85,8 +85,10 @@ public abstract class AbstractComponentInstanceRoutingMap implements ComponentIn
 
   @Override
   public URI getPermalink(final ContributionIdentifier contributionIdentifier) {
+    String compInstId = StringUtil.isDefined(contributionIdentifier.getComponentInstanceId()) ?
+        contributionIdentifier.getComponentInstanceId() : MISSING_PART;
     ContributionIdentifier permalinkContributionId = ContributionIdentifier
-        .from(MISSING_PART, contributionIdentifier.getLocalId(), contributionIdentifier.getType());
+        .from(compInstId, contributionIdentifier.getLocalId(), contributionIdentifier.getType());
     return newUriBuilder("/Contribution",
         StringUtil.asBase64(permalinkContributionId.asString().getBytes())).build();
   }
@@ -97,8 +99,8 @@ public abstract class AbstractComponentInstanceRoutingMap implements ComponentIn
   }
 
   /**
-   * Gets the base of an URI which brings the user to view or edit page.
-   * @return the base of an URI as a string.
+   * Gets the base of a URI which brings the user to view or edit page.
+   * @return the base of a URI as a string.
    */
   protected String getBaseForPages() {
     if (baseForPages == null) {
@@ -129,4 +131,5 @@ public abstract class AbstractComponentInstanceRoutingMap implements ComponentIn
     Arrays.stream(paths).forEach(uriBuilder::path);
     return uriBuilder;
   }
+
 }

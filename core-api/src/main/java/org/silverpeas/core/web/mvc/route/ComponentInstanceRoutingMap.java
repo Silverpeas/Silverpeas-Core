@@ -35,24 +35,32 @@ import java.net.URI;
  * Each component, by this interface, is able to indicates to core services how to access a view or
  * a resource.
  * </p>
- * Any application that requires to provide URL or URI to core services (indexation for example)
- * has to implement this interface and the implementation has to be qualified with the @{@link
- * javax.inject.Named} annotation by a name satisfying the following convention
+ * <p>
+ * An implementation by default is provided. This implementation is based upon the generic mechanism
+ * in Silverpeas to build an URL or an URI of a view or resource managed by a component instance (or
+ * an application instance).
+ * </p>
+ * Any application requiring to provide a specific rule for URL or URI to core services (indexation
+ * for example) has to implement this interface and the implementation has to be qualified with the
+ * {@link javax.inject.Named} annotation by a name satisfying the following convention
  * <code>[COMPONENT NAME]InstanceRoutingMap</code>. For example, for an application Kmelia,
  * the implementation must be qualified with <code>@Named("kmeliaInstanceRoutingMap")</code>
  * <p>
- * Be carefully about that an implementation of this interface must never be a singleton!
+ * Be carefully about that an implementation of this interface must never be a singleton or
+ * application scoped! The implementation should be annotated with both
+ * {@link org.silverpeas.core.annotation.Technical} and {@link org.silverpeas.core.annotation.Bean}
+ * qualifiers.
  * </p>
  * <p>
- *   This API uses the request cache service in order to improve performances.
+ * This API uses the request cache service in order to improve performances.
  * </p>
  * @author silveryocha
  */
 public interface ComponentInstanceRoutingMap {
 
   /**
-   * The predefined suffix that must compound the name of each implementation of this interface.
-   * An implementation of this interface by a Silverpeas application named Kmelia must be named
+   * The predefined suffix that must compound the name of each implementation of this interface. An
+   * implementation of this interface by a Silverpeas application named Kmelia must be named
    * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
    */
   String NAME_SUFFIX = "InstanceRoutingMap";

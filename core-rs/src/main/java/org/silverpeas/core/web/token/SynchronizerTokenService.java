@@ -51,13 +51,13 @@ import java.util.List;
 /**
  * A service to manage the synchronizer tokens used in Silverpeas to protect the user sessions or
  * the web resources published by Silverpeas.
- *
+ * <p>
  * Each resource in Silverpeas and accessible through the Web can be protected by one or more
  * security tokens. These tokens are named synchronizer token as they are transmitted within each
  * request and must match the ones expected by Silverpeas to access the asked resource. This service
  * provides the functions to generate, to validate and to set such tokens for the Web resource in
  * Silverpeas to protect (not all resources require to be protected in Silverpeas).
- *
+ * </p>
  * @author mmoquillon
  */
 @Technical
@@ -87,11 +87,11 @@ public class SynchronizerTokenService {
    * Sets up a session token for the specified Silverpeas session. It creates a synchronizer token
    * to protect the specified opened user session. If a token is already protecting the session, the
    * token is then renewed.
-   *
+   * <p>
    * A session token is a token used to validate that any requests to a protected web resource are
    * correctly sent within an opened and valid user session. The setting occurs only if the security
    * mechanism by token is enabled.
-   *
+   * </p>
    * @param session the user session to protect with a synchronizer token.
    */
   public void setUpSessionTokens(SessionInfo session) {
@@ -136,12 +136,12 @@ public class SynchronizerTokenService {
    * Validates the request to a Silverpeas web resource can be trusted. The request is validated
    * only if both the security mechanism by token is enabled and the request targets a protected web
    * resource.
-   *
+   * <p>
    * The access to a protected web resource is considered as trusted if and only if it is stamped
    * with the expected security tokens for the requested resource. Otherwise, the request isn't
    * considered as trusted and should be rejected. A request is stamped at least with the session
    * token, that is to say with the token that is set with the user session.
-   *
+   * </p>
    * @param request the HTTP request to check.
    * @throws TokenValidationException if the specified request cannot be trusted.
    */
@@ -168,13 +168,13 @@ public class SynchronizerTokenService {
 
   /**
    * Is the resource targeted by the specified request must be protected by a synchronizer token?
-   *
+   * <p>
    * A resource is protected if either the request is a POST, PUT or a DELETE HTTP method or if the
    * requested URI is declared as to be protected.
-   *
+   * </p>
    * @param request the request to a possibly protected resource.
    * @return true if the requested resource is a protected one and then the request should be
-   * validate.
+   * validated.
    */
   public boolean isAProtectedResource(HttpServletRequest request) {
     boolean isProtected = false;

@@ -39,6 +39,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
@@ -62,6 +63,7 @@ public class SilverpeasUserSessionTokenResource extends RESTWebService {
     final String sessionId = ofNullable(getHttpServletRequest().getSession(false))
         .map(HttpSession::getId)
         .map(getSessionManagement()::getSessionInfo)
+        .filter(not(SessionInfo::isAnonymous))
         .map(SessionInfo::getId)
         .orElseThrow(() -> new WebApplicationException("User Session does not exist", NOT_FOUND));
     final WebToken token = SilverpeasWebTokenService.get().generateFor(sessionId);

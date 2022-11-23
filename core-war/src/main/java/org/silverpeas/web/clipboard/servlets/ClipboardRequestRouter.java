@@ -111,7 +111,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
       if (destination.startsWith("/clipboard/jsp/Idle")) {
         // Set the idle time
         sessionInfo.setAsIdle();
-      } else {
+      } else if (!sessionInfo.isAnonymous()) {
         // Set the last accessed time
         sessionInfo.updateLastAccess();
       }
@@ -120,14 +120,17 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
 
   private String performClipboard(final HttpRequest request,
       final ClipboardSessionController clipboardSC) {
-    final String destination;
+    setClipboardData(request, clipboardSC);
+    return CLIPBOARD_JSP;
+  }
+
+  private void setClipboardData(final HttpRequest request,
+      final ClipboardSessionController clipboardSC) {
     clipboardSC.setComponentRooterName(request.getParameter("compR"));
     clipboardSC.setSpaceId(request.getParameter(SPACE_FROM_PARAM));
     clipboardSC.setComponentId(request.getParameter(COMPONENT_FROM_PARAM));
     clipboardSC.setJSPPage(request.getParameter("JSPPage"));
     clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
-    destination = CLIPBOARD_JSP;
-    return destination;
   }
 
   private String performDelete(final HttpRequest request,
@@ -193,12 +196,8 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
 
   private String performPaste(final HttpRequest request,
       final ClipboardSessionController clipboardSC) {
-    final String destination;
-    clipboardSC.setComponentRooterName(request.getParameter("compR"));
-    clipboardSC.setSpaceId(request.getParameter(SPACE_FROM_PARAM));
-    clipboardSC.setComponentId(request.getParameter(COMPONENT_FROM_PARAM));
-    clipboardSC.setJSPPage(request.getParameter("JSPPage"));
-    clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
+    setClipboardData(request, clipboardSC);
+    String destination;
     if (StringUtil.isDefined(clipboardSC.getComponentRooterName())) {
       if (StringUtil.isDefined(clipboardSC.getComponentId())) {
         destination = URLUtil.getURL(null, request.getParameter(SPACE_FROM_PARAM),

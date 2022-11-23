@@ -54,6 +54,6 @@ public class GoToPublication extends GoTo {
     setGefSpaceId(req, componentId);
 
     String gotoURL = URLUtil.getComponentInstanceURL(componentId) + pub.getURL();
-    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 }

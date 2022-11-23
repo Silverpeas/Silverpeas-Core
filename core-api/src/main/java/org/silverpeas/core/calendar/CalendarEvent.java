@@ -74,7 +74,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
 
 /**
  * An event planned in a calendar.
- *
+ * <p>
  * An event in a calendar is a possibly {@link Recurrent} and a {@link PlannableOnCalendar} general business
  * component that can be planned on one and only one given existing {@link Calendar};
  * we ensure an event is unique in a per-calendar basis.
@@ -83,17 +83,20 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
  * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}s.
  * In order to be customized for different kinds of use, some additional information can be set
  * through its {@link AttributeSet} property.
- *
+ * </p>
+ * <p>
  * An event in a calendar in Silverpeas can be originated from an external calendar. This comes
  * from an export process of the events planned in an external calendar (for example from a calendar
  * in Google Calendar). When such an event is in a Silverpeas's calendar, then the identifier of
  * this event on the external calendar can be got with the {@link CalendarEvent#getExternalId()}
  * method.
- *
+ * </p>
+ * <p>
  * When a list of events is retrieved from one or more calendars, they are all ordered by the
  * component instance that owns the calendar, then by the calendar on which they are planned, then
  * by the user who authored them, and finally by their starting  date in the timeline of the
  * calendar.
+ * </p>
  */
 @Entity
 @Table(name = "sb_cal_event")
@@ -670,10 +673,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   /**
    * Recurs this event with the specified event recurrence.
-   *
+   * <p>
    * If the recurrence ends up at a given date or datetime, then this value is updated according to
    * the period of time of this event:
-   *
+   * </p>
    * <ul>
    *  <li>
    *    The event is on all the day: the recurrence rule is updated to end at the given recurrence
@@ -927,16 +930,17 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   /**
    * Deletes only the specified occurrence of this event.
-   *
+   * <p>
    * If the event is non-recurrent, then the event is itself deleted. Otherwise, the original
    * starting date of the occurrence is added into the exception dates of its recurrence rule and
    * the event is updated. Keep in mind this last rule applies even if the occurrence is the single
    * one of the recurrence rule. If the occurrence is persisted, it is then removed from the
    * persistence context
-   *
+   * </p>
+   * <p>
    * If this event isn't yet planned, or it has no occurrences, then
    * an {@link IllegalStateException} exception is thrown.
-   *
+   * </p>
    * @param occurrence a reference to the occurrence to delete. If the occurrence doesn't come from
    * this event, then an {@link IllegalArgumentException} exception is thrown.
    * @return the result of the deletion. If the event is recurrent, it has the updated event
@@ -959,13 +963,14 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   /**
    * Deletes for this event all the occurrences since and including the specified one.
-   *
+   * <p>
    * If the event is non-recurrent, then the event is itself deleted. Otherwise, the event is
    * updated with its recurrence ending at the original starting date of the given occurrence.
-   *
+   * </p>
+   * <p>
    * If this event isn't yet planned, or it has no occurrence, then an
    * {@link IllegalStateException} exception is thrown.
-   *
+   * </p>
    * @param occurrence the occurrence since which all the forthcoming occurrences (and including
    * the specified occurrence) have to be deleted. If the occurrence doesn't come from this event,
    * then an {@link IllegalArgumentException} exception is thrown.
@@ -992,7 +997,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Updates this event. The modifications to this event are saved for all its occurrences.
    * Its sequence number is incremented by one. If the event isn't yet planned, an
    * {@link IllegalStateException} exception is thrown.
-   *
    * @return the result of the update. It has the updated event.
    */
   @Override
@@ -1061,14 +1065,15 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * the modifications to this event. The modifications to this event are saved for all the
    * occurrences since and including the specified occurrence. The occurrences occurring before the
    * specified occurrence won't be updated.
-   *
+   * <p>
    * If the event isn't yet planned, or it has no occurrence then an {@link IllegalStateException}
    * exception is thrown.
-   *
+   * </p>
+   * <p>
    * If the specified occurrence is in fact the single one of this event, then this event is
    * itself updated (this is equivalent to the {@link CalendarEvent#update()} method). Otherwise, a
    * new event is created from the modifications to this event.
-   *
+   * </p>
    * @param occurrence the occurrence of the event since which the changes to the event should be
    * applied. If the occurrence doesn't come from this event, then an
    * {@link IllegalArgumentException} exception is thrown.
@@ -1097,22 +1102,23 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   /**
    * Updates only the specified occurrence among the occurrences of this event.
-   *
+   * <p>
    * If the event is recurrent, even if the given occurrence is the single one obtained from the
    * recurrence rule, then only this occurrence is updated and the changes are persisted. The
    * sequence number of the occurrence is incremented by one.
-   *
+   * </p>
+   * <p>
    * If the event is non-recurrent then the changes are applied on this event itself from the
    * state of the occurrence. The sequence number of the event is incremented by one.
-   *
+   * </p>
+   * <p>
    * In the case the date at which the occurrence starts is modified, the participation status
    * of all the attendees in this occurrence is cleared. If the occurrence comes from a
    * non-recurrent event, then there are the participation status of all the attendees in this event
    * that are cleared.
-   *
+   * </p>
    * If this event isn't yet planned, or it has no occurrences, then an
    * {@link IllegalStateException} exception is thrown.
-   *
    * @param occurrence a reference to an occurrence of the event with the data modified.
    *  If the occurrence doesn't come from this event, then an
    * {@link IllegalArgumentException} exception is thrown.

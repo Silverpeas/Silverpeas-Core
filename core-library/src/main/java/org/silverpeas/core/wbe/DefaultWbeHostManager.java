@@ -141,7 +141,7 @@ public class DefaultWbeHostManager implements WbeHostManager {
     final Optional<Pair<String, WbeUser>> user = cache.getFileFromAccessToken(accessToken);
     user.ifPresent(p -> {
       final SessionInfo sessionInfo = getSessionManagement().getSessionInfo(p.getFirst());
-      if (sessionInfo != null) {
+      if (sessionInfo.isDefined() && !sessionInfo.isAnonymous()) {
         sessionInfo.updateLastAccess();
       }
     });

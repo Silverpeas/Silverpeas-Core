@@ -61,7 +61,7 @@
     // Bill Dortch, hIdaho Design
     // (bdortch@netw.com)
     function getCookieVal(offset) {
-      var endstr = document.cookie.indexOf(";", offset);
+      let endstr = document.cookie.indexOf(";", offset);
       if (endstr === -1) {
         endstr = document.cookie.length;
       }
@@ -69,12 +69,12 @@
     }
 
     function GetCookie(name) {
-      var arg = name + "=";
-      var alen = arg.length;
-      var clen = document.cookie.length;
-      var i = 0;
+      let arg = name + "=";
+      let alen = arg.length;
+      let clen = document.cookie.length;
+      let i = 0;
       while (i < clen) {
-        var j = i + alen;
+        let j = i + alen;
         if (document.cookie.substring(i, j) === arg)
           return getCookieVal(j);
         i = document.cookie.indexOf(" ", i) + 1;
@@ -89,7 +89,7 @@
     }
 
     function loginQuestion() {
-      var form = document.getElementById("formLogin");
+      let form = document.getElementById("formLogin");
       if (form.elements["Login"].value.length === 0) {
         alert('<fmt:message key="authentication.logon.loginMissing" />');
       } else {
@@ -99,7 +99,7 @@
     }
 
     function resetPassword() {
-      var form = document.getElementById("formLogin");
+      let form = document.getElementById("formLogin");
       if (form.elements["Login"].value.length === 0) {
         alert('<fmt:message key="authentication.logon.loginMissing" />');
       } else {
@@ -109,7 +109,7 @@
     }
 
     function changePassword() {
-      var form = document.getElementById("formLogin");
+      let form = document.getElementById("formLogin");
       if (form.elements["Login"].value.length === 0) {
         alert('<fmt:message key="authentication.logon.loginMissing" />');
       } else {
@@ -119,7 +119,7 @@
     }
 
     function newRegistration() {
-      var form = document.getElementById("formLogin");
+      let form = document.getElementById("formLogin");
       form.action = '<c:url value="/CredentialsServlet/NewRegistration" />';
       form.submit();
     }
@@ -231,7 +231,7 @@
             <p><label><span><fmt:message key="authentication.logon.domain"/></span>
               <select id="DomainId" name="DomainId" size="1">
                 <c:forEach var="domain" items="${pageScope.listDomains}">
-                  <option value="<c:out value="${domain.id}" />"<c:if test="${domain.id eq param.DomainId}">selected</c:if>><c:out value="${domain.name}"/></option>
+                  <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if>><c:out value="${domain.name}"/></option>
                 </c:forEach>
               </select>
             </label></p>
@@ -279,7 +279,7 @@
 <!-- Fin class="page" -->
 
 <script type="text/javascript">
-  var domainId = <%=domainId%>;
+  const domainId = <%=domainId%>;
 
   /* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
   if (GetCookie("defaultDomain")) {

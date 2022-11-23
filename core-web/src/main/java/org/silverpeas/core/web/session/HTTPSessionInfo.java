@@ -25,6 +25,7 @@ package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpSession;
@@ -35,22 +36,20 @@ import java.util.List;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * Information on the HTTP session opened by a Silverpeas user to access the Silverpeas Web pages.
- *
- * It wraps the HttpSession instance created by Silverpeas for a given user and it delegates all the
- * session attribute setting to the wrapped HttpSession instance. So it can be used in a such
- * context as an HTTP session itself.
- *
- * The HTTPSessionInfo objects are mainly used for the users accessing Silverpeas with their WEB
- * browser. It is not yet used in the management of sessions for REST-based web service clients.
+ * A Silverpeas user session built upon the HTTP session created by the underlying web server.
+ * <p>
+ * It wraps the {@link HttpSession} instance created by the web server for a given user and it
+ * delegates all the session attribute management to it. So it can be used instead of an HTTP
+ * session.
+ * </p>
  */
-public class HTTPSessionInfo extends org.silverpeas.core.security.session.SessionInfo {
+public class HTTPSessionInfo extends SessionInfo {
 
   private HttpSession httpSession;
 
   /**
-   * Prevent the class from being instantiate (private)
-   *
+   * Constructs a new {@link SessionInfo} object from the
+   * specified HTTP session.
    * @param session the HTTP session to wrap.
    * @param ip the remote user host address IP.
    * @param ud the detail about the connected user.
@@ -78,7 +77,6 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
     super.onClosed();
   }
 
-  @SuppressWarnings("unchecked")
   private void cleanSession(final HttpSession httpSession) {
     try {
       Enumeration<String> attributeNames = httpSession.getAttributeNames();

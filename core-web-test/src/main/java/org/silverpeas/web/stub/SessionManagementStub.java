@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Lib
  * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describin
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licen
+ * You should have received a copy of the GNU Affero General Public Licence
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -32,15 +32,15 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
 
+import javax.annotation.Nonnull;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @Service
 @Singleton
@@ -48,30 +48,34 @@ import java.util.concurrent.ConcurrentMap;
 public class SessionManagementStub implements SessionManagement {
 
   private final ConcurrentMap<String, SessionInfo> userDataSessions = new ConcurrentHashMap<>(100);
+  private final ConcurrentMap<String, SessionInfo> anonymousSessions = new ConcurrentHashMap<>(100);
 
   @Override
   public Collection<SessionInfo> getConnectedUsersList() {
-    return Collections.emptyList();
+    return userDataSessions.values();
   }
 
   @Override
   public Collection<SessionInfo> getDistinctConnectedUsersList(final User user) {
-    return Collections.emptyList();
+    return userDataSessions.values().stream()
+        .filter(s -> s.getUser().getId().equals(user.getId()))
+        .collect(Collectors.toSet());
   }
 
   @Override
   public int getNbConnectedUsersList(final User user) {
-    return 0;
+    return userDataSessions.size();
   }
 
   @Override
+  @Nonnull
   @SuppressWarnings("Duplicates")
   public SessionInfo getSessionInfo(final String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
       if (UserDetail.getCurrentRequester() != null && UserDetail.getCurrentRequester()
           .isAnonymous()) {
-        session = SessionInfo.AnonymousSession;
+        session = anonymousSessions.get(sessionId);
       } else {
         session = SessionInfo.NoneSession;
       }
@@ -81,12 +85,8 @@ public class SessionManagementStub implements SessionManagement {
 
   @Override
   public boolean isUserConnected(final User userDetail) {
-    return false;
-  }
-
-  @Override
-  public long getNextSessionTimeOut(final String s) {
-    return 0;
+    return userDataSessions.values().stream()
+        .anyMatch(s -> s.getUser().getId().equals(userDetail.getId()));
   }
 
   @Override
@@ -100,13 +100,6 @@ public class SessionManagementStub implements SessionManagement {
     return getSessionInfo(sessionKey);
   }
 
-  @Override
-  public SessionInfo openSession(final User user) {
-    SessionInfo session = new SessionInfo(UUID.randomUUID()
-        .toString(), user);
-    return openSession(session);
-  }
-
   private SessionInfo openSession(final SessionInfo session) {
     userDataSessions.put(session.getSessionId(), session);
     return session;
@@ -115,21 +108,45 @@ public class SessionManagementStub implements SessionManagement {
   @Override
   public SessionInfo openSession(final User user, final HttpServletRequest request) {
     HttpSession httpSession = request.getSession();
-    SessionInfo session = new SessionInfo(httpSession.getId(), user);
+    SessionInfo session = new SessionInfoForTest(httpSession.getId(), user);
     return openSession(session);
   }
 
   @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest httpServletRequest) {
-    return SessionInfo.AnonymousSession;
+    UserDetail anonymousUser = UserDetail.getAnonymousUser();
+    if (anonymousUser != null) {
+      HttpSession httpSession = httpServletRequest.getSession();
+      SessionInfo sessionInfo =
+          new SessionInfoForTest(httpSession.getId(), UserDetail.getAnonymousUser());
+      anonymousSessions.put(sessionInfo.getId(), sessionInfo);
+      return sessionInfo;
+    }
+    return SessionInfo.NoneSession;
   }
 
   @Override
   public void closeSession(final String sessionId) {
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
-      userDataSessions.remove(si.getSessionId());
-      si.onClosed();
+      if (si.isAnonymous()) {
+        anonymousSessions.remove(si.getSessionId());
+      } else {
+        userDataSessions.remove(si.getSessionId());
+        si.onClosed();
+      }
+    }
+  }
+
+  private static class SessionInfoForTest extends SessionInfo {
+
+    /**
+     * Constructs a new instance about a given opened user session.
+     * @param sessionId the identifier of the opened session.
+     * @param user the user for which a session was opened.
+     */
+    public SessionInfoForTest(final String sessionId, final User user) {
+      super(sessionId, user);
     }
   }
 }

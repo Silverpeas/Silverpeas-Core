@@ -26,6 +26,8 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/comments/silverpeas-comments-templates.jsp');
 
+  const cache = new SilverpeasSessionCache('silverpeas-comments');
+
   /**
    * Main component handling the different actions on the comments:
    * - creation of a new comment,
@@ -78,7 +80,35 @@
               this.resourceType + '/' + this.resourceId;
           this.loadComments();
         },
+        mounted: function() {
+          whenSilverpeasEntirelyLoaded(function() {
+            const contribId = this.componentId + ':' + this.resourceType + ':' + this.resourceId;
+            let element = cache.get(contribId);
+            if (element && (typeof element === 'string')) {
+              let $element = this.$el.querySelector(element);
+              if ($element) {
+                cache.remove(contribId);
+                if (window.AttachmentsAsContentViewer) {
+                  AttachmentsAsContentViewer.whenAllCurrentAttachmentDisplayed(function() {
+                    sp.element.scrollTo($element);
+                  }.bind(this));
+                } else {
+                  setTimeout(function() {
+                    sp.element.scrollTo($element);
+                  }, 0);
+                }
+              } else {
+                sp.log.error('No such HTML element', $element);
+              }
+            }
+          }.bind(this));
+        },
         methods : {
+          goToLoginPage: function() {
+            const contribId = this.componentId + ':' + this.resourceType + ':' + this.resourceId;
+            cache.put(contribId, '.commentsList');
+            top.location.href = webContext + '/Contribution/' + sp.base64.encode(contribId);
+          },
           /**
            * Validates the specified text satisfies the requirement to be used as a comment's
            * content.
@@ -86,7 +116,7 @@
            * @returns {boolean} true if the text is valid, false otherwise.
            */
           validateText : function(text) {
-            if (text === null || text === undefined || $.trim(text).length === 0) {
+            if (StringUtil.isNotDefined(text)) {
               SilverpeasError.add(this.messages.commentErrorSingleCharAtLeast);
             } else if (!isValidTextArea(text)) {
               SilverpeasError.add(this.messages.commentErrorFieldTooLong);
@@ -197,15 +227,15 @@
   Vue.component('silverpeas-comment-edition',
       templateRepository.get('comment-edition', {
         model : {
-          prop : 'value',
-          event : 'input'
+          prop : 'modelValue',
+          event : 'update:modelValue'
         },
         props : {
           currentUser: {
             'type': Object,
             'mandatory': true
           },
-          value : {
+          modelValue : {
             'type' : String
           }
         },
@@ -240,6 +270,9 @@
           activateUserZoom();
         },
         computed : {
+          commentText : function() {
+            return this.comment.text.convertNewLineAsHtml();
+          },
           displayUserZoom: function() {
             return this.currentUser.id !== this.comment.author.id && !this.currentUser.anonymous;
           },

@@ -497,11 +497,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public List<UserDetail> getAllUsersFromNewestToOldest() {
-    return null;
-  }
-
-  @Override
   public <T extends User> List<T> getUsersOfDomainsFromNewestToOldest(final List<String> domainIds) {
     return null;
   }

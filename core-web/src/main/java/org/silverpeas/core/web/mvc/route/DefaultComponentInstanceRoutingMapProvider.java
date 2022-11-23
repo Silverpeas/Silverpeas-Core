@@ -40,8 +40,8 @@ import java.util.Optional;
  */
 class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRoutingMapProvider {
 
-  private String instanceId;
-  private String componentName;
+  private final String instanceId;
+  private final String componentName;
   private AbstractComponentInstanceRoutingMap relativeRoutingMap;
   private AbstractComponentInstanceRoutingMap relativeToSilverpeasRoutingMap;
   private AbstractComponentInstanceRoutingMap absoluteRoutingMap;
@@ -81,7 +81,7 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
   private String getWebResourceBase() {
     return "/" + Optional.ofNullable(componentName)
         .map(String::toLowerCase)
-        .orElseGet(() -> instanceId.toLowerCase());
+        .orElseGet(instanceId::toLowerCase);
   }
 
   /**
@@ -99,9 +99,6 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
         SilverLogger.getLogger(ComponentInstanceRoutingMap.class).silent(e);
       }
     }
-    if (!componentRoutingMap.isPresent()) {
-      componentRoutingMap.set(ServiceProvider.getService(DefaultComponentInstanceRoutingMap.class));
-    }
-    return componentRoutingMap.get();
+    return componentRoutingMap.orElseGet(DefaultComponentInstanceRoutingMap::new);
   }
 }

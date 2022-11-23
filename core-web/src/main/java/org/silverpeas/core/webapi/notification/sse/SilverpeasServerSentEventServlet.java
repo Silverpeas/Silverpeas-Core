@@ -50,7 +50,7 @@ import static org.silverpeas.core.security.session.SessionManagementProvider.get
 /**
  * This abstraction defines the behavior the Servlets in charge of responding to EventSource
  * JavaScript API must have.<br>
- * Finally, adding a new URI to handle EventSource needs to extends this class and to parametrize
+ * Finally, adding a new URI to handle EventSource needs to extend this class and to parametrize
  * the mapping! (see {@link CommonServerSentEventServlet} as an example)
  * @author Yohann Chastagnier
  */

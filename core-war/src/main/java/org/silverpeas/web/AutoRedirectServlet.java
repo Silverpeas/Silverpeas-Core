@@ -27,11 +27,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -39,7 +42,6 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +53,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
@@ -89,8 +92,9 @@ public class AutoRedirectServlet extends HttpServlet {
 
     try {
       // The user is either not connected or as the anonymous user. He comes back to the login page.
+      UserDetail user = UserDetail.getCurrentRequester();
       if (mainController == null ||
-          (gef != null && UserDetail.isAnonymousUser(mainController.getUserId()) && context.notExistsGoto())) {
+          (gef != null && user.isAnonymous()) && !context.isUserAllowedToAccess(user)) {
         loginPageRedirection(context);
       } else {
         redirect(httpRequest, context, mainController, gef);
@@ -104,10 +108,9 @@ public class AutoRedirectServlet extends HttpServlet {
   private void redirect(final HttpRequest httpRequest, final Context context,
       final MainSessionController mainController, final GraphicElementFactory gef)
       throws IOException {
-    final List<Status> errorStatuses = List.of(
+    final List<Status> errorStatuses = Stream.of(
             getComponentAccessStatus(context.getComponentId(), mainController),
             getSpaceAccessStatus(context.getSpaceId(), mainController))
-        .stream()
         .filter(s -> s.getStatusCode() >= 400)
         .collect(Collectors.toList());
     if (!errorStatuses.isEmpty()) {
@@ -258,8 +261,6 @@ public class AutoRedirectServlet extends HttpServlet {
    * Handles the HTTP <code>GET</code> method.
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -270,8 +271,6 @@ public class AutoRedirectServlet extends HttpServlet {
    * Handles the HTTP <code>POST</code> method.
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
    */
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
@@ -300,7 +299,7 @@ public class AutoRedirectServlet extends HttpServlet {
     private String gotoUrl;
     private String componentId = null;
     private String spaceId = null;
-    private String language;
+    private final String language;
 
     private Context(HttpRequest request, final HttpServletResponse response) {
       this.request = request;
@@ -342,7 +341,7 @@ public class AutoRedirectServlet extends HttpServlet {
         final String extractedComponentId;
         if (gotoUrl.startsWith("/RpdcSearch/")) {
           int indexOf = urlToParse.indexOf("&componentId=");
-          extractedComponentId = urlToParse.substring(indexOf + 13, urlToParse.length());
+          extractedComponentId = urlToParse.substring(indexOf + 13);
         } else {
           urlToParse = urlToParse.substring(1);
           int indexBegin = urlToParse.indexOf('/') + 1;
@@ -394,10 +393,6 @@ public class AutoRedirectServlet extends HttpServlet {
       return graphicElementFactory;
     }
 
-    boolean notExistsGoto() {
-      return isNotDefined(gotoUrl) && isNotDefined(componentIdGoTo) && isNotDefined(spaceIdGoTo);
-    }
-
     public String getComponentId() {
       return componentId;
     }
@@ -416,6 +411,15 @@ public class AutoRedirectServlet extends HttpServlet {
 
     String getLanguage() {
       return language;
+    }
+
+    boolean isUserAllowedToAccess(final User user) {
+      if (StringUtil.isDefined(this.componentId)) {
+        return ComponentAccessControl.get().isUserAuthorized(user.getId(), this.componentId);
+      } else if (StringUtil.isDefined(this.spaceId)) {
+        return SpaceAccessControl.get().isUserAuthorized(user.getId(), this.spaceId);
+      }
+      return false;
     }
   }
 }

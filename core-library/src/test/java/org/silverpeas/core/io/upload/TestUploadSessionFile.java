@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMocks;
 
@@ -47,7 +46,7 @@ class TestUploadSessionFile {
   void setup() {
     UserDetail user = new UserDetail();
     user.setId("32");
-    new SessionInfo(null, user);
+    new SessionInfoForTest(null, user);
   }
 
   @Test
