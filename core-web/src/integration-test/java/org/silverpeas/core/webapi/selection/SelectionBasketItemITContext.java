@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.selection;
 
 import org.jboss.shrinkwrap.api.Archive;
 import org.silverpeas.core.SilverpeasResource;
+import org.silverpeas.core.web.calendar.AbstractCalendarInstanceRoutingMap;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.webapi.profile.AuthenticationResource;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
@@ -62,7 +63,8 @@ public abstract class SelectionBasketItemITContext {
         .addRESTWebServiceEnvironment()
         .addMVCFeatures()
         .addClasses(UserEntity.class, UserProfileEntity.class, AuthenticationResource.class,
-            ProfileResourceBaseURIs.class)
+            ProfileResourceBaseURIs.class, CalendarInstanceRoutingMap.class,
+            AbstractCalendarInstanceRoutingMap.class)
         .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.selection"))
         .build();
   }

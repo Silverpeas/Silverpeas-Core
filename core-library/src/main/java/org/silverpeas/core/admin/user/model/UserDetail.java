@@ -63,6 +63,7 @@ import java.text.Collator;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserManualNotificationRecipientLimit;
@@ -113,7 +114,7 @@ public class UserDetail implements User {
    * @param user a user.
    * @return a user detail.
    */
-  public static final UserDetail from(final User user) {
+  public static UserDetail from(final User user) {
     return (UserDetail) user;
   }
 
@@ -153,21 +154,12 @@ public class UserDetail implements User {
   }
 
   /**
-   * Gets the detail about all the users belonging in the specified domain.
-   * @param domainId the unique identifier of the domain.
-   * @return a list with all the users that defined in the specified domain or null if no such
-   * domain exists.
-   */
-  public static List<UserDetail> getAllInDomain(String domainId) {
-    return Arrays.asList(getOrganisationController().getAllUsersInDomain(domainId));
-  }
-
-  /**
    * Constructor
    */
   public UserDetail() {
   }
 
+  @SuppressWarnings("CopyConstructorMissesField")
   public UserDetail(UserDetail toClone) {
     id = toClone.getId();
     specificId = toClone.getSpecificId();
@@ -199,8 +191,8 @@ public class UserDetail implements User {
   }
 
   /**
-   * Set the login question
-   * @param loginQuestion
+   * Set the question to the user having lost his login.
+   * @param loginQuestion the new login question
    */
   public void setLoginQuestion(String loginQuestion) {
     this.loginQuestion = loginQuestion;
@@ -215,7 +207,7 @@ public class UserDetail implements User {
 
   /**
    * Set the login answer
-   * @param loginAnswer
+   * @param loginAnswer the new answer to the login question
    */
   public void setLoginAnswer(String loginAnswer) {
     this.loginAnswer = loginAnswer;
@@ -297,7 +289,7 @@ public class UserDetail implements User {
   }
 
   /**
-   * The state of the user (account) is updated and the according save date too.
+   * The state of the user (account) is updated and the corresponding save date too.
    * @param state the state of the user (account)
    */
   public void setState(final UserState state) {
@@ -367,7 +359,8 @@ public class UserDetail implements User {
 
   /**
    * Get specific user id
-   * @return
+   * @return the user identifier specific to the identity service into which his account is
+   * registered.
    */
   public String getSpecificId() {
     return specificId;
@@ -375,7 +368,8 @@ public class UserDetail implements User {
 
   /**
    * Set specific user id
-   * @param specificId
+   * @param specificId set the identifier of the user specific to the identity server into which
+   * his account is registered.
    */
   public void setSpecificId(String specificId) {
     this.specificId = specificId;
@@ -388,7 +382,7 @@ public class UserDetail implements User {
 
   /**
    * Set user domain id
-   * @param domainId
+   * @param domainId the identifier of the user domain.
    */
   public void setDomainId(String domainId) {
     this.domainId = domainId;
@@ -404,11 +398,7 @@ public class UserDetail implements User {
    * @param login the login to set
    */
   public void setLogin(String login) {
-    if (login != null) {
-      this.login = login;
-    } else {
-      this.login = "";
-    }
+    this.login = Objects.requireNonNullElse(login, "");
   }
 
   @Override
@@ -460,14 +450,10 @@ public class UserDetail implements User {
 
   /**
    * Set user's email
-   * @param seMail
+   * @param seMail the user email address.
    */
   public void seteMail(String seMail) {
-    if (seMail != null) {
-      this.eMail = seMail;
-    } else {
-      this.eMail = "";
-    }
+    this.eMail = Objects.requireNonNullElse(seMail, "");
   }
 
   @Override
@@ -482,14 +468,10 @@ public class UserDetail implements User {
 
   /**
    * Set user access level
-   * @param accessLevel
+   * @param accessLevel the access level of the user
    */
   public void setAccessLevel(UserAccessLevel accessLevel) {
-    if (accessLevel != null) {
-      this.accessLevel = accessLevel;
-    } else {
-      this.accessLevel = UserAccessLevel.USER;
-    }
+    this.accessLevel = Objects.requireNonNullElse(accessLevel, UserAccessLevel.USER);
 
   }
 

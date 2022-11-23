@@ -44,8 +44,8 @@ import static javax.ws.rs.core.UriBuilder.fromPath;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
- * This servlet handle the login page access.<br>
- * If it exists an opened user session, the user is redirected to the welcome Silverpeas page.
+ * This servlet handle the login page access.<br> If it exists an opened user session, the user is
+ * redirected to the welcome Silverpeas page.
  * @author Yohann Chastagnier
  */
 public class LoginServlet extends SilverpeasHttpServlet {
@@ -65,7 +65,10 @@ public class LoginServlet extends SilverpeasHttpServlet {
 
     // Verify the user is authenticated
     final UserSessionStatus userSessionStatus = existOpenedUserSession(request);
-    if (userSessionStatus.isValid()) {
+    final boolean isAnonymousAccess =
+        userSessionStatus.getInfo() != null && isAnonymousAccessActivated() &&
+            userSessionStatus.getInfo().isAnonymous();
+    if (userSessionStatus.isValid() || isAnonymousAccess) {
       performOpenedUserSession(request, response, userSessionStatus);
     } else {
       performLoginDispatch(request, response);
@@ -105,7 +108,8 @@ public class LoginServlet extends SilverpeasHttpServlet {
    * @return true if the session must be closed, false otherwise.
    */
   private boolean mustCloseSession(final HttpServletRequest request) {
-    return (getSsoLoginPage(request).isPresent() && general.getBoolean("login.sso.path.newSession", false))
+    return (getSsoLoginPage(request).isPresent() &&
+        general.getBoolean("login.sso.path.newSession", false))
         || "Error_SsoNotAllowed".equals(getErrorCode(request));
   }
 
@@ -125,8 +129,8 @@ public class LoginServlet extends SilverpeasHttpServlet {
   }
 
   /**
-   * Performs the rules of Login dispatch.<br>
-   * This method must be called only if it does not exists an authenticated user into the session.
+   * Performs the rules of Login dispatch.<br> This method must be called only if it does not exist
+   * an authenticated user into the session.
    * @param servletRequest the current request.
    * @param response the current response.
    * @throws IOException in case of redirect error.
@@ -135,16 +139,10 @@ public class LoginServlet extends SilverpeasHttpServlet {
       final HttpServletResponse response) throws IOException, ServletException {
 
     HttpRequest request = HttpRequest.decorate(servletRequest);
-
     String loginPage;
     String errorCode = getErrorCode(request);
     final Optional<String> ssoLoginPage = getSsoLoginPage(request);
-    if (ssoLoginPage.isPresent()
-        && (isNotDefined(errorCode) || "3".equals(errorCode))
-        && !request.getParameterAsBoolean(LOGOUT_PARAM)) {
-      loginPage = ssoLoginPage.get();
-      response.sendRedirect(response.encodeRedirectURL(loginPage));
-    } else if (isNotDefined(errorCode) && isAnonymousAccessActivated() &&
+    if (isNotDefined(errorCode) && isAnonymousAccessActivated() &&
         !request.isWithinAnonymousUserSession() && !request.isWithinUserSession()) {
 
       // first access to the platform
@@ -156,6 +154,11 @@ public class LoginServlet extends SilverpeasHttpServlet {
 
       RequestDispatcher dispatcher = request.getRequestDispatcher(uriBuilder.toTemplate());
       dispatcher.forward(request, response);
+    } else if (ssoLoginPage.isPresent()
+        && (isNotDefined(errorCode) || "3".equals(errorCode))
+        && !request.getParameterAsBoolean(LOGOUT_PARAM)) {
+      loginPage = ssoLoginPage.get();
+      response.sendRedirect(response.encodeRedirectURL(loginPage));
     } else {
       loginPage = general.getString("loginPage");
 

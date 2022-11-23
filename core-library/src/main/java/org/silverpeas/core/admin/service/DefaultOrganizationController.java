@@ -464,17 +464,6 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<UserDetail> getAllUsersFromNewestToOldest() {
-    try {
-      return getAdminService().getAllUsersFromNewestToOldest();
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return Collections.emptyList();
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
   public UserDetail[] getUsers(String sPrefixTableName, String sComponentName, String sProfile) {
     try {
       UserDetail[] aUserDetail = null;
@@ -777,15 +766,6 @@ public class DefaultOrganizationController implements OrganizationController {
     return getAdminService().isAnAdminTool(toolId);
   }
 
-  /**
-   * Is the specified tool is available in Silverpeas?
-   * </p>
-   * A tool in Silverpeas is a singleton component that is dedicated to a given user. Each tool is
-   * identified by a unique identifier, and it is unique to each user.
-   *
-   * @param toolId the unique identifier of a tool.
-   * @return true if the tool is available, false otherwise.
-   */
   @Override
   public boolean isToolAvailable(String toolId) {
     return ToolInstance.from(toolId).isPresent();

@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.web.servlets;
 
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
 import javax.inject.Inject;
@@ -60,7 +60,8 @@ public class GoToContribution extends GoTo {
     final ComponentInstanceRoutingMapProvider routingMap =
         this.routingMapProvider.getByInstanceId(componentInstanceId);
     final URI page;
-    if (User.getCurrentRequester() != null) {
+    User requester = User.getCurrentRequester();
+    if (requester != null && !requester.isAnonymous()) {
       // a user is connected, going to the requested page
       page = routingMap.relative().getViewPage(contributionId);
     } else {
@@ -68,7 +69,7 @@ public class GoToContribution extends GoTo {
       page = routingMap.relativeToSilverpeas().getPermalink(contributionId);
     }
 
-    return "goto=" + URLEncoder.encode(page.toString(), CharEncoding.UTF_8);
+    return "goto=" + URLEncoder.encode(page.toString(), Charsets.UTF_8);
   }
 
   protected ContributionIdentifier getContributionIdentifier(final String objectId) {

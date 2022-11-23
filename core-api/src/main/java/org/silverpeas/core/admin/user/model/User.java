@@ -65,12 +65,12 @@ public interface User extends Serializable, Comparable<User> {
   /**
    * Gets the current user behind the current treatment processing.
    * <p>
-   *   If the current process is linked to an HTTP request, then the current user will be the one
-   *   attached to the session of the request. Otherwise, the given user is the system one.
+   * If the current process is linked to an HTTP request, then the current user will be the one
+   * attached to the session of the request. Otherwise, the given user is the system one.
    * </p>
    * <p>
-   *   If the SYSTEM user MUST NOT be returned in case it does not exist a real user linked to
-   *   the thread, then use {@link #getCurrentRequester()}.
+   * If the SYSTEM user MUST NOT be returned in case it does not exist a real user linked to the
+   * thread, then use {@link #getCurrentRequester()}.
    * </p>
    * @return the {@link User} instance of current user.
    */
@@ -264,7 +264,11 @@ public interface User extends Serializable, Comparable<User> {
   boolean isAccessUnknown();
 
   /**
-   * Indicates if the user plays the administrator role in the specified component instance.
+   * Indicates if either the user is an administrator or he plays the administrator role in the
+   * specified component instance. The roles the user can play are different from the privileges he
+   * has in the given component instance. The privileges for a component instance are controlled by
+   * the {@link org.silverpeas.core.security.authorization.ComponentAccessControl} service, based
+   * upon the roles the user has specifically in the given component instance.
    * @param instanceId the unique identifier of a component instance in Silverpeas.
    * @return true if the user has an admin access on the platform or if he plays the administrator
    * role in the given component instance. False otherwise.
@@ -272,12 +276,12 @@ public interface User extends Serializable, Comparable<User> {
   boolean isPlayingAdminRole(final String instanceId);
 
   /**
-   * Please use {@link User#isValidState()} to retrieve user validity information. Please use {@link
-   * User#isDeletedState()} to retrieve user deletion information. Please use {@link
-   * User#isBlockedState()} to retrieve user blocked information. Please use {@link
-   * User#isDeactivatedState()} to retrieve user deactivated information. Please use {@link
-   * User#isExpiredState()} to retrieve user expiration information. This method returns the stored
-   * state information but not the functional information.
+   * Please use {@link User#isValidState()} to retrieve user validity information. Please use
+   * {@link User#isDeletedState()} to retrieve user deletion information. Please use
+   * {@link User#isBlockedState()} to retrieve user blocked information. Please use
+   * {@link User#isDeactivatedState()} to retrieve user deactivated information. Please use
+   * {@link User#isExpiredState()} to retrieve user expiration information. This method returns the
+   * stored state information but not the functional information.
    * @return the state of the user (account)
    */
   UserState getState();
@@ -295,29 +299,29 @@ public interface User extends Serializable, Comparable<User> {
   boolean isActivatedState();
 
   /**
-   * This method is the only one able to indicate the user validity state. Please do not use {@link
-   * User#getState()} to retrieve user validity information.
+   * This method is the only one able to indicate the user validity state. Please do not use
+   * {@link User#getState()} to retrieve user validity information.
    * @return true if valid state, false otherwise.
    */
   boolean isValidState();
 
   /**
-   * This method is the only one able to indicate the user deletion state. Please do not use {@link
-   * User#getState()} to retrieve user deletion information.
+   * This method is the only one able to indicate the user deletion state. Please do not use
+   * {@link User#getState()} to retrieve user deletion information.
    * @return true if deleted state, false otherwise.
    */
   boolean isDeletedState();
 
   /**
-   * This method is the only one able to indicate the user removed state. Please do not use {@link
-   * User#getState()} to retrieve user removed information.
+   * This method is the only one able to indicate the user removed state. Please do not use
+   * {@link User#getState()} to retrieve user removed information.
    * @return true if deleted state, false otherwise.
    */
   boolean isRemovedState();
 
   /**
-   * This method is the only one able to indicate the user blocked state. Please do not use {@link
-   * User#getState()} to retrieve user blocked information.
+   * This method is the only one able to indicate the user blocked state. Please do not use
+   * {@link User#getState()} to retrieve user blocked information.
    * @return true if blocked state, false otherwise.
    */
   boolean isBlockedState();

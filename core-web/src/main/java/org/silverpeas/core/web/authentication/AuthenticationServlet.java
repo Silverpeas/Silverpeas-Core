@@ -28,10 +28,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationUserMustAcceptTermsOfService;
+import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
@@ -55,29 +53,30 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.text.MessageFormat.format;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
- *
+ * <p>
  * This servlet delegates the authentication process and the HTTP session opening in Silverpeas to
  * the corresponding services. If the authentication and the session opening succeed, the user
  * behind the authentication ask is redirected to its user home page. Otherwise, he's redirected to
  * an authentication failure page (that can the login page enriched with an error message).
+ * </p>
  */
 public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = -8695946617361150513L;
-  private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
+  private static final String SSO_NON_EXISTING_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
   private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
   private static final String LOGIN_ERROR_PAGE = "/Login?ErrorCode=";
-  private static final int COOKIE_TIMELIFE = 31536000;
+  private static final int COOKIE_TIME_LIFE = 31536000;
 
   @Inject
   private AuthenticationService authService;
@@ -95,8 +94,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
    *
    * @param servletRequest the HTTP request.
    * @param response the HTTP response.
-   * @throws IOException when an error occurs while processing the request or sending the response.
-   * @throws ServletException if the request for the POST couldn't be handled.
    */
   @Override
   public void doPost(HttpServletRequest servletRequest, HttpServletResponse response) {
@@ -124,18 +121,17 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         silverpeasSessionOpener.closeSession(session);
       }
 
-      // Get an existing session or creates a new one.
-      HttpSession session = request.getSession();
+      // Get an existing HTTP session or creates a new one.
+      request.getSession();
 
       if (!StringUtil.isDefined(request.getCharacterEncoding())) {
         request.setCharacterEncoding(Charsets.UTF_8.name());
       }
       if (!userSessionStatus.isValid() && request.isWithinAnonymousUserSession()) {
-        // invalidate previous Wildfly session (directly because anonymous session are not managed
-        // by Silverpeas SessionManager)
-        session.invalidate();
-        // create a new Wildfly session to process correctly the authentication process
-        request.getSession(true);
+        // previously the user accessed anonymously Silverpeas and hence has an anonymous
+        // Silverpeas session. It requires then to renew the HTTP session to open upon it a new
+        // Silverpeas session.
+        renewHttpSession(request);
       }
 
       String authenticationKey = authenticate(request, authenticationParameters);
@@ -208,7 +204,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       final AuthenticationParameters authenticationParameters,
       final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier)
       throws ServletException, IOException {
-    String url = "";
+    String url;
     HttpSession session = request.getSession();
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
@@ -239,7 +235,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         // -> login / domain id can be stored
         storeDomain(response, authenticationParameters);
         storeLogin(response, authenticationParameters);
-        url = LOGIN_ERROR_PAGE + SSO_UNEXISTANT_USER_ACCOUNT;
+        url = LOGIN_ERROR_PAGE + SSO_NON_EXISTING_USER_ACCOUNT;
       } else {
         url = LOGIN_ERROR_PAGE + TECHNICAL_ISSUE;
       }
@@ -322,31 +318,31 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   }
 
   private void storeLogin(HttpServletResponse response, AuthenticationParameters params) {
-    if (!isAnonymousAuthentication(params)) {
+    if (isNotAnonymousAuthentication(params)) {
       String sLogin = params.getLogin();
       boolean secured = params.isSecuredAccess();
       if (params.isNewEncryptionMode()) {
         writeCookie(response, "var1", credentialEncryption.encode(sLogin), -1, secured);
-        writeCookie(response, "var1", credentialEncryption.encode(sLogin), COOKIE_TIMELIFE, secured);
+        writeCookie(response, "var1", credentialEncryption.encode(sLogin), COOKIE_TIME_LIFE, secured);
       } else {
         writeCookie(response, "svpLogin", sLogin, -1, secured);
-        writeCookie(response, "svpLogin", sLogin, COOKIE_TIMELIFE, secured);
+        writeCookie(response, "svpLogin", sLogin, COOKIE_TIME_LIFE, secured);
       }
     }
   }
 
   private void storeDomain(HttpServletResponse response, AuthenticationParameters params) {
-    if (!isAnonymousAuthentication(params)) {
+    if (isNotAnonymousAuthentication(params)) {
       String sDomainId = params.getDomainId();
       boolean secured = params.isSecuredAccess();
       writeCookie(response, "defaultDomain", sDomainId, -1, secured);
-      writeCookie(response, "defaultDomain", sDomainId, COOKIE_TIMELIFE, secured);
+      writeCookie(response, "defaultDomain", sDomainId, COOKIE_TIME_LIFE, secured);
     }
   }
 
-  private boolean isAnonymousAuthentication(AuthenticationParameters params) {
+  private boolean isNotAnonymousAuthentication(AuthenticationParameters params) {
     User anonymous = UserDetail.getAnonymousUser();
-    return anonymous != null && anonymous.getLogin().equals(params.getLogin());
+    return anonymous == null || !anonymous.getLogin().equals(params.getLogin());
   }
 
   private String authenticate(HttpServletRequest request,
@@ -393,17 +389,25 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   private void writeCookie(HttpServletResponse response, String name, String value, int duration,
       boolean secure) {
-    String cookieValue;
-    try {
-      cookieValue = URLEncoder.encode(value, Charsets.UTF_8.name());
-    } catch (UnsupportedEncodingException ex) {
-      logger.error(ex.getMessage(), ex);
-      cookieValue = value;
-    }
+    String cookieValue = URLEncoder.encode(value, Charsets.UTF_8);
     Cookie cookie = new Cookie(name, cookieValue);
     cookie.setSecure(secure);
     cookie.setMaxAge(duration);
     cookie.setPath("/");
     response.addCookie(cookie);
+  }
+
+  private void renewHttpSession(final HttpRequest request) {
+    HttpSession session = request.getSession(false);
+    Map<String, Object> attrs = new HashMap<>();
+    session.getAttributeNames().asIterator().forEachRemaining(a -> {
+      if (a.startsWith("Redirect") || a.equals("gotoNew")) {
+        attrs.put(a, session.getAttribute(a));
+      }
+    });
+    session.invalidate();
+
+    HttpSession newSession = request.getSession(true);
+    attrs.forEach(newSession::setAttribute);
   }
 }

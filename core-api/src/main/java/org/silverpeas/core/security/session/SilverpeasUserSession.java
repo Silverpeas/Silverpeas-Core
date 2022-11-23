@@ -27,7 +27,8 @@ package org.silverpeas.core.security.session;
 import org.silverpeas.core.admin.user.model.User;
 
 /**
- * Represents a session opened by a {@link org.silverpeas.core.admin.user.model.User}.
+ * Represents a session opened by a {@link org.silverpeas.core.admin.user.model.User} in Silverpeas.
+ * It is a Silverpeas user session, distinct to any technical sessions.
  * @author silveryocha
  */
 public interface SilverpeasUserSession {
@@ -43,4 +44,30 @@ public interface SilverpeasUserSession {
    * @return a {@link User} instance.
    */
   User getUser();
+
+  /**
+   * Sets an attribute named by the specified name with the specified value. If no attributes exists
+   * with the specified name, then it is added to the session. The attributes are a way for the
+   * applications to put in the user session some peculiar and required information.
+   * @param <T> the type of the attribute value.
+   * @param name the name of the attribute to set.
+   * @param value the value of the attribute to set.
+   */
+  <T> void setAttribute(String name, T value);
+
+  /**
+   * Gets the value of the attribute named by the specified name. The attributes are a way for the
+   * applications to put in the user session some peculiar and required information.
+   * @param <T> the type of the attribute value.
+   * @param name the name of the attribute to get.
+   * @return the value of the attribute or null if no such attribute exists.
+   */
+  <T> T getAttribute(String name);
+
+  /**
+   * Unsets the specified attribute. The consequence of an unset is the attribute is then removed
+   * from the session and cannot be retrieved later.
+   * @param name the name of the attribute to unset.
+   */
+  void unsetAttribute(String name);
 }

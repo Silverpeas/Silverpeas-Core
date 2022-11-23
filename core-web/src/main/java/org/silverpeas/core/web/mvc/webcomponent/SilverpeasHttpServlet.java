@@ -81,7 +81,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
         SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionId);
         final boolean valid =
-            sessionInfo.isDefined() && sessionInfo != SessionInfo.AnonymousSession;
+            sessionInfo.isDefined() && !sessionInfo.isAnonymous();
         return new UserSessionStatus(valid, isDesktopControllerInSession, sessionInfo);
       }
     }
@@ -106,7 +106,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
   /**
    * The precondition given in one or more of the request-header fields evaluated to false when
    * it was tested on the server. This response code allows the client to place preconditions on
-   * the current resource metainformation (header field data) and thus prevent the requested
+   * the current resource meta-information (header field data) and thus prevent the requested
    * method from being applied to a resource other than the one intended.
    */
   protected void throwHttpPreconditionFailedError() {
@@ -125,9 +125,9 @@ public class SilverpeasHttpServlet extends HttpServlet {
 
   /**
    * The server has not found anything matching the requested address (URI) ( not found ).
-   * This means the URL you have typed or cliked on is wrong or obsolete and does not match any
-   * document existing on the server (you may try to gradualy remove the URL components from the
-   * right to the left to eventualy retrieve an existing path).
+   * This means the URL you have typed or clicked on is wrong or obsolete and does not match any
+   * document existing on the server (you may try to gradually remove the URL components from the
+   * right to the left to eventually retrieve an existing path).
    */
   protected void throwHttpNotFoundError() {
     throw notFound("");
@@ -136,7 +136,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
   /**
    * The precondition given in one or more of the request-header fields evaluated to false when
    * it was tested on the server. This response code allows the client to place preconditions on
-   * the current resource metainformation (header field data) and thus prevent the requested
+   * the current resource meta-information (header field data) and thus prevent the requested
    * method from being applied to a resource other than the one intended.
    */
   protected void throwHttpPreconditionFailedError(String message) {
@@ -155,9 +155,9 @@ public class SilverpeasHttpServlet extends HttpServlet {
 
   /**
    * The server has not found anything matching the requested address (URI) ( not found ).
-   * This means the URL you have typed or cliked on is wrong or obsolete and does not match any
-   * document existing on the server (you may try to gradualy remove the URL components from the
-   * right to the left to eventualy retrieve an existing path).
+   * This means the URL you have typed or clicked on is wrong or obsolete and does not match any
+   * document existing on the server (you may try to gradually remove the URL components from the
+   * right to the left to eventually retrieve an existing path).
    */
   protected void throwHttpNotFoundError(String message) {
     throw notFound(message);
@@ -165,8 +165,8 @@ public class SilverpeasHttpServlet extends HttpServlet {
 
   /**
    * Sends an HTTP error to the client with the specified error code. Once the error is sent, the
-   * HTTP response is consumed and it cannot be used anymore; so the servlet service should returns
-   * directly after invoking this method.
+   * HTTP response is consumed, and it cannot be used anymore; so the servlet service should
+   * return directly after invoking this method.
    * @param response the HTTP response
    * @param status the error status code
    */
@@ -176,8 +176,8 @@ public class SilverpeasHttpServlet extends HttpServlet {
 
   /**
    * Sends an HTTP error to the client with the specified error code and error message. Once the
-   * error is sent, the HTTP response is consumed and it cannot be used anymore; so the servlet
-   * service should returns directly after invoking this method.
+   * error is sent, the HTTP response is consumed, and it cannot be used anymore; so the servlet
+   * service should return directly after invoking this method.
    * @param response the HTTP response
    * @param status the error status code
    * @param message the message to pass in the response and giving details about the error.
@@ -227,7 +227,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
   protected static class UserSessionStatus {
     private final boolean valid;
     private final boolean fromDesktop;
-    private SessionInfo info;
+    private final SessionInfo info;
 
     private UserSessionStatus() {
       this(false, false, null);
@@ -256,7 +256,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
   /**
    * Internal exception class management
    */
-  protected class HttpError extends RuntimeException {
+  protected static class HttpError extends RuntimeException {
     private static final long serialVersionUID = -4303217388313620495L;
     private final int errorCode;
     private final String message;

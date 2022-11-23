@@ -34,15 +34,16 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is to tag an object as to be managed by the underlying IoC container with the
- * following default life-cycle: for each ask for such a bean, a newly instance is created and that
+ * following default life-cycle: for each ask for such a bean, a new instance is created and that
  * object is bound to the life-cycle of the client object. Therefore, any instance of the bean
  * injected into an object that is being created by the container is bound to the lifecycle of the
  * newly created object. This annotation can be both to annotate business or technical objects.
- *
+ * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
  * annotation to those specific at this IoC implementation without impacting the annotated IoC
  * managed beans.
+ * </p>
  * @author mmoquillon
  */
 @Target(ElementType.TYPE)

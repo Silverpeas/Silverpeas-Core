@@ -70,7 +70,7 @@ public interface WebAuthenticationValidation {
     getSilverpeasContext().setUser(currentUser);
     if (currentUser != null) {
       MessageManager.setLanguage(currentUser.getUserPreferences().getLanguage());
-      if (User.getCurrentRequester() == null && session != SessionInfo.AnonymousSession) {
+      if (User.getCurrentRequester() == null && !session.isAnonymous()) {
         ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
             .setCurrentSessionCache(session.getCache());
       }

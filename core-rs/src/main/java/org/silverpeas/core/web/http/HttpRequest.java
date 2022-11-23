@@ -262,7 +262,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
-   * Returns an array of String objects containing all of the values the given request parameter
+   * Returns an array of String objects containing all the values the given request parameter
    * has, or null if the parameter does not exist. The parameters from a multipart/form-data stream
    * are also considered by this method, unlike of the default behavior of the decorated request.
    *

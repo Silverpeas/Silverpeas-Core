@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
@@ -39,7 +40,6 @@ import org.silverpeas.core.webapi.viewer.DocumentViewEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import static java.text.MessageFormat.format;
@@ -95,14 +95,10 @@ public class GoToFile extends GoTo {
   private String encodeFilename(String url) {
     if (url.indexOf('/') >= 0) {
       int end = url.lastIndexOf('/');
-      if (end < url.length()) {
+      if (end != url.length() - 1) {
         String subUrl = url.substring(0, end + 1);
         String fileName;
-        try {
-          fileName = URLEncoder.encode(url.substring(end + 1), CharEncoding.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-          fileName = url.substring(end + 1);
-        }
+        fileName = URLEncoder.encode(url.substring(end + 1), Charsets.UTF_8);
         return subUrl + fileName;
       }
 

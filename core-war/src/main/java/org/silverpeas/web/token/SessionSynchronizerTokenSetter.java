@@ -34,10 +34,10 @@ import javax.servlet.http.HttpSessionListener;
 
 /**
  * A setter of a session token to the new spawned user session. A user session is really created in
- * Silverpeas when a MainSessionController is instanciated and set to the current HTTP session.
+ * Silverpeas when a MainSessionController is instantiated and set to the current HTTP session.
  * Nevertheless, this session token is set for each HTTP session created by the underlying web
- * container so that it can be used with some credentials management function (password reseting,
- * new registration, ...) whereas the user isn't authentified; in this last case, the session token
+ * container so that it can be used with some credentials management function (password resetting,
+ * new registration, ...) whereas the user isn't authenticated; in this last case, the session token
  * is used as an anti-fuzzing token.
  * <p>
  * The aim of the session token is to protect the current user session from attempt of intrusively
@@ -67,6 +67,6 @@ public class SessionSynchronizerTokenSetter implements HttpSessionListener {
 
   @Override
   public void sessionDestroyed(HttpSessionEvent se) {
-
+    // nothing to do
   }
 }

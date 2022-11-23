@@ -67,12 +67,13 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
  * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
  * timeline of a calendar; it represents an event starting and ending at a given date or datetime
  * in the calendar.
- *
+ * <p>
  * A non-recurrent event is a singleton, meaning that is has only one single instance occurring in
  * the calendar (so the name occurrence). A recurrent event has one or more occurrences in the
  * timeline. It occurs several time in the calendar in a regular way according to its recurrence
  * rule; at each time such an event occurs is represented by an occurrence.
- *
+ * </p>
+ * <p>
  * By default, the occurrences of an event aren't persisted, but they are generated from the period
  * of time at which occurs the event and, if any, from its recurrence rule. If an occurrence of a
  * non-recurrent event is deleted, then the related event is deleted. If an occurrence of a
@@ -84,6 +85,7 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
  * applied to the event itself (as it is a singleton). If an occurrence of a recurrent event is
  * modified, then the modification is applied to the occurrence only and this occurrence is
  * persisted as a modification related to the recurrence rule of the concerned event.
+ * </p>
  */
 @Entity
 @Table(name = "sb_cal_occurrences")
@@ -301,13 +303,14 @@ public class CalendarEventOccurrence
 
   /**
    * Gets the event from which this occurrence was spawned.
-   *
+   * <p>
    * From the returned event, the title, the description or any other event properties can be
    * modified. Nevertheless, the change can be effective only by invoking the {@code update} method
    * of either the {@link CalendarEvent} to apply the modifications to all occurrences or this
    * occurrence to apply the modifications only to this occurrence. Only the period at which the
    * event occur in the calendar cannot be used to update this occurrence. For doing, please use
    * either the {@code setPeriod} or the {@code setDay} method of {@link CalendarEventOccurrence}.
+   * </p>
    * @return the event from which this occurrence is instantiated.
    */
   public CalendarEvent getCalendarEvent() {
@@ -533,20 +536,21 @@ public class CalendarEventOccurrence
   /**
    * Updates this occurrence and all the forthcoming occurrences of the same event with the
    * changes in this occurrence.
-   *
+   * <p>
    * If the event is non-recurrent, then the event is itself updated. Otherwise, a new event is
    * created for this occurrence and for all the forthcoming occurrences with the modifications
    * carried by this occurrence. The recurrence of the original event is updated to end up at this
    * occurrence minus one day (the recurrence end date is inclusive).
-   *
+   * </p>
+   * <p>
    * In the case the temporal period of the occurrences is modified, the participation status of
    * all the attendees in the occurrences is cleared.
-   *
+   * </p>
+   * <p>
    * This is equivalent to
    * <pre>{@code EventOperationResult result = event.updateSince(this)}</pre>
-   *
+   * </p>
    * @see CalendarEvent#updateSince(CalendarEventOccurrence)
-   *
    * @return the result of the update.
    */
   public EventOperationResult updateSinceMe() {
@@ -555,19 +559,17 @@ public class CalendarEventOccurrence
 
   /**
    * Updates only this occurrence among the occurrences of the event it comes from.
-   *
+   * <p>
    * If the event is non-recurrent, then the event is itself updated. Otherwise, the changes in
    * this occurrence are persisted and its sequence number is incremented by one, diverging then
    * from the sequence number of the event it comes from.
    * <p>
    * In the case the temporal period of the occurrence is modified, the participation status
    * of all the attendees in this occurrence is cleared.
-   *
+   * <p>
    *  This is equivalent to
    * <pre>{@code EventOperationResult result = event.updateOnly(this)}</pre>
-   *
    * @see CalendarEvent#updateOnly(CalendarEventOccurrence)
-   *
    * @return the result of the update.
    */
   public EventOperationResult update() {
@@ -586,17 +588,17 @@ public class CalendarEventOccurrence
 
   /**
    * Deletes this occurrence and all the forthcoming occurrences of the same event.
-   *
+   * <p>
    * If the event is non-recurrent, then the event is itself deleted. Otherwise, the
    * original starting date of this occurrence and of all the forthcoming occurrences are added
    * in the exception dates of the event's recurrence rule. If some occurrences were
    * persisted, then they are all removed from the persistence context.
-   *
+   * </p>
+   * <p>
    *  This is equivalent to
    * <pre>{@code EventOperationResult result = event.deleteSince(this)}</pre>
-   *
+   * </p>
    * @see CalendarEvent#deleteSince(CalendarEventOccurrence)
-   *
    * @return the result of the deletion.
    */
   public EventOperationResult deleteSinceMe() {
@@ -605,17 +607,17 @@ public class CalendarEventOccurrence
 
   /**
    * Deletes only this occurrence among the occurrences of the event it comes from.
-   *
+   * <p>
    * If the event is non-recurrent, then the event is itself deleted. Otherwise, the
    * original starting date of this occurrence is added in the exception dates of the event's
    * recurrence rule. If the occurrence was previously persisted, then it is removed from the
    * persistence context.
-   *
+   * </p>
+   * <p>
    * This is equivalent to
    * <pre>{@code EventOperationResult result = event.deleteOnly(this)}</pre>
-   *
+   * </p>
    * @see CalendarEvent#deleteOnly(CalendarEventOccurrence)
-   *
    * @return the result of the deletion.
    */
   public EventOperationResult delete() {

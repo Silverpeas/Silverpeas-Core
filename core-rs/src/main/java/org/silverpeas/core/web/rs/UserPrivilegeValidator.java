@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Lib
  * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describin
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licen
+ * You should have received a copy of the GNU Affero General Public Licence
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -27,7 +27,6 @@ package org.silverpeas.core.web.rs;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -52,10 +51,11 @@ import javax.ws.rs.core.Response;
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
  * authentication and of the authorization for a caller to request the decorated web service.
- *
+ * <p>
  * Indeed, the validation mechanism is encapsulated within the RESTWebService as it requires access
  * to the incoming HTTP request as well to the current user session if any. In order to delegate
  * externally the validation triggering,
+ * </p>
  */
 @Service
 public class UserPrivilegeValidator implements UserPrivilegeValidation {
@@ -206,14 +206,14 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    *
    * @param request the HTTP request from which the authentication of the caller can be done.
    * @param user the user for whom the authorization has to be validated.
-   * @param publi the publication accessed.
+   * @param publication the publication accessed.
    * @throws WebApplicationException exception if the validation failed.
    */
   @Override
   public void validateUserAuthorizationOnPublication(final HttpServletRequest request,
-      final User user, PublicationDetail publi) {
+      final User user, PublicationDetail publication) {
     AccessControlContext context = AccessControlContext.init();
-    if (!publicationAccessController.isUserAuthorized(user.getId(), publi, context)) {
+    if (!publicationAccessController.isUserAuthorized(user.getId(), publication, context)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
@@ -247,29 +247,25 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   /**
    * Validates the current user session with the specified session key. The session key is either an
    * identifier of an opened HTTP session or a token associated with a virtual existing user session.
-   *
+   * <p>
    * This method checks first that the specified key identifies uniquely an opened session in
    * Silverpeas. In this case it validates this session matches the one within which the current
    * HTTP request was sent. If the validation succeeds, the HTTP session is returned. If the key
-   * doesn't identify any opened session, the method validates it matches the token of a virtual
+   * doesn't identify any opened session, the method validates it matches the token of an existing
    * user session and in this case a session is then created only for the current request and it
    * is returned. If the validation fails, a WebApplicationException exception is thrown.
-   *
+   * </p>
+   * <p>
    * As the anonymous user has no opened session, when a request is received by this web service and
    * that request does neither belong to an opened session nor carries authentication information,
    * it is accepted only if the anonymous access is activated; in this case, an anonymous session is
    * created for the circumstance.
-   *
+   * </p>
    * @param context the context of the validation that contains at least the session key
    * @return the session identified by the specified session key. It can be either an opened HTTP
    * session or a session spawned only for the current request.
    */
   private SessionInfo validateUserSession(SessionValidationContext context) {
-    SessionInfo sessionInfo = sessionManager.validateSession(context);
-    if (!sessionInfo.isDefined() && UserDetail.isAnonymousUserExist()) {
-      // when no existing session whereas anonymous use is set, initializing an anonymous session
-      sessionInfo = new SessionInfo(null, UserDetail.getAnonymousUser());
-    }
-    return sessionInfo;
+    return sessionManager.validateSession(context);
   }
 }

@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.wbe;
 
 import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
@@ -37,6 +38,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
@@ -87,6 +89,7 @@ public class WbeFileEdition {
         .prepareEditionWith(ofNullable(request.getSession(false))
             .map(HttpSession::getId)
             .map(getSessionManagement()::getSessionInfo)
+            .filter(not(SessionInfo::isAnonymous))
             .orElseThrow(() -> new NotFoundException("User Session does not exist")), file)
         .flatMap(e ->
             ServiceProvider.getAllServices(ClientRequestDispatcher.class).stream()

@@ -79,7 +79,7 @@ class TestUploadSession {
   void setup() {
     UserDetail user = new UserDetail();
     user.setId("32");
-    si = new SessionInfo(null, user);
+    si = new SessionInfoForTest(null, user);
   }
 
   @SuppressWarnings("unchecked")

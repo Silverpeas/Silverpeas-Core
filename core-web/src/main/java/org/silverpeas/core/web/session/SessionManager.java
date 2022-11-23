@@ -25,6 +25,7 @@ package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
@@ -59,6 +60,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -73,7 +75,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -114,6 +115,8 @@ public class SessionManager implements SessionManagement, Initialization {
   private long maxRefreshInterval = DEFAULT_MAX_REFRESH_INTERVAL;
   // Contains all current sessions
   private final ConcurrentMap<String, SessionInfo> userDataSessions = new ConcurrentHashMap<>(100);
+  private final ConcurrentMap<String, SessionInfo> anonymousSessions = new ConcurrentHashMap<>(1000);
+
   // Contains the session when notified
   private final List<String> userNotificationSessions =
       Collections.synchronizedList(new ArrayList<>(100));
@@ -127,7 +130,7 @@ public class SessionManager implements SessionManagement, Initialization {
   private Event<UserSessionEvent> userSessionNotifier;
 
   /**
-   * Prevent the class from being instantiate (private)
+   * Prevent the class from being instantiated (private)
    */
   protected SessionManager() {
     this.mutex = this;
@@ -180,7 +183,7 @@ public class SessionManager implements SessionManagement, Initialization {
   public SessionInfo validateSession(final SessionValidationContext context) {
     String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = getSessionInfo(sessionKey);
-    if (!context.mustSkipLastUserAccessTimeRegistering()) {
+    if (!sessionInfo.isAnonymous() && !context.mustSkipLastUserAccessTimeRegistering()) {
       if (sessionInfo.isDefined()) {
         sessionInfo.updateLastAccess();
       }
@@ -190,9 +193,9 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   /**
-   * This method creates a job that executes the "doSessionManagement" method. That job fires a
-   * SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or 'EXECUTION_SUCCESSFULL'. The
-   * timestamp (every time the job will execute) settings is given by minutes and logically must be
+   * This method schedules the {@link SessionManager#manageSession()} job every n minutes, whose n
+   * is provided by the settings of the session management. The
+   * timestamp (every time the job will execute) property is given in minutes and logically must be
    * less than the session timeout.
    *
    * @throws SchedulerException if the scheduling fails
@@ -218,13 +221,17 @@ public class SessionManager implements SessionManagement, Initialization {
 
   @Override
   public void closeSession(String sessionId) {
-    SessionInfo si = userDataSessions.get(sessionId);
-    if (si != null) {
-      removeSession(si);
+    SessionInfo si = getSessionInfo(sessionId);
+    if (si.isDefined()) {
+      if (si.isAnonymous()) {
+        anonymousSessions.remove(sessionId);
+      } else {
+        removeUserSession(si);
+      }
     }
   }
 
-  private void removeSession(SessionInfo si) {
+  private void removeUserSession(SessionInfo si) {
     try {
       // Notify statistics
       Date now = new java.util.Date();
@@ -256,13 +263,13 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   @Override
-  @SuppressWarnings("Duplicates")
+  @Nonnull
   public SessionInfo getSessionInfo(String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
-      if (UserDetail.getCurrentRequester() != null &&
-          UserDetail.getCurrentRequester().isAnonymous()) {
-        session = SessionInfo.AnonymousSession;
+      if (User.getCurrentRequester() != null &&
+          User.getCurrentRequester().isAnonymous()) {
+        session = anonymousSessions.getOrDefault(sessionId, SessionInfo.NoneSession);
       } else {
         session = SessionInfo.NoneSession;
       }
@@ -327,8 +334,9 @@ public class SessionManager implements SessionManagement, Initialization {
         distinctConnectedUsersList.put(key, si);
       }
     } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
-      // default domain users can see all users
-      // users of other domains can see only users of their domain
+      // users in the default Silverpeas domain can see all the users in Silverpeas, whatever their
+      // domain.
+      // users of other domains can see only the users of their domain
       if ("0".equals(user.getDomainId())) {
         distinctConnectedUsersList.put(key, si);
       } else {
@@ -354,7 +362,7 @@ public class SessionManager implements SessionManagement, Initialization {
 
   /**
    * This method is called every scheduledSessionManagementTimeStamp minute by the scheduler, it
-   * notify the user when timeout has expired and then invalidates the session if the user has not
+   * notifies the user when timeout has expired and then invalidates the session if the user has not
    * accessed the server. The maximum minutes duration of session before invalidation is
    * userSessionTimeout + scheduledSessionManagementTimeStamp.
    *
@@ -384,7 +392,7 @@ public class SessionManager implements SessionManagement, Initialization {
         }
       }
       for (SessionInfo expiredSession : expiredSessions) {
-        removeSession(expiredSession);
+        removeUserSession(expiredSession);
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
@@ -424,7 +432,7 @@ public class SessionManager implements SessionManagement, Initialization {
   /**
    * This method notify a user's end session.
    *
-   * @param userId :the user who's session is about to expire.
+   * @param userId :the user whom session is about to expire.
    * @param endOfSession the time of the end of session (in milliseconds).
    * @param sessionId the id of the session about to expire.
    */
@@ -465,7 +473,7 @@ public class SessionManager implements SessionManagement, Initialization {
     }
     Collection<SessionInfo> allSI = new ArrayList<>(userDataSessions.values());
     for (SessionInfo si : allSI) {
-      removeSession(si);
+      removeUserSession(si);
     }
   }
 
@@ -503,21 +511,6 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   /**
-   * This method is dedicated to the authentication for only accessing the WEB services published in
-   * Silverpeas. To openSession a user using a WEB browser to access Silverpeas, please prefers the
-   * below openSession method.
-   *
-   * @param user the user for which the session has to be opened
-   * @return a SessionInfo instance representing the opened session.
-   */
-  @Override
-  public SessionInfo openSession(User user) {
-    SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), user);
-    openSession(session);
-    return session;
-  }
-
-  /**
    * This method is dedicated to the authentication of users behind a WEB browser.
    *
    * @param user the user for which the session has to be opened
@@ -526,7 +519,10 @@ public class SessionManager implements SessionManagement, Initialization {
    */
   @Override
   public SessionInfo openSession(User user, HttpServletRequest request) {
-    HTTPSessionInfo si = null;
+    if (user.isAnonymous()) {
+      throw new IllegalArgumentException("Connection with anonymous access is invoked here!");
+    }
+
     // If X-Forwarded-For header exists, we use the IP address contained in it as the client IP address
     // This is the case when Silverpeas is behind a reverse-proxy
     final String xForwardedFor = request.getHeader("X-Forwarded-For");
@@ -540,12 +536,11 @@ public class SessionManager implements SessionManagement, Initialization {
       // In case of error, simply taking the value from the servlet request
       anIP = requestRemoteHost;
     }
+
+    HttpSession session = request.getSession();
+    HTTPSessionInfo si = new HTTPSessionInfo(session, anIP, user);
     try {
-      HttpSession session = request.getSession();
-      si = new HTTPSessionInfo(session, anIP, user);
       openSession(si);
-      userDataSessions.put(si.getSessionId(), si);
-      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(si));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
@@ -554,13 +549,13 @@ public class SessionManager implements SessionManagement, Initialization {
 
   @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest request) {
-    SessionInfo sessionInfo = SessionInfo.AnonymousSession;
+    SessionInfo sessionInfo = createAnonymousSession(request);
     if (!sessionInfo.isDefined()) {
       throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
     }
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
         sessionInfo.getCache());
-    sessionInfo.setIPAddress(request.getRemoteHost());
+    anonymousSessions.put(sessionInfo.getId(), sessionInfo);
     return sessionInfo;
   }
 
@@ -570,7 +565,30 @@ public class SessionManager implements SessionManagement, Initialization {
    * @param sessionInfo information about the session to open.
    */
   private void openSession(SessionInfo sessionInfo) {
-    userDataSessions.put(sessionInfo.getSessionId(), sessionInfo);
+    if (!sessionInfo.isAnonymous()) {
+      // anonymous session aren't related to any identified Silverpeas user. Only non-anonymous
+      // user session requires to be monitored by the session manager.
+      userDataSessions.put(sessionInfo.getSessionId(), sessionInfo);
+      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(sessionInfo));
+    }
+  }
+
+  /**
+   * Creates an anonymous session for an unknown user upon the HTTP session related to specified
+   * incoming HTTP request. If no HTTP session has been created, a new one is then created.
+   * If no anonymous user account is defined, then {@link SessionInfo#NoneSession} is returned.
+   * @param request the incoming request of an unknown user.
+   * @return a new anonymous user session.
+   */
+  @Nonnull
+  private SessionInfo createAnonymousSession(final HttpServletRequest request) {
+    boolean anonymousEnabled = OrganizationController.get().isAnonymousAccessActivated();
+    UserDetail anonymousUser = UserDetail.getAnonymousUser();
+    if (anonymousUser != null && anonymousEnabled) {
+      HttpSession session = request.getSession();
+      return new HTTPSessionInfo(session, request.getRemoteHost(), anonymousUser);
+    }
+    return SessionInfo.NoneSession;
   }
 
   @Override
@@ -595,13 +613,5 @@ public class SessionManager implements SessionManagement, Initialization {
   private String log(final SessionInfo sessionInfo) {
     return sessionInfo.getUserDetail().getLogin() + " (" + sessionInfo.getUserDetail().getDomainId()
         + ")";
-  }
-
-  @Override
-  public long getNextSessionTimeOut(String sessionKey) {
-    SessionInfo session = userDataSessions.get(sessionKey);
-    long actualUserSessionTimeout = (session.getUserDetail().isAccessAdmin()) ? adminSessionTimeout
-        : userSessionTimeout;
-    return session.getLastAccessTimestamp() + actualUserSessionTimeout;
   }
 }

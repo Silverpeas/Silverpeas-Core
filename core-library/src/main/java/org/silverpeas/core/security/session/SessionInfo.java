@@ -24,7 +24,6 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
@@ -33,12 +32,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * It gathers information about an opened session of a user.
+ * Default implementation of a user session in Silverpeas. It gathers information about an opened
+ * session of a user. It is an abstract class providing a default implementation of a user session
+ * in Silverpeas for whatever technical session in use. It is the responsibility of the concrete
+ * class extending the {@link SessionInfo} abstract class to define on which technical session the
+ * user sessions in Silverpeas have to be built.
  */
-public class SessionInfo implements SilverpeasUserSession {
+public abstract class SessionInfo implements SilverpeasUserSession {
 
-  public static final SessionInfo NoneSession = new SessionInfo(null, null);
-  public static final SessionInfo AnonymousSession = getAnonymousSession();
+  /**
+   * A non defined session. To use instead of null or to represent a session info not bound to any
+   * user session.
+   */
+  public static final SessionInfo NoneSession = new SessionInfo() {};
 
   // Object on which to synchronize (the instance indeed)
   private final Object mutex;
@@ -52,13 +58,16 @@ public class SessionInfo implements SilverpeasUserSession {
   private long idleTimestamp;
   private SimpleCache cache;
 
+  private SessionInfo() {
+    this(null, null);
+  }
+
   /**
    * Constructs a new instance about a given opened user session.
-   *
    * @param sessionId the identifier of the opened session.
    * @param user the user for which a session was opened.
    */
-  public SessionInfo(final String sessionId, final User user) {
+  protected SessionInfo(final String sessionId, final User user) {
     this.mutex = this;
     this.sessionId = sessionId;
     this.userDetail = user;
@@ -68,14 +77,6 @@ public class SessionInfo implements SilverpeasUserSession {
       cache = ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(
           user);
     }
-  }
-
-  private static SessionInfo getAnonymousSession() {
-    UserDetail anonymousUser = UserDetail.getAnonymousUser();
-    if (anonymousUser != null) {
-      return new SessionInfo(null, anonymousUser);
-    }
-    return NoneSession;
   }
 
   @Override
@@ -90,7 +91,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Gets the IP address of the remote client that opened the session.
-   *
    * @return the client remote IP address.
    */
   public String getIPAddress() {
@@ -101,7 +101,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Sets the IP address of the remote client that requests a session opening with Silverpeas.
-   *
    * @param ip the IP address of the remote client.
    */
   public void setIPAddress(String ip) {
@@ -112,7 +111,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Gets the timestamp of the last access by the client behind this session.
-   *
    * @return timestamp of the last access.
    */
   public long getLastAccessTimestamp() {
@@ -123,7 +121,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Gets the timestamp at which the session with Silverpeas was opened.
-   *
    * @return the session opening timestamp.
    */
   public long getOpeningTimestamp() {
@@ -132,7 +129,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Gets the last duration of its idle time.
-   *
    * @return the session alive timestamp.
    */
   public long getLastIdleDuration() {
@@ -142,8 +138,8 @@ public class SessionInfo implements SilverpeasUserSession {
   }
 
   /**
-   * Sets this session as currently idle. A session is idle if it is not used since a given time but
-   * it is still in alive.
+   * Sets this session as currently idle. A session is idle if it is not used since a given time,
+   * but it is still in alive.
    */
   public void setAsIdle() {
     synchronized (mutex) {
@@ -153,7 +149,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Gets the unique identifier of the session.
-   *
    * @return the session identifier.
    */
   public String getSessionId() {
@@ -162,7 +157,6 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Gets the profile of the user that opened the session.
-   *
    * @return a UserDetail instance with the profile information on the user.
    */
   public User getUserDetail() {
@@ -180,46 +174,42 @@ public class SessionInfo implements SilverpeasUserSession {
   }
 
   /**
-   * Sets an attribute named by the specified name with the specified value.
-   *
-   * If no attribute exists with the specified name, then it is added to the session.
-   *
+   * Sets an attribute named by the specified name with the specified value. If no attribute exists
+   * with the specified name, then it is added to the session.
    * @param <T> the type of the attribute value.
    * @param name the name of the attribute to set.
    * @param value the value of the attribute to set.
    */
+  @Override
   public <T> void setAttribute(String name, T value) {
     attributes.put(name, value);
   }
 
   /**
    * Gets the value of the attribute named by the specified name.
-   *
    * @param <T> the type of the attribute value.
    * @param name the name of the attribute to get.
    * @return the value of the attribute or null if no such attribute exists.
    */
   @SuppressWarnings("unchecked")
+  @Override
   public <T> T getAttribute(String name) {
     return (T) attributes.get(name);
   }
 
   /**
-   * Unsets the specified attribute.
-   *
-   * The consequence of an unset is the attribute is then removed from the session.
-   *
-   * @param name the name of the attibute to unset.
+   * Unsets the specified attribute. The consequence of an unset is the attribute is then removed
+   * from the session.
+   * @param name the name of the attribute to unset.
    */
+  @Override
   public void unsetAttribute(String name) {
     attributes.remove(name);
   }
 
   /**
    * Frees the allocated resources used in the session management and carried by this session
-   * information.
-   *
-   * This method must be called at session closing by the session management system.
+   * information. This method must be called at session closing by the session management system.
    */
   public void onClosed() {
     attributes.clear();
@@ -228,7 +218,6 @@ public class SessionInfo implements SilverpeasUserSession {
   /**
    * Is this session defined? A session is defined if it's a session opened to a user in
    * Silverpeas.
-   *
    * @return true if this session is defined, false otherwise.
    */
   public boolean isDefined() {
@@ -237,12 +226,12 @@ public class SessionInfo implements SilverpeasUserSession {
 
   /**
    * Is this session an anonymous one? A session is anonymous when no users are explicitly
-   * authenticated and then identified and the users uses Silverpeas under the cover of an
-   * anonymous user account.
+   * authenticated and then identified and the users uses Silverpeas under the cover of a
+   * transparent anonymous user account.
    * @return true if this session is a defined anonymous one, false otherwise.
    */
   public boolean isAnonymous() {
-    return this == AnonymousSession && this.getUserDetail().isAnonymous();
+    return this.getUserDetail() != null && this.getUserDetail().isAnonymous();
   }
 
   /**

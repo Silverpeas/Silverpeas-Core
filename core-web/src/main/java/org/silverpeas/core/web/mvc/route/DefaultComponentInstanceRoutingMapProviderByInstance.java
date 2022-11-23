@@ -29,15 +29,19 @@ import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.Mutable;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author silveryocha
  */
 @Provider
 class DefaultComponentInstanceRoutingMapProviderByInstance
     implements ComponentInstanceRoutingMapProviderByInstance {
-  private static String CACHE_KEY_PREFIX = ComponentInstanceRoutingMap.class.getName() + "###";
+  private static final String CACHE_KEY_PREFIX =
+      ComponentInstanceRoutingMap.class.getName() + "###";
 
   @Override
+  @Nonnull
   public ComponentInstanceRoutingMapProvider getByInstanceId(final String instanceId) {
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     String cacheKey = CACHE_KEY_PREFIX + instanceId;

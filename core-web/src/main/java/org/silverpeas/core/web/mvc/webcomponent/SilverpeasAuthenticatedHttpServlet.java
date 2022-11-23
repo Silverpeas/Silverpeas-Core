@@ -44,8 +44,9 @@ import static org.silverpeas.core.web.mvc.controller.MainSessionController
     .MAIN_SESSION_CONTROLLER_ATT;
 
 /**
- * Servlet that verifies especially the user is authenticated. User: Yohann Chastagnier Date:
- * 20/09/13
+ * Servlet that verifies especially the user is authenticated.
+ * @author Yohann Chastagnier
+ * Date: 20/09/13
  */
 public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
@@ -72,24 +73,24 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
         throwUserSessionExpiration();
       } else {
 
-        // Verify that the user can login
+        // Verify that the user can sign in
         verifyUserAuthentication(mainSessionCtrl);
 
         // Perform the request
         super.service(request, response);
       }
-    } catch (UserSessionExpirationException uste) {
-      SilverLogger.getLogger(this).debug(uste.getMessage(), uste);
+    } catch (UserSessionExpirationException e) {
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
 
       /*
-       The session doesn't contains an authenticated user :
+       The session doesn't contain an authenticated user :
        - delay is passed
        - session expired manually
        */
       // Logging
       if (session != null) {
         SilverLogger.getLogger(this).warn("NewSessionId={0}", session.getId());
-        // Thoroughly clean the session
+        // Clean up the session
         silverpeasSessionOpener.closeSession(session);
       }
       // Redirecting the user
@@ -99,7 +100,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   }
 
   /**
-   * Verifies the user authnetication rules.
+   * Verifies the user authentication rules.
    * @param mainSessionCtrl the main session controller.
    */
   private void verifyUserAuthentication(final MainSessionController mainSessionCtrl) {
@@ -114,7 +115,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   /**
    * Renews the session security token.
-   * @param request
+   * @param request the incoming HTTP request
    */
   protected void renewSessionSecurityToken(final HttpServletRequest request) {
     SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
@@ -133,7 +134,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   /**
    * Used to handle the expiration of the user session.
    */
-  private class UserSessionExpirationException extends RuntimeException {
+  private static class UserSessionExpirationException extends RuntimeException {
 
     private static final long serialVersionUID = -7476590253287182372L;
     // Empty
@@ -141,8 +142,8 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   /**
    * Retrieves the Main session controller.
-   * @param request
-   * @return
+   * @param request the incoming HTTP request
+   * @return the {@link MainSessionController} instance related by the request.
    */
   protected MainSessionController getMainSessionController(final HttpServletRequest request) {
     HttpSession session = request.getSession(false);
@@ -158,8 +159,8 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   /**
    * Retrieves the SessionInfo linked to the current request.
-   * @param request
-   * @return
+   * @param request the incoming HTTP request
+   * @return the {@link SessionInfo} instance related by the request
    */
   protected SessionInfo getSessionInfo(final HttpServletRequest request) {
     return SessionManagementProvider.getSessionManagement()

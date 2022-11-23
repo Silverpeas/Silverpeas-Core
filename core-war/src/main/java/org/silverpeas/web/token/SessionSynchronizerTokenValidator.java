@@ -68,13 +68,14 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   /**
    * Validates the incoming request is performed within a valid user session.
-   *
+   * <p>
    * If the request isn't sent within an opened user session, then the user is redirected to the
    * authentication page.
-   *
+   * </p>
+   * <p>
    * If the request is sent within an opened user session but it doesn't carry a valid session
    * synchronizer token, then it is rejected and a forbidden status is sent back.
-   *
+   * </p>
    * @param request The servlet request to validate.
    * @param response The servlet response to sent back.
    * @param chain The filter chain we are processing

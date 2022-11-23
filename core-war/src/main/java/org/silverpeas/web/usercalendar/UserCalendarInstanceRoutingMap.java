@@ -28,6 +28,8 @@ import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.web.calendar.AbstractCalendarInstanceRoutingMap;
 
 import javax.inject.Named;
@@ -35,6 +37,8 @@ import javax.inject.Named;
 /**
  * @author silveryocha
  */
+@Technical
+@Bean
 @Named
 public class UserCalendarInstanceRoutingMap extends AbstractCalendarInstanceRoutingMap {
 

@@ -48,6 +48,8 @@
 <fmt:message var="textNoComment" key="comment.noComment"/>
 <fmt:message var="textComment" key="comment.comment"/>
 <fmt:message var="textComments" key="comment.comments"/>
+<fmt:message var="textConnectToViewComments" key="comment.connectToView"/>
+<fmt:message var="textConnectToPostComments" key="comment.connectToComment"/>
 <fmt:message var="textMandatory" key="GML.requiredField"/>
 <c:choose>
   <c:when test="${selfRegistrationEnabled}">
@@ -94,10 +96,11 @@ other users. The update opens a popup to modify the text of the comment.
           v-if="!user.anonymous && !user.guestAccess">
       </silverpeas-comment-edition>
 
-      <div class="connection" v-if="user.anonymous">
+      <div class="inlineMessage connection" v-if="user.anonymous">
+        <p>${textConnectToPostComments}</p>
         <div class="buttons">
-          <button class="button logOn" onclick="top.location.href='${loginUrl}'">
-            {{ messages.loginAction }}
+          <button class="button logOn" v-on:click="goToLoginPage">
+            ${loginAction}
           </button>
         </div>
       </div>
@@ -106,20 +109,15 @@ other users. The update opens a popup to modify the text of the comment.
                         type="validation"
                         v-on:api="updatePopin = $event"
                         v-bind:minWidth="650">
-        <div id="comments-update-box">
-          <div class="mandatoryField">
+        <silverpeas-form-pane id="comments-update-box"
+                              v-bind:manual-actions="true"
+                              v-bind:mandatory-legend="true">
           <textarea id="comment-update-text"
                     class="text"
                     v-model="updatedCommentText">
           </textarea>
-            <span>&nbsp;</span>
-            <view:image src="/util/icons/mandatoryField.gif" alt="${textMandatory}"/>
-            <div class="legende">
-              <view:image src="/util/icons/mandatoryField.gif" alt="${textMandatory}"/>
-              <span>&nbsp;:&nbsp;${textMandatory}</span>
-            </div>
-          </div>
-        </div>
+          <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
+        </silverpeas-form-pane>
       </silverpeas-popin>
 
       <silverpeas-fade-transition-group id="list-box"
@@ -139,16 +137,17 @@ other users. The update opens a popup to modify the text of the comment.
 
     <div v-if="user.anonymous && messages.anonymousViewMode === 'counter'">
 
-      <div class="commentsCount">
-        <span>{{ infoNbOfComments }}</span>
-      </div>
-
-      <div class="connection" v-if="user.anonymous">
+      <div class="inlineMessage connection" v-if="user.anonymous">
+        <p>${textConnectToViewComments}</p>
         <div class="buttons">
-          <button class="button logOn" onclick="top.location.href='${loginUrl}'">
-            {{ messages.loginAction }}
+          <button class="button logOn" v-on:click="goToLoginPage">
+            ${loginAction}
           </button>
         </div>
+      </div>
+
+      <div class="commentsCount">
+        <span>{{ infoNbOfComments }}</span>
       </div>
 
     </div>
@@ -167,8 +166,8 @@ Edition block of a new comment.
     </div>
     <textarea id="comment-edition-text"
               class="text"
-              v-bind:value="value"
-              v-on:input="$emit('input', $event.target.value)">
+              v-bind:value="modelValue"
+              v-on:input="$emit('update:modelValue', $event.target.value)">
     </textarea>
     <div class="buttons">
       <button class="button" v-on:click="$emit('comment-adding', comment)">
@@ -202,7 +201,7 @@ According to the rights of the current user, the comment can be updated and dele
               v-bind:rel="comment.author.id">{{ comment.author.fullName }}</span>
         <span class="date"> - {{ comment.creationDate }}</span>
       </p>
-      <pre class="text">{{ comment.text }}</pre>
+      <pre class="text">{{ commentText }}</pre>
     </div>
   </div>
 </silverpeas-component-template>
