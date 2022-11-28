@@ -34,6 +34,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -720,8 +721,10 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     return shortName;
   }
 
-  public Map<String, String> getDirectoryFormValues(String userId, String language) {
-    PublicationTemplate template = getDirectoryTemplate();
+  public Map<String, String> getDirectoryFormValues(String userId, String domainId,
+      String language) {
+    PagesContext pageContext = getFormContext(userId, domainId, language);
+    PublicationTemplate template = getDirectoryTemplate(pageContext);
     if (template != null) {
       try {
         DataRecord data = template.getRecordSet().getRecord(userId);
@@ -733,6 +736,33 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       }
     }
     return Collections.emptyMap();
+  }
+
+  public Map<String, String> getDirectoryFormLabels(String userId, String domainId,
+      String language) {
+    Map<String, String> labels = new HashMap<>();
+    PagesContext pageContext = getFormContext(userId, domainId, language);
+    PublicationTemplate template = getDirectoryTemplate(pageContext);
+    if (template != null) {
+      try {
+        FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
+        for (FieldTemplate field : fields) {
+          labels.put(field.getFieldName(), field.getLabel(language));
+        }
+        return labels;
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return Collections.emptyMap();
+  }
+
+  private PagesContext getFormContext(String userId, String domainId, String language) {
+    PagesContext pageContext = new PagesContext();
+    pageContext.setDomainId(domainId);
+    pageContext.setObjectId(userId);
+    pageContext.setLanguage(language);
+    return pageContext;
   }
 
   public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents(String templateName)

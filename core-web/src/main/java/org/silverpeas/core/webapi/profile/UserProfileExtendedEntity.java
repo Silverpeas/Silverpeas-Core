@@ -24,6 +24,8 @@
 package org.silverpeas.core.webapi.profile;
 
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -73,6 +75,10 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
     for (final String propertyName : propertyNames) {
       result.put(propertyName, labels.get(propertyName));
     }
+
+    result.putAll(PublicationTemplateManager.getInstance()
+        .getDirectoryFormLabels(user.getId(), user.getDomainId(), getLanguage()));
+
     return result;
   }
 
@@ -83,6 +89,9 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
     for (final String propertyName : propertyNames) {
       result.put(propertyName, user.getValue(propertyName));
     }
+
+    result.putAll(user.getDefinedExtraFormValues(getLanguage()));
+
     return result;
   }
 

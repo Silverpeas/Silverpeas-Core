@@ -255,7 +255,8 @@ public class UserFull extends UserDetail {
   }
 
   public Map<String, String> getDefinedExtraFormValues(String language) {
-    return PublicationTemplateManager.getInstance().getDirectoryFormValues(this.getId(), language);
+    return PublicationTemplateManager.getInstance()
+        .getDirectoryFormValues(this.getId(), this.getDomainId(), language);
   }
 
   public Map<String, String> getAllDefinedValues(String language) {
