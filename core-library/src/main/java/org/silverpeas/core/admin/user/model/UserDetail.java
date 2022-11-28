@@ -907,4 +907,18 @@ public class UserDetail implements User {
       return new ValueBuffer().append(user.getLastName()).append(user.getFirstName());
     }
   }
+
+  /**
+   * Centralized sort of {@link UserDetail} based on creation date
+   */
+  public static class OnCreationDate extends AbstractComplexComparator<User> {
+    @Override
+    protected ValueBuffer getValuesToCompare(final User user) {
+      long creationDateTime = 0;
+      if (user.getCreationDate() != null) {
+        creationDateTime = user.getCreationDate().getTime();
+      }
+      return new ValueBuffer().append(creationDateTime);
+    }
+  }
 }
