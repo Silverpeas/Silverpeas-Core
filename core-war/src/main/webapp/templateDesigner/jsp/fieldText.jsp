@@ -29,7 +29,7 @@
 
 <%@ include file="includeParamsField.jsp" %>
 
-<script language="javascript">
+<script type="application/javascript">
   function isCorrectForm() {
     checkFieldName();
     return checkErrors();

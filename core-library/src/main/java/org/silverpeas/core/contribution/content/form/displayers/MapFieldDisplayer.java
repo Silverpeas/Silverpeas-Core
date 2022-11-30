@@ -84,10 +84,8 @@ public class MapFieldDisplayer extends AbstractTextFieldDisplayer {
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
-    String value = field.getValue();
-    String defaultParam = parameters.getOrDefault("default", "");
-    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
-      value = defaultParam;
+    String defaultValue = getDefaultValue(template, pageContext);
+    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
 
     if (pageContext.isBlankFieldsUse()) {
       value = "";

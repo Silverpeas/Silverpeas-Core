@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp" %>
-<script language="javascript">
+<script type="application/javascript">
   function isCorrectForm()
   {
     checkFieldName();

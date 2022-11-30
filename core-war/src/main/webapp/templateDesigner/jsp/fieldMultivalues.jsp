@@ -51,18 +51,18 @@
     }
   }
 %>
-<script language="javascript">
+<script type="application/javascript">
   function isCorrectForm() {
     checkFieldName();
 
-    var keys = "";
-    var values = "";
+    let keys = "";
+    let values = "";
 
     // Add all available options.
-    for ( var i = 0 ; i < oListText.options.length ; i++ )
+    for ( let i = 0 ; i < oListText.options.length ; i++ )
     {
-      var sText	= oListText.options[i].value ;
-      var sValue	= oListValue.options[i].value ;
+      let sText	= oListText.options[i].value ;
+      let sValue	= oListValue.options[i].value ;
       if ( sValue.length == 0 ) sValue = sText ;
 
       keys += "##"+sValue;
@@ -77,13 +77,13 @@
 
   function Select( combo )
   {
-    var iIndex = combo.selectedIndex ;
+    let iIndex = combo.selectedIndex ;
 
     oListText.selectedIndex		= iIndex ;
     oListValue.selectedIndex	= iIndex ;
 
-    var oTxtText	= document.getElementById( "txtText" ) ;
-    var oTxtValue	= document.getElementById( "txtValue" ) ;
+    let oTxtText	= document.getElementById( "txtText" ) ;
+    let oTxtValue	= document.getElementById( "txtValue" ) ;
 
     oTxtText.value	= oListText.value ;
     oTxtValue.value	= oListValue.value ;
@@ -91,8 +91,8 @@
 
   function Add()
   {
-    var oTxtText	= document.getElementById( "txtText" ) ;
-    var oTxtValue	= document.getElementById( "txtValue" ) ;
+    let oTxtText	= document.getElementById( "txtText" ) ;
+    let oTxtValue	= document.getElementById( "txtValue" ) ;
 
     AddComboOption( oListText, oTxtText.value, oTxtText.value ) ;
     AddComboOption( oListValue, oTxtValue.value, oTxtValue.value ) ;
@@ -108,12 +108,12 @@
 
   function Modify()
   {
-    var iIndex = oListText.selectedIndex ;
+    let iIndex = oListText.selectedIndex ;
 
     if ( iIndex < 0 ) return ;
 
-    var oTxtText	= document.getElementById( "txtText" ) ;
-    var oTxtValue	= document.getElementById( "txtValue" ) ;
+    let oTxtText	= document.getElementById( "txtText" ) ;
+    let oTxtValue	= document.getElementById( "txtValue" ) ;
 
     oListText.options[ iIndex ].innerHTML	= oTxtText.value ;
     oListText.options[ iIndex ].value		= oTxtText.value ;
@@ -141,10 +141,10 @@
 
   function SetSelectedValue()
   {
-    var iIndex = oListValue.selectedIndex ;
+    let iIndex = oListValue.selectedIndex ;
     if ( iIndex < 0 ) return ;
 
-    var oTxtValue = document.getElementById("Param_default");
+    let oTxtValue = document.getElementById("Param_default");
 
     oTxtValue.value = oListValue.options[ iIndex ].value ;
   }
@@ -152,12 +152,12 @@
   //	 Moves the selected option by a number of steps (also negative)
   function ChangeOptionPosition( combo, steps )
   {
-    var iActualIndex = combo.selectedIndex ;
+    let iActualIndex = combo.selectedIndex ;
 
     if ( iActualIndex < 0 )
       return ;
 
-    var iFinalIndex = iActualIndex + steps ;
+    let iFinalIndex = iActualIndex + steps ;
 
     if ( iFinalIndex < 0 )
       iFinalIndex = 0 ;
@@ -168,9 +168,9 @@
     if ( iActualIndex == iFinalIndex )
       return ;
 
-    var oOption = combo.options[ iActualIndex ] ;
-    var sText	= oOption.innerHTML ;
-    var sValue	= oOption.value ;
+    let oOption = combo.options[ iActualIndex ] ;
+    let sText	= oOption.innerHTML ;
+    let sValue	= oOption.value ;
 
     combo.remove( iActualIndex ) ;
 
@@ -183,12 +183,12 @@
   function RemoveSelectedOptions(combo)
   {
     // Save the selected index
-    var iSelectedIndex = combo.selectedIndex ;
+    let iSelectedIndex = combo.selectedIndex ;
 
-    var oOptions = combo.options ;
+    let oOptions = combo.options ;
 
     // Remove all selected options
-    for ( var i = oOptions.length - 1 ; i >= 0 ; i-- )
+    for ( let i = oOptions.length - 1 ; i >= 0 ; i-- )
     {
       if (oOptions[i].selected) combo.remove(i) ;
     }
@@ -204,7 +204,7 @@
   //	 Add a new option to a SELECT object (combo or list)
   function AddComboOption( combo, optionText, optionValue, documentObject, index )
   {
-    var oOption ;
+    let oOption ;
 
     if ( documentObject )
       oOption = documentObject.createElement("OPTION") ;
@@ -228,22 +228,22 @@
     return document.getElementById(elementId);
   }
 
-  var oListText ;
-  var oListValue ;
+  let oListText ;
+  let oListValue ;
 
   $(document).ready(function(){
     oListText	= document.getElementById( 'cmbText' ) ;
     oListValue	= document.getElementById( 'cmbValue' ) ;
 
     <% if (keys.length() > 0 || values.length() > 0) { %>
-    var keys = "<%=keys%>";
-    var values = "<%=values%>";
+    let keys = "<%=keys%>";
+    let values = "<%=values%>";
 
-    var tKeys=keys.split('##');
-    var tValues=values.split('##');
+    let tKeys=keys.split('##');
+    let tValues=values.split('##');
 
     // Load the actual options
-    for (var i=0; i<tKeys.length; i++) {
+    for (let i=0; i<tKeys.length; i++) {
       AddComboOption( oListText, tValues[i], tValues[i]);
       AddComboOption( oListValue, tKeys[i], tKeys[i]);
     }
