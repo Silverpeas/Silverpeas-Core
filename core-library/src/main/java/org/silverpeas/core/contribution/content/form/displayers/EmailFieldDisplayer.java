@@ -90,11 +90,7 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
-    String defaultValue = "";
-    String defaultParam = parameters.getOrDefault("default", "");
-    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
-      defaultValue = defaultParam;
-
+    String defaultValue = getDefaultValue(template, pageContext);
     String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
     if (pageContext.isBlankFieldsUse()) {
       value = "";

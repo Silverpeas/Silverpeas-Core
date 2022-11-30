@@ -91,7 +91,6 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String value = "";
     String keys = "";
     String values;
     StringBuilder html = new StringBuilder();
@@ -101,10 +100,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
-    String defaultParam = parameters.getOrDefault("default", "");
-    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
-      value = defaultParam;
-
+    String value = getDefaultValue(template, pageContext);
     if (field != null && !field.isNull()) {
       value = field.getValue(language);
     }

@@ -117,7 +117,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     String selectedValues = "";
-    String defaultValue = "";
 
     List<String> valuesFromDB = new ArrayList<>();
     String keys = "";
@@ -158,10 +157,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       cols = 1;
     }
 
-    String defaultParam = parameters.getOrDefault("default", "");
-    if ((pageContext.isCreation() || pageContext.isDesignMode()) && !pageContext.isIgnoreDefaultValues())
-      defaultValue = defaultParam;
-
+    String defaultValue = getDefaultValue(template, pageContext);
     if (!StringUtil.isDefined(values)) {
       values = defaultValue;
     }
@@ -207,14 +203,17 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
         }
         boolean mustBeChecked = false;
         if (valuesFromDB.isEmpty() && !pageContext.isIgnoreDefaultValues() && (
-            optKey.equals(defaultValue) | optValue.equals(defaultValue)))
+            optKey.equals(defaultValue) || optValue.equals(defaultValue))) {
           mustBeChecked = true;
+        }
 
-        if (valuesFromDB.contains(optKey))
+        if (valuesFromDB.contains(optKey)) {
           mustBeChecked = true;
+        }
 
-        if (mustBeChecked)
+        if (mustBeChecked) {
           html.append(" checked=\"checked\" ");
+        }
 
         html.append("/>&nbsp;").append(optValue);
 
