@@ -49,6 +49,9 @@ public class DirectoryExtraFormTag extends SimpleTagSupport {
       ElementContainer container = new ElementContainer();
 
       String fieldSetId = "identity-template";
+      if (form.getData().isNew()) {
+        formContext.setCreation(true);
+      }
       if (edition) {
         formContext.setFormSkippable(skippable);
         formContext.setElementToHideWhenSkipping(fieldSetId);
