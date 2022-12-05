@@ -32,6 +32,6 @@
 %>
 
 <%
-  RequestDispatcher requestDispatcher = request.getRequestDispatcher("/Login");
+  RequestDispatcher requestDispatcher = request.getRequestDispatcher("/Login?welcome=true");
   requestDispatcher.forward(request, response);
 %>

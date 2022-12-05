@@ -44,7 +44,7 @@
 				<p><fmt:message key="registration.success"/></p>
 			</div>
 
-            <a href="<c:url value="/Login.jsp"/>" class="submit"><span><span>Se connecter</span></span></a>
+            <a href="<c:url value="/Login"/>" class="submit"><span><span><fmt:message key="registration.connect"/></span></span></a>
         </div>
     </div>
     <div id="copyright"><fmt:message key="GML.trademark" /></div>

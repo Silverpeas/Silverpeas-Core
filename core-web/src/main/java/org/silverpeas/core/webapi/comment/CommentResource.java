@@ -24,6 +24,7 @@
 package org.silverpeas.core.webapi.comment;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
@@ -38,15 +39,7 @@ import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -188,8 +181,13 @@ public class CommentResource extends RESTWebService {
     if (!commentToUpdate.getId().equals(commentId)) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
-    Comment comment = commentToUpdate.toComment();
+    CommentId id = new CommentId(inComponentId(), commentId);
     try {
+      Comment comment = commentService().getComment(id);
+      if (!comment.canBeModifiedBy(getUser())) {
+        throw new ForbiddenException();
+      }
+      comment.setMessage(commentToUpdate.getText());
       if (commentToUpdate.isIndexed()) {
         commentService().updateAndIndexComment(comment);
       } else {
@@ -197,9 +195,11 @@ public class CommentResource extends RESTWebService {
       }
       URI commentURI = getUri().getRequestUriBuilder().path(comment.getId()).build();
       return asWebEntity(comment, identifiedBy(commentURI));
-    } catch (CommentRuntimeException ex) {
+    } catch (CommentRuntimeException | SilverpeasRuntimeException ex) {
       SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (WebApplicationException ex) {
+      throw ex;
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -219,9 +219,16 @@ public class CommentResource extends RESTWebService {
   public void deleteComment(@PathParam("commentId") String onCommentId) {
     try {
       CommentId id = new CommentId(inComponentId(), onCommentId);
+      final Comment comment = commentService().getComment(id);
+      if (!comment.canBeDeletedBy(getUser())) {
+        throw new ForbiddenException();
+      }
       commentService().deleteComment(id);
-    } catch (CommentRuntimeException ex) {
+    } catch (CommentRuntimeException | SilverpeasRuntimeException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (WebApplicationException ex) {
+      throw ex;
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);

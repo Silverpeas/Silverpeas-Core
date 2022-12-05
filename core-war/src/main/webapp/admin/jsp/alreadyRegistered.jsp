@@ -24,49 +24,51 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page isELIgnored="false"%>
+<%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="../../headLog.jsp" %>
 
-<fmt:setLocale value="<%=userLanguage%>" />
-<view:setBundle basename="org.silverpeas.authentication.multilang.authentication" />
+<fmt:setLocale value="<%=userLanguage%>"/>
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
+
+<c:url value="/Login" var="loginUrl"/>
+
 <view:sp-page>
-<view:sp-head-part noLookAndFeel="true">
-<link rel="icon" href="<%=favicon%>" />
-<link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
+  <view:sp-head-part noLookAndFeel="true">
+    <link rel="icon" href="<%=favicon%>"/>
+    <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
 
-<style>
-.titre {
-    left: 375px;
-    top: 15px;
-}
-</style>
+    <style>
+      .titre {
+        left: 375px;
+        top: 15px;
+      }
+    </style>
 
-</view:sp-head-part>
-<view:sp-body-part>
-      <form id="EDform" action="/Login.jsp" method="post" accept-charset="UTF-8">
-        <div id="top"></div> <!-- Backgroud fonce -->
-        <div class="page"> <!-- Centrage horizontal des elements (960px) -->
-          <div class="titre"><fmt:message key="registration.title"/></div>
-            <div id="background"> <!-- image de fond du formulaire -->
-		<br/><br/>
-                <div class="cadre">
-                    <p style="text-align: center">
-			<span>
-				<fmt:message key="registration.alreadyRegistered"/><br/><br/>
-				<fmt:message key="registration.pleaseConnectWithSvpAccount"/>
-                        </span><br/><br/><br/><br/>
-					</p>
-
-                    <p><a href="../../Login.jsp" class="submit" ><img src='<c:url value="/images/bt-ok.png" />' alt="register"/></a></p>
-
-                </div>
-            </div>
-            <div id="copyright"><fmt:message key="GML.trademark" /></div>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <form id="EDform" action="${loginUrl}" method="post" accept-charset="UTF-8">
+      <div id="top"></div> <!-- Backgroud fonce -->
+      <div class="page"> <!-- Centrage horizontal des elements (960px) -->
+        <div class="titre"><fmt:message key="registration.title"/></div>
+        <div id="background"> <!-- image de fond du formulaire -->
+          <br/><br/>
+          <div class="cadre">
+            <p style="text-align: center">
+              <span>
+                <fmt:message key="registration.alreadyRegistered"/><br/><br/>
+                <fmt:message key="registration.pleaseConnectWithSvpAccount"/>
+              </span><br/><br/><br/><br/>
+            </p>
+            <p>
+              <a href="${loginUrl}" class="submit"><img src='<c:url value="/images/bt-ok.png" />' alt="register"/></a>
+            </p>
+          </div>
         </div>
-        </form>
-
-</view:sp-body-part>
+        <div id="copyright"><fmt:message key="GML.trademark"/></div>
+      </div>
+    </form>
+  </view:sp-body-part>
 </view:sp-page>

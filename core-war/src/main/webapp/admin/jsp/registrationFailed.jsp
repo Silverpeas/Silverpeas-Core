@@ -19,34 +19,34 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page isELIgnored="false"%>
+<%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="../../headLog.jsp" %>
 
-<fmt:setLocale value="<%=userLanguage%>" />
-<view:setBundle basename="org.silverpeas.authentication.multilang.authentication" />
+<fmt:setLocale value="<%=userLanguage%>"/>
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
 <view:sp-page>
-<view:sp-head-part noLookAndFeel="true">
-<link rel="icon" href="<%=favicon%>" />
-<link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
+  <view:sp-head-part noLookAndFeel="true">
+    <link rel="icon" href="<%=favicon%>"/>
+    <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
 
-</view:sp-head-part>
-<view:sp-body-part>
-        <div id="top"></div>
-        <div class="page">
-          <div class="titre"><fmt:message key="registration.title"/></div>
-            <div id="background">
-                <div class="cadre">
-					<div class="registrationFailedText error">
-						<p><fmt:message key="registration.failed"/></p>
-					</div>
-            
-					<a href="<c:url value="/Login.jsp"/>" class="submit"><span><span>Ok</span></span></a>
-               </div>
-            </div>
-            <div id="copyright"><fmt:message key="GML.trademark" /></div>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <div id="top"></div>
+    <div class="page">
+      <div class="titre"><fmt:message key="registration.title"/></div>
+      <div id="background">
+        <div class="cadre">
+          <div class="registrationFailedText error">
+            <p><fmt:message key="registration.failed"/></p>
+          </div>
+
+          <a href="<c:url value="/Login"/>" class="submit"><span><span><fmt:message key="GML.ok"/></span></span></a>
         </div>
-</view:sp-body-part>
+      </div>
+      <div id="copyright"><fmt:message key="GML.trademark"/></div>
+    </div>
+  </view:sp-body-part>
 </view:sp-page>

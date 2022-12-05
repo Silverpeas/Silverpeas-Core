@@ -88,6 +88,10 @@
       $("form").submit();
     }
 
+    function welcome() {
+      location.href = '<c:url value="/" />';
+    }
+
     function loginQuestion() {
       let form = document.getElementById("formLogin");
       if (form.elements["Login"].value.length === 0) {
@@ -187,7 +191,7 @@
       <div class="cadre">
         <div id="header" style="display: table; width: 100%">
           <div style="display: table-cell">
-            <img src="<%=logo%>" class="logo" alt="logo"/>
+            <a href="javascript:welcome()"><img src="<%=logo%>" class="logo" alt="logo"/></a>
           </div>
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
             <c:set var="errorMessage"/>

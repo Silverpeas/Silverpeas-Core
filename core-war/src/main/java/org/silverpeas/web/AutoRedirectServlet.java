@@ -27,14 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -64,6 +61,7 @@ import static javax.ws.rs.core.Response.Status.*;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
 import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.isAppInMaintenance;
 import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
@@ -93,8 +91,8 @@ public class AutoRedirectServlet extends HttpServlet {
     try {
       // The user is either not connected or as the anonymous user. He comes back to the login page.
       UserDetail user = UserDetail.getCurrentRequester();
-      if (mainController == null ||
-          (gef != null && user.isAnonymous()) && !context.isUserAllowedToAccess(user)) {
+      if (mainController == null || context.isForceToLogin() ||
+          ((gef != null && user.isAnonymous()) && context.notExistsGoto())) {
         loginPageRedirection(context);
       } else {
         redirect(httpRequest, context, mainController, gef);
@@ -132,7 +130,7 @@ public class AutoRedirectServlet extends HttpServlet {
 
   private void loginPageRedirection(final Context context) throws IOException {
     final Integer domainId = context.getRequest().getParameterAsInteger("domainId");
-    final Mutable<String> loginUrl = Mutable.of(URLUtil.getApplicationURL() + "/Login.jsp");
+    final Mutable<String> loginUrl = Mutable.of(getApplicationURL() + "/Login");
     if (domainId != null) {
       loginUrl.set(loginUrl.get() + "?DomainId=" + domainId);
     }
@@ -149,7 +147,7 @@ public class AutoRedirectServlet extends HttpServlet {
       sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
           getGeneralLocalizationBundle(context.getLanguage()).getString("GML.ForbiddenAccessContent"))));
     } else {
-      context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+      context.getResponse().sendRedirect(getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
     }
   }
 
@@ -158,12 +156,12 @@ public class AutoRedirectServlet extends HttpServlet {
       sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
           getGeneralLocalizationBundle(context.getLanguage()).getString("GML.DocumentNotFound"))));
     } else {
-      context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      context.getResponse().sendRedirect(getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 
   private void appInMaintenancePageRedirection(final Context context) throws IOException {
-    final String url = URLUtil.getApplicationURL() + "/admin/jsp/appInMaintenance.jsp";
+    final String url = getApplicationURL() + "/admin/jsp/appInMaintenance.jsp";
     if (context.isFromResponsiveWindow()) {
       sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("mainUrl", url)));
     } else {
@@ -189,8 +187,8 @@ public class AutoRedirectServlet extends HttpServlet {
       String mainFrame = context.getGraphicElementFactory().getLookFrame();
       if (!mainFrame.startsWith("/")) {
         mainFrame = "admin/jsp/" + mainFrame;
-      } else if (!mainFrame.startsWith(URLUtil.getApplicationURL())) {
-        mainFrame = URLUtil.getApplicationURL() + mainFrame;
+      } else if (!mainFrame.startsWith(getApplicationURL())) {
+        mainFrame = getApplicationURL() + mainFrame;
       }
       final String url = mainFrame + "?RedirectToComponentId=" + componentId;
       sendHtmlRedirectResponse(context, url);
@@ -296,6 +294,7 @@ public class AutoRedirectServlet extends HttpServlet {
     private final String spaceIdGoTo;
     private final String attachmentIdGoTo;
     private final boolean fromResponsiveWindow;
+    private final boolean forceToLogin;
     private String gotoUrl;
     private String componentId = null;
     private String spaceId = null;
@@ -312,6 +311,7 @@ public class AutoRedirectServlet extends HttpServlet {
       this.attachmentIdGoTo = request.getParameter("AttachmentId");
       this.gotoUrl = request.getParameter("goto");
       this.fromResponsiveWindow = request.getParameterAsBoolean("fromResponsiveWindow");
+      this.forceToLogin = request.getParameterAsBoolean("forceToLogin");
       this.language = this.mainSessionController != null
           ? this.mainSessionController.getFavoriteLanguage()
           : DisplayI18NHelper.getDefaultLanguage();
@@ -393,6 +393,10 @@ public class AutoRedirectServlet extends HttpServlet {
       return graphicElementFactory;
     }
 
+    boolean notExistsGoto() {
+      return isNotDefined(gotoUrl) && isNotDefined(componentIdGoTo) && isNotDefined(spaceIdGoTo);
+    }
+
     public String getComponentId() {
       return componentId;
     }
@@ -405,21 +409,16 @@ public class AutoRedirectServlet extends HttpServlet {
       return fromResponsiveWindow;
     }
 
+    boolean isForceToLogin() {
+      return forceToLogin;
+    }
+
     String getGotoUrl() {
       return gotoUrl;
     }
 
     String getLanguage() {
       return language;
-    }
-
-    boolean isUserAllowedToAccess(final User user) {
-      if (StringUtil.isDefined(this.componentId)) {
-        return ComponentAccessControl.get().isUserAuthorized(user.getId(), this.componentId);
-      } else if (StringUtil.isDefined(this.spaceId)) {
-        return SpaceAccessControl.get().isUserAuthorized(user.getId(), this.spaceId);
-      }
-      return false;
     }
   }
 }

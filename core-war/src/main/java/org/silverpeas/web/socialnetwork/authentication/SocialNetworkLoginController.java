@@ -112,7 +112,7 @@ public class SocialNetworkLoginController extends HttpServlet {
 
     AccessToken authorizationToken = getAuthorizationToken(req, connector, networkId);
     if (authorizationToken == null) {
-      resp.sendRedirect("/Login.jsp");
+      resp.sendRedirect("/Login");
       return false;
     }
 
@@ -142,7 +142,7 @@ public class SocialNetworkLoginController extends HttpServlet {
       } // new registration is disabled : redirect user to Login
       else {
         SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
-        resp.sendRedirect(URLUtil.getFullApplicationURL(req) + "/Login.jsp?ErrorCode=5");
+        resp.sendRedirect(URLUtil.getFullApplicationURL(req) + "/Login?ErrorCode=5");
       }
     } // Silverpeas account found, log user
     else {

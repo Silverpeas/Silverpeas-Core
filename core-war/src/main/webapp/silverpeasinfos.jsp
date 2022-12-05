@@ -56,7 +56,7 @@
 
 <c:set var="currentUser" value="${silfn:currentUser()}"/>
 <c:if test="${currentUser == null or !currentUser.accessAdmin}">
-  <c:redirect url="/Login.jsp"/>
+  <c:redirect url="/welcome.jsp"/>
 </c:if>
 
 <html>

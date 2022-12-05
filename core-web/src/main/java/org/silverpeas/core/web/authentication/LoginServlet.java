@@ -62,27 +62,24 @@ public class LoginServlet extends SilverpeasHttpServlet {
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
-
     // Verify the user is authenticated
-    final UserSessionStatus userSessionStatus = existOpenedUserSession(request);
-    final boolean isAnonymousAccess =
-        userSessionStatus.getInfo() != null && isAnonymousAccessActivated() &&
-            userSessionStatus.getInfo().isAnonymous();
-    if (userSessionStatus.isValid() || isAnonymousAccess) {
-      performOpenedUserSession(request, response, userSessionStatus);
+    final HttpRequest httpRequest = HttpRequest.decorate(request);
+    final UserSessionStatus userSessionStatus = existOpenedUserSession(httpRequest);
+    if (userSessionStatus.isValid() || isWelcomeWithinAnonymousSession(httpRequest)) {
+      performOpenedUserOrAnonymousSession(httpRequest, response, userSessionStatus);
     } else {
-      performLoginDispatch(request, response);
+      performLoginDispatch(httpRequest, response);
     }
   }
 
   /**
-   * Performs the redirection when an opened user session exists.
+   * Performs the redirection when an opened user session or an anonymous session exists.
    * @param request the current request.
    * @param response the current response.
    * @param userSessionStatus the status of user session.
    * @throws IOException on redirect error.
    */
-  private void performOpenedUserSession(final HttpServletRequest request,
+  private void performOpenedUserOrAnonymousSession(final HttpServletRequest request,
       final HttpServletResponse response, final UserSessionStatus userSessionStatus)
       throws ServletException, IOException {
     if (mustCloseSession(request)) {
@@ -128,6 +125,14 @@ public class LoginServlet extends SilverpeasHttpServlet {
     return UserDetail.isAnonymousUserExist();
   }
 
+  private boolean isWelcomeWithinAnonymousSession(final HttpRequest request) {
+    return request.getParameterAsBoolean("welcome") && request.isWithinAnonymousUserSession();
+  }
+
+  private boolean noUserOrAnonymousSession(final HttpRequest httpRequest) {
+    return !httpRequest.isWithinAnonymousUserSession() && !httpRequest.isWithinUserSession();
+  }
+
   /**
    * Performs the rules of Login dispatch.<br> This method must be called only if it does not exist
    * an authenticated user into the session.
@@ -143,15 +148,13 @@ public class LoginServlet extends SilverpeasHttpServlet {
     String errorCode = getErrorCode(request);
     final Optional<String> ssoLoginPage = getSsoLoginPage(request);
     if (isNotDefined(errorCode) && isAnonymousAccessActivated() &&
-        !request.isWithinAnonymousUserSession() && !request.isWithinUserSession()) {
-
+        noUserOrAnonymousSession(request)) {
       // first access to the platform
       UserDetail anonymousUser = UserDetail.getAnonymousUser();
       UriBuilder uriBuilder = UriBuilder.fromPath("/AuthenticationServlet");
       addParameter(uriBuilder, "Login", anonymousUser.getLogin());
       addParameter(uriBuilder, "Password", anonymousUser.getLogin());
       addParameter(uriBuilder, PARAM_DOMAINID, "0");
-
       RequestDispatcher dispatcher = request.getRequestDispatcher(uriBuilder.toTemplate());
       dispatcher.forward(request, response);
     } else if (ssoLoginPage.isPresent()
@@ -161,7 +164,6 @@ public class LoginServlet extends SilverpeasHttpServlet {
       response.sendRedirect(response.encodeRedirectURL(loginPage));
     } else {
       loginPage = general.getString("loginPage");
-
       if (!isDefined(loginPage)) {
         loginPage = request.getContextPath() + "/defaultLogin.jsp";
       } else if (!loginPage.startsWith(request.getContextPath())) {
@@ -171,7 +173,6 @@ public class LoginServlet extends SilverpeasHttpServlet {
       addParameter(uriBuilder, PARAM_DOMAINID, getDomainId(request));
       addParameter(uriBuilder, "ErrorCode", errorCode);
       addParameter(uriBuilder, LOGOUT_PARAM, request.getParameter(LOGOUT_PARAM));
-
       response.sendRedirect(response.encodeRedirectURL(uriBuilder.toTemplate()));
     }
   }

@@ -53,6 +53,10 @@
             'type': String,
             'mandatory': true
           },
+          fromComponentId: {
+            'type': String,
+            'mandatory': true
+          },
           indexed: {
             'type': Boolean,
             'default': true
@@ -82,12 +86,11 @@
         },
         mounted: function() {
           whenSilverpeasEntirelyLoaded(function() {
-            const contribId = this.componentId + ':' + this.resourceType + ':' + this.resourceId;
-            let element = cache.get(contribId);
+            let element = cache.get(this.contributionId.asString());
             if (element && (typeof element === 'string')) {
               let $element = this.$el.querySelector(element);
               if ($element) {
-                cache.remove(contribId);
+                cache.remove(this.contributionId.asString());
                 if (window.AttachmentsAsContentViewer) {
                   AttachmentsAsContentViewer.whenAllCurrentAttachmentDisplayed(function() {
                     sp.element.scrollTo($element);
@@ -105,9 +108,15 @@
         },
         methods : {
           goToLoginPage: function() {
-            const contribId = this.componentId + ':' + this.resourceType + ':' + this.resourceId;
-            cache.put(contribId, '.commentsList');
-            top.location.href = webContext + '/Contribution/' + sp.base64.encode(contribId);
+            cache.put(this.contributionId.asString(), '.commentsList');
+            const queryParams = {
+              forceToLogin : true
+            };
+            if (this.componentId !== this.fromComponentId) {
+              // alias case
+              queryParams.ComponentId = this.fromComponentId;
+            }
+            top.location.href = sp.url.format(webContext + '/Contribution/' + this.contributionId.asBase64(), queryParams);
           },
           /**
            * Validates the specified text satisfies the requirement to be used as a comment's
@@ -220,6 +229,9 @@
               msg = this.comments.length + ' ' + this.messages.textComments;
             }
             return msg;
+          },
+          contributionId : function() {
+            return sp.contribution.id.from(this.componentId, this.resourceType, this.resourceId);
           }
         }
       }));
@@ -271,7 +283,7 @@
         },
         computed : {
           commentText : function() {
-            return this.comment.text.convertNewLineAsHtml();
+            return this.comment.text.noHTML().convertNewLineAsHtml();
           },
           displayUserZoom: function() {
             return this.currentUser.id !== this.comment.author.id && !this.currentUser.anonymous;

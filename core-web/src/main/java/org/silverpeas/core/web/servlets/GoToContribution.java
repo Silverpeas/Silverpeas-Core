@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 import org.silverpeas.core.web.util.servlet.GoTo;
@@ -34,16 +35,21 @@ import org.silverpeas.core.web.util.servlet.GoTo;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URLEncoder;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.contribution.model.ContributionIdentifier.decode;
 import static org.silverpeas.core.util.StringUtil.fromBase64;
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 
 /**
  * The servlet in charge of handling permalink of all {@link Contribution} implementations.
  */
 public class GoToContribution extends GoTo {
+  private static final long serialVersionUID = -5953875234057830718L;
 
   @Inject
   private ComponentInstanceRoutingMapProviderByInstance routingMapProvider;
@@ -61,12 +67,23 @@ public class GoToContribution extends GoTo {
         this.routingMapProvider.getByInstanceId(componentInstanceId);
     final URI page;
     User requester = User.getCurrentRequester();
-    if (requester != null && !requester.isAnonymous()) {
-      // a user is connected, going to the requested page
-      page = routingMap.relative().getViewPage(contributionId);
+    final UriBuilder permalink = UriBuilder.fromUri(
+        routingMap.relativeToSilverpeas().getPermalink(contributionId));
+    ofNullable(req.getParameter("ComponentId")).filter(StringUtil::isDefined)
+        .ifPresent(i -> permalink.queryParam("ComponentId", i));
+    if (requester != null) {
+      // a user is connected or an anonymous session is open, going to the requested page
+      page = ofNullable(permalink.build())
+          // If the computed permalink of the resource is not the one that permits to access the
+          // current servlet dedicated to resolve generic '/Contribution' permalinks, then the
+          // component has not yet its implementation of {@link org.silverpeas.core.web.mvc.route
+          // .ComponentInstanceRoutingMap}. So redirecting to the right permalink
+          .filter(not(p -> p.toString().startsWith(getApplicationURL() + "/Contribution")))
+          // Otherwise, redirecting to the view page
+          .orElseGet(() -> routingMap.relative().getViewPage(contributionId));
     } else {
       // no user connected, playing again the permalink after a successful connexion
-      page = routingMap.relativeToSilverpeas().getPermalink(contributionId);
+      page = permalink.build();
     }
 
     return "goto=" + URLEncoder.encode(page.toString(), Charsets.UTF_8);

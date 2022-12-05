@@ -84,9 +84,12 @@ public abstract class GoTo extends HttpServlet {
           if (!redirect.startsWith("http")) {
             redirect = URLUtil.getFullApplicationURL(httpRequest) + "/autoRedirect.jsp?" + redirect;
           }
-          res.sendRedirect(res.encodeRedirectURL(UriBuilder.fromUri(redirect)
-              .queryParam("fromResponsiveWindow", context.isFromResponsiveWindow()).build()
-              .toString()));
+          final UriBuilder uriBuilder = UriBuilder.fromUri(redirect)
+              .queryParam("fromResponsiveWindow", context.isFromResponsiveWindow());
+          if (context.isForceToLogin()) {
+            uriBuilder.queryParam("forceToLogin", true);
+          }
+          res.sendRedirect(res.encodeRedirectURL(uriBuilder.build().toString()));
         }
       }
     } catch (AccessForbiddenException afe) {
@@ -199,12 +202,14 @@ public abstract class GoTo extends HttpServlet {
     private final HttpRequest request;
     private final HttpServletResponse response;
     private final boolean fromResponsiveWindow;
+    private final boolean forceToLogin;
     private final String language;
 
     private Context(HttpRequest request, final HttpServletResponse response) {
       this.request = request;
       this.response = response;
       this.fromResponsiveWindow = request.getParameterAsBoolean("fromResponsiveWindow");
+      this.forceToLogin = request.getParameterAsBoolean("forceToLogin");
       this.language = User.getCurrentRequester() != null
           ? User.getCurrentRequester().getUserPreferences().getLanguage()
           : DisplayI18NHelper.getDefaultLanguage();
@@ -224,6 +229,10 @@ public abstract class GoTo extends HttpServlet {
 
     public boolean isFromResponsiveWindow() {
       return fromResponsiveWindow;
+    }
+
+    public boolean isForceToLogin() {
+      return forceToLogin;
     }
 
     public String getLanguage() {

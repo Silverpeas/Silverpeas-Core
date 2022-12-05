@@ -1096,7 +1096,7 @@ public class JavascriptPluginInclusion {
             .add("layout.pdc.activated", lookHelper.displayPDCFrame())
             .add("layout.pdc.baseUrl", getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
-            .add("sse.enabled", isSseEnabled())
+            .add("sse.enabled", isSseEnabled() && !lookHelper.isAnonymousUser())
             .add("sse.usingWebSocket", usingWebSocket())
             .produce()));
       xhtml.addElement(scriptContent(settingVariableName("AdminLayoutSettings")

@@ -201,7 +201,7 @@ According to the rights of the current user, the comment can be updated and dele
               v-bind:rel="comment.author.id">{{ comment.author.fullName }}</span>
         <span class="date"> - {{ comment.creationDate }}</span>
       </p>
-      <pre class="text">{{ commentText }}</pre>
+      <pre class="text" v-html="commentText"></pre>
     </div>
   </div>
 </silverpeas-component-template>

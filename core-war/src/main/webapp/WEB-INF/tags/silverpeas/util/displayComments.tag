@@ -32,6 +32,8 @@
 
 <c:set var="user" value="${silfn:currentUser()}"/>
 
+<%@ attribute name="fromComponentId" required="false" type="java.lang.String"
+              description="The unique identifier of the Silverpeas component instance from which the tag is used. If empty, componentId is used" %>
 <%@ attribute name="componentId" required="true" type="java.lang.String"
               description="The unique identifier of the Silverpeas component instance or the tool to which the commented resource belongs" %>
 <%@ attribute name="resourceId" required="true" type="java.lang.String"
@@ -54,6 +56,10 @@
 <view:settings settings="org.silverpeas.util.comment.Comment" key="AdminAllowedToUpdate"
                defaultValue="true" var="canBeUpdated"/>
 
+<c:if test="${fromComponentId == null}">
+  <c:set var="fromComponentId" value="${componentId}"/>
+</c:if>
+
 <c:set var="canBeUpdated" value="${silfn:booleanValue(canBeUpdated) and user.isPlayingAdminRole(componentId)}"/>
 <c:if test="${silfn:isNotDefined(indexed)}">
   <c:set var="indexed" value="true"/>
@@ -66,6 +72,7 @@
                      resource-id='${resourceId}'
                      resource-type='${resourceType}'
                      component-id='${componentId}'
+                     from-component-id='${fromComponentId}'
                      v-bind:indexed='${indexed}'
                      v-bind:user='user'
                      v-on:change='onChange'>

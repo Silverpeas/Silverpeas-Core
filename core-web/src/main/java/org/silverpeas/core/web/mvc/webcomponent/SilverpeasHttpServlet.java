@@ -80,8 +80,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
       if (sessionId != null) {
         SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionId);
-        final boolean valid =
-            sessionInfo.isDefined() && !sessionInfo.isAnonymous();
+        final boolean valid = sessionInfo.isDefined() && !sessionInfo.isAnonymous();
         return new UserSessionStatus(valid, isDesktopControllerInSession, sessionInfo);
       }
     }

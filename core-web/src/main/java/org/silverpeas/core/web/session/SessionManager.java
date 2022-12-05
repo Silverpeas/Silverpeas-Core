@@ -25,7 +25,6 @@ package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
@@ -78,6 +77,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
@@ -582,13 +582,13 @@ public class SessionManager implements SessionManagement, Initialization {
    */
   @Nonnull
   private SessionInfo createAnonymousSession(final HttpServletRequest request) {
-    boolean anonymousEnabled = OrganizationController.get().isAnonymousAccessActivated();
-    UserDetail anonymousUser = UserDetail.getAnonymousUser();
-    if (anonymousUser != null && anonymousEnabled) {
-      HttpSession session = request.getSession();
-      return new HTTPSessionInfo(session, request.getRemoteHost(), anonymousUser);
-    }
-    return SessionInfo.NoneSession;
+    return ofNullable(UserDetail.getAnonymousUser())
+        .map(a -> {
+          HttpSession session = request.getSession();
+          return new HTTPSessionInfo(session, request.getRemoteHost(), a);
+        })
+        .map(SessionInfo.class::cast)
+        .orElse(SessionInfo.NoneSession);
   }
 
   @Override

@@ -26,8 +26,11 @@ package org.silverpeas.core.comment.model;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Date;
+
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 
 /**
  * A comment on a given user contribution.
@@ -35,6 +38,7 @@ import java.util.Date;
 public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
+  private static SettingBundle settingBundle = getSettingBundle("org.silverpeas.util.comment.Comment");
   public static final String CONTRIBUTION_TYPE = "Comment";
   private CommentId id;
   private String resourceType;
@@ -145,5 +149,12 @@ public class Comment implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return CONTRIBUTION_TYPE;
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    return user.getId().equals(authorId) ||
+        (settingBundle.getBoolean("AdminAllowedToUpdate", true) &&
+            user.isPlayingAdminRole(getComponentInstanceId()));
   }
 }

@@ -66,7 +66,7 @@
 
   UserDetail currentUser = UserDetail.getCurrentRequester();
   if (currentUser == null || !currentUser.isAccessAdmin()) {
-    request.getRequestDispatcher("../../Login.jsp").forward(request, response);
+    request.getRequestDispatcher("../../welcome.jsp").forward(request, response);
   }
 
   List<String> loggingLevels = new ArrayList<>();

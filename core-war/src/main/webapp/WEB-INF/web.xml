@@ -1198,7 +1198,7 @@
   </jsp-config>
 
   <welcome-file-list>
-    <welcome-file>Login.jsp</welcome-file>
+    <welcome-file>welcome.jsp</welcome-file>
   </welcome-file-list>
 
   <error-page>
@@ -1251,9 +1251,9 @@
       <url-pattern>/defaultLogin.jsp</url-pattern>
     </web-resource-collection>
     <web-resource-collection>
-      <web-resource-name>Login page</web-resource-name>
+      <web-resource-name>Welcome page</web-resource-name>
       <description/>
-      <url-pattern>/Login.jsp</url-pattern>
+      <url-pattern>/welcome.jsp</url-pattern>
     </web-resource-collection>
     <user-data-constraint>
       <description>SSL</description>

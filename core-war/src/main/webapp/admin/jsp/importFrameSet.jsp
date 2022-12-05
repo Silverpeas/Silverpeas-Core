@@ -53,7 +53,7 @@
   if (spUserSession) {
     spUserSession.logout();
   } else {
-    top.location = "../../Login.jsp";
+    top.location = "../../welcome.jsp";
   }
 </script>
 <%  } else {
