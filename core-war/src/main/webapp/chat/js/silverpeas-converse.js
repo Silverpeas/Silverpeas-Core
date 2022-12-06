@@ -401,6 +401,29 @@
         bundle : 'org.silverpeas.chat.multilang.chat',
         async : true
       }).then(function() {
+
+        // START cleaning old data
+        // TODO remove this cleaning treatment at 6.5.x version
+        const storage = sessionStorage;
+        let mustClear = false;
+        for (let i = 0; !mustClear && i < storage.length; i++) {
+          const key = storage.key(i);
+          if (key.indexOf('converse-session/converse.disco-entities-') === 0) {
+            const value = storage.getItem(key);
+            mustClear = value.indexOf(',"parent_jids":[') < 0 && value.indexOf('"name":null') > 0;
+          }
+        }
+        if (mustClear) {
+          for (let i = 0; i < storage.length; i++) {
+            const key = storage.key(i);
+            if (key.indexOf('converse-session/converse.disco-entities-') === 0) {
+              storage.removeItem(key);
+              sp.log.info("Removing key " + key + " with value " + storage.getItem(key));
+            }
+          }
+        }
+        // END cleaning old data
+
         const initOptions = {
           'theme' : 'default',
           'dark_theme' : 'default',
