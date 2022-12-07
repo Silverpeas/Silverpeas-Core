@@ -24,6 +24,7 @@
 package org.silverpeas.core.viewer.model;
 
 import org.silverpeas.core.util.DocumentInfo;
+import org.silverpeas.core.viewer.service.ViewerContext;
 
 import java.io.File;
 
@@ -39,9 +40,9 @@ public class TemporaryPdfView extends AbstractView {
   /**
    * Default constructor
    */
-  public TemporaryPdfView(final String documentId, final String language,
-      final String originalFileName, final File physicalFile, final DocumentInfo info) {
-    super(documentId, language, originalFileName, physicalFile, 0);
+  public TemporaryPdfView(final ViewerContext context, final File physicalFile,
+      final DocumentInfo info) {
+    super(context, physicalFile, 0);
     width = info.getMaxWidth();
     height = info.getMaxHeight();
   }

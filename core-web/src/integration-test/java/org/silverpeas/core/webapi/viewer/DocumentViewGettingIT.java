@@ -30,23 +30,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.DefaultViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
+import org.silverpeas.core.webapi.attachment.SimpleDocumentEmbedMediaViewProvider;
 import org.silverpeas.web.ResourceGettingTest;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.nio.file.Paths;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,10 +67,15 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4WebCore.onWarForTestClass(DocumentViewGettingIT.class)
         .addRESTWebServiceEnvironment().testFocusedOn(warBuilder -> {
-          warBuilder.addClasses(StubbedUserPrivilegeValidator.class);
+          warBuilder.addClasses(SimpleDocumentEmbedMediaViewProvider.class);
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
           warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
         }).build();
+  }
+
+  @Before
+  public void setup() throws Exception {
+    ServiceProvider.getSingleton(SimpleDocumentEmbedMediaViewProvider.class).init();
   }
 
   @Singleton
@@ -88,6 +93,11 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
       when(documentView.getServerFilePath()).thenReturn(Paths.get(originalFileName));
       when(documentView.getLanguage()).thenReturn("fr");
       return documentView;
+    }
+
+    @Override
+    public void removeDocumentView(final ViewerContext viewerContext) {
+
     }
   }
 
@@ -107,21 +117,12 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
   }
 
   @Override
-  public void gettingAResourceByAnUnauthorizedUser() {
-    // verifications of authorization are done after (Alias management)
-    denyAuthorizationToUsers();
-    final int ok = Response.Status.OK.getStatusCode();
-    Response response = getAt(aResourceURI(), Response.class);
-    assertThat(response.getStatus(), is(ok));
-  }
-
-  @Override
   public String aResourceURI() {
     return aResourceURI(ATTACHMENT_ID);
   }
 
   private String aResourceURI(final String attachmentId) {
-    return "view/" + getExistingComponentInstances()[0] + "/attachment/" + attachmentId;
+    return "view/attachment/" + attachmentId;
   }
 
   @Override

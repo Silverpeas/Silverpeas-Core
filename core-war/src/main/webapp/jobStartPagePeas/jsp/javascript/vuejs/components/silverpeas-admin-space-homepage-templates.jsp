@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2021 Silverpeas
+  ~ Copyright (C) 2000 - 2022 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
   ~ GNU Affero General Public License for more details.
   ~
   ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -73,13 +73,13 @@
       <div class="champs">
         <input id="shpDefaultStartPage" type="radio" name="choix" value="STANDARD" v-model="choice"/>
       </div>
-      <label class="txtlibform" for="shpDefaultStartPage">${defaultStartPageLabel}</label>
+      <silverpeas-label class="txtlibform" for="shpDefaultStartPage">${defaultStartPageLabel}</silverpeas-label>
     </div>
     <div class="field">
       <div class="champs">
         <input id="shpPeas" type="radio" name="choix" value="COMPONENT_INST" v-model="choice"/>
       </div>
-      <label class="txtlibform" for="shpPeas">${peasLabel}</label>
+      <silverpeas-label class="txtlibform" for="shpPeas">${peasLabel}</silverpeas-label>
       <select name="peas" size="1" v-model="appId">
         <option v-for="app in spaceApps" v-bind:value="app.id">{{app.label}}</option>
       </select>
@@ -88,16 +88,16 @@
       <div class="champs">
         <input id="shpPortlet" type="radio" name="choix" value="PORTLET" v-model="choice"/>
       </div>
-      <label class="txtlibform" for="shpPortlet">${portletLabel}</label>
+      <silverpeas-label class="txtlibform" for="shpPortlet">${portletLabel}</silverpeas-label>
     </div>
     <div class="field">
       <div class="champs">
         <input id="shpWebPage" type="radio" name="choix" value="HTML_PAGE" v-model="choice"/>
       </div>
-      <label class="txtlibform" for="shpWebPage">${webPageLabel}</label>
+      <silverpeas-label class="txtlibform" for="shpWebPage"
+                        v-bind:mandatory="urlIsMandatory">${webPageLabel}</silverpeas-label>
       <silverpeas-text-input id="shpWebPageExtra" label-id="shpWebPage" name="URL"
-                             v-bind:size="60" v-bind:maxlength="255"
-                             v-bind:mandatory="urlIsMandatory" v-model="url"/>
+                             v-bind:size="60" v-bind:maxlength="255" v-model="url"/>
       <template v-if="urlIsMandatory">
         <silverpeas-fade-transition>
           <div class="inlineMessage" id="urlhelp" v-html="'${silfn:escapeJs(webPageHelpMessage)}'"></div>

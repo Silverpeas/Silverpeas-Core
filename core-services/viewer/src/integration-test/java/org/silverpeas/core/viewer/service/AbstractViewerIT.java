@@ -66,6 +66,7 @@ public abstract class AbstractViewerIT {
   public static final String DOCUMENT_VIEW_FILE_NAME = "DOCUMENT_VIEW";
 
   private static final String DOC_ID = "doc-id";
+  private static final String DOC_TYPE = "doc-type";
   private static final String LANG = "fr";
 
   static final DimensionOption IMG_PORTRAIT = DimensionOption.widthAndHeight(595, 842);
@@ -176,7 +177,7 @@ public abstract class AbstractViewerIT {
   }
 
   ViewerContext createViewerContext(final String originalFileName, final File originalSourceFile) {
-    return new ViewerContext(DOC_ID, originalFileName, originalSourceFile, LANG);
+    return new ViewerContext(DOC_ID, DOC_TYPE, originalFileName, originalSourceFile, LANG);
   }
 
   void assertPreviewDimensions(final Preview preview, final DimensionOption... dimensions) {

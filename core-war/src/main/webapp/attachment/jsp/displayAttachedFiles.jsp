@@ -1,28 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2022 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
---%>
+  ~ Copyright (C) 2000 - 2022 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  --%>
 <%@page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -55,8 +53,7 @@
 <c:set var="isVersionActive" value="${not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframeajaxtransport"/>
-<view:includePlugin name="popup"/>
-<view:includePlugin name="preview"/>
+<view:includePlugin name="attachment"/>
 <c:if test="${isVersionActive}">
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -230,7 +227,12 @@
 <div id="attachmentDragAndDrop${domIdSuffix}" class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
-  <div class="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:_afManager${domIdSuffix}.addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  <div class="attachment-creation-actions">
+    <a class="menubar-creation-actions-item menubar-creation-actions-move-ignored"
+       href="javascript:_afManager${domIdSuffix}.addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');">
+      <span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span>
+    </a>
+  </div>
   </c:if>
     <ul id="attachmentList${domIdSuffix}" class="attachmentList">
       <c:forEach items="${pageScope.attachments}" var="currentAttachment" >
@@ -297,10 +299,10 @@
             </c:if>
                - <view:formatDateTime value="${currentAttachment.lastUpdateDate}"/>
             <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
-              <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview.file"/>" title="<fmt:message key="GML.preview.file" />"/>
+              <img onclick="preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview.file"/>" title="<fmt:message key="GML.preview.file" />"/>
             </c:if>
             <c:if test="${silfn:isViewable(currentAttachment.attachmentPath)}">
-              <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view.file"/>" title="<fmt:message key="GML.view.file" />"/>
+              <img onclick="view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view.file"/>" title="<fmt:message key="GML.view.file" />"/>
             </c:if>
             <c:if test="${!currentAttachment.downloadAllowedForReaders}">
               <img class="forbidden-download-file" src='<c:url value="/util/icons/forbidden-download.png"/>' alt="${forbiddenDownloadHelp}" title="${forbiddenDownloadHelp}"/>
@@ -395,18 +397,18 @@ if (!window.attachmentEventManager) {
   }
 
   function preview(target, attachmentId) {
-    $(target).preview("previewAttachment", {
-      componentInstanceId: '<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />',
-      attachmentId: attachmentId,
+    $(target).preview("document", {
+      documentId: attachmentId,
+      documentType: 'attachment',
       lang: '${contentLanguage}'
     });
     return false;
   }
 
   function view(target, attachmentId) {
-    $(target).view("viewAttachment", {
-      componentInstanceId: "<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />",
-      attachmentId: attachmentId,
+    $(target).view("document", {
+      documentId: attachmentId,
+      documentType: 'attachment',
       lang: '${contentLanguage}'
     });
     return false;
@@ -417,13 +419,21 @@ const _afManager${domIdSuffix} = new function() {
   const _self = this;
   const get$containerEl = function() { return jQuery('#attachmentList${domIdSuffix}') };
   const _self_ui = {
-    get$addAttachment : function() { return $("#dialog-attachment-add${domIdSuffix}") },
     get$updateAttachment : function() { return $("#dialog-attachment-update${domIdSuffix}") },
     get$deleteAttachment : function() { return $("#dialog-attachment-delete${domIdSuffix}") },
     get$switchAttachmentState : function() { return $("#dialog-attachment-switch${domIdSuffix}") },
     get$onlineEditingCustomProtocol : function() { return $("#dialog-attachment-onlineEditing-customProtocol${domIdSuffix}") },
     get$attachmentCheckin : function() { return $("#dialog-attachment-checkin${domIdSuffix}") }
   };
+  const __vuejsCtx = {
+    foreignContributionId : sp.contribution.id.from('${componentId}', '${param.Type}', '${param.Id}'),
+    isHandledModificationContext : ${isHandledModificationContext},
+    isVersionActive : ${isVersionActive},
+    indexIt : ${indexIt},
+    isI18nContent : ${_isI18nHandled},
+    i18nContentLanguage : '${silfn:defaultEmptyString(contentLanguage)}'
+  };
+  Object.freeze(__vuejsCtx);
   let publicVersionsWindow = window;
   <c:if test="${spinfireViewerEnable}">
   _self.changeView3d = function(objectId) {
@@ -635,12 +645,6 @@ const _afManager${domIdSuffix} = new function() {
       pageMustBeReloadingAfterSorting = true;
     };
 
-    _self.addAttachment = function(foreignId) {
-      const $addAttachment = _self_ui.get$addAttachment();
-      $addAttachment.find("form").findByName('foreignId').val(foreignId);
-      $addAttachment.dialog("open");
-    };
-
     _self.deleteAttachment = function(id, filename) {
       _self_ui.get$deleteAttachment().data("id", id).data("filename", filename).dialog("open");
     };
@@ -697,12 +701,37 @@ const _afManager${domIdSuffix} = new function() {
     </c:if>
 
     $(document).ready(function() {
+
+      _self.addAttachment = function(foreignId) {
+        window.attachmentVm.manager.addToResource(extendsObject({
+          foreignId : foreignId
+        }, __vuejsCtx), function(formPaneData) {
+          return new Promise(function(resolve) {
+            let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+            submitUrl = submitUrl + '/' + encodeURIComponent(formPaneData.fileName);
+            _performActionWithContributionModificationManagement(function() {
+              spProgressMessage.show();
+              const formData = new FormData();
+              for(let key in formPaneData) {
+                formData.set(key, formPaneData[key]);
+              }
+              sp.ajaxRequest(submitUrl).byPostMethod().send(formData).then(function() {
+                _self.reloadIncludingPage();
+                resolve();
+              });
+            }, {
+              versionTypeDomRadioSelector : '.silverpeas-attachment-form input[name="versionType"]'
+            });
+          });
+        });
+      };
+
       _self_ui.get$updateAttachment().findByName("fileLang").on("change", function(event) {
         const $updateAttachment = _self_ui.get$updateAttachment();
         $updateAttachment.findByName("fileLang").find("option:selected").each(function() {
           _loadAttachmentToUpdate($updateAttachment.findByName("IdAttachment").val(), $(this).val());
         });
-    });
+      });
 
     _self.verifyVersionType = function(domRadioSelector) {
       let lastVersionType = 'public';
@@ -805,11 +834,6 @@ const _afManager${domIdSuffix} = new function() {
     };
 
     _self_ui.get$updateAttachment().find('form').iframeAjaxFormSubmit ({
-      complete : iframeSendComplete,
-      error : iframeSendError
-    });
-
-    _self_ui.get$addAttachment().find('form').iframeAjaxFormSubmit ({
       complete : iframeSendComplete,
       error : iframeSendError
     });
@@ -936,52 +960,6 @@ const _afManager${domIdSuffix} = new function() {
       close: function() {
       }
     });
-
-      _self_ui.get$addAttachment().dialog({
-        autoOpen : false,
-        title : "<fmt:message key="attachment.dialog.add" />",
-        height : 'auto',
-        width : 550,
-        modal : true,
-        buttons : {
-          '<fmt:message key="GML.ok"/>' : function() {
-            const $this = $(this);
-            const $addAttachmentForm = _self_ui.get$addAttachment().find('form');
-            const filename = $.trim($addAttachmentForm.findByName("file_upload").val().split('\\').pop());
-            if (filename === '') {
-              return SilverpeasError.add('<fmt:message key="attachment.dialog.error.file.mandatory"/>').show();
-            }
-            let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' + encodeURIComponent(filename);
-            _performActionWithContributionModificationManagement(function() {
-              $.progressMessage();
-              if ("FormData" in window) {
-                const formData = new FormData($addAttachmentForm[0]);
-                $.ajax(submitUrl, {
-                  processData : false,
-                  contentType : false,
-                  type : 'POST',
-                  dataType : "json",
-                  data : formData,
-                  success : function(data) {
-                    _self.reloadIncludingPage();
-                    $this.dialog("close");
-                  }
-                });
-              } else {
-                $addAttachmentForm.attr('action', submitUrl);
-                $addAttachmentForm.submit();
-              }
-            }, {
-              versionTypeDomRadioSelector : '#dialog-attachment-add${domIdSuffix} input[name="versionType"]'
-            });
-          },
-          '<fmt:message key="GML.cancel"/>' : function() {
-            $(this).dialog("close");
-          }
-        }, close : function() {
-        }
-      });
 
       _self_ui.get$updateAttachment().dialog({
         autoOpen : false,
@@ -1189,7 +1167,7 @@ const _afManager${domIdSuffix} = new function() {
         _sortAttachments('${param.Id}', sortedIds);
       });
 
-      });
+    });
 
 
       const _sortAttachments = function(objectId, sortedIds) {
@@ -1335,6 +1313,24 @@ const _afManager${domIdSuffix} = new function() {
 };
 </script>
 
+<c:if test="${empty __addAttachmentDialogInserted}">
+  <c:set var="__addAttachmentDialogInserted" value="${true}" scope="request"/>
+  <silverpeas-attachment-management id="attachmentManagement"
+                                    v-on:api="manager = $event"></silverpeas-attachment-management>
+  <script type="text/javascript">
+    whenSilverpeasReady(function() {
+      window.attachmentVm = new Vue({
+        el : '#attachmentManagement',
+        data : function() {
+          return {
+            manager : undefined
+          }
+        }
+      });
+    });
+  </script>
+</c:if>
+
 <div id="dialog-attachment-update${domIdSuffix}" class="dialog-attachment-update" style="display:none">
   <form name="update-attachment-form" class="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment"/>
@@ -1368,37 +1364,6 @@ const _afManager${domIdSuffix} = new function() {
           <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage-update-${domIdSuffix}"></textarea></span>
         </div>
     <div class="mandatory" style="display: none">
-      <span class="label-ui-dialog"><img src="${mandatoryFieldUrl}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/></span>
-    </div>
-    <input type="submit" value="Submit" style="display:none" />
-  </form>
-</div>
-
-<div id="dialog-attachment-add${domIdSuffix}" class="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
-    <input type="hidden" name="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
-    <input type="hidden" name="indexIt" value="<c:out value="${indexIt}" />" />
-    <c:if test="${_isI18nHandled}">
-      <label for="langCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
-      <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate${domIdSuffix}" langCode="${contentLanguage}" includeLabel="false"/></span>
-    </c:if>
-    <label for="file_create${domIdSuffix}" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
-    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create${domIdSuffix}" />
-          <span>&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="${mandatoryFieldUrl}" width="5" height="5"/></span></span>
-    <label for="fileTitleCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="Title"/></label>
-    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate${domIdSuffix}" /></span>
-    <label for="fileDescriptionCreate${domIdSuffix}" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate${domIdSuffix}"></textarea></span>
-    <c:if test="${isVersionActive}">
-      <label for="versionType-add-${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-      <span class="champ-ui-dialog">
-        <input value="0" type="radio" name="versionType" id="versionType-add-${domIdSuffix}" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-        <input value="1" type="radio" name="versionType"/><fmt:message key="attachment.version_wip.label"/>
-      </span>
-      <label for="commentMessage-add-${domIdSuffix}" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
-      <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage-add-${domIdSuffix}"></textarea></span>
-    </c:if>
-    <div>
       <span class="label-ui-dialog"><img src="${mandatoryFieldUrl}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/></span>
     </div>
     <input type="submit" value="Submit" style="display:none" />

@@ -102,11 +102,11 @@ public class FileUtil {
   @Nonnull
   private static String computeMimeType(final String fileName) {
     String mimeType = null;
-    final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
     File file = new File(fileName);
     if (file.exists()) {
-      mimeType = getMimeTypeByMetadata(file, mimeType);
+      mimeType = getMimeTypeByMetadata(file);
     }
+    final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
     if (!StringUtil.isDefined(mimeType) && MIME_TYPES_EXTENSIONS != null &&
         !fileExtension.isEmpty()) {
       mimeType = getMimeTypeByFileExtension(fileExtension, mimeType);
@@ -157,8 +157,8 @@ public class FileUtil {
     return mimeType;
   }
 
-  private static String getMimeTypeByMetadata(final File file, final String defaultMimeType) {
-    String mimeType = defaultMimeType;
+  private static String getMimeTypeByMetadata(final File file) {
+    String mimeType = null;
     try {
       mimeType = MetadataExtractor.get().detectMimeType(file);
     } catch (Exception ex) {

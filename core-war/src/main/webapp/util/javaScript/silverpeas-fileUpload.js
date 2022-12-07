@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,29 +25,29 @@
 (function($) {
 
   // Check for the various File API support.
-  var isFileAPI = window.File;
+  const isFileAPI = window.File;
 
   // Web Context
-  if (!webContext) {
-    var webContext = '/silverpeas';
+  if (!window.webContext) {
+    window.webContext = '/silverpeas';
   }
 
   // Event definitions
-  var EVENT = {
-    SEND_FILE: 'SEND_REQUEST',
-    FILES_TO_SEND: 'FILES_TO_SEND',
-    UPLOADED_FILE_CHANGED: 'UPLOADED_FILE_CHANGED',
-    DELETE_FILE: 'DELETE_FILE'
+  const EVENT = {
+    SEND_FILE : 'SEND_REQUEST',
+    FILES_TO_SEND : 'FILES_TO_SEND',
+    UPLOADED_FILE_CHANGED : 'UPLOADED_FILE_CHANGED',
+    DELETE_FILE : 'DELETE_FILE'
   };
 
   /**
    * The different fileUpload methods handled by the plugin.
    */
-  var methods = {
+  const methods = {
     /**
      * Prepare UI and behavior
      */
-    init: function(options) {
+    init : function(options) {
       return __init($(this), options);
     },
 
@@ -55,7 +55,7 @@
      * Gets API of first jQuery instance found.
      */
     api : function() {
-      var $instances = $(this);
+      const $instances = $(this);
       if ($instances.length) {
         return __getApi($instances[0]);
       }
@@ -106,20 +106,20 @@
     }
 
     return $targets.each(function() {
-      var $target = $(this);
-      var $container = $('<div>').addClass('fileUpload-container');
+      const $target = $(this);
+      const $container = $('<div>').addClass('fileUpload-container');
       $target.append($container);
 
-      var params = {
-        $container: $container,
-        containerOriginId: $target.attr('id'),
-        uploadCount: 0
+      const params = {
+        $container : $container,
+        containerOriginId : $target.attr('id'),
+        uploadCount : 0
       };
 
       __setApi($target, params);
 
       // Options
-      var _options = __buildOptions(options);
+      const _options = __buildOptions(options);
 
       // Context
       __buildContext(params, _options);
@@ -146,12 +146,12 @@
    * @private
    */
   function __setApi($target, params) {
-    var _api = {
+    const _api = {
       /**
        * Resets the plugin.
        */
       reset : function() {
-        var $fileToDelete = $('.uploaded-file', params.$uploadedFileList);
+        const $fileToDelete = $('.uploaded-file', params.$uploadedFileList);
         $fileToDelete.trigger(EVENT.DELETE_FILE);
       },
       /**
@@ -174,7 +174,7 @@
        * Encodes a set of form elements as a string for submission.
        */
       serialize : function() {
-        var serialization = '';
+        let serialization = '';
         _api.serializeArray().forEach(function(input) {
           if (serialization.length) {
             serialization += '&'
@@ -187,12 +187,33 @@
        * Encodes a set of form elements as an array of names and values.
        */
       serializeArray : function() {
-        var serialization = [];
+        const serialization = [];
         $('input, textarea', params.$uploadedFileList).each(function(index, input) {
-          var $input = $(input);
+          const $input = $(input);
           serialization.push({name : $input.attr("name"), value : $input.val()});
         });
         return serialization;
+      },
+      /**
+       * Gets an array of all current uploaded file data.
+       * For each uploaded file, there is the attribute 'input' which is an array of all form
+       * inputs.
+       * @returns {*[]}
+       */
+      getUploadedFiles : function() {
+        const uploadedFiles = [];
+        let uploadedFile;
+        $('input, textarea', params.$uploadedFileList).each(function(index, input) {
+          const $input = $(input);
+          const __uploadedFile = $input.data('uploadedFileData');
+          if (__uploadedFile) {
+            uploadedFile = extendsObject({}, __uploadedFile);
+            uploadedFile.inputs = [];
+            uploadedFiles.push(uploadedFile);
+          }
+          uploadedFile.inputs.push({name : $input.attr("name"), value : $input.val()});
+        });
+        return uploadedFiles;
       }
     };
     params._api = _api;
@@ -270,7 +291,7 @@
    * @private
    */
   function __renderUploadLimitBloc(params) {
-    var $uploadLimitBloc = $('<div>').addClass('upload-limit').append($('<span>').addClass('legendeFileUpload').append(__getUploadLimitReachedMessage(params))).hide();
+    const $uploadLimitBloc = $('<div>').addClass('upload-limit').append($('<span>').addClass('legendeFileUpload').append(__getUploadLimitReachedMessage(params))).hide();
     params.$uploadLimitContainer = $uploadLimitBloc;
     return $uploadLimitBloc;
   }
@@ -282,7 +303,7 @@
    * @private
    */
   function __getUploadLimitWarningMessage(params) {
-    var message = params.options.labels.limitFileWarning;
+    let message = params.options.labels.limitFileWarning;
     if (params.options.nbFileLimit > 1) {
       message =
               params.options.labels.limitFilesWarning.replace(/@number@/, params.options.nbFileLimit);
@@ -297,7 +318,7 @@
    * @private
    */
   function __getUploadLimitReachedMessage(params) {
-    var message = params.options.labels.limitFileReached;
+    let message = params.options.labels.limitFileReached;
     if (params.options.nbFileLimit > 1) {
       message =
               params.options.labels.limitFilesReached.replace(/@number@/, params.options.nbFileLimit);
@@ -312,7 +333,7 @@
    * @private
    */
   function __renderUploadBloc(params) {
-    var $uploadBloc = $('<div>').addClass('actions');
+    const $uploadBloc = $('<div>').addClass('actions');
     params.$uploadContainer = $uploadBloc;
     __appendFileInputs(params, $uploadBloc);
     return $uploadBloc;
@@ -325,7 +346,7 @@
    * @private
    */
   function __renderWaitingUploadList(params) {
-    var $list = $('<div>').addClass('waiting-list');
+    const $list = $('<div>').addClass('waiting-list');
     params.$waitingUploadList = $list;
     return $list;
   }
@@ -337,7 +358,7 @@
    * @private
    */
   function __renderUploadedFilesList(params) {
-    var $list = $('<div>').addClass('uploaded-file-list');
+    const $list = $('<div>').addClass('uploaded-file-list');
     params.$uploadedFileList = $list;
     $list.on(EVENT.SEND_FILE, function(event, uploadHandler) {
       uploadHandler.send();
@@ -353,14 +374,14 @@
    */
   function __appendFileInputs(params, $uploadBloc) {
 
-    var chooseFileLabel = params.options.labels.chooseFiles;
+    let chooseFileLabel = params.options.labels.chooseFiles;
     if (!params.options.multiple) {
       chooseFileLabel = params.options.labels.chooseFile;
     }
 
     // File
     $uploadBloc.empty();
-    var $img = undefined;
+    let $img = undefined;
     if (params.options.dragAndDropDisplayIcon) {
       $img = $('<div>').append($('<img>', {
         title: chooseFileLabel,
@@ -368,16 +389,16 @@
         src: webContext + '/util/icons/create-action/addFile.png'
       })).addClass('icon');
     }
-    var $fileInputs = $('<div>').addClass('fileinputs').addClass('input');
-    var $form = $('<form>', {
-      id: 'form-' + params.containerOriginId,
-      method: 'post',
-      action: '#'
+    const $fileInputs = $('<div>').addClass('fileinputs').addClass('input');
+    const $form = $('<form>', {
+      id : 'form-' + params.containerOriginId,
+      method : 'post',
+      action : '#'
     });
-    var $fileInput = $('<input>', {
-      multiple: params.options.multiple,
-      type: 'file',
-      length: 40
+    const $fileInput = $('<input>', {
+      multiple : params.options.multiple,
+      type : 'file',
+      length : 40
     }).addClass('dragAndDrop');
     $form.append($fileInput);
     $fileInputs.append($form);
@@ -389,11 +410,11 @@
         $img.addClass('dng');
       }
       $uploadBloc.addClass('dng');
-      var $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
-        $fileInput.click();
-        return false;
-      }));
-      var $areaInput = $('<div>').addClass('droparea').append($('<span>').append((
+      const $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
+            $fileInput.click();
+            return false;
+          }));
+      const $areaInput = $('<div>').addClass('droparea').append($('<span>').append((
               params.options.multiple ? params.options.labels.dragAndDropFiles :
               params.options.labels.dragAndDropFile))).click(function() {
         $('a', $buttonInput).click();
@@ -414,7 +435,7 @@
         event.stopPropagation();
         event.preventDefault();
         $areaInput.removeClass('hover');
-        var files = __extractFilesFromEvent(event);
+        const files = __extractFilesFromEvent(event);
         if (files) {
           __appendHtml5Upload(params, files);
           __appendFileInputs(params, $uploadBloc);
@@ -442,7 +463,7 @@
    * @private
    */
   function __extractFilesFromEvent(event) {
-    var files = event.target.files;
+    let files = event.target.files;
     if (!files && event.dataTransfer) {
       files = event.dataTransfer.files;
     }
@@ -463,14 +484,14 @@
     // Verify that upload is possible
     if (__verifyUploadIsPossible(params, 1)) {
 
-      var uploadCommons = __performAppendUploadCommons(params, $inputOfFiles);
-      var $fileUploadContainer = $('<div>', {
-        id: uploadCommons.uploadContext.uploadId
+      const uploadCommons = __performAppendUploadCommons(params, $inputOfFiles);
+      const $fileUploadContainer = $('<div>', {
+        id : uploadCommons.uploadContext.uploadId
       });
-      var $form = $('<form>', {
-        id: uploadCommons.uploadContext.formId,
-        method: 'post',
-        action: uploadCommons.uploadContext.uploadUrl
+      const $form = $('<form>', {
+        id : uploadCommons.uploadContext.formId,
+        method : 'post',
+        action : uploadCommons.uploadContext.uploadUrl
       });
       $inputOfFiles.attr({
         name: 'file_upload'
@@ -502,7 +523,12 @@
       setTimeout(function() {
         // One sending per file
         $(files).each(function(index, file) {
-          var uploadCommons = __performAppendUploadCommons(params, [file]);
+          if (!params.options.multiple && index > 0) {
+            // One file only
+            return;
+          }
+
+          const uploadCommons = __performAppendUploadCommons(params, [file]);
 
           // Perform uploads
           __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
@@ -523,7 +549,7 @@
    */
   function __verifyUploadIsPossible(params, nbFilesToSend) {
     if (params.options.nbFileLimit > 0) {
-      var nbPossibleFileSends = __getNbPossibleFileSends(params);
+      const nbPossibleFileSends = __getNbPossibleFileSends(params);
       if (nbPossibleFileSends < nbFilesToSend) {
         notyError(__getUploadLimitWarningMessage(params));
         return false;
@@ -543,7 +569,7 @@
   function __performAppendUploadCommons(params, files) {
 
     // Gets a new upload identifier
-    var uploadContext = __buildUploadContext(params);
+    const uploadContext = __buildUploadContext(params);
 
     // Nb files in upload
     uploadContext.nbFiles = 1;
@@ -552,13 +578,13 @@
     }
 
     // Prepare waiting message
-    var waitingMessage = params.options.labels.sendingFile.replace(/@name@/, (
+    let waitingMessage = params.options.labels.sendingFile.replace(/@name@/, (
             (isFileAPI && files) ? files[0].name : files.val()));
     if (isFileAPI && uploadContext.nbFiles > 1) {
       waitingMessage =
               params.options.labels.sendingFiles.replace(/@number@/, uploadContext.nbFiles);
     }
-    var $waitingEndOfUploadContainer = $('<div>').addClass('inlineMessage-waiting').append(waitingMessage);
+    const $waitingEndOfUploadContainer = $('<div>').addClass('inlineMessage-waiting').append(waitingMessage);
 
     // Adding to the DOM the waiting message
     params.$waitingUploadList.append($waitingEndOfUploadContainer);
@@ -592,7 +618,7 @@
   function __getNbPossibleFileSends(params) {
 
     // Total number of files
-    var nbFiles = params.$uploadedFileList.children().length;
+    const nbFiles = params.$uploadedFileList.children().length;
 
     // Result
     return params.options.nbFileLimit - nbFiles;
@@ -610,8 +636,8 @@
    */
   function __UploadHandler(uploadContext, $waitingEndOfUploadContainer, $formUploadContainer,
           file) {
-    var self = this;
-    var xhr = null;
+    const self = this;
+    let xhr = null;
 
     /**
      * Aborts the send.
@@ -654,12 +680,12 @@
         }).submit();
       } else if (isFileAPI) {
         // HTML5 upload way
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         if (xhr.upload && file) {
           __renderUploadFile(uploadContext, self, file.name, $waitingEndOfUploadContainer);
           xhr.onload = function() {
             notySetupRequestComplete.call(this, xhr);
-            if (xhr.status == 200) {
+            if (xhr.status === 200) {
               self.sendFile(file);
             } else {
               xhr.onerror.call(this);
@@ -673,7 +699,7 @@
           };
 
           xhr.open("POST", uploadContext.uploadUrl + '/verify', true);
-          var data = new FormData();
+          const data = new FormData();
           data.append('fullPath', file.name);
           data.append('name', file.name);
           data.append('size', file.size);
@@ -692,7 +718,7 @@
       xhr.onload = function() {
         notySetupRequestComplete.call(this, xhr);
         try {
-          var uploadedFilesData = $.parseJSON($(this.responseText).html());
+          const uploadedFilesData = $.parseJSON($(this.responseText).html());
           self.sendComplete(uploadedFilesData);
           __triggerUploadedListChanged(uploadContext);
         } catch (e) {
@@ -701,11 +727,11 @@
       };
 
       // Progress informations
-      var $loadInfo = $('<span>').appendTo($waitingEndOfUploadContainer);
-      var $loadBar = $('<div>').addClass('progress-bar').appendTo($waitingEndOfUploadContainer);
+      const $loadInfo = $('<span>').appendTo($waitingEndOfUploadContainer);
+      const $loadBar = $('<div>').addClass('progress-bar').appendTo($waitingEndOfUploadContainer);
       xhr.upload.addEventListener("progress", function(event) {
-        var ratio = event.loaded / event.total;
-        var percentage = parseInt(ratio * 100);
+        const ratio = event.loaded / event.total;
+        const percentage = parseInt(ratio * 100);
         $loadInfo.empty();
         $loadInfo.append(' (').append(percentage).append('%)');
         $loadBar.height($waitingEndOfUploadContainer.height());
@@ -724,6 +750,9 @@
 
       // Start upload
       xhr.open("POST", uploadContext.uploadUrl, true);
+      if (uploadContext.options.componentInstanceId) {
+        xhr.setRequestHeader('X-COMPONENT-INSTANCE-ID', uploadContext.options.componentInstanceId);
+      }
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
       xhr.setRequestHeader('X-FULL-PATH', encodeURIComponent(file.name));
       xhr.send(file);
@@ -792,22 +821,22 @@
    * @private
    */
   function __FileUI(params) {
-    var self = this;
+    const self = this;
 
     $('fieldset#' + params.containerOriginId).css('height', 'auto');
-    var $file = $('<div>').addClass('uploaded-file');
-    var $fileDetails = $('<div>').addClass('details');
-    var $fileInfos = $('<div>').addClass('infos');
-    var $fileTitleInfo = $('<div>').addClass('infos-title');
+    const $file = $('<div>').addClass('uploaded-file');
+    const $fileDetails = $('<div>').addClass('details');
+    const $fileInfos = $('<div>').addClass('infos');
+    const $fileTitleInfo = $('<div>').addClass('infos-title');
     if (!params.options.infoInputs) {
       $fileInfos.css("display", "none");
     }
-    var $fileDescriptionInfo = $('<div>').addClass('infos-description');
+    const $fileDescriptionInfo = $('<div>').addClass('infos-description');
     $file.append($fileDetails, $fileInfos.append($fileTitleInfo, $fileDescriptionInfo));
 
-    var uploadHandler = null;
-    var $waitingEndOfUploadContainer = null;
-    var uploadedFileData = null;
+    let uploadHandler = null;
+    let $waitingEndOfUploadContainer = null;
+    let uploadedFileData = null;
 
     // Header - details
     $file.on(EVENT.DELETE_FILE, function() {
@@ -824,10 +853,10 @@
       });
     });
     $fileDetails.append($('<span>'));
-    var $deleteAction = $('<a>').attr('href', '#').addClass('delete-file').append($('<img>', {
-      title: params.options.labels.deleteFile,
-      alt: params.options.labels.deleteFile,
-      src: webContext + '/util/icons/cross.png'
+    const $deleteAction = $('<a>').attr('href', '#').addClass('delete-file').append($('<img>', {
+      title : params.options.labels.deleteFile,
+      alt : params.options.labels.deleteFile,
+      src : webContext + '/util/icons/cross.png'
     })).click(function() {
       $file.trigger(EVENT.DELETE_FILE);
       return false;
@@ -835,14 +864,14 @@
     $fileDetails.append($deleteAction.hide());
 
     // Body - title and description
-    var dummyBaseId = new Date().getMilliseconds();
-    var $fileTitle = $('<input>', {
-      type: 'text',
-      id: dummyBaseId + '-title',
-      name: dummyBaseId + '-title',
-      maxLength: 150,
-      length: 40,
-      placeholder: params.options.labels.title
+    const dummyBaseId = new Date().getMilliseconds();
+    const $fileTitle = $('<input>', {
+      type : 'text',
+      id : dummyBaseId + '-title',
+      name : dummyBaseId + '-title',
+      maxLength : 150,
+      length : 40,
+      placeholder : params.options.labels.title
     });
     if (!isFileAPI) {
       $fileTitleInfo.append($('<label>').attr('for',
@@ -850,12 +879,12 @@
               "<br/>"));
     }
     $fileTitleInfo.append($fileTitle);
-    var $fileDescription = $('<textarea>', {
-      id: dummyBaseId + '-description',
-      name: dummyBaseId + '-description',
-      rows: 2,
-      cols: 40,
-      placeholder: params.options.labels.description
+    const $fileDescription = $('<textarea>', {
+      id : dummyBaseId + '-description',
+      name : dummyBaseId + '-description',
+      rows : 2,
+      cols : 40,
+      placeholder : params.options.labels.description
     });
     if (!isFileAPI) {
       $fileDescriptionInfo.append($('<label>').attr('for', dummyBaseId +
@@ -877,7 +906,7 @@
      * @param iconUrl
      */
     this.setFileIcon = function(iconUrl) {
-      var $img = $('img.file-icon', $fileDetails);
+      let $img = $('img.file-icon', $fileDetails);
       if ($img.length === 0) {
         $img = $('<img>').attr('alt', '').addClass('file-icon').prependTo($fileDetails);
       }
@@ -904,11 +933,13 @@
       uploadedFileData = file;
 
       // Hidden technical input
-      $file.prepend($('<input>', {
+      const $input = $('<input>', {
         type: 'hidden',
         name: 'uploaded-file-' + uploadedFileData.uploadSessionId,
         value: uploadedFileData.uploadSessionId
-      }));
+      });
+      $input.data('uploadedFileData', uploadedFileData);
+      $file.prepend($input);
 
       // Header - details
       self.setFileIcon(uploadedFileData.iconUrl);
@@ -944,12 +975,12 @@
    * @private
    */
   function __buildUploadContext(params) {
-    var uploadId = params.containerOriginId + '-' + params.uploadCount;
-    var uploadContext = $.extend({
-      uploadId: uploadId,
-      formId: 'form-' + uploadId,
-      inputId: 'input-' + uploadId,
-      uploadUrl: webContext + '/services/fileUpload'
+    const uploadId = params.containerOriginId + '-' + params.uploadCount;
+    const uploadContext = $.extend({
+      uploadId : uploadId,
+      formId : 'form-' + uploadId,
+      inputId : 'input-' + uploadId,
+      uploadUrl : webContext + '/services/fileUpload'
     }, params);
     params.uploadCount++;
     return uploadContext;
@@ -983,32 +1014,33 @@
    * @private
    */
   function __buildOptions(options) {
-    var aggregatedOptions = {
-      multiple: true,
-      dragAndDropDisplay: true,
-      dragAndDropDisplayIcon: true,
-      infoInputs: true,
-      jqueryFormSelector: '',
-      nbFileLimit: 0,
-      labels: {
-        browse: '',
-        chooseFile: '',
-        chooseFiles: '',
-        dragAndDropFile: '',
-        dragAndDropFiles: '',
-        sendingFile: '',
-        sendingFiles: '',
-        sendingWaitingWarning: '',
-        limitFileWarning: '',
-        limitFilesWarning: '',
-        limitFileReached: '',
-        limitFilesReached: '',
-        title: '',
-        description: '',
-        deleteFile: ''
+    const aggregatedOptions = {
+      componentInstanceId : undefined,
+      multiple : true,
+      dragAndDropDisplay : true,
+      dragAndDropDisplayIcon : true,
+      infoInputs : true,
+      jqueryFormSelector : '',
+      nbFileLimit : 0,
+      labels : {
+        browse : '',
+        chooseFile : '',
+        chooseFiles : '',
+        dragAndDropFile : '',
+        dragAndDropFiles : '',
+        sendingFile : '',
+        sendingFiles : '',
+        sendingWaitingWarning : '',
+        limitFileWarning : '',
+        limitFilesWarning : '',
+        limitFileReached : '',
+        limitFilesReached : '',
+        title : '',
+        description : '',
+        deleteFile : ''
       }
     };
-    var _options = $.extend(aggregatedOptions, options);
+    const _options = $.extend(aggregatedOptions, options);
     if (!isFileAPI) {
       _options.multiple = false;
       _options.dragAndDropDisplay = false;
@@ -1024,8 +1056,8 @@
    * @private
    */
   function __buildContext(params, options) {
-    var context = {
-      options: options
+    const context = {
+      options : options
     };
     params.options = options;
     params.context = context;

@@ -65,6 +65,11 @@ public class DocumentViewBuilder {
     }
 
     @Override
+    public String getDocumentType() {
+      return "attachment";
+    }
+
+    @Override
     public String getLanguage() {
       return "fr";
     }

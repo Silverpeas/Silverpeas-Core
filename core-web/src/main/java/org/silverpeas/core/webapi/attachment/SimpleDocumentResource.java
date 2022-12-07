@@ -43,7 +43,6 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.attachment.WebDavTokenProducer;
 import org.silverpeas.core.web.http.FileResponse;
-import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.UserPrivilegeValidator;
@@ -67,6 +66,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
+import static org.silverpeas.core.web.attachment.SimpleDocumentUploadData.decode;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 @WebService
@@ -138,8 +138,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response updateDocument(final @PathParam("filename") String filename) throws IOException {
-    SimpleDocumentUploadData uploadData =
-        RequestParameterDecoder.decode(getHttpRequest(), SimpleDocumentUploadData.class);
+    SimpleDocumentUploadData uploadData = decode(getHttpRequest());
 
     try {
 

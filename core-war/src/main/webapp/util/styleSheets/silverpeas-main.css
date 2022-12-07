@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2022 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -3391,6 +3391,10 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
   max-width: inherit;
 }
 
+.ui-dialog #dialog-attachment-add #file_create_name {
+  width: 88%;
+}
+
 /*- [ attachments END ] ------------------------- */
 
 #admin-component .componentIcon {
@@ -5075,14 +5079,21 @@ input.search:focus {
   margin-bottom:14px;
 }
 
-.ui-dialog .form-container .label {
+.ui-dialog .form-container .label,
+.ui-dialog .form-container .silverpeas-label {
   font-weight: bold;
   color: #666;
 }
 
-.ui-dialog .form-container label {
+.ui-dialog .form-container label,
+.ui-dialog .form-container .label.value,
+.ui-dialog .form-container .silverpeas-label.value {
   font-weight: normal;
   color: #333;
+}
+
+.ui-dialog .form-container div.silverpeas-radio-input {
+  display: inline;
 }
 
 .ui-dialog .form-container input {
@@ -5482,6 +5493,7 @@ ul.tagit li.tagit-choice a.tagit-close {
   clear: left;
 }
 
+.ui-dialog .champ-ui-dialog .document-template-input,
 .ui-dialog .champ-ui-dialog input[type=text],
 .ui-dialog .champ-ui-dialog input[type=file],
 .ui-dialog .champ-ui-dialog textarea {
@@ -7139,6 +7151,126 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
 
 .unvalidated-wysiwyg-content-confirmation .help {
   display: none;
+}
+
+/**
+ * Document Template
+ */
+
+.document-template-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  flex-flow: wrap;
+}
+
+.document-template-list li {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 0;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  display: block;
+  max-width: 250px;
+}
+
+.ui-dialog .document-template-list li {
+  width: 150px;
+}
+
+.document-template-list .title {
+  font-weight: bold;
+  padding-bottom: 0.5em;
+  display: block;
+}
+
+.document-template-list .document-template-thumb img {
+  width: 100%;
+  height: 100%;
+}
+
+.document-template-list .preview img {
+  width: 100%;
+  height: 100%;
+}
+
+.document-template-list li .actions {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  height: 20px;
+  padding: 0;
+  z-index: 100;
+  width: auto;
+}
+
+.document-template-list li .actions a {
+  position: relative;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-left: 4px;
+  z-index: 100;
+  text-indent: 300em;
+  white-space: nowrap;
+  border-radius: 16px;
+}
+
+.document-template-list li:hover .preview-button {
+  background: #FFF url(../icons/preview.png) 2px 4px no-repeat;
+}
+
+.document-template-list li:hover .view-button {
+  background: #FFF url(../icons/view.png) 2px 3px no-repeat;
+}
+
+.document-template-list li:hover .delete-button {
+  background: #FFF url(../icons/delete.gif) 0 0 no-repeat;
+}
+
+.document-template-form .field {
+  margin-top: 5px;
+}
+
+.document-template-form .field.languages {
+  margin-top: 2px;
+}
+
+.document-template-form .languages {
+  display: inline-flex;
+}
+
+.document-template-form .languages label {
+  font-weight: normal;
+  width: 30px;
+  padding-right: 20px;
+}
+
+.document-template-form .languages label::before {
+  content: '[';
+}
+
+.document-template-form .languages label::after {
+  content: ']';
+}
+
+.document-template-form .file-upload {
+  display: flex;
+}
+
+.document-template-form .file-upload > img {
+  margin-top: 23px;
+}
+
+.document-template-form .legend {
+  padding-left: 15px;
+  clear: both;
 }
 
 /**

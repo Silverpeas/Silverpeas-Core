@@ -44,7 +44,7 @@ import java.io.UnsupportedEncodingException;
 public class RequestFile {
   private final FileItem fileItem;
 
-  RequestFile(final FileItem fileItem) {
+  public RequestFile(final FileItem fileItem) {
     this.fileItem = fileItem;
   }
 

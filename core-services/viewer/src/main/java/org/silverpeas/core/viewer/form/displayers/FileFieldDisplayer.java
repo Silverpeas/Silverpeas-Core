@@ -213,9 +213,9 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">\n");
     sb.append("function previewFormFile(target, attachmentId) {\n");
-    sb.append("$(target).preview(\"previewAttachment\", {\n");
-    sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId,\n");
+    sb.append("$(target).preview(\"document\", {\n");
+    sb.append("documentType: 'attachment',\n");
+    sb.append("documentId: attachmentId,\n");
     sb.append("lang: '").append(context.getContentLanguage()).append("'\n");
     sb.append("});\n");
     sb.append("return false;");
@@ -228,9 +228,9 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">\n");
     sb.append("function viewFormFile(target, attachmentId) {\n");
-    sb.append("$(target).view(\"viewAttachment\", {\n");
-    sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
-    sb.append("attachmentId: attachmentId,\n");
+    sb.append("$(target).view(\"document\", {\n");
+    sb.append("documentType: 'attachment',\n");
+    sb.append("documentId: attachmentId,\n");
     sb.append("lang: '").append(context.getContentLanguage()).append("'\n");
     sb.append("});\n");
     sb.append("return false;");

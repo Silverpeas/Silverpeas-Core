@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.viewer.model;
 
+import org.silverpeas.core.viewer.service.ViewerContext;
+
 import java.io.File;
 
 import static org.silverpeas.core.viewer.model.ViewerSettings.getLicenceKey;
@@ -33,16 +35,15 @@ import static org.silverpeas.core.viewer.model.ViewerSettings.getLicenceKey;
 public abstract class AbstractView extends AbstractPreview implements DocumentView {
   private static final long serialVersionUID = 7925552492746846823L;
 
-  private int nbPages = 0;
+  private final int nbPages;
   private boolean documentSplit = false;
   private boolean searchDataComputed = false;
 
   /**
    * Default constructor
    */
-  protected AbstractView(final String documentId, final String language,
-      final String originalFileName, final File physicalFile, final int nbPages) {
-    super(documentId, language, originalFileName, physicalFile);
+  protected AbstractView(final ViewerContext context, final File physicalFile, final int nbPages) {
+    super(context, physicalFile);
     this.nbPages = nbPages;
   }
 

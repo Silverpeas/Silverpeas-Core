@@ -31,6 +31,7 @@ import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.io.media.image.option.OrientationOption;
+import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.PdfUtil;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.Optional.of;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.silverpeas.core.util.CollectionUtil.asSet;
 import static org.silverpeas.core.util.ImageUtil.*;
@@ -127,8 +129,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         }
 
         // Returning the result
-        return new TemporaryPreview(viewerContext.getDocumentId(), viewerContext.getLanguage(),
-            viewerContext.getOriginalFileName(), resultFile);
+        return new TemporaryPreview(viewerContext, resultFile);
       }
 
       @Override
@@ -136,11 +137,18 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             ViewService.get().isViewable(viewerContext.getOriginalSourceFile()))
           ManagedThreadPool.getPool().invoke(() -> {
-            ViewService.get().getDocumentView(viewerContext.clone());
+            ViewService.get().getDocumentView(viewerContext.copy());
           });
         return ViewerTreatment.super.performAfterSuccess(result);
       }
     }).execute(viewerContext);
+  }
+
+  @Override
+  public void removePreview(final ViewerContext viewerContext) {
+    of(viewerContext.fromInitializerProcessName(PROCESS_NAME).getWorkspace())
+        .filter(TemporaryWorkspaceTranslation::exists)
+        .ifPresent(TemporaryWorkspaceTranslation::remove);
   }
 
   /**

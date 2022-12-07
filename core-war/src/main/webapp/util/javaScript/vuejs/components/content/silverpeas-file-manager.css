@@ -1,0 +1,101 @@
+/*
+ * Copyright (C) 2000 - 2022 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+
+
+.ui-dialog .creation-choice {
+  padding: 1em 0;
+  border-bottom: 1px solid #DDD;
+  margin-bottom: 1em;
+}
+
+.ui-dialog .creation-choice > div {
+  display: inline-block;
+  padding-right: 2em;
+}
+
+.ui-dialog .creation-choice div:has(input[checked="checked"]) label,
+.ui-dialog .creation-choice div:has(input.checked) .silverpeas-label {
+  color: #0060df;
+}
+
+.ui-dialog .document-template-input .sp_button {
+  background: linear-gradient(to top, #E5E5E5, #FFF);
+  line-height: 16px;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  color: #4C4C4C;
+  padding: 7px 10px;
+  font-weight: 600;
+  display: inline-block;
+  font-size: 12px !important;
+
+}
+
+.ui-dialog .document-template-input .sp_button:before {
+  content: '';
+  background: transparent url(../../../../icons/addFiche.png) 0 0 no-repeat;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 0.5em;
+  float: left;
+}
+
+.ui-dialog .help {
+  font-style: italic;
+  color: #878787;
+  display: block;
+  line-height: 100%;
+  font-size: 90%;
+  padding-top: 7px;
+}
+
+.ui-dialog .document-template-input .document-template {
+  max-width: inherit;
+  display: flex;
+  flex-direction: row-reverse;
+  text-align: left;
+}
+
+.ui-dialog .document-template-input .document-template .editorial {
+  width: calc(100% - 70px);
+  padding: 10px;
+}
+
+.ui-dialog .document-template-input .document-template .preview {
+  width: 50px;
+}
+
+.ui-dialog .champ-ui-dialog .silverpeas-file-upload .fileUpload {
+  width: 100%;
+}
+
+.ui-dialog .champ-ui-dialog .silverpeas-file-upload .fileUpload-container {
+  margin: 0;
+}
+
+.ui-dialog .champ-ui-dialog .silverpeas-file-upload .fileUpload-container .fileinputs {
+  margin-left: 0;
+}

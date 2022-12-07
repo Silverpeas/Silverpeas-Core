@@ -108,6 +108,10 @@ public interface SupportedWebPlugin {
      */
     public static final SupportedWebPlugin CALENDAR = () -> "CALENDAR";
     /**
+     * Silverpeas plugin to handle DOM element autoresize.
+     */
+    public static final SupportedWebPlugin AUTORESIZE = () -> "AUTORESIZE";
+    /**
      * Silverpeas plugin to render a pane with the attachments of a given Silverpeas resource
      * (publication, suggestion, event, ...) in a given component instance.
      */
@@ -222,6 +226,14 @@ public interface SupportedWebPlugin {
      * Silverpeas plugin to handle selection of images into Silverpeas's repositories.
      */
     public static final SupportedWebPlugin IMAGESELECTOR = () -> "IMAGESELECTOR";
+    /**
+     * Silverpeas plugin to handle file management.
+     */
+    public static final SupportedWebPlugin FILEMANAGER = () -> "FILEMANAGER";
+    /**
+     * Silverpeas plugin to handle selection of document templates into Silverpeas's repositories.
+     */
+    public static final SupportedWebPlugin DOCUMENTTEMPLATE = () -> "DOCUMENTTEMPLATE";
     /**
      * Silverpeas plugin to handle basket of resources into Silverpeas's.
      */

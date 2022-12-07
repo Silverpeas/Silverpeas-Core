@@ -63,6 +63,11 @@ public class PreviewBuilder {
     }
 
     @Override
+    public String getDocumentType() {
+      return "doc-type";
+    }
+
+    @Override
     public String getLanguage() {
       return "fr";
     }

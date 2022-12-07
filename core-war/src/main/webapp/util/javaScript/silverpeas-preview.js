@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,33 +55,32 @@
      * - componentInstanceId : the id of the current component instance,
      * - attachmentId : the id of the aimed attachment.
      */
-    previewAttachment: function(options) {
-
+    document: function(options) {
       // Light checking
-      if (!options.componentInstanceId || !options.attachmentId) {
-        console.error("Bad component instance id or attachment id");
+      if (!options.documentType || !options.documentId) {
+        console.error("Bad document id or document type");
         return false;
       }
-
       // Dialog
+      options = extendsObject({
+        noNavigation : false
+      }, options);
       return __openPreview($Src(this), options);
     }
   };
 
   /**
    * The preview Silverpeas plugin based on JQuery.
-   * This JQuery plugin abstrats the way an HTML element (usually a form or a div) is rendered
+   * This JQuery plugin abstract the way an HTML element (usually a form or a div) is rendered
    * within a JQuery UI dialog.
    *
    * Here the preview namespace in JQuery.
    */
   $Src.fn.preview = function(method) {
-
     if (!$UI.popup) {
       console.error("Silverpeas Popup JQuery Plugin is required.");
       return false;
     }
-
     if (methods[method]) {
       return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
     } else if (typeof method === 'object' || !method) {
@@ -105,9 +104,9 @@
       const $_this = $Src(this);
       // Waiting animation
       $UI.popup.showWaiting();
-      service.getDocumentPreview(options.attachmentId, options.componentInstanceId, options.lang).then(function(preview) {
+      service.getDocumentPreview(options.documentId, options.documentType, options.lang).then(function(preview) {
         $UI.popup.hideWaiting();
-        dialog.showWith($_this[0], preview);
+        dialog.showWith($_this[0], preview, options);
       }, function(e) {
         $UI.popup.hideWaiting();
         console.error(e);
@@ -118,6 +117,7 @@
   const PreviewDialog = function() {
     let __$ref;
     let __preview;
+    let __options;
     let $container = docUI.querySelector("#documentPreview");
     function __closePreviousPopup() {
       const __spPreviewPopup = $container.__spPreviewPopup;
@@ -132,9 +132,10 @@
     $container = docUI.createElement('div');
     $container.setAttribute('id', 'documentPreview');
     docUI.body.appendChild($container);
-    this.showWith = function($ref, preview) {
+    this.showWith = function($ref, preview, options) {
       __$ref = $ref;
       __preview = preview;
+      __options = options;
       this.refresh();
     }
     this.refresh = function() {
@@ -142,12 +143,13 @@
       if (!!__preview) {
         const $previewContent = new PreviewContent(__preview, docUI);
         $container.appendChild($previewContent.getContainer());
-        const $navigation = new PreviewNavigation(__$ref, $container);
+        const $navigation = new PreviewNavigation(__options, __$ref, $container);
         __closePreviousPopup();
         $container.__spPreviewPopup = $UI($container).popup('preview', {
           title: __preview.getTitle(),
           width: __preview.getWidth(),
           height: __preview.getHeight(),
+          forceBlurFirstElementOnOpen : true,
           callbackOnClose : function() {
             $navigation.destroy();
           }
@@ -171,12 +173,12 @@
     };
   }
 
-  const PreviewNavigation = function($ref, $hostContainer) {
+  const PreviewNavigation = function(options, $ref, $hostContainer) {
     const $baseContainer = $UI($hostContainer);
     let previousIndex = -1;
     let nextIndex = -1;
     const allDocumentPreviews = $W.sp.element.querySelectorAll(".preview-file", docSrc);
-    if (allDocumentPreviews && allDocumentPreviews.length > 1) {
+    if (!options.noNavigation && allDocumentPreviews && allDocumentPreviews.length > 1) {
       previousIndex = $Src.inArray($ref, allDocumentPreviews) - 1;
       if (previousIndex < 0) {
         previousIndex = allDocumentPreviews.length - 1;

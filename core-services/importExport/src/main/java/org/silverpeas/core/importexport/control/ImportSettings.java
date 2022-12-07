@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled;
 
 public class ImportSettings implements Cloneable {
 
@@ -47,10 +49,14 @@ public class ImportSettings implements Cloneable {
   private boolean poiUsed;
   private boolean versioningUsed;
   private int versionType;
+  private String versionComment;
   private int method;
   private String contentLanguage;
   private String targetValidatorIds;
   private PublicationDetail publicationForAllFiles = PublicationDetail.builder().build();
+  private String singleFileTitle;
+  private String singleFileDescription;
+  private boolean useFileMetadata = isUseFileMetadataForAttachmentDataEnabled();
 
   public ImportSettings(String pathToImport, UserDetail user, String componentId, String folderId,
       boolean draftUsed, boolean poiUsed, int method) {
@@ -166,8 +172,41 @@ public class ImportSettings implements Cloneable {
     this.versionType = versionType;
   }
 
+  public void setVersionAndComment(int versionType, String comment) {
+    this.versionType = versionType;
+    this.versionComment = comment;
+  }
+
   public int getVersionType() {
     return versionType;
+  }
+
+  public String getVersionComment() {
+    return versionComment;
+  }
+
+  public String getSingleFileTitle() {
+    return singleFileTitle;
+  }
+
+  public void setSingleFileTitle(final String singleFileTitle) {
+    this.singleFileTitle = singleFileTitle;
+  }
+
+  public String getSingleFileDescription() {
+    return singleFileDescription;
+  }
+
+  public void setSingleFileDescription(final String singleFileDescription) {
+    this.singleFileDescription = singleFileDescription;
+  }
+
+  public boolean isUseFileMetadata() {
+    return useFileMetadata;
+  }
+
+  public void setUseFileMetadata(final boolean useFileMetadata) {
+    this.useFileMetadata = useFileMetadata;
   }
 
   public String getContentLanguage() {

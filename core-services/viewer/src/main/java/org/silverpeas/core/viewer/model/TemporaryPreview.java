@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.viewer.model;
 
+import org.silverpeas.core.viewer.service.ViewerContext;
+
 import java.io.File;
 
 /**
@@ -34,8 +36,7 @@ public class TemporaryPreview extends AbstractPreview {
   /**
    * Default constructor
    */
-  public TemporaryPreview(final String documentId, final String language, final String originalFilename,
-      final File physicalFile) {
-    super(documentId, language, originalFilename, physicalFile);
+  public TemporaryPreview(final ViewerContext context, final File physicalFile) {
+    super(context, physicalFile);
   }
 }

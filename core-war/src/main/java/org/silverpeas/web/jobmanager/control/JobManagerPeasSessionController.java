@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.jobmanager.control;
 
+import org.silverpeas.core.documenttemplate.DocumentTemplateSettings;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.ArrayUtil;
@@ -127,6 +128,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + "/RjcrMonitor/jsp/Main", null, false);
     JobManagerService wbe = new JobManagerService("53", "JWBE", LEVEL_OPERATION, webContext
         + "/Rwbe/jsp/Main", null, false);
+    JobManagerService documentTemplate = new JobManagerService("54", "DOCUMENTTEMPLATE", LEVEL_OPERATION, webContext
+        + "/RdocumentTemplates/jsp/Main", null, false);
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
@@ -194,6 +197,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         if (WbeSettings.isEnabled()) {
           ids.add(wbe.getId());
           services.put(wbe.getId(), wbe);
+        }
+        if (DocumentTemplateSettings.isEnabled()) {
+          ids.add(documentTemplate.getId());
+          services.put(documentTemplate.getId(), documentTemplate);
         }
         ids.add(jst.getId());
         services.put(jst.getId(), jst);

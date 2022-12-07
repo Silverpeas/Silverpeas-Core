@@ -30,22 +30,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.service.DefaultPreviewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
+import org.silverpeas.core.webapi.attachment.SimpleDocumentEmbedMediaViewProvider;
 import org.silverpeas.web.ResourceGettingTest;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
-import javax.ws.rs.core.Response;
 import java.io.File;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,10 +67,15 @@ public class PreviewGettingIT extends ResourceGettingTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4WebCore.onWarForTestClass(PreviewGettingIT.class)
         .addRESTWebServiceEnvironment().testFocusedOn(warBuilder -> {
-          warBuilder.addClasses(StubbedUserPrivilegeValidator.class);
+          warBuilder.addClasses(SimpleDocumentEmbedMediaViewProvider.class);
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
           warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
         }).build();
+  }
+
+  @Before
+  public void setup() throws Exception {
+    ServiceProvider.getSingleton(SimpleDocumentEmbedMediaViewProvider.class).init();
   }
 
   @Singleton
@@ -85,6 +90,11 @@ public class PreviewGettingIT extends ResourceGettingTest {
       when(preview.getOriginalFileName()).thenReturn(originalFileName);
       when(preview.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
       return preview;
+    }
+
+    @Override
+    public void removePreview(final ViewerContext viewerContext) {
+
     }
   }
 
@@ -103,21 +113,12 @@ public class PreviewGettingIT extends ResourceGettingTest {
   }
 
   @Override
-  public void gettingAResourceByAnUnauthorizedUser() {
-    // verifications of authorization are done after (Alias management)
-    denyAuthorizationToUsers();
-    final int ok = Response.Status.OK.getStatusCode();
-    Response response = getAt(aResourceURI(), Response.class);
-    assertThat(response.getStatus(), is(ok));
-  }
-
-  @Override
   public String aResourceURI() {
     return aResourceURI(ATTACHMENT_ID);
   }
 
   private String aResourceURI(final String attachmentId) {
-    return "preview/" + getExistingComponentInstances()[0] + "/attachment/" + attachmentId;
+    return "preview/attachment/" + attachmentId;
   }
 
   @Override

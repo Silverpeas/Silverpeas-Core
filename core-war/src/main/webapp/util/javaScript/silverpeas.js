@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -802,11 +802,13 @@ if (!window.SilverpeasAjaxConfig) {
       this.headers = {};
     },
     withHeaders : function(headerParams) {
-      this.headers = (headerParams) ? headerParams : {};
+      this.headers = extendsObject({}, headerParams);
       return this;
     },
     withHeader : function(name, value) {
-      this.headers[name] = value;
+      if (typeof value !== 'undefined') {
+        this.headers[name] = value;
+      }
       return this;
     },
     getHeaders : function() {
@@ -2035,10 +2037,13 @@ if (typeof window.sp === 'undefined') {
       },
       /**
        * Includes Silverpeas's registered plugins into DOM.
-       * @param pluginName
+       * @param pluginNames {string|[string]} a plugin name as string or several as array of string.
        * @returns {Promise<unknown>} when inserted.
        */
-      includePlugin : function(pluginName) {
+      includePlugin : function(pluginNames) {
+        if (!window.__sp_includePluginCtx) {
+          window.__sp_includePluginCtx = {};
+        }
         function createScriptFrom(node, resolve, reject) {
           const nodeName = node.nodeName.toLowerCase();
           const $script = document.createElement(nodeName);
@@ -2062,35 +2067,45 @@ if (typeof window.sp === 'undefined') {
           alreadyExistsSelector += "']";
           return {$script : $script, alreadyExistsSelector : alreadyExistsSelector};
         }
-        return new Promise(function(resolve, reject) {
-          sp.ajaxRequest(webContext + '/plugin/' + pluginName).send().then(function(request) {
-            const newDom = sp.dom.parseHtmlString(request.responseText).querySelector('head');
-            const $dom = (document.body || document.documentElement);
-            let nodes = [];
-            Array.prototype.push.apply(nodes, newDom.childNodes);
-            let chainedPromises = sp.promise.resolveDirectlyWith();
-            nodes.forEach(function(node) {
-              const nodeName = node.nodeName.toLowerCase();
-              if (nodeName === 'link' || nodeName === 'style' || nodeName === 'script') {
-                chainedPromises = chainedPromises.then(function() {
-                  return new Promise(function (resolve, reject) {
-                    const result = createScriptFrom(node, resolve, reject);
-                    if (!document.querySelector(result.alreadyExistsSelector) &&
-                        !document.querySelector(result.alreadyExistsSelector.replace(/http.?:\/\/[^/]+/g, ''))) {
-                      $dom.appendChild(result.$script);
-                      if (!node.src && !node.href) {
+        const __pluginLoader = function(pluginName) {
+          if (window.__sp_includePluginCtx[pluginName]) {
+            return sp.promise.rejectDirectlyWith();
+          }
+          window.__sp_includePluginCtx[pluginName] = true;
+          return new Promise(function(resolve, reject) {
+            sp.ajaxRequest(webContext + '/plugin/' + pluginName).send().then(function(request) {
+              const newDom = sp.dom.parseHtmlString(request.responseText).querySelector('head');
+              const $dom = (document.body || document.documentElement);
+              let nodes = [];
+              Array.prototype.push.apply(nodes, newDom.childNodes);
+              let chainedPromises = sp.promise.resolveDirectlyWith();
+              nodes.forEach(function(node) {
+                const nodeName = node.nodeName.toLowerCase();
+                if (nodeName === 'link' || nodeName === 'style' || nodeName === 'script') {
+                  chainedPromises = chainedPromises.then(function() {
+                    return new Promise(function (resolve, reject) {
+                      const result = createScriptFrom(node, resolve, reject);
+                      if (!document.querySelector(result.alreadyExistsSelector) &&
+                          !document.querySelector(result.alreadyExistsSelector.replace(/http.?:\/\/[^/]+/g, ''))) {
+                        $dom.appendChild(result.$script);
+                        if (!node.src && !node.href) {
+                          resolve();
+                        }
+                      } else {
                         resolve();
                       }
-                    } else {
-                      resolve();
-                    }
+                    });
                   });
-                });
-              }
+                }
+              });
+              chainedPromises.then(resolve, reject);
             });
-            chainedPromises.then(resolve, reject);
           });
-        });
+        };
+        const pluginsToLoad = Array.isArray(pluginNames) ? pluginNames : [pluginNames];
+        return sp.promise.whenAllResolvedOrRejected(pluginsToLoad.map(function(pluginName) {
+          return __pluginLoader(pluginName);
+        }));
       }
     },
     form : {
@@ -2128,6 +2143,15 @@ if (typeof window.sp === 'undefined') {
       };
     },
     element : {
+      focus : function(elementOrCssSelector) {
+        const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
+        const oldTabIndex = element.tabIndex;
+        element.tabIndex = 0;
+        setTimeout(function() {
+          element.focus();
+          element.tabIndex = oldTabIndex;
+        }, 0);
+      },
       cloneAndReplace: function(elementOrCssSelector, beforeReplaceCallback) {
         const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
         const elClone = element.cloneNode(true);
@@ -2251,6 +2275,19 @@ if (typeof window.sp === 'undefined') {
           }
           sp.element.setScrollTo(scrollTop, $view);
         }
+      },
+      scrollToWhenSilverpeasEntirelyLoaded: function(elementOrCssSelector, $view, options) {
+        whenSilverpeasEntirelyLoaded(function() {
+          if (window.AttachmentsAsContentViewer) {
+            AttachmentsAsContentViewer.whenAllCurrentAttachmentDisplayed(function() {
+              sp.element.scrollTo(elementOrCssSelector, $view, options);
+            });
+          } else {
+            setTimeout(function() {
+              sp.element.scrollTo(elementOrCssSelector, $view, options);
+            }, 0);
+          }
+        });
       },
       setScrollTo: function(scrollTop, $view) {
         if (typeof $view === 'undefined') {

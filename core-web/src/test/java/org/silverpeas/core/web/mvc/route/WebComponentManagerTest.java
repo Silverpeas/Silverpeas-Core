@@ -164,7 +164,8 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
     verify(testResult.requestContext.getResponse(), times(1))
-        .sendError(HttpServletResponse.SC_FORBIDDEN);
+        .sendError(HttpServletResponse.SC_FORBIDDEN,
+            "User id null has not access right to /silverpeas/componentName26/lowerRoleAccess");
     verifyPathFound(testResult);
     verifyDestination(testResult.router, "/admin/jsp/errorpageMain.jsp");
   }

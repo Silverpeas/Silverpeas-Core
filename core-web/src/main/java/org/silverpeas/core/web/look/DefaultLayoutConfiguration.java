@@ -24,7 +24,6 @@
 package org.silverpeas.core.web.look;
 
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 

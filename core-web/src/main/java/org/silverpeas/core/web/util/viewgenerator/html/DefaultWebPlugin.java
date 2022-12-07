@@ -62,6 +62,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(RESPONSIBLES, JavascriptPluginInclusion::includeResponsibles);
     add(POPUP, (x, l) -> includePopup(x));
     add(CALENDAR, JavascriptPluginInclusion::includeCalendar);
+    add(AUTORESIZE, (x, l) -> includeAutoresize(x));
     add(IFRAMEAJAXTRANSPORT, (x, l) -> includeIFrameAjaxTransport(x));
     add(PREVIEW, (x, l) -> includePreview(x));
     add(FPVIEWER, (x, l) -> includeFlexPaperViewer(x));
@@ -85,13 +86,15 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(CONTRIBUTIONMODICTX, (x, l) -> includeContributionModificationContext(x));
     add(DRAGANDDROPUPLOAD, JavascriptPluginInclusion::includeDragAndDropUpload);
     add(IMAGESELECTOR, JavascriptPluginInclusion::includeImageSelector);
+    add(FILEMANAGER, (x, l) -> includeFileManager(x));
+    add(DOCUMENTTEMPLATE, (x, l) -> includeDocumentTemplate(x));
     add(BASKETSELECTION, (x, l) -> includeBasketSelection(x));
     add(CHART, JavascriptPluginInclusion::includeChart);
     add(CHAT, (x, l) -> includeChat(x));
     add(SELECTIZE, (x, l) -> includeSelectize(x));
     add(LISTOFUSERSANDGROUPS, JavascriptPluginInclusion::includeListOfUsersAndGroups);
     add(USERNOTIFICATION, (x, l) -> includeUserNotification(x));
-    add(ATTACHMENT, (x, l) -> includeAttachment(x));
+    add(ATTACHMENT, JavascriptPluginInclusion::includeAttachment);
     add(CRUD, (x, l) -> includeCrud(x));
     add(PANES, (x, l) -> includePanes(x));
     add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);

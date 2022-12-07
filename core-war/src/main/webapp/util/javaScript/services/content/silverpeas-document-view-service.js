@@ -25,29 +25,29 @@
 (function() {
 
   window.ViewService = function() {
-    const documentPreviewRepository = new DocumentPreviewRepository();
-    const documentViewRepository = new DocumentViewRepository();
+    const documentPreviewRepository = new Repository("preview", DocumentPreview);
+    const documentViewRepository = new Repository("view", DocumentView);
 
     /**
      * Gets document preview from given data.
-     * @param attachmentId identifier of an attachment.
-     * @param componentInstanceId identifier of a component instance.
-     * @param contentLanguage the content language into which the attachment is requested.
+     * @param documentId identifier of a document.
+     * @param documentType type of the document (not the mime type).
+     * @param contentLanguage the content language into which the document is requested.
      * @returns {*}
      */
-    this.getDocumentPreview = function(attachmentId, componentInstanceId, contentLanguage) {
-      return documentPreviewRepository.get(attachmentId, componentInstanceId, contentLanguage);
+    this.getDocumentPreview = function(documentId, documentType, contentLanguage) {
+      return documentPreviewRepository.get(documentId, documentType, contentLanguage);
     }
 
     /**
      * Gets document view from given data.
-     * @param attachmentId identifier of an attachment.
-     * @param componentInstanceId identifier of a component instance.
+     * @param documentId identifier of an attachment.
+     * @param documentType type of the document (not the mime type).
      * @param contentLanguage the content language into which the attachment is requested.
      * @returns {*}
      */
-    this.getDocumentView = function(attachmentId, componentInstanceId, contentLanguage) {
-      return documentViewRepository.get(attachmentId, componentInstanceId, contentLanguage);
+    this.getDocumentView = function(documentId, documentType, contentLanguage) {
+      return documentViewRepository.get(documentId, documentType, contentLanguage);
     }
   };
 
@@ -67,31 +67,6 @@
     };
   };
 
-  const DocumentPreviewRepository = function() {
-    const baseUri = webContext + "/services/preview/";
-    const baseAdapter = RESTAdapter.get(baseUri, DocumentPreview);
-
-    /**
-     * Gets document preview from given data.
-     * @param attachmentId identifier of an attachment.
-     * @param componentInstanceId identifier of a component instance.
-     * @param contentLanguage the content language into which the attachment is requested.
-     * @returns {*}
-     */
-    this.get = function(attachmentId, componentInstanceId, contentLanguage) {
-      if (attachmentId && componentInstanceId) {
-        const urlSuffix = componentInstanceId + "/attachment/" + attachmentId;
-        return baseAdapter.find({
-          url : baseAdapter.url + urlSuffix,
-          criteria : baseAdapter.criteria({
-            "lang" : contentLanguage
-          })
-        });
-      }
-      return sp.promise.resolveDirectlyWith();
-    }
-  };
-
   const DocumentView = function() {
     this.type = 'DocumentView';
     this.getViewerUrl = function() {
@@ -108,20 +83,20 @@
     };
   };
 
-  const DocumentViewRepository = function() {
-    const baseUri = webContext + "/services/view/";
-    const baseAdapter = RESTAdapter.get(baseUri, DocumentView);
+  const Repository = function(viewServiceName, entityType) {
+    const baseUri = webContext + "/services/" + viewServiceName + "/";
+    const baseAdapter = RESTAdapter.get(baseUri, entityType);
 
     /**
-     * Gets document view from given data.
-     * @param attachmentId identifier of an attachment.
-     * @param componentInstanceId identifier of a component instance.
-     * @param contentLanguage the content language into which the attachment is requested.
+     * Gets document entity from given data.
+     * @param documentId identifier of a document.
+     * @param documentType type of the document (not the mime type).
+     * @param contentLanguage the content language into which the document is requested.
      * @returns {*}
      */
-    this.get = function(attachmentId, componentInstanceId, contentLanguage) {
-      if (attachmentId && componentInstanceId) {
-        const urlSuffix = componentInstanceId + "/attachment/" + attachmentId;
+    this.get = function(documentId, documentType, contentLanguage) {
+      if (documentId && documentType) {
+        const urlSuffix = documentType + "/" + documentId;
         return baseAdapter.find({
           url : baseAdapter.url + urlSuffix,
           criteria : baseAdapter.criteria({
