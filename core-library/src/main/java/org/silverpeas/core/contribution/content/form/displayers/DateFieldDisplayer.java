@@ -48,7 +48,7 @@ import java.util.Map;
 
 /**
  * A DateFieldDisplayer is an object which can display a TextField in HTML the content of a
- * TextField to a end user and can retrieve via HTTP any updated value.
+ * TextField to an end user and can retrieve via HTTP any updated value.
  * <p>
  * @see Field
  * @see FieldTemplate
@@ -65,10 +65,10 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   }
 
   /**
-   * Prints the javascripts which will be used to control the new value given to the named field.
+   * Prints the javascript which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
-   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
+   * and constraints. The FieldTemplate gives the local label too. Never throws an Exception but
+   * log a trace and writes an empty string when :
    * <UL>
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
@@ -102,7 +102,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
+   * form input. Never throws an Exception but log a trace and writes an empty string when :
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
@@ -158,23 +158,24 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
         container.addElement(image);
       }
 
-      out.println(container.toString());
+      out.println(container);
     } else {
-      out.println(inputField.toString());
+      out.println(inputField);
     }
   }
 
   private String getValue(final DateField field, final PagesContext pagesContext,
       final String language, final Map<String, String> parameters) {
-    String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
+    String defaultParam = parameters.getOrDefault("default", "");
     String defaultValue = "";
     if (!pagesContext.isIgnoreDefaultValues() && (pagesContext.isCreation() || pagesContext.isDesignMode()))
     {
       if ("now".equalsIgnoreCase(defaultParam)) {
         defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
       }
-      else
+      else {
         defaultValue = defaultParam;
+      }
     }
 
     String value = (!field.isNull() ? field.getValue(language) : defaultValue);
