@@ -24,8 +24,8 @@
 
 (function() {
 
-  var commonAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(webContext +
-      '/util/javaScript/vuejs/components/silverpeas-common-templates.jsp');
+  const commonAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(
+      webContext + '/util/javaScript/vuejs/components/silverpeas-common-templates.jsp');
 
   /**
    * silverpeas-operation-creation-area is an HTML element which is built to provide the equivalent
@@ -38,7 +38,7 @@
     template : '<div id="menubar-creation-actions" ref="container"></div>',
     created : function() {
       YAHOO.util.Event.onContentReady("menuwithgroups", function() {
-        var $creationArea = $(this.$refs.container);
+        const $creationArea = $(this.$refs.container);
         if ($creationArea.length > 0) {
           $('.menubar-creation-actions-item').appendTo($creationArea);
           $('a', $creationArea).css({'display' : ''});
@@ -157,7 +157,7 @@
           return this.items.length > 0;
         },
         noItemMessage : function() {
-          var label = this.noItemLabel !== 'N/A'
+          const label = this.noItemLabel !== 'N/A'
               ? this.noItemLabel
               : this.itemFeminineGender
                   ? this.messages.noItemLabelFemale
@@ -232,25 +232,37 @@
       },
       created : function() {
         this.extendApiWith({
-          open : function(options) {
-            this.open(options);
-          },
-          close : function() {
-            this.close();
-          }
+          open : this.open,
+          close : this.close
         });
       },
       methods : {
         open : function(options) {
           Vue.nextTick(function() {
+            if (!this.jqDialog) {
+              setTimeout(function() {
+                this.jqDialog.on('dialogclose', function() {
+                  this.$emit('close');
+                }.bind(this));
+              }.bind(this), 0);
+            }
             this.jqDialog = jQuery(this.$refs.container);
-            this.jqDialog.popup(this.type, extendsObject({
+            const settings = extendsObject({
               dialogClass : this.dialogClass,
               title : this.title,
               minWidth : this.minWidth,
               maxWidth : this.maxWidth,
               openPromise : this.openPromise
-            }, options));
+            }, options);
+            const __onOpen = function() {
+              this.$emit('open');
+            }.bind(this);
+            if (sp.promise.isOne(settings.openPromise)) {
+              settings.openPromise = settings.openPromise.then(__onOpen);
+            } else {
+              setTimeout(__onOpen, 0);
+            }
+            this.jqDialog.popup(this.type, settings);
           }.bind(this));
         },
         close : function() {
@@ -258,6 +270,98 @@
         }
       }
     }));
+
+  /**
+   * This mixin is a common way to initialize the management of a popin which is using a
+   * silverpeas-pane.
+   *
+   * When the different APIs are retrieved, the API of the form pane popin is initialized.
+   * It is possible to complete the default API by implementing <code>initFormPanePopinApi</code>
+   * method.
+   *
+   * Please call the right setter on right api event.
+   *
+   * Default method <code>open</code> is implemented and can be overridden if necessary.
+   *
+   * Method <code>validate</code> MUST be implemented. It is called after that the user validate
+   * the form.
+   *
+   * Example of template:
+   * <pre>
+   *   ...
+   *   <silverpeas-popin v-on:api="setPopinApi"
+   *                     v-bind:title="title"
+   *                     type="validation">
+   *     <silverpeas-form-pane v-on:api="setFormPaneApi"
+   *                           v-bind:manual-actions="true"
+   *                           v-on:data-update="validate"
+   *                           v-bind:mandatory-legend="true">
+   *       <silverpeas-add-files-form v-on:api="setFormApi"
+   *                                  v-bind:is-document-template-enabled="${isDocumentTemplateEnabled}"
+   * v-bind:is-i18n-content="isI18nContent"
+   * v-bind:i18n-content-language="i18nContentLanguage"></silverpeas-add-files-form>
+   *        ...
+   * </pre>
+   */
+  const __initApiWhenReady = function(cmpInstance) {
+    if (!cmpInstance.apiInitialized && cmpInstance.popinApi && cmpInstance.formPaneApi &&
+        cmpInstance.formApi) {
+      cmpInstance.apiInitialized = true;
+      cmpInstance.extendApiWith(cmpInstance.initFormPanePopinApi({
+        open : cmpInstance.open,
+        formApi : cmpInstance.formApi
+      }));
+    }
+  };
+  window.VuejsDefaultFormPanePopinApiMixin = {
+    mixins : [VuejsApiMixin],
+    data : function() {
+      return {
+        apiInitialized : false,
+        popinApi : undefined,
+        formPaneApi : undefined,
+        formApi : undefined
+      };
+    },
+    methods : {
+      setPopinApi : function(popinApi) {
+        this.popinApi = popinApi;
+        __initApiWhenReady(this);
+      },
+      setFormPaneApi : function(formPaneApi) {
+        this.formPaneApi = formPaneApi;
+        __initApiWhenReady(this);
+      },
+      setFormApi : function(formApi) {
+        this.formApi = formApi;
+        __initApiWhenReady(this);
+      },
+      initFormPanePopinApi : function(defaultApi) {
+        return defaultApi;
+      },
+      open : function(options) {
+        const __settings = options || {};
+        const __callback = __settings.callback;
+        const __callbackOnClose = __settings.callbackOnClose;
+        __settings.callback = function() {
+          return this.formPaneApi.validate().then(function(formPaneData) {
+            if (__callback) {
+              return __callback(formPaneData);
+            }
+          });
+        }.bind(this);
+        __settings.callbackOnClose = function() {
+          if (__callbackOnClose) {
+            return __callbackOnClose();
+          }
+        }
+        this.popinApi.open(__settings);
+      },
+      validate : function(formPaneData) {
+        throw new Error("validate method MUST be implemented when VuejsDefaultFormPanePopinApiMixin is used");
+      }
+    }
+  }
 
   /**
    * Common implementation for components which have to display a popin from body layout to the top
@@ -285,8 +389,8 @@
    *    });
    * </pre>
    *
-   * 3) Initialize the popin api from "created" hook by calling the method 'registerTopPopinApiName'
-   * with the name of the variable defined in step 2. For example:
+   * 3) Initialize the popin api from "created" hook by calling the method
+   * 'registerTopPopinApiName' with the name of the variable defined in step 2. For example:
    * <pre>
    *    Vue.component('my-component', {
    *      ...
@@ -320,7 +424,8 @@
    *                  $W : the instance of the top window,
    *                  $Doc : the instance of document from top window,
    *                  $rootContainer : the instance of the root container of the popin,
-   *                  popinSettings : an object about the settings of the popin (cf. silverpeas-popup plugin)
+   *                  popinSettings : an object about the settings of the popin (cf.
+   *                                  silverpeas-popup plugin)
    *               }
    * </pre>
    */
@@ -514,14 +619,14 @@
       },
       methods : {
         scrollListener : function() {
-          var lastScrollHeight = this.domContext.lastScrollHeight;
-          var scrollHeight = this.$refs.content.scrollHeight;
+          const lastScrollHeight = this.domContext.lastScrollHeight;
+          const scrollHeight = this.$refs.content.scrollHeight;
           if (this.domContext.scrollEndEventEmitted && lastScrollHeight === scrollHeight) {
             return;
           }
           this.domContext.lastScrollHeight = scrollHeight;
           this.domContext.scrollEndEventEmitted = false;
-          var currentScroll = scrollHeight - this.$refs.content.scrollTop - this.$refs.content.offsetHeight;
+          const currentScroll = scrollHeight - this.$refs.content.scrollTop - this.$refs.content.offsetHeight;
           if (currentScroll <= this.scrollEndEvent) {
             this.domContext.scrollEndEventEmitted = true;
             this.$emit('scroll-end');
@@ -530,8 +635,8 @@
       },
       computed : {
         positionMonitor : function() {
-          var positionMonitor = sp.element.createPositionManager(this.$refs.popin, this.$elBase);
-          var __options = {
+          const positionMonitor = sp.element.createPositionManager(this.$refs.popin, this.$elBase);
+          const __options = {
             anchorPoint : {
               ofBase : 'bottom-right',
               ofAttached : 'top-right'
@@ -599,7 +704,7 @@
           }.bind(this));
         },
         getFormattedPermalinkForWrapper : function() {
-          var result = this.link;
+          let result = this.link;
           if (this.link.startsWith(silverpeasUrl)) {
             result = this.link.replace(silverpeasUrl, webContext);
           } else if (!this.link.startsWith(webContext)) {
@@ -608,7 +713,7 @@
           return result;
         },
         copyLink : function() {
-          var $input = this.$el.querySelector('input');
+          const $input = this.$el.querySelector('input');
           $input.select();
           document.execCommand('copy');
           notyInfo(this.messages.copyOk);
@@ -644,7 +749,8 @@
    *     api.
    *
    * @event data-update when the user has performed validation of data successfully and the new
-   *     data are ready.
+   *     data are ready. If the attribute <code>validationFormPromise</code> is set on data given
+   *     with this event, then the caller can handle a promise against the result of its processing.
    * @event validation-fail when validation of data has failed.
    * @event cancel when validation has been cancelled.
    */
@@ -669,33 +775,34 @@
       },
       created : function() {
         function __sortComponentsByOffsets(compA, compB) {
-          var result = compA.$el.offsetTop - compB.$el.offsetTop;
+          let result = compA.$el.offsetTop - compB.$el.offsetTop;
           if (result === 0) {
             result = compA.$el.offsetLeft - compB.$el.offsetLeft;
           }
           return result;
         }
 
-        var formInputValidationRegistry = [];
-        var formValidationRegistry = [];
+        const formLabelValidationRegistry = [];
+        const formInputValidationRegistry = [];
+        const formValidationRegistry = [];
 
         /**
          * Performs validation input on all linked forms
          */
-        var _validateInputs = function() {
-          var __validationPromises = [];
+        const _validateInputs = function() {
+          const __validationPromises = [];
           formInputValidationRegistry.sort(__sortComponentsByOffsets);
-          for (var i = 0; i < formInputValidationRegistry.length; i++) {
-            var validation = formInputValidationRegistry[i].api.validateFormInput();
-            var validationType = typeof validation;
-            var isPromiseValidation = sp.promise.isOne(validation);
+          for (let i = 0; i < formInputValidationRegistry.length; i++) {
+            const validation = formInputValidationRegistry[i].api.validateFormInput();
+            const validationType = typeof validation;
+            const isPromiseValidation = sp.promise.isOne(validation);
             if (!isPromiseValidation && validationType === 'undefined') {
               sp.log.error('VuejsFormInputMixin - validate method must return a promise or a boolean value');
               return sp.promise.rejectDirectlyWith();
             }
             __validationPromises.push(isPromiseValidation ? validation : sp.promise.resolveDirectlyWith(validation));
           }
-          var existsAtLeastOneError = false;
+          let existsAtLeastOneError = false;
           return sp.promise.whenAllResolved(__validationPromises).then(function(validationResults) {
             validationResults.forEach(function(validationResult) {
               validationResult = typeof validationResult !== 'undefined' ? validationResult : true;
@@ -710,20 +817,20 @@
         /**
          * Performs validation on all linked forms
          */
-        var _validate = function() {
-          var __validationPromises = [];
+        const _validate = function() {
+          const __validationPromises = [];
           formValidationRegistry.sort(__sortComponentsByOffsets);
-          for (var i = 0; i < formValidationRegistry.length; i++) {
-            var validation = formValidationRegistry[i].api.validateForm();
-            var validationType = typeof validation;
-            var isPromiseValidation = sp.promise.isOne(validation);
+          for (let i = 0; i < formValidationRegistry.length; i++) {
+            const validation = formValidationRegistry[i].api.validateForm();
+            const validationType = typeof validation;
+            const isPromiseValidation = sp.promise.isOne(validation);
             if (!isPromiseValidation && validationType === 'undefined') {
               sp.log.error('VuejsFormApiMixin - validate method must return a promise or a boolean value');
               return sp.promise.rejectDirectlyWith();
             }
             __validationPromises.push(isPromiseValidation ? validation : sp.promise.resolveDirectlyWith(validation));
           }
-          var existsAtLeastOneError = false;
+          let existsAtLeastOneError = false;
           return sp.promise.whenAllResolved(__validationPromises).then(function(validationResults) {
             validationResults.forEach(function(validationResult) {
               validationResult = typeof validationResult !== 'undefined' ? validationResult : true;
@@ -738,10 +845,10 @@
         /**
          * Performs updating of source data from internal one.
          */
-        var _updateData = function() {
-          var data = {};
+        const _updateData = function() {
+          let data = {};
           formValidationRegistry.forEach(function(formComp) {
-            var result = formComp.api.updateFormData(data);
+            const result = formComp.api.updateFormData(data);
             if (result) {
               data = result;
             }
@@ -749,21 +856,60 @@
           return data;
         }.bind(this);
 
+        const __setLinkedCmpIfNotSet = function(thisCmp, linkedName, cmp) {
+          if (!thisCmp['linked' + linkedName]) {
+            thisCmp['linked' + linkedName] = cmp;
+          }
+        };
+
         this.extendApiWith({
+          handleFormLabelComponent : function(formLabelComponent) {
+            formLabelValidationRegistry.push(formLabelComponent);
+            const labelIdRef = 'label-' + formLabelComponent.forId;
+            formLabelValidationRegistry[labelIdRef] = formLabelComponent;
+            const linkedInput = formInputValidationRegistry[labelIdRef];
+            if (linkedInput) {
+              __setLinkedCmpIfNotSet(linkedInput, 'LabelCmp', formLabelComponent);
+              __setLinkedCmpIfNotSet(formLabelComponent, 'InputCmp', linkedInput);
+            }
+          },
+          unhandleFormLabelComponent : function(formLabelComponent) {
+            formLabelValidationRegistry.removeElement(formLabelComponent);
+            const labelIdRef = 'label-' + formLabelComponent.forId;
+            delete formLabelValidationRegistry[labelIdRef];
+          },
           handleFormInputComponent : function(formInputComponent) {
             formInputValidationRegistry.push(formInputComponent);
+            const labelIdRef = 'label-' + formInputComponent.linkedLabelId;
+            formInputValidationRegistry[labelIdRef] = formInputComponent;
+            const linkedLabel = formLabelValidationRegistry[labelIdRef];
+            if (linkedLabel) {
+              __setLinkedCmpIfNotSet(linkedLabel, 'InputCmp', formInputComponent);
+              __setLinkedCmpIfNotSet(formInputComponent, 'LabelCmp', linkedLabel);
+            }
+          },
+          unhandleFormInputComponent : function(formInputComponent) {
+            formInputValidationRegistry.removeElement(formInputComponent);
+            const labelIdRef = 'label-' + formInputComponent.linkedLabelId;
+            delete formInputValidationRegistry[labelIdRef];
           },
           handleFormComponent : function(formComp) {
             formValidationRegistry.push(formComp);
           },
+          unhandleFormComponent : function(formComp) {
+            formValidationRegistry.removeElement(formComp);
+          },
           validate : function() {
             notyReset();
-            var __errMsg = "silverpeas-form - no data updated...";
+            const __errMsg = "silverpeas-form - no data updated...";
             return _validateInputs().then(function() {
               return _validate().then(function() {
-                var data = _updateData();
+                const data = _updateData();
                 if (data) {
                   this.$emit('data-update', data);
+                  if (sp.promise.isOne(data.validationFormPromise)) {
+                    return data.validationFormPromise;
+                  }
                   return data;
                 } else {
                   sp.log.error(__errMsg);
@@ -903,156 +1049,105 @@
     }
   });
 
-  Vue.component('silverpeas-text-input',
-      commonAsyncComponentRepository.get('text-input', {
-        mixins : [VuejsFormInputMixin],
-        model : {
-          prop : 'value',
-          event : 'input'
+  Vue.component('silverpeas-label',
+      commonAsyncComponentRepository.get('label', {
+        inject : {
+          rootFormApi : {
+            'default' : undefined
+          },
+          rootFormMessages : {
+            'default' : undefined
+          }
         },
         props : {
           id: {
             'type': String,
-            'required': true
+            'default': undefined
           },
-          labelId: {
+          'for': {
             'type': String,
-            'default': ''
+            'mandatory': true
           },
-          name: {
+          value : {
             'type': String,
-            'default': ''
-          },
-          title: {
-            'type': String,
-            'default': ''
-          },
-          placeholder: {
-            'type': String,
-            'default': ''
-          },
-          inputClass: {
-            'type': String,
-            'default': ''
-          },
-          size: {
-            'type': Number,
-            'default': 60
-          },
-          maxlength: {
-            'type': Number,
-            'default': 150
-          },
-          disabled: {
-            'type': Boolean,
-            'default': false
+            'mandatory': true
           },
           mandatory : {
             'type': Boolean,
             'default': false
-          },
-          value : {
-            'type': String
           }
         },
-        created : function() {
-          this.extendApiWith({
-            validateFormInput : function() {
-              var mandatoryError = this.mandatory && StringUtil.isNotDefined(this.value);
-              if (this.rootFormApi) {
-                if (mandatoryError) {
-                  this.rootFormApi.errorMessage().add(
-                      this.formatMessage(this.rootFormMessages.mandatory,
-                          this.getLabelByForAttribute(this.labelId ? this.labelId : this.id)));
-                }
-              }
-              return !mandatoryError;
-            }
-          });
+        data : function() {
+          return {
+            linkedInputCmp : undefined
+          }
         },
         mounted : function() {
-          this.updateAttribute('title');
-          this.updateAttribute('placeholder');
+          this.rootFormApi.handleFormLabelComponent(this);
         },
-        methods : {
-          updateAttribute : function(attrName) {
-            const $input = this.$el.querySelector('input');
-            const attrValue = this[attrName];
-            if (attrValue) {
-              $input.setAttribute(attrName, attrValue);
-            } else {
-              $input.removeAttribute(attrName);
-            }
-          }
+        destroyed : function() {
+          this.rootFormApi.unhandleFormLabelComponent(this);
         },
-        watch : {
-          'title' : function() {
-            this.updateAttribute('title');
+        computed : {
+          forId : function() {
+            return this['for'];
           },
-          'placeholder' : function() {
-            this.updateAttribute('placeholder');
+          isMandatory : function() {
+            return this.mandatory && (!this.linkedInputCmp || this.linkedInputCmp.isMandatory)
           }
         }
       }));
 
+  const __FormInputMixin = {
+    mixins : [VuejsFormInputMixin],
+    props : {
+      placeholder: {
+        'type': String,
+        'default': ''
+      },
+      size: {
+        'type': Number,
+        'default': 60
+      },
+      maxlength: {
+        'type': Number,
+        'default': 150
+      }
+    },
+    mounted : function() {
+      this.updateInputElementAttribute('placeholder');
+    },
+    methods : {
+      getInputElementName : function() {
+        return 'input';
+      }
+    },
+    watch : {
+      'placeholder' : function() {
+        this.updateInputElementAttribute('placeholder');
+      }
+    }
+  };
+
+  Vue.component('silverpeas-text-input',
+      commonAsyncComponentRepository.get('text-input', {
+        mixins : [__FormInputMixin]
+      }));
+
+  Vue.component('silverpeas-hidden-input',
+      commonAsyncComponentRepository.get('hidden-input', {
+        mixins : [__FormInputMixin]
+      }));
+
   Vue.component('silverpeas-url-input',
       commonAsyncComponentRepository.get('url-input', {
-        mixins : [VuejsFormInputMixin],
-        model : {
-          prop : 'value',
-          event : 'input'
-        },
-        props : {
-          id: {
-            'type': String,
-            'required': true
-          },
-          labelId: {
-            'type': String,
-            'default': ''
-          },
-          name: {
-            'type': String,
-            'default': ''
-          },
-          title: {
-            'type': String,
-            'default': ''
-          },
-          placeholder: {
-            'type': String,
-            'default': ''
-          },
-          inputClass: {
-            'type': String,
-            'default': ''
-          },
-          size: {
-            'type': Number,
-            'default': 60
-          },
-          maxlength: {
-            'type': Number,
-            'default': 150
-          },
-          disabled: {
-            'type': Boolean,
-            'default': false
-          },
-          mandatory : {
-            'type': Boolean,
-            'default': false
-          },
-          value : {
-            'type': String
-          }
-        },
+        mixins : [__FormInputMixin],
         created : function() {
           this.extendApiWith({
             validateFormInput : function() {
-              let urlError = true;
+              let urlError;
               try {
-                StringUtil.isDefined(this.value) && new URL(this.value);
+                StringUtil.isDefined(this.modelValue) && new URL(this.modelValue);
                 urlError = false;
               } catch (error) {
                 urlError = true;
@@ -1073,27 +1168,7 @@
   Vue.component('silverpeas-multiline-text-input',
       commonAsyncComponentRepository.get('multiline-text-input', {
         mixins : [VuejsFormInputMixin],
-        model : {
-          prop : 'value',
-          event : 'input'
-        },
         props : {
-          id: {
-            'type': String,
-            'required': true
-          },
-          labelId: {
-            'type': String,
-            'default': ''
-          },
-          name: {
-            'type': String,
-            'default': ''
-          },
-          inputClass: {
-            'type': String,
-            'default': ''
-          },
           cols: {
             'type': Number,
             'default': 60
@@ -1106,29 +1181,17 @@
             'type': Number,
             'default': 2000
           },
-          disabled: {
+          autoresize: {
             'type': Boolean,
             'default': false
-          },
-          mandatory : {
-            'type': Boolean,
-            'default': false
-          },
-          value : {
-            'type': String
           }
         },
         created : function() {
           this.extendApiWith({
             validateFormInput : function() {
-              var mandatoryError = this.mandatory && StringUtil.isNotDefined(this.value);
-              var maxLengthError = this.value && this.value.nbChars() > this.maxlength;
+              const mandatoryError = this.validateMandatory();
+              const maxLengthError = this.modelValue && this.modelValue.nbChars() > this.maxlength;
               if (this.rootFormApi) {
-                if (mandatoryError) {
-                  this.rootFormApi.errorMessage().add(
-                      this.formatMessage(this.rootFormMessages.mandatory,
-                          this.getLabelByForAttribute(this.labelId ? this.labelId : this.id)));
-                }
                 if (maxLengthError) {
                   this.rootFormApi.errorMessage().add(
                       this.formatMessage(this.rootFormMessages.nbMax,
@@ -1138,7 +1201,72 @@
               return !mandatoryError && !maxLengthError;
             }
           });
+        },
+        mounted : function() {
+          if (this.autoresize) {
+            sp.dom.includePlugin('autoresize').then(function() {
+              jQuery(this.$el.querySelector('textarea')).autoResize();
+            }.bind(this));
+          }
+        },
+        methods : {
+          getInputElementName : function() {
+            return 'textarea';
+          }
         }
+      }));
+
+  const __FormRadioOrCheckboxMixin = {
+    mixins : [VuejsFormInputMixin],
+    props : {
+      value : {
+        'type' : String,
+        'default' : ''
+      }
+    },
+    methods : {
+      getInputElementName : function() {
+        return 'input';
+      }
+    },
+    computed : {
+      cssClasses : function() {
+        const cssClasses = this.inputClass.split(' ');
+        if (this.value === this.model) {
+          cssClasses.push('checked');
+        }
+        return cssClasses;
+      }
+    }
+  };
+
+  Vue.component('silverpeas-radio-input',
+      commonAsyncComponentRepository.get('radio-input', {
+        mixins : [__FormRadioOrCheckboxMixin]
+      }));
+
+  Vue.component('silverpeas-checkbox-input',
+      commonAsyncComponentRepository.get('checkbox-input', {
+        mixins : [__FormRadioOrCheckboxMixin]
+      }));
+
+  const __FormSelectMixin = {
+    mixins : [VuejsFormInputMixin],
+    methods : {
+      getInputElementName : function() {
+        return 'select';
+      }
+    }
+  };
+
+  Vue.component('silverpeas-select',
+      commonAsyncComponentRepository.get('select', {
+        mixins : [__FormSelectMixin]
+  }));
+
+  Vue.component('silverpeas-select-language',
+      commonAsyncComponentRepository.get('select-language', {
+        mixins : [__FormSelectMixin]
       }));
 
   /**

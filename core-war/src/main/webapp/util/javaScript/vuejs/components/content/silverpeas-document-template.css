@@ -1,0 +1,119 @@
+/*
+ * Copyright (C) 2000 - 2022 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+.document-template-input {
+  display: inline-block;
+}
+
+.document-template-input .document-template {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 0;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  display: block;
+  max-width: 150px;
+  overflow: hidden;
+}
+
+.document-template-input .document-template .title {
+  font-weight: bold;
+  padding-bottom: 0.5em;
+}
+
+.document-template-input .document-template .actions {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  height: 20px;
+  padding: 0;
+  z-index: 100;
+  width: auto;
+}
+
+.document-template-input .document-template .actions a {
+  position: relative;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin-left: 4px;
+  z-index: 100;
+  text-indent: 300em;
+  white-space: nowrap;
+}
+
+
+.document-template-input .document-template:hover .preview-button {
+  background: transparent url(../../../../icons/preview.png) 0 0 no-repeat;
+}
+
+.document-template-input .document-template:hover .view-button {
+  background: transparent url(../../../../icons/view.png) 0 0 no-repeat;
+}
+
+.document-template-input .document-template:hover .delete-button {
+  background: transparent url(../../../../icons/delete.gif) 0 0 no-repeat;
+}
+
+.document-template-list ul {
+  display: flex;
+  max-height: 500px;
+  gap: 10px;
+  flex-flow: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.document-template-list li {
+  max-width: 99px;
+}
+
+.document-template-input .document-template .preview img,
+.document-template-list .document-template .preview img {
+  width: 100%;
+  height: auto;
+}
+
+.document-template-list .silverpeas-list-item .description {
+  display: none;
+}
+
+.document-template-list .silverpeas-list-item:hover .description {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px 4px;
+  background-color: #FFF;
+  font-size: 11px;
+  line-height: 12px;
+  font-family: Arial, sans-serif;
+  border-radius: 8px;
+}

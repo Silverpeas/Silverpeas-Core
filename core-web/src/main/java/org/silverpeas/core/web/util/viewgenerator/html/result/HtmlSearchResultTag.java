@@ -324,17 +324,16 @@ public class HtmlSearchResultTag extends TagSupport {
     }
 
     if (gsr.isPreviewable()) {
-      result.append(" <img onclick=\"javascript:previewFile(this, '").append(gsr.getAttachmentId())
-          .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
-          .append("');\" class=\"preview-file\" src=\"")
+      result.append(" <img onclick=\"previewFile(this, '").append(gsr.getAttachmentId())
+          .append("',").append(gsr.isVersioned()).append(")\" class=\"preview-file\" src=\"")
           .append(resources.getIcon("pdcPeas.file.preview")).append("\" alt=\"")
           .append(resources.getString("GML.preview.file")).append("\" title=\"")
           .append(resources.getString("GML.preview.file")).append("\"/>");
     }
     if (gsr.isViewable()) {
-      result.append(" <img onclick=\"javascript:viewFile(this, '").append(gsr.getAttachmentId())
-          .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
-          .append("');\" class=\"view-file\" src=\"").append(resources.getIcon("pdcPeas.file.view"))
+      result.append(" <img onclick=\"viewFile(this, '").append(gsr.getAttachmentId())
+          .append("',").append(gsr.isVersioned()).append(")\" class=\"view-file\" src=\"")
+          .append(resources.getIcon("pdcPeas.file.view"))
           .append("\" alt=\"").append(resources.getString("GML.view.file")).append("\" title=\"")
           .append(resources.getString("GML.view.file")).append("\"/>");
     }

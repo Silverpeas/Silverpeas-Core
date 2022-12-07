@@ -24,11 +24,11 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -37,6 +37,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
+import org.silverpeas.core.documenttemplate.DocumentTemplate;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.media.MetaData;
@@ -44,7 +45,7 @@ import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
-import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.web.http.RequestFile;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.Consumes;
@@ -61,8 +62,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
+import java.util.Objects;
+import java.util.function.Consumer;
 
+import static java.util.Optional.ofNullable;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.web.attachment.SimpleDocumentUploadData.decode;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 /**
@@ -86,8 +95,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public Response createDocument(final @PathParam("filename") String filename) throws IOException {
-    SimpleDocumentUploadData uploadData =
-        RequestParameterDecoder.decode(getHttpRequest(), SimpleDocumentUploadData.class);
+    SimpleDocumentUploadData uploadData = decode(getHttpRequest());
 
     try {
 
@@ -114,7 +122,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
 
         // In case of file upload performed by Ajax IFrame transport way,
         // the exception must also be returned into a text/html response.
-        wae = createWebApplicationExceptionWithJSonErrorInHtmlContainer(wae);
+        throw createWebApplicationExceptionWithJSonErrorInHtmlContainer(wae);
       }
       throw wae;
     }
@@ -122,119 +130,210 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
 
   protected SimpleDocumentEntity createSimpleDocument(SimpleDocumentUploadData uploadData,
       String filename) throws IOException {
+    final Context context = initializeContext(uploadData, filename);
+    if (!context.contentDataAvailable()) {
+      throw new WebApplicationException("Missing content data (file content or physical filename)", BAD_REQUEST);
+    }
     try {
-      if (uploadData.getRequestFile() == null) {
-        return null;
-      }
-
       ContributionOperationContextPropertyHandler.parseRequest(getHttpRequest());
-
-      String uploadedFilename = filename;
-      if (StringUtil.isNotDefined(filename)) {
-        uploadedFilename = uploadData.getRequestFile().getName();
+      String lang = I18NHelper.checkLanguage(uploadData.getLanguage());
+      String title = defaultStringIfNotDefined(uploadData.getTitle());
+      String description = defaultStringIfNotDefined(uploadData.getDescription());
+      if (!context.isDocumentTemplateContent() &&
+          AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+          !StringUtil.isDefined(title)) {
+        MetadataExtractor extractor = MetadataExtractor.get();
+        MetaData metadata = extractor.extractMetadata(context.getContentFile());
+        title = defaultStringIfNotDefined(metadata.getTitle(), title);
+        if (!StringUtil.isDefined(description)) {
+          description = defaultStringIfNotDefined(metadata.getSubject(), description);
+        }
       }
-      InputStream uploadedInputStream = uploadData.getRequestFile().getInputStream();
-      if (uploadedInputStream != null && StringUtil.isDefined(uploadedFilename)) {
-        File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
-        FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-
-        //check the file
-        checkUploadedFile(tempFile);
-
-        String lang = I18NHelper.checkLanguage(uploadData.getLanguage());
-        String title = defaultStringIfNotDefined(uploadData.getTitle());
-        String description = defaultStringIfNotDefined(uploadData.getDescription());
-        if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
-            !StringUtil.isDefined(title)) {
-          MetadataExtractor extractor = MetadataExtractor.get();
-          MetaData metadata = extractor.extractMetadata(tempFile);
-          if (StringUtil.isDefined(metadata.getTitle())) {
-            title = metadata.getTitle();
-          }
-          if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
-            description = metadata.getSubject();
-          }
-        }
-
-        DocumentType attachmentContext;
-        if (!StringUtil.isDefined(uploadData.getContext())) {
-          attachmentContext = DocumentType.attachment;
-        } else {
-          attachmentContext = DocumentType.valueOf(uploadData.getContext());
-        }
-        SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
-        String userId = getUser().getId();
-        SimpleDocument document;
-        boolean needCreation = true;
-        boolean publicDocument = true;
-        if (uploadData.getVersionType() != null) {
-          document = AttachmentServiceProvider.getAttachmentService()
-              .findExistingDocument(pk, uploadedFilename,
-                  new ResourceReference(uploadData.getForeignId(), getComponentId()), lang);
-          publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
-          needCreation = document == null;
-          if (needCreation) {
-            SimpleAttachment attachment = SimpleAttachment.builder(lang)
-                .setFilename(uploadedFilename)
-                .setTitle(title)
-                .setDescription(description)
-                .setSize(uploadData.getRequestFile()
-                    .getSize())
-                .setContentType(FileUtil.getMimeType(tempFile.getPath()))
-                .setCreationData(userId, new Date())
-                .build();
-            document = new HistorisedDocument(pk, uploadData.getForeignId(), 0, userId, attachment);
-            document.setDocumentType(attachmentContext);
-          }
-          document.setPublicDocument(publicDocument);
-          document.setComment(uploadData.getComment());
-        } else {
-          SimpleAttachment attachment = SimpleAttachment.builder(lang)
-              .setFilename(uploadedFilename)
+      final DocumentType attachmentContext = ofNullable(uploadData.getContext())
+          .filter(StringUtil::isDefined)
+          .map(DocumentType::valueOf)
+          .orElse(DocumentType.attachment);
+      final SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
+      final String userId = getUser().getId();
+      SimpleDocument document;
+      boolean needCreation = true;
+      boolean publicDocument = true;
+      if (uploadData.getVersionType() != null) {
+        document = getAttachmentService()
+            .findExistingDocument(pk, context.getFilename(),
+                new ResourceReference(uploadData.getForeignId(), getComponentId()), lang);
+        publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
+        needCreation = document == null;
+        if (needCreation) {
+          final SimpleAttachment attachment = SimpleAttachment.builder(lang)
+              .setFilename(context.getFilename())
               .setTitle(title)
               .setDescription(description)
-              .setSize(uploadData.getRequestFile()
-                  .getSize())
-              .setContentType(FileUtil.getMimeType(tempFile.getPath()))
+              .setSize(context.getContentSize())
+              .setContentType(context.getContentType())
               .setCreationData(userId, new Date())
               .build();
-          document = new SimpleDocument(pk, uploadData.getForeignId(), 0, false, null, attachment);
+          document = new HistorisedDocument(pk, uploadData.getForeignId(), 0, userId, attachment);
           document.setDocumentType(attachmentContext);
         }
-        document.setLanguage(lang);
-        document.setTitle(title);
-        document.setDescription(description);
-        document.setSize(tempFile.length());
-        InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-        if (needCreation) {
-          document = AttachmentServiceProvider.getAttachmentService()
-              .createAttachment(document, content, uploadData.getIndexIt(), publicDocument);
-        } else {
-          document.edit(userId);
-          AttachmentServiceProvider.getAttachmentService().lock(document.getId(), userId, lang);
-          AttachmentServiceProvider.getAttachmentService()
-              .updateAttachment(document, content, uploadData.getIndexIt(), true);
-          UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
-          unlockContext.addOption(UnlockOption.UPLOAD);
-          if (!publicDocument) {
-            unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
-          }
-          AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
-        }
-        content.close();
-        FileUtils.deleteQuietly(tempFile);
-
-        // in the case the document is a CAD one, process it for Actify
-        ActifyDocumentProcessor.getProcessor().process(document);
-
-        URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(document.
-            getLanguage()).build();
-        return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
+        document.setPublicDocument(publicDocument);
+        document.setComment(uploadData.getComment());
+      } else {
+        final SimpleAttachment attachment = SimpleAttachment.builder(lang)
+            .setFilename(context.getFilename())
+            .setTitle(title)
+            .setDescription(description)
+            .setSize(context.getContentSize())
+            .setContentType(context.getContentType())
+            .setCreationData(userId, new Date())
+            .build();
+        document = new SimpleDocument(pk, uploadData.getForeignId(), 0, false, null, attachment);
+        document.setDocumentType(attachmentContext);
       }
-      return null;
+      document.setLanguage(lang);
+      document.setTitle(title);
+      document.setDescription(description);
+      document.setSize(context.getContentFile().length());
+      document = saveContent(context, document, needCreation, publicDocument, lang);
+      // in the case the document is a CAD one, process it for Actify
+      ActifyDocumentProcessor.getProcessor().process(document);
+      final URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(document.
+          getLanguage()).build();
+      return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
     } catch (RuntimeException re) {
       performRuntimeException(re);
+    } finally {
+      context.ifContentDataAvailable(c -> FileUtils.deleteQuietly(c.getContentFile()));
     }
     throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+  }
+
+  private SimpleDocument saveContent(final Context context,
+      final SimpleDocument document,final boolean needCreation,
+      final boolean publicDocument, final String lang)
+      throws IOException {
+    final String userId = getUser().getId();
+    final SimpleDocument result;
+    try (final InputStream content = new BufferedInputStream(new FileInputStream(context.getContentFile()))) {
+      if (needCreation) {
+        result = getAttachmentService().createAttachment(document, content, context.mustIndex(), publicDocument);
+      } else {
+        document.edit(userId);
+        getAttachmentService().lock(document.getId(), userId, lang);
+        getAttachmentService().updateAttachment(document, content, context.mustIndex(), true);
+        UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
+        unlockContext.addOption(UnlockOption.UPLOAD);
+        if (!publicDocument) {
+          unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+        }
+        getAttachmentService().unlock(unlockContext);
+        result = document;
+      }
+    }
+    return result;
+  }
+
+  private Context initializeContext(final SimpleDocumentUploadData uploadData, final String filename) {
+    final Context context;
+    try {
+      context = new Context(this, uploadData, filename);
+    } catch (RuntimeException re) {
+      performRuntimeException(re);
+      throw re;
+    }
+    return context;
+  }
+
+  public static class Context {
+
+    private final AbstractSimpleDocumentResource resource;
+    private final SimpleDocumentUploadData uploadedData;
+    private final DocumentTemplate documentTemplate;
+    private final RequestFile requestFile;
+    private final String filename;
+    private final File tempFile;
+
+    public Context(final AbstractSimpleDocumentResource resource,
+        final SimpleDocumentUploadData uploadedData, final String filename) {
+      this.resource = resource;
+      this.uploadedData = uploadedData;
+      this.documentTemplate = uploadedData.getDocumentTemplate().orElse(null);
+      this.requestFile =
+          this.documentTemplate == null && isDefined(uploadedData.getRequestFile().getName()) ?
+              uploadedData.getRequestFile() :
+              null;
+      this.filename = computeFileName(filename);
+      this.tempFile = createTemporaryFile();
+    }
+
+    boolean isDocumentTemplateContent() {
+      return uploadedData.getDocumentTemplate().isPresent();
+    }
+
+    boolean contentDataAvailable() {
+      return tempFile != null;
+    }
+
+    void ifContentDataAvailable(final Consumer<Context> consumer) {
+      if (contentDataAvailable()) {
+        consumer.accept(this);
+      }
+    }
+
+    public String getFilename() {
+      Objects.requireNonNull(filename);
+      return filename;
+    }
+
+    File getContentFile() {
+      Objects.requireNonNull(tempFile);
+      return tempFile;
+    }
+
+    long getContentSize() {
+      Objects.requireNonNull(tempFile);
+      return documentTemplate != null ? tempFile.length() : requestFile.getSize();
+    }
+
+    String getContentType() {
+      Objects.requireNonNull(tempFile);
+      return FileUtil.getMimeType(tempFile.getPath());
+    }
+
+    boolean mustIndex() {
+      return uploadedData.getIndexIt();
+    }
+
+    private File createTemporaryFile() {
+      if (isDefined(filename) && (documentTemplate != null || requestFile != null)) {
+        try (final InputStream uploadedInputStream = documentTemplate != null ?
+            documentTemplate.openInputStream() :
+            requestFile.getInputStream()) {
+          final File result = File.createTempFile("silverpeas_", filename);
+          FileUtils.copyToFile(uploadedInputStream, result);
+          //check the file
+          resource.checkUploadedFile(result);
+          return result;
+        } catch (IOException e) {
+          throw new WebApplicationException(e, PRECONDITION_FAILED);
+        }
+      }
+      return null;
+    }
+
+    private String computeFileName(final String filename) {
+      final String result;
+      if (documentTemplate != null) {
+        result = ofNullable(FilenameUtils.getBaseName(filename))
+            .filter(StringUtil::isDefined)
+            .map(b -> b + "." + documentTemplate.getExtension())
+            .orElse(null);
+      } else if (StringUtil.isNotDefined(filename) && requestFile != null) {
+        result = requestFile.getName();
+      } else {
+        result = filename;
+      }
+      return result;
+    }
   }
 }

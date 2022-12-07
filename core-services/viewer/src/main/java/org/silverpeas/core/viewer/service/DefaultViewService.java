@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
+import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.DocumentInfo;
 import org.silverpeas.core.util.PdfUtil;
@@ -42,6 +43,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
+import static java.util.Optional.of;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 import static org.silverpeas.core.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
@@ -114,14 +116,11 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
          * 2 - converting the previous result into SWF file
          */
         final DocumentView documentView;
-        final String documentId = viewerContext.getDocumentId();
-        final String language = viewerContext.getLanguage();
-        final String originalFileName = viewerContext.getOriginalFileName();
         if (isSwfNeeded()) {
-          documentView = toSwfResult(documentId, language, originalFileName, pdfFile);
+          documentView = toSwfResult(viewerContext, pdfFile);
           FileUtils.deleteQuietly(pdfFile);
         } else {
-          documentView = toPdfResult(documentId, language, originalFileName, pdfFile);
+          documentView = toPdfResult(viewerContext, pdfFile);
         }
 
         // Returning the result
@@ -133,12 +132,19 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             PreviewService.get().isPreviewable(viewerContext.getOriginalSourceFile())) {
           ManagedThreadPool.getPool().invoke(() -> {
-            PreviewService.get().getPreview(viewerContext.clone());
+            PreviewService.get().getPreview(viewerContext.copy());
           });
         }
         return ViewerTreatment.super.performAfterSuccess(result);
       }
     }).execute(viewerContext);
+  }
+
+  @Override
+  public void removeDocumentView(final ViewerContext viewerContext) {
+    of(viewerContext.fromInitializerProcessName(PROCESS_NAME).getWorkspace())
+        .filter(TemporaryWorkspaceTranslation::exists)
+        .ifPresent(TemporaryWorkspaceTranslation::remove);
   }
 
   /**
@@ -154,12 +160,11 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
   /**
    * Convert into Swf {@link DocumentView} result.
    *
-   * @param language the content language.
+   * @param viewerContext the view context.
    * @param pdfSource the pdf source.
    * @return the initialized {@link DocumentView} instance.
    */
-  private DocumentView toSwfResult(final String documentId, final String language,
-      final String originalFileName, final File pdfSource) {
+  private DocumentView toSwfResult(final ViewerContext viewerContext, final File pdfSource) {
 
     // NbPages & max page width & max page height
     final DocumentInfo info = PdfUtil.getDocumentInfo(pdfSource);
@@ -195,8 +200,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
     }
 
     // Files
-    TemporaryFlexPaperView documentView =
-        new TemporaryFlexPaperView(documentId, language, originalFileName, swfFile, info);
+    TemporaryFlexPaperView documentView = new TemporaryFlexPaperView(viewerContext, swfFile, info);
     documentView.markDocumentSplit(splitMode);
     documentView.markSearchDataComputed(jsonConversion);
     return documentView;
@@ -205,17 +209,16 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
   /**
    * Convert into Pdf {@link DocumentView} result.
    *
-   * @param language the content language.
+   * @param viewerContext the view context.
    * @param pdfSource the pdf source.
    * @return the initialized {@link DocumentView} instance.
    */
-  private DocumentView toPdfResult(final String documentId, final String language,
-      final String originalFileName, final File pdfSource) {
+  private DocumentView toPdfResult(final ViewerContext viewerContext, final File pdfSource) {
 
     // NbPages & max page width & max page height
     final DocumentInfo info = PdfUtil.getDocumentInfo(pdfSource);
 
     final File pdfFile = new File(pdfSource.getPath());
-    return new TemporaryPdfView(documentId, language, originalFileName, pdfFile, info);
+    return new TemporaryPdfView(viewerContext, pdfFile, info);
   }
 }

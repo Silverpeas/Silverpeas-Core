@@ -46,33 +46,10 @@
     sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-date-picker.jsp').send().then(function(request) {
       resolve({
         mixins : [VuejsFormInputMixin],
-        model : {
-          prop : 'date',
-          event : 'change'
-        },
         props : {
-          id: {
-            'type': String,
-            'required': true
-          },
-          name: {
-            'type': String,
-            'required': true
-          },
           zoneId : {
             'type': String,
             'required': true
-          },
-          mandatory : {
-            'type': Boolean,
-            'default': false
-          },
-          disabled : {
-            'type': Boolean,
-            'default': false
-          },
-          date : {
-            'type': String
           }
         },
         template : request.responseText,
@@ -91,7 +68,7 @@
           this.extendApiWith({
             validateFormInput : function() {
               if (this.rootFormApi && !this.status.valid) {
-                if (this.mandatory && this.status.empty) {
+                if (this.isMandatory && this.status.empty) {
                   this.rootFormApi.errorMessage().add(this.formatMessage(this.rootFormMessages.mandatory,
                       this.getLabelByForAttribute(this.id)));
                 } else if (this.status.unknown) {
@@ -99,11 +76,11 @@
                       this.getLabelByForAttribute(this.id)));
                 }
               }
-              return (this.mandatory && this.status.valid) ||
-                  (!this.mandatory && (this.status.valid || this.status.empty));
+              return (this.isMandatory && this.status.valid) ||
+                  (!this.isMandatory && (this.status.valid || this.status.empty));
             }
           });
-          this.valueChanged(this.formatDate(this.date));
+          this.valueChanged(this.formatDate(this.modelValue));
           whenSilverpeasReady(function() {
             this.$jqi = jQuery(this.$refs.datePickerInput);
             this.$jqi.datepicker({
@@ -120,14 +97,17 @@
           }.bind(this));
         },
         methods : {
+          getInputElementName : function() {
+            return 'input';
+          },
           formatDate : function(isoDate) {
             return (isoDate && /^[0-9].+/.exec(isoDate)) ? sp.moment.displayAsDate(isoDate) : '';
           },
           computeStatus : function(formattedDate) {
-            var errors = isDateValid({
-              date : formattedDate, isMandatory : this.mandatory
+            const errors = isDateValid({
+              date : formattedDate, isMandatory : this.isMandatory
             });
-            var status = {
+            const status = {
               valid : StringUtil.isDefined(formattedDate) && errors.length === 0,
               empty : false,
               unknown : false
@@ -149,32 +129,32 @@
           },
           valueChanged : function(userInput) {
             this.currentInput = userInput;
-            var status = this.computeStatus(userInput);
+            const status = this.computeStatus(userInput);
             if (status.valid) {
-              var $dateToSet = sp.moment.make(userInput, 'L');
-              var $date = sp.moment.adjustTimeMinutes(
+              const $dateToSet = sp.moment.make(userInput, 'L');
+              let $date = sp.moment.adjustTimeMinutes(
                   sp.moment.atZoneIdSimilarLocal(moment(), this.zoneId).startOf('minutes'));
-              if (this.date) {
-                $date = sp.moment.make(this.date);
+              if (this.modelValue) {
+                $date = sp.moment.make(this.modelValue);
               }
               $date.year($dateToSet.year());
               $date.dayOfYear($dateToSet.dayOfYear());
-              var newDate = sp.moment.atZoneIdSimilarLocal($date, this.zoneId).format();
-              this.$emit('change', newDate);
+              const newDate = sp.moment.atZoneIdSimilarLocal($date, this.zoneId).format();
+              this.$emit('update:modelValue', newDate);
             }
             this.updateStatus(status);
           }
         },
         watch : {
-          date : function(date) {
-            var formattedDate = this.formatDate(date);
+          'modelValue' : function(date) {
+            const formattedDate = this.formatDate(date);
             if (this.currentInput !== formattedDate) {
               if (formattedDate) {
                 this.currentInput = formattedDate;
                 this.$jqi.datepicker("setDate", formattedDate);
                 this.$jqi.datepicker("refresh");
               }
-              var status = this.computeStatus(this.currentInput);
+              const status = this.computeStatus(this.currentInput);
               this.updateStatus(status);
             }
           },

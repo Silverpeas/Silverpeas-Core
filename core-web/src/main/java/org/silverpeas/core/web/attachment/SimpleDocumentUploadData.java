@@ -23,16 +23,45 @@
  */
 package org.silverpeas.core.web.attachment;
 
+import org.silverpeas.core.documenttemplate.DocumentTemplate;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestFile;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 
 import javax.ws.rs.FormParam;
+import java.util.List;
+import java.util.Optional;
 
+import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
+import static org.silverpeas.core.io.upload.FileUploadManager.getUploadedFiles;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
 
 /**
  * @author: Yohann Chastagnier
  */
 public class SimpleDocumentUploadData {
+
+  /**
+   * Decodes the request parameters in order to return a {@link SimpleDocumentUploadData} instance.
+   * @param request the {@link HttpRequest} wrapper that handle efficiently all parameters,
+   * included
+   * those of multipart request type.
+   * @return a {@link SimpleDocumentUploadData} instance.
+   */
+  public static SimpleDocumentUploadData decode(HttpRequest request) {
+    final SimpleDocumentUploadData uploadData = RequestParameterDecoder.decode(request,
+        SimpleDocumentUploadData.class);
+    if (uploadData.requestFile == null) {
+      final List<UploadedFile> uploadedFiles = getUploadedFiles(request, getCurrentRequester());
+      if (uploadedFiles.size() == 1) {
+        uploadData.requestFile = new RequestFile(uploadedFiles.get(0).asFileItem());
+      }
+    }
+    return uploadData;
+  }
 
   /**
    * Detail about the uploaded file like the filename for example.
@@ -48,6 +77,13 @@ public class SimpleDocumentUploadData {
    */
   @FormParam(X_REQUESTED_WITH)
   private String xRequestedWith;
+
+  /**
+   * Identifier of a document template. If an identifier exists, then no {@link #requestFile} has
+   * been uploaded.
+   */
+  @FormParam("documentTemplateId")
+  private String documentTemplateId;
 
   /**
    * The two-characters code of the language in which the document's content is
@@ -112,6 +148,15 @@ public class SimpleDocumentUploadData {
    */
   public String getXRequestedWith() {
     return xRequestedWith;
+  }
+
+  /**
+   * @see #documentTemplateId
+   */
+  public Optional<DocumentTemplate> getDocumentTemplate() {
+    return Optional.ofNullable(documentTemplateId)
+        .filter(StringUtil::isDefined)
+        .map(DocumentTemplateWebManager.get()::getDocumentTemplate);
   }
 
   /**

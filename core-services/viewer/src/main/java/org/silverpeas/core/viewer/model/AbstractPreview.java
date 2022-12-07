@@ -28,6 +28,7 @@ import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.viewer.service.ViewerContext;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -44,6 +45,7 @@ public abstract class AbstractPreview implements Preview {
   private static final long serialVersionUID = 3597757215012779572L;
 
   private final String documentId;
+  private final String documentType;
   private final String language;
   private final String originalFileName;
   private final File physicalFile;
@@ -61,17 +63,22 @@ public abstract class AbstractPreview implements Preview {
   /**
    * Default constructor
    */
-  AbstractPreview(final String documentId, final String language, final String originalFileName,
-      final File physicalFile) {
-    this.documentId = documentId;
-    this.language = language;
-    this.originalFileName = originalFileName;
+  AbstractPreview(final ViewerContext context, final File physicalFile) {
+    this.documentId = context.getDocumentId();
+    this.documentType = context.getDocumentType();
+    this.language = context.getLanguage();
+    this.originalFileName = context.getOriginalFileName();
     this.physicalFile = physicalFile;
   }
 
   @Override
   public String getDocumentId() {
     return this.documentId;
+  }
+
+  @Override
+  public String getDocumentType() {
+    return this.documentType;
   }
 
   @Override

@@ -349,7 +349,7 @@ public class WebComponentManager {
       return webComponentManager
           .executePath(webComponentController, path, webComponentRequestContext);
     } catch (WebApplicationException e) {
-      webComponentRequestContext.getResponse().sendError(e.getResponse().getStatus());
+      webComponentRequestContext.getResponse().sendError(e.getResponse().getStatus(), e.getMessage());
       throw e;
     } catch (InvocationTargetException e) {
       if (e.getTargetException() instanceof WebApplicationException) {

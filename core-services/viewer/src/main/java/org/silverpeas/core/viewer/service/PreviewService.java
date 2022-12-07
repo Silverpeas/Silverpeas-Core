@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.viewer.model.Preview;
 
 import java.io.File;
 
@@ -38,16 +38,22 @@ public interface PreviewService {
   }
 
   /**
-   * Verifying if it is possible to obtain an preview of the given file.
-   * @param file
-   * @return
+   * Verifying if it is possible to obtain a preview of the given file.
+   * @param file the file to verify.
+   * @return true preview is possible, false otherwise.
    */
   boolean isPreviewable(File file);
 
   /**
-   * Getting an Preview instance of the given file
-   * @param viewerContext
-   * @return
+   * Getting a Preview instance of the given file
+   * @param viewerContext the context of the preview.
+   * @return a {@link Preview} instance.
    */
   Preview getPreview(ViewerContext viewerContext);
+
+  /**
+   * Removes data about a preview from given context.
+   * @param viewerContext the context of the preview.
+   */
+  void removePreview(ViewerContext viewerContext);
 }

@@ -1,28 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2022 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
---%>
+  ~ Copyright (C) 2000 - 2022 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  --%>
 <%@page import="org.silverpeas.core.util.file.FileUtil" %>
 <%@page import="org.silverpeas.core.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -55,6 +53,7 @@
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="javax.ws.rs.core.UriBuilder" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%
   GraphicElementFactory gef =
@@ -172,7 +171,7 @@
       sb.setLength(0);
       sb.append("<img src=\"")
           .append(FileRepositoryManager.getFileIcon(publicVersion.getFilename()))
-          .append("\" border=\"0\" title=\"").append(publicVersion.getFilename()).append("\"/> ")
+          .append("\" border=\"0\" title=\"").append(WebEncodeHelper.javaStringToHtmlString(publicVersion.getFilename())).append("\"/> ")
           .append(publicVersion.getFilename());
       if (canUserDownloadFile) {
         sb.insert(0, "<a href=\"" + url + "\" target=\"_blank\">");
@@ -181,12 +180,12 @@
       arrayLine.addArrayCellText(sb.toString());
 
       if (StringUtil.isDefined(publicVersion.getTitle())) {
-        arrayLine.addArrayCellText(publicVersion.getTitle());
+        arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(publicVersion.getTitle()));
       } else {
         arrayLine.addArrayCellText("");
       }
       if (StringUtil.isDefined(publicVersion.getDescription())) {
-        arrayLine.addArrayCellText(publicVersion.getDescription());
+        arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(publicVersion.getDescription()));
       } else {
         arrayLine.addArrayCellText("");
       }
@@ -218,7 +217,7 @@
             "/util/icons/info.gif\" border=\"0\"></a> ";
       }
       if (StringUtil.isDefined(publicVersion.getComment())) {
-        arrayLine.addArrayCellText(xtraData + publicVersion.getComment());
+        arrayLine.addArrayCellText(xtraData + WebEncodeHelper.javaStringToHtmlString(publicVersion.getComment()));
       } else {
         arrayLine.addArrayCellText("");
       }

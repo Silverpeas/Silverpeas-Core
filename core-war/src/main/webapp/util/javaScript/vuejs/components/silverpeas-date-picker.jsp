@@ -32,7 +32,7 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
-<div>
+<div class="silverpeas-date-picker">
   <input ref="datePickerInput" type="text" v-bind:id="id" v-bind:name="name"
          class="dateToPick" size="14" maxlength="10" v-bind:disabled="disabled"
          v-bind:class="{'valid':statusValid,'not-valid':!statusValid}"

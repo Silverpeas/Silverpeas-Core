@@ -33,7 +33,10 @@ import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
+
+import static java.util.Optional.ofNullable;
 
 public class StringUtil extends StringUtils {
 
@@ -412,6 +415,25 @@ public class StringUtil extends StringUtils {
    */
   public static String defaultStringIfNotDefined(String string, String defaultString) {
     return StringUtils.defaultString((isDefined(string) ? string : null), defaultString);
+  }
+
+  /**
+   * This method allows the caller to handle the case where a string is not defined in a
+   * functional way.
+   * <p>
+   *   If the returned optional is present (so not empty), it means that the string given as
+   *   parameter is defined (checked with {@link #isDefined(String)}).
+   * </p>
+   * <p>
+   *   If the returned optional is not present (so empty), it means that the string given as
+   *   parameter is not defined. In a such cas, thanks to {@link Optional}, the caller can choose
+   *   the behavior to adopt.
+   * </p>
+   * @param string the String to check, may be null, blank or filled by spaces
+   * @return optional with given string if defined
+   */
+  public static Optional<String> definedString(String string) {
+    return ofNullable(string).filter(StringUtil::isDefined);
   }
 
   public static boolean isInteger(String value) {

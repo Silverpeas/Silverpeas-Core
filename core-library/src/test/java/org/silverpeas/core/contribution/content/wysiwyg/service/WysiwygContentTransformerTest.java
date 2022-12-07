@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import net.htmlparser.jericho.HTMLElementName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;

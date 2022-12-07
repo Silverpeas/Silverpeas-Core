@@ -27,19 +27,16 @@ import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewService;
-import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.webapi.viewer.ResourceView;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -54,10 +51,10 @@ import java.nio.file.Paths;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.core.webapi.viewer.ResourceViewProvider.getAuthorizedResourceView;
 
 /**
- * A common service to view document with an embed viewer.
+ * A common service to view resources with an embed viewer.
  * @author Yohann Chastagnier
  */
 @WebService
@@ -83,13 +80,12 @@ public class EmbedMediaViewerResource extends RESTWebService {
   @GET
   @Path("pdf")
   public View getPdfEmbedViewer(@QueryParam("documentId") final String documentId,
+      @QueryParam("documentType") final String documentType,
       @QueryParam("language") final String language) {
     try {
-      final SimpleDocument document = getDocument(documentId, language);
-
+      final ResourceView resource = getAuthorizedResourceView(documentId, documentType, language);
       getHttpServletRequest().setAttribute("contentUrl", getUri().getRequestUriBuilder().path("content").build());
-      setCommonRequestViewerAttributes(document);
-
+      setCommonRequestViewerAttributes(resource);
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
       ((Cache) getApplicationCacheService().getCache()).put(cacheKey, true, 10, 0);
       return new View("/media/jsp/pdf/viewer.jsp");
@@ -108,6 +104,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
   @GET
   @Path("pdf/content")
   public Response getPdfContent(@QueryParam("documentId") final String documentId,
+      @QueryParam("documentType") final String documentType,
       @QueryParam("language") final String language) {
     try {
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
@@ -116,13 +113,13 @@ public class EmbedMediaViewerResource extends RESTWebService {
         return Response.seeOther(getUri().getAbsoluteWebResourcePathBuilder()
                                          .path("pdf")
                                          .queryParam("documentId", documentId)
+                                         .queryParam("documentType", documentType)
                                          .queryParam("language", language).build())
                                  .build();
       }
-
-      final SimpleDocument document = getDocument(documentId, language);
-      final DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
-      return sendDocument(document, documentView);
+      final ResourceView resource = getAuthorizedResourceView(documentId, documentType, language);
+      final DocumentView view = viewService.getDocumentView(resource.getViewerContext());
+      return sendView(resource, view);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final AttachmentException ex) {
@@ -139,30 +136,28 @@ public class EmbedMediaViewerResource extends RESTWebService {
   @GET
   @Path("fp")
   public View getFlowPaperEmbedViewer(@QueryParam("documentId") final String documentId,
+      @QueryParam("documentType") final String documentType,
       @QueryParam("language") final String language) {
     try {
-      final SimpleDocument document = getDocument(documentId, language);
-
-      final DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
-      final String displayLicenseKey = documentView.getDisplayLicenseKey();
+      final ResourceView resource = getAuthorizedResourceView(documentId, documentType, language);
+      final DocumentView view = viewService.getDocumentView(resource.getViewerContext());
+      final String displayLicenseKey = view.getDisplayLicenseKey();
       final String displayViewerPath;
       if (StringUtil.isDefined(displayLicenseKey)) {
         displayViewerPath = UriBuilder.fromPath("/weblib").path("flexpaper").path("flash").build().toString();
       } else {
         displayViewerPath = URLUtil.getApplicationURL() + "/media/jsp/fp/core/flash";
       }
-
       getHttpServletRequest().setAttribute("contentUrl", getUri().getBaseUriBuilder()
                                                                  .path(PATH)
                                                                  .path("fp/content")
                                                                  .path(documentId)
                                                                  .path(language)
-                                                                 .path(documentView.getPhysicalFile().getName())
+                                                                 .path(view.getPhysicalFile().getName())
                                                                  .build());
-      setCommonRequestViewerAttributes(document);
-      getHttpServletRequest().setAttribute("documentView", documentView);
+      setCommonRequestViewerAttributes(resource);
+      getHttpServletRequest().setAttribute("documentView", view);
       getHttpServletRequest().setAttribute("displayViewerPath", displayViewerPath);
-
       return new View("/media/jsp/fp/viewer.jsp");
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -179,20 +174,20 @@ public class EmbedMediaViewerResource extends RESTWebService {
   @GET
   @Path("fp/content/{documentId}/{language}/{page}")
   public Response getFlowPaperContent(@PathParam("documentId") final String documentId,
-      @PathParam("language") final String language,
-      @PathParam("page") final String page) {
+      @QueryParam("documentType") final String documentType,
+      @PathParam("language") final String language, @PathParam("page") final String page) {
     try {
-      final SimpleDocument document = getDocument(documentId, language);
-      final DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
-
-      if (documentView.getServerFilePath().toString().endsWith("file.pdf")) {
+      final ResourceView resource = getAuthorizedResourceView(documentId, documentType, language);
+      final DocumentView view = viewService.getDocumentView(resource.getViewerContext());
+      if (view.getServerFilePath().toString().endsWith("file.pdf")) {
         return Response.seeOther(getUri().getAbsoluteWebResourcePathBuilder()
                                          .path("pdf")
                                          .queryParam("documentId", documentId)
+                                         .queryParam("documentType", documentType)
                                          .queryParam("language", language).build())
                                  .build();
       }
-      return sendDocument(document, documentView, page);
+      return sendView(resource, view, page);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final AttachmentException ex) {
@@ -207,40 +202,25 @@ public class EmbedMediaViewerResource extends RESTWebService {
     return null;
   }
 
-  private SimpleDocument getDocument(final String documentId, String language) {
-    if (isNotDefined(documentId)) {
-      throw new WebApplicationException("documentId is missing", Response.Status.BAD_REQUEST);
-    }
-
-    final SimpleDocument document = AttachmentService.get()
-        .searchDocumentById(new SimpleDocumentPK(documentId), language);
-    if (document == null) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    } else if (!document.canBeAccessedBy(getUser())) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
-    return document;
-  }
-
-  private void setCommonRequestViewerAttributes(final SimpleDocument document) {
-    getHttpServletRequest().setAttribute("downloadEnabled", document.isDownloadAllowedForRolesFrom(getUser()));
+  private void setCommonRequestViewerAttributes(final ResourceView resource) {
+    getHttpServletRequest().setAttribute("downloadEnabled", resource.isDownloadableBy(getUser()));
     getHttpServletRequest().setAttribute("userLanguage", getUserPreferences().getLanguage());
   }
 
-  private Response sendDocument(final SimpleDocument document, final DocumentView documentView) {
-    return sendDocument(document, documentView, null);
+  private Response sendView(final ResourceView resource, final DocumentView view) {
+    return sendView(resource, view, null);
   }
 
-  private Response sendDocument(final SimpleDocument document, final DocumentView documentView, final String page) {
+  private Response sendView(final ResourceView resource, final DocumentView view, final String page) {
     final java.nio.file.Path path = isDefined(page) ?
-        Paths.get(documentView.getServerFilePath().getParent().toString(), page) :
-        documentView.getServerFilePath();
+        Paths.get(view.getServerFilePath().getParent().toString(), page) :
+        view.getServerFilePath();
     final SilverpeasFile file = SilverpeasFileProvider.getFile(path.toString());
     final String filename = isDefined(page) ?
-        documentView.getOriginalFileName() :
-        getBaseName(documentView.getOriginalFileName()) + ".pdf";
+        view.getOriginalFileName() :
+        getBaseName(view.getOriginalFileName()) + ".pdf";
     return FileResponse.fromRest(getHttpRequest(), getHttpServletResponse())
-        .forceMimeType(document.getContentType())
+        .forceMimeType(resource.getContentType())
         .forceFileName(filename)
         .silverpeasFile(file)
         .build();

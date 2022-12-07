@@ -24,26 +24,22 @@
 
 (function() {
 
-   var __counter = 0;
-   function __newId() {
-     try {
-       return __counter;
-     } finally {
-       __counter = __counter + 1;
-     }
-   }
+  let __counter = 0;
+  function __newId() {
+    try {
+      return __counter;
+    } finally {
+      __counter = __counter + 1;
+    }
+  }
 
   /**
    * silverpeas-user-group-select handles a complex input of users and/or groups.
    */
   Vue.component('silverpeas-user-group-select', {
     mixins : [VuejsFormInputMixin],
-    template : '<div v-bind:id="rootContainerId"><span></span></div>',
+    template : '<div class="silverpeas-user-group-select" v-bind:id="rootContainerId"><span></span></div>',
     props : {
-      id : {
-        'type' : String,
-        'default' : ''
-      },
       currentUserId : {
         'type' : String,
         'default' : ''
@@ -71,14 +67,6 @@
       displayAvatar : {
         'type' : Boolean,
         'default' : true
-      },
-      readOnly : {
-        'type' : Boolean,
-        'default' : false
-      },
-      mandatory : {
-        'type' : Boolean,
-        'default' : false
       },
       navigationalBehavior : {
         'type' : Boolean,
@@ -160,25 +148,28 @@
       this.initialize();
     },
     methods : {
+      getInputElementName : function() {
+        // this method is used by silverpeas-form-pane APIs
+      },
       initialize : function() {
         this.readyPromise = new Promise(function(resolve) {
           this.$el.innerHTML = '';
-          var domainIdFilter = Array.isArray(this.domainFilter)
+          const domainIdFilter = Array.isArray(this.domainFilter)
               ? this.domainFilter
               : [this.domainFilter];
-          var roleFilter = Array.isArray(this.roleFilter)
+          const roleFilter = Array.isArray(this.roleFilter)
               ? this.roleFilter
               : [this.roleFilter];
-          var groupFilter = Array.isArray(this.groupFilter)
+          const groupFilter = Array.isArray(this.groupFilter)
               ? this.groupFilter
               : [this.groupFilter];
-          var initialUserIds = Array.isArray(this.initialUserIds)
+          const initialUserIds = Array.isArray(this.initialUserIds)
               ? this.initialUserIds
               : [this.initialUserIds];
-          var initialGroupIds = Array.isArray(this.initialGroupIds)
+          const initialGroupIds = Array.isArray(this.initialGroupIds)
               ? this.initialGroupIds
               : [this.initialGroupIds];
-          var options = {
+          const options = {
             rootContainerId : this.rootContainerId,
             hideDeactivatedState : this.hideDeactivatedState,
             domainIdFilter : domainIdFilter,
@@ -228,16 +219,16 @@
                 return this.initialize();
               },
               updateFilterOptions : function() {
-                var domainIdFilter = Array.isArray(this.domainFilter)
+                const domainIdFilter = Array.isArray(this.domainFilter)
                     ? this.domainFilter
                     : [this.domainFilter];
-                var roleFilter = Array.isArray(this.roleFilter)
+                const roleFilter = Array.isArray(this.roleFilter)
                     ? this.roleFilter
                     : [this.roleFilter];
-                var groupFilter = Array.isArray(this.groupFilter)
+                const groupFilter = Array.isArray(this.groupFilter)
                     ? this.groupFilter
                     : [this.groupFilter];
-                var options = {
+                const options = {
                   hideDeactivatedState : this.hideDeactivatedState,
                   domainIdFilter : domainIdFilter,
                   componentIdFilter : this.componentIdFilter,
@@ -247,7 +238,7 @@
                 return this.selectionApi.updateFilterOptions(options);
               },
               validateFormInput : function() {
-                var isNotValid = this.mandatory
+                const isNotValid = this.isMandatory
                     && this.selectionApi.getSelectedUserIds().length === 0
                     && this.selectionApi.getSelectedGroupIds().length === 0;
                 if (isNotValid && this.rootFormApi) {

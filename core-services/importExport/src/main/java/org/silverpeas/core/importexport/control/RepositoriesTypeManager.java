@@ -39,7 +39,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
-import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -54,7 +53,6 @@ import org.silverpeas.core.importexport.publication.PublicationContentType;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
-import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.importexport.versioning.VersioningImport;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
@@ -85,6 +83,9 @@ import java.util.List;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.attachment.model.DocumentType.attachment;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled;
+import static org.silverpeas.core.importexport.versioning.DocumentVersion.TYPE_PUBLIC_VERSION;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -110,8 +111,8 @@ public class RepositoriesTypeManager {
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
    * @param repositoryTypes - objet contenant toutes les informations de création
    * des publications du path défini
-   * @return un objet ComponentReport contenant les informations de création des publications
-   * unitaires et nécéssaire au rapport détaillé
+   * @param settings the import settings which contains main directives to perform the import.
+   * @param reportManager the instance of import report manager.
    */
   public void processImport(List<RepositoryType> repositoryTypes, ImportSettings settings,
       ImportReportManager reportManager) {
@@ -231,17 +232,21 @@ public class RepositoriesTypeManager {
         }
       }
 
-      final AttachmentDescriptor descriptor = new AttachmentDescriptor().setCurrentUser(userDetail)
+      final AttachmentDescriptor descriptor = new AttachmentDescriptor()
+          .setCurrentUser(userDetail)
           .setComponentId(componentId)
           .setResourceId(pubDetailToSave.getPK().getId())
           .setDocumentType(attachment)
           .setFile(file)
           .setContentLanguage(settings.getContentLanguage())
+          .setTitle(settings.getSingleFileTitle())
+          .setDescription(settings.getSingleFileDescription())
           .setCreationDate(creationDate)
+          .setUseFileMetadata(settings.isUseFileMetadata())
           .setHasToBeIndexed(pubDetailToSave.isIndexable())
           .setComponentVersionActivated(settings.isVersioningUsed())
-          .setPublicVersionRequired(
-              settings.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION);
+          .setPublicVersionRequired(settings.getVersionType() == TYPE_PUBLIC_VERSION)
+          .setVersionComment(settings.getVersionComment());
       final SimpleDocument document = handleFileToAttach(descriptor);
 
       reportManager.addNumberOfFilesProcessed(1);
@@ -285,58 +290,16 @@ public class RepositoriesTypeManager {
    */
   public static SimpleDocument handleFileToAttach(final AttachmentDescriptor descriptor)
       throws IOException {
-    final String fileName = descriptor.getFile().getName();
-    final long fileSize = descriptor.getFile().length();
-    boolean publicVersion =
-        descriptor.isComponentVersionActivated() && descriptor.isPublicVersionRequired();
-
-    final String mimeType = FileUtil.getMimeType(fileName);
-    final SimpleDocumentPK documentPK = new SimpleDocumentPK(null, descriptor.getComponentId());
-    if (isDefined(descriptor.getOldSilverpeasId())) {
-      if (StringUtil.isInteger(descriptor.getOldSilverpeasId())) {
-        documentPK.setOldSilverpeasId(Long.parseLong(descriptor.getOldSilverpeasId()));
-      } else {
-        documentPK.setId(descriptor.getOldSilverpeasId());
-      }
-    }
-
-    SimpleDocument document = getAttachmentService().
-        findExistingDocument(documentPK, fileName, descriptor.getResourceReference(),
-            descriptor.getContentLanguage());
-
+    final SimpleDocumentPK documentPK = createDocumentPK(descriptor);
+    SimpleDocument document = getAttachmentService().findExistingDocument(documentPK,
+        descriptor.getFile().getName(), descriptor.getResourceReference(),
+        descriptor.getContentLanguage());
     final boolean needCreation = document == null || !document.isVersioned() ||
         !document.getAttachment().getLanguage().equalsIgnoreCase(descriptor.getContentLanguage());
+    final boolean publicVersion =
+        descriptor.isComponentVersionActivated() && descriptor.isPublicVersionRequired();
     if (needCreation) {
-      if (descriptor.isComponentVersionActivated()) {
-        SimpleAttachment attachment = SimpleAttachment.builder(descriptor.contentLanguage)
-            .setFilename(fileName)
-            .setTitle(fileName)
-            .setDescription("")
-            .setSize(fileSize)
-            .setContentType(mimeType)
-            .setCreationData(descriptor.getCurrentUser()
-                .getId(), descriptor.getCreationDate())
-            .build();
-        document = new HistorisedDocument(documentPK, descriptor.resourceId, 0,
-            descriptor.getCurrentUser()
-                .getId(), attachment);
-        document.setPublicDocument(publicVersion);
-      } else {
-        SimpleAttachment attachment = SimpleAttachment.builder(descriptor.contentLanguage)
-            .setFilename(fileName)
-            .setSize(fileSize)
-            .setContentType(mimeType)
-            .setCreationData(descriptor.getCurrentUser()
-                .getId(), descriptor.getCreationDate())
-            .build();
-        document = new SimpleDocument(new SimpleDocumentPK(null, descriptor.getComponentId()),
-            descriptor.getResourceId(), 0, false, attachment);
-      }
-      document.setDocumentType(descriptor.getDocumentType());
-      setMetadata(document, descriptor.getFile());
-    }
-
-    if (needCreation) {
+      document = initializeDocument(documentPK, descriptor);
       boolean notifying = !document.isVersioned() || publicVersion;
       document = getAttachmentService().createAttachment(document, descriptor.getFile(),
           descriptor.isHasToBeIndexed(), notifying);
@@ -346,7 +309,7 @@ public class RepositoriesTypeManager {
       document.edit(descriptor.getCurrentUser().getId());
       getAttachmentService().updateAttachment(document, descriptor.getFile(),
           descriptor.isHasToBeIndexed(), publicVersion);
-      UnlockContext unlockContext =
+      final UnlockContext unlockContext =
           new UnlockContext(document.getId(), descriptor.getCurrentUser().getId(),
               descriptor.getContentLanguage(), "");
       unlockContext.addOption(UnlockOption.UPLOAD);
@@ -355,26 +318,60 @@ public class RepositoriesTypeManager {
       }
       getAttachmentService().unlock(unlockContext);
     }
-
     // Specific case: 3d file to convert by Actify Publisher
     ActifyDocumentProcessor.getProcessor().process(document);
-
     return document;
   }
 
-  /**
-   * Sets the metadata from the physical file.
-   * @param document the attachment.
-   * @param file the physical file.
-   */
-  private static void setMetadata(SimpleDocument document, File file) {
-    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled()) {
+  private static SimpleDocumentPK createDocumentPK(final AttachmentDescriptor descriptor) {
+    final SimpleDocumentPK documentPK = new SimpleDocumentPK(null, descriptor.getComponentId());
+    if (isDefined(descriptor.getOldSilverpeasId())) {
+      if (StringUtil.isInteger(descriptor.getOldSilverpeasId())) {
+        documentPK.setOldSilverpeasId(Long.parseLong(descriptor.getOldSilverpeasId()));
+      } else {
+        documentPK.setId(descriptor.getOldSilverpeasId());
+      }
+    }
+    return documentPK;
+  }
+
+  private static SimpleDocument initializeDocument(final SimpleDocumentPK documentPK,
+      final AttachmentDescriptor descriptor) {
+    final SimpleDocument document;
+    final File file = descriptor.getFile();
+    final String fileName = file.getName();
+    final long fileSize = file.length();
+    final String mimeType = FileUtil.getMimeType(fileName);
+    String docTitle = defaultStringIfNotDefined(descriptor.getTitle());
+    String docDescription = defaultStringIfNotDefined(descriptor.getDescription());
+    if (descriptor.isUseFileMetadata()) {
       final MetadataExtractor extractor = MetadataExtractor.get();
       final MetaData metadata = extractor.extractMetadata(file);
-      document.setSize(file.length());
-      document.setTitle(metadata.getTitle());
-      document.setDescription(metadata.getSubject());
+      final String metadataTitle = defaultStringIfNotDefined(docTitle, metadata.getTitle());
+      docTitle = defaultStringIfNotDefined(metadataTitle, fileName);
+      docDescription = defaultStringIfNotDefined(docDescription, metadata.getSubject());
     }
+    final SimpleAttachment attachment = SimpleAttachment.builder(descriptor.contentLanguage)
+        .setFilename(fileName)
+        .setTitle(docTitle)
+        .setDescription(docDescription)
+        .setSize(fileSize)
+        .setContentType(mimeType)
+        .setCreationData(descriptor.getCurrentUser().getId(), descriptor.getCreationDate())
+        .build();
+    if (descriptor.isComponentVersionActivated()) {
+      document = new HistorisedDocument(documentPK, descriptor.resourceId, 0,
+          descriptor.getCurrentUser().getId(), attachment);
+      document.setPublicDocument(descriptor.isPublicVersionRequired());
+      if (isDefined(descriptor.getVersionComment())) {
+        document.setComment(descriptor.getVersionComment());
+      }
+    } else {
+      document = new SimpleDocument(new SimpleDocumentPK(null, descriptor.getComponentId()),
+          descriptor.getResourceId(), 0, false, attachment);
+    }
+    document.setDocumentType(descriptor.getDocumentType());
+    return document;
   }
 
   private void processMailContent(PublicationDetail pubDetail, File file,
@@ -518,7 +515,7 @@ public class RepositoriesTypeManager {
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
    * @return the list of publications created by the import.
-   * @throws ImportExportException
+   * @throws ImportExportException on technical import error.
    */
   public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
       MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
@@ -538,7 +535,7 @@ public class RepositoriesTypeManager {
         }
       } else if (file.isDirectory()) {
         NodeDetail nodeDetail =
-            gedIE.addSubTopicToTopic(file, Integer.valueOf(settings.getFolderId()), massiveReport);
+            gedIE.addSubTopicToTopic(file, Integer.parseInt(settings.getFolderId()), massiveReport);
         // Traitement récursif spécifique
         ImportSettings recursiveSettings = settings.clone();
         recursiveSettings.setPathToImport(file.getAbsolutePath());
@@ -555,7 +552,9 @@ public class RepositoriesTypeManager {
     String[] listContenuStringPath = path.list();
 
     // Tri alphabétique du contenu
-    Arrays.sort(listContenuStringPath);
+    if (listContenuStringPath != null) {
+      Arrays.sort(listContenuStringPath);
+    }
 
     return convertListStringToListFile(listContenuStringPath, path.getPath());
   }
@@ -585,11 +584,15 @@ public class RepositoriesTypeManager {
     private String oldSilverpeasId = null;
     private DocumentType documentType = null;
     private File file = null;
+    private boolean useFileMetadata = isUseFileMetadataForAttachmentDataEnabled();
     private String contentLanguage = null;
+    private String title;
+    private String description;
     private Date creationDate = null;
     private boolean hasToBeIndexed;
     private boolean isComponentVersionActivated;
     private boolean publicVersionRequired;
+    private String versionComment;
 
     public UserDetail getCurrentUser() {
       return currentUser;
@@ -645,12 +648,39 @@ public class RepositoriesTypeManager {
       return this;
     }
 
+    public boolean isUseFileMetadata() {
+      return useFileMetadata;
+    }
+
+    public AttachmentDescriptor setUseFileMetadata(final boolean useFileMetadata) {
+      this.useFileMetadata = useFileMetadata;
+      return this;
+    }
+
     public String getContentLanguage() {
       return contentLanguage;
     }
 
     public AttachmentDescriptor setContentLanguage(final String contentLanguage) {
       this.contentLanguage = verifyTaintedData(contentLanguage);
+      return this;
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public AttachmentDescriptor setTitle(final String title) {
+      this.title = title;
+      return this;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public AttachmentDescriptor setDescription(final String description) {
+      this.description = description;
       return this;
     }
 
@@ -688,6 +718,15 @@ public class RepositoriesTypeManager {
 
     public AttachmentDescriptor setPublicVersionRequired(final boolean publicVersionRequired) {
       this.publicVersionRequired = publicVersionRequired;
+      return this;
+    }
+
+    public String getVersionComment() {
+      return versionComment;
+    }
+
+    public AttachmentDescriptor setVersionComment(final String versionComment) {
+      this.versionComment = versionComment;
       return this;
     }
 

@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -584,7 +584,7 @@
       callback: null,
       alternativeCallback: null,
       callbackOnClose: null,
-      forceFocusOnCloseButton : false
+      forceBlurFirstElementOnOpen : false
     };
     if (options) {
       $.extend(settings, options);
@@ -720,11 +720,6 @@
         if (options.callbackOnClose) {
           options.callbackOnClose.call(this);
         }
-        const lastActiveElement = $_this.data('spPopup_lastActiveElement');
-        if (lastActiveElement) {
-          $_this.removeData('spPopup_lastActiveElement');
-          lastActiveElement.focus();
-        }
       });
 
       // Scroll
@@ -746,6 +741,11 @@
         $_this.dialog("option", "width", width);
       }
       const __showPopup = function() {
+        // Blur
+        if (options.forceBlurFirstElementOnOpen === true) {
+          sp.element.focus($_this.parent()[0]);
+        }
+
         // Dialog opening
         const $dialog = $_this.dialog('open');
 
@@ -778,18 +778,6 @@
           _maxWidth = (_maxWidth !== 'auto') ? _maxWidth.replace(/px/, '') + 'px' : _maxWidth;
           $_this.dialog("widget").css('max-width', _maxWidth);
           $_this.dialog({position : $_this.dialog('option', 'position')});
-        }
-
-        // Focus
-        if (options.forceFocusOnCloseButton === true) {
-          setTimeout(function() {
-            $_this.parent().find('button.ui-dialog-titlebar-close').each(function() {
-              if (document.activeElement !== this) {
-                $_this.data('spPopup_lastActiveElement', document.activeElement);
-                this.focus();
-              }
-            });
-          }, 0);
         }
       };
       if (sp.promise.isOne(options.openPromise)) {

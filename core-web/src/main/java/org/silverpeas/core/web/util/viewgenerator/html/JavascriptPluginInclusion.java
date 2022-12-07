@@ -51,6 +51,7 @@ import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
+import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 
 import java.text.MessageFormat;
 
@@ -164,7 +165,6 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_SVG = "raphael.min.js";
   private static final String JQUERY_GAUGE = "justgage.min.js";
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
-  private static final String SILVERPEAS_COMMENT = "silverpeas-comment.js";
   private static final String JQUERY_AUTORESIZE = "autoresize.jquery.min.js";
   private static final String SILVERPEAS_TOKENIZING = "silverpeas-tkn.js";
   private static final String RATEIT_JS = "rateit/jquery.rateit.min.js";
@@ -683,8 +683,13 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeAttachment(final ElementContainer xhtml) {
+  static ElementContainer includeAttachment(final ElementContainer xhtml, final String language) {
+    includePreview(xhtml);
+    includeFileManager(xhtml);
+    includeDragAndDropUpload(xhtml, language);
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-attachment.js"));
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-attachment.css"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-attachment.js"));
     return xhtml;
   }
 
@@ -692,7 +697,7 @@ public class JavascriptPluginInclusion {
     includePdc(xhtml, language, false);
     includePanes(xhtml);
     includeCrud(xhtml);
-    includeAttachment(xhtml);
+    includeAttachment(xhtml, language);
     includeQTip(xhtml, language);
     includeTabsWebComponent(xhtml);
     includeColorPickerWebComponent(xhtml, language);
@@ -779,9 +784,8 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeComment(final ElementContainer xhtml) {
+  public static ElementContainer includeAutoresize(final ElementContainer xhtml) {
     xhtml.addElement(script(JQUERY_PATH + JQUERY_AUTORESIZE));
-    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_COMMENT));
     return xhtml;
   }
 
@@ -1053,6 +1057,7 @@ public class JavascriptPluginInclusion {
     includeIFrameAjaxTransport(xhtml);
     xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-fileUpload.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-file-upload.js"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-file-upload.js"));
     return xhtml;
   }
 
@@ -1066,6 +1071,32 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(SERVICE_PATH + "content/silverpeas-image-service.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-image-selector.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-image-selector.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas document template VueJS Plugins.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeDocumentTemplate(final ElementContainer xhtml) {
+    if (DocumentTemplateWebManager.get().existsDocumentTemplate()) {
+      includePreview(xhtml);
+      xhtml.addElement(script(SERVICE_PATH + "content/silverpeas-document-template-service.js"));
+      xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-document-template.css"));
+      xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-document-template.js"));
+    }
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas file manager VueJS Plugins.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeFileManager(final ElementContainer xhtml) {
+    includePreview(xhtml);
+    includeDocumentTemplate(xhtml);
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-file-manager.css"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-file-manager.js"));
     return xhtml;
   }
 

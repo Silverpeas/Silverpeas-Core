@@ -24,7 +24,9 @@
 package org.silverpeas.web.importexport.servlets;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.documenttemplate.DocumentTemplate;
 import org.silverpeas.core.importexport.control.ImportSettings;
 import org.silverpeas.core.importexport.control.MassiveDocumentImport;
 import org.silverpeas.core.importexport.model.ImportExportException;
@@ -36,12 +38,14 @@ import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -53,11 +57,12 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * Class declaration
- * @author
+ * @author silveryocha
  */
 public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
@@ -76,109 +81,176 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-
-    HttpRequest request = HttpRequest.decorate(req);
-    request.setCharacterEncoding("UTF-8");
-
-    UserDetail currentUser = UserDetail.getCurrentRequester();
-    String userLanguage = currentUser.getUserPreferences().getLanguage();
-    UploadSession uploadSession = UploadSession.from(request);
-    StringBuilder result = new StringBuilder();
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    final HttpRequest request = HttpRequest.decorate(req);
+    final UploadSession uploadSession = UploadSession.from(request);
+    final StringBuilder result = new StringBuilder();
     try {
+      request.setCharacterEncoding("UTF-8");
       String componentId = request.getParameter("ComponentId");
-
-      if (!uploadSession.isUserAuthorized(componentId)) {
-        throwHttpForbiddenError();
+      final boolean fromDocumentTemplate = adjustUploadSessionWithDocumentTemplateIfAny(
+          uploadSession, request, componentId);
+      checkUserAuthorizations(uploadSession, componentId);
+      checkUploadSession(uploadSession, request);
+      final String topicId = getTopicId(request);
+      final boolean ignoreFolders = request.getParameterAsBoolean("IgnoreFolders");
+      final boolean draftUsed = request.getParameterAsBoolean("Draft");
+      final String publicationName = request.getParameter("PublicationName");
+      final String publicationDescription = getPublicationDescription(uploadSession, request);
+      final boolean onePublicationForAll = StringUtil.isDefined(publicationName);
+      // root folder initialization
+      final File rootUploadFolder = getRootUploadFileFolder(uploadSession, result, ignoreFolders,
+          onePublicationForAll);
+      // import setting initialization
+      final ImportSettings settings = new ImportSettings(rootUploadFolder.getPath(),
+          UserDetail.getCurrentRequester(), componentId, topicId, draftUsed, true,
+          ImportSettings.FROM_DRAGNDROP);
+      final String contentLanguage = request.getParameter("ContentLanguage");
+      final String publicationKeywords = getPublicationKeywords(uploadSession, request);
+      final String versionType = request.getParameter("VersionType");
+      final String validatorIds = request.getParameter("ValidatorIds");
+      settings.setVersioningUsed(
+          StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType));
+      if (settings.isVersioningUsed()) {
+        final String versionComment = request.getParameter("commentMessage");
+        settings.setVersionAndComment(Integer.parseInt(versionType), versionComment);
       }
-
-      String topicId = request.getParameter("TopicId");
-      if (!StringUtil.isDefined(topicId)) {
-        SessionInfo session = getSessionInfo(req);
-        topicId = session.getAttribute("Silverpeas_DragAndDrop_TopicId");
+      settings.setSingleFileTitle(request.getParameter("fileTitle"));
+      settings.setSingleFileDescription(request.getParameter("fileDescription"));
+      settings.setTargetValidatorIds(validatorIds);
+      settings.setContentLanguage(contentLanguage);
+      if (onePublicationForAll) {
+        settings.getPublicationForAllFiles().setName(publicationName);
+        settings.getPublicationForAllFiles().setDescription(publicationDescription);
+        settings.getPublicationForAllFiles().setKeywords(publicationKeywords);
       }
-      boolean ignoreFolders = request.getParameterAsBoolean("IgnoreFolders");
-      String contentLanguage = request.getParameter("ContentLanguage");
-      boolean draftUsed = request.getParameterAsBoolean("Draft");
-      String publicationName = request.getParameter("PublicationName");
-      String publicationDescription =
-          isDescriptionHandled(uploadSession) ? request.getParameter("PublicationDescription") : "";
-      String publicationKeywords =
-          areKeywordsHandled(uploadSession) ? request.getParameter("PublicationKeywords") : "";
-      boolean onePublicationForAll = StringUtil.isDefined(publicationName);
-      String versionType = request.getParameter("VersionType");
-      String validatorIds = request.getParameter("ValidatorIds");
-
-      if (isDescriptionMandatory(uploadSession) &&
-          StringUtil.isNotDefined(publicationDescription)) {
-        throwHttpPreconditionFailedError();
+      if (fromDocumentTemplate) {
+        settings.setUseFileMetadata(false);
       }
-
-      File rootUploadFolder = uploadSession.getRootFolder();
-      if (!ignoreFolders && !onePublicationForAll) {
-        File[] foldersAtRoot =
-            rootUploadFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
-        if (foldersAtRoot != null && foldersAtRoot.length > 0) {
-          result.append("newFolder=true&");
-        }
-      } else {
-        FileUtil.moveAllFilesAtRootFolder(rootUploadFolder);
-      }
-
-      MassiveReport massiveReport = new MassiveReport();
-
-      try {
-        ImportSettings settings =
-            new ImportSettings(rootUploadFolder.getPath(), currentUser, componentId, topicId,
-                draftUsed, true, ImportSettings.FROM_DRAGNDROP);
-        settings.setVersioningUsed(
-            StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType));
-        if (settings.isVersioningUsed()) {
-          settings.setVersionType(Integer.valueOf(versionType));
-        }
-        settings.setTargetValidatorIds(validatorIds);
-        settings.setContentLanguage(contentLanguage);
-        if (onePublicationForAll) {
-          settings.getPublicationForAllFiles().setName(publicationName);
-          settings.getPublicationForAllFiles().setDescription(publicationDescription);
-          settings.getPublicationForAllFiles().setKeywords(publicationKeywords);
-        }
-
-        ImportReport importReport =
-            MassiveDocumentImport.get().importDocuments(settings, massiveReport);
-
-        if (isDefaultClassificationModifiable(topicId, componentId)) {
-          ComponentReport componentReport = importReport.getListComponentReport().get(0);
-          List<MassiveReport> listMassiveReport = componentReport.getListMassiveReports();
-          for (MassiveReport theMassiveReport : listMassiveReport) {
-            List<UnitReport> listMassiveUnitReport = theMassiveReport.getListUnitReports();
-            for (UnitReport unitReport : listMassiveUnitReport) {
-              if (unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
-                result.append("pubid=").append(unitReport.getLabel()).append("&");
-              }
-            }
-          }
-        }
-      } catch (ImportExportException ex) {
-        massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
-        SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, userLanguage);
-        throw new ServletException(ex);
-      }
+      // import
+      result.append(performImport(settings));
+    } catch (ImportExportException | IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     } finally {
       uploadSession.clear();
     }
-
-    if (result.length() > 0) {
-      res.getOutputStream().println(result.substring(0, result.length() - 1));
+    if (res.getStatus() != HttpServletResponse.SC_INTERNAL_SERVER_ERROR && result.length() > 0) {
+      try {
+        res.getOutputStream().println(result.substring(0, result.length() - 1));
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).error(e);
+        res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
     }
+  }
+
+  private void handleClassificationIfAny(final String componentId, final StringBuilder result, final String topicId,
+      final ImportReport importReport) {
+    if (isDefaultClassificationModifiable(topicId, componentId)) {
+      ComponentReport componentReport = importReport.getListComponentReport().get(0);
+      List<MassiveReport> listMassiveReport = componentReport.getListMassiveReports();
+      for (MassiveReport theMassiveReport : listMassiveReport) {
+        List<UnitReport> listMassiveUnitReport = theMassiveReport.getListUnitReports();
+        for (UnitReport unitReport : listMassiveUnitReport) {
+          if (unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+            result.append("pubid=").append(unitReport.getLabel()).append("&");
+          }
+        }
+      }
+    }
+  }
+
+  private String performImport(final ImportSettings settings) throws ImportExportException {
+    final MassiveReport massiveReport = new MassiveReport();
+    final StringBuilder result = new StringBuilder();
+    try {
+      final ImportReport importReport = MassiveDocumentImport.get()
+          .importDocuments(settings, massiveReport);
+      handleClassificationIfAny(settings.getComponentId(), result, settings.getFolderId(),
+          importReport);
+    } catch (ImportExportException ex) {
+      massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex,
+          User.getCurrentRequester().getUserPreferences().getLanguage());
+      throw ex;
+    }
+    return result.toString();
+  }
+
+  private String getPublicationKeywords(final UploadSession uploadSession,
+      final HttpRequest request) {
+    return areKeywordsHandled(uploadSession) ? request.getParameter("PublicationKeywords") : "";
+  }
+
+  private String getPublicationDescription(final UploadSession uploadSession,
+      final HttpRequest request) {
+    return isDescriptionHandled(uploadSession) ?
+        request.getParameter("PublicationDescription") :
+        "";
+  }
+
+  private void checkUploadSession(final UploadSession uploadSession, final HttpRequest request) {
+    if (isDescriptionMandatory(uploadSession) &&
+        StringUtil.isNotDefined(getPublicationDescription(uploadSession, request))) {
+      throwHttpPreconditionFailedError();
+    }
+  }
+
+  private static File getRootUploadFileFolder(final UploadSession uploadSession,
+      final StringBuilder result, final boolean ignoreFolders, final boolean onePublicationForAll)
+      throws IOException {
+    File rootUploadFolder = uploadSession.getRootFolder();
+    if (!ignoreFolders && !onePublicationForAll) {
+      File[] foldersAtRoot =
+          rootUploadFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
+      if (foldersAtRoot != null && foldersAtRoot.length > 0) {
+        result.append("newFolder=true&");
+      }
+    } else {
+      FileUtil.moveAllFilesAtRootFolder(rootUploadFolder);
+    }
+    return rootUploadFolder;
+  }
+
+  private String getTopicId(final HttpRequest request) {
+    String topicId = request.getParameter("TopicId");
+    if (!StringUtil.isDefined(topicId)) {
+      SessionInfo session = getSessionInfo(request);
+      topicId = session.getAttribute("Silverpeas_DragAndDrop_TopicId");
+    }
+    return topicId;
+  }
+
+  private void checkUserAuthorizations(final UploadSession uploadSession, final String componentId) {
+    if (!uploadSession.isUserAuthorized(componentId)) {
+      throwHttpForbiddenError();
+    }
+  }
+
+  private boolean adjustUploadSessionWithDocumentTemplateIfAny(final UploadSession uploadSession,
+      final HttpRequest request, final String componentId) {
+    var documentTemplate = ofNullable(request.getParameter("documentTemplateId"))
+        .filter(StringUtil::isDefined)
+        .map(DocumentTemplateWebManager.get()::getDocumentTemplate)
+        .map(t -> Pair.of(t, request.getParameter("fileName")))
+        .filter(p ->StringUtil.isDefined(p.getSecond()));
+    if (documentTemplate.isPresent()) {
+      uploadSession.forComponentInstanceId(componentId);
+      final DocumentTemplate docTpl = documentTemplate.get().getFirst();
+      final String fileName = documentTemplate.get().getSecond() + "." + docTpl.getExtension();
+      try (var i = docTpl.openInputStream()) {
+        uploadSession.getUploadSessionFile(fileName).write(i);
+      } catch (IOException e) {
+        throwHttpForbiddenError();
+      }
+    }
+    return documentTemplate.isPresent();
   }
 
   /**
@@ -188,7 +260,7 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    * topic (and for any of its parent topics), then false is returned.
    * @param topicId the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
-   * @return true if the default classification can be modified during the automatical
+   * @return true if the default classification can be modified during the automatic
    * classification of the imported publications. False otherwise.
    */
   protected boolean isDefaultClassificationModifiable(String topicId, String componentId) {

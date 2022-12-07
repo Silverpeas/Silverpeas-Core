@@ -21,13 +21,27 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
+<%@ page import="org.silverpeas.core.util.JSONCodec" %>
+<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
+<%@ page import="java.util.Optional" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<jsp:useBean id="language" type="java.lang.String"/>
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+
+<c:set var="allUserLanguagesAsJsArray"><%=Optional
+    .of(language)
+    .map(l -> JSONCodec.encodeArray(a -> {
+      I18NHelper.getAllUserTranslationsOfContentLanguages(l).forEach( t ->
+          a.addJSONObject(o -> o.put("id", t.getCode()).put("label", t.getLabel())));
+      return a;
+    }))
+    .orElse(StringUtil.EMPTY)%></c:set>
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
@@ -203,13 +217,31 @@
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->
+<silverpeas-component-template name="label">
+  <label class="silverpeas-label" v-bind:id="id" v-bind:for="forId">
+    <slot></slot>
+    <silverpeas-mandatory-indicator v-if="isMandatory"></silverpeas-mandatory-indicator>
+  </label>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
 <silverpeas-component-template name="text-input">
   <div class="silverpeas-text-input">
     <input type="text"
            v-bind:id="id" v-bind:name="name"
            v-bind:class="inputClass" v-bind:size="size"
            v-bind:maxlength="maxlength" v-bind:disabled="disabled"
-           v-bind:value="value" v-on:input="$emit('input', $event.target.value)"/>
+           v-model="model"/>
+    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="hidden-input">
+  <div class="silverpeas-hidden-input">
+    <input type="hidden"
+           v-bind:id="id" v-bind:name="name"
+           v-model="model"/>
     <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
@@ -221,7 +253,7 @@
          v-bind:title="title" v-bind:placeholder="placeholder"
          v-bind:class="inputClass" v-bind:size="size"
          v-bind:maxlength="maxlength" v-bind:disabled="disabled" v-bind:mandatory="mandatory"
-         v-bind:value="value" v-on:input="$emit('input', $event)"></silverpeas-text-input>
+         v-model="model"></silverpeas-text-input>
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->
@@ -230,9 +262,56 @@
     <textarea v-bind:cols="cols" v-bind:rows="rows"
               v-bind:id="id" v-bind:name="name" v-bind:class="inputClass"
               v-bind:maxlength="maxlength" v-bind:disabled="disabled"
-              v-bind:value="value" v-on:input="$emit('input', $event.target.value)"></textarea>
+              v-model="model"></textarea>
     <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
   </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="radio-input">
+  <div class="silverpeas-radio-input">
+    <input type="radio"
+           v-bind:id="id" v-bind:name="name"
+           v-bind:class="cssClasses" v-bind:disabled="disabled"
+           v-bind:value="value" v-model="model"/>
+    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="checkbox-input">
+  <div class="silverpeas-checkbox-input">
+    <input type="checkbox"
+           v-bind:id="id" v-bind:name="name"
+           v-bind:class="cssClasses" v-bind:disabled="disabled"
+           v-bind:value="value" v-model="model"/>
+    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="select">
+  <div class="silverpeas-select">
+    <select v-bind:id="id" v-bind:name="name"
+            v-bind:disabled="disabled" v-bind:class="inputClass"
+            v-model="model">
+      <slot></slot>
+    </select>
+    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="select-language">
+  <silverpeas-select class="silverpeas-select-language"
+                     v-bind:id="id" v-bind:label-id="labelId" v-bind:name="name"
+                     v-bind:title="title"
+                     v-bind:class="inputClass"
+                     v-bind:disabled="disabled" v-bind:mandatory="mandatory"
+                     v-model="model">
+    <option v-for='language in ${allUserLanguagesAsJsArray}'
+            v-bind:key="language.id" v-bind:value="language.id">{{language.label}}</option>
+  </silverpeas-select>
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->

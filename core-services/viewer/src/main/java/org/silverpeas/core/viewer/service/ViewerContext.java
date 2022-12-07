@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 import org.silverpeas.core.util.StringUtil;
@@ -36,9 +35,10 @@ import static org.silverpeas.core.viewer.model.ViewerSettings.isCacheEnabled;
  * This class permits to handled a context during the conversion processes.
  * @author Yohann Chastagnier
  */
-public class ViewerContext implements Cloneable {
+public class ViewerContext {
 
   private final String documentId;
+  private final String documentType;
   private final String originalFileName;
   private final File originalSourceFile;
   private final String language;
@@ -54,25 +54,46 @@ public class ViewerContext implements Cloneable {
    */
   public static ViewerContext from(SimpleDocument document) {
     final String contentLanguage = document.getLanguage();
-    return new ViewerContext(document.getId(), document.getFilename(), new File(document.
-        getAttachmentPath()), contentLanguage)
-        .withUniqueDocumentId(contentLanguage + "-" + document.getId());
+    return new ViewerContext(document.getId(), "attachment", document.getFilename(),
+        new File(document.getAttachmentPath()), contentLanguage).withUniqueDocumentId(
+        contentLanguage + "-" + document.getId());
   }
 
-  protected ViewerContext(final String documentId, final String originalFileName,
-      final File originalSourceFile, final String language) {
+  public ViewerContext(final String documentId, final String documentType,
+      final String originalFileName, final File originalSourceFile, final String language) {
     this.documentId = documentId;
+    this.documentType = documentType;
     this.originalFileName = originalFileName;
     this.originalSourceFile = originalSourceFile;
     this.language = language;
   }
 
+  private ViewerContext(final ViewerContext other) {
+    this.documentId = other.documentId;
+    this.documentType = other.documentType;
+    this.originalFileName = other.originalFileName;
+    this.originalSourceFile = other.originalSourceFile;
+    this.language = other.language;
+    this.initializerProcessName = other.initializerProcessName;
+    this.uniqueDocumentId = other.uniqueDocumentId;
+    this.cacheRequired = other.cacheRequired;
+    this.processingCache = other.processingCache;
+  }
+
   /**
-   * Gets the identifier of the {@link SimpleDocument}.
+   * Gets the identifier of the document.
    * @return a string.
    */
   public String getDocumentId() {
     return documentId;
+  }
+
+  /**
+   * Gets the type of the document.
+   * @return a string.
+   */
+  public String getDocumentType() {
+    return documentType;
   }
 
   /**
@@ -95,7 +116,7 @@ public class ViewerContext implements Cloneable {
    * Sets the name of the process which initializes the conversion. This identifier is used
    * by {@link #getViewId()}.
    * @param initializerProcessName the name of the process which initializes the conversion.
-   * @return
+   * @return itself.
    */
   ViewerContext fromInitializerProcessName(final String initializerProcessName) {
     this.initializerProcessName = initializerProcessName;
@@ -166,16 +187,10 @@ public class ViewerContext implements Cloneable {
     return language;
   }
 
-  @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
-  @Override
-  protected ViewerContext clone() {
-    try {
-      ViewerContext clonedViewerContext = (ViewerContext) super.clone();
-      clonedViewerContext.initializerProcessName = "";
-      clonedViewerContext.processingCache = false;
-      return clonedViewerContext;
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
+  protected ViewerContext copy() {
+    ViewerContext newViewerContext = new ViewerContext(this);
+    newViewerContext.initializerProcessName = "";
+    newViewerContext.processingCache = false;
+    return newViewerContext;
   }
 }

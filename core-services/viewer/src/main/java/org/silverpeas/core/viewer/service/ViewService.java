@@ -39,15 +39,21 @@ public interface ViewService {
 
   /**
    * Verifying if it is possible to obtain a view of the given file.
-   * @param file
-   * @return
+   * @param file the file to verify.
+   * @return true if view is possible, false otherwise.
    */
   boolean isViewable(File file);
 
   /**
-   * Getting pages view instances of the given file
-   * @param viewerContext
-   * @return
+   * Getting pages view instances of the given file.
+   * @param viewerContext the context of the view.
+   * @return a {@link DocumentView} instance.
    */
   DocumentView getDocumentView(ViewerContext viewerContext);
+
+  /**
+   * Removes data about a document view from given context.
+   * @param viewerContext the context of the document view.
+   */
+  void removeDocumentView(ViewerContext viewerContext);
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.upload;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -116,6 +117,14 @@ public class UploadedFile {
    */
   public String getDescription() {
     return description;
+  }
+
+  /**
+   * Converts the current instance into a {@link FileItem} one.
+   * @return a {@link FileItem} instance.
+   */
+  public FileItem asFileItem() {
+    return new UploadedFileItem(this);
   }
 
   /**

@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,14 +61,12 @@
      * - componentInstanceId : the id of the current component instance,
      * - attachmentId : the id of the aimed attachment.
      */
-    viewAttachment : function(options) {
-
+    document : function(options) {
       // Light checking
-      if (!options.componentInstanceId || !options.attachmentId) {
-        console.error("Bad component instance id or attachment id");
+      if (!options.documentType || !options.documentId) {
+        console.error("Bad document id or document type");
         return false;
       }
-
       // Dialog
       return __openView($Src(this), options);
     }
@@ -82,12 +80,10 @@
    * Here the view namespace in JQuery.
    */
   $Src.fn.view = function( method ) {
-
     if (!$Src.popup) {
       console.error("Silverpeas Popup JQuery Plugin is required.");
       return false;
     }
-
     if ( methods[method] ) {
       return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if ( typeof method === 'object' || ! method ) {
@@ -102,10 +98,9 @@
    * Be careful, options have to be well initialized before this function call
    */
   function __openView($this, options) {
-
-    if (!$this.length)
+    if (!$this.length) {
       return $this;
-
+    }
     return $this.each(function() {
       const $_this = $Src(this);
       // Waiting animation
@@ -117,7 +112,7 @@
       }
       const service = new ViewService();
       // Getting view
-      service.getDocumentView(options.attachmentId, options.componentInstanceId, options.lang).then(function(data) {
+      service.getDocumentView(options.documentId, options.documentType, options.lang).then(function(data) {
         if (typeof options.onceload === 'function') {
           data.onceload = options.onceload;
         }
@@ -189,7 +184,7 @@
       title : view.getTitle(),
       width : view.getWidth(),
       height : view.getHeight(),
-      forceFocusOnCloseButton : true,
+      forceBlurFirstElementOnOpen : true,
       callbackOnClose : function() {
         sp.navigation.unmute();
       }
@@ -403,9 +398,9 @@
     };
     const __renderViewable = function(attachment) {
       const $viewableContainer = document.createElement("div");
-      jQuery($viewableContainer).view("viewAttachment", {
-        componentInstanceId: attachment.instanceId,
-        attachmentId: attachment.id,
+      jQuery($viewableContainer).view("document", {
+        documentId: attachment.id,
+        documentType: 'attachment',
         lang: attachment.lang,
         insertMode : true,
         onceload : function() {

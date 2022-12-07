@@ -23,34 +23,51 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import java.net.URI;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.web.rs.WebEntity;
+
+import java.net.URI;
 
 /**
  * The preview entity is a preview instance that is exposed in the web as
  * an entity (web entity).
  * @author Yohann Chastagnier
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractPreviewEntity<T extends AbstractPreviewEntity<T>> implements
     WebEntity {
   private static final long serialVersionUID = 4118811534281560380L;
 
-  @XmlElement(defaultValue = "")
   private URI uri;
+  private String documentId;
+  private String documentType;
+  private String originalFileName;
+  private String width;
+  private String height;
+  private String language;
+
+  protected AbstractPreviewEntity() {
+  }
+
+  /**
+   * Default constructor
+   * @param preview the {@link Preview} data.
+   *
+   */
+  protected AbstractPreviewEntity(final Preview preview) {
+    documentId = preview.getDocumentId();
+    documentType = preview.getDocumentType();
+    language = preview.getLanguage();
+    originalFileName = preview.getOriginalFileName();
+    width = preview.getWidth();
+    height = preview.getHeight();
+  }
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
    * @param uri the web entity URI.
    * @return itself.
    */
+  @SuppressWarnings("unchecked")
   public T withURI(final URI uri) {
     this.uri = uri;
     return (T) this;
@@ -63,5 +80,29 @@ public abstract class AbstractPreviewEntity<T extends AbstractPreviewEntity<T>> 
   @Override
   public URI getURI() {
     return uri;
+  }
+
+  public String getDocumentId() {
+    return documentId;
+  }
+
+  public String getDocumentType() {
+    return documentType;
+  }
+
+  public String getOriginalFileName() {
+    return originalFileName;
+  }
+
+  public String getWidth() {
+    return width;
+  }
+
+  public String getHeight() {
+    return height;
+  }
+
+  public String getLanguage() {
+    return language;
   }
 }

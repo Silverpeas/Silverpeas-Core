@@ -39,6 +39,12 @@ public interface Preview extends Serializable {
   String getDocumentId();
 
   /**
+   * Getting the document type (not mime-type, but document service type, 'attachment' for example).
+   * @return a string.
+   */
+  String getDocumentType();
+
+  /**
    * Getting the language of the document content.
    * @return a string.
    */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2021 Silverpeas
+ * Copyright (C) 2000 - 2022 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -91,15 +91,7 @@
               let $element = this.$el.querySelector(element);
               if ($element) {
                 cache.remove(this.contributionId.asString());
-                if (window.AttachmentsAsContentViewer) {
-                  AttachmentsAsContentViewer.whenAllCurrentAttachmentDisplayed(function() {
-                    sp.element.scrollTo($element);
-                  }.bind(this));
-                } else {
-                  setTimeout(function() {
-                    sp.element.scrollTo($element);
-                  }, 0);
-                }
+                sp.element.scrollToWhenSilverpeasEntirelyLoaded($element);
               } else {
                 sp.log.error('No such HTML element', $element);
               }

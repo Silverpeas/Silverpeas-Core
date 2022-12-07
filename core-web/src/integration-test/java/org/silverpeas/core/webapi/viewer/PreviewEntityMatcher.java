@@ -52,9 +52,9 @@ public class PreviewEntityMatcher extends BaseMatcher<PreviewEntity> {
     boolean match = false;
     if (item instanceof PreviewEntity) {
       final PreviewEntity actual = (PreviewEntity) item;
-      match = expected.getURLAsString().equals(actual.getURL().toString()) &&
+      match = expected.getURLAsString().equals(actual.getURL()) &&
           expected.getOriginalFileName().equals(actual.getOriginalFileName())
-          && actual.getURI().toString().endsWith("/preview/dummyComponent0/attachment/7");
+          && actual.getURI().toString().endsWith("/preview/attachment/7");
     }
     return match;
   }

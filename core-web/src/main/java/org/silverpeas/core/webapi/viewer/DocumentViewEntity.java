@@ -24,11 +24,7 @@
 package org.silverpeas.core.webapi.viewer;
 
 import org.silverpeas.core.viewer.model.DocumentView;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
@@ -39,35 +35,15 @@ import static org.silverpeas.core.viewer.model.ViewerSettings.getLicenceKey;
  * an entity (web entity).
  * @author Yohann Chastagnier
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity> {
   private static final long serialVersionUID = 4270519541076741138L;
 
-  @XmlElement(defaultValue = "")
-  private String documentId;
-
-  @XmlElement(defaultValue = "")
-  private String originalFileName;
-
-  @XmlElement(defaultValue = "")
-  private String width;
-
-  @XmlElement(defaultValue = "")
-  private String height;
-
-  @XmlElement(defaultValue = "")
-  private String language;
-
-  @XmlElement(defaultValue = "")
   private String viewerUri;
-
-  @XmlElement(defaultValue = "")
   private String viewMode = "Default";
 
   /**
    * Creates a new document view entity from the specified document view.
-   * @param documentView the {@link DocumentView} data.
+   * @param documentView the {@link DocumentView} to transform to {@link WebEntity}.
    * @return the entity representing the specified document view.
    */
   public static DocumentViewEntity createFrom(final DocumentView documentView) {
@@ -80,11 +56,7 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
    *
    */
   private DocumentViewEntity(final DocumentView documentView) {
-    documentId = documentView.getDocumentId();
-    language = documentView.getLanguage();
-    originalFileName = documentView.getOriginalFileName();
-    width = documentView.getWidth();
-    height = documentView.getHeight();
+    super(documentView);
     this.viewerUri = getApplicationURL() + "/services/media/viewer/embed/";
     if (documentView.getServerFilePath().endsWith("file.pdf")) {
       viewerUri += "pdf";
@@ -94,45 +66,13 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
       }
       viewerUri += "fp";
     }
-    viewerUri += "?documentId=" + documentId + "&language=" + language;
+    viewerUri +=
+        "?documentId=" + getDocumentId() +
+        "&documentType=" + getDocumentType() +
+        "&language=" + getLanguage();
   }
 
   protected DocumentViewEntity() {
-  }
-
-  /**
-   * @return the documentId
-   */
-  protected String getDocumentId() {
-    return documentId;
-  }
-
-  /**
-   * @return the originalFileName
-   */
-  protected String getOriginalFileName() {
-    return originalFileName;
-  }
-
-  /**
-   * @return the width
-   */
-  protected String getWidth() {
-    return width;
-  }
-
-  /**
-   * @return the height
-   */
-  protected String getHeight() {
-    return height;
-  }
-
-  /**
-   * @return the language
-   */
-  protected String getLanguage() {
-    return language;
   }
 
   public String getViewerUri() {

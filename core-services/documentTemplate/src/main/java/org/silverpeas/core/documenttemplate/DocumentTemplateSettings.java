@@ -22,31 +22,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.viewer;
+package org.silverpeas.core.documenttemplate;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.web.rs.UserPrivilegeValidator;
-
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * @author silveryocha
  */
+public class DocumentTemplateSettings {
 
-@Singleton
-@Alternative
-@Priority(APPLICATION + 10)
-public class StubbedUserPrivilegeValidator extends UserPrivilegeValidator {
+  public static final String SETTINGS_PATH = "org.silverpeas.documentTemplate.settings.documentTemplate";
 
-  @Override
-  public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
-      final User user, final SimpleDocument doc) {
-    // Nothing is checked
+  private DocumentTemplateSettings() {
+  }
+
+  /**
+   * Indicates if document template feature is enabled.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isEnabled() {
+    return getSettings().getBoolean("documentTemplate.enabled", false);
+  }
+
+  private static SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle(SETTINGS_PATH);
   }
 }

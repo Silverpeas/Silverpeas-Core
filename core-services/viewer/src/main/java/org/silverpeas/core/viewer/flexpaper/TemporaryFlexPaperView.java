@@ -25,6 +25,7 @@ package org.silverpeas.core.viewer.flexpaper;
 
 import org.silverpeas.core.util.DocumentInfo;
 import org.silverpeas.core.viewer.model.AbstractView;
+import org.silverpeas.core.viewer.service.ViewerContext;
 
 import java.io.File;
 
@@ -40,9 +41,9 @@ public class TemporaryFlexPaperView extends AbstractView {
   /**
    * Default constructor
    */
-  public TemporaryFlexPaperView(final String documentId, final String language,
-      final String originalFileName, final File physicalFile, final DocumentInfo info) {
-    super(documentId, language, originalFileName, physicalFile, info.getNbPages());
+  public TemporaryFlexPaperView(final ViewerContext context, final File physicalFile,
+      final DocumentInfo info) {
+    super(context, physicalFile, info.getNbPages());
     width = info.getMaxWidth();
     height = info.getMaxHeight();
   }

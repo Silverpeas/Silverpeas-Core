@@ -1,28 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2022 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
---%>
+  ~ Copyright (C) 2000 - 2022 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -681,21 +679,27 @@
               var selectedUserIds = $scope.selectedUsers.itemIdsAsString();
        <c:choose>
         <c:when test="${hotSetting}">
+              const __triggerChange = function($jqEl) {
+                $jqEl.trigger("change");
+                $jqEl.each(function(index, $el) {
+                  jQuery($el)[0].dispatchEvent(new Event('input', { 'bubbles': true }));
+                });
+              }
               var selectedGroupNames = $scope.selectedGroups.itemNamesAsString();
               var selectedUserNames = $scope.selectedUsers.itemNamesAsString();
               var selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
               var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
               var selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
-              window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)).trigger("change");
-              window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)).trigger("change");
+              __triggerChange(window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)));
+              __triggerChange(window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)));
               if(selectionTypeField != null && selectionTypeField.length > 0) {
 		window.opener.$('#' + selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
               }
 
               window.opener.$('#' + selectionIdField + "-userIds").val(selectedUserIds);
               window.opener.$('#' + selectionIdField + "-groupIds").val(selectedGroupIds);
-              window.opener.$('#' + selectionIdField + "-userIds").trigger("change");
-              window.opener.$('#' + selectionIdField + "-groupIds").trigger("change");
+              __triggerChange(window.opener.$('#' + selectionIdField + "-userIds"));
+              __triggerChange(window.opener.$('#' + selectionIdField + "-groupIds"));
 
               window.close();
         </c:when>

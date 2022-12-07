@@ -25,7 +25,6 @@ package org.silverpeas.core.security.authentication.password;
 
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Optional;
