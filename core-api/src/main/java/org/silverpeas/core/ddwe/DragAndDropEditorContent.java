@@ -100,6 +100,14 @@ public class DragAndDropEditorContent {
     return JSONCodec.encode(json);
   }
 
+  /**
+   * Gets the content from which this instance has been initialized.
+   * @return string representing the initialized content.
+   */
+  public String getInitialRawContent() {
+    return content;
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {

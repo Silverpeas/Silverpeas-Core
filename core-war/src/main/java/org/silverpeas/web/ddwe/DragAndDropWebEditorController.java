@@ -31,9 +31,14 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
+import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.wbe.WbeEdition;
 import org.silverpeas.core.wbe.WbeFile;
 import org.silverpeas.core.wbe.WbeHostManager;
@@ -54,19 +59,29 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.MessageFormat.format;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.core.util.StringUtil.normalize;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
+import static org.silverpeas.core.util.memory.MemoryUnit.MB;
 import static org.silverpeas.core.wbe.WbeLogger.logger;
 
 /**
@@ -78,6 +93,7 @@ public class DragAndDropWebEditorController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<DragAndDropWebEditorRequestContext> {
 
   public static final String WBE_COMPONENT_NAME = "ddwe";
+  private static final MemoryData DATA_THRESHOLD = UnitUtil.getMemData(10, MB);
 
   public DragAndDropWebEditorController(final MainSessionController controller, final ComponentContext context) {
     super(controller, context, "org.silverpeas.ddwe.multilang.ddwe", null, "org.silverpeas.ddwe.ddweSettings");
@@ -130,12 +146,49 @@ public class DragAndDropWebEditorController extends
   @Produces(MediaType.APPLICATION_JSON)
   public String store(final DragAndDropWebEditorRequestContext context) {
     return process(context, e -> {
+      // first creating unique tmp file and copying the request content
+      final String tmpFileName =
+          UUID.randomUUID().toString() + "_" + context.getUser().getId() + "_" +
+              context.getFileId();
+      final java.nio.file.Path tmpFile = Paths.get(getTemporaryPath(), tmpFileName);
+      try (InputStream is = new BufferedInputStream(context.getRequest().getInputStream())) {
+        Files.copy(is, tmpFile);
+      } catch (IOException ex) {
+        SilverLogger.getLogger(this)
+            .error("Not possible to get content data, maybe consult {0} file",
+                tmpFile.getFileName().toString());
+        throw new WebApplicationException("Not possible to get content data", Status.BAD_REQUEST);
+      }
+      // checking size fo content data
+      if (tmpFile.toFile().length() > DATA_THRESHOLD.getSizeAsLong()) {
+        SilverLogger.getLogger(this)
+            .error("File {0} containing retrieved content data exceed the threshold set to {1}",
+                tmpFile.getFileName().toString(), DATA_THRESHOLD.getBestDisplayValue());
+        throw new WebApplicationException(
+            format("File exceed {0}", DATA_THRESHOLD.getBestDisplayValue()),
+            Status.BAD_REQUEST);
+      }
+      // verifying the integrity of the content
+      final DragAndDropEditorContent contentData;
       try {
-        e.getFile().updateFrom(context.getRequest().getInputStream());
+        contentData = new DragAndDropEditorContent(normalize(Files.readString(tmpFile)));
+      } catch (IOException | DecodingException ex) {
+        SilverLogger.getLogger(this)
+            .error("File {0} containing retrieved content data exceed the threshold set to {1}",
+                tmpFile.getFileName().toString(), DATA_THRESHOLD.getBestDisplayValue());
+        throw new WebApplicationException(
+            format("File exceed {0}", DATA_THRESHOLD.getBestDisplayValue()),
+            Status.BAD_REQUEST);
+      }
+      // persisting the content data
+      try (InputStream is = new ByteArrayInputStream(contentData.getInitialRawContent().getBytes(UTF_8))) {
+        e.getFile().updateFrom(is);
+        // cleaning
+        Files.deleteIfExists(tmpFile);
       } catch (IOException ex) {
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
       }
-      return EMPTY;
+      return JSONCodec.encodeObject(o -> o.put("status", "stored"));
     });
   }
 
