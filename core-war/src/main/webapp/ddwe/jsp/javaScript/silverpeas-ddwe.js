@@ -42,6 +42,11 @@
       }
     }, options);
 
+    __options.store = {
+      deferred : undefined,
+      error : false
+    };
+
     __options.tools = {
       updateToolbar : function(model) {
         if (!model.get('copyable')) {
@@ -142,6 +147,7 @@
         }
       };
       const initOptions = {
+        noticeOnUnload : false,
         i18n: i18n,
         height: 'calc(100% - ' + bottomOffset + 'px)',
         container : '#gjs',
@@ -222,8 +228,30 @@
       }
       const gEditor = grapesjs.init(initOptions);
       gEditor.on('storage:start:store', function(data) {
+        if (__options.store.deferred) {
+          __options.store.deferred.reject();
+        }
+        __options.store.deferred = sp.promise.deferred();
         data.inlinedHtml = gEditor.runCommand('gjs-get-inlined-html');
       });
+      gEditor.on('storage:end:store', function(data) {
+        if (data && data.status === 'stored') {
+          __options.store.error = false;
+          __options.store.deferred.resolve();
+        } else {
+          SilverpeasError.add(sp.i18n.get('storeErrorMsg')).show();
+          __options.store.error = true;
+          __options.store.deferred.reject();
+        }
+        __options.store.deferred = undefined;
+      });
+      window.addEventListener('beforeunload', function(e) {
+        if (__options.store.error) {
+          e.preventDefault();
+          spProgressMessage.hide();
+          return e.returnValue = sp.i18n.get('storeWarningMsg');
+        }
+      }, {capture: true});
       gEditor.on('storage:end:load', function(data) {
         if (_context.initialization) {
           _context.initialization = false;
@@ -288,6 +316,18 @@
       };
       self.getOptions = function() {
         return __options;
+      };
+      self.whenStoreProcessHasFinished = function(callback) {
+        spProgressMessage.show();
+        setTimeout(function() {
+          (__options.store.deferred
+              ? __options.store.deferred.promise
+              : sp.promise.resolveDirectlyWith()).then(function() {
+            callback();
+          }, function() {
+            spProgressMessage.hide();
+          });
+        }, 0);
       };
       __adjustComponentToolbars(gEditor);
       __adjustStyles(gEditor);
