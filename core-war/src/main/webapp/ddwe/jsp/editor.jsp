@@ -66,6 +66,8 @@
 <fmt:message key="GML.date.the" var="eventBlockContentAt" />
 <fmt:message key="GML.date.from" var="eventBlockContentFrom" />
 <fmt:message key="GML.date.to" var="eventBlockContentTo" />
+<fmt:message key="ddwe.editor.store.error" var="storeErrorMsg" />
+<fmt:message key="ddwe.editor.leave.warning" var="storeWarningMsg" />
 <fmt:message key="ddwe.editor.component.event.content" var="eventBlockDescription" />
 <fmt:message key="ddwe.editor.component.event.content.open" var="eventBlockOpen" />
 <fmt:message key="ddwe.editor.component.imageWithLink.title" var="imageWithLinkBlockTitle" />
@@ -128,6 +130,8 @@
         'finalHtml' : '${silfn:escapeJs(finalHtml)}',
         'htmlSource' : '${silfn:escapeJs(htmlSource)}',
         'editHtml' : '${silfn:escapeJs(editHtml)}',
+        'storeErrorMsg' : '${silfn:escapeJs(storeErrorMsg)}',
+        'storeWarningMsg' : '${silfn:escapeJs(storeWarningMsg)}',
         'silverpeasCategoryLabel' : '${silfn:escapeJs(silverpeasCategoryLabel)}',
         'simpleBlockTitle' : '${silfn:escapeJs(simpleBlockTitle)}',
         'contributionBlockTitle' : '${silfn:escapeJs(contributionBlockTitle)}',
@@ -178,13 +182,15 @@
       }
       function performUrl(url) {
         if (url) {
-          if (spWindow) {
-            if (url.startsWith(webContext)) {
-              spWindow.loadLink(url);
-              return;
+          vm.editorManager.whenStoreProcessHasFinished(function() {
+            if (spWindow) {
+              if (url.startsWith(webContext)) {
+                spWindow.loadLink(url);
+                return;
+              }
             }
-          }
-          sp.navRequest(url).go();
+            sp.navRequest(url).go();
+          });
         }
       }
       whenSilverpeasReady().then(function() {
@@ -240,6 +246,7 @@
         },
         data : function() {
           return {
+            editorManager : undefined,
             imageSelectorApi : undefined,
             basketSelectionApi : undefined,
             context : {
@@ -262,7 +269,7 @@
               return;
             }
             whenSilverpeasReady(function() {
-              const editorManager = new DragAndDropWebEditorManager({
+              this.editorManager = new DragAndDropWebEditorManager({
                 componentCssUrl : ['${componentCssUrl}', '${componentAddonCssUrl}'],
                 defaultEditorImageSrc : '${defaultEditorImage}',
                 imageSelectorApi : this.imageSelectorApi,
@@ -287,5 +294,6 @@
         }
       });
     </script>
+    <view:progressMessage/>
   </view:sp-body-part>
 </view:sp-page>
