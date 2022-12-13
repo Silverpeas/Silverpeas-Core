@@ -46,6 +46,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
@@ -67,6 +68,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer.bundleVariableName;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer.settingVariableName;
@@ -104,7 +106,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   private static final String ANGULAR_CKEDITOR_JS = "ng-ckeditor.js";
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
-  private static final String VUE_JS = "vue.js";
+  private static final String VUE_DEVT_JS = "vue.js";
+  private static final String VUE_JS = "vue.min.js";
   private static final String VUEJS_PATH = JAVASCRIPT_PATH + "vuejs/";
   private static final String VUEJS_COMPONENT_PATH = VUEJS_PATH + "components/";
   private static final String SILVERPEAS_VUE_JS = "silverpeas-vuejs.js";
@@ -199,6 +202,9 @@ public class JavascriptPluginInclusion {
   private static final String OK_BUNDLE_KEY = "GML.ok";
   private static final String YES_BUNDLE_KEY = "GML.yes";
   private static final String NO_BUNDLE_KEY = "GML.no";
+  private static final boolean SILVERPEAS_DEV_MODE = getBooleanValue(
+      SystemWrapper.get().getenv("SILVERPEAS_DEV_MODE"));
+
   /**
    * Hidden constructor.
    */
@@ -380,7 +386,11 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includeVueJs(final ElementContainer xhtml) {
-    xhtml.addElement(script(VUEJS_PATH + VUE_JS));
+    if (SILVERPEAS_DEV_MODE) {
+      xhtml.addElement(script(VUEJS_PATH + VUE_DEVT_JS));
+    } else {
+      xhtml.addElement(script(VUEJS_PATH + VUE_JS));
+    }
     xhtml.addElement(script(VUEJS_PATH + SILVERPEAS_VUE_JS));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-commons.js"));
     return xhtml;

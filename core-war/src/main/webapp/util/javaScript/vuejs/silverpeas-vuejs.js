@@ -22,6 +22,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Making a proxy super method for calling Super.
+ * This will applicable for mixin methods and extended component methods
+ */
+const globalVueApp = Vue.createApp({});
+globalVueApp.config.globalProperties.$super = function(__options) {
+  // Creating a Proxy instance with options. This options will be our class/mixin/component name
+  return new Proxy(__options, {
+    get : function(_options, name) {
+      // Checking if the given method is exist of method objects/list
+      if (_options.methods && _options.methods[name]) {
+        // If YES? just call and return the data
+        return _options.methods[name].bind(this);
+      }
+    }.bind(this)
+  })
+};
+
 (function() {
   window.VueJsAsyncComponentTemplateRepository = function(src) {
     var templatePromise = sp.ajaxRequest(src).send().then(function(request) {
@@ -58,7 +76,7 @@
  * This directive permits to initialize some data from the template by using mustache notations.
  * The HTML element holding the directive is removed from the DOM after the interpretations.
  */
-Vue.directive('sp-init', {
+globalVueApp.directive('sp-init', {
   bind : function(el) {
     el.style.display = 'none';
   },
@@ -70,7 +88,7 @@ Vue.directive('sp-init', {
 /**
  * This directive permits to handle a focus.
  */
-Vue.directive('sp-focus', {
+globalVueApp.directive('sp-focus', {
   inserted : function(el) {
     setTimeout(function() {
       el.focus();
@@ -81,7 +99,7 @@ Vue.directive('sp-focus', {
 /**
  * This directive permits to render an HTML element as disabled.
  */
-Vue.directive('sp-disable-if', function(el, binding) {
+globalVueApp.directive('sp-disable-if', function(el, binding) {
   if (binding.value) {
     el.classList.add('silverpeas-disabled');
     var disableElement = function(elToDisable) {
@@ -112,50 +130,57 @@ Vue.directive('sp-disable-if', function(el, binding) {
 });
 
 /**
+ * Defining global filters.
+ * With VueJS 3.x, prefer to use computed variable instead of global filters.
+ * @type {{}}
+ */
+globalVueApp.config.globalProperties.$filters = {};
+
+/**
  * This filter permits to display simple array as joined string values separated with given string
  * or space by default.
  */
-Vue.filter('joinWith', function(array, options) {
+globalVueApp.config.globalProperties.$filters.joinWith = function(array, options) {
   if (Array.isArray(array)) {
     return array.joinWith(options);
   }
   return array;
-});
+};
 
 /**
  * This filter permits to transform javascript newlines into html newlines.
  */
-Vue.filter('newlines', function(text) {
+globalVueApp.config.globalProperties.$filters.newlines = function(text) {
   return text ? text.convertNewLineAsHtml() : text;
-});
+};
 
 /**
  * This filter permits to transform javascript newlines into html newlines.
  */
-Vue.filter('noHTML', function(text) {
+globalVueApp.config.globalProperties.$filters.noHTML = function(text) {
   return text ? text.noHTML() : text;
-});
+};
 
 /**
  * This filter permits to transform ISO String date into a readable date.
  */
-Vue.filter('displayAsDate', function(dateAsText) {
+globalVueApp.config.globalProperties.$filters.displayAsDate = function(dateAsText) {
   return dateAsText ? sp.moment.displayAsDate(dateAsText) : dateAsText;
-});
+};
 
 /**
  * This filter permits to transform ISO String date time into a readable time.
  */
-Vue.filter('displayAsTime', function(dateAsText) {
+globalVueApp.config.globalProperties.$filters.displayAsTime = function(dateAsText) {
   return dateAsText ? sp.moment.displayAsTime(dateAsText) : dateAsText;
-});
+};
 
 /**
  * This filter permits to transform ISO String date time into a readable one.
  */
-Vue.filter('displayAsDateTime', function(dateAsText) {
+globalVueApp.config.globalProperties.$filters.displayAsDateTime = function(dateAsText) {
   return dateAsText ? sp.moment.displayAsDateTime(dateAsText) : dateAsText;
-});
+};
 
 /**
  * Centralizing the 'isDefined' validator.
