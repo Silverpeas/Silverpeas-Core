@@ -37,9 +37,10 @@
    * and the deletion to this component.
    * The edition of a new comment is done directly within this component.
    */
-  Vue.component('silverpeas-comments',
+  SpVue.component('silverpeas-comments',
       templateRepository.get('comments', {
         mixins: [VuejsI18nTemplateMixin],
+        emits : ['deletion', 'listing', 'addition', 'update'],
         props: {
           componentId: {
             'type': String,
@@ -228,8 +229,9 @@
         }
       }));
 
-  Vue.component('silverpeas-comment-edition',
+  SpVue.component('silverpeas-comment-edition',
       templateRepository.get('comment-edition', {
+        emits : ['update:modelValue', 'comment-adding'],
         model : {
           prop : 'modelValue',
           event : 'update:modelValue'
@@ -254,8 +256,9 @@
         }
       }));
 
-  Vue.component('silverpeas-comment',
+  SpVue.component('silverpeas-comment',
       templateRepository.get('comment', {
+        emits : ['comment-update', 'comment-deletion'],
         props: {
           currentUser: {
             'type': Object,

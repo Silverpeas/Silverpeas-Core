@@ -26,9 +26,10 @@
   /**
    * silverpeas-file-upload is the VueJS implementation of plugin silverpeas-fileUpload.
    */
-  Vue.component('silverpeas-file-upload', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-file-upload.jsp').send().then(function(request) {
-      resolve({
+  const asyncTemplate = new VueJsAsyncComponentTemplateRepository(
+      webContext + '/util/javaScript/vuejs/components/silverpeas-file-upload.jsp');
+  SpVue.component('silverpeas-file-upload',
+      asyncTemplate.getSingle({
         mixins : [VuejsFormInputMixin],
         props : {
           componentInstanceId : {
@@ -60,7 +61,6 @@
             'default': 0
           }
         },
-        template : request.responseText,
         data : function() {
           return {
             fileUploadApi : undefined
@@ -164,7 +164,5 @@
             return this.fileUploadApi.getUploadedFiles();
           }
         }
-      });
-    });
-  });
+      }));
 })();

@@ -27,7 +27,7 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/content/silverpeas-image-selector-templates.jsp');
 
-  Vue.component('silverpeas-image-selector',
+  SpVue.component('silverpeas-image-selector',
       templateRepository.get('main', {
         inject : ['context'],
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
@@ -173,10 +173,11 @@
         }
       }));
 
-  Vue.component('image-url',
+  SpVue.component('image-url',
       templateRepository.get('image-url', {
         inject : ['imageService'],
         mixins : [VuejsApiMixin],
+        emits : ['change'],
         props : {
           currentUrl : {
             'type' : String
@@ -239,9 +240,10 @@
         }
       }));
 
-  Vue.component('media-bank',
+  SpVue.component('media-bank',
       templateRepository.get('media-bank', {
         inject : ['context'],
+        emits : ['loaded'],
         data : function() {
           return {
             mediaApps : undefined,
@@ -280,8 +282,9 @@
         }
       }));
 
-  Vue.component('image-attachment',
+  SpVue.component('image-attachment',
       templateRepository.get('image-attachment', {
+        emits : ['select-image', 'delete-image-attachment'],
         props : {
           attachment : {
             'type' : Object,

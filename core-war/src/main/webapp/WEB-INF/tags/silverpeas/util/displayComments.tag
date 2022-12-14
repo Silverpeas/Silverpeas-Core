@@ -68,15 +68,17 @@
   <c:set var="callback">function(){}</c:set>
 </c:if>
 
-<silverpeas-comments class="comments-block"
-                     resource-id='${resourceId}'
-                     resource-type='${resourceType}'
-                     component-id='${componentId}'
-                     from-component-id='${fromComponentId}'
-                     v-bind:indexed='${indexed}'
-                     v-bind:user='user'
-                     v-on:change='onChange'>
-</silverpeas-comments>
+<div class="comments-block-app">
+  <silverpeas-comments class="comments-block"
+                       resource-id='${resourceId}'
+                       resource-type='${resourceType}'
+                       component-id='${componentId}'
+                       from-component-id='${fromComponentId}'
+                       v-bind:indexed='${indexed}'
+                       v-bind:user='user'
+                       v-on:change='onChange'>
+  </silverpeas-comments>
+</div>
 
 <view:script src="/util/javaScript/checkForm.js"/>
 <view:script src="/util/javaScript/jquery/autoresize.jquery.min.js"/>
@@ -85,8 +87,7 @@
 
 <script type="text/javascript">
   whenSilverpeasReady(function() {
-    new Vue({
-      el : '.comments-block',
+    SpVue.createApp({
       data: function() {
         return {
           user: {
@@ -100,11 +101,11 @@
             admin: ${user.isPlayingAdminRole(componentId)},
             canUpdateAll: ${canBeUpdated}
           }
-        }
+        };
       },
       methods: {
         onChange: ${callback}
       }
-    });
+    }).mount('.comments-block-app');
   });
 </script>

@@ -22,3 +22,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+.silverpeas-attachment-form .version-type .silverpeas-label {
+  padding-right: 10px;
+}

@@ -42,20 +42,21 @@
    * The following example illustrates the only one possible use of the directive:
    * <div silverpeas-date-picker ...>...</div>
    */
-  Vue.component('silverpeas-date-picker', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-date-picker.jsp').send().then(function(request) {
-      resolve({
+  const asyncTemplate = new VueJsAsyncComponentTemplateRepository(
+      webContext + '/util/javaScript/vuejs/components/silverpeas-date-picker.jsp');
+  SpVue.component('silverpeas-date-picker',
+      asyncTemplate.getSingle({
+        emits : ['status-change'],
         mixins : [VuejsFormInputMixin],
         props : {
           zoneId : {
-            'type': String,
-            'required': true
+            'type' : String,
+            'required' : true
           }
         },
-        template : request.responseText,
         data : function() {
           return {
-            $jqi : undefined,
+            jqI : undefined,
             currentInput : undefined,
             status : {
               valid : false,
@@ -82,13 +83,13 @@
           });
           this.valueChanged(this.formatDate(this.modelValue));
           whenSilverpeasReady(function() {
-            this.$jqi = jQuery(this.$refs.datePickerInput);
-            this.$jqi.datepicker({
-              showOn: (this.disabled ? '' : 'button'),
-              buttonImage: webContext + '/util/icons/calendar_1.png',
-              buttonImageOnly: true,
-              showOtherMonths: true,
-              selectOtherMonths: true,
+            this.jqI = jQuery(this.$refs.datePickerInput);
+            this.jqI.datepicker({
+              showOn : (this.disabled ? '' : 'button'),
+              buttonImage : webContext + '/util/icons/calendar_1.png',
+              buttonImageOnly : true,
+              showOtherMonths : true,
+              selectOtherMonths : true,
               onSelect : function(formattedDate) {
                 this.valueChanged(formattedDate);
                 return true;
@@ -121,7 +122,7 @@
             }
             return status;
           },
-          updateStatus : function(status){
+          updateStatus : function(status) {
             if (!sp.object.areExistingValuesEqual(this.status, status)) {
               this.status = status;
             }
@@ -151,16 +152,16 @@
             if (this.currentInput !== formattedDate) {
               if (formattedDate) {
                 this.currentInput = formattedDate;
-                this.$jqi.datepicker("setDate", formattedDate);
-                this.$jqi.datepicker("refresh");
+                this.jqI.datepicker("setDate", formattedDate);
+                this.jqI.datepicker("refresh");
               }
               const status = this.computeStatus(this.currentInput);
               this.updateStatus(status);
             }
           },
           disabled : function(value) {
-            if (this.$jqi) {
-              this.$jqi.datepicker("option", "showOn", (value ? "" : "button"));
+            if (this.jqI) {
+              this.jqI.datepicker("option", "showOn", (value ? "" : "button"));
             }
           }
         },
@@ -172,7 +173,5 @@
             return this.status.valid;
           }
         }
-      });
-    });
-  });
+      }));
 })();

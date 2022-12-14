@@ -64,9 +64,10 @@
    * }
    * </pre>
    */
-  Vue.component('silverpeas-admin-space-homepage-popin',
+  SpVue.component('silverpeas-admin-space-homepage-popin',
       templateRepository.get('space-homepage-popin', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+        emits : ['validated'],
         props : {
           title : {
             'type' : String,
@@ -139,9 +140,10 @@
         }
       }));
 
-  Vue.component('silverpeas-admin-space-homepage-form',
+  SpVue.component('silverpeas-admin-space-homepage-form',
       templateRepository.get('space-homepage-form', {
         mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin],
+        emits:['choice'],
         props : {
           spacePath : {
             'type' : Array,

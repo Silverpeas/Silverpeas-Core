@@ -9,7 +9,7 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/map/js/vuejs/components/silverpeas-map-form-common-templates.jsp');
 
-  Vue.component('silverpeas-info-point-bloc-label-value',
+  SpVue.component('silverpeas-info-point-bloc-label-value',
       templateRepository.get('info-point-bloc-label-value', {
         props : {
           label : {
@@ -61,7 +61,7 @@
         }
       }));
 
-  Vue.component('silverpeas-map-form-mapping-filters',
+  SpVue.component('silverpeas-map-form-mapping-filters',
       templateRepository.get('mapping-filters', {
         mixins : [FormCartoMarkerComponentMixin, VuejsI18nTemplateMixin],
         data : function() {
@@ -108,13 +108,13 @@
         }
       }));
 
-  Vue.component('silverpeas-map-form-mapping-category-filter',
+  SpVue.component('silverpeas-map-form-mapping-category-filter',
       templateRepository.get('mapping-category-filter', {
         mixins : [FormCartoMarkerComponentMixin],
         props : {
           category : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           },
           showLabel : {
             'type' : Boolean,

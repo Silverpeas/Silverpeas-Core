@@ -82,7 +82,7 @@
        v-on:mouseleave="toggleButtons(false)">
     <div class="user-notification-subject">{{notification.subject}}</div>
     <div class="date-from">
-      <span class="user-notification-date">{{notification.date | displayAsDate}}</span>
+      <span class="user-notification-date">{{notificationDate}}</span>
       <span class="user-notification-from">{{notification.senderName}}</span>
     </div>
     <div class="user-notification-source">{{notification.source}}</div>

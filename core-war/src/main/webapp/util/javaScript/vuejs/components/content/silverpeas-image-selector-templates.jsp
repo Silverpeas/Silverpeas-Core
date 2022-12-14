@@ -69,12 +69,16 @@
           <silverpeas-fade-transition v-if="!imgAttachments.length" duration-type="fast">
             <span>${noImageMessage}</span>
           </silverpeas-fade-transition>
-          <silverpeas-fade-transition-group v-if="imgAttachments.length" duration-type="fast" class="list">
-            <image-attachment v-for="imgAttachment in imgAttachments" v-bind:key="imgAttachment.id"
-                              v-bind:attachment="imgAttachment"
-                              v-on:select-image="updateSelectedImageAttachment"
-                              v-on:delete-image-attachment="deleteImageAttachment"></image-attachment>
-          </silverpeas-fade-transition-group>
+          <silverpeas-fade-transition v-if="imgAttachments.length" duration-type="fast">
+            <ul class="list" v-if="imgAttachments.length">
+              <silverpeas-fade-transition-group duration-type="fast">
+                <image-attachment v-for="imgAttachment in imgAttachments" v-bind:key="imgAttachment.id"
+                                  v-bind:attachment="imgAttachment"
+                                  v-on:select-image="updateSelectedImageAttachment"
+                                  v-on:delete-image-attachment="deleteImageAttachment"></image-attachment>
+              </silverpeas-fade-transition-group>
+            </ul>
+          </silverpeas-fade-transition>
           <div class="actions dng add-zone">
             <div class="droparea" ref="ddContainer">
               <span>${dragAndDropFilesLabel}</span>
@@ -86,7 +90,7 @@
           </div>
         </div>
         <div v-show="displayMediaBank" class="media-bank-container">
-          <span class="section-title">${orLabel}</span>
+          <span class="section-title">${orLabel} </span>
           <span class="media-bank">${mediaBanksSectionTitle}</span>
           <media-bank v-on:loaded="displayMediaBank = $event.length > 0"></media-bank>
         </div>
@@ -103,20 +107,22 @@
         <img class="thumbnail" v-if="previewUrl" v-bind:src="previewUrl" alt=""/>
       </silverpeas-fade-transition>
     </div>
-    <input type="text" v-model:value="url"/>
+    <input type="text" v-model="url"/>
   </div>
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="media-bank">
   <div class="media-bank">
-    <silverpeas-fade-transition-group>
-      <li v-for="mediaApp in mediaApps" v-bind:key="mediaApp.id"
-          v-bind:title="mediaApp.description"
-          v-on:click.stop.prevent="openMediaFileManager(mediaApp)">
-        <span>{{mediaApp.label}}</span>
-      </li>
-    </silverpeas-fade-transition-group>
+    <ul>
+      <silverpeas-fade-transition-group>
+        <li v-for="mediaApp in mediaApps" v-bind:key="mediaApp.id"
+            v-bind:title="mediaApp.description"
+            v-on:click.stop.prevent="openMediaFileManager(mediaApp)">
+          <span>{{mediaApp.label}}</span>
+        </li>
+      </silverpeas-fade-transition-group>
+    </ul>
   </div>
 </silverpeas-component-template>
 

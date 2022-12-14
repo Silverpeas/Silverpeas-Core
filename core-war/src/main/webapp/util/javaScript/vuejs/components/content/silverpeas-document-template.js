@@ -27,7 +27,7 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/content/silverpeas-document-template-templates.jsp');
 
-  Vue.component('silverpeas-document-template-input',
+  SpVue.component('silverpeas-document-template-input',
       templateRepository.get('input', {
         mixins : [VuejsFormInputMixin],
         provide : function() {
@@ -106,8 +106,9 @@
         }
       }));
 
-  Vue.component('document-template',
+  SpVue.component('document-template',
       templateRepository.get('document-template', {
+        emits : ['select', 'unselect'],
         props : {
           documentTemplate : {
             'type' : Object,

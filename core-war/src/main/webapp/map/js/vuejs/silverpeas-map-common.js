@@ -55,7 +55,7 @@
     props : {
       marker : {
         'type' : Object,
-        'mandatory' : true
+        'required' : true
       }
     },
     created : function() {

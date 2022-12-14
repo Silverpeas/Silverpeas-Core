@@ -436,7 +436,7 @@
       aloneInCluster : !mapApi.getOptions().clusters.enabled,
       contentPromise : undefined
     }, options);
-    let __marker, __markerDetail, __markerDetailVm;
+    let __marker, __markerDetail, __$markerDetail;
     this.getCoordinates = function() {
       return __options.position;
     };
@@ -487,11 +487,11 @@
       if ($previous) {
         $previous.classList.remove('current');
       }
-      __markerDetailVm.$el.parentElement.classList.add('current');
+      __$markerDetail.parentElement.classList.add('current');
     };
     this.showDetail = function() {
       if (__markerDetail) {
-        __markerDetail.setElement(__markerDetailVm.$el);
+        __markerDetail.setElement(__$markerDetail);
         __markerDetail.setPosition(__options.position);
         this.setCurrentClass();
         __map.updateSize();
@@ -515,6 +515,7 @@
       });
       __map.addOverlay(__markerDetail);
       promises.push(__options.contentPromise.then(function(content) {
+        __$markerDetail = document.createElement('div');
         const $tipComponent = document.createElement('silverpeas-map-tip-marker');
         $tipComponent.setAttribute('v-on:api', 'api = $event');
         $tipComponent.setAttribute('v-bind:marker', 'marker');
@@ -523,16 +524,15 @@
         } else {
           $tipComponent.appendChild(content);
         }
-        return __createVueJsInstance(__map, $tipComponent, {
+        __$markerDetail.appendChild($tipComponent);
+        return __createVueJsInstance(__map, __$markerDetail, {
           data : function() {
             return {
               marker : __self,
               api : undefined
             };
           }
-        }).then(function(vm) {
-          __markerDetailVm = vm;
-        }.bind(this));
+        });
       }.bind(this)));
     }
     // marker
@@ -541,16 +541,16 @@
       className: defaultOlClass + 'ol-marker'
     });
     __map.addOverlay(__marker);
-    const $markerComponent = document.createElement('silverpeas-map-marker');
-    $markerComponent.setAttribute('v-bind:marker', 'marker');
-    promises.push(__createVueJsInstance(__map, $markerComponent, {
+    const $vuejsDock = document.createElement('div');
+    promises.push(__createVueJsInstance(__map, $vuejsDock, {
       data : function() {
         return {
           marker : __self
         };
-      }
-    }).then(function(vm) {
-      __marker.setElement(vm.$el);
+      },
+      template : '<silverpeas-map-marker v-bind:marker="marker"></silverpeas-map-marker>'
+    }).then(function() {
+      __marker.setElement($vuejsDock);
       __refreshVisibility();
     }.bind(this)));
     this.promise = sp.promise.whenAllResolved(promises);
@@ -597,22 +597,22 @@
    * Create layer container
    */
   function __createLayerButtons(mapInstance) {
-    const $component = document.createElement('silverpeas-map-mapping-layers');
-    mapInstance.getRightContainer().appendChild($component);
-    __createVueJsInstance(mapInstance, $component);
+    const $vueJsDoc = document.createElement('div');
+    mapInstance.getRightContainer().appendChild($vueJsDoc);
+    __createVueJsInstance(mapInstance, $vueJsDoc, {
+      template : '<silverpeas-map-mapping-layers></silverpeas-map-mapping-layers>'
+    });
   }
 
   function __createVueJsInstance(mapInstance, $el, options) {
     return new Promise(function(resolve) {
       setTimeout(function() {
-        resolve(new Vue(extendsObject(options, {
-          el : $el,
-          provide : function() {
-            return {
-              mapInstance: mapInstance
-            }
+        SpVue.createApp(extendsObject(options, {
+          provide : {
+            mapInstance: mapInstance
           }
-        })));
+        })).mount($el);
+        resolve();
       }, 0);
     });
   }

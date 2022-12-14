@@ -62,7 +62,7 @@
                        v-bind:with-fade-transition="true">
         <silverpeas-list-item v-for="basketElement in basketElements" v-bind:key="basketElement.getId()">
           <basket-element v-bind:basket-element="basketElement"
-                          v-on:click.native="goTo(basketElement)"
+                          v-on:click="goTo(basketElement)"
                           v-on:delete="deleteBasketElement"></basket-element>
         </silverpeas-list-item>
       </silverpeas-list>
@@ -81,15 +81,17 @@
     <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" v-bind:minWidth="650">
       <div class="publication-basket-selector-container">
         <p v-if="!basketElements.length">${emptyBasketLabel}</p>
-        <silverpeas-fade-transition-group duration-type="fast" class="basket-element-list">
-          <li v-for="basketElement in basketElements" v-bind:key="basketElement.getId()">
-            <basket-element v-bind:basket-element="basketElement"
-                            v-on:select="selectBasketElement"
-                            v-on:selectAndValidate="selectAndValidateBasketElement"
-                            v-bind:read-only="true"
-                            v-bind:class="{'selected' : (currentBasketElement && currentBasketElement.getId() === basketElement.getId())}"></basket-element>
-          </li>
-        </silverpeas-fade-transition-group>
+        <ul class="basket-element-list">
+          <silverpeas-fade-transition-group duration-type="fast">
+            <li v-for="basketElement in basketElements" v-bind:key="basketElement.getId()">
+              <basket-element v-bind:basket-element="basketElement"
+                              v-on:select="selectBasketElement"
+                              v-on:selectAndValidate="selectAndValidateBasketElement"
+                              v-bind:read-only="true"
+                              v-bind:class="{'selected' : (currentBasketElement && currentBasketElement.getId() === basketElement.getId())}"></basket-element>
+            </li>
+          </silverpeas-fade-transition-group>
+        </ul>
       </div>
     </silverpeas-popin>
   </div>

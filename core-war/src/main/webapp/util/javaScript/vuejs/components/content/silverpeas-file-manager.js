@@ -27,9 +27,10 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/content/silverpeas-file-manager-templates.jsp');
 
-  Vue.component('silverpeas-add-files-popin',
+  SpVue.component('silverpeas-add-files-popin',
       templateRepository.get('silverpeas-add-files-popin', {
         mixins : [VuejsDefaultFormPanePopinApiMixin, VuejsI18nTemplateMixin, VuejsI18nContentMixin],
+        emits : ['validate'],
         props : {
           componentInstanceId : {
             'type': String,
@@ -51,7 +52,7 @@
         }
       }));
 
-  Vue.component('silverpeas-add-files-form',
+  SpVue.component('silverpeas-add-files-form',
       templateRepository.get('silverpeas-add-files-form', {
         mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin, VuejsI18nContentMixin],
         props : {
@@ -61,7 +62,7 @@
           },
           isDocumentTemplateEnabled : {
             'type' : Boolean,
-            'mandatory' : true
+            'required' : true
           },
           multiple : {
             'type': Boolean,

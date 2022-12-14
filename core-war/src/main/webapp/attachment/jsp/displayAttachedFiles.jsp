@@ -703,7 +703,7 @@ const _afManager${domIdSuffix} = new function() {
     $(document).ready(function() {
 
       _self.addAttachment = function(foreignId) {
-        window.attachmentVm.manager.addToResource(extendsObject({
+        window.attachmentApp.manager.addToResource(extendsObject({
           foreignId : foreignId
         }, __vuejsCtx), function(formPaneData) {
           return new Promise(function(resolve) {
@@ -1315,18 +1315,18 @@ const _afManager${domIdSuffix} = new function() {
 
 <c:if test="${empty __addAttachmentDialogInserted}">
   <c:set var="__addAttachmentDialogInserted" value="${true}" scope="request"/>
-  <silverpeas-attachment-management id="attachmentManagement"
-                                    v-on:api="manager = $event"></silverpeas-attachment-management>
+  <div id="attachmentManagement">
+    <silverpeas-attachment-management v-on:api="manager = $event"></silverpeas-attachment-management>
+  </div>
   <script type="text/javascript">
     whenSilverpeasReady(function() {
-      window.attachmentVm = new Vue({
-        el : '#attachmentManagement',
+      window.attachmentApp = SpVue.createApp({
         data : function() {
           return {
             manager : undefined
           }
         }
-      });
+      }).mount('#attachmentManagement');
     });
   </script>
 </c:if>

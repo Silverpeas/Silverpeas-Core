@@ -52,39 +52,39 @@
   <p>
     <silverpeas-link
         title="Destroy list"
-        v-on:click.native="demo1.list = undefined">Destroy list.</silverpeas-link>
+        v-on:click="demo1.list = undefined">Destroy list.</silverpeas-link>
     <span> | </span>
     <silverpeas-link
         title="Destroy list"
-        v-on:click.native="demo1.list = []">Empty list.</silverpeas-link>
+        v-on:click="demo1.list = []">Empty list.</silverpeas-link>
     <br/>
     <silverpeas-link
         v-if="demo1.list"
         v-bind:title="demo1.fade ? 'Fade is active on list' : 'Fade is not active on list'"
-        v-on:click.native="demo1.fade = !demo1.fade">Click this link to activate/deactivate fade on list.</silverpeas-link>
+        v-on:click="demo1.fade = !demo1.fade">Click this link to activate/deactivate fade on list.</silverpeas-link>
     <br/>
     <silverpeas-link
         v-if="demo1.list"
         v-bind:title="demo1.header ? 'Header is shown' : 'Header is hidden'"
-        v-on:click.native="demo1.header = !demo1.header">Click this link to hide/display header.</silverpeas-link>
+        v-on:click="demo1.header = !demo1.header">Click this link to hide/display header.</silverpeas-link>
     <br/>
     <silverpeas-link
         v-if="demo1.list"
         v-bind:title="demo1.actions ? 'Actions on items are shown' : 'Actions on items are hidden'"
-        v-on:click.native="demo1.actions = !demo1.actions">Click this link to hide/display actions on items.</silverpeas-link>
+        v-on:click="demo1.actions = !demo1.actions">Click this link to hide/display actions on items.</silverpeas-link>
     <br/>
     <silverpeas-link
         v-if="demo1.list"
         v-bind:title="demo1.feminineGender ? 'Feminine gender' : 'Male gender'"
-        v-on:click.native="demo1.feminineGender = !demo1.feminineGender">Click this link to change item gender.</silverpeas-link>
+        v-on:click="demo1.feminineGender = !demo1.feminineGender">Click this link to change item gender.</silverpeas-link>
     <br/>
     <silverpeas-link
         v-if="demo1.list"
         v-bind:title="demo1.footer ? 'Footer is shown' : 'Footer is hidden'"
-        v-on:click.native="demo1.footer = !demo1.footer">Click this link to hide/display footer.</silverpeas-link>
+        v-on:click="demo1.footer = !demo1.footer">Click this link to hide/display footer.</silverpeas-link>
     <silverpeas-button-pane v-if="demo1.list">
-      <silverpeas-button v-on:click.native="demo1.addData()">Add data</silverpeas-button>
-      <silverpeas-button v-on:click.native="demo1.removeLastData()"
+      <silverpeas-button v-on:click="demo1.addData()">Add data</silverpeas-button>
+      <silverpeas-button v-on:click="demo1.removeLastData()"
                          v-sp-disable-if="!demo1.list.length">Remove last data</silverpeas-button>
     </silverpeas-button-pane>
     <silverpeas-list v-if="demo1.list"
@@ -92,19 +92,19 @@
                      v-bind:items="demo1.list"
                      v-bind:item-feminine-gender="demo1.feminineGender">
       <template v-slot:before>
-        <transition name="fade" appear>
+        <silverpeas-fade-transition>
           <h3 v-if="demo1.header">HEADER PART</h3>
-        </transition>
+        </silverpeas-fade-transition>
       </template>
       <template v-slot:after>
-        <transition name="fade">
+        <silverpeas-fade-transition>
           <h3 v-if="demo1.footer">FOOTER PART</h3>
-        </transition>
+        </silverpeas-fade-transition>
       </template>
       <silverpeas-list-item v-for="item in demo1.list" v-bind:key="item.id">
         <span>Id = {{item.id}}</span> | <span>Content = {{item.content}}</span>
-        <template slot="actions" v-if="demo1.actions">
-          <silverpeas-button v-on:click.native="demo1.removeData(item)"
+        <template v-slot:actions v-if="demo1.actions">
+          <silverpeas-button v-on:click="demo1.removeData(item)"
                              v-bind:title="'Remove item with id ' + item.id"
                              icon-url="${deleteIconUrl}">Remove</silverpeas-button>
         </template>
@@ -113,9 +113,8 @@
   </p>
 </div>
 <script type="text/javascript">
-  var __count = -1;
-  window.vm = new Vue({
-    el : '#root',
+  let __count = -1;
+  window.app = SpVue.createApp({
     data : function() {
       return {
         demo1 : {
@@ -137,7 +136,7 @@
         }
       }
     }
-  });
+  }).mount('#root');
 </script>
 </body>
 </html>

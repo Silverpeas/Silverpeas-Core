@@ -39,7 +39,7 @@
     };
   }
 
-  Vue.component('mylinkspeas-widget',
+  SpVue.component('mylinkspeas-widget',
       myLinksPeasAsyncComponentRepository.get('widget', {
         props : {
           'links' : {
@@ -132,7 +132,7 @@
         }
       }));
 
-  Vue.component('mylinkspeas-accordion',
+  SpVue.component('mylinkspeas-accordion',
       myLinksPeasAsyncComponentRepository.get('accordion', {
         props : {
           'linksByCategory' : {
@@ -141,7 +141,7 @@
         }
       }));
 
-  Vue.component('mylinkspeas-accordion-category-links',
+  SpVue.component('mylinkspeas-accordion-category-links',
       myLinksPeasAsyncComponentRepository.get('accordion-category-links', {
         props : {
           'category' : {
@@ -177,7 +177,7 @@
         }
       }));
 
-  Vue.component('mylinkspeas-accordion-link',
+  SpVue.component('mylinkspeas-accordion-link',
       myLinksPeasAsyncComponentRepository.get('accordion-link', {
         props : {
           'link' : {
