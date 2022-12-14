@@ -182,7 +182,7 @@
       }
       function performUrl(url) {
         if (url) {
-          vm.editorManager.whenStoreProcessHasFinished(function() {
+          ddweApp.editorManager.whenStoreProcessHasFinished(function() {
             if (spWindow) {
               if (url.startsWith(webContext)) {
                 spWindow.loadLink(url);
@@ -235,10 +235,9 @@
     </view:window>
     <script type="text/javascript">
       function choixImageInGallery(url) {
-        window.vm.imageSelectorApi.updateSelectedImageMedia(url);
+        window.ddweApp.imageSelectorApi.updateSelectedImageMedia(url);
       }
-      window.vm = new Vue({
-        el : '#plugin-manager',
+      window.ddweApp = SpVue.createApp({
         provide : function() {
           return {
             context: this.context
@@ -292,7 +291,7 @@
             }.bind(this));
           }
         }
-      });
+      }).mount('#plugin-manager');
     </script>
     <view:progressMessage/>
   </view:sp-body-part>

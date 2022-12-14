@@ -31,7 +31,7 @@
   const adminNavigationAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(
       webContext + '/jobStartPagePeas/jsp/javascript/vuejs/admin-navigation-templates.jsp');
 
-  Vue.component('admin-navigation',
+  SpVue.component('admin-navigation',
       adminNavigationAsyncComponentRepository.get('root', {
         mixins : [VuejsApiMixin],
         data : function() {
@@ -79,8 +79,9 @@
         }
       }));
 
-  Vue.component('admin-navigation-space-selector',
+  SpVue.component('admin-navigation-space-selector',
       adminNavigationAsyncComponentRepository.get('space-selector', {
+        emits : ['space-select'],
         props : {
           spaces : {
             'type' : Array,
@@ -116,8 +117,9 @@
         }
       }));
 
-  Vue.component('admin-navigation-tree-level',
+  SpVue.component('admin-navigation-tree-level',
       adminNavigationAsyncComponentRepository.get('tree-level', {
+        emits : ['space-select', 'application-select'],
         props : {
           tree : {
             'type' : Array,
@@ -144,8 +146,9 @@
         }
       }));
 
-  Vue.component('admin-navigation-tree-space',
+  SpVue.component('admin-navigation-tree-space',
       adminNavigationAsyncComponentRepository.get('tree-space', {
+        emits : ['space-select'],
         props : {
           space : {
             'type' : Object,
@@ -163,8 +166,9 @@
         }
       }));
 
-  Vue.component('admin-navigation-tree-application',
+  SpVue.component('admin-navigation-tree-application',
       adminNavigationAsyncComponentRepository.get('tree-application', {
+        emits : ['application-select'],
         props : {
           application : {
             'type' : Object,

@@ -38,6 +38,6 @@
          v-bind:class="{'valid':statusValid,'not-valid':!statusValid}"
          v-bind:value="formattedDate"
          v-on:input="valueChanged($event.target.value)">
-  <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+  <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 </div>

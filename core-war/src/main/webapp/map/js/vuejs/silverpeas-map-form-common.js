@@ -56,24 +56,20 @@
     props : {
       formDataItem : {
         'type' : Object,
-        'mandatory' : true
+        'required' : true
       }
     },
     data : function() {
       return {
-        formDataFields : undefined
+        formDataFields : undefined,
+        name : undefined,
+        category : undefined
       }
     },
     created : function() {
       this.formDataFields = this.formDataItem.fields;
-    },
-    computed : {
-      name : function() {
-        return this.formDataItem.infoPoint.getName();
-      },
-      category : function() {
-        return this.formDataItem.infoPoint.getCategory();
-      }
+      this.name = this.formDataItem.infoPoint.getName();
+      this.category = this.formDataItem.infoPoint.getCategory();
     }
   };
 })();

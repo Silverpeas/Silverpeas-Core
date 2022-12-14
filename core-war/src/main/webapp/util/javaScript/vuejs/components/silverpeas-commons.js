@@ -34,7 +34,7 @@
    * The following example illustrates a possible use of the component:
    * @example <silverpeas-operation-creation-area></silverpeas-operation-creation-area>
    */
-  Vue.component('silverpeas-operation-creation-area', {
+  SpVue.component('silverpeas-operation-creation-area', {
     template : '<div id="menubar-creation-actions" ref="container"></div>',
     created : function() {
       YAHOO.util.Event.onContentReady("menuwithgroups", function() {
@@ -57,7 +57,7 @@
    *            <span>My message</span>
    *          </silverpeas-inline-message>
    */
-  Vue.component('silverpeas-inline-message', {
+  SpVue.component('silverpeas-inline-message', {
     template : '<div class="inlineMessage"><slot></slot></div>'
   });
 
@@ -67,11 +67,11 @@
    *
    * The following example illustrates a possible use of the component:
    * @example <silverpeas-button-pane>
-   *            <silverpeas-button v-bind:click.native="...">OK<silverpeas-button>
+   *            <silverpeas-button v-bind:click="...">OK<silverpeas-button>
    *            <silverpeas-button onclick="...">Cancel<silverpeas-button>
    *          </silverpeas-button-pane>
    */
-  Vue.component('silverpeas-button-pane', {
+  SpVue.component('silverpeas-button-pane', {
     template : '<div class="silverpeas-button-pane sp_buttonPane"><slot></slot></div>'
   });
 
@@ -88,11 +88,12 @@
    * @param title (Optional) if filled it adds a title on the button.
    * @param iconUrl (Optional) if filled the button has icon clickable behavior.
    *
-   * @example 1 <silverpeas-button v-bind:click.native="methodOfVue()">OK<silverpeas-button>
+   * @example 1 <silverpeas-button v-bind:click="methodOfVue()">OK<silverpeas-button>
    * @example 2 <silverpeas-button onclick="methodOfVanillaJs">Cancel<silverpeas-button>
    */
-  Vue.component('silverpeas-button',
+  SpVue.component('silverpeas-button',
     commonAsyncComponentRepository.get('button', {
+      emits : ['click'],
       props : {
         title : {
           'type' : String,
@@ -131,9 +132,10 @@
    *            <silverpeas-list-item v-for="item in items">{{item}}</silverpeas-list-item>
    *          <silverpeas-list>
    */
-  Vue.component('silverpeas-list',
+  SpVue.component('silverpeas-list',
     commonAsyncComponentRepository.get('list', {
       mixins : [VuejsI18nTemplateMixin],
+      emits : ['before-enter', 'enter', 'after-enter', 'before-leave', 'leave', 'after-leave'],
       props : {
         items : {
           'type' : Array,
@@ -182,23 +184,24 @@
    *            <silverpeas-list-item>
    *
    * @example 2 <silverpeas-list-item>
-   *              <span slot="header">An header</span>
+   *              <span v-slot:header>An header</span>
    *              <div>Content</div>
-   *              <template slot="actions">
+   *              <template v-slot:actions>
    *                <silverpeas-button>Save</silverpeas-button>
    *                <silverpeas-button>Delete</silverpeas-button>
    *              </template>
-   *              <span slot="footer">An footer</span>
+   *              <span v-slot:footer>An footer</span>
    *            <silverpeas-list-item>
    */
-  Vue.component('silverpeas-list-item',
+  SpVue.component('silverpeas-list-item',
     commonAsyncComponentRepository.get('list-item'));
 
   /**
    */
-  Vue.component('silverpeas-popin',
+  SpVue.component('silverpeas-popin',
     commonAsyncComponentRepository.get('popin', {
       mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+      emits : ['open', 'close'],
       props : {
         'type' : {
           'type' : String,
@@ -369,7 +372,7 @@
    *
    * 1) Add it to a component or a vue instance by attribute mixins. For example:
    * <pre>
-   *    Vue.component('my-component', {
+   *    SpVue.component('my-component', {
    *      ...
    *      mixins : [VuejsTopPopinMixin]
    *      ...
@@ -378,7 +381,7 @@
    *
    * 2) Register into data a variable dedicated to the popin api instance. For example:
    * <pre>
-   *    Vue.component('my-component', {
+   *    SpVue.component('my-component', {
    *      ...
    *      data : function() {
    *        return {
@@ -392,7 +395,7 @@
    * 3) Initialize the popin api from "created" hook by calling the method
    * 'registerTopPopinApiName' with the name of the variable defined in step 2. For example:
    * <pre>
-   *    Vue.component('my-component', {
+   *    SpVue.component('my-component', {
    *      ...
    *      created : function() {
    *        ...
@@ -554,8 +557,9 @@
    * The following example illustrates the only one possible use of the directive:
    * <silverpeas-attached-popin ...>...</silverpeas-attached-popin>
    */
-  Vue.component('silverpeas-attached-popin',
+  SpVue.component('silverpeas-attached-popin',
     commonAsyncComponentRepository.get('attached-popin', {
+      emits : ['scroll-end'],
       props : {
         'toElement' : {
           'required' : true
@@ -591,7 +595,7 @@
       },
       data : function() {
         return {
-          $elBase : undefined,
+          elBase : undefined,
           domContext : {
             lastScrollHeight : 0,
             scrollEndEventEmitted : false
@@ -600,9 +604,9 @@
       },
       created : function() {
         if (typeof this.toElement === 'string') {
-          this.$elBase = document.querySelector('#' + this.toElement);
+          this.elBase = document.querySelector('#' + this.toElement);
         } else {
-          this.$elBase = this.toElement;
+          this.elBase = this.toElement;
         }
       },
       mounted : function() {
@@ -635,7 +639,7 @@
       },
       computed : {
         positionMonitor : function() {
-          const positionMonitor = sp.element.createPositionManager(this.$refs.popin, this.$elBase);
+          const positionMonitor = sp.element.createPositionManager(this.$refs.popin, this.elBase);
           const __options = {
             anchorPoint : {
               ofBase : 'bottom-right',
@@ -674,7 +678,7 @@
    * @example <silverpeas-permalink link="/Publication/3"
    *     v-bind:simple="false"></silverpeas-permalink>
    */
-  Vue.component('silverpeas-permalink',
+  SpVue.component('silverpeas-permalink',
     commonAsyncComponentRepository.get('permalink', {
       mixins : [VuejsI18nTemplateMixin],
       props : {
@@ -754,9 +758,10 @@
    * @event validation-fail when validation of data has failed.
    * @event cancel when validation has been cancelled.
    */
-  Vue.component('silverpeas-form-pane',
+  SpVue.component('silverpeas-form-pane',
     commonAsyncComponentRepository.get('form-pane', {
       mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+      emits : ['data-update', 'validation-fail', 'cancel'],
       provide : function() {
         return {
           rootFormApi : this.api,
@@ -862,6 +867,12 @@
           }
         };
 
+        const __unsetLinkedCmpIfSet = function(thisCmp, linkedName) {
+          if (thisCmp['linked' + linkedName]) {
+            thisCmp['linked' + linkedName] = undefined;
+          }
+        };
+
         this.extendApiWith({
           handleFormLabelComponent : function(formLabelComponent) {
             formLabelValidationRegistry.push(formLabelComponent);
@@ -877,6 +888,10 @@
             formLabelValidationRegistry.removeElement(formLabelComponent);
             const labelIdRef = 'label-' + formLabelComponent.forId;
             delete formLabelValidationRegistry[labelIdRef];
+            const linkedInput = formInputValidationRegistry[labelIdRef];
+            if (linkedInput) {
+              __unsetLinkedCmpIfSet(linkedInput, 'LabelCmp');
+            }
           },
           handleFormInputComponent : function(formInputComponent) {
             formInputValidationRegistry.push(formInputComponent);
@@ -892,6 +907,10 @@
             formInputValidationRegistry.removeElement(formInputComponent);
             const labelIdRef = 'label-' + formInputComponent.linkedLabelId;
             delete formInputValidationRegistry[labelIdRef];
+            const linkedLabel = formLabelValidationRegistry[labelIdRef];
+            if (linkedLabel) {
+              __unsetLinkedCmpIfSet(linkedLabel, 'InputCmp');
+            }
           },
           handleFormComponent : function(formComp) {
             formValidationRegistry.push(formComp);
@@ -953,16 +972,16 @@
       },
       computed : {
         isHeader : function() {
-          return !!this.$slots.header;
+          return !!this.$slots['header'];
         },
         isBody : function() {
           return !!this.$slots['default'];
         },
         isFooter : function() {
-          return !!this.$slots.footer;
+          return !!this.$slots['footer'];
         },
         isLegend : function() {
-          return !!this.$slots.legend || this.mandatoryLegend;
+          return !!this.$slots['legend'] || this.mandatoryLegend;
         },
         isManualActions : function() {
           return this.manualActions;
@@ -978,7 +997,7 @@
    * The following example illustrates a possible use of the component:
    * @example <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
    */
-  Vue.component('silverpeas-link',
+  SpVue.component('silverpeas-link',
       commonAsyncComponentRepository.get('link', {
         props : {
           title : {
@@ -1039,7 +1058,7 @@
    * The following example illustrates a possible use of the component:
    * @example <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
    */
-  Vue.component('silverpeas-mandatory-indicator', {
+  SpVue.component('silverpeas-mandatory-indicator', {
     template : '<span>&#160;<img v-bind:src="iconUrl" height="5" width="5" alt=""/></span>',
     props : {
       iconUrl : {
@@ -1049,7 +1068,7 @@
     }
   });
 
-  Vue.component('silverpeas-label',
+  SpVue.component('silverpeas-label',
       commonAsyncComponentRepository.get('label', {
         inject : {
           rootFormApi : {
@@ -1085,7 +1104,7 @@
         mounted : function() {
           this.rootFormApi.handleFormLabelComponent(this);
         },
-        destroyed : function() {
+        unmounted : function() {
           this.rootFormApi.unhandleFormLabelComponent(this);
         },
         computed : {
@@ -1129,17 +1148,17 @@
     }
   };
 
-  Vue.component('silverpeas-text-input',
+  SpVue.component('silverpeas-text-input',
       commonAsyncComponentRepository.get('text-input', {
         mixins : [__FormInputMixin]
       }));
 
-  Vue.component('silverpeas-hidden-input',
+  SpVue.component('silverpeas-hidden-input',
       commonAsyncComponentRepository.get('hidden-input', {
         mixins : [__FormInputMixin]
       }));
 
-  Vue.component('silverpeas-url-input',
+  SpVue.component('silverpeas-url-input',
       commonAsyncComponentRepository.get('url-input', {
         mixins : [__FormInputMixin],
         created : function() {
@@ -1165,7 +1184,7 @@
         }
       }));
 
-  Vue.component('silverpeas-multiline-text-input',
+  SpVue.component('silverpeas-multiline-text-input',
       commonAsyncComponentRepository.get('multiline-text-input', {
         mixins : [VuejsFormInputMixin],
         props : {
@@ -1240,12 +1259,12 @@
     }
   };
 
-  Vue.component('silverpeas-radio-input',
+  SpVue.component('silverpeas-radio-input',
       commonAsyncComponentRepository.get('radio-input', {
         mixins : [__FormRadioOrCheckboxMixin]
       }));
 
-  Vue.component('silverpeas-checkbox-input',
+  SpVue.component('silverpeas-checkbox-input',
       commonAsyncComponentRepository.get('checkbox-input', {
         mixins : [__FormRadioOrCheckboxMixin]
       }));
@@ -1259,12 +1278,12 @@
     }
   };
 
-  Vue.component('silverpeas-select',
+  SpVue.component('silverpeas-select',
       commonAsyncComponentRepository.get('select', {
         mixins : [__FormSelectMixin]
   }));
 
-  Vue.component('silverpeas-select-language',
+  SpVue.component('silverpeas-select-language',
       commonAsyncComponentRepository.get('select-language', {
         mixins : [__FormSelectMixin]
       }));
@@ -1277,7 +1296,7 @@
    * The following example illustrates a possible use of the component:
    * @example <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
    */
-  Vue.component('silverpeas-event-period',
+  SpVue.component('silverpeas-event-period',
       commonAsyncComponentRepository.get('event-period', {
         props : {
           period : {
@@ -1285,12 +1304,18 @@
             'required' : true
           }
         },
-        methods : {
-          startDate : function() {
-            return this.period.getStartDate();
+        computed : {
+          startAsDate : function() {
+            return this.$filters.displayAsDate(this.period.getStartDate());
           },
-          endDate : function() {
-            return this.period.getEndDateForUI();
+          startAsTime : function() {
+            return this.$filters.displayAsTime(this.period.getStartDate());
+          },
+          endAsDate : function() {
+            return this.$filters.displayAsDate(this.period.getEndDateForUI());
+          },
+          endAsTime : function() {
+            return this.$filters.displayAsTime(this.period.getEndDateForUI());
           },
           isInDays : function() {
             return this.period.isInDays();

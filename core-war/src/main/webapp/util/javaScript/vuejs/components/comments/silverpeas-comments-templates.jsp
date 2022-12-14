@@ -120,18 +120,18 @@ other users. The update opens a popup to modify the text of the comment.
         </silverpeas-form-pane>
       </silverpeas-popin>
 
-      <silverpeas-fade-transition-group id="list-box"
-                                        v-if="comments.length"
-                                        tag="div">
-        <silverpeas-comment v-for="comment in comments"
-                            v-bind:key="comment.id"
-                            v-bind:current-user="user"
-                            v-bind:comment="comment"
-                            v-bind:readonly="false"
-                            v-on:comment-update="updateComment"
-                            v-on:comment-deletion="deleteComment">
-        </silverpeas-comment>
-      </silverpeas-fade-transition-group>
+      <div id="list-box" v-if="comments.length">
+        <silverpeas-fade-transition-group>
+          <silverpeas-comment v-for="comment in comments"
+                              v-bind:key="comment.id"
+                              v-bind:current-user="user"
+                              v-bind:comment="comment"
+                              v-bind:readonly="false"
+                              v-on:comment-update="updateComment"
+                              v-on:comment-deletion="deleteComment">
+          </silverpeas-comment>
+        </silverpeas-fade-transition-group>
+      </div>
 
     </div>
 

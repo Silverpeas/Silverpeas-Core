@@ -76,8 +76,7 @@
     spAdminWindow.loadComponent(componentId);
   }
 
-  window.adminVm = new Vue({
-    el : '#admin-navigation',
+  window.adminApp = SpVue.createApp({
     data : function() {
       return {
         api : undefined
@@ -99,9 +98,9 @@
         }, 0);
       }
     }
-  });
+  }).mount('#admin-navigation');
   spAdminLayout.getBody().getNavigation().addEventListener('json-load', function(e) {
-    adminVm.api.injectData(e.detail.data);
+    adminApp.api.injectData(e.detail.data);
     spProgressMessage.hide();
   }, 'jobStartPageNav');
   spAdminLayout.getBody().getNavigation().dispatchEvent('load');

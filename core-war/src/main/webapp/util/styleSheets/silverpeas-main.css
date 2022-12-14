@@ -5085,6 +5085,11 @@ input.search:focus {
   color: #666;
 }
 
+.silverpeas-form-pane .silverpeas-label span,
+.ui-dialog .form-container .silverpeas-label span {
+  padding-left: 3px;
+}
+
 .ui-dialog .form-container label,
 .ui-dialog .form-container .label.value,
 .ui-dialog .form-container .silverpeas-label.value {
@@ -5093,7 +5098,8 @@ input.search:focus {
 }
 
 .ui-dialog .form-container div.silverpeas-radio-input {
-  display: inline;
+  display: inline-block;
+  min-width: 17px;
 }
 
 .ui-dialog .form-container input {
@@ -7634,9 +7640,9 @@ input.dateToPick,
   opacity: 1;
 }
 
-.fast-fade-enter, .fast-fade-leave-to,
-.normal-fade-enter, .normal-fade-leave-to,
-.long-fade-enter, .long-fade-leave-to {
+.fast-fade-enter-from, .fast-fade-leave-to,
+.normal-fade-enter-from, .normal-fade-leave-to,
+.long-fade-enter-from, .long-fade-leave-to {
   opacity: 0;
 }
 

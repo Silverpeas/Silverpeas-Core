@@ -348,16 +348,16 @@
         $baseContainer.classList.add(css);
       });
       if (infoPoint.isVueJsRendering()) {
-        const $component = document.createElement('silverpeas-info-point');
-        $component.setAttribute('v-bind:form-data-item', 'formDataItem')
-        $baseContainer.appendChild($component);
+        const $vueJsDoc = document.createElement('div');
+        $baseContainer.appendChild($vueJsDoc);
         contentPromise = sp.promise.resolveDirectlyWith($baseContainer);
-        __createVueJsInstance(cmpInstance, $component, {
+        __createVueJsInstance(cmpInstance, $vueJsDoc, {
           data : function() {
             return {
               formDataItem : infoPoint.formDataItem
             }
-          }
+          },
+          template : '<silverpeas-info-point v-bind:form-data-item="formDataItem"></silverpeas-info-point>'
         });
       } else {
         contentPromise = infoPoint.promiseRender().then(function($content) {
@@ -384,23 +384,25 @@
    */
   function __createFilters(cmpInstance) {
     if (cmpInstance.categories.size() > 0) {
-      const $component = document.createElement('silverpeas-map-form-mapping-filters');
-      cmpInstance.mapApi.getRightContainer().appendChild($component);
-      __createVueJsInstance(cmpInstance, $component);
+      const $vueJsDoc = document.createElement('div');
+      cmpInstance.mapApi.getRightContainer().appendChild($vueJsDoc);
+      __createVueJsInstance(cmpInstance, $vueJsDoc, {
+        template : '<silverpeas-map-form-mapping-filters></silverpeas-map-form-mapping-filters>'
+      });
     }
   }
 
   function __createVueJsInstance(cmpInstance, $el, options) {
     return new Promise(function(resolve) {
       setTimeout(function() {
-        resolve(new Vue(extendsObject(options, {
-          el : $el,
+        SpVue.createApp(extendsObject(options, {
           provide : function() {
             return {
               cmpInstance: cmpInstance
             }
           }
-        })));
+        })).mount($el);
+        resolve();
       }, 0);
     });
   }

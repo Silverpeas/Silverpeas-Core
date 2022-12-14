@@ -29,7 +29,7 @@
 <head>
   <title>Demo VueJS</title>
   <view:looknfeel/>
-  <style type="text/css">
+  <style>
     .demo-ok {
       color: green;
     }
@@ -49,14 +49,21 @@
     Text input can be mandatory.<br/>
     <silverpeas-link
         v-bind:title="demo1.mandatory ? 'Input is mandatory' : 'Input is not mandatory'"
-        v-on:click.native="demo1.validationOk = false;demo1.mandatory = !demo1.mandatory">Click this link to change mandatory state.</silverpeas-link>
+        v-on:click="demo1.validationOk = false;demo1.mandatory = !demo1.mandatory">Click this link to change mandatory state.</silverpeas-link>
+    <span> | </span>
+    <silverpeas-link
+        title="demo1.displayInputLabel ? 'Input label is displayed' : 'Input label is not displayed'"
+        v-on:click="demo1.displayInputLabel = !demo1.displayInputLabel">Click this link to show/hide input label.</silverpeas-link>
     <silverpeas-form-pane
+        v-bind:mandatory-legend="demo1.mandatory"
         v-on:cancel="demo1.validationOk = false;demo1.value = '';demo1.mandatory = true"
         v-on:data-update="demo1.validationOk = true"
         v-on:validation-fail="demo1.validationOk = false">
+      <silverpeas-label for="demo-text-input-1" v-if="demo1.displayInputLabel"
+                        v-bind:mandatory="demo1.mandatory">An input label</silverpeas-label>
       <silverpeas-text-input
           id="demo-text-input-1"
-          v-model:value="demo1.value"
+          v-model="demo1.value"
           v-bind:mandatory="demo1.mandatory"></silverpeas-text-input>
       <span v-bind:class="{'demo-ok':demo1.mandatory && demo1.validationOk}"
             v-if="!demo1.mandatory || demo1.validationOk">{{demo1.value}}</span>
@@ -64,18 +71,18 @@
   </p>
 </div>
 <script type="text/javascript">
-  window.vm = new Vue({
-    el : '#root',
+  window.vm = SpVue.createApp({
     data : function() {
       return {
         demo1 : {
           value : '',
           validationOk : false,
-          mandatory : true
+          mandatory : true,
+          displayInputLabel : true
         }
       }
     }
-  });
+  }).mount('#root');
 </script>
 </body>
 </html>

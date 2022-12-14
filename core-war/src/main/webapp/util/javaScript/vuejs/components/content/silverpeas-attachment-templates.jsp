@@ -72,7 +72,7 @@
       </div>
     </div>
     <template v-if="context.isVersionActive">
-      <div>
+      <div class="version-type">
         <silverpeas-label for="versionType-0" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></silverpeas-label>
         <div class="champ-ui-dialog">
           <silverpeas-radio-input value="0" name="versionType" id="versionType-0"

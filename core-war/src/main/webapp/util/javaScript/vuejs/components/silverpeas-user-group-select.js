@@ -36,9 +36,10 @@
   /**
    * silverpeas-user-group-select handles a complex input of users and/or groups.
    */
-  Vue.component('silverpeas-user-group-select', {
+  SpVue.component('silverpeas-user-group-select', {
     mixins : [VuejsFormInputMixin],
     template : '<div class="silverpeas-user-group-select" v-bind:id="rootContainerId"><span></span></div>',
+    emits : ['selection-change'],
     props : {
       currentUserId : {
         'type' : String,

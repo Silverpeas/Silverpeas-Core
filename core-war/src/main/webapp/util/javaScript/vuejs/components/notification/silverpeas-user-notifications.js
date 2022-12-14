@@ -24,15 +24,15 @@
 
 (function() {
 
-  var VALIDATION_TIMEOUT = 10000;
+  const VALIDATION_TIMEOUT = 10000;
 
   // the type Replacement
-  var InboxUserNotification = function() {
+  const InboxUserNotification = function() {
     this.type = 'InboxUserNotification';
     this.deleted = false;
   };
 
-  var __onlyIds = function(notifications) {
+  const __onlyIds = function(notifications) {
     notifications = Array.isArray(notifications) ? notifications : [notifications];
     return notifications.filter(function(notification) {
       return notification && notification.id;
@@ -41,9 +41,9 @@
     });
   };
 
-  var InboxUserNotificationService = SilverpeasClass.extend({
+  const InboxUserNotificationService = SilverpeasClass.extend({
     initialize : function() {
-      var baseUri = webContext + '/services/usernotifications/inbox';
+      const baseUri = webContext + '/services/usernotifications/inbox';
       this.baseAdapter = RESTAdapter.get(baseUri, InboxUserNotification);
     },
 
@@ -80,7 +80,7 @@
      * @returns {*}
      */
     markAsRead : function(notifications) {
-      var ids = __onlyIds(notifications);
+      const ids = __onlyIds(notifications);
       if (ids.length) {
         return this.baseAdapter.put(ids);
       } else {
@@ -94,7 +94,7 @@
      * @returns {*}
      */
     remove : function(notifications) {
-      var ids = __onlyIds(notifications);
+      const ids = __onlyIds(notifications);
       if (ids.length) {
         return this.baseAdapter['delete'](ids);
       } else {
@@ -103,9 +103,9 @@
     }
   });
 
-  var inboxUserNotificationService = new InboxUserNotificationService();
+  const inboxUserNotificationService = new InboxUserNotificationService();
 
-  var NotificationManager = SilverpeasClass.extend({
+  const NotificationManager = SilverpeasClass.extend({
     initialize : function() {
       this.__notifications = [];
       this.__timer = undefined;
@@ -115,7 +115,7 @@
     },
     push : function(notification) {
       clearTimeout(this.__timer);
-      this.__timer = setTimeout(function () {
+      this.__timer = setTimeout(function() {
         this.process();
       }.bind(this), VALIDATION_TIMEOUT);
       this.__notifications.push(notification);
@@ -125,7 +125,7 @@
     },
     process : function() {
       clearTimeout(this.__timer);
-      var __notificationsToProcess = this.__notifications;
+      const __notificationsToProcess = this.__notifications;
       this.__notifications = [];
       return this.serviceAction(__notificationsToProcess);
     },
@@ -134,14 +134,14 @@
     }
   });
 
-  var MarkAsReadManager = NotificationManager.extend({
+  const MarkAsReadManager = NotificationManager.extend({
     serviceAction : function(notifications) {
       return inboxUserNotificationService.markAsRead(notifications);
     }
   });
-  var markAsReadManager = new MarkAsReadManager();
+  const markAsReadManager = new MarkAsReadManager();
 
-  var DeletionManager = NotificationManager.extend({
+  const DeletionManager = NotificationManager.extend({
     push : function(notification) {
       markAsReadManager.remove(notification);
       this._super(notification);
@@ -150,12 +150,12 @@
       return inboxUserNotificationService.remove(notifications);
     }
   });
-  var deletionManager = new DeletionManager();
+  const deletionManager = new DeletionManager();
 
-  var unreadUserNotifications = new function() {
-    var lastNbUnreadValue = 0;
-    var __listener = this.addEventListener;
-    var __dispatch = function() {
+  const unreadUserNotifications = new function() {
+    let lastNbUnreadValue = 0;
+    let __listener = this.addEventListener;
+    const __dispatch = function() {
       if (__listener) {
         __listener(lastNbUnreadValue);
       }
@@ -172,7 +172,7 @@
     }.bind(this));
   };
 
-  var userNotifAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(webContext +
+  const userNotifAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/notification/silverpeas-user-notification-templates.jsp');
 
   /**
@@ -192,7 +192,7 @@
    * The following example illustrates the only one possible use of the directive:
    * <silverpeas-user-notifications ...>...</silverpeas-user-notifications>
    */
-  Vue.component('silverpeas-user-notifications',
+  SpVue.component('silverpeas-user-notifications',
     userNotifAsyncComponentRepository.get('user-notifications', {
       mixins : [VuejsApiMixin],
       props : {
@@ -319,7 +319,7 @@
           return !this.hideWhenNoUnread || this.nbUnread;
         },
         unreadLabel : function() {
-          var label = this.nbUnread + ' ' + this.severalUnreadLabel;
+          let label = this.nbUnread + ' ' + this.severalUnreadLabel;
           if (this.nbUnread === 1) {
             label = this.nbUnread + ' ' + this.oneUnreadLabel;
           } else if (this.nbUnread === 0) {
@@ -330,8 +330,9 @@
       }
   }));
 
-  Vue.component('silverpeas-user-notification-list-item',
+  SpVue.component('silverpeas-user-notification-list-item',
       userNotifAsyncComponentRepository.get('user-notification-list-item', {
+        emits : ['notification-content-view', 'notification-read', 'notification-delete', 'notification-cancel-deletion'],
         props : {
           notification : {
             'type' : Object,
@@ -354,6 +355,9 @@
           }
         },
         computed : {
+          notificationDate : function() {
+            return this.$filters.displayAsDate(this.notification.date);
+          },
           displayMarkAsRead : function() {
             return this.displayButtons && !this.notification.deleted && !this.notification.read;
           },

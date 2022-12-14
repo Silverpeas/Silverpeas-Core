@@ -42,8 +42,7 @@
   </div>
 </div>
 <script type="text/javascript">
-  window.vm = new Vue({
-    el : '#root',
+  window.app = SpVue.createApp({
     data : function() {
       return {
         demo1 : {
@@ -51,7 +50,7 @@
         }
       }
     }
-  });
+  }).mount('#root');
 </script>
 </body>
 </html>

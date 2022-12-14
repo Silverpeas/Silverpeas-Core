@@ -88,8 +88,8 @@
 
     <div v-if="!isManualActions">
       <silverpeas-button-pane>
-        <silverpeas-button v-on:click.native="api.validate()"> ${validateLabel} </silverpeas-button>
-        <silverpeas-button v-on:click.native="api.cancel()">${cancelLabel}</silverpeas-button>
+        <silverpeas-button v-on:click="api.validate()"> ${validateLabel} </silverpeas-button>
+        <silverpeas-button v-on:click="api.cancel()">${cancelLabel}</silverpeas-button>
       </silverpeas-button-pane>
     </div>
   </div>
@@ -98,6 +98,7 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="button">
   <a class="silverpeas-button"
+     v-on:click="$emit('click')"
      v-bind:class="{'sp_button':!isIconBehavior,'sp_icon':isIconBehavior}"
      v-bind:title="title" href="javascript:void(0)">
     <slot v-if="!isIconBehavior"></slot>
@@ -118,23 +119,33 @@
     </div>
     <slot name="before"></slot>
     <template v-if="isData">
-      <template v-if="withFadeTransition">
-        <transition-group name="normal-fade" tag="ul" class="silverpeas-list" appear
-                          v-on:before-enter="$emit('before-enter',$event)"
-                          v-on:enter="$emit('enter',$event)"
-                          v-on:after-enter="$emit('after-enter',$event)"
-                          v-on:before-leave="$emit('before-leave',$event)"
-                          v-on:leave="$emit('leave',$event)"
-                          v-on:after-leave="$emit('after-leave',$event)">
-          <slot></slot>
-        </transition-group>
-      </template>
+      <silverpeas-fade-transition v-if="withFadeTransition">
+        <ul class="silverpeas-list">
+          <transition-group name="normal-fade" appear
+                            v-on:before-enter="$emit('before-enter',$event)"
+                            v-on:enter="$emit('enter',$event)"
+                            v-on:after-enter="$emit('after-enter',$event)"
+                            v-on:before-leave="$emit('before-leave',$event)"
+                            v-on:leave="$emit('leave',$event)"
+                            v-on:after-leave="$emit('after-leave',$event)">
+            <slot></slot>
+          </transition-group>
+        </ul>
+      </silverpeas-fade-transition>
       <ul v-else class="silverpeas-list">
         <slot></slot>
       </ul>
     </template>
-    <div class="no-item" v-if="!isData && !$slots.noItem" v-html="noItemMessage"></div>
-    <slot v-if="!isData" name="noItem"></slot>
+    <template v-else>
+      <silverpeas-fade-transition-group v-if="withFadeTransition">
+        <div class="no-item" v-if="!$slots.noItem" v-html="noItemMessage"></div>
+        <slot name="noItem"></slot>
+      </silverpeas-fade-transition-group>
+      <template v-else>
+        <div class="no-item" v-if="!$slots.noItem" v-html="noItemMessage"></div>
+        <slot name="noItem"></slot>
+      </template>
+    </template>
     <slot name="after"></slot>
   </div>
 </silverpeas-component-template>
@@ -185,7 +196,7 @@
         <img src="${linkIconUrl}" alt="${permalinkLabel}" />
       </a>
       <input ref="linkInput" type="text" v-bind:value="link" />
-      <silverpeas-button title="${permalinkCopyLabel}" v-on:click.native="copyLink()" class="copy-to-clipboard">${permalinkCopyLabel}</silverpeas-button>
+      <silverpeas-button title="${permalinkCopyLabel}" v-on:click="copyLink()" class="copy-to-clipboard">${permalinkCopyLabel}</silverpeas-button>
     </div>
   </div>
 </silverpeas-component-template>
@@ -232,7 +243,7 @@
            v-bind:class="inputClass" v-bind:size="size"
            v-bind:maxlength="maxlength" v-bind:disabled="disabled"
            v-model="model"/>
-    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+    <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
 
@@ -242,7 +253,7 @@
     <input type="hidden"
            v-bind:id="id" v-bind:name="name"
            v-model="model"/>
-    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+    <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
 
@@ -263,7 +274,7 @@
               v-bind:id="id" v-bind:name="name" v-bind:class="inputClass"
               v-bind:maxlength="maxlength" v-bind:disabled="disabled"
               v-model="model"></textarea>
-    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+    <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
 
@@ -274,7 +285,7 @@
            v-bind:id="id" v-bind:name="name"
            v-bind:class="cssClasses" v-bind:disabled="disabled"
            v-bind:value="value" v-model="model"/>
-    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+    <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
 
@@ -285,7 +296,7 @@
            v-bind:id="id" v-bind:name="name"
            v-bind:class="cssClasses" v-bind:disabled="disabled"
            v-bind:value="value" v-model="model"/>
-    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+    <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
 
@@ -297,7 +308,7 @@
             v-model="model">
       <slot></slot>
     </select>
-    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+    <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>
 
@@ -310,7 +321,7 @@
                      v-bind:disabled="disabled" v-bind:mandatory="mandatory"
                      v-model="model">
     <option v-for='language in ${allUserLanguagesAsJsArray}'
-            v-bind:key="language.id" v-bind:value="language.id">{{language.label}}</option>
+            v-bind:key="language.id" v-bind:value="language.id">{{ language.label }}</option>
   </silverpeas-select>
 </silverpeas-component-template>
 
@@ -320,17 +331,17 @@
 <fmt:message var="toLabel" key='GML.date.to'/>
 <silverpeas-component-template name="event-period">
   <div class="event-period">
-    <div v-if="isInDays()">
-      <span v-if="onSameDay()">{{startDate() | displayAsDate}}</span>
-      <span v-if="!onSameDay()">${fromDateLabel} {{startDate() | displayAsDate}}</span>
-      <span v-if="!onSameDay()">${toLabel} {{endDate() | displayAsDate}}</span>
+    <div v-if="isInDays">
+      <span v-if="onSameDay">{{ startAsDate }}</span>
+      <span v-if="!onSameDay">${fromDateLabel} {{ startAsDate }}</span>
+      <span v-if="!onSameDay">${toLabel} {{ endAsDate }}</span>
     </div>
-    <div v-if="!isInDays() && onSameDay()">
-      <span>{{startDate() | displayAsDate}} - {{startDate() | displayAsTime}} ${atLabel} {{endDate() | displayAsTime}}</span>
+    <div v-if="!isInDays && onSameDay">
+      <span>{{ startAsDate }} - {{ startAsTime }} ${atLabel} {{ endAsTime }}</span>
     </div>
-    <div v-if="!isInDays() && !onSameDay()">
-      <span>${fromDateLabel} {{startDate() | displayAsDate}} ${atLabel} {{startDate() | displayAsTime}}</span>
-      <span>${toLabel} {{endDate() | displayAsDate}} ${atLabel} {{endDate() | displayAsTime}}</span>
+    <div v-if="!isInDays && !onSameDay">
+      <span>${fromDateLabel} {{ startAsDate }} ${atLabel} {{ startAsTime }}</span>
+      <span>${toLabel} {{ endAsDate }} ${atLabel} {{ endAsTime }}</span>
     </div>
   </div>
 </silverpeas-component-template>

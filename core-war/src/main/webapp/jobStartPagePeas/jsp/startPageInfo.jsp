@@ -94,7 +94,7 @@
 
   if (m_SpaceExtraInfos.isAdmin()) {
 	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onclick=updateSpace()");
-    operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=spaceHomepageVm.api.open()");
+    operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=spaceHomepageApp.api.open()");
     if (isUserAdmin || m_SubSpace != null) {
       operationPane.addOperation(resource.getIcon("JSPP.SpaceOrder"),resource.getString("JSPP.SpaceOrder"),"javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)");
     }
@@ -381,8 +381,7 @@ out.println(window.printAfter());
 <c:if test="<%=m_SpaceExtraInfos.isAdmin()%>">
   <c:set var="spaceHomepageTypes" value="<%=SpaceHomePageType.values()%>"/>
   <script type="text/javascript">
-    window.spaceHomepageVm = new Vue({
-      el : '#spaceHomepage',
+    window.spaceHomepageApp = SpVue.createApp({
       data : function() {
         return {
           api : undefined,
@@ -410,7 +409,7 @@ out.println(window.printAfter());
             }.bind(this));
         }
       }
-    });
+    }).mount('#spaceHomepage');
   </script>
 </c:if>
 <view:progressMessage/>

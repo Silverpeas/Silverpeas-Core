@@ -154,33 +154,34 @@ window.USERSESSION_PROMISE.then(function() {
           <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
           <span> | </span>
         </span>
-        <silverpeas-user-notifications no-unread-label="${labelUserNotifications}"
-                                       one-unread-label="${labelUnreadUserNotification}"
-                                       several-unread-label="${labelUnreadUserNotifications}">
-          <span>
-            <a href="javascript:void(0)"></a>
-            <span> | </span>
-          </span>
-        </silverpeas-user-notifications>
-        <silverpeas-basket-selection v-on:api="setApi">
-          <span>
-            <a href="javascript:void(0)"></a>
-            <span> | </span>
-          </span>
-        </silverpeas-basket-selection>
+        <div id="header-user-notifications" class="silverpeas-user-notifications">
+          <silverpeas-user-notifications no-unread-label="${labelUserNotifications}"
+                                         one-unread-label="${labelUnreadUserNotification}"
+                                         several-unread-label="${labelUnreadUserNotifications}">
+            <span>
+              <a href="javascript:void(0)"></a>
+              <span> | </span>
+            </span>
+          </silverpeas-user-notifications>
+        </div>
+        <div id="header-basket-selection" class="silverpeas-basket-selection">
+          <silverpeas-basket-selection v-on:api="setApi">
+            <span>
+              <a href="javascript:void(0)"></a>
+              <span> | </span>
+            </span>
+          </silverpeas-basket-selection>
+        </div>
         <script type="text/javascript">
           whenSilverpeasReady(function() {
-            new Vue({
-              el : 'silverpeas-user-notifications'
-            });
-            new Vue({
-              el : 'silverpeas-basket-selection',
+            SpVue.createApp().mount('#header-user-notifications');
+            SpVue.createApp({
               methods : {
                 setApi : function(api) {
                   window.spBasketSelectionApi = api;
                 }
               }
-            });
+            }).mount('#header-basket-selection');
           });
         </script>
       </c:if>

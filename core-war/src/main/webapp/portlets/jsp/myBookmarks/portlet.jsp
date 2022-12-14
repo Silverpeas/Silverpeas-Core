@@ -53,14 +53,13 @@
     </div>
     <c:set var="jsonBookmark" value="<%=JSONCodec.encode(bookmarks.stream().map(b -> MyLinkEntity.fromLinkDetail(b, null)).collect(Collectors.toList()))%>"/>
     <script type="text/javascript">
-      new Vue({
-        el : '#mylinkspeas-widget',
+      SpVue.createApp({
         data : function() {
           return {
             links : ${jsonBookmark}
           }
         }
-      });
+      }).mount('#mylinkspeas-widget');
     </script>
   </c:otherwise>
 </c:choose>

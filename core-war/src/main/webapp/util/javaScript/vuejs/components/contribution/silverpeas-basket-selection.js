@@ -29,7 +29,7 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/contribution/silverpeas-basket-selection-templates.jsp');
 
-  Vue.component('silverpeas-basket-selection',
+  SpVue.component('silverpeas-basket-selection',
       templateRepository.get('basket-selection-main', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
         provide : function() {
@@ -116,7 +116,7 @@
         }
       }));
 
-  Vue.component('silverpeas-publication-basket-selector',
+  SpVue.component('silverpeas-publication-basket-selector',
       templateRepository.get('publication-basket-selector-main', {
         inject : ['context'],
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
@@ -178,8 +178,9 @@
         }
       }));
 
-  Vue.component('basket-element',
+  SpVue.component('basket-element',
       templateRepository.get('basket-element', {
+        emits : ['select', 'selectAndValidate', 'delete'],
         props : {
           basketElement : {
             'type' : Object,

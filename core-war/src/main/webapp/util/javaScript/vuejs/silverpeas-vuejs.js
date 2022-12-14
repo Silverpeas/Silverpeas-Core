@@ -23,29 +23,156 @@
  */
 
 /**
- * Making a proxy super method for calling Super.
- * This will applicable for mixin methods and extended component methods
+ * SpVue MUST be used into Silverpeas pages instead of Vue.
+ * It allows to register all the VueJS components of Silverpeas's VueJS applications.
  */
-Vue.prototype.$super = function(__options) {
-  // Creating a Proxy instance with options. This options will be our class/mixin/component name
-  return new Proxy(__options, {
-    get : function(_options, name) {
-      // Checking if the given method is exist of method objects/list
-      if (_options.methods && _options.methods[name]) {
-        // If YES? just call and return the data
-        return _options.methods[name].bind(this);
-      }
-    }.bind(this)
-  })
+window.SpVue = new function() {
+
+  const __filters = [];
+  /**
+   * Registering a filter.
+   * Filters are no more builtin handled in VueJS 3.x.
+   * Nevertheless, Silverpeas provides an API to apply some. All registered filters are accessible
+   * from <code>this.$filters</code>.
+   * Please use them from a component computed variable.
+   * @example
+   *       ...
+   *       computed : {
+   *         formattedStartDate : function() {
+   *           return this.$filters.displayAsDate(this.startDate);
+   *         },
+   *         formattedEndDate : function() {
+   *           return this.$filters.displayAsDate(this.endDate);
+   *         }
+   *       },
+   *       ...
+   * @param name the name of the filter.
+   * @param options options here MUST be function.
+   */
+  this.filter = function(name, options) {
+    __filters.push({
+      name : name,
+      options : options
+    });
+  };
+
+  const __directives = [];
+  /**
+   * Registering a directive.
+   * @param name the name of the directive.
+   * @param options options of a directive.
+   */
+  this.directive = function(name, options) {
+    __directives.push({
+      name : name,
+      options : options
+    });
+  };
+
+  const __components = [];
+  /**
+   * Registering a component.
+   * @param name the name of the component.
+   * @param options configuration of a component or of an asynchronous component (provided by
+   *     {@link VueJsAsyncComponentTemplateRepository#getSingle} or
+   *     {@link VueJsAsyncComponentTemplateRepository#get}).
+   */
+  this.component = function(name, options) {
+    __components.push({
+      name : name,
+      options : options
+    });
+  };
+
+  /**
+   * Creates the Vue application
+   * @param options represents the application configuration which is identical to a component.
+   * @returns {*}
+   */
+  this.createApp = function(options) {
+
+    /**
+     * The Silverpeas's applicataion.
+     */
+    const app = Vue.createApp(options || {});
+
+    /**
+     * Making a proxy super method for calling Super.
+     * This will applicable for mixin methods and extended component methods
+     */
+    app.config.globalProperties.$super = function(__options) {
+      // Creating a Proxy instance with options. This options will be our class/mixin/component name
+      return new Proxy(__options, {
+        get : function(_options, name) {
+          // Checking if the given method is exist of method objects/list
+          if (_options.methods && _options.methods[name]) {
+            // If YES? just call and return the data
+            return _options.methods[name].bind(this);
+          }
+        }.bind(this)
+      })
+    };
+
+    // registering the filters
+    app.config.globalProperties.$filters = {};
+    __filters.forEach(function(f) {
+      app.config.globalProperties.$filters[f.name] = f.options;
+    });
+
+    // registering the directives
+    __directives.forEach(function(d) {
+      app.directive(d.name, d.options);
+    });
+
+    // registering the components
+    __components.forEach(function(c) {
+      app.component(c.name, c.options);
+    });
+
+    return app;
+  };
 };
 
 (function() {
+
+  /**
+   * Specifying a repository of VueJS templates which will be loaded asynchronously.
+   * The given URL aims a resource that could be a full template of a component, or a resource
+   * containing several templates each one defined into following TAG:
+   * <pre>
+   *   <silverpeas-component-template name="templateName">
+   *   </silverpeas-component-template>
+   * </pre>
+   * @param src the URL of the resource to load.
+   * @constructor
+   */
   window.VueJsAsyncComponentTemplateRepository = function(src) {
     const templatePromise = sp.ajaxRequest(src).send().then(function(request) {
       return request.responseText
     });
+    /**
+     * Using this getter means that the {@link src} represents a single template.
+     * @param componentConfiguration the component configuration.
+     * @returns {{name: *, setup: *}}
+     */
+    this.getSingle = function(componentConfiguration) {
+      return Vue.defineAsyncComponent(function() {
+        return templatePromise.then(function(template) {
+          componentConfiguration = componentConfiguration ? componentConfiguration : {};
+          componentConfiguration.template = template;
+          return componentConfiguration;
+        });
+      });
+    };
+    /**
+     * Using this getter means that the {@link src} represents several templates.
+     * The result of this method MUST be passed as second parameter of {@link SpVue#component}
+     * @param name the reference of the component template.
+     * @param componentConfiguration the component configuration.
+     * @returns {{name: *, setup: *}}
+     */
     this.get = function(name, componentConfiguration) {
-      return function(resolve) {
+      return Vue.defineAsyncComponent(function() {
         const templateIdentifier = '<silverpeas-component-template name="' + name + '">';
         return templatePromise.then(function(templates) {
           let msg;
@@ -64,21 +191,31 @@ Vue.prototype.$super = function(__options) {
           }
           componentConfiguration = componentConfiguration ? componentConfiguration : {};
           componentConfiguration.template = templates.substring(start, end);
-          resolve(componentConfiguration);
+          return componentConfiguration;
         });
-      };
+      });
     };
-  }
+    /**
+     * Gets the component configuration completed with the template content.
+     * This method is useful to get the template content as string.
+     * @param name the reference of the component template.
+     * @param componentConfiguration the component configuration.
+     * @returns {Promise <*>}
+     */
+    this.getComponentConfiguration = function(name, componentConfiguration) {
+      return this.get(name, componentConfiguration).__asyncLoader();
+    };
+  };
 
   /**
    * This directive permits to initialize some data from the template by using mustache notations.
    * The HTML element holding the directive is removed from the DOM after the interpretations.
    */
-  Vue.directive('sp-init', {
-    bind : function(el) {
+  SpVue.directive('sp-init', {
+    created : function(el) {
       el.style.display = 'none';
     },
-    inserted : function(el) {
+    mounted : function(el) {
       el.remove();
     }
   });
@@ -106,8 +243,8 @@ Vue.prototype.$super = function(__options) {
   /**
    * This directive permits to handle a focus.
    */
-  Vue.directive('sp-focus', {
-    inserted : function(el) {
+  SpVue.directive('sp-focus', {
+    mounted : function(el) {
       if (el.classList.contains('silverpeas-input')) {
         __focusSilverpeasInput(el);
       } else {
@@ -119,8 +256,8 @@ Vue.prototype.$super = function(__options) {
   /**
    * This directive permits to handle a scroll to a component on display.
    */
-  Vue.directive('sp-scroll-to', {
-    inserted : function(el) {
+  SpVue.directive('sp-scroll-to', {
+    mounted : function(el) {
       sp.element.scrollToWhenSilverpeasEntirelyLoaded(el);
     }
   });
@@ -128,7 +265,7 @@ Vue.prototype.$super = function(__options) {
   /**
    * This directive permits to render an HTML element as disabled.
    */
-  Vue.directive('sp-disable-if', function(el, binding) {
+  SpVue.directive('sp-disable-if', function(el, binding) {
     if (binding.value) {
       el.classList.add('silverpeas-disabled');
       const disableElement = function(elToDisable) {
@@ -162,7 +299,7 @@ Vue.prototype.$super = function(__options) {
    * This filter permits to display simple array as joined string values separated with given string
    * or space by default.
    */
-  Vue.filter('joinWith', function(array, options) {
+  SpVue.filter('joinWith', function(array, options) {
     if (Array.isArray(array)) {
       return array.joinWith(options);
     }
@@ -172,35 +309,35 @@ Vue.prototype.$super = function(__options) {
   /**
    * This filter permits to transform javascript newlines into html newlines.
    */
-  Vue.filter('newlines', function(text) {
+  SpVue.filter('newlines', function(text) {
     return text ? text.convertNewLineAsHtml() : text;
   });
 
   /**
    * This filter permits to transform javascript newlines into html newlines.
    */
-  Vue.filter('noHTML', function(text) {
+  SpVue.filter('noHTML', function(text) {
     return text ? text.noHTML() : text;
   });
 
   /**
    * This filter permits to transform ISO String date into a readable date.
    */
-  Vue.filter('displayAsDate', function(dateAsText) {
+  SpVue.filter('displayAsDate', function(dateAsText) {
     return dateAsText ? sp.moment.displayAsDate(dateAsText) : dateAsText;
   });
 
   /**
    * This filter permits to transform ISO String date time into a readable time.
    */
-  Vue.filter('displayAsTime', function(dateAsText) {
+  SpVue.filter('displayAsTime', function(dateAsText) {
     return dateAsText ? sp.moment.displayAsTime(dateAsText) : dateAsText;
   });
 
   /**
    * This filter permits to transform ISO String date time into a readable one.
    */
-  Vue.filter('displayAsDateTime', function(dateAsText) {
+  SpVue.filter('displayAsDateTime', function(dateAsText) {
     return dateAsText ? sp.moment.displayAsDateTime(dateAsText) : dateAsText;
   });
 
@@ -236,6 +373,7 @@ Vue.prototype.$super = function(__options) {
    * });
    */
   window.VuejsI18nTemplateMixin = {
+    emits : ['messages'],
     data : function() {
       return {
         messages : {}
@@ -298,7 +436,7 @@ Vue.prototype.$super = function(__options) {
             if (typeof message === 'function') {
               message = message.bind(this);
             }
-            this.$set(this.messages, key, message);
+            this.messages[key] = message;
           }
           this.$emit('messages', this.messages);
         } else {
@@ -344,6 +482,7 @@ Vue.prototype.$super = function(__options) {
    * });
    */
   window.VuejsApiMixin = {
+    emits : ['api'],
     data : function() {
       return {
         api : {}
@@ -357,7 +496,7 @@ Vue.prototype.$super = function(__options) {
             if (typeof extension === 'function') {
               extension = extension.bind(this);
             }
-            this.$set(this.api, key, extension);
+            this.api[key] = extension;
           }
           this.$emit('api', this.api);
         } else {
@@ -410,7 +549,7 @@ Vue.prototype.$super = function(__options) {
     mounted : function() {
       this.rootFormApi.handleFormComponent(this);
     },
-    destroyed : function() {
+    unmounted : function() {
       this.rootFormApi.unhandleFormComponent(this);
     }
   };
@@ -454,9 +593,9 @@ Vue.prototype.$super = function(__options) {
         'default' : undefined
       }
     },
+    emits : ['update:modelValue'],
     model: {
-      prop: 'modelValue',
-      event: 'update:modelValue'
+      prop: 'modelValue'
     },
     props : {
       id: {
@@ -573,7 +712,7 @@ Vue.prototype.$super = function(__options) {
       this.updateInputElementReadOnly();
       this.updateInputElementDisabled();
     },
-    destroyed : function() {
+    unmounted : function() {
       if (this.includedIntoFormPane) {
         this.rootFormApi.unhandleFormInputComponent(this);
       }
@@ -607,6 +746,12 @@ Vue.prototype.$super = function(__options) {
       isMandatory : function() {
         return !this.disabled && !this.readOnly &&
             (this.mandatory || (this.linkedLabelCmp && this.linkedLabelCmp.mandatory));
+      },
+      displayMandatory : function() {
+        if (!this.linkedLabelCmp || !this.linkedLabelCmp.mandatory) {
+          return this.mandatory
+        }
+        return false;
       }
     }
   };
@@ -639,7 +784,8 @@ Vue.prototype.$super = function(__options) {
   /**
    * Silverpeas's fade transition.
    */
-  Vue.component('silverpeas-fade-transition', {
+  SpVue.component('silverpeas-fade-transition', {
+    emits : ['before-enter', 'enter', 'after-enter', 'before-leave', 'leave', 'after-leave'],
     template : '<transition v-bind:name="name" appear ' +
                  'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
                  'v-on:enter="$emit(\'enter\',$event)" ' +
@@ -663,8 +809,9 @@ Vue.prototype.$super = function(__options) {
   /**
    * Silverpeas's fade transition group.
    */
-  Vue.component('silverpeas-fade-transition-group', {
-    template : '<transition-group v-bind:name="name" v-bind:tag="tag" appear ' +
+  SpVue.component('silverpeas-fade-transition-group', {
+    emits : ['before-enter', 'enter', 'after-enter', 'before-leave', 'leave', 'after-leave'],
+    template : '<transition-group v-bind:name="name" appear ' +
         'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
         'v-on:enter="$emit(\'enter\',$event)" ' +
         'v-on:after-enter="$emit(\'after-enter\',$event)" ' +
@@ -672,10 +819,6 @@ Vue.prototype.$super = function(__options) {
         'v-on:leave="$emit(\'leave\',$event)" ' +
         'v-on:after-leave="$emit(\'after-leave\',$event)"><slot></slot></transition-group>',
     props : {
-      tag : {
-        'type' : String,
-        'default' : 'ul'
-      },
       durationType : {
         'type' : String,
         'default' : 'normal'

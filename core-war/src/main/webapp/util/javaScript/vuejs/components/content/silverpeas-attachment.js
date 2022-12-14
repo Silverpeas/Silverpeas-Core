@@ -27,7 +27,7 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/util/javaScript/vuejs/components/content/silverpeas-attachment-templates.jsp');
 
-  Vue.component('silverpeas-attachment-management',
+  SpVue.component('silverpeas-attachment-management',
       templateRepository.get('silverpeas-attachment-management', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
         data : function() {
@@ -60,13 +60,14 @@
         }
       }));
 
-  Vue.component('silverpeas-attachment-form',
+  SpVue.component('silverpeas-attachment-form',
       templateRepository.get('silverpeas-attachment-form', {
         mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin],
+        emits : ['foreign-id-change'],
         props : {
           context : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           }
         },
         data : function() {

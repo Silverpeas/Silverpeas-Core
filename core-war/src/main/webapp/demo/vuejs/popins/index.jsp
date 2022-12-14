@@ -32,7 +32,7 @@
 <head>
   <title>Demo VueJS</title>
   <view:looknfeel/>
-  <style type="text/css">
+  <style>
     .attached-popin-demo .silverpeas-attached-popin-content {
       width: 200px;
       min-height: 100px;
@@ -66,7 +66,7 @@
   </div>
   <silverpeas-button-pane>
     <silverpeas-button id="source"
-                       v-on:click.native="popinDisplay = !popinDisplay">
+                       v-on:click="popinDisplay = !popinDisplay">
       Show an overlay on this button !
     </silverpeas-button>
     <silverpeas-attached-popin to-element="source"
@@ -86,7 +86,7 @@
       </template>
     </silverpeas-attached-popin>
     <silverpeas-button id="source2"
-                       v-on:click.native="popinDisplay2 = !popinDisplay2">
+                       v-on:click="popinDisplay2 = !popinDisplay2">
       Show an overlay on this button ! (with scroll end event and list transition)
     </silverpeas-button>
     <silverpeas-attached-popin to-element="source2"
@@ -95,25 +95,23 @@
                                v-bind:scroll-end-event="75"
                                v-on:scroll-end="demo1.addSeveralItems()">
       <template v-slot:header>{{demo1.header}}</template>
-      <template v-slot:default>
-        <div class="attached-popin-demo-content">
-          <silverpeas-list v-bind:items="demo1.contentItems"
-                           v-bind:with-fade-transition="true">
-            <silverpeas-list-item v-for="item in demo1.contentItems" v-bind:key="item.title">
-              <div>{{item.title}}</div>
-              <div>{{item.content}}</div>
-            </silverpeas-list-item>
-          </silverpeas-list>
-        </div>
-      </template>
+      <div class="attached-popin-demo-content">
+        <silverpeas-list v-bind:items="demo1.contentItems"
+                         v-bind:with-fade-transition="true">
+          <silverpeas-list-item v-for="item in demo1.contentItems" v-bind:key="item.title">
+            <div>{{item.title}}</div>
+            <div>{{item.content}}</div>
+          </silverpeas-list-item>
+        </silverpeas-list>
+      </div>
     </silverpeas-attached-popin>
   </silverpeas-button-pane>
   <iframe src="javascript:void(0)" style="width: 1200px;height: 300px;background-color: #0a6aa1" title="background"></iframe>
   </p>
 </div>
 <script type="text/javascript">
-  window.vm = new Vue({
-    el : '#root', data : function() {
+  window.vm = SpVue.createApp({
+    data : function() {
       return {
         popinDisplay : false,
         popinDisplay2 : false,
@@ -130,7 +128,7 @@
           },
           addSeveralItems : function(nb) {
             nb = nb ? nb : 10;
-            for (var i = 0; i < nb; i++) {
+            for (let i = 0; i < nb; i++) {
               this.addItem();
             }
           },
@@ -146,7 +144,7 @@
         }
       }
     }
-  });
+  }).mount('#root');
 </script>
 </body>
 </html>

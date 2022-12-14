@@ -6,13 +6,13 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/map/js/vuejs/components/silverpeas-map-common-templates.jsp');
 
-  Vue.component('silverpeas-map-marker',
+  SpVue.component('silverpeas-map-marker',
       templateRepository.get('marker', {
         mixins : [CartoComponentMarkerMixin],
         props : {
           marker : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           }
         },
         computed : {
@@ -26,18 +26,18 @@
         }
       }));
 
-  Vue.component('silverpeas-map-tip-marker',
+  SpVue.component('silverpeas-map-tip-marker',
       templateRepository.get('tip-marker', {
         mixins : [CartoComponentMarkerMixin],
         props : {
           marker : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           }
         }
       }));
 
-  Vue.component('silverpeas-map-mapping-layers',
+  SpVue.component('silverpeas-map-mapping-layers',
       templateRepository.get('mapping-layers', {
         mixins : [CartoComponentMixin],
         data : function() {
@@ -73,13 +73,14 @@
         }
       }));
 
-  Vue.component('silverpeas-map-mapping-layer',
+  SpVue.component('silverpeas-map-mapping-layer',
       templateRepository.get('mapping-layer', {
         mixins : [CartoComponentMixin],
+        emits : ['layer-change'],
         props : {
           layer : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           }
         },
         computed : {

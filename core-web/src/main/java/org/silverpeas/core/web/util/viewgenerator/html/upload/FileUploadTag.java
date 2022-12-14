@@ -23,23 +23,26 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.upload;
 
-import org.silverpeas.core.util.URLUtil;
+import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.legend;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.util.Locale;
+
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.script;
 
 public class FileUploadTag extends TagSupport {
   private static final long serialVersionUID = -7065381733362836565L;
@@ -148,10 +151,10 @@ public class FileUploadTag extends TagSupport {
     MultiPartElement container = (isFieldset()) ? new fieldset() : new div();
     container.setID(getId());
     if (isFieldset()) {
-      container.setClass("fileUpload skinFieldset");
+      container.setClass("fileUpload skinFieldset fileUpload-tag");
       container.addElementToRegistry(new legend().addElement(getTitle()));
     } else {
-      container.setClass("fileUpload");
+      container.setClass("fileUpload fileUpload-tag");
     }
     xhtmlcontainer.addElement(container);
   }
@@ -163,11 +166,11 @@ public class FileUploadTag extends TagSupport {
     if (!fileUploadContext.jsPluginLoaded) {
       fileUploadContext.jsPluginLoaded = true;
       JavascriptPluginInclusion.includeIFrameAjaxTransport(xhtmlcontainer);
-      script jsPlugin = new script().setType("text/javascript").
-          setSrc(URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
+      final Element jsPlugin = script(
+          URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
       xhtmlcontainer.addElement(jsPlugin);
       StringBuilder jQueryStart = new StringBuilder();
-      jQueryStart.append("jQuery(document).ready(function(){jQuery('.fileUpload').fileUpload({");
+      jQueryStart.append("jQuery(document).ready(function(){jQuery('.fileUpload-tag').fileUpload({");
       jQueryStart.append("multiple:");
       jQueryStart.append(isMultiple());
       jQueryStart.append(",infoInputs:");
