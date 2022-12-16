@@ -26,6 +26,7 @@ package org.silverpeas.core.documenttemplate;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.DeletingPathVisitor;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -103,7 +104,7 @@ public class DefaultDocumentTemplateRepository implements DocumentTemplateReposi
     final Path contentPath = toCreate.getContentFilePath();
     try {
       Files.createDirectories(jsonPath.getParent());
-      Files.write(jsonPath, toCreate.getJson().toString().getBytes());
+      Files.write(jsonPath, toCreate.getJson().toString().getBytes(Charsets.UTF_8));
       Files.copy(content, contentPath);
     } catch (IOException e) {
       throw new DocumentTemplateRuntimeException(e);
@@ -138,7 +139,7 @@ public class DefaultDocumentTemplateRepository implements DocumentTemplateReposi
     final Path jsonPath = toUpdate.getDescriptorFilePath();
     try {
       Files.createDirectories(jsonPath.getParent());
-      Files.write(jsonPath, toUpdate.getJson().toString().getBytes());
+      Files.write(jsonPath, toUpdate.getJson().toString().getBytes(Charsets.UTF_8));
     } catch (IOException e) {
       throw new DocumentTemplateRuntimeException(e);
     }

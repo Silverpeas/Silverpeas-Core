@@ -25,6 +25,7 @@
 package org.silverpeas.core.documenttemplate;
 
 import org.silverpeas.core.ui.UserI18NTranslationMap;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 
@@ -150,7 +151,7 @@ class JsonDocumentTemplate implements Serializable {
 
   static JsonDocumentTemplate decode(final Path jsonPath) {
     try {
-      return decode(Files.readString(jsonPath));
+      return decode(Files.readString(jsonPath, Charsets.UTF_8));
     } catch (IOException e) {
       throw new DocumentTemplateRuntimeException(e);
     }
