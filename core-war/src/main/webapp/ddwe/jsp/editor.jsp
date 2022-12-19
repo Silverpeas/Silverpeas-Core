@@ -282,9 +282,9 @@
                   cancel : cancel
                 }
               });
-              editorManager.ready(function() {
+              this.editorManager.ready(function() {
                 document.dispatchEvent(new CustomEvent('ddwe-editor-manager-loaded', {
-                  detail : editorManager,
+                  detail : this.editorManager,
                   bubbles : true,
                   cancelable : true
                 }));
