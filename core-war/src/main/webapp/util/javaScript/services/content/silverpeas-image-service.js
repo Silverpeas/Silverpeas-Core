@@ -60,7 +60,7 @@
     this.type = 'ImageAttachment';
     this.getPreview = function() {
       if (!preview) {
-        const previewUrl = webContext + "/services/preview/" + this.instanceId + "/attachment/" + this.id;
+        const previewUrl = webContext + "/services/preview/attachment/" + this.id;
         return sp.ajaxRequest(previewUrl).withParam('lang', this.lang).sendAndPromiseJsonResponse().then(function(p) {
           preview = p;
           return p;
