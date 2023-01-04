@@ -131,7 +131,6 @@ public class ChatUser extends UserDetail {
 
   /**
    * Gets the chat domain to which this user belongs.
-   *
    * The chat domain is read from the property file
    * {@code org/silverpeas/chat/settings/chat.properties} and it depends on the Silverpeas domain of
    * the user. If no chat domain is mapped to the Silverpeas domain of the user, then the default

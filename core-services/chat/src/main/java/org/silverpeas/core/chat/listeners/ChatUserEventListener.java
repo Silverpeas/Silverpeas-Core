@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chat.listeners;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.servers.ChatServer;
@@ -34,7 +34,6 @@ import javax.inject.Inject;
 
 /**
  * Listen user modifications to clone them in Chat server
- *
  * @author remipassmoilesel
  */
 @Service
@@ -44,27 +43,38 @@ public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
   @DefaultChatServer
   private ChatServer server;
 
+  /**
+   * A new user has been created in Silverpeas, then creates his account in the remote chat
+   * service. No account should be existing for this user in the chat service, otherwise an error
+   * is raised and the user account creation in Silverpeas fails.
+   * @param event the event on the creation of a resource.
+   */
   @Override
   public void onCreation(final UserEvent event) {
-    UserDetail detail = event.getTransition().getAfter();
-    if (server.isAllowed(detail)) {
-      server.createUser(detail);
-      logger.debug("Chat account have been created for user {0}", detail.getId());
+    User user = event.getTransition().getAfter();
+    if (server.isAllowed(user)) {
+      server.createUser(user);
+      logger.debug("Chat account have been created for user {0}", user.getId());
     } else {
       logger.debug("No chat account created for user {0}: " +
-              "the user isn't allowed to use the chat service", detail.getId());
+          "the user isn't allowed to use the chat service", user.getId());
     }
   }
 
+  /**
+   * An existing user in Silverpeas has been deleted, then the account of the deleted user in
+   * the remote chat service is also deleted.
+   * @param event the event on the deletion of a resource.
+   */
   @Override
   public void onDeletion(final UserEvent event) {
-    UserDetail detail = event.getTransition().getBefore();
-    if (server.isUserExisting(detail)) {
-      server.deleteUser(detail);
-      logger.debug("Chat account have been deleted for user {0}", detail.getId());
+    User user = event.getTransition().getBefore();
+    if (server.isUserExisting(user)) {
+      server.deleteUser(user);
+      logger.debug("Chat account have been deleted for user {0}", user.getId());
     } else {
       logger.debug("No chat account deleted for user {0}: " +
-              "no such account in the chat server", detail.getId());
+          "no such account in the chat server", user.getId());
     }
   }
 
