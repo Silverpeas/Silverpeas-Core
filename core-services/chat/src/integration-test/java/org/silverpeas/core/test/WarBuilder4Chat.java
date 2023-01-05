@@ -57,7 +57,8 @@ public class WarBuilder4Chat extends BasicWarBuilder {
         .testFocusedOn(war -> {
           war.addPackages(false, "org.silverpeas.core.chat")
               .addClasses(ChatServer.class, DefaultChatServer.class)
-              .addAsResource("org/silverpeas/chat/settings/chat.properties");
+              .addAsResource("org/silverpeas/chat/settings/chat.properties")
+              .addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
         });
   }
 }
