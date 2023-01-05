@@ -22,6 +22,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
+<%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
@@ -29,13 +30,19 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<jsp:useBean id="userLanguage" type="java.lang.String"/>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
+<c:set var="putIntoBasketSnippet" value='<%=BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet("@callback@", userLanguage)%>'/>
 
 <fmt:message var="gotoLabel" key='calendar.label.event.view'/>
 <fmt:message var="fromLabel" key='GML.From'/>
 <fmt:message var="atLabel" key='GML.at'/>
 <fmt:message var="toLabel" key='GML.to'/>
+
+<c:if test="${not empty putIntoBasketSnippet}">
+  ${putIntoBasketSnippet.replace('onclick', 'ng-click').replace('@callback@', '$ctrl.putIntoBasket();$event.stopPropagation()')}
+</c:if>
 
 <script type="text/ng-template" id="###silverpeas.calendar.event.occurrence-list-item.display-grouped-by-day">
   <div class="occurrence-name">

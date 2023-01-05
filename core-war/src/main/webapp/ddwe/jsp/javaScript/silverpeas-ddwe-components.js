@@ -302,7 +302,7 @@
               attributes: {
                 'class': 'event-end-date'
               },
-              components : sp.i18n.get('eventBlockContentTo') + ' ...'
+              components : '&#160;' + sp.i18n.get('eventBlockContentTo') + ' ...'
             }]
           }, {
             type : 'text',
@@ -397,7 +397,7 @@
               }, {
                 cssSelector : '.event-end-date',
                 updateWith : function(model) {
-                  model.components(basketElement.getPeriod().formatEndDate().noHTML().convertNewLineAsHtml());
+                  model.components('&#160;' + basketElement.getPeriod().formatEndDate().noHTML().convertNewLineAsHtml());
                 }
               }, {
                 cssSelector : '.event-description',
