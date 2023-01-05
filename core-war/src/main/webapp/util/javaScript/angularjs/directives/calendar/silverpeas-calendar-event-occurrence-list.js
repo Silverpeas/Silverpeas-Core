@@ -163,7 +163,11 @@
               return this.occurrence.startDate.split('T').length > 1;
             };
             this.performExternalLink = function() {
-              sp.formConfig(this.occurrence.externalUrl()).toTarget("_blank").submit();
+              sp.formRequest(this.occurrence.externalUrl()).toTarget("_blank").submit();
+            };
+            this.putIntoBasket = function() {
+              const basketManager = new BasketManager();
+              basketManager.putContributionInBasket(this.occurrence.id);
             };
           }
         };

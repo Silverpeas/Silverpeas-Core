@@ -40,7 +40,7 @@
 <fmt:message var="toLabel" key='GML.to'/>
 
 <c:if test="${not empty putIntoBasketSnippet}">
-  ${putIntoBasketSnippet.replace('onclick', 'ng-click').replace('@callback@', '$ctrl.putIntoBasket()')}
+  ${putIntoBasketSnippet.replace('onclick', 'ng-click').replace('@callback@', '$ctrl.putIntoBasket();$event.stopPropagation()')}
 </c:if>
 <div class="occurrence-extra">
   <div class="occurrence-date">
