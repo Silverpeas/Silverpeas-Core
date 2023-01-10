@@ -38,7 +38,9 @@ import org.silverpeas.core.viewer.model.ViewerSettings;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
@@ -289,7 +291,9 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
       }
 
       assertThat(serviceCache.size(), is(0));
-      assertThat(getTemporaryPath().listFiles(), arrayWithSize(6));
+      File[] genFiles = getTemporaryPath().listFiles();
+      Arrays.stream(genFiles).forEach(f -> System.out.println(f.getName()));
+      assertThat(genFiles, arrayWithSize(6));
     }
   }
 
