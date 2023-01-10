@@ -721,7 +721,13 @@ public class CalendarEventOccurrence
   void saveIntoPersistence() {
     Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      final CalendarEventOccurrence previous = getPreviousState();
+      final CalendarEventOccurrence previous =
+          getCalendarEvent().hasDeletedAllOccurrencesBecauseOfDateOrRecurrenceChange()
+              // in a such case, performing like it was a first creation. This allows to avoid
+              // transaction interlocking
+              ? null
+              // otherwise fetching the previous state
+              : getPreviousState();
       final CalendarComponent pcc;
       final boolean modifiedSince;
       if (previous != null) {

@@ -68,6 +68,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
@@ -1218,8 +1219,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return this;
   }
 
-  private void deleteAllOccurrencesFromPersistence() {
-    Transaction.performInOne(() -> {
+  private long deleteAllOccurrencesFromPersistence() {
+    return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       List<CalendarEventOccurrence> occurrences = repository.getAllByEvent(this);
       repository.delete(occurrences);
@@ -1365,7 +1366,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
       // Deletes all persisted occurrences belonging to this event to reset any changes in some
       // of the event's occurrences
-      deleteAllOccurrencesFromPersistence();
+      if(deleteAllOccurrencesFromPersistence() > 0) {
+        getThreadCacheService().getCache()
+            .put("CalendarEvent@dateOrRecurrenceChanged@deleteAllOccurrences" + getId(), true);
+      }
     }
 
     normalize();
@@ -1378,6 +1382,16 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       this.component
           .updatedBy(previousState.component.getLastUpdater(), previousState.getLastUpdateDate());
     }
+  }
+
+  /**
+   * When the period of an event changes or the elements of the recurrence change, the process
+   * deletes all the registered occurrences of the current event before to register them again.
+   * @return true means this full deletion has been performed, false otherwise.
+   */
+  boolean hasDeletedAllOccurrencesBecauseOfDateOrRecurrenceChange() {
+    return Boolean.TRUE.equals(getThreadCacheService().getCache()
+        .get("CalendarEvent@dateOrRecurrenceChanged@deleteAllOccurrences" + getId()));
   }
 
   private EventOperationResult moveToAnotherCalendar(final CalendarEvent previousState) {
