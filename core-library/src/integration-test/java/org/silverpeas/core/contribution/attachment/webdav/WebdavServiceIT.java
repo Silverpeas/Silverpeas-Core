@@ -43,8 +43,8 @@ import javax.jcr.Node;
 import static javax.jcr.Property.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_OWNABLE_MIXIN;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_PROPERTY_OWNER;
+import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_OWNABLE_MIXIN;
+import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_PROPERTY_OWNER;
 
 @RunWith(Arquillian.class)
 public class WebdavServiceIT extends JcrIntegrationIT {

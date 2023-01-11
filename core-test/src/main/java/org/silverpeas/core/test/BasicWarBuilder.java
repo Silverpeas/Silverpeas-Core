@@ -24,7 +24,7 @@
 package org.silverpeas.core.test;
 
 /**
- * A basic war builder that does nothing more that is defined in the abstract class WarBuilder.
+ * A basic war builder that does nothing more than is defined in the abstract class WarBuilder.
  * @author mmoquillon
  */
 public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
@@ -36,7 +36,6 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
    */
   protected <T> BasicWarBuilder(final Class<T> test) {
     super(test);
-    addMavenDependencies("javax.jcr:jcr");
   }
 
   /**

@@ -84,12 +84,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Optional.*;
-import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
+import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 /**
  * Repository of documents attached to some contributions in Silverpeas. This repository abstracts
@@ -154,7 +154,7 @@ public class DocumentRepository {
     document.setLastUpdateDate(document.getCreationDate());
     converter.fillNode(document, documentNode);
     if (document.isVersioned()) {
-      documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
+      documentNode.addMixin(MIX_VERSIONABLE);
     }
     document.setId(documentNode.getIdentifier());
     document.setOldSilverpeasId(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong());
@@ -535,7 +535,7 @@ public class DocumentRepository {
       final SimpleDocument origin = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
       if (versionedNode) {
         removeHistory(documentNode);
-        documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
+        documentNode.removeMixin(MIX_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
@@ -561,7 +561,7 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
-        documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
+        documentNode.addMixin(MIX_VERSIONABLE);
         final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
         VersionManager versionManager =
             documentNode.getSession().getWorkspace().getVersionManager();

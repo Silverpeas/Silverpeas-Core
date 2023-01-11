@@ -45,10 +45,11 @@ import javax.jcr.nodetype.NodeType;
 import java.util.Calendar;
 import java.util.Date;
 
+import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 @RunWith(Arquillian.class)
 public class DocumentConverterIT extends JcrIntegrationIT {
@@ -638,7 +639,7 @@ public class DocumentConverterIT extends JcrIntegrationIT {
     try (JCRSession session = JCRSession.openSystemSession()) {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
-      documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
+      documentNode.addMixin(NodeType.MIX_VERSIONABLE);
       instance.fillNode(document, documentNode);
       instance.updateVersion(documentNode, document.getLanguage(), true);
       assertThat(documentNode.getProperty(SLV_PROPERTY_FOREIGN_KEY).getString(), is(foreignId));

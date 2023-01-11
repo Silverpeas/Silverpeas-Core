@@ -25,6 +25,7 @@
 package org.silverpeas.core.test.extention;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -47,6 +48,7 @@ import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Instance;
@@ -108,7 +110,7 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 public class SilverTestEnv
-    implements TestInstancePostProcessor, ParameterResolver, BeforeEachCallback {
+    implements TestInstancePostProcessor, ParameterResolver, BeforeEachCallback, AfterEachCallback {
 
   private static final String SYSTEM = "SYSTEM";
 
@@ -253,6 +255,33 @@ public class SilverTestEnv
     }
   }
 
+  @Override
+  public void afterEach(final ExtensionContext context) throws Exception {
+    Object testInstance = context.getRequiredTestInstance();
+    TestManagedBeans testManagedBeans =
+        testInstance.getClass().getAnnotation(TestManagedBeans.class);
+    if (testManagedBeans != null) {
+      for (Class<?> type : testManagedBeans.value()) {
+        Object bean = TestBeanContainer.getMockedBeanContainer().getBeanByType(type);
+        invokePreDestruction(bean);
+      }
+    }
+
+    loopInheritance(testInstance.getClass(), type -> {
+      Field[] fields = type.getDeclaredFields();
+      for (Field field : fields) {
+        if (field.isAnnotationPresent(TestManagedBean.class) ||
+            field.isAnnotationPresent(TestedBean.class)) {
+          field.trySetAccessible();
+          Object bean = field.get(testInstance);
+          if (bean != null) {
+            invokePreDestruction(bean);
+          }
+        }
+      }
+    });
+  }
+
   private Method recursivelyFindRequesterProvider(final Class<?> testClass) {
     Method[] methods = testClass.getDeclaredMethods();
     return Stream.of(methods)
@@ -382,7 +411,22 @@ public class SilverTestEnv
       Method[] methods = bean.getClass().getDeclaredMethods();
       for (Method method : methods) {
         if (method.isAnnotationPresent(PostConstruct.class)) {
-          method.setAccessible(true);
+          method.trySetAccessible();
+          method.invoke(bean);
+          break;
+        }
+      }
+    } catch (InvocationTargetException | IllegalAccessException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  private void invokePreDestruction(final Object bean) {
+    try {
+      Method[] methods = bean.getClass().getDeclaredMethods();
+      for (Method method : methods) {
+        if (method.isAnnotationPresent(PreDestroy.class)) {
+          method.trySetAccessible();
           method.invoke(bean);
           break;
         }

@@ -28,6 +28,8 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,17 +43,20 @@ public class SilverpeasDialectResolver implements DialectResolver {
   private static final long serialVersionUID = 901024770482418345L;
 
   @Override
+  @SuppressWarnings("unchecked")
   public Dialect resolveDialect(DialectResolutionInfo info) {
     final String dialect = System.getProperty("silverpeas.jpa.dialect");
     if (isDefined(dialect)) {
       final Logger logger = Logger.getLogger(Dialect.class.getName());
       try {
-        final Class dialectClass = Class.forName(dialect);
-        final Dialect dialectInstance = (Dialect) dialectClass.newInstance();
+        final Class<Dialect> dialectClass = (Class<Dialect>) Class.forName(dialect);
+        Constructor<Dialect> constructor = dialectClass.getConstructor();
+        final Dialect dialectInstance = constructor.newInstance();
         logger.log(Level.SEVERE, "SilverpeasDialectResolver - Using dialect: {0}",
             dialectClass.getName());
         return dialectInstance;
-      } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+      } catch (NoSuchMethodException | IllegalAccessException | InstantiationException |
+               ClassNotFoundException | InvocationTargetException | ClassCastException e) {
         logger.severe(e.getMessage());
       }
     }

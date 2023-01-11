@@ -55,6 +55,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionManager;
@@ -73,10 +74,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import static javax.jcr.nodetype.NodeType.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
+import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 @RunWith(Arquillian.class)
 public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
@@ -95,7 +97,9 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
   public void loadJcr() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
-        session.getRootNode().addNode(instanceId, NT_FOLDER);
+        session.getRootNode()
+            .addNode(instanceId, NT_FOLDER)
+            .addNode("attachments", NT_FOLDER);
       }
       session.save();
     }
@@ -4054,6 +4058,80 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
+  @Test
+  public void testFindSimpleVersionedDocumentById() throws Exception {
+    try (JCRSession session = JCRSession.openSystemSession()) {
+      SimpleDocumentPK documentPK = createSimpleVersionedDocument(session);
+
+      SimpleDocument doc = documentRepository.findDocumentById(session, documentPK, "en");
+      assertThat(doc, is(notNullValue()));
+      checkEnglishSimpleDocument(doc);
+
+      Node docNode = session.getNodeByIdentifier(doc.getId());
+      assertThat(docNode, notNullValue());
+      assertThat(DocumentConverter.isMixinApplied(docNode, MIX_SIMPLE_VERSIONABLE), is(true));
+      assertThat(DocumentConverter.isMixinApplied(docNode, MIX_VERSIONABLE), is(true));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
+  }
+
+  private SimpleDocumentPK createSimpleVersionedDocument(final Session session)
+      throws RepositoryException, IOException {
+    Node allDocs = session.getNode("/" + instanceId + "/attachments");
+    assertThat(allDocs, notNullValue());
+
+    SimpleDocumentPK docId = new SimpleDocumentPK("-1", instanceId);
+    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+        Charsets.UTF_8));
+    SimpleAttachment attachment = createEnglishVersionnedAttachment();
+    SimpleDocument document = new HistorisedDocument(docId, "node42", 10, attachment);
+    document.setCloneId("-1");
+    Node doc = allDocs.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
+    document.setId(doc.getIdentifier());
+
+    documentRepository.storeContent(document, content);
+
+    Value date = convertToJCRValue(session, attachment.getCreationDate());
+    doc.setProperty(SLV_PROPERTY_FOREIGN_KEY, document.getForeignId());
+    doc.setProperty(SLV_PROPERTY_VERSIONED, true);
+    doc.setProperty(SLV_PROPERTY_ORDER, 0);
+    doc.setProperty(SLV_PROPERTY_OLD_ID, document.getOldSilverpeasId());
+    doc.setProperty(SLV_PROPERTY_INSTANCEID, document.getInstanceId());
+    doc.setProperty(SLV_PROPERTY_OWNER, attachment.getCreatedBy());
+    doc.setProperty(SLV_PROPERTY_COMMENT, "");
+    doc.setProperty(SLV_PROPERTY_STATUS, "0");
+    doc.setProperty(SLV_PROPERTY_ALERT_DATE, date);
+    doc.setProperty(SLV_PROPERTY_EXPIRY_DATE, date);
+    doc.setProperty(SLV_PROPERTY_RESERVATION_DATE, date);
+    doc.setProperty(SLV_PROPERTY_CLONE, document.getCloneId());
+    doc.addMixin(SLV_DOWNLOADABLE_MIXIN);
+    doc.setProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES,
+        SilverpeasRole.asString(SilverpeasRole.READER_ROLES));
+    doc.addMixin(SLV_VIEWABLE_MIXIN);
+    doc.setProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, true);
+    doc.addMixin(MIX_SIMPLE_VERSIONABLE);
+
+    Node file = doc.addNode(attachment.getNodeName(), SLV_SIMPLE_ATTACHMENT);
+
+    file.setProperty(SLV_PROPERTY_CREATION_DATE, date);
+    file.setProperty(JCR_LAST_MODIFIED, date);
+    file.setProperty(SLV_PROPERTY_CREATOR, attachment.getCreatedBy());
+    file.setProperty(JCR_LAST_MODIFIED_BY, attachment.getUpdatedBy());
+    file.setProperty(SLV_PROPERTY_NAME, attachment.getFilename());
+    file.setProperty(JCR_TITLE, attachment.getTitle());
+    file.setProperty(JCR_DESCRIPTION, attachment.getDescription());
+    file.setProperty(JCR_LANGUAGE, attachment.getLanguage());
+    file.setProperty(SLV_PROPERTY_XMLFORM_ID, attachment.getXmlFormId());
+    file.setProperty(JCR_MIMETYPE, attachment.getContentType());
+    file.setProperty(SLV_PROPERTY_SIZE, attachment.getSize());
+
+    session.save();
+
+    return document.getPk();
+  }
+
   private SimpleDocumentPK createVersionedDocument(Session session, SimpleDocument document,
       InputStream content) throws RepositoryException, IOException {
     SimpleDocumentPK result = documentRepository.createDocument(session, document);
@@ -4062,5 +4140,12 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     session.save();
     documentRepository.unlock(session, document, false);
     return result;
+  }
+
+  private Value convertToJCRValue(final Session session, final Date date)
+      throws RepositoryException {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    return session.getValueFactory().createValue(calendar);
   }
 }

@@ -1259,10 +1259,4 @@
     <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 
-  <resource-env-ref>
-    <description>Content Repository</description>
-    <resource-env-ref-name>jcr/repository</resource-env-ref-name>
-    <resource-env-ref-type>javax.jcr.Repository</resource-env-ref-type>
-    <lookup-name>java:/jca/jcr</lookup-name>
-  </resource-env-ref>
 </web-app>

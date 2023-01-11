@@ -51,9 +51,10 @@ public class DefaultSystemWrapper implements SystemWrapper {
     // we don't use the ResourceLocator API here in order to avoid cyclic dependency between
     // SystemWrapper and ResourceLocator
     Properties systemSettings = new Properties();
-    Path systemSettingsPath = Paths.get(System.getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
-        "systemSettings.properties");
-    try(FileReader reader = new FileReader(systemSettingsPath.toFile())) {
+    Path systemSettingsPath =
+        Paths.get(System.getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
+            "systemSettings.properties");
+    try (FileReader reader = new FileReader(systemSettingsPath.toFile())) {
       systemSettings.load(reader);
     } catch (IOException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);

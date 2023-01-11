@@ -266,7 +266,6 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         setServicesWithIds(ids, wbe);
       }
       if (DocumentTemplateSettings.isEnabled()) {
-        ids.add(documentTemplate.getId());
         setServicesWithIds(ids, documentTemplate);
       }
       setServicesWithIds(ids, jst);

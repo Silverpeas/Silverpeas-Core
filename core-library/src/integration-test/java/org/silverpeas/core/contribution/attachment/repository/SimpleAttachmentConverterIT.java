@@ -42,10 +42,11 @@ import javax.jcr.Node;
 import java.util.Calendar;
 import java.util.Date;
 
+import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 @RunWith(Arquillian.class)
 public class SimpleAttachmentConverterIT extends JcrIntegrationIT {

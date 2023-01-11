@@ -54,13 +54,13 @@ import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.DefaultUserProvider;
-import org.silverpeas.core.admin.user.model.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.model.UserLog;
+import org.silverpeas.core.admin.user.model.UserReference;
 import org.silverpeas.core.cache.VolatileResourceCleaner;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
@@ -110,7 +110,6 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationSending
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.DefaultReminderRepository;
@@ -151,6 +150,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(EntityReference.class);
     addCalendarBaseFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
+    addMavenDependencies("org.apache.tika:tika-core");
+    addMavenDependencies("org.apache.tika:tika-parsers-standard-package");
+    addMavenDependencies("com.drewnoakes:metadata-extractor");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
         "META-INF/services/org.silverpeas.core.util.logging.SilverLoggerFactory");
@@ -442,12 +444,13 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addWbeManagementFeatures();
     addMavenDependencies("org.silverpeas.jcr:silverpeas-jcr");
     addMavenDependencies("commons-beanutils:commons-beanutils");
-    if (!contains(JcrRepositoryProvider.class)) {
+    if (!contains(JcrIntegrationIT.class)) {
       addClasses(FormException.class, JcrIntegrationIT.class, JcrContext.class,
           FileServerUtils.class);
       addPackages(true, "org.silverpeas.core.persistence.jcr");
       addPackages(true, "org.silverpeas.core.contribution.attachment");
       addClasses(VolatileResourceCleaner.class);
+      addAsResource("silverpeas-oak.properties");
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }

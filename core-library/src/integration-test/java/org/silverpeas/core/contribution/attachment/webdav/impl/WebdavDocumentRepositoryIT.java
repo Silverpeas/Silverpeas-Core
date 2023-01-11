@@ -52,10 +52,12 @@ import java.util.regex.Pattern;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.jcr.Property.*;
+import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_OWNABLE_MIXIN;
+import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_PROPERTY_OWNER;
 
 @RunWith(Arquillian.class)
 public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {

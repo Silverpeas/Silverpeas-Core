@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.persistence.jcr;
 
+import org.apache.jackrabbit.util.Text;
+import org.silverpeas.core.util.DateUtil;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
-
-import org.apache.jackrabbit.util.ISO9075;
-import org.apache.jackrabbit.util.Text;
-
-import org.silverpeas.core.util.DateUtil;
 
 /**
  * A converter of some data handled in the JCR, such as node paths and dates.
@@ -53,14 +51,8 @@ public class JcrDataConverter {
   public static final String PATH_SEPARATOR = "/";
   private static final String ILLEGAL_JCR_CHARACTERS_REGEXP = "[%:\\[\\]*'\"|\t\r\n]";
 
-  /**
-   * Encodes the JCR path to a Xpath compatible path.
-   *
-   * @param path the JCR path to be encoded for Xpath.
-   * @return the corresponding xpath.
-   */
-  public static final String encodeJcrPath(String path) {
-    return ISO9075.encodePath(convertToJcrPath(path));
+  private JcrDataConverter() {
+
   }
 
   /**
@@ -70,7 +62,7 @@ public class JcrDataConverter {
    * @return the resulting String.
    */
   public static String convertToJcrPath(String name) {
-    String coolName = name.replaceAll(" ", SPACE_TOKEN);
+    String coolName = name.replace(" ", SPACE_TOKEN);
     StringBuilder buffer = new StringBuilder(coolName.length() + 10);
     StringTokenizer tokenizer = new StringTokenizer(coolName, PATH_SEPARATOR, true);
     while (tokenizer.hasMoreTokens()) {
@@ -89,31 +81,22 @@ public class JcrDataConverter {
   }
 
   /**
-   * Replace all %39 with the char'
-   *
-   * @param text
-   * @return a String with all %39 replaced by quotes
-   */
-  public static String unescapeQuote(String text) {
-    return text.replaceAll("%" + ((int) ('\'')), "'");
-  }
-
-  /**
    * Replace all SPACE_TOKEN to whitespace.
    *
    * @param name the String o be converted.
    * @return the resulting String.
    */
   public static String convertFromJcrPath(String name) {
-    return Text.unescapeIllegalJcrChars(name.replaceAll(SPACE_TOKEN, " "));
+    return Text.unescapeIllegalJcrChars(name.replace(SPACE_TOKEN, " "));
   }
 
   /**
-   * Parse a String of format yyyy/MM/dd and return the corresponding Date.
+   * Parses the specified text encoding a date in the format yyyy/MM/dd and returns the represented
+   * date.
    *
    * @param date the String to be parsed.
    * @return the corresponding date.
-   * @throws ParseException
+   * @throws ParseException an error if the specified text doesn't encode a date.
    */
   public static Date parseDate(String date) throws ParseException {
     return DateUtil.parse(date);
@@ -132,11 +115,11 @@ public class JcrDataConverter {
   /**
    * Format a Calendar to a String of format yyyy/MM/dd.
    *
-   * @param calend the date to be formatted.
+   * @param calendar the date to be formatted.
    * @return the formatted String.
    */
-  public static String formatDate(Calendar calend) {
-    return DateUtil.formatDate(calend);
+  public static String formatDate(Calendar calendar) {
+    return DateUtil.formatDate(calendar);
   }
 
   /**
@@ -144,10 +127,10 @@ public class JcrDataConverter {
    * Calendar.
    *
    * @param time the String to be parsed.
-   * @param calend the calendar to be updated.
+   * @param calendar the calendar to be updated.
    */
-  public static void setTime(Calendar calend, String time) {
-    DateUtil.setTime(calend, time);
+  public static void setTime(Calendar calendar, String time) {
+    DateUtil.setTime(calendar, time);
   }
 
   /**
@@ -163,22 +146,16 @@ public class JcrDataConverter {
   /**
    * Format a Calendar to a String of format HH:mm.
    *
-   * @param calend the date to be formatted.
+   * @param calendar the date to be formatted.
    * @return the formatted String.
    */
-  public static String formatTime(Calendar calend) {
-    return DateUtil.formatTime(calend);
+  public static String formatTime(Calendar calendar) {
+    return DateUtil.formatTime(calendar);
   }
 
   public static String formatDateForXpath(Date date) {
     return "xs:dateTime('" + getXpathFormattedDate(date) + 'T'
         + getXpathFormattedTime(date) + getTimeZone(date) + "')";
-  }
-
-  public static String formatCalendarForXpath(Calendar date) {
-    return "xs:dateTime('" + getXpathFormattedDate(date.getTime()) + 'T'
-        + getXpathFormattedTime(date.getTime()) + getTimeZone(date.getTime())
-        + "')";
   }
 
   protected static String getTimeZone(Date date) {

@@ -25,10 +25,8 @@ package org.silverpeas.core.persistence.jcr;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -37,7 +35,6 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,14 +42,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import static javax.jcr.Property.*;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_PROPERTY_NAME;
+import static javax.jcr.nodetype.NodeType.NT_FOLDER;
+import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_PROPERTY_NAME;
 
 /**
  *
@@ -128,51 +124,11 @@ public abstract class AbstractJcrConverter {
         SilverLogger.getLogger(this).silent(e);
       }
     } else {
-      Calendar calend = Calendar.getInstance();
-      calend.setTime(value);
-      Value propertyValue = node.getSession().getValueFactory().createValue(calend);
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(value);
+      Value propertyValue = node.getSession().getValueFactory().createValue(calendar);
       node.setProperty(propertyName, propertyValue);
     }
-  }
-
-  /**
-   * Defines the Calendar value of a JCR Node's property. If the specified value is null then the
-   * corresponding property is removed from the Node.
-   *
-   * @param node the node whose property is being set.
-   * @param propertyName the name of the property being set.
-   * @param value the value being set. If it is null then the property is removed.
-   * @throws RepositoryException on error
-   */
-  public void addCalendarProperty(Node node, String propertyName,
-      Calendar value) throws RepositoryException {
-    if (value == null) {
-      try {
-        node.getProperty(propertyName).remove();
-      } catch (PathNotFoundException e) {
-        SilverLogger.getLogger(this).silent(e);
-      }
-    } else {
-      Value propertyValue = node.getSession().getValueFactory().createValue(value);
-      node.setProperty(propertyName, propertyValue);
-    }
-  }
-
-  /**
-   * Return the property value as Calendar for a JCR Node. If the property doesn't exist return
-   * null.
-   *
-   * @param node the node whose property is required.
-   * @param propertyName the name of the property required.
-   * @return the Calendar value of the property - null if the property doesn't exist.
-   * @throws RepositoryException on error
-   */
-  protected Calendar getCalendarProperty(Node node, String propertyName)
-      throws RepositoryException {
-    if (node.hasProperty(propertyName)) {
-      return node.getProperty(propertyName).getDate();
-    }
-    return null;
   }
 
   /**
@@ -239,40 +195,6 @@ public abstract class AbstractJcrConverter {
     return 0;
   }
 
-  /**
-   * Remove a reference from an array of javax.jcr.Value. If the reference is not found no change is
-   * done to the array.
-   *
-   * @param values the array of references
-   * @param uuid the reference to be removed
-   * @return the updated arry of references.
-   * @throws RepositoryException on error
-   */
-  protected Value[] removeReference(Value[] values, String uuid) throws RepositoryException {
-    List<Value> references = CollectionUtil.asList(values);
-    Iterator<Value> iter = references.iterator();
-    while (iter.hasNext()) {
-      Value value = iter.next();
-      if (uuid.equals(value.getString())) {
-        iter.remove();
-        return references.toArray(new Value[values.length - 1]);
-      }
-    }
-    return values;
-  }
-
-  /**
-   * Compute a unique node name if a node with the same name already exists under the same parent
-   * node.
-   *
-   * @param prefix a prefix to add to the node name
-   * @param tableName the name of the column used to stored the id.
-   * @return the name of the node.
-   */
-  protected String computeUniqueName(String prefix, String tableName) {
-    return prefix + DBUtil.getNextId(tableName, null);
-  }
-
   public void setContent(Node fileNode, InputStream content, String mimeType) throws
       RepositoryException {
     Node contentNode;
@@ -292,37 +214,6 @@ public abstract class AbstractJcrConverter {
     contentNode.setProperty(JCR_MIMETYPE, fileMimeType);
     Calendar lastModified = Calendar.getInstance();
     contentNode.setProperty(JCR_LAST_MODIFIED, lastModified);
-  }
-
-  /**
-   * Returns the mime-type of the jcr:content node stored in the fileNode.
-   *
-   * @param fileNode the file node
-   * @return the mime-type of the jcr:content node stored in the fileNode.
-   * @throws RepositoryException on error
-   */
-  public String getContentMimeType(Node fileNode) throws RepositoryException {
-    if (fileNode.hasNode(JCR_CONTENT)) {
-      Node contentNode = fileNode.getNode(JCR_CONTENT);
-      return getStringProperty(contentNode, JCR_MIMETYPE);
-    }
-    return null;
-  }
-
-  /**
-   * Return the size of the file in the jcr:content node which is a child node of the specified
-   * node.
-   *
-   * @param fileNode the file node
-   * @return the size of the content.
-   * @throws RepositoryException on error
-   */
-  public long getContentSize(Node fileNode) throws RepositoryException {
-    if (fileNode.hasNode(JCR_CONTENT)) {
-      Node contentNode = fileNode.getNode(JCR_CONTENT);
-      return getSize(contentNode);
-    }
-    return 0L;
   }
 
   public void setContent(Node fileNode, File file, String mimeType) throws RepositoryException {
@@ -357,8 +248,8 @@ public abstract class AbstractJcrConverter {
           ByteArrayOutputStream out = new ByteArrayOutputStream()) {
         IOUtils.copy(in, out);
         return out.toByteArray();
-      } catch (IOException ioex) {
-        throw new RepositoryException(ioex);
+      } catch (IOException ex) {
+        throw new RepositoryException(ex);
       }
     }
     return ArrayUtil.emptyByteArray();
@@ -388,20 +279,13 @@ public abstract class AbstractJcrConverter {
 
   }
 
-  private long getSize(Node contentNode) throws RepositoryException {
-    if (contentNode.hasProperty(JCR_DATA)) {
-      return contentNode.getProperty(JCR_DATA).getBinary().getSize();
-    }
-    return 0L;
-  }
-
   /**
-   * Return the node whith the specified parent and name. Create a nt:folder with the specified
+   * Return the node with the specified parent and name. Create a nt:folder with the specified
    * parent and name if the node doesn't exist.
    *
    * @param parent parent node of the folder.
    * @param name name of the folder.
-   * @return the node whith the specified parent and name.
+   * @return the node with the specified parent and name.
    * @throws RepositoryException on error
    */
   public Node getFolder(Node parent, String name) throws RepositoryException {
@@ -421,12 +305,7 @@ public abstract class AbstractJcrConverter {
    * @return rue if the specified mixin type is explicitly assigned to the node false otherwise.
    * @throws RepositoryException on error
    */
-  public boolean isMixinApplied(Node node, String mixin) throws RepositoryException {
-    for (NodeType type : node.getMixinNodeTypes()) {
-      if (type.isNodeType(mixin)) {
-        return true;
-      }
-    }
-    return false;
+  public static boolean isMixinApplied(Node node, String mixin) throws RepositoryException {
+    return Arrays.stream(node.getMixinNodeTypes()).anyMatch(m -> m.isNodeType(mixin));
   }
 }

@@ -54,10 +54,11 @@ import static java.util.Optional.ofNullable;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
+import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 /**
  * A converter of node representing documents to {@link SimpleDocument} or
@@ -98,9 +99,10 @@ class DocumentConverter extends AbstractJcrConverter {
         baseId = base.getIdentifier();
       }
       VersionIterator versionsIterator = history.getAllVersions();
-      List<SimpleDocumentVersion> documentHistory =
-          new ArrayList<>((int) versionsIterator.
-              getSize());
+      // VersionIterator#getSize() support depends on the JCR implementation: if it isn't supported,
+      // VersionIterator#getSize() returns -1. We have to take into account this particularity.
+      int capacity = versionsIterator.getSize() == -1 ? 10 : (int) versionsIterator.getSize();
+      List<SimpleDocumentVersion> documentHistory = new ArrayList<>(capacity);
 
       int versionIndex = 0;
       SimpleDocumentVersion previousVersion = null;
@@ -132,6 +134,11 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
+    if (isMixinApplied(node, MIX_SIMPLE_VERSIONABLE) && !isMixinApplied(node, MIX_VERSIONABLE)) {
+      // convert mixin
+      node.addMixin(MIX_VERSIONABLE);
+      node.getSession().save();
+    }
     if (isVersionedMaster(node)) {
       return buildHistorizedDocument(node, lang);
     }
@@ -370,7 +377,7 @@ class DocumentConverter extends AbstractJcrConverter {
 
   public boolean isVersionedMaster(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false) && !node.hasProperty(
-        JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
+        JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_VERSIONABLE);
   }
 
   public String updateVersion(Node node, String lang, boolean isPublic) throws RepositoryException {
