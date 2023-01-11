@@ -52,6 +52,7 @@ import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,7 +66,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 /**
  *
@@ -98,7 +98,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       if (!session.getRootNode()
           .hasNode(instanceId)) {
         session.getRootNode()
-            .addNode(instanceId, NT_FOLDER);
+            .addNode(instanceId, NodeType.NT_FOLDER);
       }
       Date creationDate = RandomGenerator.getRandomCalendar()
           .getTime();

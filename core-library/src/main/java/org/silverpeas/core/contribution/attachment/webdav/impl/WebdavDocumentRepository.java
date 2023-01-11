@@ -54,7 +54,9 @@ import static java.time.OffsetDateTime.ofInstant;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static javax.jcr.Node.JCR_CONTENT;
+import static javax.jcr.nodetype.NodeType.*;
+import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 @Repository
 public class WebdavDocumentRepository implements WebdavRepository {

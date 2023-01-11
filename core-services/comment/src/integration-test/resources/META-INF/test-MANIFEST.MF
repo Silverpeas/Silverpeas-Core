@@ -5,5 +5,4 @@ Dependencies: org.jboss.as.naming,
   org.apache.xerces,
   org.antlr,
   org.apache.lucene-7,
-  deployment.jackrabbit-jca.rar,
   jdk.unsupported

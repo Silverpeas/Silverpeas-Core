@@ -67,10 +67,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_START;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 @RunWith(Arquillian.class)
 public class DocumentRepositoryIT extends JcrIntegrationIT {

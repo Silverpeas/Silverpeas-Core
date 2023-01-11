@@ -34,8 +34,6 @@ import org.silverpeas.core.test.extention.SettingBundleStub;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.jcr.impl.RepositorySettings;
 
 /**
  * @author Yohann Chastagnier

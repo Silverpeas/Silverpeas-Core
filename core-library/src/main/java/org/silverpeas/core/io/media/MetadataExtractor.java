@@ -26,6 +26,8 @@ package org.silverpeas.core.io.media;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -45,6 +47,8 @@ import java.math.BigDecimal;
  * This tool is kind of interface between the Silverpeas callers which needs to get metadata from
  * files and the API used to extract them.
  */
+@Technical
+@Service
 @Singleton
 public class MetadataExtractor {
 

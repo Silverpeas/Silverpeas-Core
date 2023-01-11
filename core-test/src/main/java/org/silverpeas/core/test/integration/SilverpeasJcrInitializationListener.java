@@ -2,6 +2,8 @@ package org.silverpeas.core.test.integration;
 
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.jcr.impl.RepositorySettings;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -23,11 +25,18 @@ import java.util.function.Predicate;
  */
 public class SilverpeasJcrInitializationListener implements ServletContextListener {
 
+  private static final String JCR_HOME = "target/jcr";
+  private static final String JCR_CONFIG = "classpath:/silverpeas-oak.properties";
+
   private static final Predicate<Initialization> FILTER =
       i -> i.getClass().getSimpleName().contains("SilverpeasJCRSchemaRegister");
 
   @Override
   public void contextInitialized(final ServletContextEvent sce) {
+    SystemWrapper systemWrapper = SystemWrapper.get();
+    systemWrapper.setProperty(RepositorySettings.JCR_HOME, JCR_HOME);
+    systemWrapper.setProperty(RepositorySettings.JCR_CONF, JCR_CONFIG);
+
     SilverpeasServiceInitialization.start(FILTER);
   }
 

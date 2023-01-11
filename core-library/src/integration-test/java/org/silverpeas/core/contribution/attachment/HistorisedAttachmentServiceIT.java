@@ -51,6 +51,7 @@ import org.silverpeas.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,7 +64,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 /**
  *
@@ -96,7 +96,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
     try (JCRSession session = JCRSession.openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode()
-            .addNode(instanceId, NT_FOLDER);
+            .addNode(instanceId, NodeType.NT_FOLDER);
         Date creationDate = RandomGenerator.getRandomCalendar()
             .getTime();
         SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -113,6 +113,8 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
         SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
         InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
         existingFrDoc = documentRepository.createDocument(session, document);
+        session.save();
+
         document =
             documentRepository.findDocumentById(session, existingFrDoc, document.getLanguage());
         document.setPublicDocument(true);
@@ -140,6 +142,8 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
         document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
         content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
         existingEnDoc = documentRepository.createDocument(session, document);
+        session.save();
+
         document =
             documentRepository.findDocumentById(session, existingEnDoc, document.getLanguage());
         document.setPublicDocument(true);
@@ -154,7 +158,15 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
         assertThat(out.toString(Charsets.UTF_8), is("This is a test"));
       }
       session.save();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
     }
+  }
+
+  @Test
+  public void emptyTest() {
+    assertThat(true, is(true));
   }
 
   @Test

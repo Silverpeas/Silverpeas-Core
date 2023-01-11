@@ -56,7 +56,6 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
    */
   public static <T> WarBuilder4WarCore onWarForTestClass(Class<T> test) {
     WarBuilder4WarCore warBuilder = new WarBuilder4WarCore(test);
-    warBuilder.addMavenDependencies("javax.jcr:jcr");
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");

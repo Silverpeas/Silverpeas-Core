@@ -29,10 +29,8 @@
         http://jboss.org/schema/arquillian
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
   <!-- uncomment it for have a glance at the war content -->
-  <!--
   <engine>
     <property name="deploymentExportPath">target/deployments</property>
   </engine>
-  -->
   <container qualifier="wildfly-remote" default="true"></container>
 </arquillian>

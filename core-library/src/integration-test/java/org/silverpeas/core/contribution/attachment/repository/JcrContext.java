@@ -38,9 +38,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.jcr.JCRSession;
-import org.silverpeas.jcr.impl.RepositorySettings;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -71,16 +69,12 @@ import static org.hamcrest.Matchers.*;
  */
 public class JcrContext implements TestRule {
 
-  private static final String JCR_HOME = "target/";
-  private static final String JCR_CONFIG = "classpath:/silverpeas-oak.properties";
-
   @Override
   public Statement apply(final Statement base, final Description description) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
         try {
-          init();
           base.evaluate();
         } finally {
           clearJcrRepository();
@@ -88,12 +82,6 @@ public class JcrContext implements TestRule {
         }
       }
     };
-  }
-
-  private void init() {
-    SystemWrapper systemWrapper = SystemWrapper.get();
-    systemWrapper.setProperty(RepositorySettings.JCR_HOME, JCR_HOME);
-    systemWrapper.setProperty(RepositorySettings.JCR_CONF, JCR_CONFIG);
   }
 
   private void clearJcrRepository() throws RepositoryException {

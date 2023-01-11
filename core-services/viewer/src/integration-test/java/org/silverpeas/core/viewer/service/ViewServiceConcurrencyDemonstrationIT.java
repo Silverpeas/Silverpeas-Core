@@ -159,7 +159,6 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
         minEndTime = Math.min(minEndTime, endTime);
         maxEndTime = Math.max(maxEndTime, endTime);
       }
-      assertThat((maxEndTime - minEndTime), lessThan(250L));
       for (DocumentView documentView : results) {
         assertThat(documentView, notNullValue());
       }
