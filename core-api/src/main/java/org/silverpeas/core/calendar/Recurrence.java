@@ -27,9 +27,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.util.Pair;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -50,6 +52,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
@@ -104,6 +107,7 @@ public class Recurrence implements Serializable {
   @CollectionTable(name = "sb_cal_recurrence_exception", joinColumns = {
       @JoinColumn(name = "recurrenceId")})
   @Column(name = "recur_exceptionDate")
+  @Convert(converter = ExceptionDateNormalizer.class)
   private Set<OffsetDateTime> exceptionDates = new HashSet<>();
   @Transient
   private transient Temporal startDate;
@@ -512,15 +516,26 @@ public class Recurrence implements Serializable {
       this.until(this.endDateTime.toLocalDate());
     }
     if (!this.exceptionDates.isEmpty()) {
-      Temporal[] exceptions = this.exceptionDates.toArray(new Temporal[0]);
-      this.exceptionDates.clear();
-      this.excludeEventOccurrencesStartingAt(exceptions);
+      // Adjusting here the exception dates in order to be compliant with the start date (which
+      // could have change) and the Silverpeas's calendar engine.
+      // No full clear and add all is done here because of transaction blocking into some databases.
+      final List<Pair<OffsetDateTime, OffsetDateTime>> datesToModify = this.exceptionDates.stream()
+          .map(t -> Pair.of(t, normalize(t)))
+          .filter(not(p -> p.getFirst().equals(p.getSecond())))
+          .collect(Collectors.toList());
+      datesToModify.forEach(p -> {
+        this.exceptionDates.remove(p.getFirst());
+        this.exceptionDates.add(p.getSecond());
+      });
     }
     return this;
   }
 
   /**
    * Clears all the registered exception dates.
+   * <p>IMPORTANT: do not use this method into a process of exception date update. Please use
+   * this method in case it is sure that one of deleted dates will not be added again into the same
+   * transaction.</p>
    */
   void clearsAllExceptionDates() {
     exceptionDates.clear();
@@ -613,5 +628,30 @@ public class Recurrence implements Serializable {
       }
     }
     return date;
+  }
+
+  /**
+   * This converter is dedicated to the {@link Recurrence#exceptionDates} collection.
+   * <p>
+   *   It converts the loaded dates into {@link OffsetDateTime} at UTC offset and avoids the
+   *   collection update during exception dates manipulations.
+   *   The manipulation of this collection induces database delete/add queries which could
+   *   produces transaction blocking with some databases. Getting the dates loaded directly as
+   *   they are attempted into Silverpeas's API avoid to update a date into collection just
+   *   because it is not same offset, for example.
+   * </p>
+   */
+  @Converter
+  public static class ExceptionDateNormalizer implements AttributeConverter<OffsetDateTime, Timestamp> {
+
+    @Override
+    public Timestamp convertToDatabaseColumn(OffsetDateTime o) {
+      return Timestamp.from(o.toInstant());
+    }
+
+    @Override
+    public OffsetDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
+      return sqlTimestamp.toInstant().atOffset(ZoneOffset.UTC);
+    }
   }
 }
