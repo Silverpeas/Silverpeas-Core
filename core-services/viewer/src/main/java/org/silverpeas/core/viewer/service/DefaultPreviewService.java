@@ -188,7 +188,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
   static {
     for (final String imageExtension : new String[] { BMP_IMAGE_EXTENSION, GIF_IMAGE_EXTENSION,
         JPG_IMAGE_EXTENSION, PCD_IMAGE_EXTENSION, PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION,
-        TIF_IMAGE_EXTENSION }) {
+        TIF_IMAGE_EXTENSION, WEBP_IMAGE_EXTENSION }) {
       imageMimeTypePreviewable.add(FileUtil.getMimeType("file." + imageExtension));
     }
     imageMimeTypePreviewable.remove(MimeTypes.DEFAULT_MIME_TYPE);

@@ -103,34 +103,22 @@ function updateAvatar() {
 }
 
 function getExtension(filename) {
-  var indexPoint = filename.lastIndexOf(".");
-  // on verifie qu il existe une extension au nom du fichier
+  const indexPoint = filename.lastIndexOf(".");
   if (indexPoint !== -1) {
-    // le fichier contient une extension. On recupere l extension
-    var ext = filename.substring(indexPoint + 1);
-    return ext;
+    return filename.substring(indexPoint + 1).toLowerCase();
   }
   return null;
 }
 
 function ifFileCorrectExecute(callback) {
-  var image = $("#avatarDialog #ImageNewFile").val();
-
-  var errorMsg = "";
-  var errorNb = 0;
-
+  const image = $("#avatarDialog #ImageNewFile").val();
+  let errorMsg = "";
+  let errorNb = 0;
   if (!isWhitespace(image)) {
-    var extension = getExtension(image);
-
-    if (extension == null) {
+    const extension = getExtension(image);
+    if (extension == null || (extension !== "gif" && extension !== "jpeg" && extension !== "jpg" && extension !== "png" && extension !== "webp")) {
       errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
       errorNb++;
-    } else {
-      extension = extension.toLowerCase();
-      if ( (extension !== "gif") && (extension !== "jpeg") && (extension !== "jpg") && (extension !== "png") ) {
-        errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
-        errorNb++;
-      }
     }
   }
 

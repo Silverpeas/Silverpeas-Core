@@ -53,9 +53,11 @@ public class ImageUtil {
   public static final String TGA_IMAGE_EXTENSION = "tga";
   // Extension of tif image file
   public static final String TIF_IMAGE_EXTENSION = "tif";
+  // Extension of webp image file
+  public static final String WEBP_IMAGE_EXTENSION = "webp";
   public static final String[] IMAGE_EXTENTIONS = new String[]{BMP_IMAGE_EXTENSION,
     GIF_IMAGE_EXTENSION, JPG_IMAGE_EXTENSION, JPEG_IMAGE_EXTENSION, PCD_IMAGE_EXTENSION,
-    PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION, TIF_IMAGE_EXTENSION};
+    PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION, TIF_IMAGE_EXTENSION, WEBP_IMAGE_EXTENSION};
 
   public static String[] getWidthAndHeightByWidth(File image, int widthParam) {
     String[] result = new String[2];

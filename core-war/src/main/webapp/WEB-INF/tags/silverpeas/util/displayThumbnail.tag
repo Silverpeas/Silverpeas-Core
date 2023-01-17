@@ -120,7 +120,7 @@ function updateThumbnail() {
     if ($('#thumbnailFile').length && $('#thumbnailFile').val() != '') {
       var logicalName = $('#thumbnailFile').val();
       var extension = getExtension(logicalName);
-      if (extension == null || (extension != "gif" && extension != "jpeg" && extension != "jpg" && extension != "png")) {
+      if (extension == null || (extension !== "gif" && extension !== "jpeg" && extension !== "jpg" && extension !== "png" && extension !== "webp")) {
         error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.thumbnail.badformat" bundle="${generalBundle}"/>\n";
         error.nb++;
       }
