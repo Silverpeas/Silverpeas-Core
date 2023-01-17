@@ -118,6 +118,7 @@ public class Im4javaImageTool extends AbstractImageTool {
       orientation(op, source, options, directives);
       transparencyColor(op, options);
       background(op, options);
+      crop(op, options, directives);
       resize(op, options, directives);
       watermarkText(op, source, options);
       watermarkImage(op, source, options);
@@ -276,6 +277,36 @@ public class Im4javaImageTool extends AbstractImageTool {
   }
 
   /**
+   * Centralizes crop operation
+   * @param op the image magick operation registry to set up.
+   * @param options the different options specified by the caller.
+   * @param directives the different directives specified by the caller.
+   */
+  private void crop(final IMOperation op,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
+      final Set<ImageToolDirective> directives) {
+
+    // Getting dimension option
+    final CropOption crop = getOption(options, CropOption.class);
+    if (crop != null) {
+      final StringBuilder specialDirective = new StringBuilder();
+
+      // Shrinks images with dimension(s) larger than the corresponding width and/or height
+      // dimension(s).
+      if (directives.contains(ImageToolDirective.GEOMETRY_SHRINK)) {
+        specialDirective.append(GEOMETRY_SHRINK);
+      }
+
+      op.crop(crop.getWidth(), crop.getHeight(),
+              crop.getOffsetX(), crop.getOffsetY(),
+              specialDirective.toString());
+      if (crop.mustRemovePartsAroundCroppedZone()) {
+        op.p_repage();
+      }
+    }
+  }
+
+  /**
    * Centralizes text watermarking operation
    * @param op
    * @param source
@@ -343,17 +374,17 @@ public class Im4javaImageTool extends AbstractImageTool {
 
       final File watermark = watermarkImage.getImage();
       final Integer[] wInfo = getWidthAndHeight(watermark, options, true);
-      float wWidth = (float) wInfo[0];
-      float wHeight = (float) wInfo[1];
+      float wWidth = wInfo[0];
+      float wHeight = wInfo[1];
 
       int width = 0;
       int height = 0;
       if (srcWidth < wWidth) {
         width = srcWidth;
-        height = Math.round(((float) srcWidth) / (wWidth / wHeight));
+        height = Math.round((srcWidth) / (wWidth / wHeight));
       }
       if (srcHeight < wHeight) {
-        final int widthFromHeight = Math.round(((float) srcHeight) * (wWidth / wHeight));
+        final int widthFromHeight = Math.round((srcHeight) * (wWidth / wHeight));
         if (widthFromHeight < srcWidth) {
           width = widthFromHeight;
           height = srcHeight;

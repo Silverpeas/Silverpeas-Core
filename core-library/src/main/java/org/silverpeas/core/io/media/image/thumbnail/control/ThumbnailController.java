@@ -31,6 +31,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.media.image.ImageTool;
+import org.silverpeas.core.io.media.image.option.OrientationOption;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
@@ -55,6 +57,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHRINK;
+import static org.silverpeas.core.io.media.image.ImageToolDirective.PREVIEW_WORK;
+import static org.silverpeas.core.io.media.image.option.CropOption.crop;
+import static org.silverpeas.core.io.media.image.option.DimensionOption.widthAndHeight;
 
 @Service
 public class ThumbnailController implements ComponentInstanceDeletion {
@@ -316,26 +324,46 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       if (!cropFile.exists()) {
         Files.createFile(cropFile.toPath());
       }
-
       File originalFile = new File(pathOriginalFile);
-      BufferedImage bufferOriginal = ImageIO.read(originalFile);
-      // crop image
-      BufferedImage cropPicture = bufferOriginal.getSubimage(thumbnail.getXStart(),
-          thumbnail.getYStart(), thumbnail.getXLength(), thumbnail.getYLength());
-      BufferedImage cropPictureFinal = new BufferedImage(thumbnailWidth, thumbnailHeight,
-          BufferedImage.TYPE_INT_RGB);
-      // Redimensionnement de l'image
-      Graphics2D g2 = cropPictureFinal.createGraphics();
-      g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      g2.drawImage(cropPicture, 0, 0, thumbnailWidth, thumbnailHeight, null);
-      g2.dispose();
-
-      // save crop image
-      String extension = FilenameUtils.getExtension(originalFile.getName());
-      ImageIO.write(cropPictureFinal, extension, cropFile);
+      croppingWithImageTool(thumbnail, originalFile, cropFile, thumbnailWidth, thumbnailHeight);
+      if (cropFile.length() == 0) {
+        croppingWithImageIO(thumbnail, thumbnailWidth, thumbnailHeight, cropFile, originalFile);
+      }
     } catch (Exception e) {
       SilverLogger.getLogger(ThumbnailController.class).warn(e);
+    }
+  }
+
+  private static void croppingWithImageIO(final ThumbnailDetail thumbnail, final int thumbnailWidth,
+      final int thumbnailHeight, final File cropFile, final File originalFile) throws IOException {
+    BufferedImage bufferOriginal = ImageIO.read(originalFile);
+    // crop image
+    BufferedImage cropPicture = bufferOriginal.getSubimage(thumbnail.getXStart(),
+        thumbnail.getYStart(), thumbnail.getXLength(), thumbnail.getYLength());
+    BufferedImage cropPictureFinal = new BufferedImage(thumbnailWidth, thumbnailHeight,
+        BufferedImage.TYPE_INT_RGB);
+    // Redimensionnement de l'image
+    Graphics2D g2 = cropPictureFinal.createGraphics();
+    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    g2.drawImage(cropPicture, 0, 0, thumbnailWidth, thumbnailHeight, null);
+    g2.dispose();
+    // save crop image
+    String extension = FilenameUtils.getExtension(originalFile.getName());
+    ImageIO.write(cropPictureFinal, extension, cropFile);
+  }
+
+  private static void croppingWithImageTool(final ThumbnailDetail thumbnail,
+      final File originalFile, final File cropFile, final int thumbnailWidth,
+      final int thumbnailHeight) {
+    final ImageTool imageTool = ImageTool.get();
+    if (imageTool.isActivated()) {
+      imageTool.convert(originalFile, cropFile,
+          crop(thumbnail.getXLength(), thumbnail.getYLength())
+              .withOffset(thumbnail.getXStart(), thumbnail.getYStart()));
+      imageTool.convert(cropFile, cropFile,
+          Set.of(OrientationOption.auto(), widthAndHeight(thumbnailWidth, thumbnailHeight)),
+          PREVIEW_WORK, GEOMETRY_SHRINK);
     }
   }
 

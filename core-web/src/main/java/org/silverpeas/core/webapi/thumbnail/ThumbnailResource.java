@@ -24,13 +24,12 @@
 package org.silverpeas.core.webapi.thumbnail;
 
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -55,9 +54,6 @@ public class ThumbnailResource extends RESTWebService {
   @PathParam("contributionId")
   private String contributionId;
 
-  @Inject
-  private ThumbnailService thumbnailService;
-
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -73,8 +69,8 @@ public class ThumbnailResource extends RESTWebService {
     ThumbnailDetail thumbnail = new ThumbnailDetail(componentId,
         Integer.parseInt(getContributionId()), Integer.parseInt(getContributionType()));
     try {
-      thumbnailService.deleteThumbnail(thumbnail);
-    } catch (ThumbnailException e) {
+      ThumbnailController.deleteThumbnail(thumbnail);
+    } catch (ThumbnailRuntimeException e) {
       throw new WebApplicationException(e, Status.SERVICE_UNAVAILABLE);
     }
   }

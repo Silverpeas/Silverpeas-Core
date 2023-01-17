@@ -231,9 +231,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       }
 
       if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
-          equalsIgnoreCase(extension)) {
+          equalsIgnoreCase(extension) && !"webp".equalsIgnoreCase(extension)) {
         throw new UtilException("MyProfilRequestRouter.saveAvatar()",
-            SilverpeasRuntimeException.ERROR, "", "Bad extension, .gif or .jpg or .png expected.");
+            SilverpeasRuntimeException.ERROR, "", "Bad extension, .gif or .jpg or .png or .webp expected.");
       }
       try (InputStream fis = file.getInputStream()) {
         img.saveImage(fis);
