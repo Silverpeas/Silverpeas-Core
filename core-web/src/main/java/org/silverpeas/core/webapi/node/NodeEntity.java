@@ -54,14 +54,14 @@ public class NodeEntity implements WebEntity {
   private NodeType type = NodeType.FOLDER;
   @XmlElement
   private NodeEntity[] children;
-  @XmlElement(defaultValue = "")
-  private URI childrenURI;
   @XmlElement(required = true)
   private NodeAttrEntity attr;
   @XmlElement
   private NodeTranslationEntity[] translations;
   @XmlElement
   private NodeStateEntity state = new NodeStateEntity();
+  @XmlElement(defaultValue = "")
+  private URI childrenURI;
 
   public NodeEntity() {
   }
