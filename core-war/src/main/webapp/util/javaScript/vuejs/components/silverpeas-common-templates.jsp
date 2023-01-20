@@ -47,6 +47,8 @@
 
 <fmt:message var="validateLabel" key="GML.validate"/>
 <fmt:message var="cancelLabel" key="GML.cancel"/>
+<fmt:message var="deleteLabel" key="GML.delete"/>
+<fmt:message var="orMsgPart" key="GML.or"/>
 <c:set var="theFieldLabel"><fmt:message key='GML.thefield'/></c:set>
 <c:set var="mandatoryMessage">${theFieldLabel} {0} <fmt:message key='GML.MustBeFilled'/></c:set>
 <c:set var="mustContainsURLMessage">${theFieldLabel} {0} <fmt:message key='GML.MustContainsURL'/></c:set>
@@ -323,6 +325,44 @@
     <option v-for='language in ${allUserLanguagesAsJsArray}'
             v-bind:key="language.id" v-bind:value="language.id">{{ language.label }}</option>
   </silverpeas-select>
+</silverpeas-component-template>
+
+<fmt:message key="GML.fileInput.expectedformat" var="fileInputExpectedFormatMsg"/>
+<fmt:message key="GML.fileInput.badformat" var="badFormatErrMsg">
+  <fmt:param value="{0}"/>
+  <fmt:param value="{1}"/>
+</fmt:message>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="file-input">
+  <div v-sp-init>
+    {{addMessages({
+    orMsgPart : '${silfn:escapeJs(orMsgPart)}',
+    badFormatErrMsg : '${silfn:escapeJs(badFormatErrMsg)}',
+    expectedFormatMsg : '${silfn:escapeJs(fileInputExpectedFormatMsg)}'
+  })}}
+  </div>
+  <div class="silverpeas-file-input">
+    <div v-if="displayDelAction">
+      <template v-if="displayFileData">
+        <span v-if="fileName" class="file-name">{{ fileName }}&#160;</span>
+        <span v-if="humanReadableFileSize" class="file-size">({{ humanReadableFileSize }})&#160;</span>
+      </template>
+      <a href="javascript:void(0)" v-on:click="deleteFile">
+        <img src="<c:url value="/util/icons/cross.png"/>" alt="${deleteLabel}" title="${deleteLabel}"/>
+        ${deleteLabel}
+      </a>
+    </div>
+    <div>
+      <input type="file" ref="newFile"
+             v-bind:id="id" v-bind:name="name" v-bind:title="titleHelp"
+             v-bind:class="inputClass" v-bind:size="size" v-bind:accept="acceptedTypes"
+             v-bind:maxlength="maxlength" v-bind:disabled="disabled"
+             v-on:change="newFile"/>
+      <silverpeas-mandatory-indicator v-if="displayMandatory"></silverpeas-mandatory-indicator>
+    </div>
+    <div v-if="titleHtml" class="help" v-html="titleHtml"></div>
+  </div>
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->

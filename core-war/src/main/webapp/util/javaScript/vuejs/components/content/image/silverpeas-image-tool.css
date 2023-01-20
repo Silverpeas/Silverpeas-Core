@@ -1,0 +1,115 @@
+/*
+ * Copyright (C) 2000 - 2022 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.image-file-input .image-preview,
+.image-file-input .cropped-image-preview {
+  float: left;
+}
+
+.image-file-input .image-preview img,
+.image-file-input .cropped-image-preview img {
+  height: 50px;
+  border: 1px solid #DDDDDD;
+}
+
+.image-file-input .cropped-image-preview {
+  height: 50px;
+  overflow: hidden;
+}
+
+.image-file-input .image-actions {
+  float: left;
+  margin-left: 4px;
+}
+
+.image-file-input .image-actions a {
+  margin-bottom: 5px;
+  display: block;
+}
+
+.image-file-input .image-inputs {
+  clear: both;
+}
+
+.image-file-input .image-inputs .help {
+  font-style: italic;
+  color: #666;
+}
+
+.image-file-input .image-inputs img {
+  padding-right: 5px;
+}
+
+.image-file-input .image-inputs img,
+.image-file-input .image-inputs input,
+.image-file-input .image-inputs select,
+.image-file-input .image-actions img {
+  vertical-align: middle;
+}
+
+.image-file-input .image-inputs .sp_button {
+  padding: 1px 10px;
+  font-size: 9pt !important;
+  height: 17px;
+  line-height: 17px;
+}
+
+.crop-image-form .jcrop-holder {
+  float: left;
+}
+.crop-image-form .container {
+  height:auto;
+}
+
+.crop-image-form .preview-container {
+  height:100%;
+  background-color:#FFF;
+  border:1px solid #CCCCCC;
+  min-width:230px;
+  float:right;
+  padding:0 0 20px 0;
+  text-align:center;
+}
+
+.crop-image-form .txtlibform {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color:#909090;
+  text-align:center;
+  padding-right:0;
+}
+
+.crop-image-form .preview {
+  border:2px solid #CCC;
+  margin-left:auto;
+  margin-right:auto;
+  overflow:hidden;
+}
+
+.crop-image-form .preview img {
+  margin-top: 118px;
+  float: none;
+  width: 100%;
+  height: 100%;
+}

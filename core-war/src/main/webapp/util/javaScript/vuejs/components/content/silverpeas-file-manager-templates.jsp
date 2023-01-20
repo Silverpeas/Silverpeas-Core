@@ -51,7 +51,6 @@
                       type="validation">
       <silverpeas-form-pane v-on:api="setFormPaneApi"
                             v-bind:manual-actions="true"
-                            v-on:data-update="validate"
                             v-bind:mandatory-legend="true">
         <silverpeas-add-files-form v-on:api="setFormApi"
                                    v-bind:component-instance-id="componentInstanceId"

@@ -287,7 +287,7 @@
    * Default method <code>open</code> is implemented and can be overridden if necessary.
    *
    * Method <code>validate</code> MUST be implemented. It is called after that the user validate
-   * the form.
+   * the form and just before optional manual popin callback.
    *
    * Example of template:
    * <pre>
@@ -297,7 +297,6 @@
    *                     type="validation">
    *     <silverpeas-form-pane v-on:api="setFormPaneApi"
    *                           v-bind:manual-actions="true"
-   *                           v-on:data-update="validate"
    *                           v-bind:mandatory-legend="true">
    *       <silverpeas-add-files-form v-on:api="setFormApi"
    *                                  v-bind:is-document-template-enabled="${isDocumentTemplateEnabled}"
@@ -348,10 +347,25 @@
         const __callbackOnClose = __settings.callbackOnClose;
         __settings.callback = function() {
           return this.formPaneApi.validate().then(function(formPaneData) {
-            if (__callback) {
-              return __callback(formPaneData);
+            const promises = [];
+            let finalResult;
+            function __chainResults(result) {
+              if (sp.promise.isOne(result)) {
+                promises.push(result);
+              } else {
+                finalResult = result;
+              }
             }
-          });
+            __chainResults(this.validate(formPaneData));
+            if (typeof __callback === 'function') {
+              __chainResults(__callback(formPaneData));
+            }
+            if (promises.length) {
+              formPaneData.validationFormPromise = sp.promise.whenAllResolved(promises);
+              return formPaneData.validationFormPromise;
+            }
+            return finalResult;
+          }.bind(this));
         }.bind(this);
         __settings.callbackOnClose = function() {
           if (__callbackOnClose) {
@@ -1286,6 +1300,162 @@
   SpVue.component('silverpeas-select-language',
       commonAsyncComponentRepository.get('select-language', {
         mixins : [__FormSelectMixin]
+      }));
+
+  SpVue.component('silverpeas-file-input',
+      commonAsyncComponentRepository.get('file-input', {
+        mixins : [__FormInputMixin],
+        props : {
+          originalName : {
+            'type' : String,
+            'default' : undefined
+          },
+          originalSize : {
+            'type' : Number,
+            'default' : -1
+          },
+          displayFileData : {
+            'type' : Boolean,
+            'default' : false
+          },
+          handledTypes : {
+            'type' : Array,
+            'default' : ['*/*']
+          },
+          modelValue : {
+            'type': Object,
+            'default': {}
+          }
+        },
+        data : function() {
+          return {
+            deleteOriginal : false,
+            file : undefined
+          };
+        },
+        created : function() {
+          this.extendApiWith({
+            clear : this.clear,
+            /**
+             * Mandatory implementation needed by {@link VuejsFormInputMixin}.
+             * @returns {boolean}
+             */
+            validateFormInput : function() {
+              let isError = false;
+              if (this.isMandatory && !this.fileName) {
+                isError = true;
+                this.rootFormApi.errorMessage().add(
+                    this.formatMessage(this.rootFormMessages.mandatory,
+                        this.getLabelByForAttribute(this.id)));
+              }
+              return !isError;
+            }
+          });
+          this.clear();
+        },
+        methods : {
+          clear : function() {
+            this.deleteOriginal = false;
+            this.file = undefined;
+            this.refreshState();
+          },
+          updateModel : function() {
+            const model = {};
+            if (this.file) {
+              model.fileInputName = this.name;
+              model.file = this.file;
+            }
+            if(this.deleteOriginal) {
+              model.deleteOriginal = this.deleteOriginal;
+            }
+            this.$emit('update:modelValue', model);
+          },
+          newFile : function() {
+            const [file] = this.$refs.newFile.files;
+            if (file) {
+              if (this.checkFile(file)) {
+                this.deleteOriginal = false;
+                this.file = file;
+              }
+              this.refreshState();
+            }
+          },
+          deleteFile : function() {
+            this.file = undefined;
+            this.deleteOriginal = true;
+            this.refreshState();
+          },
+          refreshState : function() {
+            if (!this.file && this.$refs.newFile) {
+              this.$refs.newFile.value = '';
+            }
+            this.updateModel();
+          },
+          checkFile : function(file) {
+            if (this.getSpecifiedHandledMimeTypes.length && this.getSpecifiedHandledMimeTypes.indexOf(file.type) < 0) {
+              SilverpeasError.add(this.formatMessage(this.messages.badFormatErrMsg, [
+                file.name,
+                this.getSpecifiedHandledExtensions.joinWith({
+                  separator : ', ',
+                  lastSeparator : ' ' + this.messages.orMsgPart + ' '
+                })
+              ]));
+            }
+            return !SilverpeasError.show();
+          }
+        },
+        computed : {
+          fileName : function() {
+            const fileName = this.file ? this.file.name : this.originalName;
+            return fileName ? fileName.replace(/.*\/+([^/])/g, '$1') : undefined;
+          },
+          fileSize : function() {
+            return this.file ? this.file.size : this.originalSize;
+          },
+          humanReadableFileSize : function() {
+            return sp.file.humanReadableSize(this.fileSize);
+          },
+          displayDelAction : function () {
+            return !this.deleteOriginal && !this.isMandatory && this.fileName;
+          },
+          titleHelp : function() {
+            const help = [];
+            help.push(this.title);
+            if (this.getSpecifiedHandledExtensions.length) {
+              help.push(this.formatMessage(this.messages.expectedFormatMsg, [
+                this.getSpecifiedHandledExtensions.joinWith({
+                  separator : ', ',
+                  lastSeparator : ' ' + this.messages.orMsgPart + ' '
+                })
+              ],{
+                styles : {
+                  bold : false
+                }
+              }));
+            }
+            return help
+                .filter(function(value) {
+                  return !!value;
+                })
+                .join('\n');
+          },
+          titleHtml : function() {
+            return this.titleHelp.convertNewLineAsHtml();
+          },
+          getSpecifiedHandledExtensions : function() {
+            return this.getSpecifiedHandledMimeTypes.map(function(mimeType) {
+              return mimeType.replace(/^.*\/+([^/]+)/g, '$1');
+            });
+          },
+          getSpecifiedHandledMimeTypes : function() {
+            return this.handledTypes.filter(function(mimeType) {
+              return mimeType !== '*/*';
+            });
+          },
+          acceptedTypes : function () {
+            return this.handledTypes.join(',');
+          }
+        }
       }));
 
   /**

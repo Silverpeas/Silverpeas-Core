@@ -65,13 +65,13 @@
 <c:set var="nbContacts" value="${requestScope.ContactsNumber}" />
 <c:set var="contacts" value="${requestScope.Contacts}" />
 <c:set var="currentUser" value="${requestScope.UserFull}" />
+<c:url var="currentUserAvatarUrl" value="${currentUser.avatar}"/>
 <c:set var="userSelfDeletionAccountEnabled" value="${requestScope.UserSelfDeletionAccountEnabled}"/>
 <fmt:message key="myProfile.actions.deleteAccount.confirm" var="deleteAccountConfirm"/>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
 <view:includePlugin name="password"/>
+<view:includePlugin name="myprofile"/>
 <script type="text/javascript">
 function statusPublishFailed() {
 	$("#statusPublishFailedDialog").dialog("open");
@@ -99,41 +99,7 @@ function editStatus() {
 }
 
 function updateAvatar() {
-	$("#avatarDialog").dialog("open");
-}
-
-function getExtension(filename) {
-  const indexPoint = filename.lastIndexOf(".");
-  if (indexPoint !== -1) {
-    return filename.substring(indexPoint + 1).toLowerCase();
-  }
-  return null;
-}
-
-function ifFileCorrectExecute(callback) {
-  const image = $("#avatarDialog #ImageNewFile").val();
-  let errorMsg = "";
-  let errorNb = 0;
-  if (!isWhitespace(image)) {
-    const extension = getExtension(image);
-    if (extension == null || (extension !== "gif" && extension !== "jpeg" && extension !== "jpg" && extension !== "png" && extension !== "webp")) {
-      errorMsg += " - '<%=resources.getString("profil.image")%>' <%=resources.getString("profil.imageExtension")%>\n";
-      errorNb++;
-    }
-  }
-
-  switch(errorNb) {
-    case 0 :
-      callback.call(this);
-      break;
-    case 1 :
-      errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-      jQuery.popup.error(errorMsg);
-      break;
-    default :
-      errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-      jQuery.popup.error(errorMsg);
-  }
+  myProfileApp.manager.openMyPhoto();
 }
 
 $(document).ready(function(){
@@ -169,27 +135,6 @@ $(document).ready(function(){
 
     $("#statusDialog").dialog(statusDialogOpts);    //end dialog
 
-    var avatarDialogOpts = {
-		resizable: false,
-            modal: true,
-            autoOpen: false,
-            height: "auto",
-            width: 650,
-            title: "<fmt:message key="profil.actions.changePhoto" />",
-            buttons: {
-				"<fmt:message key="GML.ok"/>": function() {
-					ifFileCorrectExecute(function() {
-						document.photoForm.submit();
-          });
-				},
-				"<fmt:message key="GML.cancel"/>": function() {
-					$(this).dialog( "close" );
-				}
-			}
-    };
-
-    $("#avatarDialog").dialog(avatarDialogOpts);    //end dialog
-
     var statusPublishedDialogOpts = {
 		resizable: false,
             modal: true,
@@ -224,11 +169,6 @@ $(document).ready(function(){
 
 });
 
-function hideImageFile() {
-  $("#avatarDialog #ImageFile").hide();
-  document.photoForm.removeImageFile.value = "yes";
-}
-
 function deleteAccount() {
   $('#removeAccountDialog').popup('confirmation', {
     title : "${deleteAccountConfirm}", callback : function() {
@@ -237,9 +177,32 @@ function deleteAccount() {
     }
   });
 }
+
+whenSilverpeasReady(function() {
+  window.myProfileApp = SpVue.createApp({
+    data : function() {
+      return {
+        manager : undefined,
+        profile : {
+          avatarUrl : '${silfn:escapeJs(currentUserAvatarUrl)}'
+        }
+      }
+    },
+    methods : {
+      myPhotoChange : function() {
+        sp.navRequest('<%=MyProfileRoutes.MyInfos.toString()%>').go();
+      }
+    }
+  }).mount('#my-profile-app');
+});
 </script>
-</head>
-<body id="myProfile">
+</view:sp-head-part>
+<view:sp-body-part id="myProfile">
+  <div id="my-profile-app">
+    <silverpeas-my-profile-management v-on:api="manager = $event"
+                                      v-bind:profile="profile"
+                                      v-on:my-photo-change="myPhotoChange"></silverpeas-my-profile-management>
+  </div>
 
 <c:out value="${FB_loadSDK}" escapeXml="false"/>
 <c:out value="${LI_loadSDK}" escapeXml="false"/>
@@ -295,25 +258,6 @@ function deleteAccount() {
 		<textarea id="newStatus" cols="49" rows="4"></textarea><br/>
 		</form>
 	</div>
-
-      <div id="avatarDialog">
-        <form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-          <div>
-            <div class="txtlibform"><fmt:message key="profil.image" /> :</div>
-            <c:if test="${defaultAvatar != currentUser.avatar}">
-              <div id="ImageFile">
-                <a href="<c:url value='${currentUser.avatar}' />" target="_blank"><c:out value="${currentUser.avatarFileName}" /></a>
-                <a href="javascript:onclick=hideImageFile();"><img src="<%=resources.getIcon("socialNetwork.smallDelete")%>" border="0"/></a>
-                <br/>
-              </div></c:if>
-              <div>
-                <input type="file" name="WAIMGVAR0" id="ImageNewFile" size="60"/> <i>(.gif/.jpg/.png)</i>
-                <input type="hidden" name="removeImageFile" value="no"/>
-              </div>
-            </div>
-            <span id="avatar-policy"><fmt:message key="profil.descriptionImage" /></span>
-        </form>
-      </div>
 
 	<div id="statusPublishedDialog">
 		<fmt:message key="profil.msg.statusPublished"/>
@@ -381,5 +325,5 @@ function deleteAccount() {
 </div>
 </view:window>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

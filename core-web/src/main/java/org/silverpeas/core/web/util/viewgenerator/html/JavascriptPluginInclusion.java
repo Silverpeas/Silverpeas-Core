@@ -1075,6 +1075,19 @@ public class JavascriptPluginInclusion {
    * Includes the Silverpeas image selector VueJS Plugin.
    * @return the completed parent container.
    */
+  static ElementContainer includeImageTool(final ElementContainer xhtml, final String language) {
+    includeDragAndDropUpload(xhtml, language);
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/image/silverpeas-image-tool.css"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/image/silverpeas-image-tool.js"));
+    xhtml.addElement(link(STYLESHEET_PATH + "jquery.Jcrop.min.css"));
+    xhtml.addElement(script(JQUERY_PATH + "jquery.Jcrop.min.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas image selector VueJS Plugin.
+   * @return the completed parent container.
+   */
   static ElementContainer includeImageSelector(final ElementContainer xhtml,
       final String language) {
     includeDragAndDropUpload(xhtml, language);

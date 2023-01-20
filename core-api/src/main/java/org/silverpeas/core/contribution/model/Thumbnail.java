@@ -87,8 +87,17 @@ public interface Thumbnail extends Serializable {
 
   /**
    * Gets the URL of the thumbnail in Silverpeas in order to be rendered in the Web client.
+   * <p>
+   *   If {@link #isCropped()} returns true, then the URL returned is the one of cropped thumbnail.
+   * </p>
    * @return the URL of this thumbnail.
    */
   String getURL();
 
+  /**
+   * Gets the URL of non cropped thumbnail in Silverpeas in order to be rendered in management
+   * features.
+   * @return the URL of the non cropped thumbnail.
+   */
+  String getNonCroppedURL();
 }

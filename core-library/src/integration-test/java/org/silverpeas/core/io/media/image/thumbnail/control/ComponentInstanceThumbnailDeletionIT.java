@@ -75,6 +75,7 @@ public class ComponentInstanceThumbnailDeletionIT {
         .onWarForTestClass(ComponentInstanceThumbnailDeletionIT.class)
         .addDatabaseToolFeatures().addSilverpeasExceptionBases().addFileRepositoryFeatures()
         .addProcessFeatures()
+        .addImageToolFeatures()
         .addComponentInstanceDeletionFeatures()
         .testFocusedOn(war -> war
             .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")
