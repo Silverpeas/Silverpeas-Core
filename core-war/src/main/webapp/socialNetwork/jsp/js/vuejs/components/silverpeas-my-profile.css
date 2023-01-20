@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2022 Silverpeas
+ * Copyright (C) 2000 - 2023 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,18 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.thumbnail;
 
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-
-public class ThumbnailSessionController extends AbstractComponentSessionController {
-
-  public ThumbnailSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
-    super(mainSessionCtrl, context, "org.silverpeas.thumbnail.multilang.thumbnailBundle",
-        null, null);
-  }
-
+.my-photo-form .avatar-policy {
+  color:#333;
+  font-size:0.9em;
+  margin-top: 5px;
+  float: left;
 }

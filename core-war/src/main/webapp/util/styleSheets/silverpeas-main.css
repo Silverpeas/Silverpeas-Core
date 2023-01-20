@@ -2852,13 +2852,6 @@ caption {
   margin:0;
 }
 
-#avatarDialog #avatar-policy {
-  color:#333;
-  font-size:0.9em;
-  margin-top: 5px;
-  float: left;
-}
-
 #myProfileFiche .action .invitation {
   /*display: none;*/
 }
@@ -5097,6 +5090,11 @@ input.search:focus {
   color: #333;
 }
 
+.silverpeas-form-pane .silverpeas-file-input div.help {
+  font-style: italic;
+  color: #666;
+}
+
 .ui-dialog .form-container div.silverpeas-radio-input {
   display: inline-block;
   min-width: 17px;
@@ -6170,44 +6168,6 @@ div.user-card .userToZoom {
 
 div.user-card .field{
   color:#444;
-}
-
-/**** Thumbnail service */
-#thumbnailPreviewAndActions {
-  background-color:#EEEEEE;
-  border:1px solid #DDDDDD;
-  float:left;
-  margin-left:0;
-  padding:3px;
-  margin-bottom: 3px;
-}
-
-#thumbnailPreview {
-  float: left;
-}
-
-#thumbnailPreview #thumbnail {
-  height: 50px;
-  border:1px solid #DDDDDD;
-}
-
-#thumbnailActions {
-  float: left;
-  margin-left: 4px;
-}
-
-#thumbnailActions a {
-  margin-bottom: 5px;
-  display: block;
-}
-
-#thumbnailInputs {
-  clear: both;
-}
-
-#thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select,
-#thumbnailActions img {
-  vertical-align: middle;
 }
 
 /****** Ticker ******/

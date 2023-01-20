@@ -609,10 +609,6 @@
     <servlet-class>org.silverpeas.web.directory.servlets.DirectoryJSONServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>ThumbnailRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.thumbnail.servlets.ThumbnailRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ExportServlet</servlet-name>
     <servlet-class>org.silverpeas.core.web.export.ExportServlet</servlet-class>
   </servlet>
@@ -1103,10 +1099,6 @@
   <servlet-mapping>
     <servlet-name>DirectoryJSONServlet</servlet-name>
     <url-pattern>/DirectoryJSON</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>ThumbnailRequestRouter</servlet-name>
-    <url-pattern>/Thumbnail/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ExportServlet</servlet-name>

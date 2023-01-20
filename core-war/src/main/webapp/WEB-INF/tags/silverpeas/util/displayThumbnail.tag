@@ -21,10 +21,6 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
-<%@tag import="org.silverpeas.core.admin.service.OrganizationController"%>
-<%@tag import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
-<%@tag import="java.util.List"%>
-<%@ tag import="org.silverpeas.core.admin.user.model.User" %>
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -37,188 +33,89 @@
 <fmt:setLocale value="${_language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
-<%
-List<ComponentInstLight> galleries = OrganizationController.get().getComponentsWithParameterValue("viewInWysiwyg", "yes");
-request.setAttribute("galleries", galleries);
-if (galleries.size() == 1) {
-  request.setAttribute("uniqueGallery", galleries.get(0));
-}
-%>
-
 <%@ attribute name="thumbnail" required="true" type="org.silverpeas.core.contribution.model.Thumbnail" description="The thumbnail to manage" %>
 <%@ attribute name="mandatory" required="true" type="java.lang.Boolean" description="If thumbnail is mandatory" %>
-<%@ attribute name="error" required="false" type="java.lang.String" description="Error" %>
-<%@ attribute name="componentId" required="true" type="java.lang.String" description="Instance ID of object" %>
-<%@ attribute name="objectId" required="true" type="java.lang.String" description="ID of object" %>
-<%@ attribute name="objectType" required="true" type="java.lang.Integer" description="Type of object" %>
-<%@ attribute name="backURL" required="true" type="java.lang.String" description="URL to go back after processing the request" %>
-<%@ attribute name="width" required="false" type="java.lang.Integer" description="Width of thumbnail" %>
-<%@ attribute name="height" required="false" type="java.lang.Integer" description="Height of thumbnail" %>
-<style>
-<!--
-<c:if test="${thumbnail == null}">
-#thumbnailPreviewAndActions {
-display: none;
-}
-</c:if>
--->
-</style>
+<%@ attribute name="width" required="true" type="java.lang.Integer" description="Width of thumbnail" %>
+<%@ attribute name="height" required="true" type="java.lang.Integer" description="Height of thumbnail" %>
+
+<view:includePlugin name="imagetool"/>
 <script type="text/javascript">
-function updateThumbnail() {
-	$("#thumbnailInputs").css("display", "block");
-  }
-
-  function cropThumbnail() {
-	$("#thumbnailDialog").dialog("option", "title", "<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>");
-	$("#thumbnailDialog").dialog("option", "width", 850);
-	<c:url value="/Thumbnail/jsp/thumbnailManager.jsp" var="myURL"><c:param name="Action" value="Update"/>
-	  <c:param name="modal" value="true"/>
-	  <c:param name="ComponentId" value="${componentId}"/>
-	  <c:param name="ObjectId" value="${objectId}"/>
-	  <c:param name="ObjectType" value="${objectType}"/>
-	  <c:param name="BackUrl" value="${backURL}"/>
-	  <c:param name="ThumbnailWidth" value="${width}"/>
-	  <c:param name="ThumbnailHeight" value="${height}"/>
-	</c:url>
-	$("#thumbnailDialog").load("${myURL}").dialog("open");
-  }
-
-  function deleteThumbnail() {
-    $.ajax(webContext+"/services/thumbnail/${componentId}/${objectType}/${objectId}", {
-		 type: "DELETE",
-		 async : false,
-		 cache : false,
-		 success : function(data){
-			$("#thumbnailPreviewAndActions").hide();
-		 }
-    });
-  }
-
-  function closeThumbnailDialog() {
-	$("#thumbnailDialog").dialog("close");
-  }
-
-  function getExtension(filename) {
-	var indexPoint = filename.lastIndexOf(".");
-	// on verifie qu il existe une extension au nom du fichier
-	if (indexPoint != -1) {
-	  // le fichier contient une extension. On recupere l extension
-	  var ext = filename.substring(indexPoint + 1);
-	  return ext.toLowerCase();
-	}
-	return null;
-  }
 
   function checkThumbnail(error) {
-    <c:if test="${mandatory}">
-      if ($('#thumbnailFile').val() == '' && $('#thumbnail').is('img') == false) {
-        error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.MustBeFilled" bundle="${generalBundle}"/>\n";
-        error.nb++;
-      }
-    </c:if>
-
-    if ($('#thumbnailFile').length && $('#thumbnailFile').val() != '') {
-      var logicalName = $('#thumbnailFile').val();
-      var extension = getExtension(logicalName);
-      if (extension == null || (extension !== "gif" && extension !== "jpeg" && extension !== "jpg" && extension !== "png" && extension !== "webp")) {
-        error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.thumbnail.badformat" bundle="${generalBundle}"/>\n";
-        error.nb++;
-      }
+    if (imageToolApp.manager.checkImageMustBeFilled()) {
+      error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.MustBeFilled" bundle="${generalBundle}"/>\n";
+      error.nb++;
     }
     return false;
   }
 
-  var galleryWindow = window;
-
-  function openGalleryFromList(liste) {
-    var componentId = liste.options[liste.selectedIndex].value;
-    if (componentId) {
-      openGallery(componentId);
-    }
-  }
-
-  function openGallery(componentId) {
-    if (componentId) {
-      url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}&FieldName=Thumbnail";
-      windowName = "galleryWindow";
-      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-      if (!galleryWindow.closed && galleryWindow.name==="galleryWindow") {
-        galleryWindow.close();
+  whenSilverpeasReady(function(){
+    window.imageToolApp = SpVue.createApp({
+      data : function() {
+        return {
+          manager : undefined,
+          markAsDeleted : false,
+          imageModel : {}
+        }
+      },
+      computed : {
+        previewImageUrl : function() {
+          if (!this.hasBeenDeleted) {
+            return '${thumbnail.URL}';
+          }
+        },
+        fullImageUrl : function() {
+          if (!this.hasBeenDeleted) {
+            return '${thumbnail.nonCroppedURL}';
+          }
+        },
+        cropData : function() {
+          const cropData = {
+            previewWidth : ${width},
+            previewHeight : ${height}
+          };<c:if test="${thumbnail.cropped}">
+          if (!this.hasBeenDeleted) {
+            cropData.box = {
+              offsetX : ${thumbnail.XStart},
+              offsetY : ${thumbnail.YStart},
+              width : ${thumbnail.XLength},
+              height : ${thumbnail.YLength}
+            }
+          }</c:if>
+          if (this.imageModel.cropData) {
+            cropData.box = this.imageModel.cropData.box;
+          }
+          return cropData;
+        },
+        hasBeenDeleted : function() {
+          this.markAsDeleted = this.markAsDeleted || this.imageModel.deleteOriginal;
+          return this.markAsDeleted;
+        }
       }
-      galleryWindow = SP_openWindow(url, windowName, "820", "600", windowParams);
-    }
-  }
-
-  function choixImageInGalleryThumbnail(url) {
-    $("#thumbnailPreviewAndActions").css("display", "block");
-    $("#thumbnailActions").css("display", "none");
-    var $thumbnail = $("#thumbnail");
-    if ($thumbnail.length) {
-      $thumbnail.attr("src", url);
-    } else {
-      // No thumbnail defined yet, insert element
-      $("#thumbnailPreview").append($("<img>", {"id" : "thumbnail", "src" : url, "alt" : ''}));
-    }
-    $("#valueImageGallery").attr("value", url);
-  }
-
-  $(document).ready(function(){
-    var dialogOpts = {
-            modal: true,
-            autoOpen: false,
-            height: "auto"
-    };
-    $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
+    }).mount('#thumb');
   });
 </script>
 
 <div class="fields">
-	<div class="field" id="thumb">
-		<div id="thumbnailPreviewAndActions">
-			<div id="thumbnailPreview">
-				<c:if test="${thumbnail != null}">
-					<view:image src="${thumbnail.URL}" type="vignette.thumbnail" id="thumbnail" alt=""/>
-				</c:if>
-			</div>
-			<div id="thumbnailActions">
-				<c:if test="${thumbnail != null && thumbnail.canBeCropped()}">
-					<a href="javascript:cropThumbnail()"><img src="<c:url value="/util/icons/arrow_in.png"/>" alt=""/> <fmt:message key="GML.thumbnail.crop" bundle="${generalBundle}"/></a>
-				</c:if>
-				<c:if test="${thumbnail != null && !mandatory}">
-					<a href="javascript:deleteThumbnail()"><img src="<c:url value="/util/icons/cross.png"/>" alt="<fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/>"/> <fmt:message key="GML.thumbnail.delete" bundle="${generalBundle}"/></a>
-				</c:if>
-			</div>
-		</div>
-
-		<div id="thumbnailInputs">
-			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
-			<c:if test="${not empty galleries}">
-				<span class="txtsublibform"> <fmt:message key="GML.or" bundle="${generalBundle}"/> </span><input type="hidden" id="valueImageGallery" name="valueImageGallery"/>
-        <c:choose>
-          <c:when test="${empty uniqueGallery}">
-            <select id="galleries" name="galleries" onchange="openGalleryFromList(this);this.selectedIndex=0;">
-              <option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
-              <c:forEach items="${galleries}" var="gallery">
-                <option value="${gallery.id}">${gallery.label}</option>
-              </c:forEach>
-            </select>
-          </c:when>
-          <c:otherwise>
-            <fmt:message key="GML.thumbnail.gallery.help" bundle="${generalBundle}" var="labelHelp"/>
-            <a href="#" onclick="openGallery('${uniqueGallery.id}'); return false;" class="sp_button button-imageBank" title="${labelHelp}"><fmt:message key="GML.thumbnail.gallery" bundle="${generalBundle}"/></a>
-          </c:otherwise>
-        </c:choose>
-			</c:if>
-		<c:if test="${mandatory}">
-				<img src="<c:url value="/util/icons/mandatoryField.gif"/>" width="5" height="5" border="0" alt=""/>
-		    </c:if>
-		</div>
-		<c:if test="${error != null}">
-			<br/>
-			<div style="font-style: italic;color:red;"><c:out value="${error}"/></div>
-			<br/>
-		</c:if>
-	</div>
+  <div class="field" id="thumb">
+    <silverpeas-image-file-input
+        v-on:api="manager = $event"
+        id="image-file-input"
+        v-bind:crop-enabled="true"
+        v-bind:image-banks-enabled="true"
+        v-bind:mandatory="${mandatory}"
+        v-bind:preview-image-url="previewImageUrl"
+        v-bind:full-image-url="fullImageUrl"
+        v-bind:crop-data="cropData"
+        v-model="imageModel"></silverpeas-image-file-input>
+    <template v-if="imageModel.cropData">
+      <input type="hidden" name="ThumbnailWidth" v-model="imageModel.cropData.previewWidth"/>
+      <input type="hidden" name="ThumbnailHeight" v-model="imageModel.cropData.previewHeight"/>
+      <input type="hidden" name="XStart" v-model="imageModel.cropData.box.offsetX"/>
+      <input type="hidden" name="YStart" v-model="imageModel.cropData.box.offsetY"/>
+      <input type="hidden" name="XLength" v-model="imageModel.cropData.box.width"/>
+      <input type="hidden" name="YLength" v-model="imageModel.cropData.box.height"/>
+    </template>
+    <input v-else-if="imageModel.deleteOriginal" type="hidden" name="ThumbnailDeletion" value="true"/>
+  </div>
 </div>
-
-<div id="thumbnailDialog"></div>

@@ -85,6 +85,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(SUBSCRIPTION, JavascriptPluginInclusion::includeDynamicallySubscription);
     add(CONTRIBUTIONMODICTX, (x, l) -> includeContributionModificationContext(x));
     add(DRAGANDDROPUPLOAD, JavascriptPluginInclusion::includeDragAndDropUpload);
+    add(IMAGETOOL, JavascriptPluginInclusion::includeImageTool);
     add(IMAGESELECTOR, JavascriptPluginInclusion::includeImageSelector);
     add(FILEMANAGER, (x, l) -> includeFileManager(x));
     add(DOCUMENTTEMPLATE, (x, l) -> includeDocumentTemplate(x));

@@ -223,6 +223,10 @@ public interface SupportedWebPlugin {
      */
     public static final SupportedWebPlugin DRAGANDDROPUPLOAD = () -> "DRAGANDDROPUPLOAD";
     /**
+     * Silverpeas plugin to handle image tool (cropping) into Silverpeas's repositories.
+     */
+    public static final SupportedWebPlugin IMAGETOOL = () -> "IMAGETOOL";
+    /**
      * Silverpeas plugin to handle selection of images into Silverpeas's repositories.
      */
     public static final SupportedWebPlugin IMAGESELECTOR = () -> "IMAGESELECTOR";

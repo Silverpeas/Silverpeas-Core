@@ -164,12 +164,21 @@ public class ThumbnailDetail implements Thumbnail {
 
   @Override
   public String getURL() {
+    return computeURL(false);
+  }
+
+  @Override
+  public String getNonCroppedURL() {
+    return computeURL(true);
+  }
+
+  private String computeURL(final boolean nonCropped) {
     String image = getOriginalFileName();
     if (image.startsWith("/")) {
       // case of an image from 'gallery' app
       return image;
     }
-    if (getCropFileName() != null) {
+    if (!nonCropped && getCropFileName() != null) {
       image = getCropFileName();
     }
     return FileServerUtils.getUrl(getInstanceId(), "thumbnail", image, getMimeType(),

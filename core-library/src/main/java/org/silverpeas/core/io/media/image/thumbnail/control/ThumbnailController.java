@@ -59,10 +59,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHRINK;
 import static org.silverpeas.core.io.media.image.ImageToolDirective.PREVIEW_WORK;
 import static org.silverpeas.core.io.media.image.option.CropOption.crop;
 import static org.silverpeas.core.io.media.image.option.DimensionOption.widthAndHeight;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.file.FileUploadUtil.getParameter;
 
 @Service
 public class ThumbnailController implements ComponentInstanceDeletion {
@@ -95,6 +98,9 @@ public class ThumbnailController implements ComponentInstanceDeletion {
 
   public static boolean processThumbnail(ResourceReference pk, List<FileItem> parameters)
       throws IOException {
+    ThumbnailDetail detail = new ThumbnailDetail(pk.getInstanceId(),
+        Integer.parseInt(pk.getId()),
+        ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
     String mimeType = null;
     String physicalName = null;
     FileItem uploadedFile = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
@@ -106,7 +112,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         String type = FileRepositoryManager.getFileExtension(logicalName);
         if (FileUtil.isImage(logicalName)) {
           physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
-          SilverpeasFileDescriptor descriptor = new SilverpeasFileDescriptor(pk.getInstanceId())
+          SilverpeasFileDescriptor descriptor = new SilverpeasFileDescriptor(detail.getInstanceId())
               .mimeType(mimeType)
               .parentDirectory(publicationSettings.getString("imagesSubDirectory"))
               .fileName(physicalName);
@@ -117,30 +123,43 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         }
       }
     }
-
     // If no image have been uploaded, check if one have been picked up from a gallery
     if (physicalName == null) {
       // on a pas d'image, regarder s'il y a une provenant de la galerie
-      String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
+      String nameImageFromGallery = getParameter(parameters, "valueImageGallery");
       if (StringUtil.isDefined(nameImageFromGallery)) {
         physicalName = nameImageFromGallery;
         mimeType = "image/jpeg";
       }
     }
-
     // If one image is defined, save it through Thumbnail service
     final boolean thumbnailChanged;
     if (StringUtil.isDefined(physicalName)) {
-      ThumbnailDetail detail = new ThumbnailDetail(pk.getInstanceId(),
-          Integer.parseInt(pk.getId()),
-          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       detail.setOriginalFileName(physicalName);
       detail.setMimeType(mimeType);
       thumbnailChanged = changeThumbnail(detail);
+    } else if (getBooleanValue(getParameter(parameters, "ThumbnailDeletion"))) {
+      deleteThumbnail(detail);
+      thumbnailChanged = true;
     } else {
       thumbnailChanged = false;
     }
+    // cropping if requested
+    final Integer xStart = getParameterAsInteger(parameters, "XStart");
+    if (xStart != null) {
+      detail.setXStart(xStart);
+      detail.setYStart(getParameterAsInteger(parameters, "YStart"));
+      detail.setXLength(getParameterAsInteger(parameters, "XLength"));
+      detail.setYLength(getParameterAsInteger(parameters, "YLength"));
+      cropThumbnail(detail, getParameterAsInteger(parameters, "ThumbnailWidth"),
+          getParameterAsInteger(parameters, "ThumbnailHeight"));
+    }
     return thumbnailChanged;
+  }
+
+  private static Integer getParameterAsInteger(final List<FileItem> parameters,
+      final String parameterName) {
+    return ofNullable(getParameter(parameters, parameterName)).map(Integer::parseInt).orElse(null);
   }
 
   private static boolean changeThumbnail(final ThumbnailDetail detail) {
@@ -161,47 +180,43 @@ public class ThumbnailController implements ComponentInstanceDeletion {
   /**
    * To update thumbnails files informations.
    *
-   * @param thumbDetail :ThumbnailDetail.
+   * @param toUpdate contains the data to update.
    * @author Sebastien ROCHET
    */
-  public static void updateThumbnail(ThumbnailDetail thumbDetail) {
-
+  public static void updateThumbnail(final ThumbnailDetail toUpdate) {
     try {
-      ThumbnailDetail completeThumbnail = getThumbnailService().getCompleteThumbnail(thumbDetail);
-      // first, delete former thumbnail
-      if (completeThumbnail != null) {
-        if (completeThumbnail.getCropFileName() != null) {
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
-              .getCropFileName());
-        }
-        getThumbnailService().deleteThumbnail(thumbDetail);
-      }
-      thumbDetail.setCropFileName(null);
-      thumbDetail.setXLength(-1);
-      thumbDetail.setXStart(-1);
-      thumbDetail.setYLength(-1);
-      thumbDetail.setYStart(-1);
-      getThumbnailService().createThumbnail(thumbDetail);
+      // first deleting previous
+      deleteThumbnail(toUpdate);
+      // then creating a new entry
+      toUpdate.setCropFileName(null);
+      toUpdate.setXLength(-1);
+      toUpdate.setXStart(-1);
+      toUpdate.setYLength(-1);
+      toUpdate.setYStart(-1);
+      getThumbnailService().createThumbnail(toUpdate);
     } catch (Exception e) {
       throw new ThumbnailRuntimeException(e);
     }
   }
 
-  public static void deleteThumbnail(ThumbnailDetail thumbDetail) {
-
+  /**
+   * Deletes the given thumbnail.
+   * @param toDelete the instance representing the thumbnail to delete.
+   */
+  public static void deleteThumbnail(final ThumbnailDetail toDelete) {
     try {
       // delete the file on server
-      ThumbnailDetail completeThumbnail = getThumbnailService().getCompleteThumbnail(thumbDetail);
-      if (completeThumbnail != null) {
-        if (completeThumbnail.getOriginalFileName() != null) {
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
+      final ThumbnailDetail current = getThumbnailService().getCompleteThumbnail(toDelete);
+      if (current != null) {
+        if (current.getOriginalFileName() != null) {
+          deleteThumbnailFileOnServer(current.getInstanceId(), current
               .getOriginalFileName());
         }
-        if (completeThumbnail.getCropFileName() != null) {
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
+        if (current.getCropFileName() != null) {
+          deleteThumbnailFileOnServer(current.getInstanceId(), current
               .getCropFileName());
         }
-        getThumbnailService().deleteThumbnail(thumbDetail);
+        getThumbnailService().deleteThumbnail(toDelete);
       }
     } catch (Exception fe) {
       throw new ThumbnailRuntimeException(fe);
@@ -241,7 +256,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       if (vignette != null) {
         ThumbnailDetail thumbDetail =
             new ThumbnailDetail(toPK.getInstanceId(),
-                Integer.valueOf(toPK.getId()),
+                Integer.parseInt(toPK.getId()),
                 ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
         if (vignette.getOriginalFileName().startsWith("/")) {
           thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
@@ -310,8 +325,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
-  protected static void createCropThumbnailFileOnServer(String pathOriginalFile,
-      String pathCropdir,
+  protected static void createCropThumbnailFileOnServer(String pathOriginalFile, String pathCropdir,
       String pathCropFile, ThumbnailDetail thumbnail, int thumbnailWidth, int thumbnailHeight) {
     try {
       // Creates folder if not exists
@@ -325,17 +339,25 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         Files.createFile(cropFile.toPath());
       }
       File originalFile = new File(pathOriginalFile);
-      croppingWithImageTool(thumbnail, originalFile, cropFile, thumbnailWidth, thumbnailHeight);
-      if (cropFile.length() == 0) {
-        croppingWithImageIO(thumbnail, thumbnailWidth, thumbnailHeight, cropFile, originalFile);
+      if (!croppingWithImageTool(thumbnail, originalFile, cropFile, thumbnailWidth, thumbnailHeight)) {
+        croppingWithImageIO(thumbnail, originalFile, cropFile, thumbnailWidth, thumbnailHeight);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(ThumbnailController.class).warn(e);
     }
   }
 
-  private static void croppingWithImageIO(final ThumbnailDetail thumbnail, final int thumbnailWidth,
-      final int thumbnailHeight, final File cropFile, final File originalFile) throws IOException {
+  /**
+   * Crops the original image of a thumbnail using the given parameters and the {@link ImageIO}
+   * API.
+   * @param thumbnail the thumbnail details.
+   * @param originalFile the physical original image file.
+   * @param cropFile the physical image file of the cropping result.
+   * @param thumbnailWidth the width of the thumbnail.
+   * @param thumbnailHeight the height of the thumbnail.
+   */
+  private static void croppingWithImageIO(final ThumbnailDetail thumbnail, final File originalFile,
+      final File cropFile, final int thumbnailWidth, final int thumbnailHeight) throws IOException {
     BufferedImage bufferOriginal = ImageIO.read(originalFile);
     // crop image
     BufferedImage cropPicture = bufferOriginal.getSubimage(thumbnail.getXStart(),
@@ -353,18 +375,33 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     ImageIO.write(cropPictureFinal, extension, cropFile);
   }
 
-  private static void croppingWithImageTool(final ThumbnailDetail thumbnail,
+  /**
+   * Crops the original image of a thumbnail using the given parameters and the {@link ImageTool}
+   * API.
+   * @param thumbnail the thumbnail details.
+   * @param originalFile the physical original image file.
+   * @param cropFile the physical image file of the cropping result.
+   * @param thumbnailWidth the width of the thumbnail.
+   * @param thumbnailHeight the height of the thumbnail.
+   * @return a boolean true to indicate a successful processing, false otherwise.
+   */
+  private static boolean croppingWithImageTool(final ThumbnailDetail thumbnail,
       final File originalFile, final File cropFile, final int thumbnailWidth,
       final int thumbnailHeight) {
     final ImageTool imageTool = ImageTool.get();
     if (imageTool.isActivated()) {
-      imageTool.convert(originalFile, cropFile,
-          crop(thumbnail.getXLength(), thumbnail.getYLength())
-              .withOffset(thumbnail.getXStart(), thumbnail.getYStart()));
-      imageTool.convert(cropFile, cropFile,
-          Set.of(OrientationOption.auto(), widthAndHeight(thumbnailWidth, thumbnailHeight)),
-          PREVIEW_WORK, GEOMETRY_SHRINK);
+      try {
+        imageTool.convert(originalFile, cropFile,
+            crop(thumbnail.getXLength(), thumbnail.getYLength())
+                .withOffset(thumbnail.getXStart(), thumbnail.getYStart()));
+        imageTool.convert(cropFile, cropFile,
+            Set.of(OrientationOption.auto(), widthAndHeight(thumbnailWidth, thumbnailHeight)),
+            PREVIEW_WORK, GEOMETRY_SHRINK);
+      } catch (Exception e) {
+        SilverLogger.getLogger(ThumbnailController.class).warn(e);
+      }
     }
+    return cropFile.length() != 0;
   }
 
   private static void deleteThumbnailFileOnServer(String componentId, String fileName) {
@@ -375,21 +412,6 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     } catch (Exception e) {
       SilverLogger.getLogger(ThumbnailController.class).warn(e);
     }
-  }
-
-  public static String getImage(String instanceId, int objectId, int objectType) {
-    ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
-    // default size if creation
-    String[] imageProps = getImageAndMimeType(thumbDetail);
-    return imageProps[0];
-  }
-
-  public static String getImageMimeType(String instanceId, int objectId, int objectType) {
-    ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
-
-    // default size if creation
-    String[] imageProps = getImageAndMimeType(thumbDetail);
-    return imageProps[1];
   }
 
   public static String[] getImageAndMimeType(ThumbnailDetail thumbDetail) {
@@ -412,7 +434,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
-  public static ThumbnailDetail cropThumbnail(ThumbnailDetail thumbnail, int thumbnailWidth,
+  private static ThumbnailDetail cropThumbnail(ThumbnailDetail thumbnail, int thumbnailWidth,
       int thumbnailHeight) {
     try {
       ThumbnailDetail thumbDetailComplete = getThumbnailService().getCompleteThumbnail(thumbnail);
@@ -453,19 +475,19 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       // crop with fix height
       String[] result =
           ImageUtil.getWidthAndHeightByHeight(new File(pathOriginalFile), thumbnailHeight);
-      thumbnailWidth = Integer.valueOf(result[0]);
-      thumbnailHeight = Integer.valueOf(result[1]);
+      thumbnailWidth = Integer.parseInt(result[0]);
+      thumbnailHeight = Integer.parseInt(result[1]);
     } else if (thumbnailHeight == -1 && thumbnailWidth != -1) {
       // crop with fix width
       String[] result =
           ImageUtil.getWidthAndHeightByWidth(new File(pathOriginalFile), thumbnailWidth);
-      thumbnailWidth = Integer.valueOf(result[0]);
-      thumbnailHeight = Integer.valueOf(result[1]);
+      thumbnailWidth = Integer.parseInt(result[0]);
+      thumbnailHeight = Integer.parseInt(result[1]);
     } else if (thumbnailHeight == -1) {
       // crop full file
       String[] result = ImageUtil.getWidthAndHeight(new File(pathOriginalFile));
-      thumbnailWidth = Integer.valueOf(result[0]);
-      thumbnailHeight = Integer.valueOf(result[1]);
+      thumbnailWidth = Integer.parseInt(result[0]);
+      thumbnailHeight = Integer.parseInt(result[1]);
     }
 
     String extension = FilenameUtils.getExtension(thumbDetailComplete.getOriginalFileName());

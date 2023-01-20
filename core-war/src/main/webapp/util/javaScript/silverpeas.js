@@ -1757,6 +1757,21 @@ if (typeof window.sp === 'undefined') {
         };
       }
     },
+    file : {
+      humanReadableSize : function(bytes) {
+        if (typeof bytes === 'undefined' || bytes < 0) {
+          return '';
+        }
+        let result;
+        if (bytes === 0) {
+          result = '0 ';
+        } else {
+          const e = Math.floor(Math.log(bytes) / Math.log(1024));
+          result = (bytes / Math.pow(1024, e)).toFixed(2) + ' ' + ' KMGTP'.charAt(e);
+        }
+        return result + ((currentUser && currentUser.language === 'fr') ? 'o' : 'b');
+      }
+    },
     moment : {
       /**
        * Creates a new UTC moment.
@@ -2109,6 +2124,26 @@ if (typeof window.sp === 'undefined') {
       }
     },
     form : {
+      /**
+       * Getting a {FormData} instance initialized with given key / value parameter.
+       * @param keyValues an object containing key / values.
+       * @returns {FormData} form data initialized from given parameter.
+       */
+      toFormData : function(keyValues) {
+        return sp.form.mergeFormData(new FormData(), keyValues);
+      },
+      /**
+       * Getting a {FormData} instance completed with given key / value parameter.
+       * @param formData an existing form data.
+       * @param keyValues an object containing key / values.
+       * @returns {FormData} form data initialized from given parameter.
+       */
+      mergeFormData : function(formData, keyValues) {
+        for (let key in keyValues) {
+          formData.append(key, keyValues[key]);
+        }
+        return formData;
+      },
       /**
        * Encodes a set of form elements as a string for submission.
        */
