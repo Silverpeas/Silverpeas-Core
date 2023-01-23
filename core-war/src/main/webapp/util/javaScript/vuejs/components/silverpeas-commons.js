@@ -618,7 +618,7 @@
           this.positionMonitor.position();
         }.bind(this));
       },
-      beforeDestroy : function() {
+      beforeUnmount : function() {
         this.$refs.content.removeEventListener('scroll', this.scrollListener);
       },
       methods : {
@@ -1014,7 +1014,7 @@
         mounted : function() {
           this.ready = true;
         },
-        beforeDestroy : function() {
+        beforeUnmount : function() {
           if (this.tipApi) {
             this.tipApi.destroy(true);
           }
