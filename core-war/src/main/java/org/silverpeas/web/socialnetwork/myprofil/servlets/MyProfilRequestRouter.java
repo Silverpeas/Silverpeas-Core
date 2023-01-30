@@ -95,6 +95,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     MyProfileRoutes route = valueOf(function);
     SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
 
+    final User currentRequester = User.getCurrentRequester();
+    if (currentRequester == null || currentRequester.isAnonymous() || currentRequester.isAccessGuest()) {
+      final String errMsg = "Anonymous user or guest user should not access my profil features";
+      SilverLogger.getLogger(this).error(errMsg);
+      throw forbidden(errMsg);
+    }
+
     try {
       if (route == Main || route == MyInfos) {
         // Détermination du domaine du user
