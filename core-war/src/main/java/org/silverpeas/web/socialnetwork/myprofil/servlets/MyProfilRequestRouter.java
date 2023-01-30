@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.core.web.look.LookHelper;
@@ -92,6 +93,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = valueOf(function);
     SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
+
+    final User currentRequester = User.getCurrentRequester();
+    if (currentRequester == null || currentRequester.isAnonymous() || currentRequester.isAccessGuest()) {
+      final String errMsg = "Anonymous user or guest user should not access my profil features";
+      SilverLogger.getLogger(this).error(errMsg);
+      throw forbidden(errMsg);
+    }
 
     try {
       if (route == Main || route == MyInfos) {
