@@ -1115,7 +1115,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public boolean isExportEnabled() {
-    if (User.getCurrentRequester().isAccessAdmin()) {
+    if (User.getCurrentRequester().isAccessAdmin() || User.getCurrentRequester().isAccessSpaceManager()) {
       return true;
     }
     return getSettings().getBoolean(EXPORT_PROPERTY_PREFIX + getReferer(), false);
