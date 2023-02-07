@@ -1115,10 +1115,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public boolean isExportEnabled() {
-    if (User.getCurrentRequester().isAccessAdmin()) {
+    final User currentRequester = User.getCurrentRequester();
+    if (currentRequester.isAccessAdmin() || userIsAdminOfCurrentSpace(currentRequester)) {
       return true;
     }
     return getSettings().getBoolean(EXPORT_PROPERTY_PREFIX + getReferer(), false);
+  }
+
+  private boolean userIsAdminOfCurrentSpace(final User user) {
+    return currentSpace != null && currentSpace.canBeModifiedBy(user);
   }
 
   private List<String> getExtraFormNotExportableFields(String extraFormName) {

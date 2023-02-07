@@ -3120,12 +3120,14 @@ class DefaultAdministration implements Administration {
 
   @Override
   public boolean isSpaceAvailable(String userId, String spaceId) throws AdminException {
-    final Set<String> indexedComponentIds = new HashSet<>(getAllowedComponentIds(userId));
-    return isSpaceAvailable(indexedComponentIds, spaceId);
+    return getUserSpaceAvailabilityChecker(userId).isAvailable(spaceId);
   }
 
-  private boolean isSpaceAvailable(Set<String> componentIds, String spaceId) {
-    return isSpaceContainsOneComponent(componentIds, getDriverSpaceId(spaceId));
+  @Override
+  public UserSpaceAvailabilityChecker getUserSpaceAvailabilityChecker(final String userId)
+      throws AdminException {
+    return new UserSpaceAvailabilityChecker(userId, getAllowedComponentIds(userId),
+        this::getDriverSpaceId, this::isSpaceContainsOneComponent);
   }
 
   private boolean isSpaceContainsOneComponent(Set<String> componentIds, int spaceId) {
@@ -3859,6 +3861,24 @@ class DefaultAdministration implements Administration {
         .getProfileNamesOfUser(userId, getAllGroupsOfUser(userId), localComponentIds.keySet())
         .entrySet().stream()
         .collect(toMap(e -> localComponentIds.get(e.getKey()), Map.Entry::getValue));
+  }
+
+  @Override
+  public List<String> getSpaceUserProfilesBySpaceId(final String userId, final String spaceId)
+      throws AdminException {
+    return spaceProfileManager.getSpaceProfileNamesOfUser(userId, getAllGroupsOfUser(userId),
+        getDriverSpaceId(spaceId));
+  }
+
+  @Override
+  public Map<String, Set<String>> getSpaceUserProfilesBySpaceIds(final String userId,
+      final Collection<String> spaceIds) throws AdminException {
+    final Map<Integer, String> localSpaceIds = spaceIds.stream()
+        .collect(toMap(this::getDriverSpaceId, i -> i));
+    return spaceProfileManager
+        .getSpaceProfileNamesOfUser(userId, getAllGroupsOfUser(userId), localSpaceIds.keySet())
+        .entrySet().stream()
+        .collect(toMap(e -> localSpaceIds.get(e.getKey()), Map.Entry::getValue));
   }
 
   @Override

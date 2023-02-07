@@ -289,11 +289,6 @@ public class ChatUser extends UserDetail {
   }
 
   @Override
-  public boolean isAccessSpaceManager() {
-    return user.isAccessSpaceManager();
-  }
-
-  @Override
   public boolean isAccessPdcManager() {
     return user.isAccessPdcManager();
   }

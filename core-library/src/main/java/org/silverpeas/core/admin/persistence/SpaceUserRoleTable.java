@@ -34,6 +34,7 @@ import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
+import static org.silverpeas.core.admin.persistence.SpaceUserRoleRow.fetch;
 
 /**
  * A SpaceUserRoleTable object manages the ST_SpaceUserRole table.
@@ -49,20 +50,6 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
 
   private static final String SPACEUSERROLE_COLUMNS =
       "id,spaceId,name,RoleName,description,isInherited";
-
-  /**
-   * Fetch the current spaceUserRole row from a resultSet.
-   */
-  protected SpaceUserRoleRow fetchSpaceUserRole(ResultSet rs) throws SQLException {
-    SpaceUserRoleRow sur = new SpaceUserRoleRow();
-    sur.id = rs.getInt(1);
-    sur.spaceId = rs.getInt(2);
-    sur.name = rs.getString(3);
-    sur.roleName = rs.getString(4);
-    sur.description = rs.getString(5);
-    sur.isInherited = rs.getInt(6);
-    return sur;
-  }
 
   /**
    * Returns the SpaceUserRole whith the given id.
@@ -105,7 +92,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow[] getAllSpaceUserRoles() throws SQLException {
     List<SpaceUserRoleRow> rows = getRows(SELECT_ALL_SPACEUSERROLES);
-    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
+    return rows.toArray(new SpaceUserRoleRow[0]);
   }
 
   private static final String SELECT_ALL_SPACEUSERROLES = SELECT
@@ -117,7 +104,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   public SpaceUserRoleRow[] getAllSpaceUserRolesOfSpace(int spaceId) throws
       SQLException {
     List<SpaceUserRoleRow> rows = getRows(SELECT_ALL_SPACE_USERROLES, spaceId);
-    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
+    return rows.toArray(new SpaceUserRoleRow[0]);
   }
 
   private static final String SELECT_ALL_SPACE_USERROLES = SELECT
@@ -139,7 +126,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow[] getDirectSpaceUserRolesOfUser(int userId) throws SQLException {
     List<SpaceUserRoleRow> rows = getRows(SELECT_USER_SPACEUSERROLES, userId);
-    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
+    return rows.toArray(new SpaceUserRoleRow[0]);
   }
 
   private static final String SELECT_USER_SPACEUSERROLES = SELECT
@@ -152,7 +139,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow[] getDirectSpaceUserRolesOfGroup(int groupId) throws SQLException {
     List<SpaceUserRoleRow> rows = getRows(SELECT_GROUP_SPACEUSERROLES, groupId);
-    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
+    return rows.toArray(new SpaceUserRoleRow[0]);
   }
 
   private static final String SELECT_GROUP_SPACEUSERROLES = SELECT
@@ -166,18 +153,18 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   public SpaceUserRoleRow[] getAllMatchingSpaceUserRoles(SpaceUserRoleRow sampleSpaceUserRole)
       throws SQLException {
     String[] columns = new String[] { "name", "description" };
-    String[] values = new String[] { sampleSpaceUserRole.name, sampleSpaceUserRole.description };
+    String[] values = new String[] { sampleSpaceUserRole.getName(), sampleSpaceUserRole.getDescription() };
     List<SpaceUserRoleRow> rows = getMatchingRows(SPACEUSERROLE_COLUMNS, columns, values);
-    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
+    return rows.toArray(new SpaceUserRoleRow[0]);
   }
 
   /**
    * Inserts in the database a new spaceUserRole row.
    */
   public void createSpaceUserRole(SpaceUserRoleRow spaceUserRole) throws SQLException {
-    SpaceRow space = OrganizationSchema.get().space().getSpace(spaceUserRole.spaceId);
+    SpaceRow space = OrganizationSchema.get().space().getSpace(spaceUserRole.getSpaceId());
     if (space == null) {
-      throw new SQLException(unknown("space", String.valueOf(spaceUserRole.spaceId)));
+      throw new SQLException(unknown("space", String.valueOf(spaceUserRole.getSpaceId())));
     }
 
     insertRow(INSERT_SPACEUSERROLE, spaceUserRole);
@@ -190,16 +177,15 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceUserRoleRow row)
       throws SQLException {
-    if (row.id == -1) {
-      row.id = getNextId();
+    if (!row.isIdDefined()) {
+      row.setId(getNextId());
     }
-
-    insert.setInt(1, row.id);
-    insert.setInt(2, row.spaceId);
-    insert.setString(3, truncate(row.name, 100));
-    insert.setString(4, truncate(row.roleName, 100));
-    insert.setString(5, truncate(row.description, 500));
-    insert.setInt(6, row.isInherited);
+    insert.setInt(1, row.getId());
+    insert.setInt(2, row.getSpaceId());
+    insert.setString(3, truncate(row.getName(), 100));
+    insert.setString(4, truncate(row.getRoleName(), 100));
+    insert.setString(5, truncate(row.getDescription(), 500));
+    insert.setInt(6, row.getInheritance());
   }
 
   /**
@@ -215,9 +201,9 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update, SpaceUserRoleRow row)
       throws SQLException {
-    update.setString(1, truncate(row.name, 100));
-    update.setString(2, truncate(row.description, 500));
-    update.setInt(3, row.id);
+    update.setString(1, truncate(row.getName(), 100));
+    update.setString(2, truncate(row.getDescription(), 500));
+    update.setInt(3, row.getId());
   }
 
   /**
@@ -383,6 +369,6 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   @Override
   protected SpaceUserRoleRow fetchRow(ResultSet rs) throws SQLException {
-    return fetchSpaceUserRole(rs);
+    return fetch(rs);
   }
 }

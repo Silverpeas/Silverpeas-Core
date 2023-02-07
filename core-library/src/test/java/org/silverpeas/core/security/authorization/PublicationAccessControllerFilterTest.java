@@ -79,7 +79,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  */
 @UnitTest
 @EnableSilverTestEnv
-class TestPublicationAccessControllerFilter {
+class PublicationAccessControllerFilterTest {
 
   private static final String USER_ID = "bart";
   // NO RIGHT ON TOPIC

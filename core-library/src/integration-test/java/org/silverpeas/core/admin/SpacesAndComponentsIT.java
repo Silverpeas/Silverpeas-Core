@@ -43,6 +43,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -51,6 +52,8 @@ import org.silverpeas.core.index.indexing.IndexingLogger;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.lang.SystemWrapper;
@@ -61,10 +64,15 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 @RunWith(Arquillian.class)
 public class SpacesAndComponentsIT {
@@ -81,7 +89,8 @@ public class SpacesAndComponentsIT {
   private OrganizationController organizationController;
   @Inject
   private TreeCache treeCache;
-  private String userId = "1";
+  private final String userId = "1";
+  private final String otherUserId = "2";
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -394,6 +403,8 @@ public class SpacesAndComponentsIT {
     assertThat(sub2Id, is("WA202"));
 
     sub2 = adminController.getSpaceInstById(sub2Id);
+    assertThat(sub2, notNullValue());
+    assertThat(sub2.getId(), is(sub2Id));
 
     adminController.updateSpaceOrderNum(sub2Id, 1);
 
@@ -418,6 +429,233 @@ public class SpacesAndComponentsIT {
     sub2 = adminController.getSpaceInstById(sub2Id);
     assertThat(sub2.getAllSpaceProfilesInst().size(), is(1));
 
+  }
+
+  /**
+   * Space Tree with 'x' = blocked inheritance and 'o' not:
+   * Root space
+   *    x Sub 1
+   *      x Sub 1 1
+   *    o Sub 2
+   *      x Sub 2 1
+   *      o Sub 2 2
+   */
+  @Test
+  public void getSpaceUserProfilesBySpaceId() throws AdminException {
+    // Add user to group 1 & 2
+    final GroupDetail group1 = admin.getGroup("1");
+    group1.setUserIds(new String[]{userId});
+    admin.updateGroup(group1);
+    final GroupDetail group2 = admin.getGroup("2");
+    group2.setUserIds(new String[]{userId});
+    admin.updateGroup(group2);
+    // creating new root space
+    SpaceInst newRootSpace = new SpaceInst();
+    newRootSpace.setName("Root space");
+    newRootSpace.setCreatorUserId(userId);
+    String rootSpaceId = adminController.addSpaceInst(newRootSpace);
+    assertThat(rootSpaceId, is("WA200"));
+
+    // creating a Sub 1
+    SpaceInst sub1 = new SpaceInst();
+    sub1.setName("Sub 1");
+    sub1.setCreatorUserId(userId);
+    sub1.setDomainFatherId(rootSpaceId);
+    sub1.setInheritanceBlocked(true);
+    String sub1Id = adminController.addSpaceInst(sub1);
+    assertThat(sub1Id, is("WA201"));
+    sub1 = adminController.getSpaceInstById(sub1Id);
+    assertThat(sub1, notNullValue());
+    assertThat(sub1.getId(), is(sub1Id));
+    assertThat(sub1.isInheritanceBlocked(), is(true));
+    // creating a Sub 1 1
+    SpaceInst sub11 = new SpaceInst();
+    sub11.setName("Sub 1 1");
+    sub11.setCreatorUserId(userId);
+    sub11.setDomainFatherId(sub1Id);
+    sub11.setInheritanceBlocked(true);
+    String sub11Id = adminController.addSpaceInst(sub11);
+    assertThat(sub11Id, is("WA202"));
+    sub11 = adminController.getSpaceInstById(sub11Id);
+    assertThat(sub11, notNullValue());
+    assertThat(sub11.getId(), is(sub11Id));
+    assertThat(sub11.isInheritanceBlocked(), is(true));
+
+    // creating Sub 2
+    SpaceInst sub2 = new SpaceInst();
+    sub2.setName("Sub 2");
+    sub2.setCreatorUserId(userId);
+    sub2.setDomainFatherId(rootSpaceId);
+    String sub2Id = adminController.addSpaceInst(sub2);
+    assertThat(sub2Id, is("WA203"));
+    sub2 = adminController.getSpaceInstById(sub2Id);
+    assertThat(sub2, notNullValue());
+    assertThat(sub2.getId(), is(sub2Id));
+    assertThat(sub2.isInheritanceBlocked(), is(false));
+    // creating a Sub 2 1
+    SpaceInst sub21 = new SpaceInst();
+    sub21.setName("Sub 2 1");
+    sub21.setCreatorUserId(userId);
+    sub21.setDomainFatherId(sub2Id);
+    sub21.setInheritanceBlocked(true);
+    String sub21Id = adminController.addSpaceInst(sub21);
+    assertThat(sub21Id, is("WA204"));
+    sub21 = adminController.getSpaceInstById(sub21Id);
+    assertThat(sub21, notNullValue());
+    assertThat(sub21.getId(), is(sub21Id));
+    assertThat(sub21.isInheritanceBlocked(), is(true));
+    // creating a Sub 2 2
+    SpaceInst sub22 = new SpaceInst();
+    sub22.setName("Sub 2 2");
+    sub22.setCreatorUserId(userId);
+    sub22.setDomainFatherId(sub2Id);
+    String sub22Id = adminController.addSpaceInst(sub22);
+    assertThat(sub22Id, is("WA205"));
+    sub22 = adminController.getSpaceInstById(sub22Id);
+    assertThat(sub22, notNullValue());
+    assertThat(sub22.getId(), is(sub22Id));
+    assertThat(sub22.isInheritanceBlocked(), is(false));
+
+    // checking profiles
+    final List<Pair<String, List<SilverpeasRole>>> noSpaceProfiles = List.of(
+        Pair.of(rootSpaceId, List.of()),
+        Pair.of(sub1Id, List.of()),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of()),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of()));
+    assertUserSpaceProfiles(userId, noSpaceProfiles);
+    assertUserSpaceProfiles(otherUserId, noSpaceProfiles);
+
+    addSpaceUserRole(rootSpaceId, ADMIN, userId);
+    addSpaceUserRole(rootSpaceId, WRITER, otherUserId);
+
+    // checking profiles
+    assertUserSpaceProfiles(userId, List.of(
+        Pair.of(rootSpaceId, List.of(ADMIN)),
+        Pair.of(sub1Id, List.of()),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of(ADMIN)),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of(ADMIN))));
+    assertUserSpaceProfiles(otherUserId, List.of(
+        Pair.of(rootSpaceId, List.of(WRITER)),
+        Pair.of(sub1Id, List.of()),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of(WRITER)),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of(WRITER))));
+
+    addSpaceGroupRole(rootSpaceId, READER, group1.getId());
+
+    // checking profiles
+    assertUserSpaceProfiles(userId, List.of(
+        Pair.of(rootSpaceId, List.of(ADMIN, READER)),
+        Pair.of(sub1Id, List.of()),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of(ADMIN, READER)),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of(ADMIN, READER))));
+    assertUserSpaceProfiles(otherUserId, List.of(
+        Pair.of(rootSpaceId, List.of(WRITER)),
+        Pair.of(sub1Id, List.of()),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of(WRITER)),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of(WRITER))));
+
+    addSpaceUserRole(sub1Id, USER, userId);
+    addSpaceGroupRole(sub2Id, USER, group2.getId());
+
+    // checking profiles
+    assertUserSpaceProfiles(userId, List.of(
+        Pair.of(rootSpaceId, List.of(ADMIN, READER)),
+        Pair.of(sub1Id, List.of(USER)),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of(ADMIN, READER, USER)),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of(ADMIN, READER, USER))));
+    assertUserSpaceProfiles(otherUserId, List.of(
+        Pair.of(rootSpaceId, List.of(WRITER)),
+        Pair.of(sub1Id, List.of()),
+        Pair.of(sub11Id, List.of()),
+        Pair.of(sub2Id, List.of(WRITER)),
+        Pair.of(sub21Id, List.of()),
+        Pair.of(sub22Id, List.of(WRITER))));
+
+    // Clear
+    List.of(rootSpaceId, sub1Id, sub11Id, sub2Id, sub21Id, sub22Id)
+        .forEach(this::clearAllSpaceUserAndGroupRole);
+
+    // checking profiles
+    assertUserSpaceProfiles(userId, noSpaceProfiles);
+    assertUserSpaceProfiles(otherUserId, noSpaceProfiles);
+  }
+
+  private SpaceProfileInst addSpaceUserRole(final String aSpaceId,
+      final SilverpeasRole aRole, final String... userIds) {
+    return addSpaceUserAndGroupRole(aSpaceId, aRole,
+        Stream.of(userIds).collect(Collectors.toList()), null);
+  }
+
+  private SpaceProfileInst addSpaceGroupRole(final String aSpaceId,
+      final SilverpeasRole aRole, final String... groupIds) {
+    return addSpaceUserAndGroupRole(aSpaceId, aRole, null,
+        Stream.of(groupIds).collect(Collectors.toList()));
+  }
+
+  private SpaceProfileInst addSpaceUserAndGroupRole(final String aSpaceId,
+      final SilverpeasRole aRole, final List<String> userIds, final List<String> groupIds) {
+    final SpaceInst space = organizationController.getSpaceInstById(aSpaceId);
+    final SpaceProfileInst spaceProfileInst = space.getProfiles()
+        .stream()
+        .filter(p -> aRole.equals(SilverpeasRole.fromString(p.getName())))
+        .findFirst()
+        .orElseGet(() -> {
+          SpaceProfileInst profile = new SpaceProfileInst();
+          profile.setSpaceFatherId(aSpaceId);
+          profile.setName(aRole.getName());
+          return profile;
+        });
+    spaceProfileInst.addUsers(userIds != null ? userIds : List.of());
+    spaceProfileInst.addGroups(groupIds != null ? groupIds : List.of());
+    if (StringUtil.isDefined(spaceProfileInst.getId())) {
+      adminController.updateSpaceProfileInst(spaceProfileInst, userId);
+      return spaceProfileInst;
+    } else {
+      final String newSpaceProfileId = adminController.addSpaceProfileInst(spaceProfileInst, userId);
+      return adminController.getSpaceProfileInst(newSpaceProfileId);
+    }
+  }
+
+  private void clearAllSpaceUserAndGroupRole(final String aSpaceId) {
+    final SpaceInst space = organizationController.getSpaceInstById(aSpaceId);
+    space.getProfiles().forEach(p -> adminController.deleteSpaceProfileInst(p.getId(), userId));
+  }
+
+  void assertUserSpaceProfiles(String aUserId, List<Pair<String, List<SilverpeasRole>>> expectedSpaceAndProfiles) {
+    expectedSpaceAndProfiles.forEach(p -> {
+      var spaceId = p.getFirst();
+      var expectedRoles = p.getSecond().stream().map(SilverpeasRole::getName).toArray();
+      final List<String> spaceProfiles =
+          organizationController.getSpaceUserProfilesBySpaceId(
+              aUserId, spaceId);
+      assertThat(spaceProfiles, containsInAnyOrder(expectedRoles));
+    });
+    final Set<String> allExpectedSpaceIds = expectedSpaceAndProfiles.stream()
+        .filter(p -> !p.getSecond().isEmpty())
+        .map(Pair::getFirst)
+        .collect(Collectors.toSet());
+    final Map<String, Set<String>> allSpaceProfiles =
+        organizationController.getSpaceUserProfilesBySpaceIds(
+            aUserId, allExpectedSpaceIds);
+    assertThat(allSpaceProfiles.size(), is(allExpectedSpaceIds.size()));
+    expectedSpaceAndProfiles.forEach(p -> {
+      var spaceId = p.getFirst();
+      var expectedRoles = p.getSecond().stream().map(SilverpeasRole::getName).toArray();
+      final Set<String> roles = allSpaceProfiles.getOrDefault(spaceId, Set.of());
+      assertThat(roles, containsInAnyOrder(expectedRoles));
+    });
   }
 
   @Test

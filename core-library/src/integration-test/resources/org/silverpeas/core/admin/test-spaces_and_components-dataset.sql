@@ -22,6 +22,8 @@ INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, sta
  */
 INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
     VALUES (1, 0, '1', 'Groupe 1', 'VALID', '2012-01-01 00:00:00.000');
+INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
+    VALUES (2, 0, '2', 'Groupe 2', 'VALID', '2012-01-01 00:00:00.000');
 
 /**
  * users in the default Silverpeas domain
@@ -34,6 +36,7 @@ INSERT INTO domainsp_user (id, lastName, login) VALUES (3, 'Hetfield', 'Hetfield
  * groups in the default Silverpeas domain
  */
 INSERT INTO domainsp_group (id, name) VALUES (1, 'Groupe 1');
+INSERT INTO domainsp_group (id, name) VALUES (2, 'Groupe 2');
 
 /**
  * spaces

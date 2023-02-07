@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
+import org.silverpeas.core.admin.service.UserSpaceAvailabilityChecker;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -278,6 +279,17 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public List<String> getSpaceUserProfilesBySpaceId(final String userId, final String spaceId) {
+    return List.of();
+  }
+
+  @Override
+  public Map<String, Set<String>> getSpaceUserProfilesBySpaceIds(final String userId,
+      final Collection<String> spaceIds) {
+    return Collections.emptyMap();
+  }
+
+  @Override
   public String[] getUserProfiles(final String userId, final String componentId,
       final ProfiledObjectId objectId) {
     return new String[0];
@@ -422,6 +434,11 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public boolean isSpaceAvailable(final String spaceId, final String userId) {
     return false;
+  }
+
+  @Override
+  public UserSpaceAvailabilityChecker getUserSpaceAvailabilityChecker(final String userId) {
+    return null;
   }
 
   @Override

@@ -317,6 +317,25 @@ public interface OrganizationController extends java.io.Serializable {
       Collection<String> componentIds);
 
   /**
+   * Gets all the profiles the specified user plays in the given space.
+   * @param userId the unique identifier of a user in Silverpeas.
+   * @param spaceId the unique identifier of a space.
+   * @return a list with the name of all the user profiles in the given space. The
+   * name of the profiles correspond to the roles the user plays in the space.
+   */
+  List<String> getSpaceUserProfilesBySpaceId(String userId, String spaceId);
+
+  /**
+   * Gets the profile names of given user indexed by the given space.
+   * @param userId a user identifier as string.
+   * @param spaceIds list of space identifier as string.
+   * @return a map filled with list of profile name as string by space identifier as
+   * string.
+   */
+  Map<String, Set<String>> getSpaceUserProfilesBySpaceIds(String userId,
+      Collection<String> spaceIds);
+
+  /**
    * Gets all the profiles the user have for the specified resource in the given component
    * instance.
    * @param userId the unique identifier of a user.
@@ -540,6 +559,22 @@ public interface OrganizationController extends java.io.Serializable {
    * false otherwise.
    */
   boolean isSpaceAvailable(String spaceId, String userId);
+
+  /**
+   * This method allows callers to perform several space availability checks for a given user.
+   * <p>
+   *   This is useful for treatments requiring highest performances than calling each time
+   *   {@link #isSpaceAvailable(String, String)} for example.
+   * </p>
+   * <p>
+   *   IMPORTANT: the {@link UserSpaceAvailabilityChecker} MUST not be an attribute of a
+   *   singleton instance.
+   * </p>
+   * @param userId the unique identifier of a user
+   * @return a {@link UserSpaceAvailabilityChecker} instance initialized for the given user
+   * identifier.
+   */
+  UserSpaceAvailabilityChecker getUserSpaceAvailabilityChecker(String userId);
 
   /**
    * Is the specified resource protected by access rights in the given component instance is allowed

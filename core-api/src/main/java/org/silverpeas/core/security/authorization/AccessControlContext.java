@@ -24,22 +24,23 @@
 package org.silverpeas.core.security.authorization;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import static java.util.EnumSet.noneOf;
 
 /**
  * This class permits to define the context of access to a resource.
  */
 public class AccessControlContext {
 
-  private Set<AccessControlOperation> operations = EnumSet.noneOf(AccessControlOperation.class);
-  private Map<String, Object> cache = new HashMap<>();
+  private final Set<AccessControlOperation> operations = noneOf(AccessControlOperation.class);
+  private final Map<String, Object> cache = new HashMap<>();
 
   /**
    * Gets an initialized instance of access control context.
-   * @return
+   * @return an empty {@link AccessControlContext} instance.
    */
   public static AccessControlContext init() {
     return new AccessControlContext();
@@ -53,8 +54,8 @@ public class AccessControlContext {
 
   /**
    * Defines the operations performed into the context.
-   * @param operations
-   * @return
+   * @param operations one or several {@link AccessControlOperation} instances.
+   * @return the completed context itself.
    */
   public AccessControlContext onOperationsOf(AccessControlOperation... operations) {
     Collections.addAll(this.operations, operations);
@@ -62,12 +63,24 @@ public class AccessControlContext {
   }
 
   /**
+   * Removes the operations from the context. This is an explicit method that allows
+   * {@link AccessController} implementations to adjust the context by adding (forcing) an
+   * operation before a treatment and removing it when done.
+   * @param operations one or several {@link AccessControlOperation} instances.
+   * @return the context itself.
+   */
+  public AccessControlContext removeOperationsOf(AccessControlOperation... operations) {
+    this.operations.removeAll(Set.of(operations));
+    return this;
+  }
+
+  /**
    * Gets the operations performed into the context.
-   * @return
+   * @return a set of {@link AccessControlOperation} instances.
    */
   public Set<AccessControlOperation> getOperations() {
     if (operations.isEmpty()) {
-      return Collections.unmodifiableSet(Collections.singleton(AccessControlOperation.UNKNOWN));
+      return Collections.singleton(AccessControlOperation.UNKNOWN);
     }
     return Collections.unmodifiableSet(operations);
   }
@@ -76,7 +89,7 @@ public class AccessControlContext {
    * Puts into context a value linked to a key.
    * @param key the key.
    * @param value the value.
-   * @param <T>
+   * @param <T> the type of resource the access control is performed.
    * @return the current instance.
    */
   public <T> AccessControlContext put(String key, T value) {
@@ -88,7 +101,7 @@ public class AccessControlContext {
    * Gets from context a value from a key that has been stored into the context instance.
    * @param key the key associated to the searched value.
    * @param classType the type of expected value.
-   * @param <T>
+   * @param <T> the type of resource the access control is performed.
    * @return the value if any, null if the expected type does not match with the one of the existing
    * value.
    */

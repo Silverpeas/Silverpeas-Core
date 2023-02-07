@@ -169,7 +169,6 @@ public class UsersAndGroupsIT {
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.isAccessAdmin(), is(true));
     assertThat(user.isAccessDomainManager(), is(false));
-    assertThat(user.isAccessSpaceManager(), is(false));
     assertThat(user.isAccessPdcManager(), is(false));
     assertThat(user.isAccessUser(), is(false));
     assertThat(user.isAccessGuest(), is(false));
@@ -199,7 +198,6 @@ public class UsersAndGroupsIT {
     assertThat(user.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(false));
-    assertThat(user.isAccessSpaceManager(), is(false));
     assertThat(user.isAccessPdcManager(), is(false));
     assertThat(user.isAccessUser(), is(true));
     assertThat(user.isAccessGuest(), is(false));
@@ -235,7 +233,6 @@ public class UsersAndGroupsIT {
     assertThat(user.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(false));
-    assertThat(user.isAccessSpaceManager(), is(false));
     assertThat(user.isAccessPdcManager(), is(false));
     assertThat(user.isAccessUser(), is(false));
     assertThat(user.isAccessGuest(), is(true));
@@ -255,7 +252,6 @@ public class UsersAndGroupsIT {
     assertThat(user.getAccessLevel(), is(UserAccessLevel.DOMAIN_ADMINISTRATOR));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(true));
-    assertThat(user.isAccessSpaceManager(), is(false));
     assertThat(user.isAccessPdcManager(), is(false));
     assertThat(user.isAccessUser(), is(false));
     assertThat(user.isAccessGuest(), is(false));
@@ -268,7 +264,6 @@ public class UsersAndGroupsIT {
     assertThat(user.getAccessLevel(), is(UserAccessLevel.PDC_MANAGER));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(false));
-    assertThat(user.isAccessSpaceManager(), is(false));
     assertThat(user.isAccessPdcManager(), is(true));
     assertThat(user.isAccessUser(), is(false));
     assertThat(user.isAccessGuest(), is(false));

@@ -815,7 +815,7 @@ public class GroupManager {
     SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
         REMOVING_MESSAGE + group.getName() + " comme manager d'espace dans la base");
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
-      spaceUserRoleTable.removeGroupFromSpaceUserRole(groupId, spaceRole.id);
+      spaceUserRoleTable.removeGroupFromSpaceUserRole(groupId, spaceRole.getId());
     }
 
     // remove the group from each group role where it's used.

@@ -896,6 +896,23 @@ public interface Administration {
    */
   boolean isSpaceAvailable(String userId, String spaceId) throws AdminException;
 
+  /**
+   * This method allows callers to perform several space availability checks for a given user.
+   * <p>
+   *   This is useful for treatments requiring highest performances than calling each time
+   *   {@link #isSpaceAvailable(String, String)} for example.
+   * </p>
+   * <p>
+   *   IMPORTANT: the {@link UserSpaceAvailabilityChecker} MUST not be an attribute of a
+   *   singleton instance.
+   * </p>
+   * @param userId the unique identifier of a user
+   * @return a {@link UserSpaceAvailabilityChecker} instance initialized for the given user
+   * identifier.
+   * @throws AdminException if an error occurs
+   */
+  UserSpaceAvailabilityChecker getUserSpaceAvailabilityChecker(String userId) throws AdminException;
+
   List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException;
 
   /**
@@ -1183,6 +1200,27 @@ public interface Administration {
    */
   Map<String, Set<String>> getUserProfilesByComponentId(String userId,
       Collection<String> componentIds) throws AdminException;
+
+  /**
+   * Get the profile names of the given user for the given space.
+   * @param userId a unique identifier of a user.
+   * @param spaceId the unique identifier of a space.
+   * @return an list of all the name of the profiles in which the given user is for the given
+   * space.
+   * @throws AdminException if an error occurs
+   */
+  List<String> getSpaceUserProfilesBySpaceId(String userId, String spaceId) throws AdminException;
+
+  /**
+   * Gets the space profile names of given user indexed by the given spaces.
+   * @param userId a user identifier as string.
+   * @param spaceIds list of space identifier as string.
+   * @return a map filled with list of profile name as string by space identifier as
+   * string.
+   * @throws AdminException if an error occurs
+   */
+  Map<String, Set<String>> getSpaceUserProfilesBySpaceIds(String userId,
+      Collection<String> spaceIds) throws AdminException;
 
   /**
    * Gets all the users in the given profile for the given component instance in the given space.

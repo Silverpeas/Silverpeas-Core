@@ -23,11 +23,86 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.silverpeas.core.util.StringUtil.asInt;
+
 public class SpaceUserRoleRow {
-  public int id = -1;
-  public int spaceId = -1;
-  public String name = null;
-  public String roleName = null;
-  public String description = null;
-  public int isInherited = 0;
+
+  private static final int NO_VALUE = -1;
+
+  private int id = NO_VALUE;
+  private int spaceId = NO_VALUE;
+  private String name = null;
+  private String roleName = null;
+  private String description = null;
+  private int isInherited = 0;
+
+  private SpaceUserRoleRow() {
+  }
+
+  public static SpaceUserRoleRow from(final SpaceProfileInst spaceProfileInst) {
+    SpaceUserRoleRow spaceUserRole = new SpaceUserRoleRow();
+    spaceUserRole.id = asInt(spaceProfileInst.getId(), -1);
+    spaceUserRole.roleName = spaceProfileInst.getName();
+    spaceUserRole.name = spaceProfileInst.getLabel();
+    spaceUserRole.description = spaceProfileInst.getDescription();
+    if (spaceProfileInst.isInherited()) {
+      spaceUserRole.isInherited = 1;
+    }
+    return spaceUserRole;
+  }
+
+  public static SpaceUserRoleRow fetch(final ResultSet rs) throws SQLException {
+    SpaceUserRoleRow sur = new SpaceUserRoleRow();
+    sur.id = rs.getInt(1);
+    sur.spaceId = rs.getInt(2);
+    sur.name = rs.getString(3);
+    sur.roleName = rs.getString(4);
+    sur.description = rs.getString(5);
+    sur.isInherited = rs.getInt(6);
+    return sur;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(final int id) {
+    if (id < 0) {
+      throw new IllegalArgumentException("The identifier must not be negative");
+    }
+    this.id = id;
+  }
+
+  public boolean isIdDefined() {
+    return id != NO_VALUE;
+  }
+
+  public int getSpaceId() {
+    return spaceId;
+  }
+
+  public void setSpaceId(final int spaceId) {
+    this.spaceId = spaceId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getRoleName() {
+    return roleName;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public int getInheritance() {
+    return isInherited;
+  }
 }

@@ -28,15 +28,23 @@ import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.admin.user.dao.SpaceRoleDAO;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Service
@@ -44,9 +52,12 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 @Transactional(Transactional.TxType.MANDATORY)
 public class SpaceProfileInstManager {
 
+  public static final String SPACE_PROFILES_OF_USER = "space profiles of user";
   public static final String SPACE_PROFILE = "space profile";
   @Inject
   private OrganizationSchema organizationSchema;
+  @Inject
+  private SpaceRoleDAO spaceRoleDAO;
 
   /**
    * Constructor
@@ -69,13 +80,13 @@ public class SpaceProfileInstManager {
       SpaceUserRoleRow[] tabSpaceUserRole = organizationSchema.spaceUserRole()
           .getDirectSpaceUserRolesOfUser(Integer.parseInt(sUserId));
       for (SpaceUserRoleRow role : tabSpaceUserRole) {
-        roleIds.add(Integer.toString(role.id));
+        roleIds.add(Integer.toString(role.getId()));
       }
 
-      return roleIds.toArray(new String[roleIds.size()]);
+      return roleIds.toArray(new String[0]);
 
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space profiles of user", sUserId), e);
+      throw new AdminException(failureOnGetting(SPACE_PROFILES_OF_USER, sUserId), e);
     }
   }
 
@@ -94,12 +105,36 @@ public class SpaceProfileInstManager {
       SpaceUserRoleRow[] tabSpaceGroupRole = organizationSchema.spaceUserRole()
           .getDirectSpaceUserRolesOfGroup(Integer.parseInt(groupId));
       for (SpaceUserRoleRow role : tabSpaceGroupRole) {
-        roleIds.add(Integer.toString(role.id));
+        roleIds.add(Integer.toString(role.getId()));
       }
-      return roleIds.toArray(new String[roleIds.size()]);
+      return roleIds.toArray(new String[0]);
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("space profiles of group", groupId), e);
+    }
+  }
+
+  public List<String> getSpaceProfileNamesOfUser(final String userId, final List<String> groupIds,
+      final int spaceLocalId) throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      return spaceRoleDAO.getSpaceRoles(con, groupIds, Integer.parseInt(userId), singleton(spaceLocalId)).stream()
+          .map(SpaceUserRoleRow::getRoleName)
+          .distinct()
+          .collect(toList());
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting(SPACE_PROFILES_OF_USER, userId), e);
+    }
+  }
+
+  public Map<Integer, Set<String>> getSpaceProfileNamesOfUser(final String userId,
+      final List<String> groupIds, final Collection<Integer> spaceLocalIds)
+      throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      return spaceRoleDAO.getSpaceRoles(con, groupIds, Integer.parseInt(userId), spaceLocalIds).stream()
+          .collect(groupingBy(SpaceUserRoleRow::getSpaceId,
+              mapping(SpaceUserRoleRow::getRoleName, toSet())));
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting(SPACE_PROFILES_OF_USER, userId), e);
     }
   }
 
@@ -116,10 +151,10 @@ public class SpaceProfileInstManager {
       throws AdminException {
     try {
       // Create the spaceProfile node
-      SpaceUserRoleRow newRole = makeSpaceUserRoleRow(spaceProfileInst);
-      newRole.spaceId = parentSpaceLocalId;
+      SpaceUserRoleRow newRole = SpaceUserRoleRow.from(spaceProfileInst);
+      newRole.setSpaceId(parentSpaceLocalId);
       organizationSchema.spaceUserRole().createSpaceUserRole(newRole);
-      String spaceProfileNodeId = idAsString(newRole.id);
+      String spaceProfileNodeId = idAsString(newRole.getId());
 
       // Update the CSpace with the links TSpaceProfile-TGroup
       for (String groupId : spaceProfileInst.getAllGroups()) {
@@ -218,12 +253,12 @@ public class SpaceProfileInstManager {
   private SpaceProfileInst spaceUserRoleRow2SpaceProfileInst(SpaceUserRoleRow spaceUserRole) {
     // Set the attributes of the space profile Inst
     SpaceProfileInst spaceProfileInst = new SpaceProfileInst();
-    spaceProfileInst.setId(Integer.toString(spaceUserRole.id));
-    spaceProfileInst.setName(spaceUserRole.roleName);
-    spaceProfileInst.setLabel(spaceUserRole.name);
-    spaceProfileInst.setDescription(spaceUserRole.description);
-    spaceProfileInst.setSpaceFatherId(Integer.toString(spaceUserRole.spaceId));
-    if (spaceUserRole.isInherited == 1) {
+    spaceProfileInst.setId(Integer.toString(spaceUserRole.getId()));
+    spaceProfileInst.setName(spaceUserRole.getRoleName());
+    spaceProfileInst.setLabel(spaceUserRole.getName());
+    spaceProfileInst.setDescription(spaceUserRole.getDescription());
+    spaceProfileInst.setSpaceFatherId(Integer.toString(spaceUserRole.getSpaceId()));
+    if (spaceUserRole.getInheritance() == 1) {
       spaceProfileInst.setInherited(true);
     }
     return spaceProfileInst;
@@ -316,31 +351,14 @@ public class SpaceProfileInstManager {
       }
 
       // update the spaceProfile node
-      SpaceUserRoleRow changedSpaceUserRole = makeSpaceUserRoleRow(spaceProfileInstNew);
-      changedSpaceUserRole.id = idAsInt(spaceProfileInstNew.getId());
+      SpaceUserRoleRow changedSpaceUserRole = SpaceUserRoleRow.from(spaceProfileInstNew);
+      changedSpaceUserRole.setId(idAsInt(spaceProfileInstNew.getId()));
       organizationSchema.spaceUserRole().updateSpaceUserRole(changedSpaceUserRole);
 
-      return idAsString(changedSpaceUserRole.id);
+      return idAsString(changedSpaceUserRole.getId());
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate(SPACE_PROFILE, spaceProfileInst.getId()), e);
     }
-  }
-
-  /**
-   * Converts SpaceProfileInst to SpaceUserRoleRow
-   */
-  private SpaceUserRoleRow makeSpaceUserRoleRow(SpaceProfileInst spaceProfileInst) {
-    SpaceUserRoleRow spaceUserRole = new SpaceUserRoleRow();
-
-    spaceUserRole.id = idAsInt(spaceProfileInst.getId());
-    spaceUserRole.roleName = spaceProfileInst.getName();
-    spaceUserRole.name = spaceProfileInst.getLabel();
-    spaceUserRole.description = spaceProfileInst.getDescription();
-    if (spaceProfileInst.isInherited()) {
-      spaceUserRole.isInherited = 1;
-    }
-
-    return spaceUserRole;
   }
 
   /**
