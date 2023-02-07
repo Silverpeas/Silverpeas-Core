@@ -68,7 +68,7 @@ import static org.silverpeas.core.util.CollectionUtil.asList;
  */
 @UnitTest
 @EnableSilverTestEnv
-class TestPublicationAccessController {
+class PublicationAccessControllerTest {
 
   private static final String USER_ID = "bart";
   private static final String GED_INSTANCE_ID = "kmelia26";

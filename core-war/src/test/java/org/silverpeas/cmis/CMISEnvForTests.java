@@ -579,9 +579,12 @@ public abstract class CMISEnvForTests {
         spaceAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
         true);
     when(spaceAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(spaceAccessControl.hasUserSpaceManagementAuthorization(anyString(), anyString())).thenReturn(true);
     when(componentAccessControl.isUserAuthorized(anyString(),
         any(ResourceIdentifier.class))).thenReturn(true);
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
+        .thenReturn(Set.of(SilverpeasRole.WRITER, SilverpeasRole.READER));
     when(componentAccessControl.filterAuthorizedByUser(anyCollection(), anyString())).then(
         (Answer<Stream<String>>) invocation -> {
           Collection<String> compInstIds = invocation.getArgument(0);

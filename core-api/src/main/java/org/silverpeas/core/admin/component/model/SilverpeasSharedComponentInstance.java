@@ -26,12 +26,16 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.SpaceAccessControl;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
@@ -66,11 +70,19 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
    */
   @Override
   default boolean canBeModifiedBy(User user) {
-    return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
+    return SpaceAccessControl.get().hasUserSpaceManagementAuthorization(user.getId(), getSpaceId());
   }
 
+  /**
+   * Can the user add contributions into a shared component instance?
+   * @param user a user in Silverpeas.
+   * @return true if he can, false otherwise.
+   * @see Securable#canBeFiledInBy(User) 
+   */
   @Override
   default boolean canBeFiledInBy(User user) {
-    return canBeModifiedBy(user);
+    final Set<SilverpeasRole> role = ComponentAccessControl.get()
+        .getUserRoles(user.getId(), getId(), AccessControlContext.init());
+    return role.stream().anyMatch(r -> r.isGreaterThanOrEquals(SilverpeasRole.WRITER));
   }
 }

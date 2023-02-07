@@ -29,9 +29,14 @@ import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.DefaultSilverpeasComponentDataProvider;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
+import org.silverpeas.core.admin.component.service.DefaultSilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -43,6 +48,7 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -53,10 +59,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.silverpeas.core.security.authorization.ComponentInstanceAccessControlExtension.Constants.NAME_SUFFIX;
 
 /**
  *
@@ -64,7 +70,7 @@ import static org.mockito.Mockito.when;
  */
 @UnitTest
 @EnableSilverTestEnv
-class TestComponentAccessController {
+class ComponentAccessControllerTest {
   private static final String toolId = "toolId";
   private static final String componentAdminId = "ADMIN";
   private static final String componentId = "kmelia18";
@@ -88,6 +94,14 @@ class TestComponentAccessController {
   private PersonalComponentRegistry personalComponentRegistry;
   @TestManagedMock
   private RemovedSpaceAndComponentInstanceChecker checker;
+  @TestManagedBean
+  private DefaultSilverpeasComponentInstanceProvider componentInstanceProvider;
+  @TestManagedBean
+  private DefaultSilverpeasComponentDataProvider componentDataProvider;
+  @TestManagedBean
+  private WAComponentRegistry componentRegistry;
+  @TestManagedBean
+  private DefaultInstanceAccessControlExtension defaultInstanceAccessControlExtension;
 
   private ComponentAccessControl instance;
 
@@ -95,7 +109,7 @@ class TestComponentAccessController {
 
   @BeforeEach
   void setup() {
-    when(ServiceProvider.getService(RemovedSpaceAndComponentInstanceChecker.class)).thenReturn(checker);
+    when(ServiceProvider.getService(endsWith(NAME_SUFFIX))).thenReturn(defaultInstanceAccessControlExtension);
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     final UserDetail user = new UserDetail();
     user.setId(USER_ID);

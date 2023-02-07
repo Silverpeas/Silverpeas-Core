@@ -42,7 +42,6 @@ import org.silverpeas.core.util.SettingBundle;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.notification.user.client.CurrentUserNotificationContext.getCurrentUserNotificationContext;
 
@@ -258,67 +257,6 @@ class CurrentUserNotificationContextTest {
       throws Exception {
     currentUser.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     assertThat(UserDetail.getCurrentRequester().isAccessDomainManager(), is(true));
-    enableLimitationAt(3);
-    getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
-  }
-
-  // Space administrator
-
-  @Test
-  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationNotEnabled()
-      throws Exception {
-    currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-    assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
-    getCurrentUserNotificationContext().checkManualUserNotification(null);
-  }
-
-  @Test
-  void checkManualUserNotificationWithNullNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationEnabled() {
-    assertThrows(NullPointerException.class, () -> {
-      currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-      assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
-      enableLimitationAt(1);
-      getCurrentUserNotificationContext().checkManualUserNotification(null);
-    });
-  }
-
-  @Test
-  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationNotEnabled()
-      throws Exception {
-    currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-    assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
-    getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
-  }
-
-  @Test
-  void checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentSpaceAdminUserAndLimitationEnabled()
-      throws Exception {
-    currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-    assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
-    enableLimitationAt(1);
-    getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
-  }
-
-  @Test
-  void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationNotEnabled() throws Exception {
-    currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-    assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
-    getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
-  }
-
-  @Test
-  void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationEnabled() throws Exception {
-    currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-    assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
-    enableLimitationAt(2);
-    getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(2));
-  }
-
-  @Test
-  void checkManualUserNotificationWithCurrentSpaceAdminUserAndLimitationEnabledAndNbReceiversOverLimit()
-      throws Exception {
-    currentUser.setAccessLevel(UserAccessLevel.SPACE_ADMINISTRATOR);
-    assertThat(UserDetail.getCurrentRequester().isAccessSpaceManager(), is(true));
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
   }

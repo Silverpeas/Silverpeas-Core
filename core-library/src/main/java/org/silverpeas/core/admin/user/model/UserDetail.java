@@ -513,11 +513,6 @@ public class UserDetail implements User {
   }
 
   @Override
-  public boolean isAccessSpaceManager() {
-    return UserAccessLevel.SPACE_ADMINISTRATOR.equals(accessLevel);
-  }
-
-  @Override
   public boolean isAccessPdcManager() {
     return UserAccessLevel.PDC_MANAGER.equals(accessLevel);
   }

@@ -520,6 +520,27 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
+  public List<String> getSpaceUserProfilesBySpaceId(String userId, String spaceId) {
+    try {
+      return getAdminService().getSpaceUserProfilesBySpaceId(userId, spaceId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return emptyList();
+    }
+  }
+
+  @Override
+  public Map<String, Set<String>> getSpaceUserProfilesBySpaceIds(final String userId,
+      final Collection<String> spaceIds) {
+    try {
+      return getAdminService().getSpaceUserProfilesBySpaceIds(userId, spaceIds);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return emptyMap();
+    }
+  }
+
+  @Override
   public String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId) {
     try {
       return getAdminService().getProfilesByObjectAndUserId(objectId, componentId, userId);
@@ -828,6 +849,16 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;
+    }
+  }
+
+  @Override
+  public UserSpaceAvailabilityChecker getUserSpaceAvailabilityChecker(final String userId) {
+    try {
+      return getAdminService().getUserSpaceAvailabilityChecker(userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new UserSpaceAvailabilityChecker(userId);
     }
   }
 

@@ -234,12 +234,6 @@ public interface User extends Serializable, Comparable<User> {
   boolean isAccessDomainManager();
 
   /**
-   * Indicates if the user has space manager access on the platform.
-   * @return true if space manager access, false otherwise.
-   */
-  boolean isAccessSpaceManager();
-
-  /**
    * Indicates if the user has PDC manager access on the platform.
    * @return true if PDC manager access, false otherwise.
    */

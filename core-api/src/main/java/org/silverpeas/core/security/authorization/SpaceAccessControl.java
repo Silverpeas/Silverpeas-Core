@@ -40,4 +40,23 @@ public interface SpaceAccessControl extends AccessController<String> {
   default boolean isUserAuthorized(String userId, ResourceIdentifier id) {
     return isUserAuthorized(userId, id.asString());
   }
+
+  /**
+   * Checks if the specified user may manage the specified space represented by its identifier.
+   * @param userId the unique identifier of the user.
+   * @param spaceId the full identifier of a space.
+   * @return true if space management is granted, false otherwise.
+   */
+  default boolean hasUserSpaceManagementAuthorization(String userId, String spaceId) {
+    return hasUserSpaceManagementAuthorization(userId, spaceId, AccessControlContext.init());
+  }
+
+  /**
+   * Checks if the specified user may manage the specified space represented by its identifier.
+   * @param userId the unique identifier of the user.
+   * @param spaceId the full identifier of a space.
+   * @param context the context in which the space is accessed.
+   * @return true if space management is granted, false otherwise.
+   */
+  boolean hasUserSpaceManagementAuthorization(String userId, String spaceId, AccessControlContext context);
 }

@@ -65,7 +65,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  */
 @UnitTest
 @EnableSilverTestEnv
-class TestNodeAccessController {
+class NodeAccessControllerTest {
 
   private final static String A_NODE_ID = "26";
   private final static String userId = "5";
@@ -957,7 +957,7 @@ class TestNodeAccessController {
     private boolean rightsOnTopicEnabled = false;
     private boolean givingNodeInstanceDirectly = false;
 
-    TestCaseBuilder(final TestNodeAccessController testInstance, final SilverpeasRole componentRole) {
+    TestCaseBuilder(final NodeAccessControllerTest testInstance, final SilverpeasRole componentRole) {
       this.organizationController = testInstance.organizationController;
       this.componentAccessController = testInstance.componentAccessController;
       this.nodeService = testInstance.nodeService;

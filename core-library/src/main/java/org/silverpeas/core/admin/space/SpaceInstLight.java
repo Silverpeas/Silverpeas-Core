@@ -326,10 +326,15 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
    */
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
-        && (user.isAccessAdmin() || user.isAccessSpaceManager());
+    return SpaceAccessControl.get().hasUserSpaceManagementAuthorization(user.getId(), getId());
   }
 
+  /**
+   * Can the user add spaces or component instances into this space?
+   * @param user a user in Silverpeas.
+   * @return true if he can, false otherwise.
+   * @see Securable#canBeFiledInBy(User)
+   */
   @Override
   public boolean canBeFiledInBy(final User user) {
     return canBeModifiedBy(user);

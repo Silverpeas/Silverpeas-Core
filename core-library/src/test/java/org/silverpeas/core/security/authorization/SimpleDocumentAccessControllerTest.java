@@ -64,7 +64,7 @@ import static org.mockito.Mockito.*;
  */
 @UnitTest
 @EnableSilverTestEnv
-class TestSimpleDocumentAccessController {
+class SimpleDocumentAccessControllerTest {
 
   private static final String USER_ID = "bart";
   private static final String GED_INSTANCE_ID = "kmelia26";

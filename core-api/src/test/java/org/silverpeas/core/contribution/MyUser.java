@@ -152,11 +152,6 @@ public class MyUser implements User {
   }
 
   @Override
-  public boolean isAccessSpaceManager() {
-    return getAccessLevel() == UserAccessLevel.SPACE_ADMINISTRATOR;
-  }
-
-  @Override
   public boolean isAccessPdcManager() {
     return getAccessLevel() == UserAccessLevel.PDC_MANAGER;
   }

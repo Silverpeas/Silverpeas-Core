@@ -763,7 +763,7 @@ public class UserManager {
     SpaceUserRoleRow[] spaceRoles =
         organizationSchema.spaceUserRole().getDirectSpaceUserRolesOfUser(userIdAsInt);
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
-      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(userIdAsInt, spaceRole.id);
+      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(userIdAsInt, spaceRole.getId());
     }
 
     GroupUserRoleTable groupUserRoleTable = OrganizationSchema.get().groupUserRole();

@@ -36,18 +36,44 @@ import java.util.Set;
 
 /**
  * The core predefined user roles in Silverpeas. Each role has a name and is attached to a
- * predefined set of privileges. Those privileges are common to all the applications in Silverpeas
+ * predefined set of privileges. Those privileges are common to all the applications in Silverpeas,
  * but they can be extended in the applications themselves. As a reminder, a privilege is the
  * ability to perform a given action and in Silverpeas the privileges are hard-coded.
  */
 public enum SilverpeasRole {
+  /**
+   * ADMIN means a component instance administrator (also called manager of component instance)
+   */
   ADMIN("admin"),
+  /**
+   * Special role used essentially into workflows to supervise all tasks managed by in instance.
+   */
   SUPERVISOR("supervisor"),
+  /**
+   * MANAGER means administrator of spaces or groups of users.
+   */
   MANAGER("Manager"),
+  /**
+   * PUBLISHER means a user having rights to publish and to validate contributions into a
+   * component instance.
+   */
   PUBLISHER("publisher"),
+  /**
+   * WRITER means a user having rights to create, update and delete his own contributions into a
+   * component instance.
+   */
   WRITER("writer"),
+  /**
+   * PRIVILEGED_USER means a reader with additional rights specific to some component instances.
+   */
   PRIVILEGED_USER("privilegedUser"),
+  /**
+   * USER means a user having only access rights to resources without any modification rights.
+   */
   USER("user"),
+  /**
+   * READER has same meaning than {@link #USER}.
+   */
   READER("reader");
 
   private final String name;
