@@ -22,18 +22,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication;
-import org.checkerframework.checker.nullness.qual.NonNull;
+
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.annotation.Defined;
 
-import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 

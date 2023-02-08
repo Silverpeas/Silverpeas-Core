@@ -87,7 +87,7 @@ CREATE TABLE calendarJournalCategory (
 );
 
 CREATE TABLE days (
-	day varchar(50) NOT NULL
+	"day" varchar(50) NOT NULL
 );
 
 CREATE TABLE calendarToDo (

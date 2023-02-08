@@ -73,7 +73,6 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Pagination;
 import org.silverpeas.core.util.Pair;
@@ -143,15 +142,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  private void setTranslations(Connection con, Collection<PublicationDetail> publis) {
-    if (publis != null && !publis.isEmpty()) {
+  private void setTranslations(Connection con, Collection<PublicationDetail> publications) {
+    if (publications != null && !publications.isEmpty()) {
       long startTime = System.currentTimeMillis();
       final List<String> publicationIds =
-          publis.stream().map(PublicationDetail::getId).collect(Collectors.toList());
+          publications.stream().map(PublicationDetail::getId).collect(Collectors.toList());
       try {
         final Map<String, List<PublicationI18N>> translations = PublicationI18NDAO
             .getIndexedTranslations(con, publicationIds);
-        publis.forEach(p -> {
+        publications.forEach(p -> {
           PublicationI18N translation = new PublicationI18N(p.getLanguage(), p.getName(),
               p.getDescription(), p.getKeywords());
           p.addTranslation(translation);
@@ -163,7 +162,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         long endTime = System.currentTimeMillis();
         SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat
             .format(" search publication translations in {0} with {1} publications",
-                formatDurationHMS(endTime - startTime), publis.size()));
+                formatDurationHMS(endTime - startTime), publications.size()));
       }
     }
   }
@@ -354,7 +353,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
 
       if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
-        createIndex(detail.getPK(), true, indexOperation);
+        createIndex(detail.getPK(), indexOperation);
       } else if (indexOperation == IndexManager.REMOVE) {
         deleteIndex(detail.getPK());
       }
@@ -750,12 +749,12 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
       boolean filterOnVisibilityPeriod) {
     try (Connection con = getConnection()) {
-      Collection<PublicationDetail> publis =
+      Collection<PublicationDetail> publications =
           PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod);
       if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, publis);
+        setTranslations(con, publications);
       }
-      return publis;
+      return publications;
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -766,12 +765,12 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       boolean filterOnVisibilityPeriod, String userId) {
 
     try (Connection con = getConnection()) {
-      Collection<PublicationDetail> publis =
+      Collection<PublicationDetail> publications =
           PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, userId);
       if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, publis);
+        setTranslations(con, publications);
       }
-      return publis;
+      return publications;
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -995,7 +994,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public void createIndex(PublicationPK pubPK) {
-    createIndex(pubPK, true);
+    createIndex(pubPK, IndexManager.ADD);
   }
 
   private FullIndexEntry getFullIndexEntry(PublicationDetail publi, boolean processContent) {
@@ -1012,7 +1011,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     return indexEntry;
   }
 
-  private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
+  private void createIndex(PublicationPK pubPK, int indexOperation) {
 
     if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
 
@@ -1020,7 +1019,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         PublicationDetail pubDetail = getDetail(pubPK);
         if (pubDetail != null) {
           // Index the Publication Header
-          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
+          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, true);
           IndexEngineProxy.addIndexEntry(indexEntry);
 
           // process aliases
@@ -1030,10 +1029,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         SilverLogger.getLogger(this).error(e);
       }
     }
-  }
-
-  private void createIndex(PublicationPK pubPK, boolean processWysiwygContent) {
-    createIndex(pubPK, processWysiwygContent, IndexManager.ADD);
   }
 
   private FullIndexEntry getFullIndexEntry(PublicationDetail pubDetail) {
@@ -1324,9 +1319,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   /**
-   * Recupere les coordonnees de la publication (collection de nodePK)
+   * Gets the coordinates of the specified publication in the PdC.
    * @param pubId a publication identifier
-   * @param componentId a component identifier
+   * @param componentId a component instance identifier
    * @return a collection of coordinates of the publication in a tree of classification
    */
   @Override
@@ -1343,7 +1338,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
     Collection<Coordinate> coordinates =
         coordinatesService.getCoordinatesByCoordinateIds(coordinateIds, coordinatePK);
-    // Enrichit les coordonnees avec le nom du noeud
+    // Enrich the coordinates with the node name
     Iterator<Coordinate> itCoordinates = coordinates.iterator();
     Iterator<CoordinatePoint> pointsIt;
     while (itCoordinates.hasNext()) {
@@ -1404,7 +1399,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    * @param end date
    * @return List <SocialInformation>
    */
-  @SuppressWarnings("unchecked")
   @Override
   public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId, Date begin,
       Date end) {
@@ -1520,14 +1514,14 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private SilverpeasList<PublicationDetail> performAuthorizedLocation(final Connection con,
       final String userId, final PublicationCriteria criteria,
-      final SilverpeasList<PublicationDetail> publis) {
+      final SilverpeasList<PublicationDetail> publications) {
     if (!criteria.isAliasesTakenIntoAccount()) {
-      return publis;
+      return publications;
     }
     long startTime = System.currentTimeMillis();
     try {
       final Map<String, List<Location>> indexedLocations =
-          PublicationFatherDAO.getAllLocationsByPublicationIds(con, publis.stream()
+          PublicationFatherDAO.getAllLocationsByPublicationIds(con, publications.stream()
               .map(PublicationDetail::getId)
               .collect(Collectors.toSet()));
       final Set<String> instanceIds = new HashSet<>(criteria.getComponentInstanceIds());
@@ -1539,7 +1533,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           .filterAuthorizedByUser(locationsAsNodePKs.keySet(), userId)
           .map(locationsAsNodePKs::get)
           .collect(Collectors.toSet());
-      return publis.stream()
+      return publications.stream()
           .filter(p -> {
             final Optional<Location> result = indexedLocations.get(p.getId()).stream()
                 .filter(authorizedLocations::contains)
@@ -1552,7 +1546,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
             }
             return false;
           })
-          .collect(SilverpeasList.collector(publis));
+          .collect(SilverpeasList.collector(publications));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(failureOnGetting("publications alias", "adjustments"));
       return new SilverpeasArrayList<>(0);
@@ -1560,7 +1554,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       long endTime = System.currentTimeMillis();
       SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat
           .format(" setting authorized locations in {0} with {1} publications",
-              formatDurationHMS(endTime - startTime), publis.size()));
+              formatDurationHMS(endTime - startTime), publications.size()));
     }
   }
 

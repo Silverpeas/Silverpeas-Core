@@ -24,7 +24,6 @@
 package org.silverpeas.core.date;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.annotation.constraint.DateRange;
 
 import javax.persistence.Column;
@@ -38,8 +37,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Objects;
 
@@ -601,13 +598,6 @@ public class Period implements Serializable {
      */
     public Period ofYears(long amount) {
       return of(amount, ChronoUnit.YEARS);
-    }
-
-    private void checkTimeUnit(final ChronoUnit timeUnit) {
-      if (ChronoUnit.HOURS.compareTo(timeUnit) < 0 || ChronoUnit.YEARS.compareTo(timeUnit) > 0) {
-        throw new NotSupportedException(
-            "Only time unit of hours, days, months, years are currently supported in Period");
-      }
     }
   }
 }

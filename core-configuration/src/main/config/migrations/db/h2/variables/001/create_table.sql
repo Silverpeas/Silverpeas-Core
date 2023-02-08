@@ -13,7 +13,7 @@ CREATE TABLE SB_Variables_Variable (
 CREATE TABLE SB_Variables_Value (
   id             VARCHAR(40)    NOT NULL,
   variableId     VARCHAR(40)    NOT NULL,
-  value          VARCHAR(255)   NOT NULL,
+  "value"          VARCHAR(255)   NOT NULL,
   startDate      DATE           NOT NULL,
   endDate        DATE           NOT NULL,
   createDate     TIMESTAMP      NOT NULL,

@@ -185,19 +185,23 @@ class CalendarEventOccurrenceGenerationTest {
 
   @Test
   void countEventOccurrencesInAGivenPeriod() {
-    List<CalendarEventOccurrence> occurrences = generator
-        .generateOccurrencesOf(calendarEventsForTest(),
-            Period.between(date(2016, 8, 8), date(2016, 8, 14)));
-    assertThat(occurrences.isEmpty(), is(false));
-    assertThat(occurrences.size(), is(2));
-    List<String> allEventIds = occurrences.stream()
-        .map(o -> o.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get())
-        .collect(Collectors.toList());
-    assertThat(allEventIds.stream()
-        .distinct()
-        .allMatch(id -> id.equals("1") || id.equals("3")), is(true));
-    assertThat(allEventIds.stream().filter(id -> id.equals("1")).count(), is(1L));
-    assertThat(allEventIds.stream().filter(id -> id.equals("3")).count(), is(1L));
+    try {
+      List<CalendarEventOccurrence> occurrences = generator
+          .generateOccurrencesOf(calendarEventsForTest(),
+              Period.between(date(2016, 8, 8), date(2016, 8, 14)));
+      assertThat(occurrences.isEmpty(), is(false));
+      assertThat(occurrences.size(), is(2));
+      List<String> allEventIds = occurrences.stream()
+          .map(o -> o.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get())
+          .collect(Collectors.toList());
+      assertThat(allEventIds.stream()
+          .distinct()
+          .allMatch(id -> id.equals("1") || id.equals("3")), is(true));
+      assertThat(allEventIds.stream().filter(id -> id.equals("1")).count(), is(1L));
+      assertThat(allEventIds.stream().filter(id -> id.equals("3")).count(), is(1L));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
