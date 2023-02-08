@@ -119,7 +119,7 @@ CREATE TABLE ST_Instance_Data
     componentId   int           NOT NULL,
     name          varchar(100)  NOT NULL,
     label	  varchar(100)  NOT NULL,
-    value	  varchar(400)
+    "value"	  varchar(400)
 );
 
 CREATE TABLE ST_UserRole

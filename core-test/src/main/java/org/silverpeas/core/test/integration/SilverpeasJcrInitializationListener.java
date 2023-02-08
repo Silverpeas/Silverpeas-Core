@@ -3,7 +3,6 @@ package org.silverpeas.core.test.integration;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
 import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.jcr.impl.RepositorySettings;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -34,8 +33,8 @@ public class SilverpeasJcrInitializationListener implements ServletContextListen
   @Override
   public void contextInitialized(final ServletContextEvent sce) {
     SystemWrapper systemWrapper = SystemWrapper.get();
-    systemWrapper.setProperty(RepositorySettings.JCR_HOME, JCR_HOME);
-    systemWrapper.setProperty(RepositorySettings.JCR_CONF, JCR_CONFIG);
+    systemWrapper.setProperty("jcr.home", JCR_HOME);
+    systemWrapper.setProperty("jcr.conf", JCR_CONFIG);
 
     SilverpeasServiceInitialization.start(FILTER);
   }

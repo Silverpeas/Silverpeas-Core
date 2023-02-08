@@ -25,18 +25,16 @@ package org.silverpeas.core.web.authentication;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
-import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -205,7 +203,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier)
       throws ServletException, IOException {
     String url;
-    HttpSession session = request.getSession();
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else if (error != null) {

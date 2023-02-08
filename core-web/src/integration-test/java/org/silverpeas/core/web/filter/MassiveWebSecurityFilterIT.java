@@ -31,11 +31,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
 
-import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -366,8 +365,10 @@ public class MassiveWebSecurityFilterIT {
       urlConfigTest.configure(parameterConfig);
       try {
 
-        new MassiveWebSecurityFilter().doFilter(httpRequest, httpResponse, mock(FilterChain
-            .class));
+        new MassiveWebSecurityFilter().doFilter(httpRequest, httpResponse,
+            (servletRequest, servletResponse) -> {
+              // nothing
+            });
 
         verify(httpResponse, times(injectionHasToBeDetected ? 1 : 0))
             .sendError(eq(HttpServletResponse.SC_FORBIDDEN), contains(messagePart));

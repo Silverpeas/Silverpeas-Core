@@ -35,7 +35,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>6.4-feature12866</version>
+  <version>6.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
   <url>https://www.silverpeas.org/docs/core</url>

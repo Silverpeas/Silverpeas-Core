@@ -11,6 +11,6 @@ CREATE TABLE SB_PDC_Subscription_Axis
 	id			int		NOT NULL ,
 	pdcSubscriptionId	int		NOT NULL ,
 	axisId			int		NOT NULL ,
-	value			varchar (100)
+	"value"			varchar (100)
 )
 ;

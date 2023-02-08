@@ -95,7 +95,7 @@ CREATE TABLE SB_Workflow_UserInfo
   id         int          NOT NULL,
   settingsId int          NOT NULL,
   name       varchar(50)  NOT NULL,
-  value      varchar(100) NULL
+  "value"      varchar(100) NULL
 );
 
 CREATE TABLE SB_Workflow_UserSettings

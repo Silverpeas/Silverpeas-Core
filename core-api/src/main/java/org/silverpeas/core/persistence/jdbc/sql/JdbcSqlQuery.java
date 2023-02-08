@@ -142,6 +142,7 @@ public class JdbcSqlQuery {
    * @param counterName the name of the counter containing the counted number of items.
    * @return the instance of the new sql query.
    */
+  @SuppressWarnings("unused")
   public static JdbcSqlQuery countAllAs(@Nonnull String counterName) {
     return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*) AS").addSqlPart(counterName);
   }
@@ -370,6 +371,7 @@ public class JdbcSqlQuery {
    * @param parameter the parameter that has to be not null.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
+  @SuppressWarnings("unused")
   public JdbcSqlQuery orNotNull(final String parameter) {
     return addSqlPart("OR " + parameter + " IS NOT NULL");
   }
@@ -380,6 +382,7 @@ public class JdbcSqlQuery {
    * @param parameter the parameter that has to be not null.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
+  @SuppressWarnings("unused")
   public JdbcSqlQuery orNull(final String parameter) {
     return addSqlPart("OR " + parameter + " IS NULL");
   }
@@ -562,7 +565,7 @@ public class JdbcSqlQuery {
    * Centralization in order to build easily a SQL values clause.
    */
   private void valuesForInsert() {
-    if (!isSqlQueryCompleted()) {
+    if (isNotSqlQueryCompleted()) {
       sqlQuery.append(") values");
       addListOfParameters(allParameters, false);
     }
@@ -572,7 +575,7 @@ public class JdbcSqlQuery {
    * Centralization in order to build easily a SQL values clause.
    */
   private void finalizeTableCreation() {
-    if (!isSqlQueryCompleted()) {
+    if (isNotSqlQueryCompleted()) {
       sqlQuery.append(")");
     }
   }
@@ -581,7 +584,7 @@ public class JdbcSqlQuery {
    * Indicates if the query seems completed.
    * @return true if query is completed, false otherwise.
    */
-  private boolean isSqlQueryCompleted() {
+  private boolean isNotSqlQueryCompleted() {
     final char lastChar = sqlQuery.charAt(sqlQuery.length() - 1);
     int openParenthesisCount = 0;
     int closeParenthesisCount = 0;
@@ -593,7 +596,7 @@ public class JdbcSqlQuery {
         closeParenthesisCount++;
       }
     }
-    return lastChar == ';' || openParenthesisCount == closeParenthesisCount;
+    return lastChar != ';' && openParenthesisCount != closeParenthesisCount;
   }
 
   private void addListOfParameters(Collection<?> parameters,
@@ -738,6 +741,7 @@ public class JdbcSqlQuery {
    * @return a stream between given discriminant identifiers and the corresponding data.
    * @throws java.sql.SQLException on SQL error.
    */
+  @SuppressWarnings("unused")
   public static <I, T> Stream<T> streamBySplittingOn(final Collection<I> discriminantData,
       final SplitListProcess<I, List<T>> process, Function<T, I> idGetter) throws SQLException {
     final Map<I, T> indexedResult = streamBySplittingOn(discriminantData, process)
@@ -873,6 +877,7 @@ public class JdbcSqlQuery {
       return needRealOriginalSize;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Configuration withResultLimit(final int limit) {
       if (limit < 0) {
         throw new IllegalArgumentException("Invalid limit: expected positive value");
@@ -881,6 +886,7 @@ public class JdbcSqlQuery {
       return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Configuration withOffset(final int offset) {
       if (offset < 0) {
         throw new IllegalArgumentException("Invalid offset: expected positive value");
@@ -889,6 +895,7 @@ public class JdbcSqlQuery {
       return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Configuration ignoreRealOriginalSize() {
       this.needRealOriginalSize = false;
       return this;

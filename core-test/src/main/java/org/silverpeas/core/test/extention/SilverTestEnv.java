@@ -274,9 +274,7 @@ public class SilverTestEnv
             field.isAnnotationPresent(TestedBean.class)) {
           field.trySetAccessible();
           Object bean = field.get(testInstance);
-          if (bean != null) {
-            invokePreDestruction(bean);
-          }
+          invokePreDestruction(bean);
         }
       }
     });
@@ -422,6 +420,9 @@ public class SilverTestEnv
   }
 
   private void invokePreDestruction(final Object bean) {
+    if (bean == null) {
+      return;
+    }
     try {
       Method[] methods = bean.getClass().getDeclaredMethods();
       for (Method method : methods) {

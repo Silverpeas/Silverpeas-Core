@@ -35,7 +35,6 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
@@ -204,7 +203,7 @@ public interface PublicationService {
    *   This method is designed for process performance needs.
    * </p>
    * @param ids the instance ids aimed.
-   * @return a list of {@link Location} instances.
+   * @return a map of {@link Location} instances for each of the specified publications.
    */
   Map<String, List<Location>> getAllLocationsByPublicationIds(Collection<String> ids);
 
@@ -482,15 +481,14 @@ public interface PublicationService {
       Date begin, Date end);
 
   /**
-   * get list of socialInformation of my contacts according to options and number of Item and the
+   * Get list of socialInformation of my contacts according to options and number of Item and the
    * first Index
-   *
-   * @return: List <SocialInformation>
-   * @param myContactsIds
-   * @param options
-   * @param begin
-   * @param end
-   * @return
+   * @param myContactsIds a list of contacts
+   * @param options a list of options
+   * @param begin the start of the date interval in which information are fetched.
+   * @param end the end of the date interval in which information are fetched.
+   * @return a list of publications that were authored by the contacts in the specified interval of
+   * date.
    */
   List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       List<String> myContactsIds, List<String> options, Date begin, Date end);
@@ -498,7 +496,7 @@ public interface PublicationService {
   /**
    * get all publications of given user in state 'Draft'. It returns simple publications in state
    * 'Draft' and cloned publications with a clone in state 'Draft'.
-   * @param userId
+   * @param userId the unique identifier of a user.
    * @return all PublicationDetail in state 'Draft' according to given userId
    */
   Collection<PublicationDetail> getDraftsByUser(String userId);
