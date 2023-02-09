@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -13,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,23 +22,23 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>demandeCongesSimple</name>
+  <behaviors>
+    <behavior>workflow</behavior>
+  </behaviors>
   <label>
     <message lang="fr">Demande de congés simplifiée</message>
     <message lang="en">Simple workflow to ask for a vacation leave</message>
-  </label>
+  <message lang="es">Solicitud de vacaciones simplificada</message></label>
   <description>
     <message lang="fr">Processus : Demande de congés simplifiée</message>
     <message lang="en">Workflow : ask for a vacation leave</message>
-  </description>
+  <message lang="es">Proceso: Solicitud de baja simplificada</message></description>
   <suite>
     <message lang="fr">05 Workflow</message>
     <message lang="en">05 Workflow</message>
-  </suite>
+  <message lang="es">05 Flujo de trabajo</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <router>RprocessManager</router>
@@ -48,11 +47,11 @@
       <label>
         <message lang="fr">Collaborateur</message>
         <message lang="en">Employee</message>
-      </label>
+      <message lang="es">colaborador</message></label>
       <help>
         <message lang="fr">Collaborateur</message>
         <message lang="en">Employee</message>
-      </help>
+      <message lang="es">colaborador</message></help>
       <spaceMapping>
         <profile>writer</profile>
         <profile>reader</profile>
@@ -62,11 +61,11 @@
       <label>
         <message lang="fr">Responsable</message>
         <message lang="en">Manager</message>
-      </label>
+      <message lang="es">Responsable</message></label>
       <help>
         <message lang="fr">Responsable</message>
         <message lang="en">Manager</message>
-      </help>
+      <message lang="es">Responsable</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -75,11 +74,11 @@
       <label>
         <message lang="fr">Superviseur</message>
         <message lang="en">Supervisor</message>
-      </label>
+      <message lang="es">Supervisor</message></label>
       <help>
         <message lang="fr">Superviseur</message>
         <message lang="en">Supervisor</message>
-      </help>
+      <message lang="es">Supervisor</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -91,7 +90,7 @@
       <label>
         <message lang="fr">Modèle abstrait</message>
         <message lang="en">Abstract model</message>
-      </label>
+      <message lang="es">patrón abstracto</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>DemandeCongesSimple/DemandeCongesSimple.xml</value>
@@ -100,14 +99,14 @@
       <help>
         <message lang="fr">Nom du fichier XML contenant le modèle du processsus.</message>
         <message lang="en">XMl file containing the model of the workflow.</message>
-      </help>
+      <message lang="es">Nombre del archivo XML que contiene el modelo de proceso.</message></help>
     </parameter>
     <parameter>
       <name>exportCSV</name>
       <label>
         <message lang="fr">Export CSV</message>
         <message lang="en">CSV export</message>
-      </label>
+      <message lang="es">exportación CSV</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -116,23 +115,39 @@
       <help>
         <message lang="fr">Export des données sous forme d'un fichier CSV.</message>
         <message lang="en">Exporting the workflow data in a CSV file.</message>
-      </help>
+      <message lang="es">Exportar datos como un archivo CSV.</message></help>
     </parameter>
     <parameter>
       <name>fieldsToExport</name>
       <label>
         <message lang="fr">Champs à exporter</message>
         <message lang="en">Fields to export</message>
-      </label>
+      <message lang="es">Campos a exportar</message></label>
       <order>3</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>text</type>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Les champs du workflow à exporter.</message>
         <message lang="en">The fields to be exported.</message>
-      </help>
+      <message lang="es">Los campos de flujo de trabajo para exportar.</message></help>
+    </parameter>
+    <parameter>
+      <name>hideReturn</name>
+      <label>
+        <message lang="fr">Masquer les retours (O/N)</message>
+        <message lang="en">Hide return (Y/N)</message>
+      <message lang="es">Ocultar devoluciones (S/N)</message></label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet aux utilisateurs de ne plus voir l'action "Retour à..."</message>
+        <message lang="en"/>
+      <message lang="es">Permite que los usuarios ya no vean la acción &amp;quot;Volver a...&amp;quot;</message></help>
     </parameter>
   </parameters>
 </WAComponent>
