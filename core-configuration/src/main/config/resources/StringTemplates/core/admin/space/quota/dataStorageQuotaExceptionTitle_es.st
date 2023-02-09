@@ -1,0 +1,1 @@
+Espacio en disco lleno
