@@ -60,7 +60,6 @@
   </view:sp-head-part>
   <view:sp-body-part>
     <script type="text/javascript">
-      let firstLoad = true;
       const domain = '${domain}';
       const options = {
         configOverwrite : {
@@ -72,20 +71,17 @@
         jwt: '${jwt}',
         userInfo: {
           displayName: '${userName}'
-        },
-        onload : function() {
-          if (!firstLoad) {
-            window.postMessage(JSON.stringify({'jitsimeet_event' : 'close'}), "${origin}");
-            <c:if test="${isMobile}">
-            window.close();
-            </c:if>
-          }
-          firstLoad = false;
         }
       };
       const api = new JitsiMeetExternalAPI(domain, options);
-      api.addListener('videoConferenceJoined', function() {
+      api.addListener('browserSupport', function() {
         api.executeCommand('avatarUrl', '${userAvatarUrl}');
+      });
+      api.addListener('readyToClose', function() {
+        window.postMessage(JSON.stringify({'jitsimeet_event' : 'close'}), "${origin}");
+        <c:if test="${isMobile}">
+        window.close();
+        </c:if>
       });
     </script>
   </view:sp-body-part>
