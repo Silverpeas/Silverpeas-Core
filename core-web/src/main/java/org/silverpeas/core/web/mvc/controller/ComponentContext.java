@@ -27,8 +27,8 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 
 /**
- * Built by the main session controller the ComponentContext objects store the context of a component
- * instance : space, user, ... Used by the abstract component session controllers.
+ * Built by the main session controller the ComponentContext objects store the context of a
+ * component instance: space, user, ... Used by the abstract component session controllers.
  * @author nicolas and didier
  */
 public class ComponentContext {
