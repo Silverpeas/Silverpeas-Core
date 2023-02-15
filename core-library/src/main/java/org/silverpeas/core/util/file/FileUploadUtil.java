@@ -23,23 +23,21 @@
  */
 package org.silverpeas.core.util.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
-
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.UtilException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for file uploading.
@@ -47,7 +45,10 @@ import org.silverpeas.core.exception.UtilException;
  */
 public class FileUploadUtil {
 
-  public static final String DEFAULT_ENCODING = CharEncoding.UTF_8;
+  public static final String DEFAULT_ENCODING = Charsets.UTF_8.name();
+
+  private FileUploadUtil() {
+  }
 
   private static final ServletFileUpload upload = new ServletFileUpload(
       new SilverpeasDiskFileItemFactory());
@@ -61,16 +62,14 @@ public class FileUploadUtil {
    * shouldn't be used directly; instead use the HttpRequest instance.
    * @param request the HTTP servlet request.
    * @return a list of file items encoded into the multipart stream of the request.
-   * @throws UtilException if an error occurs while fetching the file items.
+   * @throws SilverpeasRuntimeException if an error occurs while fetching the file items.
    */
-  public static List<FileItem> parseRequest(HttpServletRequest request)
-      throws UtilException {
+  public static List<FileItem> parseRequest(HttpServletRequest request) {
     try {
       // Parse the request
-      return (List<FileItem>) upload.parseRequest(request);
-    } catch (FileUploadException fuex) {
-      throw new UtilException("FileUploadUtil.parseRequest",
-          "Error uploading files", fuex);
+      return upload.parseRequest(request);
+    } catch (FileUploadException e) {
+      throw new SilverpeasRuntimeException("Error uploading files", e);
     }
   }
 
@@ -78,7 +77,7 @@ public class FileUploadUtil {
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
    * @param items the items resulting from parsing the request.
-   * @param parameterName
+   * @param parameterName name of the parameter.
    * @param defaultValue the value to be returned if the parameter is not found.
    * @param encoding the request encoding.
    * @return the parameter value from the list of FileItems. Returns the defaultValue if the
@@ -100,7 +99,7 @@ public class FileUploadUtil {
 
   public static List<String> getParameterValues(List<FileItem> items, String parameterName,
       String encoding) {
-    List<String> values = new ArrayList<String>();
+    List<String> values = new ArrayList<>();
     for (FileItem item : items) {
       if (item.isFormField() && item.getFieldName().startsWith(parameterName)) {
         try {
@@ -117,7 +116,7 @@ public class FileUploadUtil {
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
    * @param items the items resulting from parsing the request.
-   * @param parameterName
+   * @param parameterName the name of the parameter.
    * @param defaultValue the value to be returned if the parameter is not found.
    * @return the parameter value from the list of FileItems. Returns the defaultValue if the
    * parameter is not found.
@@ -129,7 +128,7 @@ public class FileUploadUtil {
   /**
    * Get the parameter value from the list of FileItems. Returns null if the parameter is not found.
    * @param items the items resulting from parsing the request.
-   * @param parameterName
+   * @param parameterName the name of the parameter.
    * @return the parameter value from the list of FileItems. Returns null if the parameter is not
    * found.
    */
@@ -137,19 +136,12 @@ public class FileUploadUtil {
     return getParameter(items, parameterName, null);
   }
 
-  @SuppressWarnings("unchecked")
-  public static String getOldParameter(List items, String parameterName) {
-    return getParameter((List<FileItem>) items, parameterName, null);
+  public static String getOldParameter(List<FileItem> items, String parameterName) {
+    return getParameter(items, parameterName, null);
   }
 
-  @SuppressWarnings("unchecked")
-  public static String getOldParameter(List items, String parameterName, String defaultValue) {
-    return getParameter((List<FileItem>) items, parameterName, defaultValue);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static FileItem getOldFile(List items, String parameterName) {
-    return getFile((List<FileItem>) items, parameterName);
+  public static String getOldParameter(List<FileItem> items, String parameterName, String defaultValue) {
+    return getParameter(items, parameterName, defaultValue);
   }
 
   public static FileItem getFile(List<FileItem> items, String parameterName) {
@@ -170,7 +162,7 @@ public class FileUploadUtil {
     return null;
   }
 
-  public static FileItem getFile(HttpServletRequest request) throws UtilException {
+  public static FileItem getFile(HttpServletRequest request) {
     List<FileItem> items = FileUploadUtil.parseRequest(request);
     return FileUploadUtil.getFile(items);
   }
@@ -184,8 +176,5 @@ public class FileUploadUtil {
 
   public static void saveToFile(File file, FileItem item) throws IOException {
     FileUtils.copyInputStreamToFile(item.getInputStream(), file);
-  }
-
-  private FileUploadUtil() {
   }
 }

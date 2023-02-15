@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Lib
  * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describin
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licen
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -36,7 +36,6 @@ import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.UnsupportedEncodingException;
@@ -62,7 +61,6 @@ import static org.silverpeas.core.util.StringUtil.EMPTY;
  * the implementation of some of its methods to take into account some Silverpeas specificities or
  * needs. For example, the <code>getParameter(java.lang.String)</code> method has been modified to
  * take into account also the parameters passed in a multipart/form-data stream.
- *
  * @author mmoquillon
  */
 public class HttpRequest extends HttpServletRequestWrapper {
@@ -81,7 +79,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
   /**
    * Decorates the specified HTTP servlet request with an HttpRequest instance. If the request is
    * already an HttpRequest instance, then it is simply returned.
-   *
    * @param request the Http servlet request to decorate.
    * @return an HttpRequest instance decorating the specified request.
    */
@@ -95,7 +92,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
   /**
    * Decorates the specified servlet request with an HttpRequest instance. If the request is already
    * an HttpRequest instance, then it is simply returned.
-   *
    * @param request the servlet request to decorate. Must be of type HttpServletRequest.
    * @return an HttpRequest instance decorating the specified request.
    */
@@ -120,7 +116,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Is this request within an anonymous user session?
-   *
    * @return true if the request is sent in the context of an opened user session and this session
    * is for an anonymous user.
    */
@@ -131,8 +126,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Is this request within an opened user session?
-   *
-   * @return true if the request is sent in the context of a Silvepreas user session.
+   * @return true if the request is sent in the context of a Silverpeas user session.
    */
   public boolean isWithinUserSession() {
     return User.getCurrentRequester() != null;
@@ -141,7 +135,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
   /**
    * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> compliant
    * multipart/form-data stream.
-   *
    * @return a list of FileItem instances parsed from the request, in the order that they were
    * transmitted.
    */
@@ -150,26 +143,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
       fileItems = FileUploadUtil.parseRequest(this);
     }
     return fileItems;
-  }
-
-  /**
-   * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> compliant
-   * multipart/form-data stream and returns the item whose the name matches the specified one.
-   *
-   * @param name the name of the data to fetch.
-   * @return the FileItem instance whose the name matches the specified one or null if no such data
-   * exists in the multipart/form-data stream. The file item can be either a file or a parameter.
-   */
-  public FileItem getFileItem(String name) {
-    FileItem item = null;
-    List<FileItem> items = getFileItems();
-    for (FileItem fileItem : items) {
-      if (fileItem.getFieldName().equals(name)) {
-        item = fileItem;
-        break;
-      }
-    }
-    return item;
   }
 
   /**
@@ -196,26 +169,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
-   * Is this request has a cookie with the specified name?
-   *
-   * @param name the name of the cookie.
-   * @return true if a cookie with the specified name is carried by this request, false otherwise.
-   */
-  public boolean hasCookie(String name) {
-    if (StringUtil.isNotDefined(name)) {
-      return false;
-    }
-    boolean found = false;
-    Cookie[] cookies = getCookies();
-    for (int i = 0; i < cookies.length && !found; i++) {
-      found = cookies[i].getName().equals(name);
-    }
-    return found;
-  }
-
-  /**
    * Gets the language of the user behind this request.
-   *
    * @return the language of the user as he has chosen in its profile in Silverpeas.
    */
   public String getUserLanguage() {
@@ -229,7 +183,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}.
-   *
    * @return collection of {@link UploadedFile}. Empty collection if no uploaded file exists.
    */
   public Collection<UploadedFile> getUploadedFiles() {
@@ -243,7 +196,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Get a parameter value as a boolean.
-   *
    * @param attributeName the name of the attribute.
    * @return the value of the attribute as a boolean.
    */
@@ -253,7 +205,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Get a parameter value as a Long.
-   *
    * @param attributeName the name of the attribute.
    * @return the value of the attribute as a long.
    */
@@ -265,9 +216,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * Returns an array of String objects containing all the values the given request parameter
    * has, or null if the parameter does not exist. The parameters from a multipart/form-data stream
    * are also considered by this method, unlike of the default behavior of the decorated request.
-   *
+   * <p>
    * If the parameter has a single value, the array has a length of 1.
-   *
+   * </p>
    * @param name the name of the parameter whose value is requested.
    * @return an array of String objects containing the parameter's values.
    */
@@ -289,7 +240,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * this request. If the request has no parameters, the method returns an empty Enumeration. The
    * parameters from a multipart/form-data stream are also considered by this method, unlike of the
    * default behavior of the decorated request.
-   *
    * @return an Enumeration of String objects, each String containing the name of a request
    * parameter; or an empty Enumeration if the request has no parameters.
    */
@@ -313,12 +263,12 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Returns a java.util.Map of the parameters of this request.
-   *
+   * <p>
    * Request parameters are extra information sent with the request. For HTTP servlets, parameters
    * are contained in the query string or posted form data. The parameters from a
    * multipart/form-data stream are also considered by this method, unlike of the default behavior
    * of the decorated request.
-   *
+   * </p>
    * @return an immutable java.util.Map containing parameter names as keys and parameter values as
    * map values. The keys in the parameter map are of type String. The values in the parameter map
    * are of type String array.
@@ -350,7 +300,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Same as {@link #getParameterMap()} but with a String as value instead of an array of string.
-   *
    * @return an immutable java.util.Map containing parameter names as keys and parameter values as
    * map values. The keys in the parameter map are of type String. The values in the parameter map
    * are of type String.
@@ -367,11 +316,11 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * extracted from the current request.
    * <p>
    * Default parameter names are used:
+   * </p>
    * <ul>
    * <li>selectedIds: parameter name to retrieve selected identifiers.</li>
    * <li>unselectedIds: parameter name to retrieve unselected identifiers.</li>
    * </ul>
-   * </p>
    * @param selectedIds the collection of selected identifiers.
    */
   public void mergeSelectedItemsInto(Collection<String> selectedIds) {
@@ -403,17 +352,19 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * are contained in the query string or posted form data. The parameters from a
    * multipart/form-data stream are also considered by this method, unlike of the default behavior
    * of the decorated request.
-   *
+   * <p>
    * You should only use this method when you are sure the parameter has only one value. If the
    * parameter might have more than one value, use getParameterValues(java.lang.String).
-   *
+   * </p>
+   * <p>
    * If you use this method with a multivalued parameter, the value returned is equal to the first
    * value in the array returned by getParameterValues.
-   *
+   * </p>
+   * <p>
    * If the parameter data was sent in the request body, such as occurs with an HTTP POST request,
    * then reading the body directly via getInputStream() or getReader() can interfere with the
    * execution of this method.
-   *
+   * </p>
    * @param name the name of the parameter.
    * @return the single value of the parameter.
    */
@@ -494,6 +445,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param parameterName the name of the parameter.
    * @return the value of the parameter as a list of boolean.
    */
+  @SuppressWarnings("unused")
   public List<Boolean> getParameterAsBooleanList(String parameterName) {
     return getParameterAsList(parameterName).stream().map(RequestParameterDecoder::asBoolean)
         .collect(Collectors.toList());
@@ -515,6 +467,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param parameterName the name of the parameter.
    * @return the value of the parameter as a list of long.
    */
+  @SuppressWarnings("unused")
   public List<Long> getParameterAsLongList(String parameterName) {
     return getParameterAsList(parameterName).stream().map(RequestParameterDecoder::asLong)
         .collect(Collectors.toList());
@@ -536,6 +489,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param parameterName the name of the parameter.
    * @return the value of the parameter as a list of integer.
    */
+  @SuppressWarnings("unused")
   public List<Integer> getParameterAsIntegerList(String parameterName) {
     return getParameterAsList(parameterName).stream().map(RequestParameterDecoder::asInteger)
         .collect(Collectors.toList());
@@ -558,6 +512,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param dateParameterName the name of the parameter.
    * @return the value of the parameter as a list of date.
    */
+  @SuppressWarnings("unused")
   public List<Date> getParameterAsDateList(String dateParameterName) {
     return getParameterAsList(dateParameterName).stream().map(p -> {
       try {
@@ -601,6 +556,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @param enumClass the class of the expected enum instance.
    * @return the value of the parameter as a list of enum.
    */
+  @SuppressWarnings("unused")
   public <E extends Enum<E>> List<E> getParameterAsEnumList(String parameterName, Class<E> enumClass) {
     return getParameterAsList(parameterName).stream().map(p -> RequestParameterDecoder.asEnum(p, enumClass))
         .collect(Collectors.toList());
@@ -608,7 +564,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   /**
    * Is the content in this request is encoded in a multipart stream.
-   * @return true if the content type of this request is a compilant multipart/form-data stream,
+   * @return true if the content type of this request is a compliant multipart/form-data stream,
    * false otherwise.
    */
   public boolean isContentInMultipart() {
