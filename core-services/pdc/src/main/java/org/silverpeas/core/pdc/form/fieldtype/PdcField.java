@@ -30,7 +30,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
 
 /**
- * A PDC field describes the positions on axis of PDC of a publication.
+ * A PDC field describes the positions of a contribution on the axis of the PdC (Plan of
+ * Classification)
  * @author ahedin
  * @see PdcFieldDisplayer
  */
@@ -43,7 +44,7 @@ public class PdcField extends AbstractField {
   private String value = "";
 
   public PdcField() {
-
+    // nothing  to do
   }
 
   public String getTypeName() {
@@ -90,7 +91,7 @@ public class PdcField extends AbstractField {
     return (getStringValue() == null || getStringValue().trim().equals(""));
   }
 
-  public void setNull() throws FormException {
+  public void setNull() {
     setStringValue(null);
   }
 
@@ -106,7 +107,7 @@ public class PdcField extends AbstractField {
     }
   }
 
-  public void setStringValue(String value) throws FormException {
+  public void setStringValue(String value) {
     this.value = value;
   }
 
@@ -118,19 +119,20 @@ public class PdcField extends AbstractField {
     setStringValue(value);
   }
 
-  public int compareTo(Object o) {
+  @Override
+  public int compareTo(Field o) {
     String s = getStringValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof PdcField) {
-      String t = ((PdcField) o).getStringValue();
+      String t = o.getStringValue();
       if (t == null) {
         t = "";
       }
       return s.compareTo(t);
-    } else if (o instanceof Field) {
-      String t = ((Field) o).getValue("");
+    } else if (o != null) {
+      String t = o.getValue("");
       if (t == null) {
         t = "";
       }

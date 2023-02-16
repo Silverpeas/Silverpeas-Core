@@ -38,27 +38,15 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
  */
 public class GroupField extends AbstractField {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 3278935449715773819L;
   /**
    * The text field type name.
    */
-  static public final String TYPE = "group";
+  public static final String TYPE = "group";
 
-  /**
-   * Returns the type name.
-   */
   @Override
   public String getTypeName() {
     return TYPE;
-  }
-
-  /**
-   * The no parameters constructor
-   */
-  public GroupField() {
   }
 
   /**
@@ -72,7 +60,6 @@ public class GroupField extends AbstractField {
    * Set the group id referenced by this field.
    */
   public void setGroupId(String groupId) {
-
     this.groupId = groupId;
   }
 
@@ -83,9 +70,6 @@ public class GroupField extends AbstractField {
     return false;
   }
 
-  /**
-   * Returns the string value of this field : aka the group name.
-   */
   @Override
   public String getValue() {
 
@@ -119,6 +103,7 @@ public class GroupField extends AbstractField {
    */
   @Override
   public void setValue(String value) throws FormException {
+    // nothing to do
   }
 
   /**
@@ -126,6 +111,7 @@ public class GroupField extends AbstractField {
    */
   @Override
   public void setValue(String value, String language) throws FormException {
+    // nothing to do
   }
 
   /**
@@ -170,28 +156,18 @@ public class GroupField extends AbstractField {
     }
   }
 
-  /**
-   * Returns true if the value is a String and this field isn't read only.
-   */
   @Override
   public boolean acceptObjectValue(Object value) {
     return value instanceof Group && !isReadOnly();
   }
 
-  /**
-   * Returns this field value as a normalized String : a group id
-   */
   @Override
   public String getStringValue() {
     return getGroupId();
   }
 
-  /**
-   * Set this field value from a normalized String : a user id
-   */
   @Override
   public void setStringValue(String value) {
-
     setGroupId(value);
   }
 
@@ -203,27 +179,16 @@ public class GroupField extends AbstractField {
     return !isReadOnly();
   }
 
-  /**
-   * Returns true if this field is not set.
-   */
   @Override
   public boolean isNull() {
     return (getGroupId() == null);
   }
 
-  /**
-   * Set to null this field.
-   *
-   * @throws FormException when the field is mandatory or  when the field is read only.
-   */
   @Override
   public void setNull() throws FormException {
     setGroupId(null);
   }
 
-  /**
-   * Tests equality between this field and the specified field.
-   */
   @Override
   public boolean equals(Object o) {
     String s = getGroupId();
@@ -240,14 +205,14 @@ public class GroupField extends AbstractField {
    * Compares this field with the specified field.
    */
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(Field o) {
     String s = getValue();
     if (s == null) {
       s = "";
     }
 
     if (o instanceof GroupField) {
-      String t = ((GroupField) o).getValue();
+      String t = o.getValue();
       if (t == null) {
         t = "";
       }

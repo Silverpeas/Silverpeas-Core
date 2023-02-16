@@ -158,6 +158,7 @@ public class PublicationsPickerField extends AbstractField {
   /**
    * Set node referenced by this field.
    */
+  @SuppressWarnings("unchecked")
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof List) {
       StringBuilder rawResourceReferences = new StringBuilder();
@@ -242,13 +243,14 @@ public class PublicationsPickerField extends AbstractField {
   /**
    * Compares this field with the specified field.
    */
-  public int compareTo(Object o) {
+  @Override
+  public int compareTo(Field o) {
     String s = getValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof PublicationsPickerField) {
-      String t = ((PublicationsPickerField) o).getValue();
+      String t = o.getValue();
       if (t == null) {
         t = "";
       }

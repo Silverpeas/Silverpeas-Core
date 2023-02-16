@@ -46,12 +46,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
- * ProcessInstance. The instance : instance instance.title instance.<columnName> The model : model
- * model.label model.peas-label The folder : <folderItem> The forms : form.<formName>
- * form.<formName>.title form.<formName>.<fieldItem> The actions : action.<actionName>
- * action.<actionName>.label action.<actionName>.date action.<actionName>.actor The users :
- * participant.<participantName>
+ * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a process
+ * instance.
+ * <ul>
+ *   <li>The process instance: instance.title, instance.&lt;columnName&gt;</li>
+ *   <li>The process model: model, model.label, model.peas-label</li>
+ *   <li>The folder: &lt;folderItem&gt;</li>
+ *   <li>The forms: form.&lt;formName&gt;, form.&lt;formName&gt;.title, form.&lt;formName&gt;.&lt;
+ *   fieldItem&gt;</li>
+ *   <li>The actions: action.&lt;actionName&gt;, action.&lt;actionName&gt;.label, action.&lt;
+ *   actionName&gt;.date, action.&lt;actionName&gt;.actor</li>
+ *   <li>The users: participant.&lt;participantName&gt;</li>
+ * </ul>
  */
 public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord {
 
@@ -74,28 +80,21 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     return null;
   }
 
-  /**
-   * Returns the data record id.
-   */
   @Override
   public String getId() {
     return instance.getInstanceId();
   }
 
-  /**
-   * Returns the named field.
-   * @throw FormException when the fieldName is unknown.
-   */
   @Override
   public Field getField(String fieldName) throws FormException {
     if (fieldName.startsWith("folder.") || fieldName.startsWith("instance.")) {
       int pos = fieldName.indexOf('.');
-      return getFolderField(fieldName.substring(pos + 1, fieldName.length()));
+      return getFolderField(fieldName.substring(pos + 1));
     }
 
     if (fieldName.startsWith("action.")) {
       int pos = fieldName.indexOf('.');
-      return getActionField(fieldName.substring(pos + 1, fieldName.length()));
+      return getActionField(fieldName.substring(pos + 1));
     }
 
     return null;
@@ -120,7 +119,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
       else if (fieldName.endsWith(".actor")) {
         return getActorNameRoField(fieldName);
       } // Relation with action last actor
-      else if (fieldName.indexOf(ACTOR) != -1) {
+      else if (fieldName.contains(ACTOR)) {
         return getRelationRoField(fieldName);
       } else {
         throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
@@ -199,7 +198,8 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     Field field;
     try {
       Item fieldItem = instance.getProcessModel().getDataFolder().getItem(fieldName);
-      Class<? extends Field> fieldImpl = TypeManager.getInstance().getFieldImplementation(fieldItem.getType());
+      Class<? extends Field> fieldImpl =
+          TypeManager.getInstance().getFieldImplementation(fieldItem.getType());
       Class<?>[] noParameterClass = new Class[0];
       Constructor<? extends Field> constructor = fieldImpl.getConstructor(noParameterClass);
       Object[] noParameter = new Object[0];
@@ -226,13 +226,14 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     });
   }
 
-  /**
-   * Returns the field at the index position in the record.
-   * @throw FormException when the fieldIndex is unknown.
-   */
   @Override
   public Field getField(int fieldIndex) {
     return null;
+  }
+
+  @Override
+  public int size() {
+    return -1;
   }
 
   @Override
@@ -240,10 +241,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     return new String[0];
   }
 
-  /**
-   * The process instance whose data are managed by this data record.
-   */
   final String role;
   final String lang;
-  private Map<String, String> rawValues = new HashMap<>();
+  private final Map<String, String> rawValues = new HashMap<>();
 }

@@ -25,12 +25,13 @@ package org.silverpeas.core.workflow.api.model;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;forms&gt; element of a Process Model.
  */
-public interface Forms {
+public interface Forms extends Serializable {
 
   /**
    * Iterate through the Form objects

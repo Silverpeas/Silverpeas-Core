@@ -1681,6 +1681,22 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
+  public List<ProfileInst> getProfiles(final String userId, final String componentId) {
+    List<ProfileInst> profiles = new ArrayList<>();
+    try {
+      var profileIds = List.of(getProfileIds(userId));
+      var componentInst = getComponentInst(componentId);
+      profiles = componentInst.getProfiles().stream()
+          .filter(p -> profileIds.contains(p.getId()))
+          .distinct()
+          .collect(toList());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return profiles;
+  }
+
+  @Override
   public List<ProfileInst> getProfilesByObject(ProfiledObjectId objectRef, String componentId)
       throws AdminException {
     return profiledObjectManager.getProfiles(objectRef, getDriverComponentId(componentId));

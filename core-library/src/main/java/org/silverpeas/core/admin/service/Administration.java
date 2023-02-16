@@ -215,9 +215,9 @@ public interface Administration {
   Map<String, WAComponent> getAllWAComponents();
 
   /**
-   * Gets the component instance related to the given identifier.<br> In contrary to {@link
-   * #getComponentInst(String)}, {@link #getComponentInstLight(String)} signatures, this one is able
-   * to return different kinds of implementation of {@link SilverpeasComponentInstance}:
+   * Gets the component instance related to the given identifier.<br> In contrary to
+   * {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)} signatures, this one
+   * is able to return different kinds of implementation of {@link SilverpeasComponentInstance}:
    * <ul>
    *   <li>{@link PersonalComponentInstance}</li>
    *   <li>{@link ComponentInstLight}</li>
@@ -365,6 +365,16 @@ public interface Administration {
    * @throws AdminException if an error occurs
    */
   ProfileInst getProfileInst(String sProfileId) throws AdminException;
+
+  /**
+   * Gets all the profiles of the specified user in the given component instance. A profile is a
+   * mapping between a role and the privileges the role provides to a user in a given space or
+   * applications in Silverpeas.
+   * @param userId the unique identifier of a user.
+   * @param componentId the unique identifier of a component instance in Silverpeas.
+   * @return a list with the profiles the user has in the given component instance.
+   */
+  List<ProfileInst> getProfiles(String userId, String componentId);
 
   List<ProfileInst> getProfilesByObject(ProfiledObjectId objectRef, String componentId)
       throws AdminException;
@@ -529,7 +539,8 @@ public interface Administration {
    * @return the identifier of the deleted group.
    * @throws AdminException if an error occurs.
    */
-  List<GroupDetail> deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException;
+  List<GroupDetail> deleteGroupById(String sGroupId, boolean onlyInSilverpeas)
+      throws AdminException;
 
   /**
    * Update the given group in Silverpeas and specific.
@@ -553,8 +564,8 @@ public interface Administration {
   void addUserInGroup(String sUserId, String sGroupId) throws AdminException;
 
   /**
-   * Gets all {@link GroupState#VALID} root groups in Silverpeas. A root group is the group of
-   * users without any other parent group.
+   * Gets all {@link GroupState#VALID} root groups in Silverpeas. A root group is the group of users
+   * without any other parent group.
    * @return a list of user groups.
    * @throws AdminException if an error occurs whil getting the root user groups.
    */
@@ -899,12 +910,12 @@ public interface Administration {
   /**
    * This method allows callers to perform several space availability checks for a given user.
    * <p>
-   *   This is useful for treatments requiring highest performances than calling each time
-   *   {@link #isSpaceAvailable(String, String)} for example.
+   * This is useful for treatments requiring highest performances than calling each time
+   * {@link #isSpaceAvailable(String, String)} for example.
    * </p>
    * <p>
-   *   IMPORTANT: the {@link UserSpaceAvailabilityChecker} MUST not be an attribute of a
-   *   singleton instance.
+   * IMPORTANT: the {@link UserSpaceAvailabilityChecker} MUST not be an attribute of a singleton
+   * instance.
    * </p>
    * @param userId the unique identifier of a user
    * @return a {@link UserSpaceAvailabilityChecker} instance initialized for the given user
@@ -1205,8 +1216,7 @@ public interface Administration {
    * Get the profile names of the given user for the given space.
    * @param userId a unique identifier of a user.
    * @param spaceId the unique identifier of a space.
-   * @return an list of all the name of the profiles in which the given user is for the given
-   * space.
+   * @return an list of all the name of the profiles in which the given user is for the given space.
    * @throws AdminException if an error occurs
    */
   List<String> getSpaceUserProfilesBySpaceId(String userId, String spaceId) throws AdminException;
@@ -1215,8 +1225,7 @@ public interface Administration {
    * Gets the space profile names of given user indexed by the given spaces.
    * @param userId a user identifier as string.
    * @param spaceIds list of space identifier as string.
-   * @return a map filled with list of profile name as string by space identifier as
-   * string.
+   * @return a map filled with list of profile name as string by space identifier as string.
    * @throws AdminException if an error occurs
    */
   Map<String, Set<String>> getSpaceUserProfilesBySpaceIds(String userId,
@@ -1244,8 +1253,8 @@ public interface Administration {
   GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException;
 
   /**
-   * For use in userPanel: return recursively the direct {@link GroupState#VALID} subgroups of 
-   * the specified group.
+   * For use in userPanel: return recursively the direct {@link GroupState#VALID} subgroups of the
+   * specified group.
    * @param parentGroupId the unique identifier of the parent group
    * @return an array with all the groups children of the specified group
    * @throws AdminException if an error occurs
@@ -1330,8 +1339,8 @@ public interface Administration {
    * given identifier.
    * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    * @param sSpaceId the unique identifier of a space
-   * @return an array with the identifier of all the component instances in the given space and
-   * its subspaces.
+   * @return an array with the identifier of all the component instances in the given space and its
+   * subspaces.
    * @throws AdminException if an error occurs
    */
   String[] getAllComponentIdsRecur(String sSpaceId) throws AdminException;
@@ -1482,7 +1491,8 @@ public interface Administration {
    * Gets all the groups that were removed in the specified domains. If no domains are specified,
    * then all the domains are taken into account.
    * @param domainIds the unique identifiers of the domains.
-   * @return a list of groups or an empty list if there is no removed groups in the specified domains.
+   * @return a list of groups or an empty list if there is no removed groups in the specified
+   * domains.
    * @throws AdminException if an error occurs
    */
   List<GroupDetail> getRemovedGroups(String... domainIds) throws AdminException;

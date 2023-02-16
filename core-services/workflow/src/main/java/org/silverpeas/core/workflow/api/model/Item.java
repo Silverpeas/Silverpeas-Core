@@ -25,13 +25,14 @@ package org.silverpeas.core.workflow.api.model;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Interface describing a representation of the &lt;item&gt; element of a Process Model.
  */
-public interface Item {
+public interface Item extends Serializable {
   /**
    * Get the name of this item
    * @return item's name
@@ -147,19 +148,19 @@ public interface Item {
 
   /**
    * Create an object implementing Parameter
-   * @return
+   * @return a new parameter.
    */
   Parameter createParameter();
 
   /**
    * Add a Parameter to the collection
-   * @param parameter
+   * @param parameter the parameter to add in this item.
    */
   void addParameter(Parameter parameter);
 
   /**
    * Return an Iterator over the parameters collection
-   * @return
+   * @return an iterator over the parameters of this item.
    */
   Iterator<Parameter> iterateParameter();
 
@@ -171,7 +172,9 @@ public interface Item {
   void removeParameter(String strName) throws WorkflowException;
 
   /**
-   * @return
+   * Gets the parameters as a dictionary of keys to values.
+   * @return a {@link Map} with all the parameters with as key the parameter name and value the
+   * parameter value.
    */
   Map<String, String> getKeyValuePairs();
 }

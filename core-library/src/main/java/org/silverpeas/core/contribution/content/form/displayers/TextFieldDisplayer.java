@@ -45,19 +45,12 @@ import java.util.Map;
 /**
  * A TextFieldDisplayer is an object which can display a TextField in HTML the content of a
  * TextField to a end user and can retrieve via HTTP any updated value.
- *
  * @see Field
  * @see FieldTemplate
  * @see Form
  * @see FieldDisplayer
  */
 public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
-
-  /**
-   * Constructor
-   */
-  public TextFieldDisplayer() {
-  }
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
@@ -78,39 +71,67 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     // Suggestions used ?
-    String paramSuggestions =
-        parameters.containsKey("suggestions") ? parameters.get("suggestions") : "false";
-    boolean useSuggestions = Boolean.valueOf(paramSuggestions);
-    List<String> suggestions = null;
-    if (useSuggestions) {
-      TextFieldImpl textField = (TextFieldImpl) field;
-      suggestions = textField.getSuggestions(fieldName, template.getTemplateName(),
-          pageContext.getComponentId());
-    }
+    String paramSuggestions = parameters.getOrDefault("suggestions", "false");
+    boolean useSuggestions = Boolean.parseBoolean(paramSuggestions);
+    List<String> suggestions =
+        useSuggestions((TextFieldImpl) field, template, pageContext, fieldName, useSuggestions);
 
-    String cssClass = null;
-    if (parameters.containsKey("class")) {
-      cssClass = parameters.get("class");
-      if (cssClass != null) {
-        cssClass = "class=\"" + cssClass + "\"";
+    String cssClass = getCssClass(parameters);
+    String defaultValue = getDefaultValue(template, pageContext);
+    String value = getValue(field, pageContext, defaultValue);
+
+    input textInput = getTextInput(template, fieldName, parameters, cssClass, value);
+    img image = getImage(template, pageContext);
+
+    if (suggestions != null && !suggestions.isEmpty()) {
+      TextFieldImpl.printSuggestionsIncludes(fieldName, out);
+      out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
+
+      out.println(textInput);
+
+      out.println("<div id=\"container" + fieldName + "\"/>\n");
+      out.println("</div>\n");
+
+      if (image != null) {
+        out.println(image);
+      }
+
+      TextFieldImpl.printSuggestionsScripts(fieldName, suggestions, out);
+    } else {
+      if (image != null) {
+        ElementContainer container = new ElementContainer();
+        container.addElement(textInput);
+        container.addElement("&nbsp;");
+        container.addElement(image);
+        out.println(container);
+      } else {
+        out.println(textInput);
       }
     }
+  }
 
-    String defaultValue = getDefaultValue(template, pageContext);
-    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
-
-    if (pageContext.isBlankFieldsUse()) {
-      value = "";
+  private static img getImage(final FieldTemplate template, final PagesContext pageContext) {
+    img image = null;
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
+        isHidden() && pageContext.useMandatory()) {
+      image = new img();
+      image.setSrc(Util.getIcon("mandatoryField"));
+      image.setWidth(5);
+      image.setHeight(5);
+      image.setBorder(0);
     }
+    return image;
+  }
 
+  private static input getTextInput(final FieldTemplate template, final String fieldName,
+      final Map<String, String> parameters, final String cssClass, final String value) {
     input textInput = new input();
     textInput.setName(fieldName);
     textInput.setID(fieldName);
     textInput.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     textInput.setType(template.isHidden() ? input.hidden : input.text);
-    textInput.setMaxlength(parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters
-        .get(TextField.PARAM_MAXLENGTH) : "1000");
-    textInput.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
+    textInput.setMaxlength(parameters.getOrDefault(TextField.PARAM_MAXLENGTH, "1000"));
+    textInput.setSize(parameters.getOrDefault("size", "50"));
     if (parameters.containsKey("border")) {
       textInput.setBorder(Integer.parseInt(parameters.get("border")));
     }
@@ -122,41 +143,38 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
     if (StringUtil.isDefined(cssClass)) {
       textInput.setClass(cssClass);
     }
+    return textInput;
+  }
 
-    img image = null;
-    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
-        isHidden() && pageContext.useMandatory()) {
-      image = new img();
-      image.setSrc(Util.getIcon("mandatoryField"));
-      image.setWidth(5);
-      image.setHeight(5);
-      image.setBorder(0);
+  private static String getValue(final TextField field, final PagesContext pageContext,
+      final String defaultValue) {
+    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+
+    if (pageContext.isBlankFieldsUse()) {
+      value = "";
     }
+    return value;
+  }
 
-    if (suggestions != null && suggestions.size() > 0) {
-      TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
-      out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
-
-      out.println(textInput.toString());
-
-      out.println("<div id=\"container" + fieldName + "\"/>\n");
-      out.println("</div>\n");
-
-      if (image != null) {
-        out.println(image.toString());
-      }
-
-      TextFieldImpl.printSuggestionsScripts(fieldName, suggestions, out);
-    } else {
-      if (image != null) {
-        ElementContainer container = new ElementContainer();
-        container.addElement(textInput);
-        container.addElement("&nbsp;");
-        container.addElement(image);
-        out.println(container.toString());
-      } else {
-        out.println(textInput.toString());
+  private static String getCssClass(final Map<String, String> parameters) {
+    String cssClass = null;
+    if (parameters.containsKey("class")) {
+      cssClass = parameters.get("class");
+      if (cssClass != null) {
+        cssClass = "class=\"" + cssClass + "\"";
       }
     }
+    return cssClass;
+  }
+
+  private static List<String> useSuggestions(final TextFieldImpl field,
+      final FieldTemplate template,
+      final PagesContext pageContext, final String fieldName, final boolean useSuggestions) {
+    List<String> suggestions = null;
+    if (useSuggestions) {
+      suggestions = field.getSuggestions(fieldName, template.getTemplateName(),
+          pageContext.getComponentId());
+    }
+    return suggestions;
   }
 }

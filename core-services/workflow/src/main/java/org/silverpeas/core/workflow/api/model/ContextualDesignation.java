@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of one of the following elements of a Process Model:
  * <ul>
@@ -32,7 +34,7 @@ package org.silverpeas.core.workflow.api.model;
  * <li>&lt;title&gt;</li>
  * </ul>
  */
-public interface ContextualDesignation {
+public interface ContextualDesignation extends Serializable {
 
   /**
    * Get the content of the designation

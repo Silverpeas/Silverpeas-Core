@@ -236,13 +236,13 @@ public class UserField extends AbstractField {
    * Compares this field with the specified field.
    */
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(Field o) {
     String s = getValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof UserField) {
-      String t = ((UserField) o).getValue();
+      String t = o.getValue();
       if (t == null) {
         t = "";
       }

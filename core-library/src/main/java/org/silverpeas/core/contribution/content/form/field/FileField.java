@@ -37,22 +37,14 @@ public class FileField extends TextField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = TYPE_FILE;
-  static public final String PARAM_ID_SUFFIX = "_id";
+  public static final String TYPE = TYPE_FILE;
+  public static final String PARAM_ID_SUFFIX = "_id";
 
-  /**
-   * Returns the type name.
-   */
   @Override
   public String getTypeName() {
     return TYPE;
   }
 
-  /**
-   * The no parameters constructor
-   */
-  public FileField() {
-  }
 
   public String getAttachmentId() {
     return attachmentId;
@@ -62,18 +54,11 @@ public class FileField extends TextField {
     this.attachmentId = attachmentId;
   }
 
-
-  /**
-   * Returns the string value of this field.
-   */
   @Override
   public String getStringValue() {
-    return attachmentId;
+    return getAttachmentId();
   }
 
-  /**
-   * Set the string value of this field.
-   */
   @Override
   public void setStringValue(String value) {
     this.attachmentId = value;
@@ -86,8 +71,16 @@ public class FileField extends TextField {
 
   @Override
   public boolean isReadOnly() {
-    // TODO Auto-generated method stub
     return false;
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import java.io.Serializable;
+
 /**
  * Interface describing a representation of the &lt;parameter&gt; element of a Process Model.
  */
-public interface Parameter {
+public interface Parameter extends Serializable {
   /**
    * Get the name of the Parameter
    * @return parameter's name

@@ -38,7 +38,7 @@ import java.util.Map;
 public class DummyDataRecord implements DataRecord {
 
   private static final long serialVersionUID = -3169937693303520239L;
-  private Field field;
+  private final Field field;
 
   public DummyDataRecord() {
     field = new TextFieldImpl();
@@ -48,33 +48,21 @@ public class DummyDataRecord implements DataRecord {
     this.field = field;
   }
 
-  /**
-   * Returns the data record id.
-   */
   @Override
   public String getId() {
     return "id";
   }
 
-  /**
-   * Gives an id to the data record.
-   */
   @Override
   public void setId(String externalId) {
     // nothing to do
   }
 
-  /**
-   * Return true if this record has not been inserted in a RecordSet.
-   */
   @Override
   public boolean isNew() {
     return true;
   }
 
-  /**
-   * Returns the named field.
-   */
   @Override
   public Field getField(String fieldName) {
     return field;
@@ -85,12 +73,14 @@ public class DummyDataRecord implements DataRecord {
     return field;
   }
 
-  /**
-   * Returns the field at the index position in the record.
-   */
   @Override
   public Field getField(int fieldIndex) {
     return field;
+  }
+
+  @Override
+  public int size() {
+    return 1;
   }
 
   @Override

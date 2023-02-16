@@ -31,77 +31,61 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import java.io.Serializable;
 
 /**
- * An Identified RecordTemplate adds a database id and an external id to a RecordTemplate.
+ * A {@link IdentifiedRecordTemplate} decorates a {@link RecordTemplate} with a database identifier
+ * and an external identifier.
  */
 public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   private static final long serialVersionUID = 1L;
   private int id = -1;
   private String externalId;
-  private RecordTemplate wrappedTemplate;
+  private final RecordTemplate wrappedTemplate;
   private String templateName;
   private boolean encrypted;
 
   /**
    * A IdentifiedRecordTemplate is built upon a wrapped template.
+   * @param wrappedTemplate another {@link RecordTemplate} instance.
    */
   public IdentifiedRecordTemplate(RecordTemplate wrappedTemplate) {
     this.wrappedTemplate = wrappedTemplate;
   }
 
   /**
-   * Returns the wrapped template.
+   * Gets the wrapped template.
+   * @return the wrapped {@link RecordTemplate} instance.
    */
   public RecordTemplate getWrappedTemplate() {
     return wrappedTemplate;
   }
 
-  /**
-   * Returns all the field names of the DataRecord built on this template.
-   */
   public String[] getFieldNames() {
     return wrappedTemplate.getFieldNames();
   }
 
-  /**
-   * Returns all the field templates.
-   */
   public FieldTemplate[] getFieldTemplates() throws FormException {
     return wrappedTemplate.getFieldTemplates();
   }
 
-  /**
-   * Returns the FieldTemplate of the named field.
-   * @throws FormException if the field name is unknown.
-   */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     return wrappedTemplate.getFieldTemplate(fieldName);
   }
 
-  /**
-   * Returns the field index of the named field.
-   * @throws FormException if the field name is unknown.
-   */
-  public int getFieldIndex(String fieldName) throws FormException {
+ public int getFieldIndex(String fieldName) throws FormException {
     return wrappedTemplate.getFieldIndex(fieldName);
   }
 
-  /**
-   * Returns an empty DataRecord built on this template.
-   */
-  public DataRecord getEmptyRecord() throws FormException {
+ public DataRecord getEmptyRecord() throws FormException {
     return wrappedTemplate.getEmptyRecord();
   }
 
-  /**
-   * Returns true if the data record is built on this template and all the constraints are ok.
-   */
   public boolean checkDataRecord(DataRecord record) {
     return wrappedTemplate.checkDataRecord(record);
   }
 
   /**
-   * Returns the external template id.
+   * Gets the external template id.
+   * @return the external identifier set.
    */
   public String getExternalId() {
     return externalId;
@@ -109,6 +93,7 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Gives an external id to the template.
+   * @param externalId an identifier.
    */
   public void setExternalId(String externalId) {
     if (this.externalId == null) {
@@ -117,14 +102,16 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
   }
 
   /**
-   * Gets the internal id.
+   * Gets the internal identifier. It is for internal mechanism.
+   * @return an identifier.
    */
   public int getInternalId() {
     return id;
   }
 
   /**
-   * Sets the internal id.
+   * Sets the internal identifier to this template. It is for internal mechanism.
+   * @param id an internal identifier.
    */
   public void setInternalId(int id) {
     if (this.id == -1) {

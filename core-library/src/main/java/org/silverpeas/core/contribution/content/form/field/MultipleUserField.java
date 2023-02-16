@@ -140,7 +140,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
-   * @throws FormException
    */
   @Override
   public void setValue(String value, String language) {
@@ -176,7 +175,6 @@ public class MultipleUserField extends AbstractField {
 
   /**
    * Set user referenced by this field.
-   * @throws FormException
    */
   @Override
   public void setObjectValue(Object value) throws FormException {
@@ -226,7 +224,7 @@ public class MultipleUserField extends AbstractField {
       while (tokenizer.hasMoreTokens()) {
         extractedIds.add(tokenizer.nextToken());
       }
-      setUserIds(extractedIds.toArray(new String[extractedIds.size()]));
+      setUserIds(extractedIds.toArray(new String[0]));
     }
   }
 
@@ -287,7 +285,7 @@ public class MultipleUserField extends AbstractField {
    * Compares this field with the specified field. This is nonsense to compare arrays.
    */
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(Field o) {
     return 0;
   }
 

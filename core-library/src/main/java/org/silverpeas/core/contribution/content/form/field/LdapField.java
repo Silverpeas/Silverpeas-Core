@@ -37,6 +37,7 @@ import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A LdapField stores a value of ldap field.
@@ -55,6 +56,8 @@ public class LdapField extends TextField {
    * The ldap field dynamic variable login.
    */
   public static final String VARIABLE_LOGIN = "$$login";
+  private static final String LDAP_FIELD_SEARCH_LDAP = "LdapField.searchLdap";
+  private static final String FORM_EX_CANT_SEARCH_LDAP = "form.EX_CANT_SEARCH_LDAP";
 
   private String value = "";
 
@@ -154,21 +157,10 @@ public class LdapField extends TextField {
   public Collection<String> searchLdap(LDAPConnection ldapConnection, String baseDn,
       String scope, String filter, String attribute, boolean typesOnly,
       String currentUserId) throws FormException {
-    Collection<String> listRes = new ArrayList<>();
-
-    LDAPSearchResults searchResult = null;
-
     // parsing filter -> dynamic variable
-    if (filter != null && filter.contains(VARIABLE_LOGIN)) {
-      try {
-        String valueLogin = User.getById(currentUserId).getLogin();
-        filter = filter.replace(VARIABLE_LOGIN, valueLogin);
-      } catch (Exception e) {
-        throw new FormException("LdapField.searchLdap",
-            "form.EX_CANT_SEARCH_LDAP", "Can't get login of the currentUser", e);
-      }
-    }
+    filter = parseFilter(filter, currentUserId);
 
+    LDAPSearchResults searchResult;
     String[] tabSearchAttribute = null;
     try {
       int scopeInt = LDAPConnection.SCOPE_SUB;
@@ -182,39 +174,70 @@ public class LdapField extends TextField {
       searchResult = ldapConnection.search(baseDn, scopeInt, filter,
           tabSearchAttribute, typesOnly);
     } catch (Exception e) {
-      throw new FormException("LdapField.searchLdap",
-          "form.EX_CANT_SEARCH_LDAP", e);
+      throw new FormException(LDAP_FIELD_SEARCH_LDAP,
+          FORM_EX_CANT_SEARCH_LDAP, e);
     }
 
-    if (searchResult != null) {
-      LDAPEntry entry;
-      int nbReaded = 0;
-      LDAPAttribute ldapAttribute;
-      String theValue = null;
-      try {
-        while (searchResult.hasMore()
-            && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
-          entry = searchResult.next();
+    if (searchResult == null) {
+      return List.of();
+    }
+    return processSearchResult(ldapConnection, searchResult, tabSearchAttribute);
+  }
 
-          if (tabSearchAttribute != null) {
-            ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);
-            if (ldapAttribute != null) {
-              theValue = ldapAttribute.getStringValue();
-            }
-          } else {
-            theValue = entry.getDN();
-          }
+  private static List<String> processSearchResult(final LDAPConnection ldapConnection,
+      final LDAPSearchResults searchResult, final String[] tabSearchAttribute)
+      throws FormException {
+    List<String> listRes = new ArrayList<>();
+    LDAPEntry entry;
+    int nbReaded = 0;
+    LDAPAttribute ldapAttribute;
+    String theValue = null;
+    try {
+      while (searchResult.hasMore()
+          && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
+        entry = searchResult.next();
 
-          nbReaded++;
-          if (StringUtil.isDefined(theValue)) {
-            listRes.add(theValue);
+        if (tabSearchAttribute != null) {
+          ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);
+          if (ldapAttribute != null) {
+            theValue = ldapAttribute.getStringValue();
           }
+        } else {
+          theValue = entry.getDN();
         }
-      } catch (LDAPException e) {
-        throw new FormException("LdapField.searchLdap",
-            "form.EX_CANT_SEARCH_LDAP", e);
+
+        nbReaded++;
+        if (StringUtil.isDefined(theValue)) {
+          listRes.add(theValue);
+        }
       }
+    } catch (LDAPException e) {
+      throw new FormException(LDAP_FIELD_SEARCH_LDAP,
+          FORM_EX_CANT_SEARCH_LDAP, e);
     }
     return listRes;
+  }
+
+  private static String parseFilter(String filter, final String currentUserId) throws FormException {
+    if (filter != null && filter.contains(VARIABLE_LOGIN)) {
+      try {
+        String valueLogin = User.getById(currentUserId).getLogin();
+        filter = filter.replace(VARIABLE_LOGIN, valueLogin);
+      } catch (Exception e) {
+        throw new FormException(LDAP_FIELD_SEARCH_LDAP,
+            FORM_EX_CANT_SEARCH_LDAP, "Can't get login of the currentUser", e);
+      }
+    }
+    return filter;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

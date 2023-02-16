@@ -26,12 +26,13 @@ package org.silverpeas.core.workflow.api.model;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;dataFolder&gt; element of a Process Model.
  */
-public interface DataFolder {
+public interface DataFolder extends Serializable {
 
   /**
    * Get the items
@@ -41,11 +42,12 @@ public interface DataFolder {
 
   /**
    * Converts this object in a RecordTemplate object
-   * @param role
-   * @param lang
-   * @param disabled
-   * @return the resulting RecordTemplate
-   * @throws WorkflowException
+   * @param role the role the user plays.
+   * @param lang the ISO-631 code of the language in which is written the record.
+   * @param disabled a boolean indicating if the record is disabled or not.
+   * @return the resulting {@link RecordTemplate} instance.
+   * @throws WorkflowException if an error occurs while converting this data folder into a
+   * {@link RecordTemplate} object.
    */
   RecordTemplate toRecordTemplate(String role, String lang, boolean disabled) throws
       WorkflowException;

@@ -25,13 +25,14 @@ package org.silverpeas.core.workflow.api.model;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Interface describing an object holding a collection of <code>ContextualDesignation</code>
  * objects. Does not correspond to any Process Model schema elements.
  */
-public interface ContextualDesignations {
+public interface ContextualDesignations extends Serializable {
 
   /**
    * Iterate through the ContextualDesignation objects
@@ -43,6 +44,7 @@ public interface ContextualDesignations {
    * Create a ContextualDesignation
    * @return an object implementing ContextualDesignation
    */
+  @SuppressWarnings("unused")
   ContextualDesignation createContextualDesignation();
 
   /**

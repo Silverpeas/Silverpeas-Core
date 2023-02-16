@@ -31,38 +31,33 @@ public class DateFieldImpl extends DateField {
   private static final long serialVersionUID = 7900206250697595169L;
   private String value = "";
 
-  public DateFieldImpl() {
-  }
-
-  /**
-   * Returns the string value of this field.
-   */
   @Override
   public String getStringValue() {
     return value;
   }
 
-  /**
-   * Set the string value of this field.
-   */
   @Override
   public void setStringValue(String value) {
     this.value = value;
   }
 
-  /**
-   *
-   */
   @Override
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
 
-  /**
-   * Returns true if the value is read only.
-   */
   @Override
   public boolean isReadOnly() {
     return false;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

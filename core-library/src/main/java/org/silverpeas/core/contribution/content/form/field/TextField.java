@@ -40,11 +40,11 @@ public abstract class TextField extends AbstractField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = "text";
-  static public final String CONTENT_TYPE = "contentType";
-  static public final String CONTENT_TYPE_INT = "int";
-  static public final String CONTENT_TYPE_FLOAT = "float";
-  static public final String PARAM_MAXLENGTH = "maxLength";
+  public static final String TYPE = "text";
+  public static final String CONTENT_TYPE = "contentType";
+  public static final String CONTENT_TYPE_INT = "int";
+  public static final String CONTENT_TYPE_FLOAT = "float";
+  public static final String PARAM_MAXLENGTH = "maxLength";
 
   /**
    * Returns the type name.
@@ -208,26 +208,21 @@ public abstract class TextField extends AbstractField {
    * Compares this field with the specified field.
    */
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(Field o) {
     String s = getStringValue();
     if (s == null) {
       s = "";
     }
+    String t;
     if (o instanceof TextField) {
-      String t = ((TextField) o).getStringValue();
-      if (t == null) {
-        t = "";
-      }
-      return s.compareTo(t);
-    } else if (o instanceof Field) {
-      String t = ((Field) o).getValue("");
-      if (t == null) {
-        t = "";
-      }
-      return s.compareTo(t);
-    } else {
-      return -1;
+      t = o.getStringValue();
+    } else  {
+      t = o.getValue("");
     }
+    if (t == null) {
+      t = "";
+    }
+    return s.compareTo(t);
   }
 
   @Override
