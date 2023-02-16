@@ -5064,6 +5064,7 @@ input.search:focus {
 
 .ui-dialog .ui-dialog-content {
   padding: 1em 1em 0.5em 1em;
+  overflow: inherit;
 }
 
 .ui-dialog .champs-ui-dialog {
