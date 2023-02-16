@@ -25,12 +25,13 @@ package org.silverpeas.core.workflow.api.model;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;actions&gt; element of a Process Model.
  */
-public interface Actions {
+public interface Actions extends Serializable {
 
   /**
    * Iterate through the Action objects
@@ -60,7 +61,7 @@ public interface Actions {
    * Get the action definition with given name
    * @param name action name
    * @return wanted action definition
-   * @throws WorkflowException
+   * @throws WorkflowException if an error occurs while getting the action with the specified name.
    */
   Action getAction(String name) throws WorkflowException;
 

@@ -50,7 +50,7 @@ public class TextFieldImpl extends TextField {
       + " and r.recordId = f.recordId"
       + " and f.fieldName = ?"
       + " and t.externalId = ?"
-      + " order by f.fieldValue asc";
+      + " order by f.fieldValue";
 
   /**
    * Returns the string value of this field.
@@ -104,8 +104,7 @@ public class TextFieldImpl extends TextField {
     return suggestions;
   }
 
-  public static void printSuggestionsIncludes(PagesContext pageContext,
-      String fieldName, PrintWriter out) {
+  public static void printSuggestionsIncludes(String fieldName, PrintWriter out) {
     int zindex = 100;
     out.println("<style type=\"text/css\">\n");
     out.println("	#container" + fieldName + " {\n");
@@ -160,5 +159,15 @@ public class TextFieldImpl extends TextField {
     out.println("		}\n");
     out.println("	});\n");
     out.println("</script>\n");
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

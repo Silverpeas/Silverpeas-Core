@@ -35,8 +35,8 @@ import org.silverpeas.core.util.ArrayUtil;
  */
 public class DummyRecordTemplate implements RecordTemplate {
 
-  private DataRecord dataRecord;
-  private FieldTemplate fieldTemplate;
+  private final DataRecord dataRecord;
+  private final FieldTemplate fieldTemplate;
 
   /**
    * A DummyRecordTemplate is empty.
@@ -46,57 +46,42 @@ public class DummyRecordTemplate implements RecordTemplate {
     dataRecord = new DummyDataRecord();
   }
 
+  /**
+   * Constructs a {@link DummyRecordTemplate} from the specified other {@link RecordTemplate}.
+   * @param template another {@link RecordTemplate} object.
+   * @throws FormException if an error occurs while initializing this {@link DummyRecordTemplate}
+   * object.
+   */
   public DummyRecordTemplate(RecordTemplate template) throws FormException {
     fieldTemplate = new DummyFieldTemplate();
     dataRecord = new GenericDataRecord(template);
   }
 
-  /**
-   * Returns all the field names of the DataRecord built on this template.
-   */
   @Override
   public String[] getFieldNames() {
     return ArrayUtil.emptyStringArray();
   }
 
-  /**
-   * Returns all the field templates.
-   */
   @Override
   public FieldTemplate[] getFieldTemplates() {
     return new FieldTemplate[0];
   }
 
-  /**
-   * Returns the FieldTemplate of the named field.
-   * @throws FormException
-   */
   @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     return fieldTemplate;
   }
 
-  /**
-   * Returns the field index of the named field.
-   * @throws FormException if the field name is unknown.
-   */
   @Override
   public int getFieldIndex(String fieldName) throws FormException {
     return 0;
   }
 
-  /**
-   * Returns an empty DataRecord built on this template.
-   * @throws FormException
-   */
   @Override
   public DataRecord getEmptyRecord() throws FormException {
     return dataRecord;
   }
 
-  /**
-   * Returns true if the data record is built on this template and all the constraints are ok.
-   */
   @Override
   public boolean checkDataRecord(DataRecord record) {
     return true;

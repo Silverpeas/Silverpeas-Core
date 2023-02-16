@@ -96,7 +96,7 @@ public class SequenceField extends TextField {
     } else {
       if (reuseAvailableValues) {
         newValue = startValue;
-        while (values.contains(Integer.valueOf(newValue))) {
+        while (values.contains(newValue)) {
           newValue++;
         }
       } else {
@@ -156,11 +156,12 @@ public class SequenceField extends TextField {
    * @return The string representing the number.
    */
   private static String numberToString(int number, int minLength) {
-    String result = String.valueOf(number);
+    StringBuilder result = new StringBuilder();
+    result.append(number);
     while (result.length() < minLength) {
-      result = "0" + result;
+      result.insert(0, "0");
     }
-    return result;
+    return result.toString();
   }
 
   /**
@@ -179,5 +180,15 @@ public class SequenceField extends TextField {
       }
     }
     return NUMBER_ERROR;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

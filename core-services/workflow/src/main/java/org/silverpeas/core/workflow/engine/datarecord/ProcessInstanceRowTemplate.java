@@ -32,14 +32,10 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Presentation;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
  * ProcessInstanceRowTemplate.
  */
-public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
+public class ProcessInstanceRowTemplate extends ProcessInstanceTemplate {
 
   private static final String PROCESS_INSTANCE_RECORD_TEMPLATE = "ProcessInstanceRecordTemplate";
   private static final String FORM_EXP_UNKNOWN_FIELD = "form.EXP_UNKNOWN_FIELD";
@@ -55,50 +51,7 @@ public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
     init();
   }
 
-  /**
-   * Returns all the field names of the DataRecord built on this template.
-   */
-  public String[] getFieldNames() {
-    if (fieldNames == null) {
-      fieldNames = new String[fields.size()];
-      Iterator<String> names = fields.keySet().iterator();
-      String name;
-      while (names.hasNext()) {
-        name = names.next();
-        try {
-          fieldNames[getFieldIndex(name)] = name;
-        } catch (Exception e) {
-          // can't happen : the name is a key
-        }
-      }
-    }
-    return fieldNames;
-  }
-
-  /**
-   * Returns all the field templates.
-   */
-  public FieldTemplate[] getFieldTemplates() throws FormException {
-    if (fieldTemplates == null) {
-      fieldTemplates = new FieldTemplate[fields.size()];
-      Iterator<String> names = fields.keySet().iterator();
-      String name;
-      while (names.hasNext()) {
-        name = names.next();
-        try {
-          fieldTemplates[getFieldIndex(name)] = getFieldTemplate(name);
-        } catch (Exception e) {
-          // can't happen : the name is a key
-        }
-      }
-    }
-    return fieldTemplates;
-  }
-
-  /**
-   * Returns the FieldTemplate of the named field.
-   * @throw FormException if the field name is unknown.
-   */
+  @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = fields.get(fieldName);
 
@@ -109,10 +62,7 @@ public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
     return indexed.fieldTemplate;
   }
 
-  /**
-   * Returns the FieldTemplate at the given position
-   * @throw FormException if the field index is out of bound.
-   */
+  @Override
   public FieldTemplate getFieldTemplate(int fieldIndex) throws FormException {
     if (0 <= fieldIndex && fieldIndex < fields.size()) {
       return getFieldTemplates()[fieldIndex];
@@ -122,10 +72,6 @@ public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
     }
   }
 
-  /**
-   * Returns the Field index of the named field.
-   * @throw FormException if the field name is unknown.
-   */
   @Override
   public int getFieldIndex(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = fields.get(fieldName);
@@ -137,16 +83,11 @@ public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
     return indexed.index;
   }
 
-  /**
-   * Throws an illegal call exception, since an empty DataRecord can't be built from this template.
-   */
+  @Override
   public DataRecord getEmptyRecord() throws FormException {
     throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
   }
 
-  /**
-   * Returns true if the data record is built on this template.
-   */
   @Override
   public boolean checkDataRecord(DataRecord record) {
     if (record instanceof ProcessInstanceRowRecord) {
@@ -157,9 +98,6 @@ public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
     }
   }
 
-  /**
-   * Builds a Field[] with the correct size().
-   */
   @Override
   public Field[] buildFieldsArray() {
     return new Field[fields.size()];
@@ -179,21 +117,6 @@ public class ProcessInstanceRowTemplate implements ProcessInstanceTemplate {
    * The lang used for this view of the process.
    */
   private final String lang;
-
-  /**
-   * The field names.
-   */
-  private String[] fieldNames = null;
-
-  /**
-   * The field templates.
-   */
-  private FieldTemplate[] fieldTemplates = null;
-
-  /**
-   * The map (fieldName -> IndexedFieldTemplate).
-   */
-  private Map<String, IndexedFieldTemplate> fields = new HashMap<>();
 
   /**
    * Inits the fields

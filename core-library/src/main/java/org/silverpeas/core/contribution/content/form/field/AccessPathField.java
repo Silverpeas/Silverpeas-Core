@@ -31,14 +31,12 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
  * An AccessPathField stores the current access path of the form
- * <p>
  * @see Field
  * @see FieldDisplayer
  */
@@ -48,20 +46,12 @@ public class AccessPathField extends TextField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = "accessPath";
+  public static final String TYPE = "accessPath";
   private String value = "";
 
-  /**
-   * Returns the type name.
-   */
+  @Override
   public String getTypeName() {
     return TYPE;
-  }
-
-  /**
-   * The no parameters constructor
-   */
-  public AccessPathField() {
   }
 
   /**
@@ -92,57 +82,71 @@ public class AccessPathField extends TextField {
       String contentLanguage) {
     StringBuilder currentAccessPath = new StringBuilder();
 
-    // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInstLight> listSpaces =  OrganizationControllerProvider
-          .getOrganisationController().getPathToComponent(componentId);
-      for (SpaceInstLight space : listSpaces) {
-        currentAccessPath.append(space.getName()).append(" > ");
-      }
+      // Space > SubSpace
+      setSpacePath(componentId, currentAccessPath);
 
       // Service
       currentAccessPath.append(OrganizationControllerProvider.getOrganisationController()
           .getComponentInstLight(componentId).getLabel());
 
       // Theme > SubTheme
-      StringBuilder pathString = new StringBuilder();
-      if (nodeId != null) {
-        NodeService nodeService = null;
-        try {
-          nodeService = NodeService.get();
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
+      setNodePath(componentId, nodeId, contentLanguage, currentAccessPath);
+    }
 
-        if (nodeService != null) {
-          NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection<NodeDetail> listPath = nodeService.getPath(nodePk);
-          if (listPath != null) {
-            String nodeName;
-            for (NodeDetail nodeInPath : listPath) {
-              if (!nodeInPath.getNodePK().getId().equals("0")) {
-                if (contentLanguage != null) {
-                  nodeName = nodeInPath.getName(contentLanguage);
-                } else {
-                  nodeName = nodeInPath.getName();
-                }
-                pathString.append(WebEncodeHelper.javaStringToHtmlString(nodeName)).append(" > ");
-              }
-            }
+    return currentAccessPath.toString();
+  }
 
-            if (pathString.length() > 0) {
-              // remove the last ' > ' characters
-              pathString.delete(pathString.length() - 3, pathString.length());
-            }
+  private static void setNodePath(final String componentId, final String nodeId,
+      final String contentLanguage, final StringBuilder currentAccessPath) {
+    StringBuilder pathString = new StringBuilder();
+    if (nodeId == null) {
+      return;
+    }
+
+    NodeService nodeService = NodeService.get();
+    NodePK nodePk = new NodePK(nodeId, componentId);
+    Collection<NodeDetail> listPath = nodeService.getPath(nodePk);
+    if (listPath != null) {
+      String nodeName;
+      for (NodeDetail nodeInPath : listPath) {
+        if (!nodeInPath.getNodePK().getId().equals("0")) {
+          if (contentLanguage != null) {
+            nodeName = nodeInPath.getName(contentLanguage);
+          } else {
+            nodeName = nodeInPath.getName();
           }
+          pathString.append(WebEncodeHelper.javaStringToHtmlString(nodeName)).append(" > ");
         }
       }
 
       if (pathString.length() > 0) {
-        currentAccessPath.append(" > ").append(pathString);
+        // remove the last ' > ' characters
+        pathString.delete(pathString.length() - 3, pathString.length());
       }
     }
 
-    return currentAccessPath.toString();
+    if (pathString.length() > 0) {
+      currentAccessPath.append(" > ").append(pathString);
+    }
+  }
+
+  private static void setSpacePath(final String componentId,
+      final StringBuilder currentAccessPath) {
+    List<SpaceInstLight> listSpaces = OrganizationControllerProvider
+        .getOrganisationController().getPathToComponent(componentId);
+    for (SpaceInstLight space : listSpaces) {
+      currentAccessPath.append(space.getName()).append(" > ");
+    }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

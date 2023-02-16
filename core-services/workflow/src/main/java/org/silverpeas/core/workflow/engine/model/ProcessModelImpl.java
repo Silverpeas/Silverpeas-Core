@@ -80,6 +80,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ProcessModelImpl implements ProcessModel, Serializable {
   private static final long serialVersionUID = -4576686557632464607L;
+  private static final String PROCESS_MODEL = "ProcessModel";
   private String modelId;
   @XmlAttribute
   private String name;
@@ -104,8 +105,8 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
   @XmlElement(type = FormsImpl.class)
   private Forms forms;
 
-  private HashMap<String, RecordTemplate> instanceDataTemplates = new HashMap<>();
-  private HashMap<String, RecordTemplate> rowTemplates = new HashMap<>();
+  private final HashMap<String, RecordTemplate> instanceDataTemplates = new HashMap<>();
+  private final HashMap<String, RecordTemplate> rowTemplates = new HashMap<>();
 
   /**
    * Constructor
@@ -515,13 +516,13 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     // Now, the folder is read from xml file and no more in database
     // This permit to add items to the folder
     IdentifiedRecordTemplate idTemplate;
-    int templateId = -1;
+    int templateId;
     try {
       RecordSet recordSet = getGenericRecordSetManager().getRecordSet(getFolderRecordSetName());
       idTemplate = (IdentifiedRecordTemplate) recordSet.getRecordTemplate();
       templateId = idTemplate.getInternalId();
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_UNKNOWN_RECORD_SET",
+      throw new WorkflowException(PROCESS_MODEL, "workflowEngine.EXP_UNKNOWN_RECORD_SET",
           getFolderRecordSetName(), e);
     }
 
@@ -541,7 +542,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
           getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
 
       /*
-       * If recordset cannot be found, form is a new Form declared after peas instanciation : add it
+       * If recordset cannot be found, form is a new Form declared after peas instantiation: add it
        */
       if (recordSet instanceof DummyRecordSet) {
         Form form = getForm(formName);
@@ -554,7 +555,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
 
       GenericRecordTemplate wrapped = (GenericRecordTemplate) template.getWrappedTemplate();
 
-      GenericFieldTemplate fieldTemplate = null;
+      GenericFieldTemplate fieldTemplate;
       String fieldName;
       String fieldType;
       boolean isMandatory;
@@ -563,12 +564,12 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
       FormImpl form = (FormImpl) getForm(formName);
       FieldTemplate[] fields = form.toRecordTemplate(null, null).getFieldTemplates();
 
-      for (int i = 0; i < fields.length; i++) {
-        fieldName = fields[i].getFieldName();
-        fieldType = fields[i].getTypeName();
-        isMandatory = fields[i].isMandatory();
-        isReadOnly = fields[i].isReadOnly();
-        isHidden = fields[i].isHidden();
+      for (final FieldTemplate field : fields) {
+        fieldName = field.getFieldName();
+        fieldType = field.getTypeName();
+        isMandatory = field.isMandatory();
+        isReadOnly = field.isReadOnly();
+        isHidden = field.isHidden();
 
         fieldTemplate = new GenericFieldTemplate(fieldName, fieldType);
         fieldTemplate.setMandatory(isMandatory);
@@ -580,7 +581,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
 
       return recordSet;
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_UNKNOWN_RECORD_SET",
+      throw new WorkflowException(PROCESS_MODEL, "workflowEngine.EXP_UNKNOWN_RECORD_SET",
           getFormRecordSetName(formName), e);
     }
   }
@@ -615,7 +616,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
       }
     }
 
-    throw new WorkflowException("ProcessModel", "workflowEngine.ERR_NO_CREATE_ACTION_DEFINED");
+    throw new WorkflowException(PROCESS_MODEL, "workflowEngine.ERR_NO_CREATE_ACTION_DEFINED");
   }
 
   /**
@@ -640,13 +641,13 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
   public org.silverpeas.core.contribution.content.form.Form getPresentationForm(String name, String roleName, String lang)
       throws WorkflowException {
     Action action = null;
-    Form form = null;
+    Form form;
 
     if (!"presentationForm".equalsIgnoreCase(name)) {
       try {
         action = getAction(name);
-      } catch (WorkflowException ignoredAtThisStep) {
-        SilverLogger.getLogger(this).error("This is ignored", ignoredAtThisStep);
+      } catch (WorkflowException e) {
+        SilverLogger.getLogger(this).warn(e.getMessage());
       }
     }
 
@@ -680,7 +681,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
         return xmlForm;
       }
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
+      throw new WorkflowException(PROCESS_MODEL, "workflowEngine.EXP_ILL_FORMED_FORM",
           form.getName(), e);
     }
   }
@@ -707,7 +708,7 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
     try {
       return this.getUserInfos().toRecordTemplate(roleName, lang, false).getEmptyRecord();
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
+      throw new WorkflowException(PROCESS_MODEL, "workflowEngine.EXP_ILL_FORMED_FORM",
           "User Infos", e);
     }
   }
@@ -735,9 +736,9 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
         }
       }
 
-      return someRoles.toArray(new String[someRoles.size()]);
+      return someRoles.toArray(new String[0]);
     } catch (Exception e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_FAIL_GET_CREATION_ROLES",
+      throw new WorkflowException(PROCESS_MODEL, "workflowEngine.EXP_FAIL_GET_CREATION_ROLES",
           this.name, e);
     }
   }

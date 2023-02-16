@@ -29,9 +29,7 @@ import org.silverpeas.core.contribution.content.form.field.TextField;
  * A read only TextField
  */
 public class TextRoField extends TextField {
-  /**
-   *
-   */
+
   private static final long serialVersionUID = 1L;
   private final String value;
 

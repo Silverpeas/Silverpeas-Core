@@ -27,104 +27,147 @@ import java.io.Serializable;
 
 /**
  * A Field is an item of a DataRecord. The fields of a record may have different types, but they are
- * all managed via this interface. To be displayed in a jsp page a field must be handled by a
- * specific FieldDisplayer which is aware of the internal data type and format of the field. The
- * links between Fields and FieldDisplayers are managed by a RecordTemplate.
+ * all managed via this interface. To be displayed in a web page a field must be handled by a
+ * specific {@link FieldDisplayer} which is aware of the internal data type and format of the field.
+ * The links between Fields and FieldDisplayers are managed by a {@link RecordTemplate}.
  * @see DataRecord
  * @see FieldDisplayer
  * @see RecordTemplate
  */
-public interface Field extends Serializable, Comparable {
+public interface Field extends Serializable, Comparable<Field> {
 
   String TYPE_FILE = "file";
   String FILE_PARAM_NAME_SUFFIX = "$$id";
 
   /**
-   * Returns the type name of this field.
+   * Gets the type name of this field.
+   * @return the name of this field type.
    */
   String getTypeName();
 
   /**
-   * Returns the normalized value of this field.
+   * Gets the normalized value of this field.
+   * @return the value of this field.
    */
   String getValue();
 
   /**
-   * Set this field value from a normalized string value.
-   * @throws FormException when the field is readOnly or when the string value is ill formed.
+   * Sets the specified normalized value.
+   * @param value the normalized value to set.
+   * @throws FormException when the field is readOnly or when the value format is wrong.
    */
   void setValue(String value) throws FormException;
 
   /**
-   * Returns true if the value isn't ill formed and this field isn't read only.
+   * Is this field is able to accept the specified value?
+   * @return true if the value format is correct and this field isn't read only. False otherwise.
    */
   boolean acceptValue(String value);
 
   /**
-   * Returns the local string value of this field.
+   * Gets the textual value of this field in the specified language.
+   * @param lang the ISO-631 code of a supported language.
+   * @return the value in the specified language.
    */
   String getValue(String lang);
 
   /**
-   * Set this field value from a local string value.
-   * @throws FormException when the field is readOnly or when the string value is ill formed.
+   * Sets the specified textual value in the given language.
+   * @param value a textual value.
+   * @param lang the ISO-631 code of a supported language.
+   * @throws FormException when the field is readOnly or if the value isn't a text.
    */
   void setValue(String value, String lang) throws FormException;
 
   /**
-   * Returns true if the local value isn't ill formed and this field isn't read only.
+   * Is this field is able to accept the specified value in the given language?
+   * @param value a textual value.
+   * @param lang the ISO-631 code of a supported language.
+   * @return true if the local value isn't ill formed and this field isn't read only.
    */
   boolean acceptValue(String value, String lang);
 
   /**
-   * Returns the normalized String value.
+   * Gets the normalized {@link String} value of this field.
+   * @return the {@link String} representation of the value of this field.
    */
   String getStringValue();
 
   /**
-   * Set this field value from a normalized String value.
+   * Sets the specified {@link String} normalized value.
+   * @param value the {@link String} value to set
    * @throws FormException when the field is readOnly or FormException when the value is not a
    * normalized.
    */
   void setStringValue(String value) throws FormException;
 
   /**
-   * Returns true if the value isn't normalized and this field isn't read only.
+   * Is this field able to accept the specified {@link String} value?
+   * @param value a {@link String} value.
+   * @return true if the value isn't normalized and this field isn't read only.
    */
   boolean acceptStringValue(String value);
 
   /**
-   * Returns the value of this field.
+   * Gets the value of this field.
+   * @return an object representing the value of this field.
    */
   Object getObjectValue();
 
   /**
-   * Set this field value.
+   * Sets the specified value.
+   * @param value an {@link Object} representing the value to set.
    * @throws FormException when the field is readOnly or when the value has a wrong type.
    */
   void setObjectValue(Object value) throws FormException;
 
   /**
-   * Returns true if the value hasn't a wrong type and this field isn't read only.
+   * Is this field able to accept the specified value?
+   * @param value a value
+   * @return true if the value hasn't a wrong type and this field isn't read only.
    */
+  @SuppressWarnings("unused")
   boolean acceptObjectValue(Object value);
 
   /**
-   * Returns true if this field is not set.
+   * Is this field valued?
+   * @return true if this field is not set. False otherwise.
    */
   boolean isNull();
 
   /**
-   * Set to null this field.
+   * Sets to null this field.
    * @throws FormException when the field is mandatory or when the field is read only.
    */
   void setNull() throws FormException;
 
+  /**
+   * Gets the occurrence position of this field in the case there is several identical fields in
+   * a {@link DataRecord}. A field is identified by its name.
+   * @return the occurrence position of this field.
+   */
   int getOccurrence();
 
+  /**
+   * Sets the specified occurrence position of this field in a {@link DataRecord} when there is
+   * several similar fields. A field is identified by its name.
+   * @param i the occurrence position.
+   */
   void setOccurrence(int i);
 
+  /**
+   * Sets the name of this field. Its name is its identifier in a {@link DataRecord} or in a
+   * {@link RecordTemplate}.
+   * @param name the name of the field.
+   */
   void setName(String name);
 
+  /**
+   * Gets the name of this field.
+   * @return the field name.
+   */
   String getName();
+
+  @Override
+  int compareTo(Field field);
 }

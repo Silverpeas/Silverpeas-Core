@@ -54,6 +54,9 @@ public abstract class AbstractProcessInstanceDataRecord implements DataRecord {
 
   /**
    * Builds the data record representation of a process instance.
+   * @param instance the instance of a workflow process.
+   * @param role the role played by a user in the process instance.
+   * @param lang the language in which the textual data are set or get within the process instance.
    */
   public AbstractProcessInstanceDataRecord(ProcessInstance instance, String role, String lang)
       throws WorkflowException {
@@ -74,17 +77,11 @@ public abstract class AbstractProcessInstanceDataRecord implements DataRecord {
     return null;
   }
 
-  /**
-   * The id of an instance is immutable.
-   */
   @Override
   public void setId(String externalId) {
     // do nothing
   }
 
-  /**
-   * An instance is always registred.
-   */
   @Override
   public boolean isNew() {
     return true;
@@ -110,6 +107,11 @@ public abstract class AbstractProcessInstanceDataRecord implements DataRecord {
       fields[fieldIndex] = field;
     }
     return field;
+  }
+
+  @Override
+  public int size() {
+    return fields.length;
   }
 
   @Override

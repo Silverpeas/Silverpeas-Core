@@ -30,11 +30,11 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.text.ParseException;
 
 /**
  * A TextField stores a text value.
- *
  * @see Field
  * @see FieldDisplayer
  */
@@ -46,13 +46,11 @@ public abstract class DateField extends AbstractField {
    */
   public static final String TYPE = "date";
 
-  /**
-   * Returns the type name.
-   */
   @Override
   public String getTypeName() {
     return TYPE;
   }
+
 
   public abstract boolean isReadOnly();
 
@@ -79,9 +77,6 @@ public abstract class DateField extends AbstractField {
   private String formatClient(String value, String language) {
     if ((value != null) && (!value.equals(""))) {
       try {
-        /*
-         * Date valueBD = formatterBD.parse(value); value = formatter.format(valueBD);
-         */
         value = DateUtil.getInputDate(value, language);
       } catch (ParseException pe) {
         SilverLogger.getLogger(this).error(pe);
@@ -91,14 +86,8 @@ public abstract class DateField extends AbstractField {
   }
 
   private String formatBD(String newValue, String language) {
-    // SimpleDateFormat formatter = new
-    // SimpleDateFormat(Util.getString("GML.dateFormat", language));
     String dateBD = null;
     try {
-      /*
-       * Date date = null; if ((newValue != null)&&(!newValue.equals(""))) date =
-       * formatter.parse(newValue); if (date != null) dateBD = formatterBD.format(date);
-       */
       dateBD = DateUtil.date2SQLDate(newValue, language);
     } catch (ParseException pe) {
       SilverLogger.getLogger(this).error(pe);
@@ -158,9 +147,6 @@ public abstract class DateField extends AbstractField {
     setStringValue(null);
   }
 
-  /**
-   * Tests equality between this field and the specified field.
-   */
   @Override
   public boolean equals(Object o) {
     String s = getStringValue();
@@ -184,14 +170,14 @@ public abstract class DateField extends AbstractField {
    * Compares this field with the specified field.
    */
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(@Nonnull Field o) {
     String s = getStringValue();
     if (s == null) {
       s = "";
     }
 
     if (o instanceof DateField) {
-      String t = ((DateField) o).getStringValue();
+      String t = o.getStringValue();
       if (t == null) {
         t = "";
       }

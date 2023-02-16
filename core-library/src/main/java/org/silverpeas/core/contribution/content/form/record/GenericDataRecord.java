@@ -44,20 +44,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A GenericDataRecord use a Field[] and a GenericRecordTemplate.
+ * A GenericDataRecord is made up of an array of {@link Field}s and a {@link GenericRecordTemplate}
+ * from which the fields are modelled.
  */
 public class GenericDataRecord implements DataRecord, Serializable {
 
   private static final long serialVersionUID = 1L;
   private int id = -1;
   private String externalId;
-  private Field[] fields;
-  private transient RecordTemplate template;
+  private final Field[] fields;
+  private final transient RecordTemplate template;
   private String language;
-  private Map<String, List<Field>> fieldsByName;
+  private final Map<String, List<Field>> fieldsByName;
 
   /**
-   * A GenericDataRecord is built from a RecordTemplate.
+   * A GenericDataRecord is built from a {@link RecordTemplate} instance.
+   * @param template the template modelling the fields that make this data record.
    */
   public GenericDataRecord(RecordTemplate template) throws FormException {
     this.template = template;
@@ -78,36 +80,27 @@ public class GenericDataRecord implements DataRecord, Serializable {
       fieldsByName.put(fieldName, occurrences);
       allFields.addAll(occurrences);
     }
-    fields = allFields.toArray(new Field[allFields.size()]);
+    fields = allFields.toArray(new Field[0]);
   }
 
-  /**
-   * Returns the data record id. The record is known by its external id.
-   */
   @Override
   public String getId() {
     return externalId;
   }
 
-  /**
-   * Gives an id to the record. Caution ! the record is known by its external id.
-   */
   @Override
   public void setId(String id) {
     this.externalId = id;
   }
 
   /**
-   * Returns all the fields
+   * Gets all the fields set in this data record.
+   * @return an array of {@link Field}s
    */
   public Field[] getFields() {
     return fields;
   }
 
-  /**
-   * Returns the named field.
-   * @throws FormException when the fieldName is unknown.
-   */
   @Override
   public Field getField(String fieldName) throws FormException {
     return getField( fieldName,  0);
@@ -129,10 +122,6 @@ public class GenericDataRecord implements DataRecord, Serializable {
     return field;
   }
 
-  /**
-   * Returns the field at the index position in the record.
-   * @throws FormException when the fieldIndex is unknown.
-   */
   @Override
   public Field getField(int fieldIndex) throws FormException {
     if (fieldIndex >= 0 && fieldIndex < fields.length) {
@@ -142,23 +131,25 @@ public class GenericDataRecord implements DataRecord, Serializable {
     }
   }
 
-  /**
-   * Return true if this record has not been inserted in a RecordSet.
-   */
+  @Override
+  public int size() {
+    return fields.length;
+  }
+
   @Override
   public boolean isNew() {
     return (id == -1);
   }
 
   /**
-   * Gets the internal id. May be used only by a package class !
+   * Gets the internal id. For internal mechanism of record set.
    */
   int getInternalId() {
     return id;
   }
 
   /**
-   * Sets the internal id. May be used only by a package class !
+   * Sets the internal id. For internal mechanism or record set.
    */
   void setInternalId(int id) {
     this.id = id;

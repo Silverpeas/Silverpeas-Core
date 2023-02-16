@@ -94,7 +94,7 @@ public class PdcUserField extends AbstractField {
       String userCardId;
       String userId;
       User user;
-      StringBuilder names = new StringBuilder("");
+      StringBuilder names = new StringBuilder();
       int begin = 0;
       int end = theUserCardIds.indexOf(',', begin);
       while (end != -1) {
@@ -115,7 +115,7 @@ public class PdcUserField extends AbstractField {
       }
 
       if (!names.toString().equals("")) {
-        names = names.deleteCharAt(names.length() - 1);
+        names.deleteCharAt(names.length() - 1);
       }
 
       return names.toString();
@@ -259,13 +259,13 @@ public class PdcUserField extends AbstractField {
    * Compares this field with the specified field.
    */
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(Field o) {
     String s = getValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof PdcUserField) {
-      String t = ((PdcUserField) o).getValue();
+      String t = o.getValue();
       if (t == null) {
         t = "";
       }

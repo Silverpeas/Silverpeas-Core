@@ -34,17 +34,16 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.Collection;
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * An ExplorerField stores a node reference.
- *
  * @see Field
  * @see FieldDisplayer
  */
@@ -54,79 +53,73 @@ public class ExplorerField extends AbstractField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = "explorer";
+  public static final String TYPE = "explorer";
 
-  /**
-   * Returns the type name.
-   */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
 
   /**
-   * The no parameters constructor
-   */
-  public ExplorerField() {
-  }
-
-  /**
-   * Returns the node id referenced by this field (ex : kmelia1-138)
+   * Gets the node id referenced by this field (ex: kmelia1-138)
+   * @return a node identifier.
    */
   public String getNodePK() {
     return pk;
   }
 
   /**
-   * Set the node id referenced by this field.
+   * Sets the node id to be referenced by this field.
+   * @param pk a node identifier.
    */
   public void setNodePK(String pk) {
-
     this.pk = pk;
   }
 
   /**
-   * Returns true if the value is read only.
+   * Is this field is read only?
+   * @return true if the value is read only.
    */
   public boolean isReadOnly() {
     return false;
   }
 
-  /**
-   * Returns the string value of this field : aka the node path.
-   */
+  @Override
   public String getValue() {
     return getValue(I18NHelper.DEFAULT_LANGUAGE);
   }
 
-  /**
-   * Returns the local value of this field. There is no local format for a user field, so the
-   * language parameter is unused.
-   */
+  @Override
   public String getValue(String language) {
-    ResourceReference pk = (ResourceReference) getObjectValue();
-    if (pk == null) {
+    ResourceReference ref = (ResourceReference) getObjectValue();
+    if (ref == null) {
       return "";
     }
 
 
-    return getPath(pk.getInstanceId(), pk.getId(), language);
+    return getPath(ref.getInstanceId(), ref.getId(), language);
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
+  @Override
   public void setValue(String value) throws FormException {
+    // nothing to do
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
+  @Override
   public void setValue(String value, String language) throws FormException {
+    // nothing to do
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
+  @Override
   public boolean acceptValue(String value) {
     return false;
   }
@@ -134,6 +127,7 @@ public class ExplorerField extends AbstractField {
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
+  @Override
   public boolean acceptValue(String value, String language) {
     return false;
   }
@@ -141,6 +135,7 @@ public class ExplorerField extends AbstractField {
   /**
    * Returns the User referenced by this field.
    */
+  @Override
   public Object getObjectValue() {
     if (!StringUtil.isDefined(getNodePK())) {
       return null;
@@ -152,10 +147,11 @@ public class ExplorerField extends AbstractField {
   /**
    * Set node referenced by this field.
    */
+  @Override
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof ResourceReference) {
-      ResourceReference pk = (ResourceReference) value;
-      setNodePK(pk.getInstanceId() + "-" + pk.getId());
+      ResourceReference ref = (ResourceReference) value;
+      setNodePK(ref.getInstanceId() + "-" + ref.getId());
     } else if (value == null) {
       setNodePK(null);
     } else {
@@ -164,31 +160,31 @@ public class ExplorerField extends AbstractField {
     }
   }
 
-  /**
-   * Returns true if the value is a String and this field isn't read only.
-   */
+  @Override
   public boolean acceptObjectValue(Object value) {
     return value instanceof UserDetail && !isReadOnly();
   }
 
   /**
-   * Returns this field value as a normalized String : a user id
+   * Returns this field value as a normalized String: a user id
    */
+  @Override
   public String getStringValue() {
     return getNodePK();
   }
 
   /**
-   * Set this field value from a normalized String : a user id
+   * Set this field value from a normalized String: a user id
    */
+  @Override
   public void setStringValue(String value) {
-
     setNodePK(value);
   }
 
   /**
    * Returns true if this field isn't read only.
    */
+  @Override
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
@@ -196,22 +192,17 @@ public class ExplorerField extends AbstractField {
   /**
    * Returns true if this field is not set.
    */
+  @Override
   public boolean isNull() {
     return (getNodePK() == null);
   }
 
-  /**
-   * Set to null this field.
-   *
-   * @throws FormException when the field is mandatory or when the field is read only.
-   */
+  @Override
   public void setNull() throws FormException {
     setNodePK(null);
   }
 
-  /**
-   * Tests equality between this field and the specified field.
-   */
+  @Override
   public boolean equals(Object o) {
     String s = getNodePK();
 
@@ -223,16 +214,14 @@ public class ExplorerField extends AbstractField {
     }
   }
 
-  /**
-   * Compares this field with the specified field.
-   */
-  public int compareTo(Object o) {
+  @Override
+  public int compareTo(@Nonnull Field o) {
     String s = getValue();
     if (s == null) {
       s = "";
     }
     if (o instanceof ExplorerField) {
-      String t = ((ExplorerField) o).getValue();
+      String t = o.getValue();
       if (t == null) {
         t = "";
       }
@@ -257,6 +246,7 @@ public class ExplorerField extends AbstractField {
     String s = getNodePK();
     return ("" + s).hashCode();
   }
+
   /**
    * The referenced node.
    */
@@ -268,13 +258,9 @@ public class ExplorerField extends AbstractField {
   private String getPath(String componentId, String nodeId, String language) {
     StringBuilder path = new StringBuilder();
 
-    // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInstLight> listSpaces = OrganizationControllerProvider.getOrganisationController()
-          .getPathToComponent(componentId);
-      for (SpaceInstLight space : listSpaces) {
-        path.append(space.getName(language)).append(" > ");
-      }
+      // Space > SubSpace
+      setSpacePath(componentId, language, path);
 
       // Service
       path.append(OrganizationControllerProvider.getOrganisationController()
@@ -282,44 +268,53 @@ public class ExplorerField extends AbstractField {
           .getLabel(language));
 
       // Theme > SubTheme
-      StringBuilder pathString = new StringBuilder();
-      if (nodeId != null) {
-        NodeService nodeService = null;
-        try {
-          nodeService = NodeService.get();
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
-
-        if (nodeService != null) {
-          NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection<NodeDetail> listPath = nodeService.getPath(nodePk);
-          if (listPath != null) {
-            Collections.reverse((List<NodeDetail>) listPath);
-            String nodeName;
-            for (NodeDetail nodeInPath : listPath) {
-              if (!nodeInPath.getNodePK().getId().equals("0")) {
-                if (language != null) {
-                  nodeName = nodeInPath.getName(language);
-                } else {
-                  nodeName = nodeInPath.getName();
-                }
-                pathString.append(nodeName).append(" > ");
-              }
-            }
-
-            if (pathString.length() > 0) {
-              // remove last ' > '
-              pathString.delete(pathString.length() - 3, pathString.length());
-            }
-          }
-        }
-      }
-      if (pathString.length() > 0) {
-        path.append(" > ").append(pathString);
-      }
+      setNodePath(componentId, nodeId, language, path);
     }
 
     return path.toString();
+  }
+
+  private static void setNodePath(final String componentId, final String nodeId,
+      final String language, final StringBuilder path) {
+    StringBuilder pathString = new StringBuilder();
+    if (nodeId == null) {
+      return;
+    }
+
+    NodeService nodeService = NodeService.get();
+    NodePK nodePk = new NodePK(nodeId, componentId);
+    NodePath listPath = nodeService.getPath(nodePk);
+    if (listPath != null) {
+      Collections.reverse(listPath);
+      String nodeName;
+      for (NodeDetail nodeInPath : listPath) {
+        if (!nodeInPath.getNodePK().getId().equals("0")) {
+          if (language != null) {
+            nodeName = nodeInPath.getName(language);
+          } else {
+            nodeName = nodeInPath.getName();
+          }
+          pathString.append(nodeName).append(" > ");
+        }
+      }
+
+      if (pathString.length() > 0) {
+        // remove last ' > '
+        pathString.delete(pathString.length() - 3, pathString.length());
+      }
+    }
+
+    if (pathString.length() > 0) {
+      path.append(" > ").append(pathString);
+    }
+  }
+
+  private static void setSpacePath(final String componentId, final String language,
+      final StringBuilder path) {
+    List<SpaceInstLight> listSpaces = OrganizationControllerProvider.getOrganisationController()
+        .getPathToComponent(componentId);
+    for (SpaceInstLight space : listSpaces) {
+      path.append(space.getName(language)).append(" > ");
+    }
   }
 }

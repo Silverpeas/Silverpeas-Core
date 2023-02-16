@@ -40,37 +40,37 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map (FieldName ->
- * (index,GenericFieldTemplate))
+ * A GenericRecordTemplate is the template for all of the {@link GenericDataRecord}s. It uses a map
+ * in which each field name is mapped to an indexed field template.
  */
 @XmlRootElement(name = "recordTemplate")
 @XmlAccessorType(XmlAccessType.NONE)
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
   private static final long serialVersionUID = 5454875955919676819L;
 
-  private Map<String, IndexedFieldTemplate> fields = new LinkedHashMap<>();
+  private final Map<String, IndexedFieldTemplate> fields = new LinkedHashMap<>();
 
-  @XmlElement(name = "fieldTemplate", type=GenericFieldTemplate.class)
+  @XmlElement(name = "fieldTemplate", type = GenericFieldTemplate.class)
   private List<FieldTemplate> fieldList = new ArrayList<>();
   private String templateName;
 
   /**
-   * A GenericRecordTemplate is built empty : use addFieldTemplate for each field.
+   * The default constructor. It builds an empty template.
    */
   public GenericRecordTemplate() {
     // empty constructor
   }
 
+  /**
+   * Gets all the templates modelling each of them a field of a {@link DataRecord}.
+   * @return a list of {@link FieldTemplate}s.
+   */
   public List<FieldTemplate> getFieldList() {
     return fieldList;
   }
 
-  public void setFieldList(List<FieldTemplate> fieldList) {
-    this.fieldList = new ArrayList<>(fieldList);
-  }
-
   Map<String, IndexedFieldTemplate> getFields() {
-    if (fields == null || fields.isEmpty()) {
+    if (fields.isEmpty()) {
       for (FieldTemplate aFieldList : fieldList) {
         GenericFieldTemplate field = (GenericFieldTemplate) aFieldList;
         field.setTemplateName(templateName);
@@ -82,23 +82,18 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Adds a new field template at the end of this record template.
+   * @param fieldTemplate the template of a field.
    */
   public void addFieldTemplate(FieldTemplate fieldTemplate) {
     IndexedFieldTemplate indexed = new IndexedFieldTemplate(fields.size(), fieldTemplate);
     fields.put(fieldTemplate.getFieldName(), indexed);
   }
 
-  /**
-   * Returns all the field names of the DataRecord built on this template.
-   */
   @Override
   public String[] getFieldNames() {
-    return getFields().keySet().toArray(new String[getFields().size()]);
+    return getFields().keySet().toArray(new String[0]);
   }
 
-  /**
-   * Returns all the field templates.
-   */
   @Override
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldsArray = new FieldTemplate[getFields().keySet().size()];
@@ -108,10 +103,6 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
     return fieldsArray;
   }
 
-  /**
-   * Returns the FieldTemplate of the named field.
-   * @throws FormException if the field name is unknown.
-   */
   @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = getFields().get(fieldName);
@@ -123,10 +114,6 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
     return indexed.fieldTemplate;
   }
 
-  /**
-   * Returns the field index of the named field.
-   * @throws FormException if the field name is unknown.
-   */
   @Override
   public int getFieldIndex(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = getFields().get(fieldName);
@@ -138,20 +125,14 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
     return indexed.index;
   }
 
-  /**
-   * Returns an empty DataRecord built on this template.
-   */
   @Override
   public DataRecord getEmptyRecord() throws FormException {
     return new GenericDataRecord(this);
   }
 
-  /**
-   * Returns true if the data record is built on this template and all the constraints are ok.
-   */
   @Override
   public boolean checkDataRecord(DataRecord record) {
-    return true; // xoxox à implémenter
+    return true;
   }
 
   public void setTemplateName(String templateName) {

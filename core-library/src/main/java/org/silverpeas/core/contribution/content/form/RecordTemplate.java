@@ -26,39 +26,57 @@ package org.silverpeas.core.contribution.content.form;
 import java.io.Serializable;
 
 /**
- * A RecordTemplate describes DataRecord and gives the field names and type informations.
+ * A RecordTemplate defines the schema of a {@link DataRecord} by defining the fields by their names
+ * and types.
  * @see DataRecord
  */
 public interface RecordTemplate extends Serializable {
   /**
-   * Returns all the field names of the DataRecord built on this template.
+   * Gets all the field names of the {@link DataRecord}s built on this template.
+   * @return an array with the name of the fields defined by this template.
    */
   String[] getFieldNames();
 
   /**
-   * Returns all the field templates.
+   * Gets all the fields defined by this template.
+   * @return an array of {@link FieldTemplate} instances, each of them being a template of a
+   * {@link DataRecord} field.
+   * @throws FormException is an error occurs while getting the template of the fields.
    */
   FieldTemplate[] getFieldTemplates() throws FormException;
 
   /**
-   * Returns the FieldTemplate of the named field.
-   * @throws FormException if the field name is unknown.
+   * Gets the {@link FieldTemplate} modelling the specified named field.
+   * @param fieldName the name of a field
+   * @return a {@link FieldTemplate} instance or null if there is no such template.
+   * @throws FormException if the template of the specified named field cannot be got.
+   * @apiNote the {@link FormException} can be thrown if the template of the named field cannot be
+   * found instead of returning null. It depends of the implementation of the concrete class.
    */
   FieldTemplate getFieldTemplate(String fieldName) throws FormException;
 
   /**
-   * Returns the Field index of the named field.
-   * @throws FormException if the field name is unknown.
+   * Gets the index in this template of of the named field.
+   * @param fieldName the name of a field.
+   * @return the index of the named field in this template or -1 if no template of this field can be
+   * found.
+   * @throws FormException if the template of the specified named field cannot be got.
+   * @apiNote the {@link FormException} can be thrown if the template of the named field cannot be
+   * found instead of returning -1. It depends of the implementation of the concrete class.
    */
   int getFieldIndex(String fieldName) throws FormException;
 
   /**
-   * Returns an empty DataRecord built on this template.
+   * Gets an empty DataRecord built on this template.
+   * @return an empty {@link DataRecord} instance.
    */
   DataRecord getEmptyRecord() throws FormException;
 
   /**
-   * Returns true if the data record is built on this template and all the constraints are ok.
+   * Checks the specified {@link DataRecord} instance matches this template.
+   * @param record a {@link DataRecord} object.
+   * @return true if the data record is built on this template and all the constraints are
+   * satisfied.
    */
   boolean checkDataRecord(DataRecord record);
 }

@@ -27,12 +27,13 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;Form&gt; element of a Process Model.
  */
-public interface Form {
+public interface Form extends Serializable {
   /**
    * Get the name of this form
    * @return form's name
@@ -67,7 +68,7 @@ public interface Form {
   /**
    * Set the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
    * display the form
-   * @return form's name
+   * @param  htmlFileName the form's name
    */
   void setHTMLFileName(String htmlFileName);
 

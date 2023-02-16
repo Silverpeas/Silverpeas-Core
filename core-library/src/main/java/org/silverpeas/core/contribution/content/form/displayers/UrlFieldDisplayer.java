@@ -53,9 +53,6 @@ import java.util.Map;
  */
 public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
 
-  public UrlFieldDisplayer() {
-  }
-
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
@@ -68,9 +65,7 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     String html = "";
-
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
-
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     String defaultValue = getDefaultValue(template, pageContext);
@@ -91,71 +86,95 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
     } else {
       // Suggestions used ?
       String paramSuggestions =
-          parameters.containsKey("suggestions") ? parameters.get("suggestions") : "false";
-      boolean useSuggestions = Boolean.valueOf(paramSuggestions);
-      List<String> suggestions = null;
-      if (useSuggestions) {
-        TextFieldImpl textField = (TextFieldImpl) field;
-        suggestions =
-            textField.getSuggestions(fieldName, template.getTemplateName(), pageContext.
-            getComponentId());
-      }
+          parameters.getOrDefault("suggestions", "false");
+      boolean useSuggestions = Boolean.parseBoolean(paramSuggestions);
+      List<String> suggestions =
+          getSuggestions((TextFieldImpl) field, template, pageContext, fieldName, useSuggestions);
 
-      input inputField = new input();
-      inputField.setName(fieldName);
-      inputField.setID(fieldName);
-      inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
-      inputField.setType(template.isHidden() ? input.hidden : input.text);
-      inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
-          : "1000");
-      inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
-      if (parameters.containsKey("border")) {
-        inputField.setBorder(Integer.parseInt(parameters.get("border")));
-      }
-      if (template.isDisabled()) {
-        inputField.setDisabled(true);
-      } else if (template.isReadOnly()) {
-        inputField.setReadOnly(true);
-      }
+      input inputField = getInputField(template, fieldName, parameters, value);
+      img image = getImage(template, pageContext);
 
-      img image = null;
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-          && !template.isHidden() && pageContext.useMandatory()) {
-        image = new img();
-        image.setSrc(Util.getIcon("mandatoryField"));
-        image.setWidth(5);
-        image.setHeight(5);
-        image.setBorder(0);
-      }
-
-      if (suggestions != null && suggestions.size() > 0) {
-        TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
-        out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
-
-        out.println(inputField.toString());
-
-        out.println("<div id=\"container" + fieldName + "\"/>\n");
-        out.println("</div>\n");
-
-        if (image != null) {
-          image.setStyle("position:absolute;left:16em;top:5px");
-          out.println(image.toString());
-        }
-
-        TextFieldImpl.printSuggestionsScripts(fieldName, suggestions, out);
+      if (suggestions != null && !suggestions.isEmpty()) {
+        printSuggestions(out, fieldName, suggestions, inputField, image);
       } else {
-        // print field
-        if (image != null) {
-          ElementContainer container = new ElementContainer();
-          container.addElement(inputField);
-          container.addElement("&nbsp;");
-          container.addElement(image);
-          out.println(container.toString());
-        } else {
-          out.println(inputField.toString());
-        }
+        // print fields
+        printFields(out, inputField, image);
       }
     }
     out.println(html);
+  }
+
+  private static void printFields(final PrintWriter out, final input inputField, final img image) {
+    if (image != null) {
+      ElementContainer container = new ElementContainer();
+      container.addElement(inputField);
+      container.addElement("&nbsp;");
+      container.addElement(image);
+      out.println(container);
+    } else {
+      out.println(inputField);
+    }
+  }
+
+  private static void printSuggestions(final PrintWriter out, final String fieldName,
+      final List<String> suggestions, final input inputField, final img image) {
+    TextFieldImpl.printSuggestionsIncludes(fieldName, out);
+    out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
+
+    out.println(inputField);
+
+    out.println("<div id=\"container" + fieldName + "\"/>\n");
+    out.println("</div>\n");
+
+    if (image != null) {
+      image.setStyle("position:absolute;left:16em;top:5px");
+      out.println(image);
+    }
+
+    TextFieldImpl.printSuggestionsScripts(fieldName, suggestions, out);
+  }
+
+  private static img getImage(final FieldTemplate template, final PagesContext pageContext) {
+    img image = null;
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+        && !template.isHidden() && pageContext.useMandatory()) {
+      image = new img();
+      image.setSrc(Util.getIcon("mandatoryField"));
+      image.setWidth(5);
+      image.setHeight(5);
+      image.setBorder(0);
+    }
+    return image;
+  }
+
+  private static input getInputField(final FieldTemplate template, final String fieldName,
+      final Map<String, String> parameters, final String value) {
+    input inputField = new input();
+    inputField.setName(fieldName);
+    inputField.setID(fieldName);
+    inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
+    inputField.setType(template.isHidden() ? input.hidden : input.text);
+    inputField.setMaxlength(parameters.getOrDefault("maxLength", "1000"));
+    inputField.setSize(parameters.getOrDefault("size", "50"));
+    if (parameters.containsKey("border")) {
+      inputField.setBorder(Integer.parseInt(parameters.get("border")));
+    }
+    if (template.isDisabled()) {
+      inputField.setDisabled(true);
+    } else if (template.isReadOnly()) {
+      inputField.setReadOnly(true);
+    }
+    return inputField;
+  }
+
+  private static List<String> getSuggestions(final TextFieldImpl field, final FieldTemplate template,
+      final PagesContext pageContext, final String fieldName, final boolean useSuggestions) {
+    List<String> suggestions = null;
+    if (useSuggestions) {
+      suggestions =
+          field.getSuggestions(fieldName, template.getTemplateName(), pageContext.
+          getComponentId());
+    }
+    return suggestions;
   }
 }
