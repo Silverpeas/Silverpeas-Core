@@ -666,8 +666,9 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     // Affichage de l'espace perso
     List<ComponentItem> componentItems = new ArrayList<>();
     boolean isAnonymousAccess = helper.isAnonymousAccess();
+    boolean isAccessGuest = helper.isAccessGuest();
 
-    if (!isAnonymousAccess && settings.getBoolean("personnalSpaceVisible", true)) {
+    if (!isAnonymousAccess && !isAccessGuest && settings.getBoolean("personnalSpaceVisible", true)) {
       if (settings.getBoolean("agendaVisible", true)) {
         componentItems
             .add(ComponentItem.of(URLUtil.CMP_AGENDA).withLabel(message.getString("Diary")));

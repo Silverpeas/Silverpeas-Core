@@ -57,6 +57,7 @@
 <c:if test="${isVersionActive}">
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+
   VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLUtil.CMP_VERSIONINGPEAS);
   if(versioningSC == null) {
       String componentId = request.getParameter("ComponentId");
@@ -92,6 +93,8 @@
          value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
   <c:set var="isHandledModificationContext"
          value="${silfn:booleanValue(param.HandledContributionModificationContext)}"/>
+
+  <c:set var="isAccessGuest" value="${mainSessionController.currentUserDetail.accessGuest}"/>
 
   <view:componentParam var="commentActivated" componentId="${param.ComponentId}" parameter="tabComments"/>
   <c:if test="${not silfn:booleanValue(commentActivated)}">
@@ -177,6 +180,9 @@
   <c:set var="useXMLForm" value="${silfn:isDefined(xmlForm)}" />
   <c:set var="indexIt" value="${silfn:booleanValue(param.IndexIt)}" />
   <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
+  <c:if test="${isAccessGuest}">
+    <c:set var="showMenuNotif" value="false" />
+  </c:if>
   <c:set var="displayUniversalLinks"><%=URLUtil.displayUniversalLinks()%></c:set>
 
   <c:set var="domIdSuffix" value="${silfn:formatForDomId(param.Id)}"/>

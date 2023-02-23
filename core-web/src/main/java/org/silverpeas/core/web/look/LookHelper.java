@@ -103,6 +103,8 @@ public abstract class LookHelper {
 
   public abstract boolean isAnonymousUser();
 
+  public abstract boolean isAccessGuest();
+
   public abstract boolean displayPDCInNavigationFrame();
 
   public abstract boolean displayPDCFrame();

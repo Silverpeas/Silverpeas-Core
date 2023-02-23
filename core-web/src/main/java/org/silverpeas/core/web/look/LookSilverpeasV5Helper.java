@@ -401,6 +401,11 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return UserDetail.isAnonymousUser(getUserId());
   }
 
+  @Override
+  public boolean isAccessGuest() {
+    return getUserDetail().isAccessGuest();
+  }
+
   /*
    * (non-Javadoc)
    * @see org.silverpeas.core.web.look.LookHelper#displayPDCInNavigationFrame()

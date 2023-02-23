@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -371,7 +372,8 @@ public abstract class AbstractWindow implements Window {
   @Override
   public String printBefore() {
     StringBuilder result = new StringBuilder(200);
-    if (!isPopup() && !getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
+    if (!isPopup() && !User.getCurrentRequester().isAnonymous() &&
+        !User.getCurrentRequester().isAccessGuest() &&
         !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
       addSpaceOrComponentOperations();
     }

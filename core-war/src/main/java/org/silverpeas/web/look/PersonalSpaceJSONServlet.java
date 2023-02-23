@@ -260,7 +260,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.homePage.multilang.homePageBundle", helper.getLanguage());
     String json = "";
-    if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
+    if (!helper.isAnonymousAccess() && !helper.isAccessGuest() && helper.getSettings("personnalSpaceVisible", true)) {
       json = JSONCodec.encodeArray(jsonArray -> {
         addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"),
             URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main");
