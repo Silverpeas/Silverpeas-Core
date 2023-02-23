@@ -39,32 +39,34 @@
 <c:url var="icon_px" value="/util/viewGenerator/icons/px.gif"/>
 
 <%
-LookHelper 	helper 	= LookHelper.getLookHelper(session);
-SettingBundle settings 		= gef.getFavoriteLookSettings();
+  LookHelper 	helper 	= LookHelper.getLookHelper(session);
+  SettingBundle settings 		= gef.getFavoriteLookSettings();
 
-String currentComponentId 	= helper.getComponentId();
-String currentSpaceId		= helper.getSpaceId();
-gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
+  String currentComponentId 	= helper.getComponentId();
+  String currentSpaceId		= helper.getSpaceId();
+  gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
 
-boolean goToFavoriteSpaceOnHomeLink = settings.getBoolean("home.target.favoriteSpace", false);
+  boolean goToFavoriteSpaceOnHomeLink = settings.getBoolean("home.target.favoriteSpace", false);
 
-List<TopItem> topItems = helper.getTopItems();
+  List<TopItem> topItems = helper.getTopItems();
 
-boolean isAnonymousAccess 	= helper.isAnonymousAccess();
+  boolean isAnonymousAccess 	= helper.isAnonymousAccess();
+  boolean isAccessGuest 	= helper.isAccessGuest();
 
-String wallPaper = helper.getSpaceWallPaper();
-if (wallPaper == null) {
-  wallPaper = gef.getIcon("wallPaper");
-}
-if (wallPaper == null) {
-  wallPaper = m_sContext+"/admin/jsp/icons/silverpeasV5/bandeauTop.jpg";
-}
+  String wallPaper = helper.getSpaceWallPaper();
+  if (wallPaper == null) {
+    wallPaper = gef.getIcon("wallPaper");
+  }
+  if (wallPaper == null) {
+    wallPaper = m_sContext+"/admin/jsp/icons/silverpeasV5/bandeauTop.jpg";
+  }
 
-String helpURL = helper.getSettings("helpURL", "");
+  String helpURL = helper.getSettings("helpURL", "");
 
-boolean outilDisplayed = false;
+  boolean outilDisplayed = false;
 %>
 <c:set var="isAnonymousAccess" value="<%=helper.isAnonymousAccess()%>"/>
+<c:set var="isAccessGuest" value="<%=helper.isAccessGuest()%>"/>
 
 <c:set var="labelConnectedUser" value='<%=helper.getString("lookSilverpeasV5.connectedUser")%>'/>
 <c:set var="labelConnectedUsers" value='<%=helper.getString("lookSilverpeasV5.connectedUsers")%>'/>
@@ -77,79 +79,79 @@ boolean outilDisplayed = false;
 <view:includePlugin name="basketSelection"/>
 <view:includePlugin name="ticker" />
 <style type="text/css">
-#shortcuts {
-	bottom: 25px;
-	position: absolute;
-<% if(helper.isBackOfficeVisible()) { %>
-	right: 120px;
-<% } else { %>
-	right: 0px;
-<% } %>
-	height: 20px;
-	width: auto;
-}
-body {
-	background-image: url(<%=wallPaper%>);
-	background-repeat: no-repeat;
-	background-position: left top;
-}
+  #shortcuts {
+    bottom: 25px;
+    position: absolute;
+  <% if(helper.isBackOfficeVisible()) { %>
+    right: 120px;
+  <% } else { %>
+    right: 0px;
+  <% } %>
+    height: 20px;
+    width: auto;
+  }
+  body {
+    background-image: url(<%=wallPaper%>);
+    background-repeat: no-repeat;
+    background-position: left top;
+  }
 </style>
 <view:loadScript src="/util/javaScript/lookV5/tools.js"/>
 <view:loadScript src="/util/javaScript/lookV5/topBar.js"/>
 <script type="text/javascript">
-function goToHome() {
-  var params = {"FromTopBar" : '1'};
-  <%if (goToFavoriteSpaceOnHomeLink) {%>
-  params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
-  <%}%>
-  spWindow.loadHomePage(params);
-}
+  function goToHome() {
+    var params = {"FromTopBar" : '1'};
+    <%if (goToFavoriteSpaceOnHomeLink) {%>
+    params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
+    <%}%>
+    spWindow.loadHomePage(params);
+  }
 
-function getContext() {
-  return "<%=m_sContext%>";
-}
+  function getContext() {
+    return "<%=m_sContext%>";
+  }
 
-function getBannerHeight() {
-	return "<%=helper.getSettings("bannerHeight", "115")%>";
-}
-function getFooterHeight() {
-	return "<%=helper.getSettings("footerHeight", "26")%>";
-}
+  function getBannerHeight() {
+    return "<%=helper.getSettings("bannerHeight", "115")%>";
+  }
+  function getFooterHeight() {
+    return "<%=helper.getSettings("footerHeight", "26")%>";
+  }
 
-function goToMyProfile() {
-  spWindow.loadLink(webContext + '/RMyProfil/jsp/Main');
-}
+  function goToMyProfile() {
+    spWindow.loadLink(webContext + '/RMyProfil/jsp/Main');
+  }
 
-window.USERSESSION_PROMISE.then(function() {
-  spUserSession.addEventListener('connectedUsersChanged', function(event) {
-    var nb = event.detail.data.nb;
-    var $container = jQuery("#connectedUsers");
-    if (nb <= 0) {
-      $container.hide();
-    } else {
-      var label = " ${labelConnectedUsers}";
-      if (nb === 1) {
-        label = " ${labelConnectedUser}";
+  window.USERSESSION_PROMISE.then(function() {
+    spUserSession.addEventListener('connectedUsersChanged', function(event) {
+      var nb = event.detail.data.nb;
+      var $container = jQuery("#connectedUsers");
+      if (nb <= 0) {
+        $container.hide();
+      } else {
+        var label = " ${labelConnectedUsers}";
+        if (nb === 1) {
+          label = " ${labelConnectedUser}";
+        }
+        $container.show();
+        jQuery("a", $container).text(nb + label);
       }
-      $container.show();
-      jQuery("a", $container).text(nb + label);
-    }
-  }, 'connectedUsersChanged@TopBar');
-});
+    }, 'connectedUsersChanged@TopBar');
+  });
 
 </script>
 <div id="topBar">
-    <div id="backHome">
-        <a href="javaScript:goToHome();"><img src="${icon_px}" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
-	  <viewTags:displayTicker/>
-	    <div id="outils">
-		<% if (!isAnonymousAccess) { %>
-			<div class="avatarName">
-				<a href="javascript:goToMyProfile()" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
-			</div>
-		<% } %>
-		<div class="userNav">
-      <c:if test="${not isAnonymousAccess}">
+  <div id="backHome">
+    <a href="javaScript:goToHome();"><img src="${icon_px}" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
+  <viewTags:displayTicker/>
+  <div id="outils">
+    <% if (!isAnonymousAccess && !isAccessGuest) { %>
+    <div class="avatarName">
+      <a href="javascript:goToMyProfile()" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
+    </div>
+    <% } %>
+    <div class="userNav">
+      <c:if test="${not isAnonymousAccess && not isAccessGuest}">
         <span id="connectedUsers" style="display:none">
           <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
           <span> | </span>
@@ -185,76 +187,76 @@ window.USERSESSION_PROMISE.then(function() {
           });
         </script>
       </c:if>
-      <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
+      <% if (!isAnonymousAccess && !isAccessGuest && helper.getSettings("directoryVisible", true)) {
         outilDisplayed = true;
       %>
-				<a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
-		<% } %>
-		<% if (helper.getSettings("glossaryVisible", false)) {
-				outilDisplayed = true;
-		%>
-				<a href="javascript:onClick=openPdc()"><%=helper.getString("lookSilverpeasV5.glossaire")%></a>
-		<% } %>
-		<% if (helper.getSettings("mapVisible", true)) {
-			if (outilDisplayed) {
-				out.print(" | ");
-			}
-			outilDisplayed = true;
-		    %>
-				<a href="<%=m_sContext + "/admin/jsp/Map.jsp"%>" target="MyMain"><%=helper.getString("lookSilverpeasV5.Map")%></a>
-		<% } %>
-		<% if (helper.getSettings("helpVisible", true) && StringUtil.isDefined(helpURL)) {
-			if (outilDisplayed) {
-			out.print(" | ");
-			}
-		    outilDisplayed = true;
-		%>
-			<a href="<%=helpURL%>" target="_blank"><%=helper.getString("lookSilverpeasV5.Help")%></a>
-		<% } %>
-		<% if (!isAnonymousAccess && helper.getSettings("logVisible", true)) {
-			if (outilDisplayed) {
-			out.print(" | ");
-			}
-		%>
-			<a id="logout" href="javascript:onClick=spUserSession.logout();"><%=helper.getString("lookSilverpeasV5.logout")%></a>
-		<% } %>
-		</div>
-        </div>
-
-    <% if (!topItems.isEmpty()) { %>
-    <div id="shortcuts">
-        <table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-              <td class="gaucheShortcuts">&nbsp;</td>
-              <td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
-              <%
-		for ( TopItem item :topItems) {
-			//le composant est-il celui selectionne ?
-                String cssStyle = "";
-			if (item.getId().equals(currentComponentId) || item.getId().equals(currentSpaceId))
-				cssStyle = "activeShortcut";
-		%>
-			<td nowrap="nowrap" align="center" id="item<%=item.getId()%>" class="<%=cssStyle%>"><nobr><a href="javaScript:goToItem('<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>');"><%=item.getLabel()%></a></nobr></td>
-			<td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
-		<% } %>
-                <td class="droiteShortcuts">&nbsp;</td>
-            </tr>
-        </table>
+      <a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
+      <% } %>
+      <% if (helper.getSettings("glossaryVisible", false)) {
+        outilDisplayed = true;
+      %>
+      <a href="javascript:onClick=openPdc()"><%=helper.getString("lookSilverpeasV5.glossaire")%></a>
+      <% } %>
+      <% if (helper.getSettings("mapVisible", true)) {
+        if (outilDisplayed) {
+          out.print(" | ");
+        }
+        outilDisplayed = true;
+      %>
+      <a href="<%=m_sContext + "/admin/jsp/Map.jsp"%>" target="MyMain"><%=helper.getString("lookSilverpeasV5.Map")%></a>
+      <% } %>
+      <% if (helper.getSettings("helpVisible", true) && StringUtil.isDefined(helpURL)) {
+        if (outilDisplayed) {
+          out.print(" | ");
+        }
+        outilDisplayed = true;
+      %>
+      <a href="<%=helpURL%>" target="_blank"><%=helper.getString("lookSilverpeasV5.Help")%></a>
+      <% } %>
+      <% if (!isAnonymousAccess && helper.getSettings("logVisible", true)) {
+        if (outilDisplayed) {
+          out.print(" | ");
+        }
+      %>
+      <a id="logout" href="javascript:onClick=spUserSession.logout();"><%=helper.getString("lookSilverpeasV5.logout")%></a>
+      <% } %>
     </div>
-    <% } %>
+  </div>
 
-    <% if(helper.isBackOfficeVisible()) { %>
-    <div id="administration">
-       <table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-		<td>
-                <a href="javascript:void(0)" onclick="spWindow.loadAdminHomePage();"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <% } %>
+  <% if (!topItems.isEmpty()) { %>
+  <div id="shortcuts">
+    <table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="gaucheShortcuts">&nbsp;</td>
+        <td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
+        <%
+          for ( TopItem item :topItems) {
+            //le composant est-il celui selectionne ?
+            String cssStyle = "";
+            if (item.getId().equals(currentComponentId) || item.getId().equals(currentSpaceId))
+              cssStyle = "activeShortcut";
+        %>
+        <td nowrap="nowrap" align="center" id="item<%=item.getId()%>" class="<%=cssStyle%>"><nobr><a href="javaScript:goToItem('<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>');"><%=item.getLabel()%></a></nobr></td>
+        <td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
+        <% } %>
+        <td class="droiteShortcuts">&nbsp;</td>
+      </tr>
+    </table>
+  </div>
+  <% } %>
+
+  <% if(helper.isBackOfficeVisible()) { %>
+  <div id="administration">
+    <table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td>
+          <a href="javascript:void(0)" onclick="spWindow.loadAdminHomePage();"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <% } %>
 </div>
 <form name="topBarSearchForm" action="">
-<input type="hidden" name="query"/>
+  <input type="hidden" name="query"/>
 </form>

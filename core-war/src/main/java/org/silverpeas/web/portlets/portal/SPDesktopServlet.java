@@ -505,7 +505,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
     if (spContext.startsWith("space")) {
       portletWindowData.setSpaceId(spContext);
     }
-    if (isSpaceFrontOffice(request) || isAnonymousUser()) {
+    if (isSpaceFrontOffice(request) || isAnonymousUser() || isAccessGuest()) {
       portletWindowData.setEdit(false);
       portletWindowData.setHelp(false);
       portletWindowData.setRemove(false);
@@ -536,6 +536,10 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private boolean isAnonymousUser() {
     return UserDetail.getCurrentRequester().isAnonymous();
+  }
+
+  private boolean isAccessGuest() {
+    return UserDetail.getCurrentRequester().isAccessGuest();
   }
 
   private void setUserIdAndSpaceIdInRequest(String spaceId, String userId,

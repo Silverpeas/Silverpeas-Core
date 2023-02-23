@@ -32,6 +32,7 @@
 	String 				action		= (String) request.getAttribute("Action");
 	ComponentInst		inst		= (ComponentInst) request.getAttribute("ComponentInst");
 	boolean				isAnonymousAccess = (Boolean) request.getAttribute("IsAnonymousAccess");
+  boolean				isAccessGuest = (Boolean) request.getAttribute("IsAccessGuest");
 
 	String login = "";
 	String password = "";
@@ -134,7 +135,7 @@ else {
   out.println(frame.printBefore());
 %>
 
-	<% if (isAnonymousAccess) { %>
+	<% if (isAnonymousAccess && isAccessGuest) { %>
 		<div class="inlineMessage"><%=resource.getString("webConnections.parametersWillNotBeStored")%></div><br clear="all"/>
 	<% } %>
 

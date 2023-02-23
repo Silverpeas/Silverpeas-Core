@@ -201,11 +201,18 @@ public class WebConnectionsRequestRouter extends
     ComponentInst inst = getOrganizationController().getComponentInst(connection.getComponentId());
     request.setAttribute("ComponentInst", inst);
     request.setAttribute("IsAnonymousAccess", isAnonymousAccess(request));
+    request.setAttribute("IsAccessGuest", isAccessGuest(request));
+
   }
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
     return lookHelper != null && lookHelper.isAnonymousAccess();
+  }
+
+  private boolean isAccessGuest(HttpServletRequest request) {
+    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
+    return lookHelper != null && lookHelper.isAccessGuest();
   }
 
 }

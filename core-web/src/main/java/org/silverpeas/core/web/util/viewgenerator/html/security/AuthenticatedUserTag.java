@@ -39,7 +39,7 @@ public class AuthenticatedUserTag extends TagSupport {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (sessionController != null) {
       UserDetail user = UserDetail.getById(sessionController.getUserId());
-      if (user != null && !user.isAnonymous()) {
+      if (user != null && !user.isAnonymous() && !user.isAccessGuest()) {
         return EVAL_BODY_INCLUDE;
       }
     }

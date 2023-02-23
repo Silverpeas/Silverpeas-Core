@@ -298,7 +298,7 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
       <div id="spaces">
 		<center><br/><br/><fmt:message key="lookSilverpeasV5.loadingSpaces" /><br/><br/><img src="<c:url value='/util/icons/inProgress.gif'/>" alt="<fmt:message key="lookSilverpeasV5.loadingSpaces" />"/></center>
 	  </div>
-      <% if (!helper.isAnonymousAccess()) { %>
+      <% if (!helper.isAnonymousAccess() && !helper.isAccessGuest()) { %>
         <div id="spacePerso" class="spaceLevelPerso"><a class="spaceURL" href="javaScript:openMySpace();"><fmt:message key="lookSilverpeasV5.PersonalSpace" /></a></div>
       <% } %>
     </div>
