@@ -306,6 +306,11 @@ if (showTabs) {
     <td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.users") %> :</td>
     <td align=left valign="baseline" width="100%"><%=grObject.getTotalNbUsers()%></td>
   </tr>
+  <tr>
+    <td></td>
+    <td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.Id") %> :</td>
+    <td align=left valign="baseline" width="100%"><%=grObject.getId()%></td>
+  </tr>
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
