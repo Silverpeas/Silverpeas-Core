@@ -256,6 +256,9 @@ out.println(tabbedPane.print());
             <%=resource.getString("JSPP.inheritanceComponentUsed")%>
           <% } %>
         </div>
+		<div class="general-info-id">
+			<b>Id : </b><%=compoInst.getId() %>
+		</div>
         <% } %>
       </div>
       <% if (descDefined) { %>
