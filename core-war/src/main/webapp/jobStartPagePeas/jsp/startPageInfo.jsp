@@ -365,6 +365,10 @@ out.println(tabbedPane.print());
                 <td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
                 <td><%=spaceLook%></td>
               </tr>
+              <tr>
+                <td class="txtlibform"><%=resource.getString("GML.Id")%> :</td>
+                <td>WA<%=m_SpaceId%></td>
+              </tr>
               <% } %>
               </tbody>
             </table>
