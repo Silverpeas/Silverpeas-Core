@@ -332,7 +332,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         String extension = FileRepositoryManager.getFileExtension(fileName);
         if ("xml".equalsIgnoreCase(extension)) {
           PublicationTemplate template = loadPublicationTemplate(
-              fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length()));
+              fileName.substring(fileName.lastIndexOf(File.separator) + 1));
           if (onlyVisible) {
             if (template.isVisible()) {
               publicationTemplates.add(template);

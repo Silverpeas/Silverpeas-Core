@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.ComponentSpaceProfileMapping;
 import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.component.model.GroupOfParameters;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.Profile;
@@ -95,7 +96,7 @@ class WAComponentRegistryTest {
     assertThat(almanach.isVisible(), is(true));
     assertThat(almanach.isVisibleInPersonalSpace(), is(false));
     assertThat(almanach.getSuite().get("fr"), is("02 Gestion Collaborative"));
-    assertThat(almanach.getParameters().size(), is(5));
+    assertThat(almanach.getParameters().size(), is(8));
     Parameter paramWithOption = null;
     for (Parameter parameter : almanach.getParameters()) {
       if ("directAccess".equals(parameter.getName())) {
@@ -108,7 +109,8 @@ class WAComponentRegistryTest {
     assertThat(profiles.size(), is(3));
     Profile profile = profiles.get(0);
     assertThat(profile.getName(), is("admin"));
-    assertThat(profile.getHelp("en"), nullValue());
+    assertThat(profile.getHelp("en"),
+        is("Managers create events and set up the classification scheme."));
     assertThat(profile.getSpaceProfileMapping(), notNullValue());
     assertThat(profile.getSpaceProfileMapping().getProfiles().size(), is(1));
     assertThat(profile.getSpaceProfileMapping().getProfiles().get(0).getValue(),
@@ -163,10 +165,15 @@ class WAComponentRegistryTest {
     assertThat(kmelia.isVisible(), is(true));
     assertThat(kmelia.isVisibleInPersonalSpace(), is(true));
     assertThat(kmelia.getSuite().get("fr"), is("01 Gestion Documentaire"));
-    assertThat(kmelia.getParameters().size(), is(40));
+    assertThat(kmelia.getGroupsOfParameters().size(), is(8));
     Parameter paramWithXMLTemplate = null;
     Parameter versionControl = null;
-    for (Parameter parameter : kmelia.getParameters()) {
+    Optional<GroupOfParameters> filesParameters = kmelia.getGroupsOfParameters()
+        .stream()
+        .filter(g -> g.getLabel("en").equals("Files"))
+        .findFirst();
+    assertThat(filesParameters.isPresent(), is(true));
+    for (Parameter parameter : filesParameters.get().getParameters()) {
       if ("XmlFormForFiles".equals(parameter.getName())) {
         paramWithXMLTemplate = parameter;
       }
@@ -196,9 +203,8 @@ class WAComponentRegistryTest {
     assertThat(option.getName().get("fr"), is("template"));
 
     assertThat(versionControl, is(notNullValue()));
-    assertThat(versionControl.getWarning().isPresent(), is(true));
-    assertThat(versionControl.getWarning().get().isAlways(), is(true));
-    assertThat(versionControl.getWarning().get().getMessages(), aMapWithSize(3));
+    assertThat(versionControl.getHelp(), is(notNullValue()));
+    assertThat(versionControl.getHelp().size(), is(4));
   }
 
   @Test
@@ -220,8 +226,7 @@ class WAComponentRegistryTest {
     GlobalContext context = new GlobalContext("WA1");
     context.setComponentName("classifieds");
     PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-    assertThat(templateManager.getPublicationTemplates(context).size(),
-        is(1));
+    assertThat(templateManager.getPublicationTemplates(context).size(), is(1));
     assertThat(paramWithXMLTemplate, is(notNullValue()));
     List<Option> visibleOptions = new ArrayList<>();
     List<Option> options = paramWithXMLTemplate.getOptions();
@@ -240,8 +245,8 @@ class WAComponentRegistryTest {
   @Test
   void testSaveWorkflow() throws Exception {
     final String componentName = NEW_WORKFLOW_COMPONENT_NAME;
-    final Path expectedDescriptor =
-        Paths.get(getWorkflowRepoPath().toString(), componentName + ".xml");
+    final Path expectedDescriptor = Paths.get(getWorkflowRepoPath().toString(),
+        componentName + ".xml");
     assertThat(Files.exists(expectedDescriptor), is(false));
     assertThat(streamComponentDescriptors(componentName).count(), is(0L));
     String label = "Nouveau Workflow";
