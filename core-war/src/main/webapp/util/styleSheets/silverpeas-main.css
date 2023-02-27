@@ -326,93 +326,8 @@ Definition des class de style Silverpeas
   font-weight: bold
 }
 
-#agenda .grille {
-  background-color: #CCC;
-}
-
-#agenda .intfdcolor {
-  background-color:#FFF;
-}
-
-#agenda #agendaView {
-  float: left;
-  width: 100%;
-  margin-left: 10px;
-}
-
-#agenda #navigation {
-  float: left;
-  margin-left: 10px;
-  margin-bottom: 10px;
-}
-
 #genericForm {
   height: 0;
-}
-
-#agenda #currentScope,
-#agenda #jump,
-#agenda #today {
-  float: left;
-  border: 1px solid;
-  margin-right: 10px;
-  background:    url(../icons/design/degrade20px.jpg) repeat-x;
-  white-space: nowrap;
-  padding: 5px;
-}
-
-#agenda #currentScope {
-  display: inline;
-  text-align: center;
-}
-
-#agenda #currentScope img {
-  margin-top: 2px;
-}
-
-#agenda #jump form,
-#agenda #footer form
-{
-  margin: 0px;
-  padding: 0px;
-}
-
-#agenda #others {
-  float: left;
-  padding: 7px;
-}
-
-#agenda #footer {
-  float: left;
-  margin-left: 10px;
-  margin-top: 10px;
-}
-
-#agenda #categories,
-#agenda #invitations,
-#agenda #alert,
-#agenda #caption,
-#agenda #rss {
-  float: left;
-  border: 1px solid;
-  margin-right: 10px;
-  background:    url(../icons/design/degrade20px.jpg) repeat-x;
-  white-space: nowrap;
-  padding: 5px;
-}
-
-#agenda #rss img {
-  border:0;
-}
-
-#agenda #today a {
-  font-size: 1em;
-  font-weight: bold;
-  color: #000
-}
-
-#agenda #today a:hover {
-  text-decoration: underline;
 }
 
 .ongletOn {
@@ -467,7 +382,7 @@ Definition des class de style Silverpeas
 }
 
 .intfdcolor {
-  background:   url(../icons/design/degrade20px.jpg) repeat-x;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 75%, rgba(229,229,229,1) 100%);
   white-space: nowrap;
 }
 
@@ -1134,6 +1049,10 @@ Style Utilise par le ViewGenerator
   margin-top:0.5em;
 }
 
+#sp-layout-body-part {
+  position: relative;
+}
+
 #sp-layout-body-part-layout-content-part {
   padding-left:1em;
 }
@@ -1239,7 +1158,8 @@ Style Utilise par le ViewGenerator
 /* Objet board */
 .tableBoard {
   border: 1px solid #CCC;
-  background: #FFF url(../icons/design/fondBoard.jpg) no-repeat right top;
+  background: rgb(255,255,255);
+  background: linear-gradient(90deg, rgba(255,255,255,1) 75%, rgba(229,229,229,1) 100%);
   margin:0 auto 10px auto ;
   width: 98%;
   padding: 1%;
@@ -1273,7 +1193,7 @@ Style Utilise par le ViewGenerator
 }
 
 .ArrayNavigation {
-  background:transparent url(../icons/design/degrade20px.jpg) repeat-x;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 75%, rgba(229,229,229,1) 100%);
   font-weight: bold;
   color:#000;
   text-decoration: none;
@@ -1708,7 +1628,7 @@ span.csv {
   width: 100%;
   margin: 0;
   padding: 0;
-  background:url(../icons/design/degradeEnteteBox.jpg) right repeat-y;
+  background: linear-gradient(90deg, rgba(255,255,255,1) 20%, rgba(212,212,212,1) 100%);
   border: 1px solid  #DEDEDE;
   border-right-style: none;
   clear: both;
@@ -1797,7 +1717,7 @@ span.csv {
   width: 100%;
   margin: 0;
   padding: 0 0 0 10px;
-  background:     url(../icons/design/degradeEnteteBox.jpg) right repeat-y;
+  background: linear-gradient(90deg, rgba(255,255,255,1) 20%, rgba(212,212,212,1) 100%);
   border: 1px solid #DEDEDE;
   border-right-style: none;
 }
@@ -2414,10 +2334,13 @@ caption {
 /*- [ directory BEGIN ] --------------------------- */
 
 #directory .message_list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
 }
 
 #directory .message_list li.intfdcolor  {
@@ -2427,29 +2350,10 @@ caption {
   border:1px solid #CFCFCF;
 }
 
-/*
--- Pour affichage 1 seule colonne
 #directory .aff_colonnes li {
-    width:100%;
+  flex-basis:400px;
+  margin-right:1em;
 }
-*/
-
-/* Par d?faut, 2 colonnes */
-#directory .aff_colonnes li {
-  float:left;
-  margin-right:1%;
-  margin-right:0.5%;
-  width:48.8%;
-}
-
-/*
--- Pour affichage 3 colonnes
-#directory .aff_colonnes li {
-    float:left;
-    margin-right:0.4%;
-    width:32.6%;
-}
-*/
 
 #directory .mail {
   text-decoration: underline;
@@ -2521,7 +2425,7 @@ caption {
   padding:5px;
   text-align:left;
   width:100%;
-  height:25px;
+  height:auto;
 }
 #directory #indexAndSearch #search > form {
   display:inline;
@@ -3107,25 +3011,6 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
   height:auto;
 }
 
-/* Par d?faut 1 colonne */
-.aff_colonnes .a_contact {
-}
-
-/*
--- Pour affichage2 colonnes
-#contactProfil .aff_colonnes .a_contact {
-    width:46%;
-    float:right;
-}*/
-
-/*
--- Pour affichage 3 colonnes
-.aff_colonnes .a_contact {
-    width:30%;
-    float:right;
-}
-*/
-
 #invitationProfil .profilPhoto, #contactProfil  .profilPhoto{
   float: left;
   height: auto;
@@ -3583,7 +3468,6 @@ select.mandatoryField {
 
 select.mandatoryField option {
   font-style: normal;
-  font
   color:#000;
 }
 
@@ -3731,6 +3615,7 @@ table.pdcPositionsField {
   margin:0 0 0 1px;
   color:#4d4d4d;
   border-bottom:1px solid #e9e9e9;
+  background-color: #FFF;
 }
 
 
