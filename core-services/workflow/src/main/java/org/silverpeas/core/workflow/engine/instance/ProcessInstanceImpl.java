@@ -77,6 +77,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -205,42 +206,27 @@ public class ProcessInstanceImpl
     // This constructor is necessary with JAXB
   }
 
-  /**
-   * Get the workflow instance id
-   * @return instance id
-   */
+  @Override
   public String getInstanceId() {
     return getId();
   }
 
-  /**
-   * Set the workflow instance id
-   * @param instanceId instance id
-   */
+  @Override
   public void setInstanceId(String instanceId) {
     setId(instanceId);
   }
 
-  /**
-   * Get the workflow model id
-   * @return model id
-   */
+  @Override
   public String getModelId() {
     return modelId;
   }
 
-  /**
-   * Set the workflow model id
-   * @param modelId model id
-   */
+  @Override
   public void setModelId(String modelId) {
     this.modelId = modelId;
   }
 
-  /**
-   * Add an history step for this instance
-   * @param step the history step to add
-   */
+  @Override
   public void addHistoryStep(HistoryStep step) {
     ((HistoryStepImpl) step).setProcessInstance(this);
     historySteps.add((HistoryStepImpl) step);
@@ -248,18 +234,12 @@ public class ProcessInstanceImpl
     this.currentStep = step;
   }
 
-  /**
-   * Update an history step for this instance
-   * @param step the history step to update
-   */
+  @Override
   public void updateHistoryStep(HistoryStep step) {
     this.currentStep = step;
   }
 
-  /**
-   * Set a state active for this instance
-   * @param state State to be activated
-   */
+  @Override
   public void addActiveState(State state) {
     Date timeOutDate = computeTimeOutDate(state, 1);
     this.addActiveState(state.getName(), timeOutDate);
@@ -269,7 +249,7 @@ public class ProcessInstanceImpl
     // checks if timeout actions have been defined on the state to add
     TimeOutAction[] timeOutActions = state.getTimeOutActions();
     Date timeOutDate = null;
-    if (timeOutActions != null && timeOutActions.length > 0) {
+    if (timeOutActions != null) {
       for (TimeOutAction timeOutAction : timeOutActions) {
         if (timeOutAction.getOrder() == order) {
           // Check if an item has been mapped to timeoutdate
@@ -304,14 +284,15 @@ public class ProcessInstanceImpl
     Calendar now = Calendar.getInstance();
     Date timeOutDate = null;
     String delay = timeOutAction.getDelay();
+    final int delayAsInt = Integer.parseInt(delay.substring(0, delay.length() - 1));
     if (StringUtil.isDefined(delay) && delay.endsWith("m")) {
-      now.add(Calendar.MONTH, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+      now.add(Calendar.MONTH, delayAsInt);
       timeOutDate = now.getTime();
     } else if (StringUtil.isDefined(delay) && delay.endsWith("d")) {
-      now.add(Calendar.DAY_OF_YEAR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+      now.add(Calendar.DAY_OF_YEAR, delayAsInt);
       timeOutDate = now.getTime();
     } else if (StringUtil.isDefined(delay) && delay.endsWith("h")) {
-      now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+      now.add(Calendar.HOUR, delayAsInt);
       timeOutDate = now.getTime();
     } else if (StringUtil.isDefined(delay) && StringUtils.isNumeric(delay)) {
       // If no unit is specified, we consider the value as a number of minutes
@@ -327,8 +308,9 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Set a state active for this instance
-   * @param state The name of state to be activated
+   * Adds a state active for this instance
+   * @param state the name of state to be activated
+   * @param timeOutDate a timeout datetime.
    */
   private void addActiveState(String state, Date timeOutDate) {
     ActiveState activeState = new ActiveState(state);
@@ -342,9 +324,7 @@ public class ProcessInstanceImpl
     }
 
     // if this state wasn't already active, add it in list of active states
-    if (!activeStates.contains(activeState)) {
-      activeStates.add(activeState);
-    }
+    activeStates.add(activeState);
 
     // add this operation in undo history
     if (!inUndoProcess) {
@@ -352,17 +332,14 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Set a state inactive for this instance
-   * @param state State to be desactivated
-   */
+  @Override
   public void removeActiveState(State state) {
     this.removeActiveState(state.getName());
   }
 
   /**
    * Set a state inactive for this instance
-   * @param state The name of state to be desactivated
+   * @param state The name of state to be deactivated
    */
   private void removeActiveState(String state) {
     ActiveState activeState = new ActiveState(state);
@@ -380,7 +357,7 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Computes time out status : instance is in timeout if at least one active state is in timeout
+   * Computes time out status: instance is in timeout if at least one active state is in timeout
    */
   private void computeTimeOutStatus() {
     if (CollectionUtil.isEmpty(activeStates)) {
@@ -397,9 +374,6 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * @param state
-   */
   @Override
   public void addTimeout(State state) {
     if (CollectionUtil.isEmpty(activeStates)) {
@@ -416,9 +390,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * @param state
-   */
+
   @Override
   public void removeTimeout(State state) {
     boolean found = false;
@@ -438,12 +410,6 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Add an user in the working user list
-   * @param user user to add
-   * @param state state for which the user can make an action
-   * @param role role name under which the user can make an action
-   */
   @Override
   public void addWorkingUser(User user, State state, String role) {
     this.addWorkingUser(user, getStateName(state), role, null);
@@ -451,7 +417,8 @@ public class ProcessInstanceImpl
 
   @Override
   public void addWorkingUser(Actor actor, State state) {
-    addWorkingUser(actor.getUser(), getStateName(state), actor.getUserRoleName(), actor.getGroupId());
+    addWorkingUser(actor.getUser(), getStateName(state), actor.getUserRoleName(),
+        actor.getGroupId());
   }
 
   /**
@@ -476,9 +443,7 @@ public class ProcessInstanceImpl
     wkUser.setState(state);
     wkUser.setRole(role);
     wkUser.setProcessInstance(this);
-    if (!workingUsers.contains(wkUser)) {
-      workingUsers.add(wkUser);
-    }
+    workingUsers.add(wkUser);
 
     // add this operation in undo history
     if (!inUndoProcess) {
@@ -490,12 +455,6 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Remove an user from the working user list
-   * @param user user to remove
-   * @param state state for which the user could make an action
-   * @param role role name under which the user could make an action
-   */
   @Override
   public void removeWorkingUser(User user, State state, String role) {
     this.removeWorkingUser(user, state.getName(), role);
@@ -508,7 +467,7 @@ public class ProcessInstanceImpl
    * @param role role name under which the user could make an action
    */
   private void removeWorkingUser(User user, String state, String role) {
-    WorkingUser userToDelete = null;
+    WorkingUser userToDelete;
 
     // Build virtual working user to find the true one end delete it
     userToDelete = new WorkingUser();
@@ -533,12 +492,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Add an user in the interested user list
-   * @param user user to add
-   * @param state state for which the user is interested
-   * @param role role name under which the user is interested
-   */
+  @Override
   public void addInterestedUser(User user, State state, String role) {
     this.addInterestedUser(user, state.getName(), role, null);
   }
@@ -571,9 +525,7 @@ public class ProcessInstanceImpl
     intUser.setState(state);
     intUser.setRole(role);
     intUser.setProcessInstance(this);
-    if (!interestedUsers.contains(intUser)) {
-      interestedUsers.add(intUser);
-    }
+    interestedUsers.add(intUser);
 
     // add this operation in undo history
     if (!inUndoProcess) {
@@ -585,24 +537,14 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Remove an user from the interested user list
-   * @param user user to remove
-   * @param state state for which the user is interested
-   * @param role role name under which the user is interested
-   */
+  @Override
   public void removeInterestedUser(User user, State state, String role) {
     this.removeInterestedUser(user, state.getName(), role);
   }
 
-  /**
-   * Remove an user from the interested user list
-   * @param user user to remove
-   * @param state the name of state for which the user is interested
-   * @param role role name under which the user is interested
-   */
+
   private void removeInterestedUser(User user, String state, String role) {
-    InterestedUser userToDelete = null;
+    InterestedUser userToDelete;
 
     // Build virtual interestedUser user to find the true one end delete it
     userToDelete = new InterestedUser();
@@ -629,22 +571,19 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Add a question for this instance
+   * Add a question to this instance
    * @param question the question to add
-   * @throws WorkflowException
    */
   public void addQuestion(Question question) {
     questions.add((QuestionImpl) question);
   }
 
+  @Override
   public void computeValid() {
     this.valid = !workingUsers.isEmpty();
   }
 
-  /**
-   * @return ProcessModel
-   * @throws WorkflowException
-   */
+  @Override
   public ProcessModel getProcessModel() throws WorkflowException {
     if (model == null) {
       ProcessModelManager modelManager = Workflow.getProcessModelManager();
@@ -653,23 +592,17 @@ public class ProcessInstanceImpl
     return model;
   }
 
-  /**
-   * @return HistoryStep[]
-   */
   @Override
   public HistoryStep[] getHistorySteps() {
     if (historySteps != null) {
       List<HistoryStep> steps = new ArrayList<>(historySteps);
       Collections.sort(steps);
-      return steps.toArray(new HistoryStep[steps.size()]);
+      return steps.toArray(new HistoryStep[0]);
     }
     return new HistoryStep[0];
   }
 
-  /**
-   * @return HistoryStep
-   * @throws WorkflowException
-   */
+  @Override
   public HistoryStep getHistoryStep(String stepId) throws WorkflowException {
     for (HistoryStep historyStep : historySteps) {
       if (historyStep.getId().equals(stepId)) {
@@ -680,9 +613,7 @@ public class ProcessInstanceImpl
         "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND", INSTANCEID_PARAM + getId());
   }
 
-  /**
-   * @return Vector
-   */
+  @Override
   public List<Participant> getParticipants() throws WorkflowException {
     List<Participant> participants = new ArrayList<>();
     for (HistoryStep step : historySteps) {
@@ -700,12 +631,6 @@ public class ProcessInstanceImpl
     return participants;
   }
 
-  /**
-   * Get the last user who resolved the given state
-   * @param resolvedState the resolved state
-   * @return this user as a Participant object
-   * @throws WorkflowException
-   */
   @Override
   public Participant getParticipant(String resolvedState) throws WorkflowException {
     // Get the most recent step
@@ -732,9 +657,7 @@ public class ProcessInstanceImpl
         state, step.getAction());
   }
 
-  /**
-   * Returns the folder as a DataRecord
-   */
+  @Override
   public DataRecord getFolder() throws WorkflowException {
     if (folder == null) {
       String folderId = getId();
@@ -755,16 +678,12 @@ public class ProcessInstanceImpl
     return folder;
   }
 
-  /**
-   * Returns a data record with all the accessible data in this instance.
-   */
+  @Override
   public DataRecord getAllDataRecord(String role, String lang) throws WorkflowException {
     return new ProcessInstanceDataRecord(this, role, lang);
   }
 
-  /**
-   * Returns a data record with all the main data in this instance.
-   */
+  @Override
   public DataRecord getRowDataRecord(String role, String lang) throws WorkflowException {
     return new ProcessInstanceRowRecord(this, role, lang);
   }
@@ -783,9 +702,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Updates the folder with the data filled within an action.
-   */
+  @Override
   public void updateFolder(DataRecord actionData) throws WorkflowException {
     try {
       RecordSet folderSet = getProcessModel().getFolderRecordSet();
@@ -803,11 +720,11 @@ public class ProcessInstanceImpl
   private void setUpdatedFields(final DataRecord actionData, final String[] fieldNames)
       throws WorkflowException {
     Field updatedField;
-    for (int i = 0; i < fieldNames.length; i++) {
+    for (final String fieldName : fieldNames) {
       try {
-        updatedField = actionData.getField(fieldNames[i]);
+        updatedField = actionData.getField(fieldName);
         if (updatedField != null) {
-          setField(fieldNames[i], updatedField);
+          setField(fieldName, updatedField);
         }
       } catch (FormException e) {
         // the field i is not updated (unknown in the action context)
@@ -815,9 +732,6 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Returns the required field from the folder.
-   */
   @Override
   public Field getField(String fieldName) throws WorkflowException {
     DataRecord theFolder = getFolder();
@@ -840,12 +754,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Update the named field with the value of the given field.
-   * @param fieldName
-   * @param copiedField
-   * @throws WorkflowException
-   */
+  @Override
   public void setField(String fieldName, Field copiedField) throws WorkflowException {
     Field updatedField = getField(fieldName);
 
@@ -861,12 +770,6 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Get the data associated to the given action
-   * @param actionName action name
-   * @return
-   * @throws WorkflowException
-   */
   @Override
   public DataRecord getActionRecord(String actionName) throws WorkflowException {
     if (actionData == null) {
@@ -888,13 +791,6 @@ public class ProcessInstanceImpl
     return data;
   }
 
-  /**
-   * @param formName
-   * @param role
-   * @param lang
-   * @return DataRecord
-   * @throws WorkflowException
-   */
   @Override
   public DataRecord getFormRecord(String formName, String role, String lang)
       throws WorkflowException {
@@ -915,14 +811,9 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Get a new data record associated to the given action
-   * @param actionName action name
-   * @return
-   * @throws WorkflowException
-   */
   @Override
-  public DataRecord getNewActionRecord(String actionName, String language) throws WorkflowException {
+  public DataRecord getNewActionRecord(String actionName, String language)
+      throws WorkflowException {
     try {
       Form form = getProcessModel().getActionForm(actionName);
       if (form == null) {
@@ -935,15 +826,15 @@ public class ProcessInstanceImpl
       List<String> fNames;
       if (inputs != null) {
         fNames = new ArrayList<>(inputs.length);
-        for (int i = 0; i < inputs.length; i++) {
-          if (inputs[i] != null && inputs[i].getItem() != null) {
-            fNames.add(inputs[i].getItem().getName());
+        for (final Input input : inputs) {
+          if (input != null && input.getItem() != null) {
+            fNames.add(input.getItem().getName());
           }
         }
       } else {
         fNames = Collections.emptyList();
       }
-      DataRecordUtil.updateFields(fNames.toArray(new String[fNames.size()]), data, getFolder(), language);
+      DataRecordUtil.updateFields(fNames.toArray(new String[0]), data, getFolder(), language);
       return data;
     } catch (FormException e) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
@@ -951,11 +842,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Set the form associated to the given action
-   * @param step
-   * @param actionData
-   */
+  @Override
   public void saveActionRecord(HistoryStep step, DataRecord actionData) throws WorkflowException {
     // special case : wysiwyg, check if data has been put into file and not kept in value field
     try {
@@ -973,13 +860,12 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Parse fields values and check ones that have wysiwyg displayer. In case of new process
-   * instance, txt files may not have been created yet. if yes, value must start with
-   * "xmlWysiwygField_"
-   * @param step
-   * @param actionData
-   * @throws WorkflowException
-   * @throws FormException
+   * Parse fields values and check ones that have wysiwyg renderer. In case of new process instance,
+   * txt files may not have been created yet. if yes, value must start with "xmlWysiwygField_"
+   * @param step a step in the history of this process instance.
+   * @param actionData the data of the action related by the step.
+   * @throws WorkflowException if an error occurs with the workflow.
+   * @throws FormException if an error occurs while parsing the form.
    */
   private void checkWysiwygData(HistoryStep step, DataRecord actionData)
       throws WorkflowException, FormException {
@@ -1009,13 +895,12 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Parse fields values and check ones that have wysiwyg displayer. In case of new process
-   * instance, txt files may not have been created yet. if yes, value must start with
-   * "xmlWysiwygField_"
-   * @param step
-   * @param actionData
-   * @throws WorkflowException
-   * @throws FormException
+   * Parse fields values and check ones that have wysiwyg renderer. In case of new process instance,
+   * txt files may not have been created yet. if yes, value must start with "xmlWysiwygField_"
+   * @param step a step in the history of this process instance.
+   * @param actionData the data of the action related by the step.
+   * @throws WorkflowException if an error occurs with the workflow.
+   * @throws FormException if an error occurs while parsing the form.
    */
   private void updateWysiwygDataWithStepId(HistoryStep step, DataRecord actionData)
       throws WorkflowException, FormException {
@@ -1024,10 +909,9 @@ public class ProcessInstanceImpl
     RecordTemplate template = form.toRecordTemplate(step.getUserRoleName(), "");
     String[] fieldNames = actionData.getFieldNames();
 
-    for (int i = 0; i < fieldNames.length; i++) {
-      String fieldName = fieldNames[i];
+    for (String fieldName : fieldNames) {
       Field updatedField = actionData.getField(fieldName);
-      FieldTemplate tmpl = template.getFieldTemplate(fieldNames[i]);
+      FieldTemplate tmpl = template.getFieldTemplate(fieldName);
 
       if ("wysiwyg".equals(tmpl.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
@@ -1063,9 +947,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Returns the most recent step where this action was performed.
-   */
+  @Override
   public HistoryStep getMostRecentStep(String actionName) {
     Date actionDate = null;
     HistoryStep mostRecentStep = null;
@@ -1084,10 +966,7 @@ public class ProcessInstanceImpl
     return mostRecentStep;
   }
 
-  /**
-   * Get step saved by given user id.
-   * @throws WorkflowException
-   */
+  @Override
   public HistoryStep getSavedStep(String userId) throws WorkflowException {
     HistoryStep savedStep = null;
     for (HistoryStep step : historySteps) {
@@ -1136,6 +1015,7 @@ public class ProcessInstanceImpl
     return mostRecentStep;
   }
 
+  @Override
   public String[] getActiveStates() {
     if (CollectionUtil.isEmpty(activeStates)) {
       return ArrayUtil.emptyStringArray();
@@ -1148,13 +1028,9 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Test is a active state is in back status
-   * @param stateName name of active state
-   * @return true if resolution of active state involves a cancel of actions
-   */
+  @Override
   public boolean isStateInBackStatus(String stateName) {
-    for(ActiveState activeState : activeStates) {
+    for (ActiveState activeState : activeStates) {
       if (activeState.getState().equals(stateName) && activeState.getBackStatus()) {
         return true;
       }
@@ -1162,21 +1038,16 @@ public class ProcessInstanceImpl
     return false;
   }
 
-  /**
-   * @return Actor[]
-   */
+  @Override
   public Actor[] getWorkingUsers() throws WorkflowException {
     List<Actor> actors = new ArrayList<>(workingUsers.size());
     for (WorkingUser wkUser : workingUsers) {
       actors.addAll(wkUser.toActors());
     }
-    return actors.toArray(new Actor[actors.size()]);
+    return actors.toArray(new Actor[0]);
   }
 
-  /**
-   * @param state
-   * @return Actor[]
-   */
+  @Override
   public Actor[] getWorkingUsers(String state) throws WorkflowException {
     List<Actor> actors = new ArrayList<>(workingUsers.size());
     for (WorkingUser wkUser : workingUsers) {
@@ -1184,7 +1055,7 @@ public class ProcessInstanceImpl
         actors.addAll(wkUser.toActors());
       }
     }
-    return actors.toArray(new Actor[actors.size()]);
+    return actors.toArray(new Actor[0]);
   }
 
   @Override
@@ -1232,10 +1103,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * @param state
-   * @return Actor[]
-   */
+  @Override
   public Actor[] getWorkingUsers(String state, String role) throws WorkflowException {
     List<Actor> actors = new ArrayList<>(workingUsers.size());
     for (WorkingUser wkUser : workingUsers) {
@@ -1243,12 +1111,10 @@ public class ProcessInstanceImpl
         actors.addAll(wkUser.toActors());
       }
     }
-    return actors.toArray(new Actor[actors.size()]);
+    return actors.toArray(new Actor[0]);
   }
 
-  /**
-   * Returns all the state name assigned to the user.
-   */
+  @Override
   public String[] getAssignedStates(User user, String roleName) {
     List<String> stateNames = new ArrayList<>();
     String userId = user.getUserId();
@@ -1272,13 +1138,25 @@ public class ProcessInstanceImpl
 
     }
 
-    return stateNames.toArray(new String[stateNames.size()]);
+    return stateNames.toArray(new String[0]);
   }
 
-  /**
-   * @param state
-   * @return LockingUser
-   */
+  @Override
+  public String[] getAllAssignedStates(final User user) {
+    List<String> groupIds = user.getGroupIds();
+    Predicate<WorkingUser> isUser = u ->
+        StringUtil.isDefined(u.getUserId()) && u.getUserId().equals(user.getUserId());
+    Predicate<WorkingUser> sameGroup = u ->
+        StringUtil.isDefined(u.getGroupId()) && groupIds.contains(u.getGroupId());
+    return workingUsers.stream()
+        .filter(Objects::nonNull)
+        .filter(isUser.or(sameGroup))
+        .map(WorkingUser::getState)
+        .distinct()
+        .toArray(String[]::new);
+  }
+
+  @Override
   public LockingUser getLockingUser(String state) {
     for (LockingUser lockingUser : lockingUsers) {
       if (state.equals(lockingUser.getState())) {
@@ -1288,11 +1166,7 @@ public class ProcessInstanceImpl
     return null;
   }
 
-  /**
-   * Locks this instance for the given instance and state
-   * @param state state that have to be locked
-   * @param user the locking user
-   */
+  @Override
   public void lock(State state, User user) throws WorkflowException {
     this.lock(state.getName(), user);
   }
@@ -1332,11 +1206,7 @@ public class ProcessInstanceImpl
     lockingUsers.add(searchedUser);
   }
 
-  /**
-   * Un-locks this instance for the given instance and state
-   * @param state state that have to be un-locked
-   * @param user the current locking user
-   */
+  @Override
   public void unLock(State state, User user) throws WorkflowException {
     if (state == null) {
       this.unLock("", user);
@@ -1381,9 +1251,7 @@ public class ProcessInstanceImpl
     lockingUsers.remove(searchedUser);
   }
 
-  /**
-   * Lock this instance for the engine
-   */
+  @Override
   public void lock() throws WorkflowException {
     // Test if lock already exists
     if (isLockedByAdmin()) {
@@ -1393,9 +1261,7 @@ public class ProcessInstanceImpl
     setLockedByAdmin(true);
   }
 
-  /**
-   * Unlock this instance for the engine
-   */
+  @Override
   public void unLock() {
     // Test if the instance is locked
     if (isLockedByAdmin()) {
@@ -1403,18 +1269,12 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Get the validity state of this instance
-   * @return true is this instance is valid
-   */
+  @Override
   public boolean isValid() {
     return valid;
   }
 
-  /**
-   * Get the lock Admin status of this instance
-   * @return true is this instance is locked by admin
-   */
+  @Override
   public boolean isLockedByAdmin() {
     return locked == 1;
   }
@@ -1427,56 +1287,42 @@ public class ProcessInstanceImpl
     this.locked = locked ? 1 : 0;
   }
 
-  /**
-   * Get the error status of this instance
-   * @return true if this instance is in error
-   */
+  @Override
   public boolean getErrorStatus() {
     return errorStatus != 0;
   }
 
-  /**
-   * Set the error status of this instance
-   * @param errorStatus true if this instance is in error
-   */
+  @Override
   public void setErrorStatus(boolean errorStatus) {
     this.errorStatus = errorStatus ? 1 : 0;
   }
 
-  /**
-   * Get the timeout status of this instance
-   * @return true if this instance is in an active state for a long long time
-   */
+  @Override
   public boolean getTimeoutStatus() {
     return timeoutStatus == 1;
   }
 
-  /**
-   * Set the timeout status of this instance
-   * @param timeoutStatus true if this instance is in an active state for a long long time
-   */
+  @Override
   public void setTimeoutStatus(boolean timeoutStatus) {
     this.timeoutStatus = timeoutStatus ? 1 : 0;
   }
 
+  @Override
   public List<User> getUsersInRole(String role) {
     UserManager userManager = WorkflowHub.getUserManager();
     User[] usersInRole = userManager.getUsersInRole(role, modelId);
     return Arrays.asList(usersInRole);
   }
 
+  @Override
   public List<User> getUsersInGroup(String groupId) {
     UserManager userManager = WorkflowHub.getUserManager();
     User[] usersInGroup = userManager.getUsersInGroup(groupId, modelId);
     return Arrays.asList(usersInGroup);
   }
 
-  /**
-   * Computes tuples role/user/state (stored in an Actor object) from a QualifiedUsers object
-   * @param qualifiedUsers Users defined by their role or by a relation with a participant
-   * @param state State for which these user were/may be actors
-   * @return tuples role/user as an array of Actor objects
-   */
+  @SuppressWarnings("FuseStreamOperations")
+  @Override
   public Actor[] getActors(QualifiedUsers qualifiedUsers, State state) throws WorkflowException {
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
@@ -1485,7 +1331,7 @@ public class ProcessInstanceImpl
     // Process first "user in Role"
     List<Actor> actors = Stream.of(userInRoles)
         .map(u -> new ActorImpl(null, u.getRoleName(), state))
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(ArrayList::new));
 
     // Then process related users
     setActorsFromRelatedUsers(qualifiedUsers, state, relatedUsers, actors);
@@ -1493,12 +1339,12 @@ public class ProcessInstanceImpl
     if (relatedGroups != null) {
       setActorsFromRelatedGroups(qualifiedUsers, state, relatedGroups, actors);
     }
-    return actors.toArray(new Actor[actors.size()]);
+    return actors.toArray(new Actor[0]);
   }
 
   private void setActorsFromRelatedGroups(final QualifiedUsers qualifiedUsers, final State state,
       final RelatedGroup[] relatedGroups, final List<Actor> actors) throws WorkflowException {
-      // Finally, process related groups
+    // Finally, process related groups
     for (RelatedGroup relatedGroup : relatedGroups) {
       if (relatedGroup != null && relatedGroup.getFolderItem() != null) {
         String fieldName = relatedGroup.getFolderItem().getName();
@@ -1546,7 +1392,8 @@ public class ProcessInstanceImpl
     }
   }
 
-  private List<User> findUsersInRelation(final UserManager userManager, final RelatedUser relatedUser)
+  private List<User> findUsersInRelation(final UserManager userManager,
+      final RelatedUser relatedUser)
       throws WorkflowException {
     List<User> users = new ArrayList<>();
     if (relatedUser.getParticipant() != null) {
@@ -1599,12 +1446,14 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Undo all atomic operations that had occured for a given historyStep
-   * @param historyStep the historyStep when the atomic operations had occured
+   * Undo all atomic operations that had occurred for a given historyStep
+   * @param historyStep the historyStep when the atomic operations had occurred
+   * @throws WorkflowException if an error occurs.
    */
+  @SuppressWarnings("StringTokenizerDelimiter")
   private void undoStep(HistoryStep historyStep) throws WorkflowException {
     try {
-      // Mark this instance as beeing in undo process
+      // Mark this instance as being in undo process
       // to avoid storing atomic operation done here
       this.inUndoProcess = true;
 
@@ -1612,10 +1461,6 @@ public class ProcessInstanceImpl
       for (UndoHistoryStep undoStep : someUndoSteps) {
         String action = undoStep.getAction();
         StringTokenizer st = new StringTokenizer(undoStep.getParameters(), "##");
-        // The number of parameters must be : 3 or 2
-        final int maxParametersCount = 3;
-        final int minParametersCount = 2;
-
         if (ADD_ACTIVE_STATE.equals(action)) {
           String state = undoStep.getParameters();
           this.removeActiveState(state);
@@ -1623,9 +1468,9 @@ public class ProcessInstanceImpl
           String state = undoStep.getParameters();
           this.addActiveState(state, null);
         } else if (ADD_WORKING_USER.equals(action)) {
-          undoAddWorkingUser(st, minParametersCount, maxParametersCount);
+          undoAddWorkingUser(st);
         } else if (REMOVE_WORKING_USER.equals(action)) {
-          undoRemoveWorkingUser(st, minParametersCount, maxParametersCount);
+          undoRemoveWorkingUser(st);
         } else if (ADD_INTERESTED_USER.equals(action)) {
           // The number of parameters must be : 3 or 2
           undoAddInterestedUser(st);
@@ -1678,8 +1523,9 @@ public class ProcessInstanceImpl
     this.removeInterestedUser(user, state, role);
   }
 
-  private void undoRemoveWorkingUser(final StringTokenizer st, int minParametersCount,
-      int maxParametersCount) throws WorkflowException {
+  private void undoRemoveWorkingUser(final StringTokenizer st) throws WorkflowException {
+    final int maxParametersCount = 3;
+    final int minParametersCount = 2;
     if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
           INSTANCEID_PARAM + getId() + ", method removeWorkingUser - found:" + st.countTokens() +
@@ -1694,8 +1540,9 @@ public class ProcessInstanceImpl
     this.addWorkingUser(user, state, role, null);
   }
 
-  private void undoAddWorkingUser(final StringTokenizer st, int minParametersCount,
-      int maxParametersCount) throws WorkflowException {
+  private void undoAddWorkingUser(final StringTokenizer st) throws WorkflowException {
+    final int maxParametersCount = 3;
+    final int minParametersCount = 2;
     if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
       throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
           INSTANCEID_PARAM + getId() + ", method addWorkingUser - found:" + st.countTokens() +
@@ -1711,11 +1558,7 @@ public class ProcessInstanceImpl
     this.unLock(state, user);
   }
 
-  /**
-   * Cancel all the atomic operations since the step where first action had occured
-   * @param state the name of state where ac action has been discussed
-   * @param actionDate date of state re-resolving
-   */
+  @Override
   public void reDoState(String state, Date actionDate) throws WorkflowException {
     // Get the most recent step that logged an action to this state (=the action
     // that is now the One)
@@ -1740,13 +1583,7 @@ public class ProcessInstanceImpl
     }
   }
 
-  /**
-   * Get all the steps where given user (with given role) can go back from the given state
-   * @param user user that can do the back actions
-   * @param roleName role name of this user
-   * @param stateName name of state where user want to go back from
-   * @return an array of HistoryStep objects
-   */
+  @Override
   public HistoryStep[] getBackSteps(User user, String roleName, String stateName)
       throws WorkflowException {
     List<String> stepIds = new ArrayList<>();
@@ -1774,17 +1611,17 @@ public class ProcessInstanceImpl
       }
 
       // Build vector of HistoryStep found
-      for (int i = 0; i < allSteps.length; i++) {
-        ActiveState state = new ActiveState(allSteps[i].getResolvedState());
-        if (stepIds.contains(allSteps[i].getId()) &&
-            (!allSteps[i].getAction().equals(QUESTION_ACTION)) &&
-            (!allSteps[i].getAction().equals("#response#")) &&
-            (allSteps[i].getResolvedState() != null) && (!activeStates.contains(state))) {
-          steps.add(allSteps[i]);
+      for (final HistoryStep allStep : allSteps) {
+        ActiveState state = new ActiveState(allStep.getResolvedState());
+        if (stepIds.contains(allStep.getId()) &&
+            (!allStep.getAction().equals(QUESTION_ACTION)) &&
+            (!allStep.getAction().equals("#response#")) &&
+            (allStep.getResolvedState() != null) && (!activeStates.contains(state))) {
+          steps.add(allStep);
         }
       }
 
-      return steps.toArray(new HistoryStep[steps.size()]);
+      return steps.toArray(new HistoryStep[0]);
     } catch (SQLException e) {
       throw new WorkflowException("ProcessInstanceImpl.getBackSteps",
           "workflowEngine.EX_ERR_GET_BACKSTEPS", INSTANCEID_PARAM + getId(), e);
@@ -1794,6 +1631,7 @@ public class ProcessInstanceImpl
   /**
    * Search for the step with given id
    * @param stepId the search step id
+   * @throws WorkflowException if an error occurs during the search.
    */
   private HistoryStep getStep(String stepId) throws WorkflowException {
     HistoryStep[] steps = getHistorySteps();
@@ -1815,15 +1653,6 @@ public class ProcessInstanceImpl
     return foundStep;
   }
 
-  /**
-   * Add a question
-   * @param content question text
-   * @param stepId id of destination step for the question
-   * @param fromState the state where the question was asked
-   * @param fromUser the user who asked the question
-   * @return The state to which the question is
-   * @throws WorkflowException
-   */
   @Override
   public State addQuestion(String content, String stepId, State fromState, User fromUser)
       throws WorkflowException {
@@ -1837,13 +1666,6 @@ public class ProcessInstanceImpl
     return getProcessModel().getState(step.getResolvedState());
   }
 
-  /**
-   * Answer a question
-   * @param content response text
-   * @param questionId id of question corresponding to this response
-   * @return The state where the question was asked
-   * @throws WorkflowException
-   */
   @Override
   public State answerQuestion(String content, String questionId) throws WorkflowException {
     Question question = null;
@@ -1866,11 +1688,6 @@ public class ProcessInstanceImpl
     return question.getTargetState();
   }
 
-  /**
-   * Get all the questions asked to the given state
-   * @param stateName given state name
-   * @return all the questions (not yet answered) asked to the given state
-   */
   @Override
   public Question[] getPendingQuestions(String stateName) {
     List<Question> questionsAsked = new ArrayList<>();
@@ -1880,14 +1697,10 @@ public class ProcessInstanceImpl
         questionsAsked.add(question);
       }
     }
-    return questionsAsked.toArray(new Question[questionsAsked.size()]);
+    return questionsAsked.toArray(new Question[0]);
   }
 
-  /**
-   * Get all the questions asked from the given state
-   * @param stateName given state name
-   * @return all the questions (not yet answered) asked from the given state
-   */
+  @Override
   public Question[] getSentQuestions(String stateName) {
     List<Question> questionsAsked = new ArrayList<>();
 
@@ -1897,32 +1710,23 @@ public class ProcessInstanceImpl
         questionsAsked.add(question);
       }
     }
-    return questionsAsked.toArray(new QuestionImpl[questionsAsked.size()]);
+    return questionsAsked.toArray(new Question[0]);
   }
 
-  /**
-   * Get all the questions asked from the given state and that have been aswered
-   * @param stateName given state name
-   * @return all the answered questions asked from the given state
-   */
+  @Override
   public Question[] getRelevantQuestions(String stateName) {
     List<Question> questionsAsked = new ArrayList<>();
 
     for (Question question : questions) {
-     if (question.getFromState().getName().equals(stateName) &&
+      if (question.getFromState().getName().equals(stateName) &&
           question.getResponseDate() != null && question.isRelevant()) {
         questionsAsked.add(question);
       }
     }
-    return questionsAsked.toArray(new QuestionImpl[questionsAsked.size()]);
+    return questionsAsked.toArray(new Question[0]);
   }
 
-  /**
-   * Cancel a question without response 1 - make a fictive answer 2 - remove active state 3 -
-   * remove
-   * working user 4 - recurse in question target state, if questions have been asked in cascade
-   * @param question the question to cancel
-   */
+  @Override
   public void cancelQuestion(Question question) throws WorkflowException {
     // 0 - recurse if necessary
     Question[] theQuestions = getSentQuestions(question.getTargetState().getName());
@@ -1942,12 +1746,9 @@ public class ProcessInstanceImpl
     removeWorkingUser(step.getUser(), state, step.getUserRoleName());
   }
 
-  /**
-   * Get all the questions asked in this processInstance
-   * @return all the questions
-   */
+  @Override
   public Question[] getQuestions() {
-    return questions.toArray(new QuestionImpl[questions.size()]);
+    return questions.toArray(new Question[0]);
   }
 
   /**
@@ -1959,12 +1760,7 @@ public class ProcessInstanceImpl
     this.activeStates.add(activeState);
   }
 
-  /**
-   * Returns this instance title.
-   * @param role
-   * @param lang
-   * @return
-   */
+  @Override
   public String getTitle(String role, String lang) {
     String title = null;
     Presentation template = null;
@@ -1992,10 +1788,7 @@ public class ProcessInstanceImpl
     return title;
   }
 
-  /**
-   * Returns the timeout action to be launched after given date
-   * @throws WorkflowException
-   */
+  @Override
   public ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException {
 
     // Parse active states
@@ -2046,12 +1839,10 @@ public class ProcessInstanceImpl
 
   /**
    * If the 7 lists @OneToMany were eagerly, the SQL query could be super huge when getting data,
-   * even for only one process instance.<br>
-   * As an example, if it exists 5 lines into each list, the SQL query loads
-   * 5x5x5x5x5x5x5=78125 lines for one process instance!!! Not amazing...<br>
-   * Graph entity is not the solution as it should do here the same thing that the EAGER fetch
-   * directive on @ManyToOne.<br>
-   * So there is yet 2 options:
+   * even for only one process instance.<br> As an example, if it exists 5 lines into each list, the
+   * SQL query loads 5x5x5x5x5x5x5=78125 lines for one process instance!!! Not amazing...<br> Graph
+   * entity is not the solution as it should do here the same thing that the EAGER fetch directive
+   * on @ManyToOne.<br> So there is yet 2 options:
    * <ul>
    *   <li>loading the things by sub SQL queries</li>
    *   <li>performing manually the data fetching after the process instance load</li>
@@ -2059,6 +1850,7 @@ public class ProcessInstanceImpl
    * Second option is chosen.
    * @return itself.
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   ProcessInstanceImpl fetchAll() {
     historySteps.size();
     undoSteps.size();

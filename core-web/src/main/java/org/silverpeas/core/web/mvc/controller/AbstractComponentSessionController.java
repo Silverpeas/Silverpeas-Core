@@ -301,12 +301,10 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   /**
-   * Gets all of the roles the current user plays in Silverpeas.
+   * Gets all of the roles the current user plays in Silverpeas. Because the
    * @return an array with all the user role names.
-   * @deprecated please use instead {@link #getSilverpeasUserRoles()} method.
    */
   @Override
-  @Deprecated
   public String[] getUserRoles() {
     return context.getCurrentProfile();
   }
