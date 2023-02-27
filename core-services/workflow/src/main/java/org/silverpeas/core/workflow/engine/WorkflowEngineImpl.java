@@ -109,7 +109,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 
   private void processControls(GenericEvent event, String id, boolean creation) {
     Transaction.performInOne(() -> {
-      UpdatableProcessInstance instance = repository.getById(id);
+      ProcessInstanceImpl instance = repository.getById(id);
 
       try {
         // Over-locks the process instance by admin
@@ -125,7 +125,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
           instance.lock(new StateImpl(""), event.getUser());
         }
 
-        repository.save((ProcessInstanceImpl) instance);
+        repository.save(instance);
       } catch (WorkflowException we) {
         throw new WorkflowException("WorkflowEngineImpl.processControls",
             "workflowEngine.EX_ERR_PROCESS_EVENT", we);
@@ -220,7 +220,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     instance.addHistoryStep(step.get());
 
     Transaction.performInOne(()-> {
-      UpdatableProcessInstance processInstance = repository.getById(id);
+      ProcessInstanceImpl processInstance = repository.getById(id);
 
       UpdatableHistoryStep currentStep =
           (UpdatableHistoryStep) processInstance.getHistoryStep(step.get().getId());
@@ -235,7 +235,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       currentStep.setActionStatus(ActionStatus.AFFECTATIONS_DONE);
       processInstance.updateHistoryStep(currentStep);
 
-      repository.save((ProcessInstanceImpl) processInstance);
+      repository.save(processInstance);
 
       return null;
     });

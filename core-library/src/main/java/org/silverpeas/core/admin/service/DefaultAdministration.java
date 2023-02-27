@@ -1680,12 +1680,12 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public List<ProfileInst> getProfiles(final String userId, final String componentId) {
+  public List<ProfileInst> getAllProfiles(final String userId, final String componentId) {
     List<ProfileInst> profiles = new ArrayList<>();
     try {
       var profileIds = List.of(getProfileIds(userId));
       var componentInst = getComponentInst(componentId);
-      profiles = componentInst.getProfiles().stream()
+      profiles = componentInst.getAllProfilesInst().stream()
           .filter(p -> profileIds.contains(p.getId()))
           .distinct()
           .collect(toList());
@@ -3416,7 +3416,7 @@ class DefaultAdministration implements Administration {
         // Get space ids on which the user is specifically indicated as manager
         final Integer[] directSpacedIds = userManager.getManageableSpaceIds(sUserId, groupIds);
         final List<SpaceInst> consumer = new ArrayList<>();
-        for(Integer directSpaceId : directSpacedIds) {
+        for (Integer directSpaceId : directSpacedIds) {
           consumer.add(getSpaceInstById(String.valueOf(directSpaceId)));
         }
         // Identifying all managed space ids
@@ -6115,8 +6115,7 @@ class DefaultAdministration implements Administration {
     /**
      * Gets the role in the component that is mapped with the specified space role. By convention,
      * whether there is no explicit mapping defined in the component descriptor, the role in the
-     * component is mapped to the role in the space on their name (they have the same
-     * name).
+     * component is mapped to the role in the space on their name (they have the same name).
      * @param spaceRole the role at space level.
      * @param componentName the name of the aimed component.
      * @return the name of the role in the component that is mapped with the specified space role

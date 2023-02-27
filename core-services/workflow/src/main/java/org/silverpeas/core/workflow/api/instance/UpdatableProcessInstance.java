@@ -31,6 +31,9 @@ import org.silverpeas.core.workflow.api.user.User;
 
 import java.util.Date;
 
+/**
+ * A process instance that can be updated.
+ */
 public interface UpdatableProcessInstance extends ProcessInstance {
   /**
    * Set the workflow instance id
@@ -45,27 +48,30 @@ public interface UpdatableProcessInstance extends ProcessInstance {
   void setModelId(String modelId);
 
   /**
-   * @param step
+   * Add a step in the history of actions performed in this process instance.
+   * @param step a step in the workflow process history.
    */
   void addHistoryStep(HistoryStep step) throws WorkflowException;
 
   /**
-   * @param step
+   * Update the related history step by the given one.
+   * @param step a step in the workflow process history.
    */
   void updateHistoryStep(HistoryStep step);
 
   /**
-   * Cancel all the atomic operations since the step where first action had occured
+   * Cancel all the atomic operations since the step where first action had occurred
    * @param state the name of state where ac action has been discussed
    * @param actionDate date of state re-resolving
    */
   void reDoState(String state, Date actionDate) throws WorkflowException;
 
   /**
-   * @param name
-   * @param value
+   * Sets the specified field in the process instance.
+   * @param name the name of the field
+   * @param field the field to set
    */
-  void setField(String name, Field value) throws WorkflowException;
+  void setField(String name, Field field) throws WorkflowException;
 
   /**
    * Save a new version of given form (including values)
@@ -76,34 +82,61 @@ public interface UpdatableProcessInstance extends ProcessInstance {
       throws WorkflowException;
 
   /**
-   * @param state
+   * Adds the specified state as an active one in this process instance. An active state is the
+   * current state of the process instance; that is to say a state that is currently waiting for
+   * actions by working users. A process instance can have several active states in parallel.
+   * @param state the active state.
    */
   void addActiveState(State state) throws WorkflowException;
 
   /**
-   * @param state
+   * Removes the specified state as an active one. An active state is the current state of the
+   * process instance; that is to say a state that is currently waiting for actions by working
+   * users. A process instance can have several active states in parallel.
+   * @param state the active state.
    */
   void removeActiveState(State state) throws WorkflowException;
 
   /**
-   * @param state
+   * Adds a timeout to the specified active state. A timeout is a way to avoid a long time state.
+   * The time out is defined by a {@link org.silverpeas.core.workflow.api.model.TimeOutAction}
+   * provided by the specified state.
+   * @param state the state for which a time out has to be added.
    */
   void addTimeout(State state) throws WorkflowException;
 
   /**
-   * @param state
+   * Removes the timeout from the specified active state. A timeout is a way to avoid a long time
+   * state.
+   * @param state the state for which a time out has to be removed.
    */
+  @SuppressWarnings("unused")
   void removeTimeout(State state) throws WorkflowException;
 
   /**
-   * @param user
+   * Adds the specified working user to the given state with the specified role.
+   * @param user the working user to add
+   * @param state the state on which the user will work
+   * @param role the role the user will play in the above state
+   * @throws WorkflowException if the adding fails.
    */
   void addWorkingUser(User user, State state, String role) throws WorkflowException;
 
+  /**
+   * Adds the specified actor to the given state.
+   * @param actor the actor to add
+   * @param state the state for which the actor has to be defined
+   * @throws WorkflowException if the adding fails.
+   */
   void addWorkingUser(Actor actor, State state) throws WorkflowException;
 
   /**
-   * @param user
+   * Removes the specified user from the working users of the specified state and with the given
+   * role.
+   * @param user the user to remove.
+   * @param state the state from which the user has to be removed
+   * @param role the role the user plays in the above state
+   * @throws WorkflowException if the removing fails.
    */
   void removeWorkingUser(User user, State state, String role) throws WorkflowException;
 
@@ -119,6 +152,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
    */
+  @SuppressWarnings("unused")
   void addInterestedUser(User user, State state, String role) throws WorkflowException;
 
   void addInterestedUser(Actor actor, State state) throws WorkflowException;
@@ -129,6 +163,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
    */
+  @SuppressWarnings("unused")
   void removeInterestedUser(User user, State state, String role) throws WorkflowException;
 
   /**
@@ -153,8 +188,8 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    */
   void setErrorStatus(boolean errorStatus);
 
-  /**
-     */
+
+  @SuppressWarnings("unused")
   void computeValid();
 
   /**

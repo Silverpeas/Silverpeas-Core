@@ -369,12 +369,13 @@ public interface Administration {
   /**
    * Gets all the profiles of the specified user in the given component instance. A profile is a
    * mapping between a role and the privileges the role provides to a user in a given space or
-   * applications in Silverpeas.
+   * applications in Silverpeas. Both inherited and explicit profiles of the given component
+   * instance are taken into account, either through a group of users or by the user himself.
    * @param userId the unique identifier of a user.
    * @param componentId the unique identifier of a component instance in Silverpeas.
    * @return a list with the profiles the user has in the given component instance.
    */
-  List<ProfileInst> getProfiles(String userId, String componentId);
+  List<ProfileInst> getAllProfiles(String userId, String componentId);
 
   List<ProfileInst> getProfilesByObject(ProfiledObjectId objectRef, String componentId)
       throws AdminException;
