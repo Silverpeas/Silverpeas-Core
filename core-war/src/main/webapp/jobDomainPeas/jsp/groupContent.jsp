@@ -53,6 +53,7 @@
 <fmt:message key="JDP.groupRemConfirm" var="groupRemConfirmMessage"/>
 <fmt:message key="JDP.groupDelConfirm" var="groupDelConfirmMessage"/>
 <fmt:message key="JDP.groupDelConfirmHelp" var="groupDelConfirmMessageHelp"/>
+<fmt:message key="GML.mandatory" var="mandatoryText"/>
 
 <%
   Domain domObject = (Domain) request.getAttribute("domainObject");
@@ -276,35 +277,42 @@ if (showTabs) {
 %>
 <view:frame>
 <view:board>
-<table cellpadding="5" cellspacing="0" border="0" width="100%">
-	<tr valign="baseline">
+<table>
+  <caption></caption>
+  <th></th>
+	<tr>
 		<%
 			String icon = resource.getIcon("JDP.group");
 			if (grObject.isSynchronized())
 				icon = resource.getIcon("JDP.groupSynchronized");
 		%>
-		<td><img src="<%=icon%>" alt="<%=resource.getString("GML.groupe") %>" title="<%=resource.getString("GML.groupe")%>" align="absmiddle"/></td>
-		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
-		<td align=left valign="baseline" width="100%"><%=WebEncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
+		<td><img src="<%=icon%>" alt="<%=resource.getString("GML.groupe") %>" title="<%=resource.getString("GML.groupe")%>"/></td>
+		<td class="textePetitBold"><%=resource.getString("GML.name")%> :</td>
+		<td><%=WebEncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
 	</tr>
   <c:if test="${not empty groupData.description}">
 	<tr>
 	    <td></td>
-		<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.description") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=WebEncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
+		<td class="textePetitBold"><%=resource.getString("GML.description") %> :</td>
+		<td><%=WebEncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
 	</tr>
   </c:if>
   <c:if test="${not empty groupData.rule}">
 	<tr>
 	<td></td>
-	<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("JDP.synchroRule") %> :</td>
-	<td align=left valign="baseline" width="100%"><%=WebEncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
+	<td class="textePetitBold"><%=resource.getString("JDP.synchroRule") %> :</td>
+	<td><%=WebEncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
     </tr>
   </c:if>
   <tr>
     <td></td>
-    <td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.users") %> :</td>
-    <td align=left valign="baseline" width="100%"><%=grObject.getTotalNbUsers()%></td>
+    <td class="textePetitBold"><%=resource.getString("GML.users") %> :</td>
+    <td><%=grObject.getTotalNbUsers()%></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="textePetitBold"><%=resource.getString("GML.Id") %> :</td>
+    <td><%=grObject.getId()%></td>
   </tr>
 </table>
 </view:board>
@@ -482,7 +490,7 @@ if (showTabs) {
              alt="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>"
              title="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>"/>
 			  </a>
-        <img src="${context}${mandatoryIcon}" width="5" height="5" border="0"/>
+        <img src="${context}${mandatoryIcon}" width="5" height="5" alt="${mandatoryText}"/>
         <input type="hidden" name="sourceRightsId" id="sourceRightsId" value=""/>
         <input type="hidden" name="sourceRightsType" id="sourceRightsType" value=""/>
 		  </span>
@@ -500,7 +508,7 @@ if (showTabs) {
         <input type="hidden" name="nodeAssignRights" id="nodeAssignRights" value="true"/>
 	    </span>
     <label class="label-ui-dialog">
-      <img src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+      <img src="${context}${mandatoryIcon}" width="5" height="5" alt="${mandatoryText}"/> : <fmt:message key="GML.requiredField"/>
     </label>
   </form>
 </div>
