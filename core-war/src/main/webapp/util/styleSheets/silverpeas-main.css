@@ -4411,6 +4411,10 @@ input.search:focus {
   max-width: none !important;
 }
 
+.type-user > div {
+  display: inline-block;
+}
+
 .select-user-group-container .type-group,
 .select-user-group-container .type-user {
   white-space: nowrap;
@@ -4424,6 +4428,53 @@ input.search:focus {
 .select-user-group-container .selectize-input .type-group,
 .select-user-group-container .selectize-input .type-user {
   display: inline-flex;
+}
+
+.select-user-group-container .type-user .user-state {
+  font-style: italic;
+  opacity: 0.5;
+  font-size: 90%;
+  line-height: 1em;
+}
+
+.select-user-group-container .type-user {
+  position: relative;
+}
+
+.select-user-group-container .type-user.deactivated-state,
+.select-user-group-container .type-user.removed-state {
+  opacity: 0.8;
+}
+
+.select-user-group-container .type-user.deactivated-state:after {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  content: ' ';
+  width: 16px;
+  height: 16px;
+  background: transparent url(../icons/user-deactivated.png) 0 0 no-repeat;
+}
+
+.select-user-group-container .type-user.removed-state:after,
+.select-user-group-container .type-user.expired-state:after {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  content: ' ';
+  width: 16px;
+  height: 16px;
+  background: transparent url(../icons/user-expired.png) 0 0 no-repeat;
+}
+
+.select-user-group-container .type-user.blocked-state:after {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  content: ' ';
+  width: 16px;
+  height: 16px;
+  background: transparent url(../icons/user-blocked.png) 0 0 no-repeat;
 }
 
 .select-user-group-container .selectize-control .type-group img {
@@ -4614,11 +4665,17 @@ input.search:focus {
   height:auto;
 }
 
-.userPanel .state-deactivated .avatar {
+.userPanel .state-expired .avatar,
+.userPanel .state-blocked .avatar,
+.userPanel .state-deactivated .avatar,
+.userPanel .state-removed .avatar {
   opacity:0.5;
 }
 
-.userPanel .state-deactivated .name_user {
+.userPanel .state-expired .name_user,
+.userPanel .state-blocked .name_user,
+.userPanel .state-deactivated .name_user,
+.userPanel .state-removed .name_user {
   color:#666;
 }
 
@@ -6160,6 +6217,7 @@ div.user-card .field{
 
 .userToZoom {
   white-space: nowrap;
+  display: inline-block;
 }
 
 div.user-card .userToZoom {
@@ -6727,6 +6785,11 @@ a.navigation-button {
 
 .access-list li:first-child{
   clear:left;
+}
+
+.access-list li .user-state {
+  padding-left: 0.25em;
+  display:inline-block;
 }
 
 .fields .buttonPanel {

@@ -40,14 +40,21 @@
 <view:setBundle basename="org.silverpeas.notificationManager.multilang.notificationManagerBundle" var="notificationBundle" />
 
 <view:setConstant var="DEACTIVATED_USER_STATE" constant="org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED"/>
+<fmt:message var="EXPIRED_SHORT_LABEL" key="GML.user.account.state.EXPIRED.short"/>
+<c:set var="EXPIRED_SHORT_LABEL" value="${fn:toLowerCase(EXPIRED_SHORT_LABEL)}"/>
+<fmt:message var="BLOCKED_SHORT_LABEL" key="GML.user.account.state.BLOCKED.short"/>
+<c:set var="BLOCKED_SHORT_LABEL" value="${fn:toLowerCase(BLOCKED_SHORT_LABEL)}"/>
 <fmt:message var="DEACTIVATED_SHORT_LABEL" key="GML.user.account.state.DEACTIVATED.short"/>
 <c:set var="DEACTIVATED_SHORT_LABEL" value="${fn:toLowerCase(DEACTIVATED_SHORT_LABEL)}"/>
+<fmt:message var="REMOVED_SHORT_LABEL" key="GML.user.account.state.REMOVED.short"/>
+<c:set var="REMOVED_SHORT_LABEL" value="${fn:toLowerCase(REMOVED_SHORT_LABEL)}"/>
 
 <c:set var="currentUserId"           value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="selection"               value="${requestScope.SELECTION}"/>
 <jsp:useBean id="selection" type="org.silverpeas.core.web.selection.Selection"/>
 <c:set var="registeredServerDomains" value="${selection.registeredServerDomains}"/>
 <c:set var="multipleSelection"       value="${selection.multiSelect}"/>
+<c:set var="includeRemovedUsers"          value="${selection.extraParams.includeRemovedUsers or false}"/>
 <c:set var="instanceId"              value="${selection.extraParams.componentId}"/>
 <c:set var="domainId"                value="${selection.extraParams.domainId}"/>
 <c:set var="roles"                   value="${selection.extraParams.joinedProfileNames}"/>
@@ -165,9 +172,14 @@
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
               <a href="#" ng-show="selectedUsers.multipleSelection && !isSelectedUserLimitEnabled()" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
               <ul id="user_list">
-                <li ng-repeat="user in users track by user.uri" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="user in users track by user.uri" ng-class="userItemCss(user)" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
-                  <span class="name_user">{{ userFullName(user) }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
+                  <span class="name_user">{{ userFullName(user) }}
+                    <span ng-show="user.expiredState"> (${EXPIRED_SHORT_LABEL})</span>
+                    <span ng-show="user.blockedState"> (${BLOCKED_SHORT_LABEL})</span>
+                    <span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span>
+                    <span ng-show="user.removedState"> (${REMOVED_SHORT_LABEL})</span>
+                  </span>
                   <span class="mail_user">{{ user.eMail }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a href="#" ng-show="isUserSelectable(user)" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
@@ -212,9 +224,14 @@
               <p class="nb_results" id="user_selected_count">{{ selectedUsers.length }} ${selectedUserText}</p>
               <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="deselectAllUsers()" title="${removeAllUsersFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
               <ul id="selected_user_list">
-                <li ng-repeat="user in selectedUsers.currentpage() track by user.uri" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="user in selectedUsers.currentpage() track by user.uri" ng-class="userItemCss()" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
-                  <span class="name_user">{{ userFullName(user) }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
+                  <span class="name_user">{{ userFullName(user) }}
+                    <span ng-show="user.expiredState"> (${EXPIRED_SHORT_LABEL})</span>
+                    <span ng-show="user.blockedState"> (${BLOCKED_SHORT_LABEL})</span>
+                    <span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span>
+                    <span ng-show="user.removedState"> (${REMOVED_SHORT_LABEL})</span>
+                  </span>
                   <span class="mail_user">{{ user.eMail }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
@@ -259,7 +276,7 @@
           domain: '${domainId}'});
 
         /* declare the module userSelector and its dependencies (here on the silverpeas module) */
-        var userSelector = angular.module('silverpeas.userSelector', ['silverpeas.services', 'silverpeas.directives']);
+        const userSelector = angular.module('silverpeas.userSelector', ['silverpeas.services', 'silverpeas.directives']);
 
         /* the main controller of the application */
         userSelector.controller('mainController', function(context, User, UserGroup, $scope) {
@@ -298,12 +315,12 @@
       </c:choose>
 
             /* the type of users displayed in the user listing: relationships or users in a group */
-            var displayedUserType;
-            /* keeps in memory the current filters on the user name and on the group name */
-            var listingFilters = {
-              userName: null,
-              groupName: null
-            };
+          let displayedUserType;
+          /* keeps in memory the current filters on the user name and on the group name */
+          const listingFilters = {
+            userName : null,
+            groupName : null
+          };
 
           /**
            * Sets the common parameters
@@ -313,6 +330,7 @@
               params = {};
             }
             if (typeof params === 'object') {
+              params.includeRemoved = ${includeRemovedUsers}
               if (context.hidingDeactivatedState) {
                 params.userStatesToExclude = ['${DEACTIVATED_USER_STATE}'];
               }
@@ -335,19 +353,21 @@
           }
 
             /* The root of the user group tree. It can be then considered as any other user group */
-            var rootGroup = { name: '<fmt:message key="selection.RootUserGroups"/>', root: true,
-              subgroups: function() {
-                return __getUserGroups(arguments[0]);
-              },
-              users: function() {
-                var params = (arguments.length > 0 && arguments[0] ? arguments[0]:{});
-                params.group = 'all';
-                return __getUsers(params);
-              }
-            };
+          const rootGroup = {
+            name : '<fmt:message key="selection.RootUserGroups"/>',
+            root : true,
+            subgroups : function() {
+              return __getUserGroups(arguments[0]);
+            },
+            users : function() {
+              const params = (arguments.length > 0 && arguments[0] ? arguments[0] : {});
+              params.group = 'all';
+              return __getUsers(params);
+            }
+          };
 
-             /* me, the current user */
-             var me;
+          /* me, the current user */
+          let me;
           __getUsers(${currentUserId}).then(function(user) {
                me = user;
              });
@@ -360,7 +380,7 @@
              * depends on the current user displaying context (relationships, all users, or users of a
              * group) */
             function fetchUsers(params) {
-              var users;
+              let users;
               switch(displayedUserType) {
                 case UserSource.All:
                   users = __getUsers(params);
@@ -383,7 +403,7 @@
              /* update the groups in the filter on the groups */
             function updateGroupsFilter(groups) {
               if ($scope.groupsFilter)
-                for (var i = 0; i < groups.length; i++)
+                for (let i = 0; i < groups.length; i++)
                   $scope.groupsFilter.push(groups[i]);
               else
                 $scope.groupsFilter = groups;
@@ -443,7 +463,7 @@
 
             /* Total number of selected users (from user and group lists) */
             function getTotalNumberOfSelectedUsers () {
-              var nbSelectedUsers = $scope.selectedUsers.length();
+              let nbSelectedUsers = $scope.selectedUsers.length();
               $.each($scope.selectedGroups.items, function(index, group) {
                 nbSelectedUsers += group.userCount;
               });
@@ -507,16 +527,16 @@
               }).then(setGroupsFilter);
               $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
               if(preselectedUsers.length) {
-                var component = context.component;
+                const component = context.component;
                 context.component = '';
-                User.get({"id":preselectedUsers}).then(function(users) {
+                User.get({"id":preselectedUsers,"includeRemoved":true}).then(function(users) {
                   $scope.selectedUsers.add(users);
                 });
                 context.component = component;
               }
               $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
               if(preselectedUserGroups.length) {
-                var component = context.component;
+                const component = context.component;
                 context.component = '';
                 UserGroup.get({"ids":preselectedUserGroups}).then(function(groups) {
                   $scope.selectedGroups.add(groups);
@@ -550,9 +570,9 @@
 
            /* Indicates if the current group is selectable */
            $scope.isGroupSelectable = function(group) {
-             var isSelectable = $scope.selectedGroups.indexOf(group) < 0;
+             let isSelectable = $scope.selectedGroups.indexOf(group) < 0;
              if (isSelectable && $scope.isSelectedUserLimitEnabled()) {
-               var totalOfSelectedUsers = getTotalNumberOfSelectedUsers();
+               const totalOfSelectedUsers = getTotalNumberOfSelectedUsers();
                isSelectable = group.userCount > 0
                               && context.selectedUserLimit >= (totalOfSelectedUsers + group.userCount);
              }
@@ -561,7 +581,7 @@
 
            /* Indicates if the current user is selectable */
            $scope.isUserSelectable = function(user) {
-             var isSelectable = $scope.selectedUsers.indexOf(user) < 0;
+             let isSelectable = $scope.selectedUsers.indexOf(user) < 0;
              if (isSelectable && $scope.isSelectedUserLimitEnabled()) {
                isSelectable = context.selectedUserLimit > getTotalNumberOfSelectedUsers();
              }
@@ -570,13 +590,13 @@
 
            /* pagination in the listings and in the selections panels */
            $scope.changeGroupListingPage = function(pageNumber) {
-              var params = {page: {number: pageNumber, size: $scope.groupPageSize}};
-              if (listingFilters.groupName)
+             const params = {page : {number : pageNumber, size : $scope.groupPageSize}};
+             if (listingFilters.groupName)
                 params.name = listingFilters.groupName;
              $scope.currentGroup.subgroups(__applyCommonParameters(params)).then(updateGroupsListing);
             };
             $scope.changeUserListingPage = function(pageNumber) {
-              var params = {page: {number: pageNumber, size: $scope.userPageSize}};
+              const params = {page : {number : pageNumber, size : $scope.userPageSize}};
               if (listingFilters.userName)
                 params.name = listingFilters.userName;
               fetchUsers(params).then(updateUsersListing);
@@ -592,7 +612,7 @@
 
             /* displays the nexts given number of groups in the filter of groups */
             $scope.displayNextGroups = function() {
-              var pageNumber = ($scope.groupsFilter.length / GroupsFilterSizeStep) + 1;
+              const pageNumber = ($scope.groupsFilter.length / GroupsFilterSizeStep) + 1;
               $scope.currentGroup.subgroups(__applyCommonParameters({
                 page : {
                   number : pageNumber,
@@ -673,11 +693,21 @@
               $('#breadcrumb').breadcrumb('set', group);
             };
 
+            /* css for user item */
+            $scope.userItemCss = function(user) {
+              return {
+                'state-expired' : user.expiredState,
+                'state-blocked' : user.blockedState,
+                'state-deactivated' : user.deactivatedState,
+                'state-removed' : user.removedState
+              };
+            };
+
              /* validate the selection of users and/or of user groups */
             $scope.validate = function() {
-              var selectedGroupIds = $scope.selectedGroups.itemIdsAsString();
-              var selectedUserIds = $scope.selectedUsers.itemIdsAsString();
-       <c:choose>
+              const selectedGroupIds = $scope.selectedGroups.itemIdsAsString();
+              const selectedUserIds = $scope.selectedUsers.itemIdsAsString();
+              <c:choose>
         <c:when test="${hotSetting}">
               const __triggerChange = function($jqEl) {
                 $jqEl.trigger("change");
@@ -685,11 +715,11 @@
                   jQuery($el)[0].dispatchEvent(new Event('input', { 'bubbles': true }));
                 });
               }
-              var selectedGroupNames = $scope.selectedGroups.itemNamesAsString();
-              var selectedUserNames = $scope.selectedUsers.itemNamesAsString();
-              var selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
-              var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
-              var selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
+              const selectedGroupNames = $scope.selectedGroups.itemNamesAsString();
+              const selectedUserNames = $scope.selectedUsers.itemNamesAsString();
+              const selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
+              const selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
+              const selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
               __triggerChange(window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)));
               __triggerChange(window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)));
               if(selectionTypeField != null && selectionTypeField.length > 0) {
@@ -770,18 +800,18 @@
 
         /* autoresize the filters area according to the width and height of the window */
         function autoresizeUserGroupFilters() {
-          var height_container = $('.container_userPanel').outerHeight();
-          var height_listing_groups = $('.listing_groups_filter').outerHeight();
-          var height_listing = $('.listing_filter').outerHeight();
-          var height_title = $('#filter_userPanel .title').outerHeight();
-          var new_height_listing_groups = height_container - (height_listing - height_listing_groups) - height_title;
+          const height_container = $('.container_userPanel').outerHeight();
+          const height_listing_groups = $('.listing_groups_filter').outerHeight();
+          const height_listing = $('.listing_filter').outerHeight();
+          const height_title = $('#filter_userPanel .title').outerHeight();
+          const new_height_listing_groups = height_container - (height_listing - height_listing_groups) - height_title;
 
           $('.listing_groups_filter').css('height', new_height_listing_groups + 'px');
         }
 
         $(document).ready(function() {
           try {
-            var documentWidth = 1090;
+            const documentWidth = 1090;
             if ($(window).width() < documentWidth) {
               window.resizeTo(documentWidth, 600);
             }

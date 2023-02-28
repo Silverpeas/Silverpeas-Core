@@ -44,11 +44,29 @@ public interface UserManager {
 
   /**
    * Returns all the users having a given role relative to a processModel.
+   * <p>
+   *   Users in removed states are taken into account if it exists a valid replacement at the
+   *   instant of method call for the given role name on the process represented by modelId
+   *   parameter.
+   * </p>
+   * @param roleName the role name to check.
+   * @param modelId the identifier of the model which is the identifier of the component instance
+   * id.
+   * @return an array of {@link User} instances corresponding to given parameters.
    */
-  User[] getUsersInRole(String roleName, String processModelId)
-      throws WorkflowException;
+  User[] getUsersInRole(String roleName, String modelId);
 
-  User[] getUsersInGroup(String groupId);
+  /**
+   * Returns all the users into given group and its sub groups.
+   * <p>
+   *   Users in removed states are taken into account if it exists a valid replacement at the
+   *   instant of method call on the process represented by modelId parameter.
+   * </p>
+   * @param modelId the identifier of the model which is the identifier of the component instance
+   * id.
+   * @return an array of {@link User} instances corresponding to given parameters.
+   */
+  User[] getUsersInGroup(String groupId, final String modelId);
 
   /**
    * Get a user from a given user and relation

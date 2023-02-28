@@ -57,6 +57,10 @@
         'type' : String,
         'default' : ''
       },
+      includeRemovedUsers : {
+        'type' : Boolean,
+        'default' : false
+      },
       hideDeactivatedState : {
         'type' : Boolean,
         'default' : true
@@ -172,6 +176,7 @@
               : [this.initialGroupIds];
           const options = {
             rootContainerId : this.rootContainerId,
+            includeRemovedUsers : this.includeRemovedUsers,
             hideDeactivatedState : this.hideDeactivatedState,
             domainIdFilter : domainIdFilter,
             componentIdFilter : this.componentIdFilter,

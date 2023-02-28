@@ -28,13 +28,13 @@
     return;
   }
 
-  var SELECT_NB_ITEM_PER_TYPE = 20;
-  var SELECTION_TYPE = {
+  const SELECT_NB_ITEM_PER_TYPE = 20;
+  const SELECTION_TYPE = {
     USER : 0,
     GROUP : 1,
     USER_GROUP : 2,
     decode : function(value) {
-      var decoded;
+      let decoded;
       if (typeof value === 'string') {
         decoded = SELECTION_TYPE[value.toUpperCase()];
       }
@@ -42,44 +42,47 @@
     }
   };
 
-  var ICON_USER_GROUP_PANEL = webContext + "/util/icons/create-action/add-existing-group.png";
-  var ICON_USER_PANEL = webContext + "/util/icons/user.png";
-  var ICON_GROUP_PANEL = webContext + "/util/icons/groups.png";
-  var ICON_GROUP_SYNC = webContext + "/jobDomainPeas/jsp/icons/scheduledGroup.gif";
-  var ICON_GROUP = webContext + "/util/icons/groupe.gif";
-  var ICON_USER = webContext + "/util/icons/user.gif";
-  var ICON_USER_BLOCKED = webContext + "/util/icons/user-blocked.png";
-  var ICON_USER_EXPIRED = webContext + "/util/icons/user-expired.png";
+  const ICON_USER_GROUP_PANEL = webContext + "/util/icons/create-action/add-existing-group.png";
+  const ICON_USER_PANEL = webContext + "/util/icons/user.png";
+  const ICON_GROUP_PANEL = webContext + "/util/icons/groups.png";
+  const ICON_GROUP_SYNC = webContext + "/jobDomainPeas/jsp/icons/scheduledGroup.gif";
+  const ICON_GROUP = webContext + "/util/icons/groupe.gif";
+  const ICON_USER = webContext + "/util/icons/user.gif";
+  const ICON_USER_DEACTIVATED = webContext + "/util/icons/user-deactivated.png";
+  const ICON_USER_REMOVED = webContext + "/util/icons/user-deactivated.png";
+  const ICON_USER_BLOCKED = webContext + "/util/icons/user-blocked.png";
+  const ICON_USER_EXPIRED = webContext + "/util/icons/user-expired.png";
 
-  var USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE = UserGroupListSettings.get("u.m.n.u.r.l.v");
-  var DOMAIN_RESTRICTION = UserGroupListSettings.get("d.r");
-  var NB_DOMAINS = UserGroupListSettings.get("d.nb");
+  const USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE = UserGroupListSettings.get("u.m.n.u.r.l.v");
+  const DOMAIN_RESTRICTION = UserGroupListSettings.get("d.r");
+  const NB_DOMAINS = UserGroupListSettings.get("d.nb");
 
-  var USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_MESSAGE = UserGroupListBundle.get("n.m.r.l.m.w");
-  const LABEL_GROUPS = UserGroupListBundle.get("GML.group_s");
-  const LABEL_USERS = UserGroupListBundle.get("GML.user_s");
-  const LABEL_AND = UserGroupListBundle.get("GML.and");
-  var LABEL_DELETE = UserGroupListBundle.get("GML.delete");
-  var LABEL_DELETE_ALL = UserGroupListBundle.get("GML.deleteAll");
-  var LABEL_CONFIRM_DELETE_ALL = UserGroupListBundle.get("GML.confirmation.deleteAll");
-  var LABEL_REMOVE = UserGroupListBundle.get("GML.action.remove");
-  var LABEL_REMOVE_ALL = UserGroupListBundle.get("GML.action.removeAll");
-  var LABEL_KEEP = UserGroupListBundle.get("GML.action.keep");
-  var LABEL_UPDATE = UserGroupListBundle.get("GML.modify");
-  var LABEL_SELECT = UserGroupListBundle.get("GML.action.select");
-  var LABEL_LIST_CHANGED = UserGroupListBundle.get("GML.list.changed.message");
+  const USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_MESSAGE = sp.i18n.get("n.m.r.l.m.w");
+  const LABEL_GROUPS = sp.i18n.get("GML.group_s");
+  const LABEL_USERS = sp.i18n.get("GML.user_s");
+  const LABEL_AND = sp.i18n.get("GML.and");
+  const LABEL_DELETE = sp.i18n.get("GML.delete");
+  const LABEL_DELETE_ALL = sp.i18n.get("GML.deleteAll");
+  const LABEL_CONFIRM_DELETE_ALL = sp.i18n.get("GML.confirmation.deleteAll");
+  const LABEL_REMOVE = sp.i18n.get("GML.action.remove");
+  const LABEL_REMOVE_ALL = sp.i18n.get("GML.action.removeAll");
+  const LABEL_KEEP = sp.i18n.get("GML.action.keep");
+  const LABEL_UPDATE = sp.i18n.get("GML.modify");
+  const LABEL_SELECT = sp.i18n.get("GML.action.select");
+  const LABEL_LIST_CHANGED = sp.i18n.get("GML.list.changed.message");
 
-  var __globalIdCounter = 0;
+  let __globalIdCounter = 0;
 
-  var UserGroupRequester = function(options) {
-    var __applyCommonParameters = function(params) {
+  const UserGroupRequester = function(options) {
+    const __applyCommonParameters = function(params) {
       this.options = extendsObject({
+        includeRemovedUsers : false,
         hideDeactivatedState : false,
         domainIdFilter : '',
         resourceIdFilter : '',
         componentIdFilter : ''
       }, options);
-      var _params = params;
+      let _params = params;
       if (typeof _params === 'undefined') {
         _params = {};
       }
@@ -105,6 +108,9 @@
             _params.group = this.options.groupFilter;
           }
         }
+        if (this.options.includeRemovedUsers) {
+          _params.includeRemoved = true;
+        }
       }
       if (_params.limit) {
         _params.page = {number : 1, size : _params.limit};
@@ -113,7 +119,7 @@
     }.bind(this);
 
     this.getUsers = function(params) {
-      var finalParams = __applyCommonParameters(params);
+      const finalParams = __applyCommonParameters(params);
       return User.get(finalParams).then(function(users) {
         if (finalParams.limit && finalParams.limit < users.length) {
           users.splice(finalParams.limit, 1);
@@ -124,7 +130,7 @@
     };
 
     this.getUserGroups = function(params) {
-      var finalParams = __applyCommonParameters(params);
+      const finalParams = __applyCommonParameters(params);
       return UserGroup.get(finalParams).then(function(groups) {
         if (finalParams.limit && finalParams.limit < groups.length) {
           groups.splice(finalParams.limit, 1);
@@ -135,7 +141,7 @@
     }
   };
 
-  var UserGroupSelectize = function(userGroupSelectInstance) {
+  const UserGroupSelectize = function(userGroupSelectInstance) {
     applyReadyBehaviorOn(this);
 
     /**
@@ -144,15 +150,15 @@
      */
     this.refresh = function(silent) {
       this.clear();
-      var __userDeferred = sp.promise.deferred();
-      var __groupDeferred = sp.promise.deferred();
-      var __initializeByAjaxDone = [__userDeferred.promise, __groupDeferred.promise];
+      const __userDeferred = sp.promise.deferred();
+      const __groupDeferred = sp.promise.deferred();
+      const __initializeByAjaxDone = [__userDeferred.promise, __groupDeferred.promise];
       // Groups
       if (userGroupSelectInstance.context.currentGroupIds.length) {
         __requester.getUserGroups({ids : userGroupSelectInstance.context.currentGroupIds}).then(
             function(groups) {
               groups.forEach(function(group) {
-                var item = new SelectUserGroupItem(group, userGroupSelectInstance);
+                const item = new SelectUserGroupItem(group, userGroupSelectInstance);
                 __applyItemSelectizeData(item, 'group-', 1);
                 __selectize.addOption(item);
                 __selectize.addItem(item.id, true);
@@ -163,11 +169,11 @@
         __groupDeferred.resolve();
       }
       // Users
-      if (userGroupSelectInstance.context.currentUserIds.length){
+      if (userGroupSelectInstance.context.currentUserIds.length) {
         __requester.getUsers({id : userGroupSelectInstance.context.currentUserIds}).then(
             function(users) {
               users.forEach(function(user) {
-                var item = new SelectUserItem(user, userGroupSelectInstance);
+                const item = new SelectUserItem(user, userGroupSelectInstance);
                 __applyItemSelectizeData(item, 'user-', 1);
                 __selectize.addOption(item);
                 __selectize.addItem(item.id, true);
@@ -192,7 +198,7 @@
      * @returns {int}
      */
     this.getTotalOfSelectedUsers = function() {
-      var count = 0;
+      let count = 0;
       __selectize.items.forEach(function(selectedId) {
         count = count + __selectize.options[selectedId].getUserCount();
       });
@@ -231,25 +237,24 @@
     Initializations
      */
 
-    var __sequential = sp.promise.resolveDirectlyWith();
-    var __requester = new UserGroupRequester(userGroupSelectInstance.options);
-    var __applyItemSelectizeData = function(item, idPrefix, score) {
+    const __sequential = sp.promise.resolveDirectlyWith();
+    const __requester = new UserGroupRequester(userGroupSelectInstance.options);
+    const __applyItemSelectizeData = function(item, idPrefix, score) {
       item.id = idPrefix + item.getId();
       item.name = item.getFullName();
       item.score = score;
     };
-    var __isUserId = function(id) {
+    const __isUserId = function(id) {
       return id.startsWith("user-")
     };
-    var __normalizeId = function(id) {
+    const __normalizeId = function(id) {
       return id.replace(/[^0-9]/g, '');
     };
-    var __updateIdContainers = function(id, allValues) {
-      var _allValues = typeof allValues === 'string' ? [allValues] : allValues;
-      var isAdd = Array.isArray(_allValues);
-      var isUserId = __isUserId(id);
-      var idContainer = isUserId ?
-          userGroupSelectInstance.context.currentUserIds :
+    const __updateIdContainers = function(id, allValues) {
+      const _allValues = typeof allValues === 'string' ? [allValues] : allValues;
+      const isAdd = Array.isArray(_allValues);
+      const isUserId = __isUserId(id);
+      const idContainer = isUserId ? userGroupSelectInstance.context.currentUserIds :
           userGroupSelectInstance.context.currentGroupIds;
       if (isAdd) {
         if (userGroupSelectInstance.options.userManualNotificationUserReceiverLimit &&
@@ -272,12 +277,12 @@
       userGroupSelectInstance.refreshCommons();
     }.bind(this);
 
-    var __ifPreparedItemsWith = function(query) {
-      var __itemDeferred = sp.promise.deferred();
+    const __ifPreparedItemsWith = function(query) {
+      const __itemDeferred = sp.promise.deferred();
       __sequential.then(function() {
         __selectize.loadedSearches = {};
         userGroupSelectInstance.context.searchInput.processQuery(query, function(ajaxPerformed) {
-          for (var itemId in __selectize.options) {
+          for (let itemId in __selectize.options) {
             __selectize.options[itemId].score = 0;
             if (__selectize.items.indexOf(itemId) < 0) {
               __selectize.removeOption(itemId);
@@ -286,8 +291,8 @@
           __selectize.refreshOptions(true);
 
           if (ajaxPerformed) {
-            var all = [];
-            var currentTotalOfSelectedUsers;
+            const all = [];
+            let currentTotalOfSelectedUsers;
             if (userGroupSelectInstance.options.userManualNotificationUserReceiverLimit) {
               currentTotalOfSelectedUsers = this.getTotalOfSelectedUsers();
             }
@@ -316,7 +321,7 @@
       return __itemDeferred.promise;
     }.bind(this);
 
-    var selectizePlugins = [];
+    const selectizePlugins = [];
     if (userGroupSelectInstance.options.queryInputName) {
       selectizePlugins.push({
         name : 'QueryInputUsedInForm',
@@ -332,54 +337,55 @@
     if (userGroupSelectInstance.options.selectOnTabulationKeyDown) {
       selectizePlugins.push('SelectOnTabulationKeyDown');
     }
-    var __selectize = jQuery(userGroupSelectInstance.context.searchInput).selectize({
-      plugins: selectizePlugins,
-      valueField: 'id',
-      placeholder: "          ",
-      options: [],
-      create: false,
-      highlight: false,
+    const __selectize = jQuery(userGroupSelectInstance.context.searchInput).selectize({
+      plugins : selectizePlugins,
+      valueField : 'id',
+      placeholder : "          ",
+      options : [],
+      create : false,
+      highlight : false,
       hideSelected : true,
       loadThrottle : 300,
       maxItems : userGroupSelectInstance.options.multiple ? null : 1,
       maxOptions : (SELECT_NB_ITEM_PER_TYPE * 2) - 1,
-      render: {
-        option: function(data, escape) {
-          var option = data.getElement();
+      render : {
+        option : function(data, escape) {
+          const option = data.getElement();
           option.classList.add('option');
           return option;
         },
-        item: function(data, escape) {
-          var item = data.getElement();
+        item : function(data, escape) {
+          const item = data.getElement();
           item.classList.add('item');
           return item;
         }
       },
-      score: function(search) {
+      score : function(search) {
         return function(item) {
           return item.score;
         };
       },
-      load: function(query, callback) {
+      load : function(query, callback) {
         __ifPreparedItemsWith(query).then(function(items) {
           callback(items);
         })
       }
     })[0].selectize;
+
     function __onChange() {
-      var c = userGroupSelectInstance.context;
-      var forceChangeTrigger = false;
+      const c = userGroupSelectInstance.context;
+      let forceChangeTrigger = false;
       if (!c._last_currentUserIds) {
         c._last_currentUserIds = [];
         c._last_currentGroupIds = [];
         forceChangeTrigger = true;
       }
-      var userIdsChange = !sp.object.areExistingValuesEqual(__copyAndSort(c._last_currentUserIds), __copyAndSort(c.currentUserIds));
-      var groupIdsChange = !sp.object.areExistingValuesEqual(__copyAndSort(c._last_currentGroupIds), __copyAndSort(c.currentGroupIds));
+      const userIdsChange = !sp.object.areExistingValuesEqual(__copyAndSort(c._last_currentUserIds), __copyAndSort(c.currentUserIds));
+      const groupIdsChange = !sp.object.areExistingValuesEqual(__copyAndSort(c._last_currentGroupIds), __copyAndSort(c.currentGroupIds));
       c._last_currentUserIds = [].concat(c.currentUserIds);
       c._last_currentGroupIds = [].concat(c.currentGroupIds);
       if (forceChangeTrigger || userIdsChange || groupIdsChange) {
-        var o = userGroupSelectInstance.options;
+        const o = userGroupSelectInstance.options;
         if (typeof o.onChange === 'function') {
           setTimeout(function() {
             try {
@@ -397,6 +403,7 @@
         }
       }
     }
+
     setTimeout(function() {
       if (userGroupSelectInstance.options.initialQuery) {
         __selectize.setTextboxValue(userGroupSelectInstance.options.initialQuery);
@@ -426,9 +433,10 @@
 
   window.UserGroupSelect = function(options) {
     applyReadyBehaviorOn(this);
-    var __idCounter = __globalIdCounter;
+    const __idCounter = __globalIdCounter;
 
     this.options = extendsObject({
+      includeRemovedUsers : false,
       hideDeactivatedState : true,
       domainIdFilter : '',
       componentIdFilter : '',
@@ -482,8 +490,8 @@
       this.options.noSelectionClear = true;
     }
 
-    var initialUserIds = __convertToString(this.options.initialUserIds);
-    var initialGroupIds = __convertToString(this.options.initialGroupIds);
+    const initialUserIds = __convertToString(this.options.initialUserIds);
+    const initialGroupIds = __convertToString(this.options.initialGroupIds);
 
     this.context = {
       hidden : this.options.hidden,
@@ -554,14 +562,14 @@
       }.bind(this));
     };
 
-    var __requester = new UserGroupRequester(this.options);
+    const __requester = new UserGroupRequester(this.options);
 
-    var _doSearchWith = function(search, callback) {
-      var userDeferred = sp.promise.deferred();
-      var groupDeferred = sp.promise.deferred();
-      var searchDone = [userDeferred.promise, groupDeferred.promise];
+    const _doSearchWith = function(search, callback) {
+      const userDeferred = sp.promise.deferred();
+      const groupDeferred = sp.promise.deferred();
+      const searchDone = [userDeferred.promise, groupDeferred.promise];
       // Query
-      var query = encodeURIComponent(search + '*');
+      const query = encodeURIComponent(search + '*');
       // Users
       if (this.options.selectionType !== SELECTION_TYPE.GROUP) {
         __requester.getUsers({name : query, limit : SELECT_NB_ITEM_PER_TYPE}).then(function(users) {
@@ -592,19 +600,19 @@
       }.bind(this));
     }.bind(this);
 
-    var __internalOnReady = function() {
+    const __internalOnReady = function() {
       if (!this.context.readOnly && !this.context.hidden) {
         Mousetrap(this.context.rootContainer).bind('esc', function(e) {
           this.context.dropPanel.hide();
           this.context.searchInput.focus();
         }.bind(this));
 
-        var __queryRunning = false;
-        var __lastUnperformedQuery = "";
-        var __performSearch = function(value, callback) {
+        let __queryRunning = false;
+        let __lastUnperformedQuery = "";
+        const __performSearch = function(value, callback) {
           __queryRunning = true;
           __lastUnperformedQuery = "";
-          var __doLastUnperformedQuery = function() {
+          const __doLastUnperformedQuery = function() {
             __queryRunning = false;
             if (__lastUnperformedQuery) {
               __performSearch(__lastUnperformedQuery, callback);
@@ -613,7 +621,7 @@
           _doSearchWith(value, callback).then(__doLastUnperformedQuery, __doLastUnperformedQuery);
         };
         this.context.searchInput.processQuery = function(value, callback) {
-          var __value = (value || "").toLowerCase();
+          let __value = (value || "").toLowerCase();
           __value = __value.trim();
           if (__value && __value.length > 2) {
             if (!__queryRunning) {
@@ -627,7 +635,7 @@
           }
         }.bind(this);
         this.context.searchInput.addEventListener('focus', function() {
-          var __value = (this.context.searchInput.value || "").toLowerCase();
+          const __value = (this.context.searchInput.value || "").toLowerCase();
           if (__value.length > 2) {
             this.context.dropPanel.show();
           }
@@ -635,7 +643,7 @@
       }
     }.bind(this);
 
-    var __notifyReady = function() {
+    const __notifyReady = function() {
       __internalOnReady();
       setTimeout(function() {
         this.notifyReady();
@@ -647,7 +655,7 @@
       this.context.rootContainer.classList.add('select-user-group-container');
 
       if (!this.context.readOnly && !this.context.hidden) {
-        var __searchContainer = document.createElement('div');
+        const __searchContainer = document.createElement('div');
         __searchContainer.classList.add('search-input-container');
         this.context.searchInput = document.createElement('select');
         __searchContainer.appendChild(this.context.searchInput);
@@ -658,13 +666,13 @@
         this.context.dropPanel = new UserGroupSelectize(this);
 
         if (!this.options.noUserPanel) {
-          var __userPanelSelect = document.createElement('a');
+          const __userPanelSelect = document.createElement('a');
           __userPanelSelect.href = 'javascript:void(0)';
           __userPanelSelect.classList.add('user-panel-button');
           if (this.options.noSelectionClear) {
             __userPanelSelect.classList.add('alone');
           }
-          var __userPanelSelectIcon = document.createElement('img');
+          const __userPanelSelectIcon = document.createElement('img');
           __userPanelSelectIcon.setAttribute("title", this.options.userPanelButtonLabel);
           __userPanelSelectIcon.setAttribute("alt", this.options.userPanelButtonLabel);
           switch (this.options.selectionType) {
@@ -686,10 +694,10 @@
         }
 
         if (!this.options.noSelectionClear) {
-          var __clear = document.createElement('a');
+          const __clear = document.createElement('a');
           __clear.href = 'javascript:void(0)';
           __clear.classList.add('remove-button');
-          var __clearIcon = document.createElement("img");
+          const __clearIcon = document.createElement("img");
           __clearIcon.setAttribute("border", "0");
           __clearIcon.setAttribute("title", this.options.removeButtonLabel);
           __clearIcon.setAttribute("alt", this.options.removeButtonLabel);
@@ -702,7 +710,7 @@
         }
 
         if (this.options.mandatory) {
-          var __mandatoryIcon = document.createElement("img");
+          const __mandatoryIcon = document.createElement("img");
           __mandatoryIcon.setAttribute("src", webContext + "/util/icons/mandatoryField.gif");
           __mandatoryIcon.setAttribute("width", "5");
           __mandatoryIcon.setAttribute("height", "5");
@@ -731,8 +739,8 @@
           // For now, the user panel sets USER and GROUP identifiers and then trigger a change on
           // USER and an other one on GROUP.
           // So, only USER change event is listened...
-          var userPanelValue = this.context.userSelectionInput.value;
-          var groupPanelValue = this.context.groupSelectionInput.value;
+          const userPanelValue = this.context.userSelectionInput.value;
+          const groupPanelValue = this.context.groupSelectionInput.value;
           this.context.currentUserIds = userPanelValue ? userPanelValue.split(',') : [];
           this.context.currentGroupIds = groupPanelValue ? groupPanelValue.split(',') : [];
           this.context.dropPanel.refresh(!this.options.multiple);
@@ -745,7 +753,7 @@
         __createHiddenInputs(this, this.context.rootContainer);
         this.refreshCommons();
         if (!this.context.hidden) {
-          var listOptions = extendsObject({}, this.options);
+          const listOptions = extendsObject({}, this.options);
           listOptions.userSelectionInput = this.context.userSelectionInput;
           listOptions.groupSelectionInput = this.context.groupSelectionInput;
           new ListOfUsersAndGroups(listOptions).ready(function() {
@@ -760,10 +768,11 @@
 
   window.ListOfUsersAndGroups = function(options) {
     applyReadyBehaviorOn(this);
-    var __idCounter = __globalIdCounter;
+    const __idCounter = __globalIdCounter;
 
     this.options = extendsObject({
       simpleDetailsWhenRecipientTotalExceed : 0,
+      includeRemovedUsers : false,
       hideDeactivatedState : true,
       domainIdFilter : '',
       resourceIdFilter : '',
@@ -791,8 +800,8 @@
       this.options.userPanelId = "user-group-list-" + __idCounter;
     }
 
-    var initialUserIds = __convertToString(this.options.initialUserIds);
-    var initialGroupIds = __convertToString(this.options.initialGroupIds);
+    const initialUserIds = __convertToString(this.options.initialUserIds);
+    const initialGroupIds = __convertToString(this.options.initialGroupIds);
 
     this.context = {
       type : 'list',
@@ -825,17 +834,17 @@
       }
     }
 
-    var __currentUserId = currentUserId;
+    let __currentUserId = currentUserId;
     if (this.options.currentUserId && typeof this.options.currentUserId !== 'string') {
       __currentUserId = "" + this.options.currentUserId;
     }
     this.context.currentUserId = __currentUserId;
 
-    var __requester = new UserGroupRequester(this.options);
+    const __requester = new UserGroupRequester(this.options);
 
     this.refreshAll = function() {
       this.refreshCommons();
-      var promises = [refreshUserData(), refreshGroupData()];
+      const promises = [refreshUserData(), refreshGroupData()];
       return sp.promise.whenAllResolved(promises).then(function() {
         let simpleDetailsWhenRecipientTotalExceed = this.options.simpleDetailsWhenRecipientTotalExceed;
         if (simpleDetailsWhenRecipientTotalExceed && simpleDetailsWhenRecipientTotalExceed > 0) {
@@ -880,9 +889,9 @@
       }
     };
 
-    var hasListChanged = function() {
-      var i;
-      var hasChanged = this.context.currentUserIds.length !== initialUserIds.length ||
+    const hasListChanged = function() {
+      let i;
+      let hasChanged = this.context.currentUserIds.length !== initialUserIds.length ||
           this.context.currentGroupIds.length !== initialGroupIds.length;
       if (!hasChanged && this.context.currentUserIds.length === initialUserIds.length) {
         for (i = 0; i < initialUserIds.length; i++) {
@@ -922,9 +931,9 @@
       this.context.groupSelectionInput.value = this.context.currentGroupIds;
     };
 
-    var refreshUserData = function() {
-      var userIds = this.context.currentUserIds;
-      var processUsers = function(userProfiles) {
+    const refreshUserData = function() {
+      const userIds = this.context.currentUserIds;
+      const processUsers = function(userProfiles) {
         this.context.userItems = [];
         userProfiles.forEach(function(userProfile) {
           this.context.userItems.push(new UserItem(userProfile, this));
@@ -943,9 +952,9 @@
       return sp.promise.resolveDirectlyWith();
     }.bind(this);
 
-    var refreshGroupData = function() {
-      var groupIds = this.context.currentGroupIds;
-      var processGroups = function(groupProfiles) {
+    const refreshGroupData = function() {
+      const groupIds = this.context.currentGroupIds;
+      const processGroups = function(groupProfiles) {
         this.context.groupItems = [];
         groupProfiles.forEach(function(groupProfile) {
           this.context.groupItems.push(new UserGroupItem(groupProfile, this));
@@ -963,7 +972,7 @@
       return sp.promise.resolveDirectlyWith();
     }.bind(this);
 
-    var processUserPanelChanges = function() {
+    const processUserPanelChanges = function() {
       if (this.context.displayActionPanel) {
         if (this.context.userPanelSaving) {
           this.context.saveCallback.call(this);
@@ -1006,8 +1015,8 @@
           // For now, the user panel sets USER and GROUP identifiers and then trigger a change on
           // USER and an other one on GROUP.
           // So, only USER change event is listened...
-          var userPanelValue = this.context.userSelectionInput.value;
-          var groupPanelValue = this.context.groupSelectionInput.value;
+          const userPanelValue = this.context.userSelectionInput.value;
+          const groupPanelValue = this.context.groupSelectionInput.value;
           this.context.currentUserIds = userPanelValue ? userPanelValue.split(',') : [];
           this.context.currentGroupIds = groupPanelValue ? groupPanelValue.split(',') : [];
           processUserPanelChanges();
@@ -1021,7 +1030,8 @@
   };
   
   function __openUserPanel(instance) {
-    var params = {
+    const params = {
+      "includeRemovedUsers" : instance.options.includeRemovedUsers,
       "formName" : instance.context.userPanelFormName,
       "domainIdFilter" : instance.options.domainIdFilter,
       "resourceIdFilter" : instance.options.resourceIdFilter,
@@ -1031,7 +1041,7 @@
     if (instance.options.roleFilter) {
       params["roles"] = instance.options.roleFilter.join(',');
     }
-    var uri = instance.options.userPanelInitUrl;
+    let uri = instance.options.userPanelInitUrl;
     if (!uri) {
       uri = webContext  + '/RselectionPeasWrapper/jsp/open';
       params["selectedUserLimit"] = instance.options.userManualNotificationUserReceiverLimit;
@@ -1057,11 +1067,11 @@
   function __createHiddenInputs(instance, rootContainer) {
     instance.context.userSelectionInput = instance.options.userSelectionInput;
     if (!instance.context.userSelectionInput) {
-      var userInputId = instance.options.userPanelId + "-userIds";
+      const userInputId = instance.options.userPanelId + "-userIds";
       if (StringUtil.isNotDefined(instance.options.userInputName)) {
         instance.options.userInputName = userInputId;
       }
-      var userPanelSelectionInput = document.createElement("input");
+      const userPanelSelectionInput = document.createElement("input");
       userPanelSelectionInput.setAttribute("type", "hidden");
       userPanelSelectionInput.setAttribute("id", userInputId);
       userPanelSelectionInput.setAttribute("name", instance.options.userInputName);
@@ -1072,11 +1082,11 @@
 
     instance.context.groupSelectionInput = instance.options.groupSelectionInput;
     if (!instance.context.groupSelectionInput) {
-      var groupInputId = instance.options.userPanelId + "-groupIds";
+      const groupInputId = instance.options.userPanelId + "-groupIds";
       if (StringUtil.isNotDefined(instance.options.groupInputName)) {
         instance.options.groupInputName = groupInputId;
       }
-      var groupPanelSelectionInput = document.createElement("input");
+      const groupPanelSelectionInput = document.createElement("input");
       groupPanelSelectionInput.setAttribute("type", "hidden");
       groupPanelSelectionInput.setAttribute("id", groupInputId);
       groupPanelSelectionInput.setAttribute("name", instance.options.groupInputName);
@@ -1099,20 +1109,20 @@
    * @private
    */
   function __decorateContainer(instance) {
-    var rootContainer = instance.context.rootContainer;
+    const rootContainer = instance.context.rootContainer;
     if (instance.context.displayActionPanel) {
       rootContainer.classList.add("fields");
-      var buttonPanel = document.createElement("div");
+      const buttonPanel = document.createElement("div");
       buttonPanel.classList.add("buttonPanel");
 
-      var userPanelButton = document.createElement("a");
+      const userPanelButton = document.createElement("a");
       userPanelButton.classList.add("explorePanel");
       userPanelButton.setAttribute("href", "javascript:void(0)");
       userPanelButton.innerHTML =
           "<span>" + (instance.context.userPanelSaving ? LABEL_UPDATE : LABEL_SELECT) + "</span>";
       instance.context.userPanelButton = userPanelButton;
 
-      var clearButton = document.createElement("a");
+      const clearButton = document.createElement("a");
       clearButton.classList.add("emptyList");
       clearButton.setAttribute("href", "javascript:void(0)");
       clearButton.innerHTML =
@@ -1125,14 +1135,14 @@
       rootContainer.appendChild(buttonPanel);
     }
 
-    var lists = document.createElement('div');
+    const lists = document.createElement('div');
     lists.classList.add("field", "entireWidth");
     if (instance.context.displayActionPanel) {
       lists.classList.add("contentWithButtonPanel");
     }
 
     if (!instance.context.userPanelSaving) {
-      var messagePanel = document.createElement('div');
+      const messagePanel = document.createElement('div');
       messagePanel.classList.add("inlineMessage");
       messagePanel.style.display = 'none';
       messagePanel.innerHTML = "<span>" + LABEL_LIST_CHANGED + "</span>";
@@ -1143,9 +1153,9 @@
 
     let simpleDetails = document.createElement('div');
     simpleDetails.classList.add('simple-details', 'hide');
-    var groups = document.createElement('ul');
+    const groups = document.createElement('ul');
     groups.classList.add("access-list", "group");
-    var users = document.createElement('ul');
+    const users = document.createElement('ul');
     users.classList.add("access-list", "user");
     lists.appendChild(simpleDetails);
     lists.appendChild(groups);
@@ -1157,7 +1167,7 @@
     __createHiddenInputs(instance, rootContainer);
   }
 
-  var Item = SilverpeasClass.extend({
+  const Item = SilverpeasClass.extend({
     initialize : function(profile, instance) {
       this.profile = profile;
       this.instance = instance;
@@ -1169,7 +1179,7 @@
       return this.element;
     },
     remove : function() {
-      var index = this.handledIds.indexOf(this.profile.id);
+      const index = this.handledIds.indexOf(this.profile.id);
       this.handledIds.splice(index, 1);
       this.element.style.opacity = 0.5;
       this.removed = true;
@@ -1183,7 +1193,7 @@
     }
   });
 
-  var UserItem = Item.extend({
+  const UserItem = Item.extend({
     initialize : function(profile, instance) {
       this._super(profile, instance);
       this.element = __createUserElement(this);
@@ -1200,14 +1210,14 @@
     }
   });
 
-  var SelectUserItem = UserItem.extend({
+  const SelectUserItem = UserItem.extend({
     initialize : function(profile, instance) {
       this.isSelectElement = true;
       this._super(profile, instance);
     }
   });
 
-  var UserGroupItem = Item.extend({
+  const UserGroupItem = Item.extend({
     initialize : function(profile, instance) {
       this._super(profile, instance);
       this.element = __createGroupElement(this);
@@ -1227,7 +1237,7 @@
     }
   });
 
-  var SelectUserGroupItem = UserGroupItem.extend({
+  const SelectUserGroupItem = UserGroupItem.extend({
     initialize : function(profile, instance) {
       this.isSelectElement = true;
       this._super(profile, instance);
@@ -1239,11 +1249,11 @@
   }
 
   function __createUserElement(userItem) {
-    var intoList = !userItem.isSelectElement;
-    var item = document.createElement(intoList ? "li" : "div");
+    const intoList = !userItem.isSelectElement;
+    const item = document.createElement(intoList ? "li" : "div");
     item.classList.add("type-user");
     item.setAttribute("user-id", userItem.getId());
-    var avatar = document.createElement("img");
+    const avatar = document.createElement("img");
     avatar.setAttribute("alt", "");
     if (userItem.instance.options.displayAvatar) {
       avatar.classList.add("user-avatar");
@@ -1253,32 +1263,45 @@
         avatar.setAttribute("src", ICON_USER_BLOCKED);
       } else if (userItem.profile.expiredState) {
         avatar.setAttribute("src", ICON_USER_EXPIRED);
+      } else if (userItem.profile.deactivatedState) {
+        avatar.setAttribute("src", ICON_USER_DEACTIVATED);
+      } else if (userItem.profile.removedState) {
+        avatar.setAttribute("src", ICON_USER_REMOVED);
       } else {
         avatar.setAttribute("src", ICON_USER);
       }
     }
     item.appendChild(avatar);
-    var span = document.createElement("span");
+    const $infos = document.createElement("div");
     if (intoList) {
       if (userItem.instance.context.currentUserId !== userItem.getId()) {
-        span.classList.add("userToZoom");
-        span.setAttribute("rel", userItem.getId());
+        $infos.classList.add("userToZoom");
+        $infos.setAttribute("rel", userItem.getId());
       }
-      span.innerHTML = userItem.getFullName();
+      $infos.innerHTML = userItem.getFullName();
     } else {
-      var mainInfo = document.createElement("div");
-      mainInfo.classList.add("main-info");
-      mainInfo.innerHTML = userItem.getFullName();
-      span.appendChild(mainInfo);
-      var extraInfo = document.createElement("div");
-      extraInfo.classList.add("extra-info");
-      extraInfo.innerHTML = userItem.getDomain();
-      span.appendChild(extraInfo);
+      const $main = document.createElement("div");
+      $main.classList.add("main-info");
+      $main.innerHTML = userItem.getFullName();
+      $infos.appendChild($main);
+      const $extra = document.createElement("div");
+      $extra.classList.add("extra-info");
+      $extra.innerHTML = userItem.getDomain();
+      $infos.appendChild($extra);
       if (__hideDomain(userItem)) {
         item.classList.add("hidden-domain");
       }
     }
-    item.appendChild(span);
+    ['blocked', 'expired', 'deactivated', 'removed'].forEach(function(state) {
+      if (!!userItem.profile[state + 'State']) {
+        item.classList.add(state + "-state");
+        const $state = document.createElement("div");
+        $state.classList.add("user-state");
+        $state.innerHTML = '(' + sp.i18n.get('GML.user.account.state.' + state.toUpperCase() + '.short').toLowerCase() + ')';
+        $infos.appendChild($state);
+      }
+    });
+    item.appendChild($infos);
     if (intoList && !userItem.instance.context.readOnly) {
       item.appendChild(__createOperationFragment(userItem));
     }
@@ -1286,23 +1309,23 @@
   }
 
   function __createGroupElement(groupItem) {
-    var intoList = !groupItem.isSelectElement;
-    var item = document.createElement(intoList ? "li" : "div");
+    const intoList = !groupItem.isSelectElement;
+    const item = document.createElement(intoList ? "li" : "div");
     item.classList.add("type-group");
     item.setAttribute("group-id", groupItem.getId());
-    var avatar = document.createElement("img");
+    const avatar = document.createElement("img");
     avatar.setAttribute("src", groupItem.isSynchronized() ? ICON_GROUP_SYNC : ICON_GROUP);
     avatar.setAttribute("alt", "");
     item.appendChild(avatar);
-    var span = document.createElement("span");
+    const span = document.createElement("span");
     if (intoList) {
       span.innerHTML = groupItem.getFullName();
     } else {
-      var mainInfo = document.createElement("div");
+      const mainInfo = document.createElement("div");
       mainInfo.classList.add("main-info");
       mainInfo.innerHTML = groupItem.getFullName();
       span.appendChild(mainInfo);
-      var extraInfo = document.createElement("div");
+      const extraInfo = document.createElement("div");
       extraInfo.classList.add("extra-info");
       extraInfo.innerHTML = groupItem.getDomain();
       span.appendChild(extraInfo);
@@ -1318,13 +1341,13 @@
   }
 
   function __createOperationFragment(item) {
-    var label = (item.instance.context.userPanelSaving ? LABEL_DELETE : LABEL_REMOVE);
-    var op = document.createElement("div");
+    const label = (item.instance.context.userPanelSaving ? LABEL_DELETE : LABEL_REMOVE);
+    const op = document.createElement("div");
     op.classList.add("operation");
-    var a = document.createElement("a");
+    const a = document.createElement("a");
     a.setAttribute("href", "javascript:void(0)");
     a.setAttribute("title", label);
-    var img = document.createElement("img");
+    const img = document.createElement("img");
     img.setAttribute("border", "0");
     img.setAttribute("title", label);
     img.setAttribute("alt", label);
@@ -1338,7 +1361,7 @@
       new Promise(function(resolve) {
         if (!item.removed) {
           if (item.instance.context.userPanelSaving) {
-            var confirmLabel = UserGroupListBundle.get("GML.confirmation.delete", item.getFullName());
+            const confirmLabel = sp.i18n.get("GML.confirmation.delete", item.getFullName());
             jQuery.popup.confirm("<p>" + confirmLabel + "</p>", function() {
               item.remove();
               item.instance.context.saveCallback.call(this);
@@ -1371,7 +1394,7 @@
 
   function __convertToString(element) {
     if (typeof element === 'object' && element.length && typeof element[0] !== 'string') {
-      var array = [];
+      const array = [];
       element.forEach(function(value) {
         array.push("" + value);
       });
