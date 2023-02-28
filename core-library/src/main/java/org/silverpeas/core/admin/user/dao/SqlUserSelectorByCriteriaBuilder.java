@@ -229,10 +229,12 @@ public class SqlUserSelectorByCriteriaBuilder {
     if (criteria.isCriterionOnUserStatesToExcludeSet()) {
       excludedStates.addAll(Arrays.asList(criteria.getCriterionOnUserStatesToExclude()));
     }
-    getSharedComponentInstanceWithRights(criteria)
-        // this clause is to be compliant with searchGroup service
-        // this is a limitation induced by profile services which are excluding REMOVED users
-        .ifPresent(i -> excludedStates.add(UserState.REMOVED));
+    if (!criteria.mustIncludeRemovedUsers()) {
+      getSharedComponentInstanceWithRights(criteria)
+          // this clause is to be compliant with searchGroup service
+          // this is a limitation induced by profile services which are excluding REMOVED users
+          .ifPresent(i -> excludedStates.add(UserState.REMOVED));
+    }
     return excludedStates;
   }
 

@@ -927,6 +927,12 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames) {
+    return getUsersIdsByRoleNames(componentId, profileNames, false);
+  }
+
+  @Override
+  public String[] getUsersIdsByRoleNames(final String componentId, final List<String> profileNames,
+      final boolean includeRemovedUsersAndGroups) {
     try {
       List<String> userIds;
       ComponentInst componentInst = getComponentInst(componentId);
@@ -941,7 +947,7 @@ public class DefaultOrganizationController implements OrganizationController {
         return ArrayUtil.emptyStringArray();
       }
 
-      userIds = getAdminService().searchUserIdsByProfile(profileIds);
+      userIds = getAdminService().searchUserIdsByProfile(profileIds, includeRemovedUsersAndGroups);
       return userIds.toArray(new String[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -951,7 +957,12 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames) {
+    return getUsersIdsByRoleNames(componentId, objectId, profileNames, false);
+  }
 
+  @Override
+  public String[] getUsersIdsByRoleNames(final String componentId, final ProfiledObjectId objectId,
+      final List<String> profileNames, final boolean includeRemovedUsersAndGroups) {
     try {
       List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, componentId);
       List<String> profileIds = new ArrayList<>();
@@ -965,7 +976,7 @@ public class DefaultOrganizationController implements OrganizationController {
         return ArrayUtil.emptyStringArray();
       } // else return all users !!
 
-      List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds);
+      List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds, includeRemovedUsersAndGroups);
       return userIds.toArray(new String[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);

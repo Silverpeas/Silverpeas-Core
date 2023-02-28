@@ -293,7 +293,7 @@
               profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
         User.get(user.id).then(function(theUser) {
           profile = theUser;
-          if (!profile.system && !profile.deletedState && !profile.deactivatedState) {
+          if (!profile.system && !profile.deletedState && !profile.removedState && !profile.deactivatedState) {
             render($this, profile);
           }
         });

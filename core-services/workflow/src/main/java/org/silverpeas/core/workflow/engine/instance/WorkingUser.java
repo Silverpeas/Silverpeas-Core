@@ -179,7 +179,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
     // then add users by group or role
     if (StringUtil.isDefined(getGroupId())) {
       User[] users =
-          WorkflowHub.getUserManager().getUsersInGroup(getGroupId());
+          WorkflowHub.getUserManager().getUsersInGroup(getGroupId(), processInstance.getModelId());
       for (User anUser : users) {
         actors.add(new ActorImpl(anUser, role, actualState));
       }

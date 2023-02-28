@@ -5268,12 +5268,13 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException {
+  public List<String> searchUserIdsByProfile(final List<String> profileIds,
+      final boolean includeRemovedUsersAndGroups) throws AdminException {
     Set<String> userIds = new HashSet<>();
     // search users in profiles
     try {
       for (String profileId : profileIds) {
-        ProfileInst profile = profileManager.getProfileInst(profileId, false);
+        ProfileInst profile = profileManager.getProfileInst(profileId, includeRemovedUsersAndGroups);
         // add users directly attach to profile
         addAllUsersInProfile(profile, userIds);
       }
