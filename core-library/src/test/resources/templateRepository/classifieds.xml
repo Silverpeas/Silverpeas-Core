@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -13,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,19 +22,283 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<publicationTemplate>
-    <name>Classifieds</name>
-    <description>Donn�es compl�mentaires pour les petites annonces</description>
-	<image>/weblib/xmlForms/model1.gif</image>
-    <visible>true</visible>
-	<applications>
-        <application>classifieds</application>
-    </applications>
-    <viewFileName>classifieds/view.xml</viewFileName>
-    <viewTypeFile></viewTypeFile>
-    <updateFileName>classifieds/update.xml</updateFileName>
-    <updateTypeFile></updateTypeFile>
-    <searchFileName>classifieds/search.xml</searchFileName>
-    <dataFileName>classifieds/data.xml</dataFileName>
-</publicationTemplate>
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+  <name>classifieds</name>
+  <label>
+    <message lang="fr">Petites annonces</message>
+    <message lang="en">Classifieds</message>
+    <message lang="de">Kleinanzeigen</message>
+  <message lang="es">ofertas</message></label>
+  <description>
+    <message lang="fr">Les annonces peuvent être classées par thématiques.
+      La structure des annonces est personnalisable. Elles peuvent être modérées. Les
+      utilisateurs peuvent laisser des commentaires et s’abonner aux thématiques de
+      leurs choix.
+    </message>
+    <message lang="en">Classified adds are organized by categories and types</message>
+    <message lang="de">Kleinanzeigen organisiert nach Art und Kategorie</message>
+  <message lang="es">Los anuncios se pueden clasificar por tema. La estructura del anuncio es personalizable. Pueden ser moderados. Los usuarios pueden dejar comentarios y suscribirse a los temas de su elección.</message></description>
+  <suite>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
+  <message lang="es">04 Gestión de contenidos</message></suite>
+  <visible>true</visible>
+  <portlet>false</portlet>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
+      <message lang="es">Gerentes</message></label>
+      <help>
+        <message lang="fr">Les gestionnaires modèrent et valident les annonces.</message>
+        <message lang="en">Managers manage and validate adds.</message>
+        <message lang="de">Managers manage and validate adds.</message>
+      <message lang="es">Los gerentes moderan y validan los anuncios.</message></help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
+    </profile>
+    <profile name="publisher">
+      <label>
+        <message lang="fr">Annonceurs</message>
+        <message lang="en">Authors</message>
+        <message lang="de">Autor</message>
+      <message lang="es">anunciantes</message></label>
+      <help>
+        <message lang="fr">Les annonceurs créent des annonces.</message>
+        <message lang="en">Authors create classified adds.</message>
+        <message lang="de">Autor</message>
+      <message lang="es">Los anunciantes crean anuncios.</message></help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
+    </profile>
+    <profile name="reader">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+      <message lang="es">Lectores</message></label>
+      <help>
+        <message lang="fr">Les lecteurs consultent les petites annonces et peuvent laisser des
+          commentaires.
+        </message>
+        <message lang="en">Readers consult classified adds and can leave comments.</message>
+      <message lang="es">Los lectores consultan los clasificados y pueden dejar comentarios.</message></help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>homePage</name>
+      <label>
+        <message lang="fr">Page d'accueil</message>
+        <message lang="en">Homepage</message>
+        <message lang="de">Home page</message>
+      <message lang="es">Pagina de inicio</message></label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Annonces par catégories</message>
+            <message lang="en">Classifieds by category</message>
+            <message lang="de">Anzeigen nach Kategorie</message>
+          <message lang="es">Anuncios por categorías</message></name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Annonces non catégorisées</message>
+            <message lang="en">Classifieds uncategorized</message>
+            <message lang="de">Anzeigen uncategorized</message>
+          <message lang="es">Anuncios sin categorizar</message></name>
+          <value>1</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Type d'affichage de la page d'accueil des petites annonces</message>
+        <message lang="en">Type of display of the classifieds home page</message>
+        <message lang="de">Anzeige Geben Sie die Homepage von Anzeigen</message>
+      <message lang="es">Tipo de visualización de la página de inicio de anuncios clasificados</message></help>
+    </parameter>
+    <parameter>
+      <name>XMLFormName</name>
+      <label>
+        <message lang="fr">Formulaire XML</message>
+        <message lang="en">XML Form</message>
+        <message lang="de">XML Formular</message>
+      <message lang="es">Formulario XML</message></label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>classifieds.xml</value>
+      <type>xmltemplates</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Nom du formulaire XML associé aux petites annonces</message>
+        <message lang="en">Form XML name attached to classifieds</message>
+        <message lang="de">Name des XML Formulars der mit der Kleinanzeigen verbunden ist</message>
+      <message lang="es">Nombre del formulario XML asociado a los clasificados</message></help>
+    </parameter>
+    <parameter>
+      <name>searchFields1</name>
+      <label>
+        <message lang="fr">Champ de catégorisation</message>
+        <message lang="en">Categorization field</message>
+        <message lang="de">Suchfeld 1</message>
+      <message lang="es">campo de categorización</message></label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value>category</value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Sur la page principale, les annonces sont regroupées selon ces
+          catégories
+        </message>
+        <message lang="en">On the main page, classifieds are grouped according to these categories
+        </message>
+        <message lang="de">Erstes Suchfeld</message>
+      <message lang="es">En la página principal, los anuncios se agrupan según estas categorías</message></help>
+    </parameter>
+    <parameter>
+      <name>searchFields2</name>
+      <label>
+        <message lang="fr">Champs recherche 2</message>
+        <message lang="en">Search field 2</message>
+        <message lang="de">Suchfeld 2</message>
+      <message lang="es">Campos de búsqueda 2</message></label>
+      <order>5</order>
+      <mandatory>false</mandatory>
+      <value>type</value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce second critère est le second champ dédié aux abonnements</message>
+        <message lang="en">This second criteria is devoted to subscriptions</message>
+        <message lang="de">Zweites Suchfeld</message>
+      <message lang="es">Este segundo criterio es el segundo campo dedicado a las suscripciones</message></help>
+    </parameter>
+    <parameter>
+      <name>draft</name>
+      <label>
+        <message lang="fr">Mode brouillon</message>
+        <message lang="en">Draf</message>
+        <message lang="de">Entwurf</message>
+      <message lang="es">Modo borrador</message></label>
+      <order>6</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Le mode brouillon permet de travailler sur une annonce sans que personne
+          d'autre ne puisse la voir.
+        </message>
+        <message lang="en">Draft mode enables you to work on a classified whilst being invisible to
+          other users.
+        </message>
+        <message lang="de">Eine Kleinanzeigen im Entwurfs-Modus ist nur für den Autor sichtbar, so
+          kann er daran arbeiten.
+        </message>
+      <message lang="es">El modo borrador le permite trabajar en un anuncio sin que nadie más lo vea.</message></help>
+    </parameter>
+    <parameter>
+      <name>validation</name>
+      <label>
+        <message lang="fr">Validation</message>
+        <message lang="en">Validation</message>
+        <message lang="de">Validierung</message>
+      <message lang="es">Validación</message></label>
+      <order>7</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'activer la validation des annonces par les gestionnaires
+        </message>
+        <message lang="en">Enables validation of classified ads by the managers</message>
+        <message lang="de">Ermöglicht die Validierung von Kleinanzeigen von den Managern</message>
+      <message lang="es">Permite activar la validación de los anuncios por parte de los gestores</message></help>
+    </parameter>
+    <parameter>
+      <name>comments</name>
+      <label>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
+      <message lang="es">Comentarios</message></label>
+      <order>8</order>
+      <mandatory>true</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'activer la possibilité de laisser des commentaires sur une
+          annonce
+        </message>
+        <message lang="en">Enables ability to post comments on adds</message>
+      <message lang="es">Habilita la posibilidad de dejar comentarios en un anuncio.</message></help>
+    </parameter>
+    <parameter>
+      <name>expirationDelay</name>
+      <label>
+        <message lang="fr">Délai d'expiration des annonces en jours</message>
+        <message lang="en">Classifieds expiration delay in days</message>
+      <message lang="es">Tiempo de caducidad del anuncio en días</message></label>
+      <order>9</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de spécifier un délai d'expiration spécifique à cette instance
+        </message>
+        <message lang="en">Allow a specific setup of expiration delay for this instance</message>
+      <message lang="es">Le permite especificar un tiempo de espera específico para esta instancia</message></help>
+    </parameter>
+    <parameter>
+      <name>usePrice</name>
+      <label>
+        <message lang="fr">Prix</message>
+        <message lang="en">Price</message>
+      <message lang="es">Premio</message></label>
+      <order>10</order>
+      <mandatory>false</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Autorise un prix sur chaque annonce</message>
+        <message lang="en">Allows adding a price to each ad</message>
+      <message lang="es">Permite un precio en cada anuncio</message></help>
+    </parameter>
+    <parameter>
+      <name>usePhotos</name>
+      <label>
+        <message lang="fr">Photos</message>
+        <message lang="en">Photos</message>
+      <message lang="es">Fotos</message></label>
+      <order>11</order>
+      <mandatory>false</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Autorise l'ajout de photos sur chaque annonce</message>
+        <message lang="en">Allows adding photos to each ad</message>
+      <message lang="es">Permite la adición de fotos en cada anuncio</message></help>
+    </parameter>
+  </parameters>
+</WAComponent>

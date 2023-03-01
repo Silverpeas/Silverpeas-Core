@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
   ~ Copyright (C) 2000 - 2022 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -11,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ FLOSS exception. You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,20 +20,17 @@
   ~
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
-<PersonalComponent xmlns="http://silverpeas.org/xml/ns/component"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  --><PersonalComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>userCalendar</name>
   <label>
     <message lang="fr">Mes agendas</message>
     <message lang="en">My diaries</message>
     <message lang="de">My diaries</message>
-  </label>
+  <message lang="es">mis diarios</message></label>
   <description>
     <message lang="fr">Vos agendas personnels.</message>
     <message lang="en">Your personal diaries.</message>
     <message lang="de">Your personal diaries.</message>
-  </description>
+  <message lang="es">Tus diarios personales.</message></description>
   <visible>true</visible>
 </PersonalComponent>
