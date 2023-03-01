@@ -1,0 +1,1 @@
+<b>$sender$</b> $if(declined)$не $endif$будет $if(declined)$не примет участия $endif$$if(tentative)$возможно, $endif$в назначенной вам встрече <b>$name$</b> запланировано на $eventTimeDescription_fr()$.
