@@ -500,10 +500,6 @@ Definition des class de style Silverpeas
 
 #sp-admin-layout-body-part-layout-navigation-part {
   width: 270px;
-}
-
-#sp-admin-layout-body-part-layout-navigation-part,
-#sp-admin-layout-body-part-layout-navigation-part {
   padding: 1em 0 1em 0.5em;
 }
 
@@ -911,21 +907,6 @@ Style Utilise par le ViewGenerator
   display: none;
 }
 
-#domainsBar #spaceTransverse {
-}
-
-#spaceTransverse .spaceLevel1On {
-}
-
-/* AVERIFIERSUPPR A SUPPRIMER DANS LE HTML */
-#basSpaceTransverse .basSpacesGauche {}
-#basSpaceTransverse .basSpacesMilieu {}
-#basSpaceTransverse .basSpacesDroite {}
-
-.spaceURL {}
-.spaceURLOn {}
-
-
 #pdc {
   margin-top: 10px;
   background-color: #EEEEEE;
@@ -942,9 +923,6 @@ Style Utilise par le ViewGenerator
 #pdc a {
   font-weight: normal;
 }
-
-#spacePerso {}
-#spacePerso .spaceURL {}
 
 #spacePerso .contentSpace {
   margin-top: 7px;
@@ -1268,7 +1246,6 @@ Style Utilise par le ViewGenerator
   padding:0.5em;
 }
 
-
 .pageNav .pageJumper *{
   display:inline-block;
   height:1.2em;
@@ -1320,12 +1297,6 @@ Style Utilise par le ViewGenerator
   padding-left:0.5em;
 }
 
-.pageNav .numberPerPage a:after{
-  content:'|';
-  margin-left:0.5em;
-  margin-right:0.5em;
-}
-
 .pageNavContent > div:after{
   /*content:'-';*/
   margin-left:0.5em;
@@ -1366,13 +1337,6 @@ Style Utilise par le ViewGenerator
 
 .pageNav .numberPerPage a:last-child:after{
   content:' ';
-}
-.pageNav .pageOff a:hover, .pageNav .pageOff a:focus{
-}
-
-.pageNav .pageJumper *{
-  display:inline-block;
-  height:1.1em;
 }
 
 .pageNav .pageJumper .jumper:focus {
@@ -2541,12 +2505,7 @@ caption {
 }
 
 #directory .info ul {
-  margin: 0;
   padding: 0;
-}
-
-
-#directory .info ul {
   margin:10px 10px 0 104px;
   color:#909090;
   font-size:1em;
@@ -2637,16 +2596,21 @@ caption {
   clear:right;
 }
 
-#myProfileFiche  .action .link:hover, #publicProfileFiche  .action .link:focus , #publicProfileFiche  #allContact .link:focus, #publicProfileFiche  #allContact .link:hover,
-#myProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus,
-#publicProfileFiche  .action .link:hover, #publicProfileFiche  .action .link:focus , #publicProfileFiche  #allContact .link:focus, #publicProfileFiche  #allContact .link:hover,
-#publicProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus  {
+#myProfileFiche  .action .link:hover, 
+#myProfileFiche  #contactCommun .link:hover, 
+#publicProfileFiche  .action .link:hover, 
+#publicProfileFiche  .action .link:focus , 
+#publicProfileFiche  #allContact .link:focus, 
+#publicProfileFiche  #allContact .link:hover,
+#publicProfileFiche  #contactCommun .link:hover, 
+#publicProfileFiche  #contactCommun .link:focus  {
   color:#000;
   border-bottom:1px solid #000;
 }
 
-#myProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link,
-#publicProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
+#myProfileFiche  #allContact .link, 
+#publicProfileFiche  #allContact .link, 
+#publicProfileFiche  #contactCommun .link {
   clear:both;
   float:right;
   margin-top:10px;
@@ -3012,9 +2976,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 }
 
 #invitationProfil .profilPhoto, #contactProfil  .profilPhoto{
-  float: left;
   height: auto;
-  margin: 7px;
   width: 64px;
   float:left;
   clear:both;
@@ -3112,7 +3074,6 @@ hr.sep  {
 
 /* class actuellement utilis?e dans l'annuaire expert ? g?n?raliser */
 .linkMore {
-  background-color: #efefef;
   background: linear-gradient(#fff, #e7e7e7) repeat scroll 0 0 #fff;
   border-bottom: 1px solid #CCC;
   border-top: 1px solid #CCC;
@@ -3287,7 +3248,6 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
   background-color:inherit;
   border:0;
   padding-left: 0;
-  margin:inherit;
   width: 46%;
   margin:0;
   line-height:100%;
@@ -3332,7 +3292,7 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 }
 
 .commentaires .commentsCount span {
-  font-family: Arial;
+  font-family:"Arial", sans-serif;
   font-size: 1.2em;
   font-weight: bold;
   text-align: center;
@@ -3353,8 +3313,6 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 
 .commentaires div.avatar {
   position:absolute;
-  top:0;
-  left:0;
   border:1px solid #CECECE;
   padding:1px;
   background-color:#FFF;
@@ -3419,7 +3377,7 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 
 .commentaires .oneComment .text {
   color: #888888;
-  font-family: Arial;
+  font-family: "Arial", sans-serif;
   font-size: 1.1em;
   line-height: 1.2em;
   margin: 0;
@@ -3442,7 +3400,7 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
   width: 95%;
   height: 3em;
   color: #888888;
-  font-family: Arial;
+  font-family: "Arial", sans-serif;
   font-size: 1.1em;
   line-height: 1.2em;
 }
@@ -3879,10 +3837,6 @@ li.application {
   background: #eaeaea linear-gradient(to bottom, #ffffff 0%, #eaeaea 100%);
 }
 
-li.application {
-  border:1px solid #dfdfdf;
-}
-
 li.application  a {
   padding:2px 10px 2px 72px;
   width:318px;
@@ -4157,11 +4111,7 @@ li.application  .applicationName {
 }
 
 #filter_userPanel {
-  height:100%;
   overflow:hidden;
-}
-
-#filter_userPanel {
   width:24%;
   height:100%;
   float:left;
@@ -4731,7 +4681,6 @@ input.search:focus {
 }
 
 .userzoom-tooltip-interaction-action   {
-  bottom: 10px;
   height: 40px;
   padding-left: 10px;
   position: absolute;
@@ -6098,6 +6047,7 @@ div.user-card .field{
   float:left;
   width:220px;
   padding:0 4px 2px 6px;
+  color:#444;
 }
 
 .userToZoom {
@@ -6108,10 +6058,6 @@ div.user-card .field{
 div.user-card .userToZoom {
   color:#000;
   font-weight:bold;
-}
-
-div.user-card .field{
-  color:#444;
 }
 
 /****** Ticker ******/
@@ -6230,9 +6176,7 @@ iframe.embed {
 
 /*********************** Style pour les elements en lecture seule de type tagit *********************/
 .tagit-readonly {
-  background: #e7e7e7;
-  background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0.32,#e7e7e7),color-stop(0.66,#f9f9f9),color-stop(0.83, #f9f9f9));
-  background: -moz-linear-gradient(center top , #f9f9f9, #e7e7e7) repeat scroll 0 0 #f9f9f9;
+  background: #e7e7e7 linear-gradient(to top, #f9f9f9 0%, #e7e7e7 100%);
   border: 1px solid #999;
   border-radius: 0 6px;
   cursor: default;
@@ -6463,7 +6407,6 @@ iframe.embed {
   width: 16px;
   height: 20px;
   padding: 0;
-  background-color: #FFF;
   text-indent: -3000em;
   background: transparent url(../icons/delete.gif) 0 0 no-repeat;
 }
