@@ -40,25 +40,42 @@
 
 .right-container {
   position: absolute;
-  top: 0;
+  top: 2.3em;
   right: 0;
-  height: 100%;
+  height: calc(100% - 2.3em);
+  pointer-events : none;
 }
 
 .ol-marker {
-  z-index : 1;
+  z-index: 1;
+}
+
+.ol-marker-group {
+  z-index: 2;
 }
 
 .ol-top-marker {
-  z-index : 2;
+  z-index: 5;
 }
 
 .ol-top-marker.current {
-  z-index: 3;
+  z-index: 6;
 }
 
 .ol-top-marker:hover {
-  z-index: 4;
+  z-index: 7;
+}
+
+.ol-zoom-extent {
+  left: unset;
+  right: 2.5em;
+  top: 0.5em;
+}
+
+.ol-zoom-extent button,
+.ol-full-screen button {
+  background-color: #efefef;
+  opacity: 0.8;
 }
 
 .map-marker {
@@ -103,6 +120,7 @@
   background-color: #efefef;
   opacity: 0.8;
   font-weight: bold;
+  pointer-events : initial;
 }
 
 .mapping-filters .category {
@@ -119,8 +137,8 @@
 
 .mapping-filters .min-max {
   position: absolute;
-  top : 10px;
-  right : 10px;
+  top: 10px;
+  right: 10px;
 }
 
 .mapping-layers {
@@ -136,6 +154,7 @@
   opacity: 0.8;
   font-weight: bold;
   white-space: nowrap;
+  pointer-events : initial;
 }
 
 .mapping-layers .not-selected {

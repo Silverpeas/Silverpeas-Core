@@ -577,11 +577,14 @@ function getWindowScrollBarThicknessSize() {
 
 if (!window.SilverpeasPluginSettings) {
   window.SilverpeasPluginSettings = function(theSettings) {
-    var settings = theSettings ? theSettings : {};
+    const settings = theSettings ? theSettings : {};
     this.get = function() {
-      var key = arguments[0];
+      const key = arguments[0];
       return settings[key];
     };
+    this.getOrDefault = function(key, defaultValue) {
+      return StringUtil.defaultStringIfNotDefined(this.get(key), defaultValue);
+    }
   };
 }
 

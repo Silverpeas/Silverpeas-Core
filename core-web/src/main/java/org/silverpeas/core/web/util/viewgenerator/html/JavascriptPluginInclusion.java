@@ -963,14 +963,22 @@ public class JavascriptPluginInclusion {
   /**
    * Includes all the scripts and stylesheets that made up the Silverpeas Map display.
    * @param xhtml the Web document as container of HTML elements.
+   * @param language the user language.
    * @return the completed parent container.
    */
-  static ElementContainer includeMap(final ElementContainer xhtml) {
+  static ElementContainer includeMap(final ElementContainer xhtml, final String language) {
+    final LocalizationBundle mapBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.map.multilang.mapBundle", language);
     final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.map.settings.map");
     final JavascriptSettingProducer settingBundle = settingVariableName("MapSettings");
     final String mapDir = getApplicationURL() + "/map/";
     xhtml.addElement(link(mapDir + "ol/css/ol-min.css"));
     xhtml.addElement(script(mapDir + "ol/ol-min.js"));
+    xhtml.addElement(scriptContent(JavascriptBundleProducer.bundleVariableName("MapBundle")
+        .add("m.f.m", mapBundle.getString("map.fullscreen.mode"))
+        .add("m.v.i", mapBundle.getString("map.view.initial"))
+        .add("m.z.i", mapBundle.getString("map.zoom.in"))
+        .add("m.z.o", mapBundle.getString("map.zoom.out"))
+        .produce()));
     xhtml.addElement(scriptContent(settingBundle
         .add("ip.c.c", JSONCodec.encode(settings.getList("view.infoPoint.category.colors", new String[0], ",")))
         .add("v.z.min", settings.getInteger("view.zoom.min", 5))
@@ -980,15 +988,25 @@ public class JavascriptPluginInclusion {
         .add("v.c.d.lat", settings.getFloat("view.coordinates.default.lat", 45.1667f))
         .add("xyz.p", settings.getString("jsonXyzProviders", EMPTY))
         .add("bm.p", settings.getString("jsonBmProvider", EMPTY))
+        .add("g.d.c", settings.getString("groups.default.color", "#FFF"))
+        .add("g.d.o", settings.getFloat("groups.default.opacity", 1f))
+        .add("g.d.tc", settings.getString("groups.default.textColor", "#000"))
+        .add("g.d.tox", settings.getInteger("groups.default.textOffsetX", 0))
+        .add("g.d.toy", settings.getInteger("groups.default.textOffsetY", 0))
+        .add("g.d.ts", settings.getFloat("groups.default.textScale", 1f))
+        .add("g.d.tfs", settings.getString("groups.default.textFontStyle", EMPTY))
         .add("c.d.e", settings.getBoolean("clusters.default.enabled", false))
+        .add("c.d.r.t", settings.getFloat("clusters.default.resolution.threshold", 0))
+        .add("c.d.n.t", settings.getInteger("clusters.default.nb.threshold", 1))
         .add("c.d.d", settings.getInteger("clusters.default.distance", 40))
-        .add("c.d.c", settings.getString("clusters.default.color", "#7eb73b"))
+        .add("c.d.c", settings.getString("clusters.default.color", "#000"))
         .add("c.d.o", settings.getFloat("clusters.default.opacity", 1f))
-        .add("c.d.tc", settings.getString("clusters.default.textColor", "#fff"))
+        .add("c.d.tc", settings.getString("clusters.default.textColor", "#FFF"))
         .add("c.d.tox", settings.getInteger("clusters.default.textOffsetX", 0))
         .add("c.d.toy", settings.getInteger("clusters.default.textOffsetY", 0))
         .add("c.d.ts", settings.getFloat("clusters.default.textScale", 1f))
         .add("c.d.tfs", settings.getString("clusters.default.textFontStyle", EMPTY))
+        .add("c.d.z.p", settings.getInteger("clusters.default.zoom.padding", 200))
         .produce()));
     xhtml.addElement(link(mapDir + "css/silverpeas-map.css"));
     xhtml.addElement(script(mapDir + "js/services/silverpeas-map-address-service.js"));

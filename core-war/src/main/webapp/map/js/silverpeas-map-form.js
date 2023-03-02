@@ -280,6 +280,8 @@
             __createFilters(this);
             // End of processing
             this.adapter.afterAll();
+            // Enable Initial View
+            this.mapApi.enableInitialViewControl();
           }.bind(this));
         }.bind(this));
       }.bind(this));
