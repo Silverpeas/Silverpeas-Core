@@ -556,6 +556,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * FormTemplate exposition for taglibs
    */
 
+  @SuppressWarnings("unused")
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
