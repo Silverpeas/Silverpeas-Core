@@ -46,7 +46,8 @@ import java.util.List;
  * @deprecated
  */
 @Deprecated
-abstract public class SilverpeasException extends Exception implements WithNested, FromModule {
+public abstract class SilverpeasException extends org.silverpeas.core.SilverpeasException
+    implements WithNested, FromModule {
 
   public static final int FATAL = 0x00000005;
   public static final int ERROR = 0x00000004;
