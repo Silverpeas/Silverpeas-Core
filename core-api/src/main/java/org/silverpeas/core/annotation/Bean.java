@@ -28,16 +28,20 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Stereotype;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 
 /**
  * This annotation is to tag an object as to be managed by the underlying IoC container with the
  * following default life-cycle: for each ask for such a bean, a new instance is created and that
  * object is bound to the life-cycle of the client object. Therefore, any instance of the bean
  * injected into an object that is being created by the container is bound to the lifecycle of the
- * newly created object. This annotation can be both to annotate business or technical objects.
+ * newly created object. This annotation can be both to annotate business or technical objects. It
+ * can be also used to define as a base type for a more meaningful IoC annotation.
  * <p>
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
@@ -46,7 +50,7 @@ import java.lang.annotation.Target;
  * </p>
  * @author mmoquillon
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Dependent
