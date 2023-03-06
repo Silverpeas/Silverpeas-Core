@@ -103,6 +103,7 @@
           }
           if (this.options.roleFilter) {
             _params.roles = this.options.roleFilter.join(',');
+            _params.matchingAllRoles = !!this.options.matchingAllRoles;
           }
           if (this.options.groupFilter) {
             _params.group = this.options.groupFilter;
@@ -443,6 +444,7 @@
       resourceIdFilter : '',
       groupFilter : '',
       roleFilter : [],
+      matchingAllRoles : false,
       selectOnTabulationKeyDown : true,
       navigationalBehavior : false,
       doNotSelectAutomaticallyOnDropDownOpen : false,
@@ -518,6 +520,9 @@
       }
       if (typeof filterOptions.roleFilter !== 'undefined') {
         this.options.roleFilter = filterOptions.roleFilter;
+        if (typeof filterOptions.matchingAllRoles === 'boolean') {
+          this.options.matchingAllRoles = filterOptions.matchingAllRoles;
+        }
       }
       if (typeof filterOptions.groupFilter !== 'undefined') {
         this.options.groupFilter = filterOptions.groupFilter;
@@ -1040,6 +1045,9 @@
     };
     if (instance.options.roleFilter) {
       params["roles"] = instance.options.roleFilter.join(',');
+      if (typeof instance.options.matchingAllRoles === 'boolean') {
+        params["matchingAllRoles"] = instance.options.matchingAllRoles;
+      }
     }
     let uri = instance.options.userPanelInitUrl;
     if (!uri) {

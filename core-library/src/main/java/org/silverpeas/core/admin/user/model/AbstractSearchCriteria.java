@@ -24,8 +24,11 @@
 
 package org.silverpeas.core.admin.user.model;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.util.StringUtil;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -40,6 +43,8 @@ public abstract class AbstractSearchCriteria implements SearchCriteria {
 
   private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
   private static final String INCLUDE_REMOVED_USERS = "includeRemovedUsers";
+  private static final String ROLE_NAMES = "roleIds";
+  private static final String MATCHING_ALL_ROLE_NAMES = "matchingAllRoleNames";
 
   protected Map<String, Object> criteria = new HashMap<>();
 
@@ -55,6 +60,21 @@ public abstract class AbstractSearchCriteria implements SearchCriteria {
   public SearchCriteria includeRemovedUsers() {
     criteria.put(INCLUDE_REMOVED_USERS, true);
     return adjustUserStatesToExclude();
+  }
+
+  @Override
+  public SearchCriteria onRoleNames(String... roleIds) {
+    if (ArrayUtils.isNotEmpty(roleIds)) {
+      criteria.put(ROLE_NAMES,
+          Arrays.stream(roleIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    }
+    return this;
+  }
+
+  @Override
+  public SearchCriteria matchingAllRoleNames() {
+    criteria.put(MATCHING_ALL_ROLE_NAMES, true);
+    return this;
   }
 
   @SuppressWarnings("unchecked")
@@ -81,6 +101,14 @@ public abstract class AbstractSearchCriteria implements SearchCriteria {
   }
 
   /**
+   * Is the criterion on role names set?
+   * @return true if set, false otherwise.
+   */
+  public boolean isCriterionOnRoleNamesSet() {
+    return criteria.containsKey(ROLE_NAMES);
+  }
+
+  /**
    * Gets user states to exclude criterion.
    * @return the access level criterion.
    */
@@ -94,5 +122,22 @@ public abstract class AbstractSearchCriteria implements SearchCriteria {
    */
   public boolean mustIncludeRemovedUsers() {
     return Boolean.TRUE.equals(criteria.get(INCLUDE_REMOVED_USERS));
+  }
+
+  /**
+   * Gets the disjunction on the role names.
+   * @return an array with each element of the disjunction.
+   */
+  public String[] getCriterionOnRoleNames() {
+    return (String[]) criteria.get(ROLE_NAMES);
+  }
+
+  /**
+   * Must each result item matches all role names.
+   * @return true if it must match all roles, false otherwise.
+   */
+  public boolean mustMatchAllRoles() {
+    return isCriterionOnRoleNamesSet() && getCriterionOnRoleNames().length > 1 &&
+        Boolean.TRUE.equals(criteria.get(MATCHING_ALL_ROLE_NAMES));
   }
 }

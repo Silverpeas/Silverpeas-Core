@@ -240,6 +240,7 @@ public class UserProfileResource extends RESTWebService {
    * identifier "all" means all user groups.
    * @param roles the name of the roles the users must play either for the component instance or for
    * a given resource of the component instance.
+   * @param matchingAllRoles boolean at true if the users must play all the roles, false otherwise.
    * @param resource the unique identifier of the resource in the component instance the users to
    * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
    * one. If it is not set, by default the resource refered is the whole component instance. As for
@@ -262,6 +263,7 @@ public class UserProfileResource extends RESTWebService {
       @PathParam("instanceId") String instanceId,
       @QueryParam("group") String groupId,
       @QueryParam("roles") String roles,
+      @QueryParam("matchingAllRoles") boolean matchingAllRoles,
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
@@ -284,7 +286,7 @@ public class UserProfileResource extends RESTWebService {
     UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
         .withDomainIds(domainIds.toArray(new String[0]))
         .withComponentInstanceId(instanceId)
-        .withRoles(roleNames)
+        .withRoles(roleNames, matchingAllRoles)
         .withResourceId(resource)
         .withGroupIds(groupId)
         .withName(name)
@@ -312,6 +314,7 @@ public class UserProfileResource extends RESTWebService {
    * to.
    * @param roles the name of the roles the users must play either for the component instance or for
    * a given resource of the component instance.
+   * @param matchingAllRoles boolean at true if the users must play all the roles, false otherwise.
    * @param resource the unique identifier of the resource in the component instance the users to
    * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
    * one. If it is not set, by default the resource refered is the whole component instance. As for
@@ -334,6 +337,7 @@ public class UserProfileResource extends RESTWebService {
   public Response getUserContacts(@PathParam("userId") String userId,
       @QueryParam("instance") String instanceId,
       @QueryParam("roles") String roles,
+      @QueryParam("matchingAllRoles") boolean matchingAllRoles,
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
@@ -349,7 +353,7 @@ public class UserProfileResource extends RESTWebService {
       UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
           .withComponentInstanceId(instanceId)
           .withDomainIds(domainId)
-          .withRoles(roleNames)
+          .withRoles(roleNames, matchingAllRoles)
           .withResourceId(resource)
           .withUserIds(contactIds)
           .withName(name)

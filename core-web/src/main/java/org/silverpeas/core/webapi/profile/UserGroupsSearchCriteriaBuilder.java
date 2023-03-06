@@ -70,9 +70,12 @@ public class UserGroupsSearchCriteriaBuilder {
     return this;
   }
 
-  public UserGroupsSearchCriteriaBuilder withRoles(String[] roleIds) {
+  public UserGroupsSearchCriteriaBuilder withRoles(String[] roleIds, boolean matchingAllRoles) {
     if (roleIds != null && roleIds.length > 0) {
       searchCriteria.onRoleNames(roleIds);
+      if (matchingAllRoles) {
+        searchCriteria.matchingAllRoleNames();
+      }
     }
     return this;
   }

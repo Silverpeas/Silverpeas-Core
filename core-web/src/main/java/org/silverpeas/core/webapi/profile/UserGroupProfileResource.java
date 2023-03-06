@@ -136,6 +136,7 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param withChildren if true the sub groups are also returned.
    * @param roles the roles the groups must play. Null if no specific roles have to be played by the
    * groups.
+   * @param matchingAllRoles boolean at true if the groups must play all the roles, false otherwise.
    * @param resource the unique identifier of the resource in the component instance the groups to
    * get must have enough rights to access. This query filter is coupled with the <code>roles</code>
    * one. If it is not set, by default the resource refered is the whole component instance. As for
@@ -157,8 +158,11 @@ public class UserGroupProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getGroupsInApplication(@PathParam("instanceId") String instanceId, //NOSONAR
       @QueryParam("withChildren") boolean withChildren,
-      @QueryParam("roles") String roles, @QueryParam("resource") String resource,
-      @QueryParam("name") String name, @QueryParam("page") String page,
+      @QueryParam("roles") String roles,
+      @QueryParam("matchingAllRoles") boolean matchingAllRoles,
+      @QueryParam("resource") String resource,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page,
       @QueryParam("domain") String domain,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
@@ -168,7 +172,7 @@ public class UserGroupProfileResource extends RESTWebService {
       domainId = getUser().getDomainId();
       criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
-          withRoles(roleNames).
+          withRoles(roleNames, matchingAllRoles).
           withResourceId(resource).
           withDomainId(domainId).
           withMixedDomainId().
@@ -177,7 +181,7 @@ public class UserGroupProfileResource extends RESTWebService {
     } else {
       criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
-          withRoles(roleNames).
+          withRoles(roleNames, matchingAllRoles).
           withResourceId(resource).
           withDomainId(domainId).
           withName(name).

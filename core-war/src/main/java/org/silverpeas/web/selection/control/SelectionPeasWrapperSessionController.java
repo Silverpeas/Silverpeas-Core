@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -223,8 +224,9 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   /**
    * Init the user panel.
    */
-  public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles,
-      final boolean includeRemovedUsers, final boolean showDeactivated, final boolean selectedUserLimit) {
+  public String initSelectionPeas(boolean multiple, String instanceId,
+      Pair<List<String>, Boolean> roles, final boolean includeRemovedUsers,
+      final boolean showDeactivated, final boolean selectedUserLimit) {
     String applicationContext = URLUtil.getApplicationURL();
     String hostUrl = applicationContext + "/RselectionPeasWrapper/jsp/close";
 
@@ -258,8 +260,8 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     }
     if (StringUtil.isDefined(instanceId)) {
       sug.setComponentId(instanceId);
-      if (roles != null && !roles.isEmpty()) {
-        sug.setProfileNames(roles);
+      if (roles != null && !roles.getFirst().isEmpty()) {
+        sug.setProfileNames(roles.getFirst(), roles.getSecond());
       }
       sel.setExtraParams(sug);
     }

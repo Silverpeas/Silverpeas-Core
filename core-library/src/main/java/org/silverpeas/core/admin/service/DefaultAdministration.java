@@ -5359,13 +5359,17 @@ class DefaultAdministration implements Administration {
   private void setGroupsPlayingRole(final List<String> roleNames,
       final SilverpeasComponentInstance instance, final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
-    final Set<String> groupIds = getRecursivelyValidGroupsIdPlaying(roleNames, instance,
-        searchCriteria.getCriterionOnResourceId());
-    final String[] groupIdArray = groupIds.toArray(new String[0]);
-    searchCriteria.onGroupsInRoles(groupIdArray);
-    if (searchCriteria.isCriterionOnAnyGroupSet()) {
-      searchCriteria.onGroupIds(groupIdArray);
-    }
+    getRecursivelyValidGroupsIdPlaying(roleNames, instance,
+        searchCriteria.getCriterionOnResourceId()).ifPresent(m -> {
+          searchCriteria.withGroupsByRoles(m);
+          if (searchCriteria.isCriterionOnAnyGroupSet()) {
+            searchCriteria.onGroupIds(m.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .distinct()
+                .toArray(String[]::new));
+          }
+        });
   }
 
   private void setAllValidGroupChildren(final UserDetailsSearchCriteria searchCriteria)
@@ -5380,26 +5384,34 @@ class DefaultAdministration implements Administration {
     }
   }
 
-  private Set<String> getRecursivelyValidGroupsIdPlaying(final List<String> roleNames,
-      final SilverpeasComponentInstance instance, final String resourceId) throws AdminException {
-    final Set<String> allGroupIds = new HashSet<>();
+  private Optional<Map<String, Set<String>>> getRecursivelyValidGroupsIdPlaying(
+      final List<String> roleNames, final SilverpeasComponentInstance instance,
+      final String resourceId) throws AdminException {
     final List<ProfileInst> profiles;
     if (StringUtil.isDefined(resourceId)) {
       profiles = getProfileInstsFor(resourceId, instance.getId());
     } else {
       profiles = getComponentInst(instance.getId()).getAllProfilesInst();
     }
+    final Map<String, Set<String>> groupIdsByRole = new HashMap<>(profiles.size());
     for (ProfileInst aProfile : profiles) {
       if (roleNames.isEmpty() || roleNames.contains(aProfile.getName())) {
+        final String roleName = aProfile.getName();
+        final Set<String> allGroupIdsOfCurrentRole = Optional
+            .ofNullable(groupIdsByRole.get(roleName))
+            .orElseGet(HashSet::new);
         // groups (and recursively their subgroups) playing the role
-        List<String> groupIds = aProfile.getAllGroups();
+        final List<String> groupIds = aProfile.getAllGroups();
         for (String aGroupId : groupIds) {
-          allGroupIds.add(aGroupId);
-          allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+          allGroupIdsOfCurrentRole.add(aGroupId);
+          allGroupIdsOfCurrentRole.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+        }
+        if (!allGroupIdsOfCurrentRole.isEmpty()) {
+          groupIdsByRole.put(roleName, allGroupIdsOfCurrentRole);
         }
       }
     }
-    return allGroupIds;
+    return Optional.of(groupIdsByRole).filter(not(Map::isEmpty));
   }
 
   private void addAllUsersInProfile(final ProfileInst aProfile, final Collection<String> userIds)
@@ -5420,19 +5432,19 @@ class DefaultAdministration implements Administration {
   public SilverpeasList<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
       throws AdminException {
     final List<String> roleNames =
-        Optional.ofNullable(searchCriteria.getAndClearCriterionOnRoleNames())
+        Optional.ofNullable(searchCriteria.getCriterionOnRoleNames())
             .filter(ArrayUtil::isNotEmpty)
             .stream()
             .flatMap(Stream::of)
             .collect(toList());
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
       // ok, replace role names and component instance by role ids.
-      SilverpeasComponentInstance instance =
+      final SilverpeasComponentInstance instance =
           getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
       if (!roleNames.isEmpty() || !instance.isPublic()) {
-        List<String> roleIds = new ArrayList<>();
+        final List<String> profileIds = new ArrayList<>();
         if (!instance.isPersonal()) {
-          List<ProfileInst> profiles;
+          final List<ProfileInst> profiles;
           if (searchCriteria.isCriterionOnResourceIdSet()) {
             profiles =
                 getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
@@ -5441,12 +5453,13 @@ class DefaultAdministration implements Administration {
           }
           profiles.stream()
               .filter(p -> roleNames.isEmpty() || roleNames.contains(p.getName()))
-              .forEach(p -> roleIds.add(p.getId()));
+              .map(ProfileInst::getId)
+              .forEach(profileIds::add);
           // if empty, given criteria are not consistent. A dummy role id is set in order to get an
           // empty result
-          Optional.of(roleIds).filter(List::isEmpty).ifPresent(r -> r.add("-1000"));
+          Optional.of(profileIds).filter(List::isEmpty).ifPresent(r -> r.add("-1000"));
         }
-        searchCriteria.onRoleNames(roleIds.toArray(new String[0]));
+        searchCriteria.onProfileIds(profileIds.toArray(new String[0]));
       }
     } else if (!roleNames.isEmpty()) {
       SilverLogger.getLogger(this)

@@ -31,21 +31,24 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.constant.GroupState;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.MemoizedSupplier;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.text.MessageFormat.format;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 
@@ -77,11 +80,9 @@ public class SqlUserSelectorByCriteriaBuilder {
    * @return the SQL query matching the specified criteria.
    */
   public JdbcSqlQuery build(final UserDetailsSearchCriteria criteria) {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields)
-        .from(getTables(criteria))
-        .where("st_user.state")
-        .notIn(getExcludedUserStates(criteria));
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields);
 
+    applyJoinsAndDefaultCriteria(query, criteria);
     applyCriteriaOnRoles(query, criteria);
     applyCriteriaOnDomain(query, criteria);
     applyCriteriaOnUserIds(query, criteria);
@@ -99,10 +100,20 @@ public class SqlUserSelectorByCriteriaBuilder {
     return query;
   }
 
+  private void applyJoinsAndDefaultCriteria(final JdbcSqlQuery query,
+      final UserDetailsSearchCriteria criteria) {
+    query.from("st_user");
+    if (criteria.isCriterionOnGroupIdsSet() || criteria.isCriterionOnAnyGroupSet()) {
+      query.join("st_group_user_rel").on("st_group_user_rel.userid = st_user.id");
+      query.join("st_group").on("st_group.id = st_group_user_rel.groupid");
+    }
+    query.where("st_user.state").notIn(getExcludedUserStates(criteria));
+  }
+
   private void applyCriteriaOnGroupIds(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
     if (criteria.isCriterionOnGroupIdsSet() || criteria.isCriterionOnAnyGroupSet()) {
-      query.and("st_group_user_rel.userId = st_user.id");
+      query.and("st_group.state").notIn(GroupState.REMOVED);
       final String[] groupIds = criteria.getCriterionOnGroupIds();
       if (isNotEmpty(groupIds)) {
         query.and("st_group_user_rel.groupId")
@@ -168,37 +179,63 @@ public class SqlUserSelectorByCriteriaBuilder {
       final UserDetailsSearchCriteria criteria) {
     getSharedComponentInstanceWithRights(criteria).ifPresent(i -> {
       int instanceId = ComponentInst.getComponentLocalId(i.getId());
-      query.and("(st_user.id IN (")
-          .addSqlPart("SELECT st_userrole_user_rel.userId " +
-              "FROM st_userrole " +
-              "INNER JOIN st_userrole_user_rel ON st_userrole_user_rel.userroleId = st_userrole.id " +
-              "WHERE st_userrole.instanceId = ?", instanceId);
+      query.and("st_user.id IN (");
+      query.addSqlPart(
+          "SELECT distinct all_profiles.userid " +
+          "FROM (" +
+              "SELECT distinct urur.userId, ur.rolename " +
+              "FROM st_userrole_user_rel urur " +
+                    "INNER JOIN st_userrole ur ON urur.userroleId = ur.id " +
+              "WHERE ur.instanceId = ?", instanceId);
       if (criteria.isCriterionOnResourceIdSet()) {
         final List<ProfiledObjectId> profiledResourceId = Stream
             .of(criteria.getCriterionOnResourceId())
             .map(ProfiledObjectId::from)
             .collect(Collectors.toList());
-        query.and("st_userrole.objecttype").in(profiledResourceId.stream()
+        query.and("ur.objecttype").in(profiledResourceId.stream()
             .map(ProfiledObjectId::getType)
             .map(ProfiledObjectType::getCode)
             .collect(Collectors.toList()));
-        query.and("st_userrole.objectId").in(profiledResourceId.stream()
+        query.and("ur.objectId").in(profiledResourceId.stream()
             .map(ProfiledObjectId::getId)
             .map(Integer::parseInt)
             .collect(Collectors.toList()));
       } else {
-        query.andNull("st_userrole.objectId");
+        query.andNull("ur.objectId");
       }
       if (criteria.isCriterionOnRoleNamesSet()) {
-        query.and("st_userrole.roleName").in(criteria.getCriterionOnRoleNames());
+        query.and("ur.rolename").in((Object[]) criteria.getCriterionOnRoleNames());
       }
-      query.addSqlPart(")");
-      if (criteria.isCriterionOnGroupsInRolesSet()) {
-        String[] groupIds = criteria.getCriterionOnGroupsInRoles();
-        query.or("st_user.id IN (")
-            .addSqlPart("SELECT userId FROM st_group_user_rel WHERE st_group_user_rel.groupId")
-            .in(Stream.of(groupIds).map(Integer::parseInt).collect(Collectors.toList()))
-            .addSqlPart(")");
+      if (criteria.isCriterionOnGroupsByRolesSet()) {
+        final Map<String, Set<String>> groupIdsByRoles = criteria.getCriterionOnGroupsByRoles();
+        if (criteria.mustMatchAllRoles()) {
+          groupIdsByRoles.forEach((r, g) -> {
+            query.union();
+            query.addSqlPart(format(
+                "SELECT distinct gur.userId, ''{0}'' as rolename " +
+                "FROM st_group_user_rel gur " +
+                "WHERE gur.groupId", r))
+                .in(g.stream().map(Integer::parseInt).collect(Collectors.toList()));
+          });
+        } else {
+          query.union();
+          query.addSqlPart(
+              "SELECT distinct gur.userId, 'dummy' as rolename " +
+              "FROM st_group_user_rel gur " +
+              "WHERE gur.groupId")
+              .in(groupIdsByRoles.values()
+                  .stream()
+                  .flatMap(Collection::stream)
+                  .distinct()
+                  .map(Integer::parseInt)
+                  .collect(Collectors.toList()));
+        }
+      }
+      query.addSqlPart(") all_profiles");
+      if (criteria.mustMatchAllRoles()) {
+        query.addSqlPart(
+            "GROUP BY all_profiles.userid " +
+            "HAVING COUNT(all_profiles.userid) = ?", criteria.getCriterionOnRoleNames().length);
       }
       query.addSqlPart(")");
     });
@@ -236,15 +273,6 @@ public class SqlUserSelectorByCriteriaBuilder {
           .ifPresent(i -> excludedStates.add(UserState.REMOVED));
     }
     return excludedStates;
-  }
-
-  private String[] getTables(final UserDetailsSearchCriteria criteria) {
-    final List<String> tables = new ArrayList<>();
-    tables.add("st_user");
-    if (criteria.isCriterionOnGroupIdsSet() || criteria.isCriterionOnAnyGroupSet()) {
-      tables.add("st_group_user_rel");
-    }
-    return tables.toArray(new String[0]);
   }
 }
   

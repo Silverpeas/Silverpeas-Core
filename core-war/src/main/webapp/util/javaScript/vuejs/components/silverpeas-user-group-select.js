@@ -137,6 +137,9 @@
           return [];
         }
       },
+      matchingAllRoles : {
+        'default' : false
+      },
       groupFilter : {
         'default' : function() {
           return [];
@@ -181,6 +184,7 @@
             domainIdFilter : domainIdFilter,
             componentIdFilter : this.componentIdFilter,
             roleFilter : roleFilter,
+            matchingAllRoles : this.matchingAllRoles,
             groupFilter : groupFilter,
             initialQuery : this.initialQuery,
             navigationalBehavior : this.navigationalBehavior,
@@ -239,6 +243,7 @@
                   domainIdFilter : domainIdFilter,
                   componentIdFilter : this.componentIdFilter,
                   roleFilter : roleFilter,
+                  matchingAllRoles : this.matchingAllRoles,
                   groupFilter : groupFilter
                 };
                 return this.selectionApi.updateFilterOptions(options);
@@ -266,6 +271,9 @@
         this.api.updateFilterOptions && this.api.updateFilterOptions();
       },
       roleFilter : function() {
+        this.api.updateFilterOptions && this.api.updateFilterOptions();
+      },
+      matchingAllRoles : function() {
         this.api.updateFilterOptions && this.api.updateFilterOptions();
       },
       groupFilter : function() {

@@ -43,7 +43,7 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
   private static final String GROUP_ID = "groupId";
   private static final String USER_ID = "userId";
   private static final String SUPERGROUP_ID = "parentId";
-  private static final String ROLE_NAMES = "roleIds";
+  private static final String PROFILE_IDS = "profileIds";
   private static final String DOMAIN_IDS = "domainIds";
   private static final String INSTANCE_ID = "instanceId";
   private static final String WITH_CHILDREN = "withChildren";
@@ -85,9 +85,13 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
 
   @Override
   public GroupsSearchCriteria onRoleNames(String... roleIds) {
-    if (isNotEmpty(roleIds)) {
-      criteria.put(ROLE_NAMES,
-          Arrays.stream(roleIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    return (GroupsSearchCriteria) super.onRoleNames(roleIds);
+  }
+
+  public GroupsSearchCriteria onProfileIds(String... profileIds) {
+    if (isNotEmpty(profileIds)) {
+      criteria.put(PROFILE_IDS,
+          Arrays.stream(profileIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
     return this;
   }
@@ -163,8 +167,8 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
     return this;
   }
 
-  public boolean isCriterionOnRoleNamesSet() {
-    return criteria.containsKey(ROLE_NAMES);
+  public boolean isCriterionOnProfileIdsSet() {
+    return criteria.containsKey(PROFILE_IDS);
   }
 
   public boolean isCriterionOnResourceIdSet() {
@@ -220,21 +224,17 @@ public class GroupsSearchCriteria extends AbstractSearchCriteria {
   }
 
   /**
-   * Gets the conjunction on the role names.
+   * Gets the conjunction on the profile ids.
    *
    * @return an array with each element of the conjunction.
    */
-  public String[] getCriterionOnRoleNames() {
-    return (String[]) criteria.get(ROLE_NAMES);
+  public String[] getCriterionOnProfileIds() {
+    return (String[]) criteria.get(PROFILE_IDS);
   }
 
-  /**
-   * Gets and clears the conjunction on the role names.
-   *
-   * @return an array with each element of the conjunction.
-   */
-  public String[] getAndClearCriterionOnRoleNames() {
-    return (String[]) criteria.remove(ROLE_NAMES);
+  @Override
+  public boolean mustMatchAllRoles() {
+    return isCriterionOnProfileIdsSet() && super.mustMatchAllRoles();
   }
 
   /**

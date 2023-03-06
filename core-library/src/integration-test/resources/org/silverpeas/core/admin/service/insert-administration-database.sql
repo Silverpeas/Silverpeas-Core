@@ -10,7 +10,7 @@ VALUES ('U', 'User'),
  Users:
  # SP DOMAIN
  - Admin
- - 15 users, 1001 to 1015:
+ - 16 users, 1001 to 1016:
  - ... BLOCKED:
  - ... ... 1002
  - ... EXPIRED:
@@ -64,6 +64,8 @@ VALUES (0, 0, '0', 'adm', 'Administrateur', 'adm@silverpeas.org', 'administrateu
         'VALID', '2012-01-01 00:00:00.0'),
        (1015, 0, '???REM???15', 'spu15', 'SP USER 15', 'spu15@silverpeas.org', '???REM???15', '',
         'U', 'DELETED', '2012-01-01 00:00:00.0'),
+       (1016, 0, '31', 'spu16', 'SP USER 16', 'spu16@silverpeas.org', 'sp_user_16', '', 'U',
+        'VALID', '2012-01-01 00:00:00.0'),
 -- SQL DOMAIN
        (2001, 1, '16', 'sqlu1', 'SQL USER 1', 'sqlu1@silverpeas.org', 'sql_user_1', '', 'U',
         'VALID', '2012-01-01 00:00:00.0'),
@@ -93,7 +95,7 @@ VALUES (0, 0, '0', 'adm', 'Administrateur', 'adm@silverpeas.org', 'administrateu
         'VALID', '2012-01-01 00:00:00.0'),
        (2014, 1, '29', 'sqlu14', 'SQL USER 14', 'sqlu14@silverpeas.org', 'sql_user_14', '', 'U',
         'VALID', '2012-01-01 00:00:00.0'),
-       (2015, 1, '???REM???30', 'sqlu30', 'SQL USER 30', 'sqlu30@silverpeas.org', '???REM???30', '',
+       (2015, 1, '???REM???30', 'sqlu15', 'SQL USER 15', 'sqlu15@silverpeas.org', '???REM???30', '',
         'U', 'DELETED', '2012-01-01 00:00:00.0');
 
 /*
@@ -123,7 +125,8 @@ INSERT INTO st_group (id, domainid, specificid, name, description, synchrorule, 
            (1001, 0, '7', 'Group SP 1', 'Group SP 1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
            (1002, 0, '8', 'Group SP 2', 'Group SP 2 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
            (2001, 1, '9', 'Group SQL 1', 'Group SQL 1 description', '', NULL, 'VALID', '2012-01-01 00:00:00.000'),
-           (2011, 1, '10', 'Group SQL 1-1', 'Group SQL 1-1 description', '', 2001, 'VALID', '2012-01-01 00:00:00.000');
+           (2011, 1, '10', 'Group SQL 1-1', 'Group SQL 1-1 description', '', 2001, 'VALID', '2012-01-01 00:00:00.000'),
+           (2012, 1, '11', 'Group SQL 1-2 (REMOVED)', 'Group SQL 1-2 description', '', 2001, 'REMOVED', '2012-01-01 00:00:00.000');
 
 INSERT INTO st_group_user_rel (groupid, userid)
     -- # MIXED DOMAIN
@@ -159,6 +162,7 @@ VALUES (1, 1002),
        (1001, 1005),
 -- ... Group SP 2: 1013 (VALID)
        (1002, 1013),
+       (1002, 1016),
 -- # SQL DOMAIN
 -- ... Group SQL 1: 2005 (VALID), 2006 (REMOVED)
        (2001, 2005),
@@ -166,7 +170,11 @@ VALUES (1, 1002),
 -- ... Group SQL 1-1: 2004 (VALID), 2011 (VALID), 2009 (VALID)
        (2011, 2004),
        (2011, 2011),
-       (2011, 2009);
+       (2011, 2009),
+-- ... Group SQL 1-2 (REMOVED): 2001 (VALID), 2002 (VALID), 2002 (DELETED)
+       (2012, 2001),
+       (2012, 2002),
+       (2012, 2003);
 
 /*
 Spaces
@@ -324,8 +332,10 @@ VALUES (10, 312),
 -- 100 | 1 - kmelia-Space-A_Level-1 | admin inherited
 --     1 - Group MIX 1
 --     1001 - Group SP 1
+--     2012 - SQL 1-2 (REMOVED)
        (100, 1),
        (100, 1001),
+       (100, 2012),
 -- 110 | 1 - kmelia-Space-A_Level-1 | writer inherited
 --     31 - Group MIX 3-1
 --     2001 - Group SQL 1
@@ -339,6 +349,9 @@ VALUES (10, 312),
 -- 911 | 1 - kmelia-Space-A_Level-1 | Folder-1-1 (1011) with specific rights | writer
 --     1002 - Group SP 2
        (911, 1002),
+-- 21 | 2 - blog-Space-A_Level-2| writer
+--     2012 - SQL 1-2 (REMOVED)
+       (21, 2012),
 -- 210 | 2 - blog-Space-A_Level-2 | writer inherited
 --     31 - Group MIX 3-1
 --     2001 - Group SQL 1
@@ -346,10 +359,17 @@ VALUES (10, 312),
        (210, 2001),
 -- 300 | 3 - almanach-Space-B_Level-1 | admin inherited
 --     1002 - Group SP 2
+--     2012 - SQL 1-2 (REMOVED)
        (300, 1002),
+       (300, 2012),
 -- 310 | 3 - almanach-Space-B_Level-1 | writer inherited
 --     3 - Group MIX 3
        (310, 3),
+-- 32 | 3 - almanach-Space-B_Level-1 | writer
+--     1002 - Group SP 2
+--     2012 - SQL 1-2 (REMOVED)
+       (32, 1002),
+       (32, 2012),
 -- 320 | 3 - almanach-Space-B_Level-1 | publisher inherited
 --     1 - Group MIX 1
 --     2011 - Group SQL 1-1
@@ -377,6 +397,9 @@ VALUES (10, 1008),
 --     2014 - SQL USER 14 - VALID
        (11, 2006),
        (11, 2014),
+-- 910 | 1 - kmelia-Space-A_Level-1 | Folder-1-1 (1011) with specific rights | admin
+--     1016 - SP USER 16 - VALID
+       (910, 1016),
 -- 911 | 1 - kmelia-Space-A_Level-1 | Folder-1-1 (1011) with specific rights | writer
 --     2001 - SQL USER 1 - VALID
        (911, 2001),

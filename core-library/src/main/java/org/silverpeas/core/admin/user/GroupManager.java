@@ -61,8 +61,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
 import static org.silverpeas.core.util.StringUtil.*;
@@ -1054,6 +1053,7 @@ public class GroupManager {
     private final String nameFilter;
     private final PaginationPage paginationPage;
     private final boolean childrenRequired;
+    private final boolean mustMatchAllRoles;
     private final boolean logicalNameFiltering;
     private final Map<String, List<GroupDetail>> subGroupsOfGroupsCache = new LinkedHashMap<>();
 
@@ -1063,11 +1063,14 @@ public class GroupManager {
       this.criteria = criteria;
       this.groupDao = groupDao;
       this.nameFilter = defaultStringIfNotDefined(criteria.getCriterionOnName()).replace('*', '%');
-      this.paginationPage = criteria.getCriterionOnPagination();
       this.childrenRequired = criteria.childrenRequired();
       this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);
-      if (childrenRequired) {
+      this.mustMatchAllRoles = criteria.mustMatchAllRoles();
+      if (childrenRequired || mustMatchAllRoles) {
+        this.paginationPage = criteria.getCriterionOnPagination();
         criteria.clearPagination();
+      } else {
+        this.paginationPage = null;
       }
       if (logicalNameFiltering) {
         criteria.clearOnName();
@@ -1076,6 +1079,31 @@ public class GroupManager {
 
     SilverpeasList<GroupDetail> getFilteredValidGroups() throws SQLException {
       List<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria);
+      final Map<String, Set<String>> rolesByGroup = getRolesByGroup(groups);
+      groups = addChildrenAndFilterOnName(groups, rolesByGroup);
+      matchingAllRoles(groups, rolesByGroup);
+      if (paginationPage != null) {
+        groups = paginationPage.getPaginatedListFrom(groups);
+      }
+      return SilverpeasList.wrap(groups);
+    }
+
+    private void matchingAllRoles(final List<GroupDetail> groups,
+        final Map<String, Set<String>> rolesByGroup) {
+      if (rolesByGroup != null) {
+        final Iterator<GroupDetail> it = groups.iterator();
+        final int nbRoles = criteria.getCriterionOnRoleNames().length;
+        while(it.hasNext()) {
+          final GroupDetail group = it.next();
+          if (rolesByGroup.getOrDefault(group.getId(), emptySet()).size() != nbRoles) {
+            it.remove();
+          }
+        }
+      }
+    }
+
+    private List<GroupDetail> addChildrenAndFilterOnName(List<GroupDetail> groups,
+        final Map<String, Set<String>> rolesByGroup) {
       if (childrenRequired) {
         final List<GroupDetail> allSubGroups = new LinkedList<>();
         final Iterator<GroupDetail> it = groups.iterator();
@@ -1084,9 +1112,16 @@ public class GroupManager {
           if (logicalNameFiltering && !likeIgnoreCase(group.getName(), nameFilter)) {
             it.remove();
           }
-          final List<GroupDetail> subGroups = getAllValidSubGroups(group.getId());
+          final String groupId = group.getId();
+          final List<GroupDetail> subGroups = getAllValidSubGroups(groupId);
           if (logicalNameFiltering) {
             subGroups.removeIf(g -> !likeIgnoreCase(g.getName(), nameFilter));
+          }
+          if (rolesByGroup != null) {
+            subGroups.forEach(g -> {
+              final Set<String> roles = rolesByGroup.computeIfAbsent(g.getId(), k -> new HashSet<>());
+              roles.addAll(rolesByGroup.get(groupId));
+            });
           }
           allSubGroups.addAll(subGroups);
         }
@@ -1096,11 +1131,23 @@ public class GroupManager {
             .distinct()
             .sorted(Comparator.comparing(GroupDetail::getName))
             .collect(Collectors.toList());
-        if (paginationPage != null) {
-          groups = paginationPage.getPaginatedListFrom(groups);
-        }
       }
-      return SilverpeasList.wrap(groups);
+      return groups;
+    }
+
+    private Map<String, Set<String>> getRolesByGroup(final List<GroupDetail> groups)
+        throws SQLException {
+      final Map<String, Set<String>> rolesByGroup;
+      if (mustMatchAllRoles && !groups.isEmpty()) {
+        final List<String> groupIds = groups.stream()
+            .map(GroupDetail::getId)
+            .collect(Collectors.toList());
+        rolesByGroup = groupDao.getRolesByGroupsMappingWith(connection, groupIds,
+            criteria.getCriterionOnProfileIds());
+      } else {
+        rolesByGroup = null;
+      }
+      return rolesByGroup;
     }
 
     List<GroupDetail> getAllValidSubGroups(String fromGroupId) {

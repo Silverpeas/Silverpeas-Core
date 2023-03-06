@@ -58,6 +58,7 @@
 <c:set var="instanceId"              value="${selection.extraParams.componentId}"/>
 <c:set var="domainId"                value="${selection.extraParams.domainId}"/>
 <c:set var="roles"                   value="${selection.extraParams.joinedProfileNames}"/>
+<c:set var="matchingAllRoles"        value="${selection.extraParams.matchingAllProfileNames or false}"/>
 <c:set var="resourceId"              value="${selection.extraParams.objectId}"/>
 <c:set var="validationURL"           value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"          value="${selection.cancelURL}"/>
@@ -273,6 +274,7 @@
           component: '${instanceId}',
           resource: '${resourceId}',
           roles: '${roles}',
+          matchingAllRoles: ${matchingAllRoles},
           domain: '${domainId}'});
 
         /* declare the module userSelector and its dependencies (here on the silverpeas module) */

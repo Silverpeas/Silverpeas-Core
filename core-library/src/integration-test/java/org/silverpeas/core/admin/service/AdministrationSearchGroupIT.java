@@ -101,7 +101,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         GROUP_SQL_1_ID));
     assertGroupListData(groups, asList(
         0, 3, 7,
-        2, 1,
+        2, 2,
         4
     ));
   }
@@ -321,7 +321,7 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         GROUP_SP_1_ID, GROUP_SP_2_ID));
     assertGroupListData(groups, asList(
         1, 3, 7, 6, 5, 1,
-        2, 1
+        2, 2
     ));
   }
 
@@ -527,6 +527,147 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
         .build());
     assertSortedGroupIds(groups, GROUP_MIX_1_ID, GROUP_MIX_31_ID, GROUP_SP_1_ID, GROUP_SQL_1_ID);
+    // searching for kmelia instance and several right role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .build());
+    assertSortedGroupIds(groups,
+        GROUP_MIX_1_ID, GROUP_MIX_31_ID, GROUP_MIX_312_ID,
+        GROUP_SP_1_ID, GROUP_SP_2_ID,
+        GROUP_SQL_1_ID);
+    // searching for kmelia instance and several right role names with children
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .withChildren()
+        .build());
+    assertSortedGroupIds(groups,
+        GROUP_MIX_1_ID, GROUP_MIX_31_ID, GROUP_MIX_311_ID, GROUP_MIX_312_ID,
+        GROUP_SP_1_ID, GROUP_SP_2_ID,
+        GROUP_SQL_1_ID, GROUP_SQL_11_ID);
+    // searching for almanach instance on admin, writer and publisher role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName(), SilverpeasRole.PUBLISHER.getName())
+        .build());
+    assertSortedGroupIds(groups,
+        GROUP_MIX_1_ID, GROUP_MIX_3_ID,
+        GROUP_SP_2_ID,
+        GROUP_SQL_11_ID);
+    // searching for almanach instance on writer and publisher role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.WRITER.getName(), SilverpeasRole.PUBLISHER.getName())
+        .build());
+    assertSortedGroupIds(groups,
+        GROUP_MIX_1_ID, GROUP_MIX_3_ID,
+        GROUP_SP_2_ID,
+        GROUP_SQL_11_ID);
+    // searching for almanach instance on admin and writer role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .build());
+    assertSortedGroupIds(groups,
+        GROUP_MIX_3_ID,
+        GROUP_SP_2_ID);
+    // searching for almanach instance on admin and publisher role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.PUBLISHER.getName())
+        .build());
+    assertSortedGroupIds(groups,
+        GROUP_MIX_1_ID,
+        GROUP_SP_2_ID,
+        GROUP_SQL_11_ID);
+  }
+
+  @Test
+  public void componentIdAndMatchingAllRoleNameCriteria() throws AdminException {
+    // searching for role name without specifying a component id performs no role name filtering
+    SilverpeasList<GroupDetail> groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedGroupIds(groups, ALL_GROUP_IDS_SORTED_BY_NAME);
+    // searching for blog instance and wrong role name returns no group
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.SUPERVISOR.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for blog instance and a right role name
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedGroupIds(groups, GROUP_MIX_1_ID, GROUP_SP_1_ID);
+    // searching for blog instance and a other right role name
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedGroupIds(groups, GROUP_MIX_31_ID, GROUP_SQL_1_ID);
+    // searching for blog instance and several right role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for kmelia instance and several right role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for kmelia instance and several right role names with children
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .withChildren()
+        .build());
+    assertSortedGroupIds(groups, GROUP_MIX_312_ID);
+    // searching for almanach instance on admin, writer and publisher role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName(), SilverpeasRole.PUBLISHER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for almanach instance on writer and publisher role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.WRITER.getName(), SilverpeasRole.PUBLISHER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for almanach instance on admin and writer role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for almanach instance on admin and publisher role names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_B_LEVEL_1_ALMANACH_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.PUBLISHER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedGroupIds(groups, GROUP_SP_2_ID);
   }
 
   @Test
@@ -565,6 +706,49 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
         .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
         .build());
     assertSortedGroupIds(groups, GROUP_SP_2_ID);
+  }
+
+  @Test
+  public void componentIdAndResourceIdAndMatchingAllRoleNamesCriteria() throws AdminException {
+    // searching for kmelia instance, a node id with inherited rights and right role name returns
+    // no group
+    SilverpeasList<GroupDetail> groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ROOT_FOLDER_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for kmelia instance and a sub sub node id with specific rights and an empty role
+    // name returns no group
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for kmelia instance and a sub sub node id with specific rights and a right role
+    // name
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedGroupIds(groups, GROUP_SP_2_ID);
+    // searching for kmelia instance and a sub sub node id with specific rights and several role
+    // names
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), SilverpeasRole.WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
   }
 
   private void assertSortedGroupIds(final List<? extends Group> groups,

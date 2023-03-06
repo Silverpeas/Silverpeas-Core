@@ -29,7 +29,9 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -45,7 +47,6 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
   private static final String USER_SPECIFIC_IDS = "userSpecificIds";
-  private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
   private static final String RESOURCE_ID = "resourceId";
   private static final String INSTANCE_ID = "instanceId";
@@ -98,12 +99,8 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   }
 
   @Override
-  public UserDetailsSearchCriteria onRoleNames(String[] roleIds) {
-    if (isNotEmpty(roleIds)) {
-      criteria.put(ROLE_NAMES,
-          Arrays.stream(roleIds).filter(StringUtil::isDefined).toArray(String[]::new));
-    }
-    return this;
+  public UserDetailsSearchCriteria onRoleNames(String... roleIds) {
+    return (UserDetailsSearchCriteria) super.onRoleNames(roleIds);
   }
 
   /**
@@ -111,14 +108,13 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
    * criterion on the role names. If this criterion isn't set, then only the users playing directly
    * the roles will be searched and not those that are part of a group playing the roles. It is
    * strongly recommended to specify the groups along with their own children groups.
-   * @param groupIds one or more unique identifiers of groups playing the role that is specified
-   * in the criterion on the role names.
+   * @param groupIdsByRoles map containing one or more unique identifiers of groups playing the
+   * role that is specified in the criterion on the role names by role name.
    * @return itself.
    */
-  public UserDetailsSearchCriteria onGroupsInRoles(String... groupIds) {
-    if (isNotEmpty(groupIds)) {
-      criteria.put(ROLE_GROUPS,
-          Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
+  public UserDetailsSearchCriteria withGroupsByRoles(Map<String, Set<String>> groupIdsByRoles) {
+    if (!groupIdsByRoles.isEmpty()) {
+      criteria.put(ROLE_GROUPS, groupIdsByRoles);
     }
     return this;
   }
@@ -194,12 +190,10 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
     return this;
   }
 
-  public boolean isCriterionOnGroupsInRolesSet() {
-    return criteria.containsKey(ROLE_GROUPS) && isNotEmpty((String[]) criteria.get(ROLE_GROUPS));
-  }
-
-  public boolean isCriterionOnRoleNamesSet() {
-    return criteria.containsKey(ROLE_NAMES);
+  @SuppressWarnings("unchecked")
+  public boolean isCriterionOnGroupsByRolesSet() {
+    return criteria.containsKey(ROLE_GROUPS) &&
+        !((Map<String, Set<String>>) criteria.get(ROLE_GROUPS)).isEmpty();
   }
 
   public boolean isCriterionOnResourceIdSet() {
@@ -251,20 +245,13 @@ public class UserDetailsSearchCriteria extends AbstractSearchCriteria {
   }
 
   /**
-   * Gets the disjunction on the role names.
-   * @return an array with each element of the disjunction.
+   * Gets the mapping of groups playing the roles given by the criterion on the role
+   * names by role name.
+   * @return a map with set of group ids by role name.
    */
-  public String[] getCriterionOnRoleNames() {
-    return (String[]) criteria.get(ROLE_NAMES);
-  }
-
-  /**
-   * Gets the disjunction on the groups that play the roles given by the criterion on the role
-   * names.
-   * @return an array with each element of the disjunction.
-   */
-  public String[] getCriterionOnGroupsInRoles() {
-    return (String[]) criteria.get(ROLE_GROUPS);
+  @SuppressWarnings("unchecked")
+  public Map<String, Set<String>> getCriterionOnGroupsByRoles() {
+    return (Map<String, Set<String>>) criteria.get(ROLE_GROUPS);
   }
 
   /**

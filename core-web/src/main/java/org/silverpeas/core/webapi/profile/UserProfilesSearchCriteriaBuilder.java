@@ -92,11 +92,15 @@ public class UserProfilesSearchCriteriaBuilder {
   /**
    * The users to find have to play at least one of the specified roles.
    * @param roleIds one or more identifiers of roles.
+   * @param matchingAllRoles one or more identifiers of roles.
    * @return itself.
    */
-  public UserProfilesSearchCriteriaBuilder withRoles(String... roleIds) {
+  public UserProfilesSearchCriteriaBuilder withRoles(String[] roleIds, boolean matchingAllRoles) {
     if (roleIds != null && roleIds.length > 0) {
       searchCriteria.onRoleNames(roleIds);
+      if (matchingAllRoles) {
+        searchCriteria.matchingAllRoleNames();
+      }
     }
     return this;
   }
