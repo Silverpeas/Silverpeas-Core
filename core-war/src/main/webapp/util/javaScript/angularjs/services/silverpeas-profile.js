@@ -44,7 +44,8 @@
           defaultParameters = {
             resource : context.resource,
             domain : context.domain,
-            roles : context.roles
+            roles : context.roles,
+            matchingAllRoles : context.matchingAllRoles
           };
         }
 
@@ -118,7 +119,8 @@
           defaultParameters = {
             resource: context.resource,
             domain: context.domain,
-            roles: context.roles
+            roles: context.roles,
+            matchingAllRoles: context.matchingAllRoles
           };
         }
 

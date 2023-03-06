@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
-import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;

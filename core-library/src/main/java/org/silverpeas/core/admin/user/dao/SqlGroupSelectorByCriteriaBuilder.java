@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.SearchCriteria;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,11 +53,9 @@ public class SqlGroupSelectorByCriteriaBuilder {
    * @return the SQL query matching the specified criteria.
    */
   public JdbcSqlQuery build(final GroupsSearchCriteria criteria) {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields)
-        .from(getTables(criteria))
-        .where("st_group.state")
-        .notIn(GroupState.REMOVED);
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields);
 
+    applyJoinsAndDefaultCriteria(query, criteria);
     applyCriteriaOnGroupName(query, criteria);
     applyCriteriaOnGroupIds(query, criteria);
     applyCriteriaOnDomain(query, criteria);
@@ -66,7 +63,7 @@ public class SqlGroupSelectorByCriteriaBuilder {
     applyCriteriaOnRoles(query, criteria);
     applyCriteriaOnSuperGroup(query, criteria);
 
-    query.orderBy("st_group.name");
+    query.orderBy("g.name");
 
     if (criteria.isCriterionOnPaginationSet()) {
       PaginationPage page = criteria.getCriterionOnPagination();
@@ -76,27 +73,34 @@ public class SqlGroupSelectorByCriteriaBuilder {
     return query;
   }
 
+  private void applyJoinsAndDefaultCriteria(final JdbcSqlQuery query,
+      final GroupsSearchCriteria criteria) {
+    query.from("st_group g");
+    if (criteria.isCriterionOnProfileIdsSet()) {
+      query.join("st_userrole_group_rel urgr").on("urgr.groupId = g.id");
+    }
+    query.where("g.state").notIn(GroupState.REMOVED);
+  }
+
   private void applyCriteriaOnSuperGroup(final JdbcSqlQuery query,
       final GroupsSearchCriteria criteria) {
     if (criteria.isCriterionOnSuperGroupIdSet() && criteria.mustBeRoot()) {
-      query.and("(st_group.superGroupId = ? or st_group.superGroupId is null)",
+      query.and("(g.superGroupId = ? or g.superGroupId is null)",
           Integer.parseInt(criteria.getCriterionOnSuperGroupId()));
     } else if (criteria.isCriterionOnSuperGroupIdSet()) {
-      query.and("st_group.superGroupId = ?",
+      query.and("g.superGroupId = ?",
           Integer.parseInt(criteria.getCriterionOnSuperGroupId()));
     } else if (criteria.mustBeRoot()) {
-      query.and("st_group.superGroupId is null");
+      query.and("g.superGroupId is null");
     }
   }
 
   private void applyCriteriaOnRoles(final JdbcSqlQuery query, final GroupsSearchCriteria criteria) {
-    if (criteria.isCriterionOnRoleNamesSet()) {
-      List<Integer> rolesIds = Stream.of(criteria.getCriterionOnRoleNames())
+    if (criteria.isCriterionOnProfileIdsSet()) {
+      final List<Integer> profileIds = Stream.of(criteria.getCriterionOnProfileIds())
           .map(Integer::parseInt)
           .collect(Collectors.toList());
-      query.and("st_group.id = st_userrole_group_rel.groupId")
-          .and("st_userrole_group_rel.userRoleId")
-          .in(rolesIds);
+      query.and("urgr.userRoleId").in(profileIds);
     }
   }
 
@@ -106,7 +110,9 @@ public class SqlGroupSelectorByCriteriaBuilder {
       List<Integer> ids = Stream.of(criteria.getCriterionOnUserIds())
           .map(Integer::parseInt)
           .collect(Collectors.toList());
-      query.and("st_group.id = st_group_user_rel.groupId").and("st_group_user_rel.userId").in(ids);
+      query.and("g.id IN (" +
+          "SELECT groupId FROM st_group_user_rel WHERE userId").in(ids);
+      query.addSqlPart(")");
     }
   }
 
@@ -114,7 +120,7 @@ public class SqlGroupSelectorByCriteriaBuilder {
       final GroupsSearchCriteria criteria) {
     if (criteria.isCriterionOnNameSet()) {
       final String normalizedName = criteria.getCriterionOnName().replace('*', '%');
-      query.and("lower(st_group.name) like lower(?)", normalizedName);
+      query.and("lower(g.name) like lower(?)", normalizedName);
     }
   }
 
@@ -125,7 +131,7 @@ public class SqlGroupSelectorByCriteriaBuilder {
       List<Integer> groupIds = Stream.of(criteria.getCriterionOnGroupIds())
           .map(Integer::parseInt)
           .collect(Collectors.toList());
-      query.and("st_group.id").in(groupIds);
+      query.and("g.id").in(groupIds);
     }
   }
 
@@ -135,20 +141,8 @@ public class SqlGroupSelectorByCriteriaBuilder {
       List<Integer> domainIds = Stream.of(criteria.getCriterionOnDomainIds())
           .map(Integer::parseInt)
           .collect(Collectors.toList());
-      query.and("st_group.domainId").in(domainIds);
+      query.and("g.domainId").in(domainIds);
     }
-  }
-
-  private String[] getTables(final GroupsSearchCriteria criteria) {
-    final List<String> tables = new ArrayList<>();
-    tables.add("st_group");
-    if (criteria.isCriterionOnRoleNamesSet()) {
-      tables.add("st_userrole_group_rel");
-    }
-    if (criteria.isCriterionOnUserIdsSet()) {
-      tables.add("st_group_user_rel");
-    }
-    return tables.toArray(new String[0]);
   }
 }
   

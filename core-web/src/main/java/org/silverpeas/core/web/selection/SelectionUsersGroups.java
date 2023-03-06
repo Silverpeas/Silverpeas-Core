@@ -48,6 +48,7 @@ public class SelectionUsersGroups {
   private String objectId = null;
   private List<String> profileIds = null;
   private List<String> profileNames = null;
+  private boolean matchingAllProfileNames = false;
 
   public String getJoinedProfileNames() {
     if (profileNames != null && !profileNames.isEmpty()) {
@@ -56,12 +57,21 @@ public class SelectionUsersGroups {
     return null;
   }
 
+  public boolean isMatchingAllProfileNames() {
+    return matchingAllProfileNames;
+  }
+
   public List<String> getProfileIds() {
     return this.profileIds;
   }
 
   public void setProfileNames(List<String> profileNames) {
+    setProfileNames(profileNames, false);
+  }
+
+  public void setProfileNames(List<String> profileNames, boolean matchingAll) {
     this.profileNames = profileNames;
+    this.matchingAllProfileNames = matchingAll;
     ComponentInst componentInst = organizationController.getComponentInst(componentId);
     profileIds = new ArrayList<>();
     for (ProfileInst profileInst : componentInst.getAllProfilesInst()) {

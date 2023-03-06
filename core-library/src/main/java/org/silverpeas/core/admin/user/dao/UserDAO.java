@@ -57,11 +57,11 @@ public class UserDAO {
   private static final String USER_TABLE = "st_user";
   private static final String GROUP_USER_REL_TABLE = "st_group_user_rel";
   private static final String USER_COLUMNS =
-      "DISTINCT(st_user.id),specificId,domainId,login,firstName,lastName,loginMail,email,"
-      +    "accessLevel,"
-      + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
+      "DISTINCT(st_user.id),st_user.specificId,st_user.domainId,"
+      + "login,firstName,lastName,loginMail,email,accessLevel,"
+      + "loginQuestion,loginAnswer,st_user.creationDate,st_user.saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
-      + "state,stateSaveDate, notifManualReceiverLimit";
+      + "st_user.state,st_user.stateSaveDate, notifManualReceiverLimit";
   private static final String STATE_CRITERION = "state = ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";

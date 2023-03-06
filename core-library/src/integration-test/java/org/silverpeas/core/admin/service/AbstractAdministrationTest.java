@@ -93,6 +93,7 @@ public abstract class AbstractAdministrationTest {
   final static String USER_SPU13_1013_ID_VALID = "1013";
   final static String USER_SPU14_1014_ID_VALID = "1014";
   final static String USER_SPU15_1015_ID_DELETED = "1015";
+  final static String USER_SPU16_1016_ID_VALID = "1016";
   final static String USER_SQLU1_2001_ID_VALID = "2001";
   final static String USER_SQLU2_2002_ID_VALID = "2002";
   final static String USER_SQLU3_2003_ID_DELETED = "2003";
@@ -112,7 +113,7 @@ public abstract class AbstractAdministrationTest {
   final static String[] SP_DOMAIN_NOT_DELETED_USER_IDS_SORTED_BY_NAME = new String[]{
       USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID, USER_SPU10_1010_ID_VALID,
       USER_SPU11_1011_ID_REMOVED,
-      USER_SPU12_1012_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+      USER_SPU12_1012_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
       USER_SPU2_1002_ID_BLOCKED, USER_SPU3_1003_ID_EXPIRED,
       USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID, USER_SPU6_1006_ID_VALID,
       USER_SPU7_1007_ID_DEACTIVATED,
@@ -160,7 +161,7 @@ public abstract class AbstractAdministrationTest {
 
   final static Integer[] ALL_GROUP_TOTAL_NB_USERS_SORTED_BY_NAME = new Integer[] {
       1, 4, 11, 10, 5, 5,
-      2, 1,
+      2, 2,
       5, 3
   };
 
@@ -336,6 +337,11 @@ public abstract class AbstractAdministrationTest {
       return this;
     }
 
+    UserSearchCriteriaBuilder matchingAllRoleNames() {
+      searchCriteria.matchingAllRoleNames();
+      return this;
+    }
+
     UserSearchCriteriaBuilder withFirstName(final String firstName) {
       searchCriteria.onFirstName(firstName);
       return this;
@@ -436,6 +442,11 @@ public abstract class AbstractAdministrationTest {
 
     GroupSearchCriteriaBuilder withRoleNames(final String... roleNames) {
       searchCriteria.onRoleNames(roleNames);
+      return this;
+    }
+
+    GroupSearchCriteriaBuilder matchingAllRoleNames() {
+      searchCriteria.matchingAllRoleNames();
       return this;
     }
 

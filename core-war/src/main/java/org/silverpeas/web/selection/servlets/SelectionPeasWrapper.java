@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.selection.servlets;
 
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -86,6 +87,7 @@ public class SelectionPeasWrapper extends
     boolean selectedUserLimit = request.getParameterAsBoolean("selectedUserLimit");
     String instanceId = request.getParameter("instanceId");
     List<String> roles = request.getParameterAsList("roles");
+    boolean matchingAllRoles = request.getParameterAsBoolean("matchingAllRoles");
     boolean includeRemovedUsers = request.getParameterAsBoolean("includeRemovedUsers");
     boolean showDeactivated = request.getParameterAsBoolean("showDeactivated");
 
@@ -107,8 +109,8 @@ public class SelectionPeasWrapper extends
         controller.setSelectedUserId(request.getParameter("selectedUser"));
       }
     }
-    return controller.initSelectionPeas(selectionMultiple, instanceId, roles, includeRemovedUsers,
-        showDeactivated, selectedUserLimit);
+    return controller.initSelectionPeas(selectionMultiple, instanceId,
+        Pair.of(roles, matchingAllRoles), includeRemovedUsers, showDeactivated, selectedUserLimit);
   }
 
   public String closeUserGroupPanel(final HttpRequest request,

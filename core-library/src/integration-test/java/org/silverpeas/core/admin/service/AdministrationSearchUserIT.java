@@ -103,7 +103,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withAccessLevels(USER)
         .withPagination(new PaginationPage(3, 2))
         .build());
-    assertSortedUserIds(users, USER_SPU14_1014_ID_VALID, USER_SPU2_1002_ID_BLOCKED);
+    assertSortedUserIds(users, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID);
     // pdc managers
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withAccessLevels(PDC_MANAGER)
@@ -519,7 +519,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     assertSortedUserIds(users,
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID, USER_SPU10_1010_ID_VALID,
         USER_SPU11_1011_ID_REMOVED,
-        USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID, USER_SPU6_1006_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -580,7 +580,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users,
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -594,7 +594,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users,
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -645,7 +645,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users,
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID, USER_SPU6_1006_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -664,7 +664,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users,
         USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -692,7 +692,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withGroupIds(GROUP_SP_2_ID)
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a group not linked to kmelia, in that
     // case REMOVED users are not taken into account because when searching on instance id, the
     // filtering is done by applying filters on user and group rights which are using services
@@ -824,7 +824,9 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID);
+    assertSortedUserIds(users,
+        USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID,
+        USER_SQLU1_2001_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a group id
     // linked to node, in that case REMOVED users are not taken into account because when
     // searching on instance id, the filtering is done by applying filters on user and group
@@ -835,7 +837,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withGroupIds(GROUP_SP_2_ID)
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a group id
     // linked to node, in that case REMOVED users are not taken into account because when
     // searching on instance id, the filtering is done by applying filters on user and group
@@ -846,7 +848,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a group id
     // not linked to node, in that case REMOVED users are not taken into account because when
     // searching on instance id, the filtering is done by applying filters on user and group
@@ -1045,6 +1047,179 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
   }
 
   @Test
+  public void componentIdAndMatchingAllRoleNamesCriteria() throws AdminException {
+    // searching for role name id without specifying a component id performs no resource id filtering
+    SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users, ALL_NOT_DELETED_USER_IDS_SORTED_BY_NAME);
+    // searching for blog instance and wrong role name returns no users
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.SUPERVISOR.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(users, notNullValue());
+    assertThat(users, empty());
+    // searching for blog instance and wrong role name and a group id returns no users
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.SUPERVISOR.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_SP_1_ID)
+        .build());
+    assertThat(users, notNullValue());
+    assertThat(users, empty());
+    // searching for blog instance and a right role name, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users,
+        USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
+        USER_SPU2_1002_ID_BLOCKED,
+        USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID,
+        USER_SQLU9_2009_ID_VALID
+    );
+    // searching for blog instance and a right role name and an admin group id, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_MIX_1_ID)
+        .build());
+    assertSortedUserIds(users, USER_SPU2_1002_ID_BLOCKED);
+    // searching for blog instance and a right role name and an admin group id, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
+        .build());
+    assertSortedUserIds(users,
+        USER_SPU2_1002_ID_BLOCKED,
+        USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID
+    );
+    // searching for blog instance and a right role name and not linked group id, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_MIX_2_ID)
+        .build());
+    assertThat(users, notNullValue());
+    assertThat(users, empty());
+    // searching for kmelia instance and a group not linked to kmelia, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users. (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(WRITER.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_MIX_2_ID)
+        .build());
+    assertSortedUserIds(users,
+        USER_SPU6_1006_ID_VALID, USER_SPU7_1007_ID_DEACTIVATED,
+        USER_SQLU14_2014_ID_VALID
+    );
+    // searching for blog instance and a other right role name, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users,
+        USER_SPU1_1001_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU2_1002_ID_BLOCKED,
+        USER_SPU6_1006_ID_VALID,
+        USER_SPU7_1007_ID_DEACTIVATED,
+        USER_SQLU1_2001_ID_VALID, USER_SQLU10_2010_ID_VALID,
+        USER_SQLU11_2011_ID_VALID, USER_SQLU13_2013_ID_VALID, USER_SQLU14_2014_ID_VALID,
+        USER_SQLU4_2004_ID_VALID, USER_SQLU5_2005_ID_VALID,
+        USER_SQLU9_2009_ID_VALID
+    );
+    // searching for blog instance and a other right role name and an admin group id, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(WRITER.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_SP_1_ID)
+        .build());
+    assertThat(users, notNullValue());
+    assertThat(users, empty());
+    // searching for blog instance and several right role names, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users,
+        USER_SPU1_1001_ID_VALID,
+        USER_SPU2_1002_ID_BLOCKED,
+        USER_SQLU9_2009_ID_VALID
+    );
+    // searching for blog instance and several right role names and group ids, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    //
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_SP_1_ID, GROUP_SQL_1_ID)
+        .build());
+    assertSortedUserIds(users, USER_SQLU9_2009_ID_VALID
+    );
+    // searching for blog instance and several right role names and group ids, in that
+    // case REMOVED users are not taken into account because when searching on instance id, the
+    // filtering is done by applying filters on user and group rights which are using services
+    // filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_SP_1_ID, GROUP_SQL_11_ID)
+        .build());
+    assertSortedUserIds(users, USER_SQLU9_2009_ID_VALID
+    );
+  }
+
+  @Test
   public void componentIdAndResourceIdAndRoleNamesCriteria() throws AdminException {
     // searching for kmelia instance, a node id with inherited rights and right role name returns
     // no user
@@ -1062,8 +1237,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
-    assertThat(users, notNullValue());
-    assertThat(users, empty());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and an empty role
     // and a writer group id name returns no user
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1072,8 +1246,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(GROUP_SP_2_ID)
         .build());
-    assertThat(users, notNullValue());
-    assertThat(users, empty());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and an empty role
     // and a writer group id name returns no user
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1082,8 +1255,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withRoleNames(SilverpeasRole.ADMIN.getName())
         .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
         .build());
-    assertThat(users, notNullValue());
-    assertThat(users, empty());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a right role
     // name
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1091,7 +1263,9 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withRoleNames(WRITER.getName())
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID);
+    assertSortedUserIds(users,
+        USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID,
+        USER_SQLU1_2001_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a right role
     // and a writer group id name
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1100,7 +1274,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withRoleNames(WRITER.getName())
         .withGroupIds(GROUP_SP_2_ID)
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and a right role
     // and a writer group id name
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1109,7 +1283,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withRoleNames(WRITER.getName())
         .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID);
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and several role
     // names
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1117,7 +1291,100 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
         .build());
-    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID);
+    assertSortedUserIds(users,
+        USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID,
+        USER_SQLU1_2001_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and several role
+    // names and a group on component
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
+        .withGroupIds(GROUP_SQL_1_ID)
+        .build());
+    assertThat(users, notNullValue());
+    assertThat(users, empty());
+  }
+
+  @Test
+  public void componentIdAndResourceIdAndMatchingAllRoleNamesCriteria() throws AdminException {
+    // searching for kmelia instance, a node id with inherited rights and right role name returns
+    // no user
+    SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ROOT_FOLDER_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertThat(users, notNullValue());
+    assertThat(users, empty());
+    // searching for kmelia instance and a sub sub node id with specific rights and an empty role
+    // name returns no user
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and an empty role
+    // and a writer group id name returns no user
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_SP_2_ID)
+        .build());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and an empty role
+    // and a writer group id name returns no user
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
+        .build());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and a right role
+    // name
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID, USER_SQLU1_2001_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and a right role
+    // and a writer group id name
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(WRITER.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(GROUP_SP_2_ID)
+        .build());
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and a right role
+    // and a writer group id name
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(WRITER.getName())
+        .matchingAllRoleNames()
+        .withGroupIds(UserDetailsSearchCriteria.ANY_GROUPS)
+        .build());
+    assertSortedUserIds(users, USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID);
+    // searching for kmelia instance and a sub sub node id with specific rights and several role
+    // names
+    users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
+        .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
+        .matchingAllRoleNames()
+        .build());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
     // searching for kmelia instance and a sub sub node id with specific rights and several role
     // names and a group on component
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
@@ -1143,6 +1410,22 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withUserIds(USER_SPU2_1002_ID_BLOCKED, USER_SQLU4_2004_ID_VALID, USER_SPU13_1013_ID_VALID)
         .build());
     assertSortedUserIds(users, USER_SPU2_1002_ID_BLOCKED, USER_SQLU4_2004_ID_VALID);
+  }
+
+  @Test
+  public void componentIdAndMatchingAllRoleNameAndUserIdCriteria() throws AdminException {
+    // searching for blog instance and several right role names (which MUST be all matched by
+    // users) and users ids, in that case REMOVED users are not taken into account because when
+    // searching on instance id, the filtering is done by applying filters on user and group
+    // rights which are using services filtering on DELETED and REMOVED users.
+    // (BE AWARE of that users of groups are also retrieved)
+    SilverpeasList<UserDetail> users = admin.searchUsers(newUserSearchCriteriaBuilder()
+        .withComponentId(INSTANCE_SPACE_A_LEVEL_2_BLOG_ID)
+        .withRoleNames(SilverpeasRole.ADMIN.getName(), WRITER.getName())
+        .matchingAllRoleNames()
+        .withUserIds(USER_SPU2_1002_ID_BLOCKED, USER_SQLU4_2004_ID_VALID, USER_SPU13_1013_ID_VALID)
+        .build());
+    assertSortedUserIds(users, USER_SPU2_1002_ID_BLOCKED);
   }
 
   @Test
@@ -1175,7 +1458,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users, Stream.concat(Stream.of(
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID, USER_SPU6_1006_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -1197,7 +1480,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users, Stream.concat(Stream.of(
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID, USER_SPU6_1006_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -1220,7 +1503,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .build());
     assertSortedUserIds(users, Stream.concat(Stream.of(
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU13_1013_ID_VALID,
+        USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID, USER_SPU5_1005_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,
@@ -1257,15 +1540,14 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withRoleNames(SilverpeasRole.ADMIN.getName())
         .build());
-    assertThat(users, notNullValue());
-    assertThat(users, empty());
+    assertSortedUserIds(users, USER_SPU16_1016_ID_VALID);
     users = admin.searchUsers(newUserSearchCriteriaBuilder()
         .withComponentId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_ID)
         .withNodeId(INSTANCE_SPACE_A_LEVEL_1_KMELIA_FOLDER_11_ID)
         .withRoleNames(SilverpeasRole.WRITER.getName())
         .build());
     assertSortedUserIds(users, Stream.concat(Stream.of(
-        USER_SPU13_1013_ID_VALID, USER_SQLU1_2001_ID_VALID), userIds.stream())
+        USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID, USER_SQLU1_2001_ID_VALID), userIds.stream())
         .toArray(String[]::new)
     );
   }
@@ -1276,6 +1558,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     List<String> userIds = admin.searchUserIdsByProfile(asList("320", "32"), false);
     assertThat(userIds, containsInAnyOrder(
         USER_SPU2_1002_ID_BLOCKED,
+        USER_SPU13_1013_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU4_1004_ID_VALID,
         USER_SQLU11_2011_ID_VALID,
         USER_SQLU4_2004_ID_VALID, USER_SQLU9_2009_ID_VALID
@@ -1283,7 +1566,7 @@ public class AdministrationSearchUserIT extends AbstractAdministrationTest {
     userIds = admin.searchUserIdsByProfile(asList("320", "32", "310", "31"), false);
     assertThat(userIds, containsInAnyOrder(
         USER_ADM_0_ID_VALID, USER_SPU1_1001_ID_VALID,
-        USER_SPU10_1010_ID_VALID, USER_SPU14_1014_ID_VALID,
+        USER_SPU10_1010_ID_VALID, USER_SPU13_1013_ID_VALID, USER_SPU14_1014_ID_VALID, USER_SPU16_1016_ID_VALID,
         USER_SPU2_1002_ID_BLOCKED,
         USER_SPU4_1004_ID_VALID,
         USER_SPU7_1007_ID_DEACTIVATED,

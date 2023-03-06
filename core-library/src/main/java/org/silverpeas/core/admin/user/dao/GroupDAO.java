@@ -41,14 +41,18 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -67,6 +71,7 @@ public class GroupDAO {
       "DISTINCT({0}id),{0}specificId,{0}domainId,{0}superGroupId,{0}name,{0}description," +
           "{0}synchroRule,{0}creationDate,{0}saveDate,{0}state,{0}stateSaveDate";
   private static final String GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, EMPTY);
+  private static final String SEARCH_GROUP_COLUMNS = format(GROUP_COLUMNS_PATTERN, "g.");
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
   private static final String GROUP_ID_CRITERION = "groupId = ?";
   private static final String STATE_CRITERION = "state = ?";
@@ -189,7 +194,7 @@ public class GroupDAO {
         .from(GROUP_TABLE)
         .where(STATE_CRITERION, GroupState.REMOVED);
     final List<Integer> requestedDomainIds =
-        Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
+        Stream.of(domainIds).map(Integer::parseInt).collect(toList());
     if (!requestedDomainIds.isEmpty()) {
       query.and(DOMAIN_ID).in(requestedDomainIds);
     }
@@ -388,9 +393,27 @@ public class GroupDAO {
    */
   public ListSlice<GroupDetail> getGroupsByCriteria(Connection connection,
       GroupsSearchCriteria criteria) throws SQLException {
-    return new SqlGroupSelectorByCriteriaBuilder(GROUP_COLUMNS)
+    return new SqlGroupSelectorByCriteriaBuilder(SEARCH_GROUP_COLUMNS)
         .build(criteria)
         .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  public Map<String, Set<String>> getRolesByGroupsMappingWith(Connection connection,
+      final List<String> groupIds, final String[] profileIds) throws SQLException {
+    final Map<String, Set<String>> rolesByGroup = new HashMap<>(groupIds.size());
+    JdbcSqlQuery.executeBySplittingOn(groupIds, (idBatch, ignore) ->
+        JdbcSqlQuery.createSelect("urgr.groupid, ur.rolename")
+            .from(USER_ROLE_GROUPS_TABLE + " urgr")
+            .join("st_userrole ur").on("ur.id = urgr.userroleid")
+            .where("urgr.groupid").in(idBatch.stream().map(Integer::parseInt).collect(toList()))
+            .and("ur.id").in(Stream.of(profileIds).map(Integer::parseInt).collect(toList()))
+            .executeWith(connection, r -> {
+              final String groupId = Integer.toString(r.getInt(1));
+              final Set<String> roles = rolesByGroup.computeIfAbsent(groupId, k -> new HashSet<>());
+              roles.add(r.getString(2));
+              return null;
+            }));
+    return rolesByGroup;
   }
 
   public GroupDetail getGroupBySpecificId(final Connection connection, final String domainId,
@@ -537,7 +560,7 @@ public class GroupDAO {
         .where(GROUP_ROLE_GROUPS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
         .and(GROUP_TABLE + ".id = " + GROUP_ROLE_TABLE + GROUP_ID_ATTR)
         .and(GROUP_ROLE_GROUPS_TABLE + GROUP_ID_ATTR)
-        .in(groupIds.stream().map(Integer::parseInt).collect(Collectors.toList()))
+        .in(groupIds.stream().map(Integer::parseInt).collect(toList()))
         .and(STATE).notIn(GroupState.REMOVED)
         .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }

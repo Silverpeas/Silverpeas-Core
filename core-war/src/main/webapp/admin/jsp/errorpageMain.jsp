@@ -50,6 +50,9 @@ if (response.isCommitted() == false) {
 <%@ include file="import.jsp" %>
 
 <%
+if (response.getStatus() < 400) {
+  response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+};
 Throwable exception = (Throwable) request.getAttribute("javax.servlet.jsp.jspException");
 Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
 String exStr = HomePageUtil.getMessageToDisplay(exception , language);

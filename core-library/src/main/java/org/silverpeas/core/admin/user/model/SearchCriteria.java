@@ -116,6 +116,15 @@ public interface SearchCriteria {
   SearchCriteria onRoleNames(String... roleNames);
 
   /**
+   * Specifies that each result item MUST match all specified roles if any.
+   * <p>
+   *   If no role criteria is set, this criteria has no effect.
+   * </p>
+   * @return the criteria enriched with a criterion on the role name clause.
+   */
+  SearchCriteria matchingAllRoleNames();
+
+  /**
    * Appends a criteria on the user profiles for which the search must be constrained to. The
    * properties of the resources to fetch have to satisfy this criterion.
    * This criterion replaces any previous criterion on the user profiles.
