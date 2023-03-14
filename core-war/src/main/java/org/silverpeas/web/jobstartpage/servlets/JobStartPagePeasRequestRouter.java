@@ -835,12 +835,18 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     if (desc == null) {
       desc = "";
     }
-    String pPublic = request.getParameter("PublicComponent");
+    if (JobStartPagePeasSettings.isPublicParameterEnable) {
+      String pPublic = request.getParameter("PublicComponent");
+      componentInst.setPublic(StringUtil.isDefined(pPublic));
+    } else {
+      WAComponent.getByInstanceId(componentInst.getId())
+          .map(WAComponent::isPublicByDefault)
+          .ifPresent(componentInst::setPublic);
+    }
     String pHidden = request.getParameter("HiddenComponent");
     String pInheritance = request.getParameter("InheritanceBlocked");
     componentInst.setLabel(name);
     componentInst.setDescription(desc);
-    componentInst.setPublic(StringUtil.isDefined(pPublic));
     componentInst.setHidden(StringUtil.isDefined(pHidden));
     if (StringUtil.isDefined(pInheritance)) {
       componentInst.setInheritanceBlocked(StringUtil.getBooleanValue(pInheritance));
