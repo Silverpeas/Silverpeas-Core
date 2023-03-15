@@ -24,6 +24,7 @@
 package org.silverpeas.web.personalization.servlets;
 
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -41,6 +42,7 @@ public class PersoPeasRequestRouter extends
   private static final long serialVersionUID = 1L;
   private static final String VALIDATION_MESSAGE = "validationMessage";
   private static final String VALIDATION_UPDATE_KEY = "GML.validation.update";
+  private static final String VALIDATION_ADD_KEY = "GML.validation.create";
 
   @Override
   public PersonalizationSessionController createComponentSessionController(
@@ -70,12 +72,12 @@ public class PersoPeasRequestRouter extends
   @Override
   public String getDestination(final String function,
       final PersonalizationSessionController personalizationScc, final HttpRequest request) {
-    String destination;
+    String destination = "";
     try {
       if (function.startsWith("SaveChannels")) {
         saveChannels(personalizationScc, request);
         destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
-      } else if (function.startsWith("ParametrizeNotification")){
+      } else if (function.startsWith("ParametrizeNotification")) {
         parametrizeNotification(personalizationScc, request);
         destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
       } else {
@@ -89,6 +91,33 @@ public class PersoPeasRequestRouter extends
 
     return destination;
   }
+
+  private void addChannel(final PersonalizationSessionController personalizationScc,
+      final HttpServletRequest request) throws PeasCoreException {
+
+    String id = request.getParameter("id");
+    final String notifName = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName"));
+    final String channelId = request.getParameter("channelId");
+    final String address = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
+    personalizationScc.saveNotifAddress(id, notifName, channelId, address, null) ;
+    request.setAttribute(VALIDATION_MESSAGE,
+        personalizationScc.getMultilang().getString(VALIDATION_ADD_KEY));
+    request.setAttribute("Action","AddChannel");
+  }
+
+  private void updateChannel(final PersonalizationSessionController personalizationScc,
+      final HttpServletRequest request) throws PeasCoreException {
+
+    String id = request.getParameter("id");
+    final String notifName = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName"));
+    final String channelId = request.getParameter("channelId");
+    final String address = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
+    personalizationScc.saveNotifAddress(id, notifName, channelId, address, null) ;
+    request.setAttribute(VALIDATION_MESSAGE,
+        personalizationScc.getMultilang().getString(VALIDATION_UPDATE_KEY));
+    request.setAttribute("Action","UpdateChannel");
+  }
+
 
   private void saveChannels(final PersonalizationSessionController personalizationScc,
       final HttpServletRequest request) throws PeasCoreException {
@@ -132,6 +161,14 @@ public class PersoPeasRequestRouter extends
       case Delete:
         personalizationScc.deleteNotifAddress(id);
         request.setAttribute(VALIDATION_MESSAGE, messages.getString("GML.validation.delete"));
+        break;
+      case Add:
+        addChannel(personalizationScc, request);
+        request.setAttribute(VALIDATION_MESSAGE, messages.getString(VALIDATION_ADD_KEY));
+        break;
+      case Update:
+        updateChannel(personalizationScc, request);
+        request.setAttribute(VALIDATION_MESSAGE, messages.getString(VALIDATION_UPDATE_KEY));
         break;
       default:
         break;

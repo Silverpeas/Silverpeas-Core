@@ -79,7 +79,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   }
 
   private static final String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID = SELECT
-      + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress where userId=?";
+      + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress where userId=? order by id asc";
 
   /**
    * Returns all the rows.
