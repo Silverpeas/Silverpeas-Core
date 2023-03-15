@@ -401,7 +401,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         selected = "";
       }
       valret.append("<option value=\"\" ").append(selected).append(">").append(
-          WebEncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
+          WebEncodeHelper.javaStringToHtmlString(selectText)).append("</option>");
     }
     if (bSorted) {
       Properties[] theList = ar.toArray(new Properties[ar.size()]);
@@ -421,7 +421,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         }
         valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").append(
             selected).append(">").append(WebEncodeHelper.javaStringToHtmlString(
-            elmt.getProperty("name"))).append("</option>\n");
+            elmt.getProperty("name"))).append("</option>");
       }
     }
     return valret.toString();

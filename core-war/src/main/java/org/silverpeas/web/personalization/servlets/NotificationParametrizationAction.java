@@ -48,7 +48,15 @@ public enum NotificationParametrizationAction {
   /**
    * To view the different user notification parameters.
    */
-  View;
+  View,
+  /**
+   * To add a different user notification channel.
+   */
+  Add,
+  /**
+   * To update a notification channel.
+   */
+  Update;
 
   public static NotificationParametrizationAction from(String action) {
     String actionToConvert = action;
