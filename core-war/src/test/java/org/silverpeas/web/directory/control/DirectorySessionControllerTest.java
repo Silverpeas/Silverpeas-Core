@@ -42,8 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -276,8 +275,8 @@ class DirectorySessionControllerTest {
   }
 
   @Test
-  void testGetAllUsersBySpace() {
-    List<User> usersOfSpace = new ArrayList<>();
+  void getAllUsersOfSpaceTree() {
+    List<User> usersOfSpaceByItsInstances = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
     user1.setLastName("durand");
@@ -296,10 +295,10 @@ class DirectorySessionControllerTest {
     user3.setFirstName("nabil");
     user3.seteMail("nabil@gmail.com");
     user3.setLogin("nabil");
-    usersOfSpace.add(user1);
-    usersOfSpace.add(user2);
-    usersOfSpace.add(user3);
-    DirectoryItemList usersOfSpaceExpectedItems = new DirectoryItemList(usersOfSpace);
+    usersOfSpaceByItsInstances.add(user1);
+    usersOfSpaceByItsInstances.add(user2);
+    usersOfSpaceByItsInstances.add(user3);
+    DirectoryItemList usersOfSpaceExpectedItems = new DirectoryItemList(usersOfSpaceByItsInstances);
 
     MainSessionController controller = mock(MainSessionController.class);
     when(controller.getCurrentUserDetail()).thenReturn(user1);
@@ -320,7 +319,7 @@ class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    DirectoryItemList usersOfSpaceCalledItems = directoryDSC.getAllUsersBySpace("0");
+    DirectoryItemList usersOfSpaceCalledItems = directoryDSC.getAllUsersOfSpaceTree("0");
     // All users By domain
     assertNotNull(usersOfSpaceCalledItems);
     assertEquals(3, usersOfSpaceCalledItems.size());
@@ -351,6 +350,38 @@ class DirectorySessionControllerTest {
     assertEquals(usersOfSpaceExpectedItems.get(0), usersOfSpaceCalledItems.get(0));
     assertEquals(usersOfSpaceExpectedItems.get(1), usersOfSpaceCalledItems.get(1));
     assertEquals(usersOfSpaceExpectedItems.get(2), usersOfSpaceCalledItems.get(2));
+  }
+
+  @Test
+  void getOnlyUsersOfSpace() {
+    UserDetail user1 = new UserDetail();
+    user1.setId("1");
+    user1.setLastName("durand");
+    user1.setFirstName("julien");
+    user1.seteMail("julien.durand@gmail.com");
+    user1.setLogin("julin");
+
+    MainSessionController controller = mock(MainSessionController.class);
+    when(controller.getCurrentUserDetail()).thenReturn(user1);
+    String[] componentIds = {"kmelia12"};
+    when(mockOrganizationController.getAllComponentIdsRecur("0")).thenReturn(componentIds);
+
+    UserDetail[] component1 = {user1};
+    Map<String, UserDetail[]> components = new HashMap<>();
+    components.put("kmelia12", component1);
+    when(mockOrganizationController.getAllUsers("kmelia12")).thenReturn(components.get("kmelia12"));
+    when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
+        .thenReturn(new String[0]);
+
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("directory12");
+    DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
+    final DirectoryItemList allUsersOfSpaceTree = directoryDSC.getAllUsersOfSpaceTree("0");
+    assertNotNull(allUsersOfSpaceTree);
+    assertFalse(allUsersOfSpaceTree.isEmpty());
+    DirectoryItemList usersOfSpaceCalledItems = directoryDSC.getOnlyUsersOfSpace("0");
+    assertNotNull(usersOfSpaceCalledItems);
+    assertTrue(usersOfSpaceCalledItems.isEmpty());
   }
 
   @Test

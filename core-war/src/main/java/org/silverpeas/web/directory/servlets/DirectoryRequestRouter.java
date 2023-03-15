@@ -49,10 +49,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.StringUtil.split;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.getPaginationPageFrom;
 
@@ -113,7 +113,14 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         if (CollectionUtil.isNotEmpty(groupIds)) {
           users = directorySC.getAllUsersByGroups(groupIds, componentId);
         } else if (StringUtil.isDefined(spaceId)) {
-          users = directorySC.getAllUsersBySpace(spaceId);
+          final boolean inWholeSpaceTree = ofNullable(request.getParameter("InWholeSpaceTree"))
+              .map(StringUtil::getBooleanValue)
+              .orElse(true);
+          if (inWholeSpaceTree) {
+            users = directorySC.getAllUsersOfSpaceTree(spaceId);
+          } else {
+            users = directorySC.getOnlyUsersOfSpace(spaceId);
+          }
         } else if (!lDomainIds.isEmpty()) {
           directorySC.initSources(true);
           users = directorySC.getAllUsersByDomains();
@@ -160,7 +167,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         if (query != null && !query.isEmpty()) {
           if (globalSearch) {
             // case of direct search
-            Optional.ofNullable(request.getParameter("DoNotUseContacts"))
+            ofNullable(request.getParameter("DoNotUseContacts"))
                 .filter(StringUtil::isDefined)
                 .map(StringUtil::getBooleanValue)
                 .ifPresent(directorySC::setDoNotUseContacts);

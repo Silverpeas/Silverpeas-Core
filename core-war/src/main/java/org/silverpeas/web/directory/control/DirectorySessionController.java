@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -103,6 +104,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
@@ -452,27 +454,59 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * return All users of Space who has Id="spaceId"
-   * @param spaceId:the ID of Space
-   *
+   * Gets all users specified at space level roles of given space and of component instances of
+   * space and its sub-spaces.
+   * @param spaceId the unique identifier of a space.
    */
-  public DirectoryItemList getAllUsersBySpace(String spaceId) {
+  public DirectoryItemList getAllUsersOfSpaceTree(String spaceId) {
+    return getAllUsersBySpace(spaceId, true);
+  }
+
+  /**
+   * Gets all users specified at space level roles of given space without taking care of
+   * component instances of the space and its sub-spaces.
+   * @param spaceId the unique identifier of a space.
+   */
+  public DirectoryItemList getOnlyUsersOfSpace(String spaceId) {
+    return getAllUsersBySpace(spaceId, false);
+  }
+
+  /**
+   * Gets all users of space according to given parameters.
+   * @param spaceId the unique identifier of a space.
+   * @param inWholeSpaceTree true to also lookup roles of component instances of the
+   * space and its sub-spaces, false to take into account only roles at space level of the
+   * specified space.
+   */
+  private DirectoryItemList getAllUsersBySpace(String spaceId, final boolean inWholeSpaceTree) {
     resetDirectorySession();
     setCurrentDirectory(DIRECTORY_SPACE);
     currentSpace = getOrganisationController().getSpaceInstLightById(spaceId);
-    DirectoryItemList lus = new DirectoryItemList();
-    String[] componentIds = getOrganisationController().getAllComponentIdsRecur(spaceId);
-    for (String componentId : componentIds) {
-      mergeUsersIntoDirectoryItemList(getOrganisationController().getAllUsers(componentId), lus);
+    final DirectoryItemList items = new DirectoryItemList();
+    final User[] directSpaceUsers = Optional.of(spaceId)
+        .map(getOrganisationController()::getSpaceInstById)
+        .stream()
+        .flatMap(s -> s.getAllSpaceProfilesInst().stream())
+        .filter(not(SpaceProfileInst::isManager))
+        .flatMap(p -> Stream.concat(p.getAllUsers().stream().map(User::getById), p.getAllGroups()
+            .stream()
+            .flatMap(g -> Stream.of(getOrganisationController().getAllUsersOfGroup(g)))))
+        .distinct()
+        .toArray(User[]::new);
+    mergeUsersIntoDirectoryItemList(directSpaceUsers, items);
+    if (inWholeSpaceTree) {
+      String[] componentIds = getOrganisationController().getAllComponentIdsRecur(spaceId);
+      for (String componentId : componentIds) {
+        mergeUsersIntoDirectoryItemList(getOrganisationController().getAllUsers(componentId), items);
+      }
     }
 
-    lastAllListUsersCalled = lus;
+    lastAllListUsersCalled = items;
     lastListUsersCalled = lastAllListUsersCalled;
 
     // Sorting list before returning it
     sort(getCurrentSort());
     return lastAllListUsersCalled;
-
   }
 
   /**
