@@ -80,12 +80,12 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
   @Transactional
   @Override
   public void subscribe(final Collection<? extends Subscription> subscriptions) {
-
     Connection con = null;
     try {
       con = getConnection();
       for (Subscription subscription : subscriptions) {
         if (!subscriptionDao.existsSubscription(con, subscription)) {
+          subscription.getSubscriber().checkValid();
           subscriptionDao.add(con, subscription);
         }
       }

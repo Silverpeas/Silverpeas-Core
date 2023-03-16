@@ -35,6 +35,7 @@ import org.silverpeas.core.subscription.service.DefaultResourceSubscriptionServi
 import org.silverpeas.core.subscription.service.PKSubscription;
 import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -157,5 +158,24 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
         final TestForumMessageSubscriptionResource resource, final String creatorId) {
       super(subscriber, resource, creatorId);
     }
+  }
+
+  protected static SubscriptionSubscriber toValidSubscriber(final SubscriptionSubscriber subscriber) {
+    return new SubscriptionSubscriber() {
+      @Override
+      public String getId() {
+        return subscriber.getId();
+      }
+
+      @Override
+      public SubscriberType getType() {
+        return subscriber.getType();
+      }
+
+      @Override
+      public void checkValid() throws SubscribeRuntimeException {
+        // valid
+      }
+    };
   }
 }

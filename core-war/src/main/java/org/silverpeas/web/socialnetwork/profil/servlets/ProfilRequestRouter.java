@@ -52,6 +52,9 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
   @Override
   public String getDestination(String function, ProfilSessionController profileSC,
       HttpRequest request) {
+    if (profileSC.getUserDetail().isAnonymous() || profileSC.getUserDetail().isAccessGuest()) {
+      throwHttpForbiddenError("anonymous or guest user cannot access profil features");
+    }
     String destination = "#";
     String userId = request.getParameter("userId");
     String context = request.getScheme() + "://" + request.getServerName() + ":" + request.

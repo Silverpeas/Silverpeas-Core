@@ -179,10 +179,7 @@
   <c:set var="aliasContext" value="${param.Alias}" />
   <c:set var="useXMLForm" value="${silfn:isDefined(xmlForm)}" />
   <c:set var="indexIt" value="${silfn:booleanValue(param.IndexIt)}" />
-  <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
-  <c:if test="${isAccessGuest}">
-    <c:set var="showMenuNotif" value="false" />
-  </c:if>
+  <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif) and not isAccessGuest}" />
   <c:set var="displayUniversalLinks"><%=URLUtil.displayUniversalLinks()%></c:set>
 
   <c:set var="domIdSuffix" value="${silfn:formatForDomId(param.Id)}"/>

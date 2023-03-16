@@ -24,6 +24,7 @@
 package org.silverpeas.core.subscription;
 
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
@@ -44,11 +45,15 @@ public interface SubscriptionService extends Serializable {
   void subscribe(Subscription subscription);
 
   /**
-   * Register given subscriptions. The informations of creator identifier and creation date are
+   * Register given subscriptions. The information of creator identifier and creation date are
    * ignored. If a subscription already exists, nothing is registered for it.
+   * <p>
+   *   IMPORTANT: runtime error will be thrown if subscription is created with Anonymous or Guest user
+   * </P>
    * @param subscriptions
+   * @throws SubscribeRuntimeException if attempting to create subscription with Anonymous or Guest user.
    */
-  void subscribe(Collection<? extends Subscription> subscriptions);
+  void subscribe(Collection<? extends Subscription> subscriptions) throws SubscribeRuntimeException;
 
   /**
    * Unregister a subscription.

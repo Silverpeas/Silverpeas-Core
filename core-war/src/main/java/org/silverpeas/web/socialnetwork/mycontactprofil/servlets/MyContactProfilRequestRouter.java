@@ -74,6 +74,9 @@ public class MyContactProfilRequestRouter
   @Override
   public String getDestination(String function, MyContactProfilSessionController sc,
       HttpRequest request) {
+    if (sc.getUserDetail().isAnonymous() || sc.getUserDetail().isAccessGuest()) {
+      throwHttpForbiddenError("anonymous or guest user cannot access my contact features");
+    }
     String destination = "#";
     String userId = request.getParameter("userId");
     if ("Infos".equalsIgnoreCase(function)) {

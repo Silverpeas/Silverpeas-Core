@@ -24,6 +24,7 @@
 package org.silverpeas.core.subscription;
 
 import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
 
 /**
  * User: Yohann Chastagnier
@@ -42,4 +43,10 @@ public interface SubscriptionSubscriber {
    * @return the subscriber type.
    */
   SubscriberType getType();
+
+  /**
+   * This method checks the subscriber integrity.
+   * @throws SubscribeRuntimeException if not valid.
+   */
+  void checkValid() throws SubscribeRuntimeException;
 }

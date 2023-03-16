@@ -69,6 +69,11 @@ public class SubscriptionServiceIT extends AbstractCommonSubscriptionIntegration
       public SubscriberType getType() {
         return SubscriberType.UNKNOWN;
       }
+
+      @Override
+      public void checkValid() throws SubscribeRuntimeException {
+        // valid
+      }
     }, nodePk));
   }
 
@@ -86,11 +91,13 @@ public class SubscriptionServiceIT extends AbstractCommonSubscriptionIntegration
         getBySubscriberAndResource(subscription.getSubscriber(), subscription.getResource());
     assertThat(result, hasSize(0));
 
-    subscriptionService.subscribe(subscription);
-    subscriptionService.subscribe(subscription);
-    subscriptionService.subscribe(subscription);
-    subscriptionService.subscribe(subscription);
-    subscriptionService.subscribe(subscription);
+    final SubscriptionSubscriber validSubscriber = toValidSubscriber(subscription.getSubscriber());
+    Subscription validSubscription = new NodeSubscription(validSubscriber, nodePk);
+    subscriptionService.subscribe(validSubscription);
+    subscriptionService.subscribe(validSubscription);
+    subscriptionService.subscribe(validSubscription);
+    subscriptionService.subscribe(validSubscription);
+    subscriptionService.subscribe(validSubscription);
 
     // Verifying that subscription exists
     result = subscriptionService.

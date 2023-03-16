@@ -1017,6 +1017,24 @@ class SimpleDocumentAccessControllerTest {
         .verifyCallOfComponentAccessControllerGetUserRoles();
     assertIsUserAuthorized(false);
 
+    // User has USER role on component but it is guest
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.USER)
+        .onGEDComponent()
+        .userHasGuestAccess()
+        .documentAttachedToPublication()
+        .publicationOnRootDirectory()
+        .withRightsActivatedOnDirectory()
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.SHARING)
+        .enableFileSharingRole(SilverpeasRole.READER);
+    testContext.results()
+        .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfPublicationBmGetMainLocation()
+        .verifyCallOfComponentAccessControllerGetUserRoles();
+    assertIsUserAuthorized(false);
+
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
@@ -1870,6 +1888,7 @@ class SimpleDocumentAccessControllerTest {
 
   private class TestContext {
     private boolean userIsAnonymous;
+    private boolean userHasGuestAccess;
     private boolean isGED;
     private boolean isCoWriting;
     private SilverpeasRole fileSharingRole;
@@ -1894,6 +1913,7 @@ class SimpleDocumentAccessControllerTest {
           new SimpleDocumentAccessController(componentAccessController, nodeAccessController,
               publicationAccessController);
       userIsAnonymous = false;
+      userHasGuestAccess = false;
       isGED = false;
       isCoWriting = false;
       fileSharingRole = null;
@@ -1911,6 +1931,11 @@ class SimpleDocumentAccessControllerTest {
 
     public TestContext userIsAnonymous() {
       userIsAnonymous = true;
+      return this;
+    }
+
+    public TestContext userHasGuestAccess() {
+      userHasGuestAccess = true;
       return this;
     }
 
@@ -1985,6 +2010,7 @@ class SimpleDocumentAccessControllerTest {
     public void setup() {
       when(user.getId()).thenReturn(USER_ID);
       when(user.isAnonymous()).thenReturn(userIsAnonymous);
+      when(user.isAccessGuest()).thenReturn(userHasGuestAccess);
       when(componentAccessController.getUserRoles(anyString(), anyString(),
           any(AccessControlContext.class))).then(new Returns(componentUserRoles));
       when(componentAccessController.isUserAuthorized(any(EnumSet.class))).then(

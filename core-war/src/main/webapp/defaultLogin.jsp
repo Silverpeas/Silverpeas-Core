@@ -65,7 +65,7 @@
       if (endstr === -1) {
         endstr = document.cookie.length;
       }
-      return unescape(document.cookie.substring(offset, endstr));
+      return decodeURIComponent(document.cookie.substring(offset, endstr));
     }
 
     function GetCookie(name) {

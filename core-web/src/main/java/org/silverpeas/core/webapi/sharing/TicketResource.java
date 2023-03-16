@@ -119,6 +119,9 @@ public class TicketResource extends RESTWebService {
     this.componentId = componentId;
     UserPrivilegeValidation validation = UserPrivilegeValidation.get();
     validateUserAuthorization(validation);
+    if (getUser().isAnonymous() || getUser().isAccessGuest()) {
+      throw new WebApplicationException("anonymous or guest user not allowed", Status.FORBIDDEN);
+    }
   }
 
   private SharingTicketService getFileSharingService() {

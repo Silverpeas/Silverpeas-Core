@@ -178,7 +178,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
                 .ifPresent(a -> {
           final User user = User.getById(userId);
           final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-          authorized.set(!user.isAnonymous() && componentDataManager.isPublicationSharingEnabledForRole(instanceId, safeHighestUserRole));
+          authorized.set(!user.isAnonymous() && !user.isAccessGuest() && componentDataManager.isPublicationSharingEnabledForRole(instanceId, safeHighestUserRole));
         });
       // Verifying persist actions
       authorized.filter(a -> a && isPersistActionFrom(operations))

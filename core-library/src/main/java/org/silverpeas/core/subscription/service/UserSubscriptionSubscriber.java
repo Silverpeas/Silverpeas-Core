@@ -23,7 +23,12 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.util.StringUtil;
+
+import static java.text.MessageFormat.format;
+import static java.util.Optional.ofNullable;
 
 /**
  * User: Yohann Chastagnier
@@ -46,5 +51,28 @@ public class UserSubscriptionSubscriber extends AbstractSubscriptionSubscriber {
    */
   protected UserSubscriptionSubscriber(final String id) {
     super(id, SubscriberType.USER);
+  }
+
+  /**
+   * This method checks the user subscriber integrity:
+   * <ul>
+   *   <li>user identifier MUST be defined</li>
+   *   <li>user MUST exist</li>
+   *   <li>user MUST not be an anonymous one or a guest one</li>
+   * </ul>
+   * @throws SubscribeRuntimeException if not valid.
+   */
+  @Override
+  public void checkValid() throws SubscribeRuntimeException {
+    if (StringUtil.isNotDefined(getId())) {
+      throw new SubscribeRuntimeException("user identifier is not specified");
+    } else {
+      final User user = ofNullable(User.getById(getId())).orElseThrow(
+          () -> new SubscribeRuntimeException(
+              format("user with identifier {0} not found", getId())));
+      if (user.isAnonymous() || user.isAccessGuest()) {
+        throw new SubscribeRuntimeException("user MUST not be an anonymous or a guest one");
+      }
+    }
   }
 }

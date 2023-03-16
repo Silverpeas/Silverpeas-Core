@@ -293,10 +293,11 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     itemsBuilder.append("</ul>").append(NEWLINE);
 
     StringBuilder configBuilder = new StringBuilder();
-    configBuilder.append(String.format(TEMPLATE, attachmentId, "0", !showMenuNotif));
+    int menuIndex = 0;
     if (sharingAllowed) {
-      configBuilder.append(String.format(TEMPLATE, attachmentId, "1", false));
+      configBuilder.append(String.format(TEMPLATE, attachmentId, menuIndex++, false));
     }
+    configBuilder.append(String.format(TEMPLATE, attachmentId, menuIndex, !showMenuNotif));
 
     return getMenu(attachmentId, itemsBuilder.toString(), configBuilder.toString());
   }

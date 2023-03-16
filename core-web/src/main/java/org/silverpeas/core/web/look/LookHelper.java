@@ -105,6 +105,14 @@ public abstract class LookHelper {
 
   public abstract boolean isAccessGuest();
 
+  public boolean isConnectedUsersDisplayEnabled() {
+    return !isAnonymousUser() && !isAccessGuest();
+  }
+
+  public boolean isDirectoryDisplayEnabled() {
+    return getSettings("directoryVisible", true) && !isAnonymousUser() && !isAccessGuest();
+  }
+
   public abstract boolean displayPDCInNavigationFrame();
 
   public abstract boolean displayPDCFrame();
@@ -175,5 +183,4 @@ public abstract class LookHelper {
   public abstract LayoutConfiguration getLayoutConfiguration();
 
   public abstract void initLayoutConfiguration();
-
 }

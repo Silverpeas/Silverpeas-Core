@@ -50,9 +50,6 @@
 
   List<TopItem> topItems = helper.getTopItems();
 
-  boolean isAnonymousAccess 	= helper.isAnonymousAccess();
-  boolean isAccessGuest 	= helper.isAccessGuest();
-
   String wallPaper = helper.getSpaceWallPaper();
   if (wallPaper == null) {
     wallPaper = gef.getIcon("wallPaper");
@@ -66,7 +63,11 @@
   boolean outilDisplayed = false;
 %>
 <c:set var="isAnonymousAccess" value="<%=helper.isAnonymousAccess()%>"/>
+<jsp:useBean id="isAnonymousAccess" type="java.lang.Boolean"/>
 <c:set var="isAccessGuest" value="<%=helper.isAccessGuest()%>"/>
+<jsp:useBean id="isAccessGuest" type="java.lang.Boolean"/>
+<c:set var="displayConnectedUsers" value="<%=helper.isConnectedUsersDisplayEnabled()%>"/>
+<jsp:useBean id="displayConnectedUsers" type="java.lang.Boolean"/>
 
 <c:set var="labelConnectedUser" value='<%=helper.getString("lookSilverpeasV5.connectedUser")%>'/>
 <c:set var="labelConnectedUsers" value='<%=helper.getString("lookSilverpeasV5.connectedUsers")%>'/>
@@ -122,6 +123,7 @@
     spWindow.loadLink(webContext + '/RMyProfil/jsp/Main');
   }
 
+  <c:if test="${displayConnectedUsers}">
   window.USERSESSION_PROMISE.then(function() {
     spUserSession.addEventListener('connectedUsersChanged', function(event) {
       var nb = event.detail.data.nb;
@@ -138,20 +140,25 @@
       }
     }, 'connectedUsersChanged@TopBar');
   });
-
+  </c:if>
 </script>
 <div id="topBar">
   <div id="backHome">
     <a href="javaScript:goToHome();"><img src="${icon_px}" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
   <viewTags:displayTicker/>
   <div id="outils">
-    <% if (!isAnonymousAccess && !isAccessGuest) { %>
-    <div class="avatarName">
-      <a href="javascript:goToMyProfile()" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
-    </div>
-    <% } %>
+    <c:if test="${not isAnonymousAccess}">
+      <div class="avatarName">
+        <c:if test="${isAccessGuest}">
+          <view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %>
+        </c:if>
+        <c:if test="${not isAccessGuest}">
+          <a href="javascript:goToMyProfile()" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
+        </c:if>
+      </div>
+    </c:if>
     <div class="userNav">
-      <c:if test="${not isAnonymousAccess && not isAccessGuest}">
+      <c:if test="${not isAnonymousAccess and not isAccessGuest}">
         <span id="connectedUsers" style="display:none">
           <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
           <span> | </span>
@@ -187,7 +194,7 @@
           });
         </script>
       </c:if>
-      <% if (!isAnonymousAccess && !isAccessGuest && helper.getSettings("directoryVisible", true)) {
+      <% if (helper.isDirectoryDisplayEnabled()) {
         outilDisplayed = true;
       %>
       <a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>

@@ -158,7 +158,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     if (authorized && sharingOperation) {
       final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
       final User user = User.getById(userId);
-      authorized = !user.isAnonymous() && componentDataManager.isFileSharingEnabledForRole(object.getInstanceId(), highestUserRole);
+      authorized = !user.isAnonymous() && !user.isAccessGuest() && componentDataManager.isFileSharingEnabledForRole(object.getInstanceId(), highestUserRole);
       isRoleVerificationRequired = false;
     }
 

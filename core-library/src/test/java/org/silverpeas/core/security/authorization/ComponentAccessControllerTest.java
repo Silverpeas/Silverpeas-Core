@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -34,9 +35,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.DefaultSilverpeasComponentDataProvider;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
 import org.silverpeas.core.admin.component.service.DefaultSilverpeasComponentInstanceProvider;
-import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -58,7 +57,8 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,6 +85,7 @@ class ComponentAccessControllerTest {
 
   private static final String USER_ID = "26";
   private static final String ANONYMOUS_ID = "26598";
+  private static final String GUEST_ID = "38895";
   private static final AccessControlOperation NONE = null;
   private static final AccessControlOperation A_PERSIST_ACTION = AccessControlOperation.PERSIST_ACTIONS.iterator().next();
 
@@ -119,6 +120,10 @@ class ComponentAccessControllerTest {
     anonymous.setId(ANONYMOUS_ID);
     when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(anonymous);
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(anonymous);
+    final UserDetail aGuest = new UserDetail();
+    aGuest.setId(GUEST_ID);
+    when(UserProvider.get().getUser(GUEST_ID)).thenReturn(aGuest);
+    when(controller.getUserDetail(GUEST_ID)).thenReturn(aGuest);
     final PersonalComponent personalComponent = mock(PersonalComponent.class);
     when(personalComponentRegistry.getPersonalComponent("personalComponent"))
         .then(new Returns(Optional.of(personalComponent)));
@@ -201,12 +206,15 @@ class ComponentAccessControllerTest {
   void testIsUserAuthorized() {
     final UserDetail user = controller.getUserDetail(USER_ID);
     final UserDetail anonymous = controller.getUserDetail(ANONYMOUS_ID);
+    final UserDetail aGuest = controller.getUserDetail(GUEST_ID);
 
     // USER DOES NOT EXIST
     when(UserProvider.get().getUser(USER_ID)).thenReturn(null);
     when(controller.getUserDetail(USER_ID)).thenReturn(null);
     when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(null);
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(null);
+    when(UserProvider.get().getUser(GUEST_ID)).thenReturn(null);
+    when(controller.getUserDetail(GUEST_ID)).thenReturn(null);
 
     initTest();
     boolean result = instance.isUserAuthorized(USER_ID, (String)null);
@@ -233,6 +241,8 @@ class ComponentAccessControllerTest {
     when(controller.getUserDetail(USER_ID)).thenReturn(user);
     when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(anonymous);
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(anonymous);
+    when(UserProvider.get().getUser(GUEST_ID)).thenReturn(aGuest);
+    when(controller.getUserDetail(GUEST_ID)).thenReturn(aGuest);
     setupUser(null);
 
     initTest();
@@ -663,6 +673,62 @@ class ComponentAccessControllerTest {
    * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
    */
   @Test
+  void testGetUserRolesAndGuestUserButExpiredAndUnknownContext() {
+    assertGetUserRolesAndIsUserAuthorizedForGuest(NONE);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  void testGetUserRolesAndGuestUserButExpiredAndPersistContext() {
+    assertGetUserRolesAndIsUserAuthorizedForGuest(A_PERSIST_ACTION);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  void testGetUserRolesAndGuestUserButExpiredAndDownloadContext() {
+    assertGetUserRolesAndIsUserAuthorizedForGuest(AccessControlOperation.DOWNLOAD);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  void testGetUserRolesAndGuestUserButExpiredAndSharingContext() {
+    assertGetUserRolesAndIsUserAuthorizedForGuest(AccessControlOperation.SHARING);
+  }
+
+  private void assertGetUserRolesAndIsUserAuthorizedForGuest(
+      final AccessControlOperation operation) {
+    setupGuestUser();
+    assertGetUserRolesAndIsUserAuthorized(null, operation, SilverpeasRole.ADMIN);
+    assertGetUserRolesAndIsUserAuthorized(toolId, operation, SilverpeasRole.ADMIN);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, operation);
+    if (isPersistOperation(operation)) {
+      assertGetUserRolesAndIsUserAuthorized(publicComponentId, operation);
+      assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, operation);
+      assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, operation);
+      assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, operation);
+    } else {
+      assertGetUserRolesAndIsUserAuthorized(publicComponentId, operation, SilverpeasRole.USER);
+      assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, operation, SilverpeasRole.USER);
+      assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, operation, SilverpeasRole.USER);
+      assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, operation, SilverpeasRole.USER);
+    }
+    assertGetUserRolesAndIsUserAuthorized(componentId, operation);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, operation);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, operation);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, operation);
+    assertGetUserRolesAndIsUserAuthorized(personalComponentId, operation);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
   void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndUnknownContext() {
     assertGetUserRolesAndIsUserAuthorizedForDeletedReader(NONE);
   }
@@ -830,7 +896,7 @@ class ComponentAccessControllerTest {
       expectedUserAuthorization = false;
     }
     boolean result = instance.isUserAuthorized(componentUserRole);
-    assertEquals("User authorized on " + instanceId, expectedUserAuthorization, result);
+    Assertions.assertEquals(expectedUserAuthorization, result, "User authorized on " + instanceId);
   }
 
   private void setupUser(SilverpeasRole componentRole) {
@@ -856,6 +922,12 @@ class ComponentAccessControllerTest {
 
   private void setupAnonymousUser() {
     final UserDetail user = controller.getUserDetail(ANONYMOUS_ID);
+    prepareUser(user, null, UserState.VALID);
+    user.setAccessLevel(UserAccessLevel.GUEST);
+  }
+
+  private void setupGuestUser() {
+    final UserDetail user = controller.getUserDetail(GUEST_ID);
     prepareUser(user, null, UserState.VALID);
     user.setAccessLevel(UserAccessLevel.GUEST);
   }

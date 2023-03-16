@@ -153,8 +153,8 @@ public class Comment implements SilverpeasContent {
 
   @Override
   public boolean canBeModifiedBy(final User user) {
-    return user.getId().equals(authorId) ||
+    return !user.isAnonymous() && !user.isAccessGuest() && (user.getId().equals(authorId) ||
         (settingBundle.getBoolean("AdminAllowedToUpdate", true) &&
-            user.isPlayingAdminRole(getComponentInstanceId()));
+            user.isPlayingAdminRole(getComponentInstanceId())));
   }
 }

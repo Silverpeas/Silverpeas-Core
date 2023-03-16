@@ -500,6 +500,7 @@ class PublicationAccessControllerFilterTest {
       clear();
       when(user.getId()).thenReturn(USER_ID);
       when(user.isAnonymous()).thenReturn(false);
+      when(user.isAccessGuest()).thenReturn(false);
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(singleton(SilverpeasRole.USER)));

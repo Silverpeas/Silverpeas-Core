@@ -23,34 +23,34 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
-import org.silverpeas.web.directory.servlets.ImageProfil;
-import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
-import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.security.encryption.cipher.CryptMD5;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.authentication.credentials.RegistrationSettings;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
+import org.silverpeas.web.directory.servlets.ImageProfil;
+import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -90,17 +90,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   @Override
   public String getDestination(String function, MyProfilSessionController myProfilSC,
       HttpRequest request) {
+    if (myProfilSC.getUserDetail().isAnonymous() || myProfilSC.getUserDetail().isAccessGuest()) {
+      throwHttpForbiddenError("anonymous or guest user cannot access my profil features");
+    }
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = valueOf(function);
     SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
-
-    final User currentRequester = User.getCurrentRequester();
-    if (currentRequester == null || currentRequester.isAnonymous() || currentRequester.isAccessGuest()) {
-      final String errMsg = "Anonymous user or guest user should not access my profil features";
-      SilverLogger.getLogger(this).error(errMsg);
-      throw forbidden(errMsg);
-    }
 
     try {
       if (route == Main || route == MyInfos) {

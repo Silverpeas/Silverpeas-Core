@@ -23,7 +23,12 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.util.StringUtil;
+
+import static java.text.MessageFormat.format;
+import static java.util.Optional.ofNullable;
 
 /**
  * User: Yohann Chastagnier
@@ -46,5 +51,30 @@ public class GroupSubscriptionSubscriber extends AbstractSubscriptionSubscriber 
    */
   protected GroupSubscriptionSubscriber(final String id) {
     super(id, SubscriberType.GROUP);
+  }
+
+  /**
+   * This method checks the group subscriber integrity:
+   * <ul>
+   *   <li>group identifier MUST be defined</li>
+   *   <li>group MUST exist</li>
+   *   <li>group MUST not contain an anonymous or a guest user</li>
+   * </ul>
+   * @throws SubscribeRuntimeException if not valid.
+   */
+  @Override
+  public void checkValid() throws SubscribeRuntimeException {
+    if (StringUtil.isNotDefined(getId())) {
+      throw new SubscribeRuntimeException("group identifier is not specified");
+    } else {
+      final Group user = ofNullable(Group.getById(getId())).orElseThrow(
+          () -> new SubscribeRuntimeException(
+              format("group with identifier {0} not found", getId())));
+      user.getAllUsers().forEach(u -> {
+        if (u.isAnonymous() || u.isAccessGuest()) {
+          throw new SubscribeRuntimeException("group contains an anonymous or a guest user");
+        }
+      });
+    }
   }
 }

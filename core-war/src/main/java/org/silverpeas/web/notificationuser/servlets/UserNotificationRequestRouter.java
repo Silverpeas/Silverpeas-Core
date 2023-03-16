@@ -75,6 +75,9 @@ public class UserNotificationRequestRouter
   @Override
   public String getDestination(String function, UserNotificationSessionController nuSC,
       HttpRequest request) {
+    if (nuSC.getUserDetail().isAnonymous() || nuSC.getUserDetail().isAccessGuest()) {
+      throwHttpForbiddenError("anonymous or guest user cannot access manual notification");
+    }
     String destination;
     try {
       request.setCharacterEncoding("UTF-8");

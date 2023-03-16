@@ -36,6 +36,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -78,6 +79,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   @Override
   public String getDestination(String function, DirectorySessionController directorySC,
       HttpRequest request) {
+    if (!LookHelper.getLookHelper(request.getSession(false)).isDirectoryDisplayEnabled()) {
+      throwHttpForbiddenError("anonymous or guest user cannot access directory");
+    }
     String destination = "";
 
     try {

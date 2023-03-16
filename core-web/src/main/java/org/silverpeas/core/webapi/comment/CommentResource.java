@@ -46,6 +46,8 @@ import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.List;
 
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+
 /**
  * A REST Web resource representing a given comment. It is a web service that provides access to
  * a comment referenced by its URL.
@@ -316,6 +318,9 @@ public class CommentResource extends RESTWebService {
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
+    if (getUser().isAnonymous() || getUser().isAccessGuest()) {
+      throw new WebApplicationException("anonymous or guest user cannot manage comments", FORBIDDEN);
+    }
     if (!theComment.getComponentId().equals(getComponentId()) ||
         !theComment.getResourceType().equals(
             getContentType()) || !theComment.getResourceId().equals(

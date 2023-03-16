@@ -131,7 +131,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     if (authorized && isSharingActionFrom(context.getOperations())) {
       final SilverpeasRole highestUserRole = highestRole.get();
       final User user = User.getById(userId);
-      authorized = !user.isAnonymous() &&
+      authorized = !user.isAnonymous() && !user.isAccessGuest() &&
           componentDataManager.isFolderSharingEnabledForRole(nodePK.getInstanceId(),
               highestUserRole);
     }

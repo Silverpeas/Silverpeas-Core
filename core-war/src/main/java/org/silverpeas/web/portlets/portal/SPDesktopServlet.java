@@ -79,6 +79,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -3241648887903159985L;
   private static final String ADMIN_ROLE = "admin";
+  private static final String SPACE_ID = "SpaceId";
   private ServletContext context;
   private static final Logger logger = Logger.getLogger("org.silverpeas.web.portlets.portal",
       "org.silverpeas.portlets.PCDLogMessages");
@@ -100,15 +101,18 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-
     String spaceHomePage = null;
-    String spaceId = request.getParameter("SpaceId");
+    String spaceId = request.getParameter(SPACE_ID);
+    final User currentRequester = User.getCurrentRequester();
     if (StringUtil.isNotDefined(spaceId) || SpaceInst.PERSONAL_SPACE_ID.equals(spaceId) ||
         SpaceInst.DEFAULT_SPACE_ID.equals(spaceId)) {
+      if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId) &&
+          (currentRequester.isAnonymous() || currentRequester.isAccessGuest())) {
+        throwHttpForbiddenError("anonymous or guest user cannot access personal space");
+      }
       request.getSession().removeAttribute("Silverpeas_Portlet_SpaceId");
     } else if (isDefined(spaceId)) {
-      if (!SpaceAccessControl.get()
-          .isUserAuthorized(User.getCurrentRequester().getId(), spaceId)) {
+      if (!SpaceAccessControl.get().isUserAuthorized(currentRequester.getId(), spaceId)) {
         spaceHomePage = "/admin/jsp/spaceOrCompAccessForbidden.jsp";
       } else {
         request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
@@ -521,7 +525,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
     String spaceId = getSpaceId(request);
 
     if (!isDefined(spaceId) || isSpaceBackOffice(request)) {
-      request.setAttribute("SpaceId", spaceId);
+      request.setAttribute(SPACE_ID, spaceId);
 
       if (isAnonymousUser()) {
         request.setAttribute("DisableMove", Boolean.TRUE);
@@ -544,7 +548,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private void setUserIdAndSpaceIdInRequest(String spaceId, String userId,
       final HttpServletRequest request) {
-    request.setAttribute("SpaceId", spaceId);
+    request.setAttribute(SPACE_ID, spaceId);
     request.setAttribute("UserId", userId);
   }
 
@@ -575,7 +579,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
     String spaceId = request.getParameter(WindowInvokerConstants.DRIVER_SPACEID);
 
     if (!isDefined(spaceId)) {
-      spaceId = request.getParameter("SpaceId");
+      spaceId = request.getParameter(SPACE_ID);
 
       if (isDefined(spaceId)) {
         if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {

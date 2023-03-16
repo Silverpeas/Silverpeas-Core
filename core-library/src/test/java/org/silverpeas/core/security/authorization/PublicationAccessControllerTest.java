@@ -350,6 +350,19 @@ class PublicationAccessControllerTest {
         .verifyCallOfPublicationBmGetDetail();
     assertIsUserAuthorized(false);
 
+    // User has USER role on component but it has guest access
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.USER)
+        .userHasGuestAccess()
+        .onOperationsOf(AccessControlOperation.SHARING)
+        .enablePublicationSharingRole(SilverpeasRole.READER);
+    testContext.results()
+        .verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetail();
+    assertIsUserAuthorized(false);
+
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
@@ -3483,6 +3496,38 @@ class PublicationAccessControllerTest {
     assertIsUserAuthorized(true);
 
     // User has USER role on component
+    // User has ADMIN role on directory But user is anonymous
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.ADMIN)
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING)
+        .enablePublicationSharingRole(SilverpeasRole.ADMIN)
+        .userIsAnonymous();
+    testContext.results()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfPublicationBmGetMainLocation()
+        .verifyCallOfNodeAccessControllerGetUserRoles();
+    assertIsUserAuthorized(false);
+
+    // User has USER role on component
+    // User has ADMIN role on directory But user has guest access
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.USER).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.ADMIN)
+        .userIsThePublicationAuthor().onOperationsOf(AccessControlOperation.SHARING)
+        .enablePublicationSharingRole(SilverpeasRole.ADMIN)
+        .userHasGuestAccess();
+    testContext.results()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfPublicationBmGetMainLocation()
+        .verifyCallOfNodeAccessControllerGetUserRoles();
+    assertIsUserAuthorized(false);
+
+    // User has USER role on component
     // User has USER role on directory
     // User is going to modify the publication
     testContext.clear();
@@ -3600,6 +3645,7 @@ class PublicationAccessControllerTest {
 
   private class TestContext {
     private boolean userIsAnonymous;
+    private boolean userHasGuestAccess;
     private boolean isGED;
     private boolean isCoWriting;
     private boolean isDraftVisibleWithCoWriting;
@@ -3627,6 +3673,7 @@ class PublicationAccessControllerTest {
       Mockito.reset(user, componentAccessController, organizationController, nodeAccessController, publicationService);
       testInstance = new PublicationAccessController4Test(componentAccessController, nodeAccessController);
       userIsAnonymous = false;
+      userHasGuestAccess = false;
       isGED = false;
       isCoWriting = false;
       isDraftVisibleWithCoWriting = false;
@@ -3652,6 +3699,12 @@ class PublicationAccessControllerTest {
 
     public TestContext userIsAnonymous() {
       userIsAnonymous = true;
+      userHasGuestAccess = true;
+      return this;
+    }
+
+    public TestContext userHasGuestAccess() {
+      userHasGuestAccess = true;
       return this;
     }
 
@@ -3781,6 +3834,7 @@ class PublicationAccessControllerTest {
     public void setup() {
       when(user.getId()).thenReturn(USER_ID);
       when(user.isAnonymous()).thenReturn(userIsAnonymous);
+      when(user.isAccessGuest()).thenReturn(userHasGuestAccess);
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(componentUserRoles));

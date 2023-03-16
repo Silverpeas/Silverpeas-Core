@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriberType;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/02/13
  */
-public class AbstractSubscriptionSubscriber implements SubscriptionSubscriber {
+public abstract class AbstractSubscriptionSubscriber implements SubscriptionSubscriber {
 
   private final String id;
   private final SubscriberType type;

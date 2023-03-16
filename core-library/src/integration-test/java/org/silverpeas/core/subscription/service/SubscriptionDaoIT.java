@@ -167,6 +167,11 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
       public SubscriberType getType() {
         return SubscriberType.UNKNOWN;
       }
+
+      @Override
+      public void checkValid() throws SubscribeRuntimeException {
+        // valid
+      }
     }, nodePk));
   }
 
