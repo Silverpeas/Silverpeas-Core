@@ -187,6 +187,7 @@
   padding: 0 0 10px 0;
   margin: 0;
   max-height: 300px;
+  overflow:auto;
 }
 
 .publication-basket-selector-container .basket-element {
