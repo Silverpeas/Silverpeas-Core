@@ -536,7 +536,7 @@
       if (__coordinates.length) {
         const boundingExtent = ol.extent.boundingExtent(__coordinates);
         const zoomToExtent = new ol.control.ZoomToExtent({
-          label : '\uF09F',
+          label : '\u2237',
           tipLabel : sp.i18n.get('m.v.i'),
           extent : boundingExtent
         });
@@ -698,6 +698,7 @@
     // overlay management
     const __overlay = new ol.Overlay({
       positioning : markers[0].getMarkerOverlay().getPositioning(),
+      autoPan : true,
       className : DEFAULT_OL_CLASS + 'ol-marker-group',
     });
     __map.addOverlay(__overlay);
