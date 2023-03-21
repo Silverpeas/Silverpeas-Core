@@ -31,11 +31,9 @@ import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.attachment.WebDavProtocol;
-import org.silverpeas.core.web.attachment.WebDavTokenProducer;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
+import org.silverpeas.jcr.webdav.WebDavAccessOpener;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -43,8 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
-
-import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
 
 /**
  * @author ehugonnet
@@ -57,7 +53,8 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
    * @param request servlet request
    * @param response servlet response
    */
-  protected void processRequest(final HttpServletRequest request, final HttpServletResponse response) {
+  protected void processRequest(final HttpServletRequest request,
+      final HttpServletResponse response) {
     UserDetail user = getMainSessionController(request).getCurrentUserDetail();
     String id = request.getParameter("id");
     String language = request.getParameter("lang");
@@ -65,26 +62,22 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
     SimpleDocument document =
         AttachmentService.get().searchDocumentById(new SimpleDocumentPK(id), language);
 
-      if (!document.isEdited() || !document.canBeModifiedBy(user) ||
-          (!document.isEditedBy(user) &&
-              (!wbe || !document.editableSimultaneously().orElse(false)))) {
-        throwHttpForbiddenError();
-      }
+    if (!document.isEdited() || !document.canBeModifiedBy(user) ||
+        (!document.isEditedBy(user) &&
+            (!wbe || !document.editableSimultaneously().orElse(false)))) {
+      throwHttpForbiddenError();
+    }
 
     try {
-      final Optional<String> wbeEditorUrl = Optional.of(wbe).filter(w -> w).flatMap(w -> WbeFileEdition.get().initializeWith(request, new WebdavWbeFile(document)));
+      final Optional<String> wbeEditorUrl = Optional.of(wbe).filter(w -> w)
+          .flatMap(w -> WbeFileEdition.get().initializeWith(request, new WebdavWbeFile(document)));
       if (wbeEditorUrl.isPresent()) {
-        final RequestDispatcher requestDispatcher = request.getRequestDispatcher(wbeEditorUrl.get());
+        final RequestDispatcher requestDispatcher =
+            request.getRequestDispatcher(wbeEditorUrl.get());
         requestDispatcher.forward(request, response);
       } else {
         String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();
-        String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
-        SilverpeasJcrWebdavContext silverpeasJcrWebdavContext = createWebdavContext(documentUrl, token);
-        response.setContentType("application/javascript");
-        response.setHeader("Content-Disposition", "inline; filename=launch.js");
-        String webDavUrl = silverpeasJcrWebdavContext.getWebDavUrl()
-            .replaceFirst("^http", WebDavProtocol.WEBDAV_SCHEME);
-        response.getWriter().append("window.location.href='").append(webDavUrl).append("';");
+        new WebDavAccessOpener().open(user, documentUrl, response);
       }
     } catch (ServletException | IOException e) {
       SilverLogger.getLogger(this).error(e);
@@ -94,7 +87,6 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
 
   /**
    * Handles the HTTP <code>GET</code> method.
-   *
    * @param request servlet request
    * @param response servlet response
    */
@@ -105,7 +97,6 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
 
   /**
    * Handles the HTTP <code>POST</code> method.
-   *
    * @param request servlet request
    * @param response servlet response
    */
@@ -116,7 +107,6 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
 
   /**
    * Returns a short description of the servlet.
-   *
    * @return a String containing servlet description
    */
   @Override
@@ -124,11 +114,4 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
     return "Generating the JNLP for direct edition";
   }
 
-  private static String fetchDocumentId(String documentUrl) {
-    String[] paths = documentUrl.split("/");
-    if (paths.length > 3) {
-      return paths[paths.length - 3];
-    }
-    return null;
-  }
 }

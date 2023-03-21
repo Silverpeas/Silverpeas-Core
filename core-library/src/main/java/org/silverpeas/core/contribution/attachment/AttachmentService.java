@@ -57,7 +57,7 @@ public interface AttachmentService extends DocumentIndexing {
    * Deletes all the documents related to the component instance identified by the specified
    * identifier.
    * @param componentInstanceId the component instance identifier.
-   * @throws AttachmentException if the attachments deletion failed.
+   * @throws AttachmentException if the deletion failed.
    */
   void deleteAllAttachments(String componentInstanceId) throws AttachmentException;
 
@@ -92,308 +92,327 @@ public interface AttachmentService extends DocumentIndexing {
   void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName);
 
   /**
-   * Clone the document to a cloned container.
+   * Clones the given document and attached it to the specified resource. The document is attached
+   * to a resource that has been cloned; hence this method is to clone the document in order to
+   * attach it to the cloned resource. The difference between a clone and a copy is the clone
+   * maintains a link with its original counterpart: any changes performed in one is synchronized
+   * with the other.
    * @param original the document to clone.
-   * @param foreignCloneId the resource to which the clone has to be attached.
-   * @return the unique identifier of the clone
+   * @param foreignCloneId the identifier of the resource to which the document is attached.
+   * @return the identifier of the cloned document.
    */
   SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId);
 
   /**
-   * Merges the documents of cloned container with the original documents.
-   * @param originalForeignKey a reference to the resource to which the original documents.
-   * @param cloneForeignKey the reference to the resource to which are attached the cloned
-   * documents.
-   * @param type the type of documents for which the merge has to be done.
-   * @return a map with the cloned document id as key and the original document id as value.
+   * Merges the documents of the cloned resource with their original counterparts.
+   * @param originalResource the original resource.
+   * @param clonedResource the cloned resource.
+   * @param type the type of the documents to merge.
+   * @return a map with the cloned document identifier as key and the original document identifier
+   * as value.
    */
-  Map<String, String> mergeDocuments(ResourceReference originalForeignKey,
-      ResourceReference cloneForeignKey,
+  Map<String, String> mergeDocuments(ResourceReference originalResource,
+      ResourceReference clonedResource,
       DocumentType type);
 
   /**
-   * Copies the attachment.
+   * Copies the specified document to another existing resource. The difference between a copy with
+   * a clone is the copy is detached to the original document from which it has been copied. So any
+   * changes in one isn't reported to the other one.
    * @param original the document to copy.
-   * @param targetPk the reference to the resource to which the copy has to be attached.
-   * @return the unique identifier of the copy.
+   * @param targetResource the resource to which the copy of the document has to be attached.
+   * @return the identifier of the copy.
    */
-  SimpleDocumentPK copyDocument(SimpleDocument original, ResourceReference targetPk);
+  SimpleDocumentPK copyDocument(SimpleDocument original, ResourceReference targetResource);
 
   /**
-   * Copies all the attachment linked to a resource to another one.
-   * @param resourceSourcePk the identifier of the resource and its location (component instance)
-   * which linked attachments must be copied.
-   * @param targetDestinationPk the identifier of the resource and its location (component instance)
-   * that will get the copied attachments.
+   * Copies all the attachments linked to the given source resource to the specified destination
+   * one.
+   * @param sourceResource the reference of the resource (identifier and component instance) from
+   * which the attachments must be copied.
+   * @param destinationResource the reference of the resource (identifier and component instance) to
+   * which attachments will be copied.
    * @return le list of copied attachments, empty if nothing is copied.
    */
   List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(
-      ResourceReference resourceSourcePk,
-      ResourceReference targetDestinationPk);
+      ResourceReference sourceResource,
+      ResourceReference destinationResource);
 
   /**
-   * Moves the attachment.
-   * @param document to be moved.
-   * @param destination the foreign id to be moved to.
-   * @return the new document id.
+   * Moves the specified document to the given resource.
+   * @param document the document to be moved.
+   * @param destination the resource to which the document has to be attached.
+   * @return the new document identifier once moved.
    */
   SimpleDocumentPK moveDocument(SimpleDocument document, ResourceReference destination);
 
-  /*
-   * Moves all the attachment linked to a resource to another one.
-   * @param resourceSourcePk the identifier of the resource and its location (component instance)
+  /**
+   * Moves all the attachments linked to the specified resource to the another one.
+   * @param sourceResource the reference of the resource (identifier and component instance) from
    * which linked attachments must be moved.
-   * @param targetDestinationPk the identifier of the resource and its location (component instance)
+   * @param destinationResource the reference of the resource (identifier and component instance)
    * that will get the moved attachments.
    * @return le list of moved attachments, empty if nothing is moved.
    */
-  List<SimpleDocumentPK> moveAllDocuments(ResourceReference resourceSourcePk,
-      ResourceReference targetDestinationPk);
+  List<SimpleDocumentPK> moveAllDocuments(ResourceReference sourceResource,
+      ResourceReference destinationResource);
 
 
   /**
-   * Create file attached to an object who is identified by the foreignId.
+   * Creates the attachment and saves the content of the specified document. The created document is
+   * indexed and a notification about the creation is sent.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
+   * to the given document.
    * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @return the stored document.
-   * @throws AttachmentException if an error occurs while creating the attachment in Silverpeas.
+   * @throws AttachmentException if the creation of the specified document fails.
    */
-  SimpleDocument createAttachment(SimpleDocument document, InputStream content) throws
-                                                                                AttachmentException;
+  SimpleDocument createAttachment(SimpleDocument document, InputStream content)
+      throws AttachmentException;
 
   /**
-   * Create file attached to an object who is identified by the foreignId.
+   * Creates the attachment, saves the content of the specified document and indexes it if asked.
+   * Once the attachment created, a notification about this creation is then sent.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
+   * to the given document.
    * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt true if the document is to be indexed - false otherwise.
+   * @param indexIt true if the document has to be indexed, false otherwise.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, InputStream content, boolean indexIt);
 
   /**
-   * Create file attached to an object who is identified by the foreignId.
+   * Creates the attachment, saves the content of the specified document, indexes it if asked, and
+   * notifies about the creation.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
+   * to the given document.
    * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt true if the document is to be indexed - false otherwise.
-   * @param invokeCallback true if the callback methods of the components must be called, false for
-   * ignoring those callbacks.
+   * @param indexIt true if the document has to be indexed, false otherwise.
+   * @param notify true if a notification about the creation has to be sent, false otherwise.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, InputStream content, boolean indexIt,
-      boolean invokeCallback);
+      boolean notify);
 
   /**
-   * Create file attached to an object who is identified by the foreignId.
+   * Creates the attachment and saves the content of the specified document. The created document is
+   * indexed and a notification about the creation is sent.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
+   * to the given document.
    * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @return the stored document.
-   * @throws AttachmentException if an error occurs while creating the attachment in Silverpeas.
+   * @throws AttachmentException if an error occurs while creating the attachment and saving the
+   * content.
    */
-  SimpleDocument createAttachment(SimpleDocument document, File content) throws
-                                                                         AttachmentException;
+  SimpleDocument createAttachment(SimpleDocument document, File content) throws AttachmentException;
 
   /**
-   * Create file attached to an object who is identified by the foreignId.
+   * Creates the attachment, saves the content of the specified document and indexes it if asked.
+   * Once the attachment created, a notification about this creation is then sent.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
+   * to the given document.
    * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt true if the document is to be indexed, false otherwise.
+   * @param indexIt true if the document has to be indexed, false otherwise.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt);
 
   /**
-   * Create file attached to an object who is identified by the foreignId.
+   * Creates the attachment, saves the content of the specified document, indexes it if asked, and
+   * notifies about the creation.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
+   * to the given document.
    * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt true if the document is to be indexed, false otherwise.
-   * @param invokeCallback true if the callback methods of the components must be called, false for
-   * ignoring those callbacks.
+   * @param indexIt true if the document has to be indexed, false otherwise.
+   * @param notify true if a notification about the creation has to be sent, false otherwise.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
-      boolean invokeCallback);
+      boolean notify);
 
   /**
-   * Index the specified document
-   * @param document the document to index.
+   * Indexes the specified document.
+   * @param document the document
    */
   void createIndex(SimpleDocument document);
 
   /**
-   * Delete the index entry referring the specified document.
-   * @param document the document to unindex
+   * Deletes any index on the specified document.
+   * @param document the document.
    */
   void deleteIndex(SimpleDocument document);
 
   /**
-   * Index the specified document with its period of visibility.
+   * Creates an index on the specified document with a period of time of visibility.
    * @param document the document to index.
-   * @param startOfVisibilityPeriod the start date of its visibility period.
-   * @param endOfVisibilityPeriod the end date of its visibility period.
+   * @param startOfVisibilityPeriod the date at which the document should be visible.
+   * @param endOfVisibilityPeriod the date at which the document shouldn't be anymore visible.
    */
   void createIndex(SimpleDocument document, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod);
 
   /**
-   * Deletes all the document attached to a component resource.
+   * Deletes all the documents attached to a resource.
    * @param resourceId the identifier of the resource.
    * @param componentInstanceId the identifier of the component instance into which the resource is
-   * referenced.
+   * located.
    */
   void deleteAllAttachments(String resourceId, String componentInstanceId);
 
   /**
-   * Delete a given attachment.
+   * Deletes the given document and notifies about this deletion.
    * @param document the document to delete.
    */
   void deleteAttachment(SimpleDocument document);
 
   /**
-   * Delete a given attachment.
+   * Deletes the given document and notifies about this deletion is asked.
    * @param document the document to delete.
-   * @param invokeCallback true if the callback methods of the components must be called, false for
-   * ignoring those callbacks.
-   * @throws AttachmentException if the attachment cannot be deleted.
+   * @param notify true if a notification about the deletion has to be sent. False otherwise.
+   * @throws AttachmentException if the document cannot be deleted.
    */
-  void deleteAttachment(SimpleDocument document, boolean invokeCallback);
+  void deleteAttachment(SimpleDocument document, boolean notify);
 
   /**
-   * To remove the content of the document in the specified language.
-   * @param document the document for which the content has to be removed.
-   * @param lang the language of the content to remove
-   * @param invokeCallback if an event notification has to be invoked to inform about the content
-   * removal
+   * Removes the content of the specified document in the given language.
+   * @param document the document.
+   * @param lang the ISO-631 code of a language.
+   * @param notify true if a notification about the content deletion has to be sent. False
+   * otherwise. If the document has again content (in others languages), an document update event is
+   * sent. Otherwise a deletion event is sent.
    */
-  void removeContent(SimpleDocument document, String lang, boolean invokeCallback);
+  void removeContent(SimpleDocument document, String lang, boolean notify);
 
   /**
-   * Reorder the attachments according to the order in the list.
-   * @param pks the new ordered list of documents (by their unique identifier)
-   * @throws AttachmentException if an error occurs while applying the reordering of the documents.
+   * Reorders the documents referenced in the given list according their order in the list.
+   * @param pks a list of document identifiers.
+   * @throws AttachmentException if an error occurs while reordering the documents.
    */
   void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException;
 
   /**
-   * Reorder the attachments according to the order in the list.
-   * @param documents the document to reorder.
-   * @throws AttachmentException if an error occurs while applying the reordering of the documents.
+   * Reorders the documents in the given list according their order in the list.
+   * @param documents the documents to reorder.
+   * @throws AttachmentException if an error occurs while reordering the documents.
    */
   void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException;
 
   /**
-   * Search the document.
-   * @param primaryKey the primary key of document.
-   * @param lang the lang of the document.
-   * @return java.util.Vector: a collection of AttachmentDetail
-   * @throws AttachmentException when is impossible to search
+   * Search the document with the given identifier and in the specified language.
+   * @param docPk the identifier of the document to search.
+   * @param lang the ISO-631 code of a language.
+   * @return the document or null if no such document exists.
+   * @throws AttachmentException if an error occurs while searching the document.
    */
-  SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang);
+  SimpleDocument searchDocumentById(SimpleDocumentPK docPk, String lang);
 
   /**
-   * Search all files attached to a foreign object.
-   * @param foreignKey : the primary key of foreign object.
-   * @param lang the language of the documents.
-   * @return the list of attached documents.
-   * @throws AttachmentException when is impossible to search
+   * Search all the documents of type files attached to the specified resource and in the given
+   * language.
+   * @param foreignKey a reference to the resource.
+   * @param lang the ISO-631 code of a language.
+   * @return the list of documents of type files attached to the specified resource.
+   * @throws AttachmentException if an error occurs while searching the documents.
    */
   SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(ResourceReference foreignKey,
       String lang);
 
   /**
-   * Search all documents (files, XML form content, wysiwyg) attached to a foreign object.
-   * @param foreignKey : the primary key of foreign object.
-   * @param lang the language of the documents.
-   * @return the list of attached documents.
-   * @throws AttachmentException when is impossible to search
+   * Search all the documents (whatever their type: files, xmlform content, wysiwyg, ...) attached
+   * to the specified resource and in the given language.
+   * @param foreignKey a reference to the resource.
+   * @param lang the ISO-631 code of a language.
+   * @return the list of documents attached to the specified resource.
+   * @throws AttachmentException if an error occurs while searching the documents.
    */
   SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(ResourceReference foreignKey,
       String lang);
 
   /**
-   * Search all file attached to a foreign object.
-   * @param foreignKey : the primary key of foreign object.
-   * @param type : the type of document
-   * @param lang the lang for the documents.
-   * @return the list of attached documents.
-   * @throws AttachmentException when is impossible to search
+   * Search all the documents attached to the specified resource, for a given type of document, and
+   * in the specified language.
+   * @param foreignKey a reference to the resource.
+   * @param type the type of the documents to search.
+   * @param lang the ISO-621 code of a language.
+   * @return the list of documents attached to the specified resource.
+   * @throws AttachmentException if an error occurs while searching the documents.
    */
   SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(ResourceReference foreignKey,
       DocumentType type, String lang);
 
-  void unindexAttachmentsOfExternalObject(ResourceReference foreignKey);
-
   /**
-   * To update the document : status, metadata but not its content.
-   * <p>
-   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
-   * only single character encoding and no more combined characters. The normalized filename is set
-   * to given document.
-   * </p>
-   * @param document the document to update
-   * @param indexIt if the update has to be indexed
-   * @param invokeCallback if an event notification about this update has to be triggered.
+   * Unindex all the attachments of the specified resource.
+   * @param externalResource a reference to the resource.
    */
-  void updateAttachment(SimpleDocument document, boolean indexIt, boolean invokeCallback);
+  void unindexAttachmentsOfExternalObject(ResourceReference externalResource);
 
   /**
-   * To update a document content by updating or adding some content.
+   * Updates the specified whole document: status, metadata but not its content.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
    * to given document.
    * </p>
-   * @param document the document to update
-   * @param content the new content of the document
-   * @param indexIt if the update has to be indexed
-   * @param invokeCallback if an event notification about this update has to be triggered.
+   * @param document the document to update.
+   * @param indexIt true if the document change has to be indexed. False otherwise.
+   * @param notify true if a notification about the update has to be sent. False otherwise.
    */
-  void updateAttachment(SimpleDocument document, File content, boolean indexIt,
-      boolean invokeCallback);
+  void updateAttachment(SimpleDocument document, boolean indexIt, boolean notify);
 
   /**
-   * To update a document content by updating or adding some content.
+   * Updates the specified whole document with its content either by updating the given content or
+   * by adding it among its others contents.
    * <p>
    * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
    * only single character encoding and no more combined characters. The normalized filename is set
    * to given document.
    * </p>
-   * @param document the document to update
-   * @param content a stream on the new content of the document
-   * @param indexIt if the update has to be indexed
-   * @param invokeCallback if an event notification about this update has to be triggered.
+   * @param document the document to update.
+   * @param content the content to update or to add (in the case of multi-languages support).
+   * @param indexIt true if the change has to be indexed. False otherwise.
+   * @param notify true if a notification about the update has to be sent. False otherwise.
+   */
+  void updateAttachment(SimpleDocument document, File content, boolean indexIt, boolean notify);
+
+  /**
+   * Updates the specified whole document with its content either by updating the given content or
+   * by adding it among its others contents.
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is set
+   * to given document.
+   * </p>
+   * @param document the document to update.
+   * @param content the content to update or to add (in the case of multi-languages support).
+   * @param indexIt true if the change has to be indexed. False otherwise.
+   * @param notify true if a notification about the update has to be sent. False otherwise.
    */
   void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt,
-      boolean invokeCallback);
+      boolean notify);
 
   /**
    * Search all the documents in an instance which are locked at the alert date.
@@ -432,9 +451,8 @@ public interface AttachmentService extends DocumentIndexing {
   /**
    * Release a locked file.
    * @param context : the unlock parameters.
-   * @return false if the file is locked - true if the unlocking succeeded.
-   * @throws AttachmentException if an error occurs while unlocking the document referred by the
-   * specified context.
+   * @return false if the file is locked - true if the unlock succeeded.
+   * @throws AttachmentException if the unlocking fails.
    */
   boolean unlock(UnlockContext context);
 
@@ -445,7 +463,7 @@ public interface AttachmentService extends DocumentIndexing {
    * created and the document becomes a document with a version history management. F
    * @param pk the id of the document.
    * @param comment the comment of the versioned document if we are switching from simple to
-   * versioned state.
+   * versioned.
    * @return the pk to the document after is state change.
    */
   SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment);
@@ -478,12 +496,12 @@ public interface AttachmentService extends DocumentIndexing {
   void updateIndexEntryWithDocuments(FullIndexEntry indexEntry);
 
   /**
-   * Indexes all the documents (whatever their type) of a container.
-   * @param fk the id of the container of the document.
-   * @param startOfVisibilityPeriod can be null.
-   * @param endOfVisibilityPeriod can be null.
+   * Indexes all the documents (whatever their type) of the given resource.
+   * @param resource the resource.
+   * @param startOfVisibilityPeriod the start date of the document visibility. It can be null.
+   * @param endOfVisibilityPeriod the end date of the document visibility. It can be null.
    */
-  void indexAllDocuments(ResourceReference fk, Date startOfVisibilityPeriod,
+  void indexAllDocuments(ResourceReference resource, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod);
 
   /**
@@ -492,11 +510,11 @@ public interface AttachmentService extends DocumentIndexing {
    * removed and the document becomes a simple document with no more version management. If the
    * document has no version management then a new public version is created and the document
    * becomes a document with a version history management.
-   * @param componentId : the id of the component switching its behaviour.
-   * @param toVersioning: if set to true all simple attachments become versioned, if false all
+   * @param componentId the id of the component switching its behaviour.
+   * @param versioned if set to true all simple attachments become versioned, if false all
    * versioned attachments become simple attachments.
    */
-  void switchComponentBehaviour(String componentId, boolean toVersioning);
+  void switchComponentBehaviour(String componentId, boolean versioned);
 
   /**
    * Allows or forbids the download for readers.

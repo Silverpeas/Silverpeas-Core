@@ -74,21 +74,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static javax.jcr.nodetype.NodeType.*;
+import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
+import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.silverpeas.jcr.util.SilverpeasProperty.*;
 
 @RunWith(Arquillian.class)
-public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
+public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia73";
   private final DocumentRepository documentRepository = new DocumentRepository();
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(HistorisedDocumentRepositoryIT.class)
+    return WarBuilder4LibCore.onWarForTestClass(HistorizedDocumentRepositoryIT.class)
         .addJcrFeatures()
         .build();
   }
@@ -105,19 +106,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of createDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testCreateDocument() throws Exception {
+  public void createDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -135,19 +131,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of deleteDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testDeleteDocument() throws Exception {
+  public void deleteDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -159,7 +150,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
       assertThat(doc.getCreationDate(), is(creationDate));
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -172,18 +163,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of findDocumentById method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testFindDocumentById() throws Exception {
+  public void findDocumentById() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -198,18 +184,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of findLast method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testFindLast() throws Exception {
+  public void findLast() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
@@ -217,7 +198,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(result, is(expResult));
       long oldSilverpeasId = document.getOldSilverpeasId();
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       foreignId = "node78";
       document = new HistorisedDocument(emptyId, foreignId, 5, attachment);
@@ -232,11 +213,8 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of findLast method, of class DocumentRepository.
-   */
   @Test
-  public void testGetMinMaxIndexes() throws Exception {
+  public void getMinMaxIndexes() throws Exception {
     final String foreignId = "node78";
     try (JCRSession session = JCRSession.openSystemSession()) {
       // can not get MIN MAX because it does not exist document into JCR for the foreignId
@@ -248,7 +226,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createFrenchVersionnedAttachment();
+      SimpleAttachment attachment = createFrenchVersionedAttachment();
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
       session.save();
@@ -264,7 +242,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       // registering now a second document into JCR
       emptyId = new SimpleDocumentPK("-1", instanceId);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 5, attachment);
       result = createVersionedDocument(session, document, content);
       session.save();
@@ -281,7 +259,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       IntStream.of(0, -6, 30, 40, 10000000, -3890000, 78, 1, 10).forEach(i -> {
         final SimpleDocumentPK _emptyId = new SimpleDocumentPK("-1", instanceId);
         final ByteArrayInputStream _content = new ByteArrayInputStream(("With index order " + i).getBytes(Charsets.UTF_8));
-        final SimpleAttachment _attachment = createFrenchVersionnedAttachment();
+        final SimpleAttachment _attachment = createFrenchVersionedAttachment();
         final SimpleDocument _document = new HistorisedDocument(_emptyId, foreignId, i, _attachment);
         try {
           final SimpleDocumentPK _result = createVersionedDocument(session, _document, _content);
@@ -304,18 +282,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of updateDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testUpdateDocument() throws Exception {
+  public void updateDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       document.setPublicDocument(false);
@@ -332,7 +305,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(docCreated.getHistory(), hasSize(0));
       assertThat(docCreated.getMajorVersion(), is(0));
       assertThat(docCreated.getMinorVersion(), is(1));
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -353,36 +326,31 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of listDocumentsByForeignId method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testListDocumentsByForeignId() throws Exception {
+  public void listDocumentsByForeignId() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument docNode18_1 = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       createVersionedDocument(session, docNode18_1, content);
       docNode18_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docNode18_2 = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       createVersionedDocument(session, docNode18_2, content);
       docNode18_2.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       foreignId = "node25";
       SimpleDocument docNode25_1 = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       createVersionedDocument(session, docNode25_1, content);
       docNode25_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docNode25_2 = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       createVersionedDocument(session, docNode25_2, content);
@@ -396,35 +364,30 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of selectDocumentsByForeignId method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testSelectDocumentsByForeignId() throws Exception {
+  public void selectDocumentsByForeignId() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument docNode18_1 = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       createVersionedDocument(session, docNode18_1, content);
       docNode18_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       SimpleDocument docNode18_2 = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       createVersionedDocument(session, docNode18_2, content);
       docNode18_2.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       foreignId = "node25";
       SimpleDocument docNode25_1 = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       createVersionedDocument(session, docNode25_1, content);
       docNode25_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       SimpleDocument docNode25_2 = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       createVersionedDocument(session, docNode25_2, content);
       docNode25_2.setMajorVersion(2);
@@ -439,18 +402,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of selectDocumentsByOwnerId method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testSelectDocumentsByOwnerId() throws Exception {
+  public void selectDocumentsByOwnerId() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       HistorisedDocument docOwn10_1 = new HistorisedDocument(emptyId, foreignId, 10, owner,
@@ -458,14 +416,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       createVersionedDocument(session, docOwn10_1, content);
       docOwn10_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       HistorisedDocument docOwn10_2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
           attachment);
       createVersionedDocument(session, docOwn10_2, content);
       docOwn10_2.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       HistorisedDocument docOwn25_1 = new HistorisedDocument(emptyId, foreignId, 10, owner,
           attachment);
       createVersionedDocument(session, docOwn25_1, content);
@@ -485,15 +443,10 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of addContent method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testAddContent() throws Exception {
+  public void addContent() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
@@ -502,7 +455,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document.setPK(result);
       documentRepository.lock(session, document, document.getEditedBy());
       documentRepository.addContent(session, result, attachment);
@@ -516,15 +469,10 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of removeContent method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testRemoveContent() throws Exception {
+  public void removeContent() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
@@ -532,7 +480,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document.setPK(result);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       documentRepository.lock(session, document, document.getEditedBy());
@@ -549,7 +497,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  private SimpleAttachment createEnglishVersionnedAttachment() {
+  private SimpleAttachment createEnglishVersionedAttachment() {
     return SimpleAttachment.builder("en")
         .setFilename("test.pdf")
         .setTitle("My test document")
@@ -561,7 +509,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
         .build();
   }
 
-  private SimpleAttachment createFrenchVersionnedAttachment() {
+  private SimpleAttachment createFrenchVersionedAttachment() {
     return SimpleAttachment.builder("fr")
         .setFilename("test.odp")
         .setTitle("Mon document de test")
@@ -588,37 +536,32 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     assertThat(doc.getDescription(), is("Ceci est un document de test"));
   }
 
-  /**
-   * Test of listDocumentsByOwner method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testListDocumentsByOwner() throws Exception {
+  public void listDocumentsByOwner() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       SimpleDocument docOwn10_1 = new HistorisedDocument(emptyId, foreignId, 10, owner, attachment);
       createVersionedDocument(session, docOwn10_1, content);
       docOwn10_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docOwn10_2 = new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
       createVersionedDocument(session, docOwn10_2, content);
       docOwn10_2.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument docOwn25_1 = new HistorisedDocument(emptyId, foreignId, 10, owner, attachment);
       createVersionedDocument(session, docOwn25_1, content);
       docOwn25_1.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docOwn25_2 = new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
       createVersionedDocument(session, docOwn25_2, content);
@@ -637,17 +580,12 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of listExpiringDocumentsByOwner method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testListExpiringDocuments() throws Exception {
+  public void listExpiringDocuments() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
@@ -660,7 +598,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, expiringDoc1, owner);
       documentRepository.updateDocument(session, expiringDoc1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notExpiringDoc2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
           attachment);
@@ -670,7 +608,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, notExpiringDoc2, owner);
       documentRepository.updateDocument(session, notExpiringDoc2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument expiringDoc3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
           attachment);
@@ -680,7 +618,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, expiringDoc3, owner);
       documentRepository.updateDocument(session, expiringDoc3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notExpiringDoc4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
           attachment);
@@ -699,17 +637,12 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of selectExpiringDocuments method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testSelectExpiringDocuments() throws Exception {
+  public void selectExpiringDocuments() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
@@ -721,7 +654,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, expiringDoc1, owner);
       documentRepository.updateDocument(session, expiringDoc1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notExpiringDoc2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
           attachment);
@@ -730,7 +663,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, notExpiringDoc2, owner);
       documentRepository.updateDocument(session, notExpiringDoc2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       SimpleDocument expiringDoc3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
           attachment);
       expiringDoc3.setExpiry(today.getTime());
@@ -738,7 +671,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, expiringDoc3, owner);
       documentRepository.updateDocument(session, expiringDoc3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notExpiringDoc4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
           attachment);
@@ -757,17 +690,12 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of listDocumentsToUnlock method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testListDocumentsToUnlock() throws Exception {
+  public void listDocumentsToUnlock() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
@@ -780,7 +708,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, docToLeaveLocked1, owner);
       documentRepository.updateDocument(session, docToLeaveLocked1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docToUnlock2
           = new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
@@ -790,7 +718,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, docToUnlock2, owner);
       documentRepository.updateDocument(session, docToUnlock2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument docToUnlock3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
           attachment);
@@ -800,7 +728,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, docToUnlock3, owner);
       documentRepository.updateDocument(session, docToUnlock3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docToLeaveLocked4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
           attachment);
@@ -819,18 +747,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of selectDocumentsRequiringUnlocking method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testSelectDocumentsRequiringUnlocking() throws Exception {
+  public void selectDocumentsRequiringUnlocking() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
@@ -843,7 +766,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, docToLeaveLocked1, owner);
       documentRepository.updateDocument(session, docToLeaveLocked1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docToUnlock2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
           attachment);
@@ -853,7 +776,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, docToUnlock2, owner);
       documentRepository.updateDocument(session, docToUnlock2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument docToUnlock3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
           attachment);
@@ -863,7 +786,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, docToUnlock3, owner);
       documentRepository.updateDocument(session, docToUnlock3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
           attachment);
@@ -884,18 +807,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of selectWarningDocuments method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testSelectWarningDocuments() throws Exception {
+  public void selectWarningDocuments() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
@@ -906,21 +824,21 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.createDocument(session, warningDoc1);
       documentRepository.storeContent(warningDoc1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notWarningDoc2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
           attachment);
       notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
       createVersionedDocument(session, notWarningDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       SimpleDocument warningDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       warningDoc3.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc3);
       documentRepository.storeContent(warningDoc3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notWarningDoc4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
           attachment);
@@ -937,19 +855,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of moveDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testMoveDocument() throws Exception {
+  public void moveDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -1048,19 +961,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of moveDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testMoveDocumentWithCheckOutStateAtTrue() throws Exception {
+  public void moveDocumentWithCheckOutStateAtTrue() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -1147,11 +1055,6 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
 
       // Version path pattern
       assertThat(document.getVersionMaster().getId(), is(doc.getVersionMaster().getId()));
-      String masterUuid = doc.getVersionMaster().getId();
-      String versionPathPattern =
-          "/jcr:system/jcr:versionStorage/" + masterUuid.substring(0, 2) + "/" +
-              masterUuid.substring(2, 4) + "/" + masterUuid.substring(4, 6) + "/" + masterUuid +
-              "/%s/jcr:frozenNode";
 
       // History
       assertThat(doc.getHistory(), hasSize(0));
@@ -1160,18 +1063,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of moveDocument method, of class DocumentRepository.
-   * @throws Exception
-   */
   @Test
-  public void testMoveDocumentChangingFunctionalVersion() throws Exception {
+  public void moveDocumentChangingFunctionalVersion() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -1321,18 +1220,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of moveDocument method, of class DocumentRepository.
-   * @throws Exception
-   */
   @Test
-  public void testMoveDocumentWithoutChangingFunctionalVersion() throws Exception {
+  public void moveDocumentWithoutChangingFunctionalVersion() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -1480,18 +1375,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of moveDocument method, of class DocumentRepository.
-   * @throws Exception
-   */
   @Test
-  public void testMoveDocumentWithHugeHistory() throws Exception {
+  public void moveDocumentWithHugeHistory() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -1778,20 +1669,16 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of moveDocument method, of class DocumentRepository.
-   * @throws Exception
-   */
   @Test
-  public void testMoveDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
+  public void moveDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath("")));
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Map<String, Date> creationDateByLanguage = new HashMap<String, Date>();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
+      Map<String, Date> creationDateByLanguage = new HashMap<>();
       creationDateByLanguage.put("en", attachment.getCreationDate());
       String foreignId = "node78";
       SimpleDocument initialDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
@@ -1800,7 +1687,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       createVersionedDocument(session, initialDocument, content);
       // French content before version
       initialDocument.setLanguage("fr");
-      initialDocument.setAttachment(createFrenchVersionnedAttachment());
+      initialDocument.setAttachment(createFrenchVersionedAttachment());
       creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreationDate());
       documentRepository.updateDocument(session, initialDocument, true);
       session.save();
@@ -2012,8 +1899,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getHistory().get(0).getRepositoryPath(),
           is(String.format(versionPathPattern, "1.6")));
 
-      Map<String, HistorisedDocument> historisedDocumentByLanguage =
-          new HashMap<String, HistorisedDocument>();
+      Map<String, HistorisedDocument> historisedDocumentByLanguage = new HashMap<>();
       historisedDocumentByLanguage.put("fr",
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "fr"));
       historisedDocumentByLanguage.put("en",
@@ -2133,19 +2019,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of copyDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testCopyDocument() throws Exception {
+  public void copyDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -2215,19 +2096,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of copyDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testCopyReservedDocument() throws Exception {
+  public void copyReservedDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -2357,18 +2233,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of copyDocument method, of class DocumentRepository.
-   * @throws Exception
-   */
   @Test
-  public void testCopyDocumentChangingFunctionalVersion() throws Exception {
+  public void copyDocumentChangingFunctionalVersion() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -2497,19 +2369,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of copyDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testCopyDocumentWithoutChangingFunctionalVersion() throws Exception {
+  public void copyDocumentWithoutChangingFunctionalVersion() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -2636,19 +2503,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of copyDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testCopyDocumentWithHugeHistory() throws Exception {
+  public void copyDocumentWithHugeHistory() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
@@ -2915,20 +2777,16 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of copyDocument method, of class DocumentRepository.
-   * @throws Exception
-   */
   @Test
-  public void testCopyDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
+  public void copyDocumentWithHugeHistoryTwoLanguagesBeforeVersions() throws Exception {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath("")));
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Map<String, Date> creationDateByLanguage = new HashMap<String, Date>();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
+      Map<String, Date> creationDateByLanguage = new HashMap<>();
       creationDateByLanguage.put("en", attachment.getCreationDate());
       String foreignId = "node78";
       SimpleDocument initialDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
@@ -2937,7 +2795,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       createVersionedDocument(session, initialDocument, content);
       // French content before version
       initialDocument.setLanguage("fr");
-      initialDocument.setAttachment(createFrenchVersionnedAttachment());
+      initialDocument.setAttachment(createFrenchVersionedAttachment());
       creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreationDate());
       documentRepository.updateDocument(session, initialDocument, true);
       session.save();
@@ -3149,8 +3007,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getHistory().get(0).getRepositoryPath(),
           is(String.format(versionPathPattern, "1.6")));
 
-      Map<String, HistorisedDocument> historisedDocumentByLanguage =
-          new HashMap<String, HistorisedDocument>();
+      Map<String, HistorisedDocument> historisedDocumentByLanguage = new HashMap<>();
       historisedDocumentByLanguage.put("fr",
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, "fr"));
       historisedDocumentByLanguage.put("en",
@@ -3249,7 +3106,6 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void assertSimpleDocumentsAreEquals(SimpleDocument result, SimpleDocument expected,
       String... ignoredBeanProperties) throws Exception {
 
@@ -3257,7 +3113,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     Map<String, String> expectedBeanProperties = BeanUtils.describe(expected);
     Map<String, String> resultBeanProperties = BeanUtils.describe(result);
     String resultRepoPath = resultBeanProperties.get("repositoryPath");
-    List<String> toIgnoredBeanProperties = new ArrayList<String>();
+    List<String> toIgnoredBeanProperties = new ArrayList<>();
     Collections.addAll(toIgnoredBeanProperties, ignoredBeanProperties);
     toIgnoredBeanProperties.add("file");
     for (String keyToRemove : toIgnoredBeanProperties) {
@@ -3284,13 +3140,8 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of findDocumentByOldSilverpeasId method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testFindDocumentByOldSilverpeasId() throws Exception {
+  public void findDocumentByOldSilverpeasId() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       long oldSilverpeasId = 2048L;
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -3298,7 +3149,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
@@ -3337,15 +3188,12 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of listDocumentsRequiringWarning method, of class DocumentRepository.
-   */
   @Test
-  public void testListDocumentsRequiringWarning() throws Exception {
+  public void listDocumentsRequiringWarning() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
@@ -3358,7 +3206,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, warningDoc1, owner);
       documentRepository.updateDocument(session, warningDoc1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notWarningDoc2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
           attachment);
@@ -3368,7 +3216,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.lock(session, notWarningDoc2, owner);
       documentRepository.updateDocument(session, notWarningDoc2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();
+      attachment = createEnglishVersionedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument warningDoc3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
           attachment);
@@ -3378,7 +3226,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.updateDocument(session, warningDoc3, true);
       warningDoc3.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocument notWarningDoc4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
           attachment);
@@ -3397,12 +3245,8 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of saveForbiddenDownloadForRoles method, of class DocumentRepository.
-   * Testing also history, functional history, repository path and version index.
-   */
   @Test
-  public void testSaveForbiddenDownloadForRoles() throws Exception {
+  public void saveForbiddenDownloadForRoles() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
@@ -3413,7 +3257,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       document.setPublicDocument(false);
@@ -3443,7 +3287,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(masterPath, is("/kmelia73/attachments/" + docCreated.getNodeName()));
 
       // Update the versioned document to a public one
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(true);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -3467,7 +3311,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
 
       // Update the versioned document to a working one
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -3540,12 +3384,8 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of saveDisplayableAsContent method, of class DocumentRepository.
-   * Testing also history, functional history, repository path and version index.
-   */
   @Test
-  public void testSaveDisplayableAsContent() throws Exception {
+  public void saveDisplayableAsContent() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
@@ -3556,7 +3396,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       document.setPublicDocument(false);
@@ -3586,7 +3426,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(masterPath, is("/kmelia73/attachments/" + docCreated.getNodeName()));
 
       // Update the versioned document to a public one
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(true);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -3610,7 +3450,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
 
       // Update the versioned document to a working one
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -3681,12 +3521,8 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of saveEditableSimultaneously method, of class DocumentRepository.
-   * Testing also history, functional history, repository path and version index.
-   */
   @Test
-  public void testSaveEditableSimultaneously() throws Exception {
+  public void saveEditableSimultaneously() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
@@ -3697,7 +3533,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       document.setPublicDocument(false);
@@ -3727,7 +3563,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(masterPath, is("/kmelia73/attachments/" + docCreated.getNodeName()));
 
       // Update the versioned document to a public one
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(true);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -3751,7 +3587,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
 
       // Update the versioned document to a working one
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -3826,11 +3662,8 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Testing history, functional history, repository path and version index.
-   */
   @Test
-  public void testHistoryAndVersions() throws Exception {
+  public void historyAndVersions() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
 
       /*
@@ -3841,7 +3674,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       document.setPublicDocument(false);
@@ -3882,7 +3715,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       for (int i = 0; i < 1100; i++) {
         if (i % 50 == 0) {
           // Functional version number is incremented (and the technical too)
-          attachment = createFrenchVersionnedAttachment();
+          attachment = createFrenchVersionedAttachment();
           document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
           if (minor >= 4) {
             document.setPublicDocument(true);
@@ -3909,7 +3742,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       HistorisedDocument doc =
           (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
 
-      List<String> publicDocumentsIdsFromLastToFirst = new ArrayList<String>();
+      List<String> publicDocumentsIdsFromLastToFirst = new ArrayList<>();
       VersionHistory versionHistory =
           session.getWorkspace().getVersionManager().getVersionHistory(doc.getFullJcrPath());
       NodeIterator frozenNodeIt = versionHistory.getAllFrozenNodes();
@@ -3925,7 +3758,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
         }
       }
 
-      // Testing the historised document.
+      // Testing the historized document.
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOrder(), is(15));
       assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
@@ -3998,18 +3831,13 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     }
   }
 
-  /**
-   * Test of updateDocument method, of class DocumentRepository.
-   *
-   * @throws Exception
-   */
   @Test
-  public void testChangeVersionStateOfVersionedDocument() throws Exception {
+  public void changeVersionStateOfVersionedDocument() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      SimpleAttachment attachment = createEnglishVersionedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
       document.setPublicDocument(false);
@@ -4026,7 +3854,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(docCreated.getHistory(), hasSize(0));
       assertThat(docCreated.getMajorVersion(), is(0));
       assertThat(docCreated.getMinorVersion(), is(1));
-      attachment = createFrenchVersionnedAttachment();
+      attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -4059,7 +3887,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testFindSimpleVersionedDocumentById() throws Exception {
+  public void findSimpleVersionedDocumentById() throws Exception {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK documentPK = createSimpleVersionedDocument(session);
 
@@ -4069,7 +3897,6 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
 
       Node docNode = session.getNodeByIdentifier(doc.getId());
       assertThat(docNode, notNullValue());
-      assertThat(DocumentConverter.isMixinApplied(docNode, MIX_SIMPLE_VERSIONABLE), is(true));
       assertThat(DocumentConverter.isMixinApplied(docNode, MIX_VERSIONABLE), is(true));
     } catch (Exception e) {
       e.printStackTrace();
@@ -4085,7 +3912,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
     SimpleDocumentPK docId = new SimpleDocumentPK("-1", instanceId);
     ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
         Charsets.UTF_8));
-    SimpleAttachment attachment = createEnglishVersionnedAttachment();
+    SimpleAttachment attachment = createEnglishVersionedAttachment();
     SimpleDocument document = new HistorisedDocument(docId, "node42", 10, attachment);
     document.setCloneId("-1");
     Node doc = allDocs.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
@@ -4111,7 +3938,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
         SilverpeasRole.asString(SilverpeasRole.READER_ROLES));
     doc.addMixin(SLV_VIEWABLE_MIXIN);
     doc.setProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, true);
-    doc.addMixin(MIX_SIMPLE_VERSIONABLE);
+    doc.addMixin(MIX_VERSIONABLE);
 
     Node file = doc.addNode(attachment.getNodeName(), SLV_SIMPLE_ATTACHMENT);
 

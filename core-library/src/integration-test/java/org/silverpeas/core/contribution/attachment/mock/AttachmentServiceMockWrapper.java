@@ -97,20 +97,20 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public Map<String, String> mergeDocuments(ResourceReference originalForeignKey, ResourceReference cloneForeignKey,
+  public Map<String, String> mergeDocuments(ResourceReference originalResource, ResourceReference clonedResource,
       DocumentType type) {
-    return mock.mergeDocuments(originalForeignKey, cloneForeignKey, type);
+    return mock.mergeDocuments(originalResource, clonedResource, type);
   }
 
   @Override
-  public SimpleDocumentPK copyDocument(SimpleDocument original, ResourceReference targetPk) {
-    return mock.copyDocument(original, targetPk);
+  public SimpleDocumentPK copyDocument(SimpleDocument original, ResourceReference targetResource) {
+    return mock.copyDocument(original, targetResource);
   }
 
   @Override
-  public List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(final ResourceReference resourceSourcePk,
-      final ResourceReference targetDestinationPk) {
-    return mock.copyAllDocuments(resourceSourcePk, targetDestinationPk);
+  public List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(final ResourceReference sourceResource,
+      final ResourceReference destinationResource) {
+    return mock.copyAllDocuments(sourceResource, destinationResource);
   }
 
   @Override
@@ -119,9 +119,9 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocumentPK> moveAllDocuments(final ResourceReference resourceSourcePk,
-      final ResourceReference targetDestinationPk) {
-    return mock.moveAllDocuments(resourceSourcePk, targetDestinationPk);
+  public List<SimpleDocumentPK> moveAllDocuments(final ResourceReference sourceResource,
+      final ResourceReference destinationResource) {
+    return mock.moveAllDocuments(sourceResource, destinationResource);
   }
 
   @Override
@@ -138,8 +138,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
 
   @Override
   public SimpleDocument createAttachment(SimpleDocument document, InputStream content,
-      boolean indexIt, boolean invokeCallback) {
-    return mock.createAttachment(document, content, indexIt, invokeCallback);
+      boolean indexIt, boolean notify) {
+    return mock.createAttachment(document, content, indexIt, notify);
   }
 
   @Override
@@ -155,8 +155,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
 
   @Override
   public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
-      boolean invokeCallback) {
-    return mock.createAttachment(document, content, indexIt, invokeCallback);
+      boolean notify) {
+    return mock.createAttachment(document, content, indexIt, notify);
   }
 
   @Override
@@ -186,13 +186,13 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public void deleteAttachment(SimpleDocument document, boolean invokeCallback) {
-    mock.deleteAttachment(document, invokeCallback);
+  public void deleteAttachment(SimpleDocument document, boolean notify) {
+    mock.deleteAttachment(document, notify);
   }
 
   @Override
-  public void removeContent(SimpleDocument document, String lang, boolean invokeCallback) {
-    mock.removeContent(document, lang, invokeCallback);
+  public void removeContent(SimpleDocument document, String lang, boolean notify) {
+    mock.removeContent(document, lang, notify);
   }
 
   @Override
@@ -206,8 +206,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
-    return mock.searchDocumentById(primaryKey, lang);
+  public SimpleDocument searchDocumentById(SimpleDocumentPK docPk, String lang) {
+    return mock.searchDocumentById(docPk, lang);
   }
 
   @Override
@@ -229,19 +229,19 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public void unindexAttachmentsOfExternalObject(ResourceReference foreignKey) {
-    mock.unindexAttachmentsOfExternalObject(foreignKey);
+  public void unindexAttachmentsOfExternalObject(ResourceReference externalResource) {
+    mock.unindexAttachmentsOfExternalObject(externalResource);
   }
 
   @Override
-  public void updateAttachment(SimpleDocument document, boolean indexIt, boolean invokeCallback) {
-    mock.updateAttachment(document, indexIt, invokeCallback);
+  public void updateAttachment(SimpleDocument document, boolean indexIt, boolean notify) {
+    mock.updateAttachment(document, indexIt, notify);
   }
 
   @Override
   public void updateAttachment(SimpleDocument document, File content, boolean indexIt,
-      boolean invokeCallback) {
-    mock.updateAttachment(document, content, indexIt, invokeCallback);
+      boolean notify) {
+    mock.updateAttachment(document, content, indexIt, notify);
   }
 
   @Override
@@ -297,14 +297,14 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public void indexAllDocuments(ResourceReference fk, Date startOfVisibilityPeriod,
+  public void indexAllDocuments(ResourceReference resource, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
-    mock.indexAllDocuments(fk, startOfVisibilityPeriod, endOfVisibilityPeriod);
+    mock.indexAllDocuments(resource, startOfVisibilityPeriod, endOfVisibilityPeriod);
   }
 
   @Override
-  public void switchComponentBehaviour(String componentId, boolean toVersioning) {
-    mock.switchComponentBehaviour(componentId, toVersioning);
+  public void switchComponentBehaviour(String componentId, boolean versioned) {
+    mock.switchComponentBehaviour(componentId, versioned);
   }
 
   @Override

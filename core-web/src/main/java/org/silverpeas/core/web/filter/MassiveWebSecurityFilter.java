@@ -32,11 +32,11 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.SilverpeasWebResource;
-import org.silverpeas.core.web.attachment.WebDavProtocol;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.jcr.webdav.WebDavProtocol;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -110,8 +110,10 @@ public class MassiveWebSecurityFilter implements Filter {
     }
 
     SQL_PATTERNS = new ArrayList<>(6);
-    SQL_PATTERNS.add(Pattern.compile("(?i)(grant|revoke)" +
-        "(( .*|.* )(select|insert|update|delete|references|alter|index|all))+( .*|.* )on"));
+    SQL_PATTERNS.add(
+        Pattern.compile("(?i)(grant|revoke)(( .*|.* )(select|insert|update|delete))+( .*|.* )on"));
+    SQL_PATTERNS.add(
+        Pattern.compile("(?i)(grant|revoke)(( .*|.* )(references|alter|index|all))+( .*|.* )on"));
     SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)( .*|.* )(table|database|schema)"));
     SQL_PATTERNS.add(SQL_SELECT_FROM_PATTERN);
     SQL_PATTERNS.add(SQL_INSERT_VALUES_PATTERN);
@@ -139,7 +141,7 @@ public class MassiveWebSecurityFilter implements Filter {
       logger.error("The request for path {0} isn''t valid: {1}", pathOf(httpRequest),
           wse.getMessage());
 
-      // An HTTP error is sended to the client
+      // An HTTP error is sent to the client
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, wse.getMessage());
     }
   }
@@ -266,11 +268,11 @@ public class MassiveWebSecurityFilter implements Filter {
   /**
    * Verifies deeply a matched SQL string. Indeed, throwing an exception of XSS attack only on SQL
    * detection is not enough. This method tries to detect a known table name from the SQL string.
-   * @param matcherFound
-   * @param string
-   * @return
+   * @param matcherFound a pattern matcher
+   * @param statement a SQL statement to check
+   * @return true of the SQL statement is considered as safe. False otherwise.
    */
-  private boolean verifySqlDeeply(final Matcher matcherFound, String string) {
+  private boolean verifySqlDeeply(final Matcher matcherFound, String statement) {
     boolean isVerified = true;
     if (matcherFound.pattern() == SQL_SELECT_FROM_PATTERN ||
         matcherFound.pattern() == SQL_INSERT_VALUES_PATTERN ||
@@ -278,10 +280,11 @@ public class MassiveWebSecurityFilter implements Filter {
         matcherFound.pattern() == SQL_DELETE_PATTERN) {
       isVerified = false;
       Pattern tableNamesPattern = getSqlTableNamesPattern();
-      Matcher tableNameMatcher = tableNamesPattern.matcher(string);
+      Matcher tableNameMatcher = tableNamesPattern.matcher(statement);
       while (tableNameMatcher.find()) {
-        isVerified = tableNamesPattern.matcher(extractTableNameWholeWord(tableNameMatcher, string))
-            .matches();
+        isVerified =
+            tableNamesPattern.matcher(extractTableNameWholeWord(tableNameMatcher, statement))
+                .matches();
         if (isVerified) {
           break;
         }
@@ -291,11 +294,11 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Extracts the whole table name matched. Indeed, the matcher can find a table name that is a part
-   * of another ...
-   * @param matcher
-   * @param matchedString
-   * @return
+   * Extracts the whole table name matching the given pattern. Indeed, the matcher can find a table
+   * name that is a part of another one.
+   * @param matcher a pattern matcher.
+   * @param matchedString a SQL statement part
+   * @return a whole table name
    */
   private String extractTableNameWholeWord(Matcher matcher, String matchedString) {
     StringBuilder tableName =
@@ -324,9 +327,9 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Gets a pattern that permits to chexk deeply a detected SELECT FROM with known table names. A
+   * Gets a pattern that permits to check deeply a detected SELECT FROM with known table names. A
    * cache is handled by this method in order to avoid building at every call the same pattern.
-   * @return
+   * @return a regexp pattern.
    */
   private synchronized Pattern getSqlTableNamesPattern() {
     Pattern pattern = (sqlSelectPatternInspectDeeplyCacheKey != null) ?
@@ -344,7 +347,7 @@ public class MassiveWebSecurityFilter implements Filter {
       }
       sbPattern.append(")");
 
-      pattern = Pattern.compile("(?i)" + sbPattern.toString());
+      pattern = Pattern.compile("(?i)" + sbPattern);
       sqlSelectPatternInspectDeeplyCacheKey =
           CacheServiceProvider.getApplicationCacheService().getCache().add(pattern);
     }
@@ -353,8 +356,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Must the given parameter be skipped from SQL injection verifying?
-   * @param parameterName
-   * @return
+   * @param parameterName name of a parameter.
+   * @return true if the given parameter has to be skipped. False otherwise.
    */
   private boolean mustTheParameterBeVerifiedForSqlVerifications(String parameterName) {
     return findPatternMatcherFromString(SQL_SKIPPED_PARAMETER_PATTERNS, parameterName, false) ==
@@ -363,8 +366,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Must the given parameter be skipped from XSS injection verifying?
-   * @param parameterName
-   * @return
+   * @param parameterName name of a parameter.
+   * @return true of the given parameter has to be skipped. False otherwise.
    */
   private boolean mustTheParameterBeVerifiedForXssVerifications(String parameterName) {
     return findPatternMatcherFromString(XSS_SKIPPED_PARAMETER_PATTERNS, parameterName, false) ==
@@ -372,11 +375,13 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Indicates the index of one pattern from the given pattern list matches with the given string.
-   * @param patterns
-   * @param string
-   * @param startsAndEndsByWholeWord
-   * @return
+   * Gets the matcher corresponding to the pattern in the given list of patterns and for which the
+   * specified string is compliant.
+   * @param patterns a list of pattern to apply on the given string.
+   * @param string a string to check.
+   * @param startsAndEndsByWholeWord a flag indicating the pattern should match for the first and
+   * for the end word in the string.
+   * @return the pattern matcher matching the given string.
    */
   private Matcher findPatternMatcherFromString(List<Pattern> patterns, String string,
       boolean startsAndEndsByWholeWord) {
@@ -395,9 +400,9 @@ public class MassiveWebSecurityFilter implements Filter {
 
   /**
    * Verifies that the first word of matching starts with a whole word.
-   * @param matcher
-   * @param matchedString
-   * @return
+   * @param matcher a matcher.
+   * @param matchedString a string.
+   * @return true if the first word of matching starts with a whole word
    */
   private boolean verifyMatcherStartingByAWord(Matcher matcher, String matchedString) {
     return matcher.start() == 0 || !ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN.matcher(
@@ -405,10 +410,10 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Verifies that the first word of matching starts with a whole word.
-   * @param matcher
-   * @param matchedString
-   * @return
+   * Verifies that the first word of matching ends with a whole word.
+   * @param matcher a matcher
+   * @param matchedString a string
+   * @return true if the first word of matching ends with a whole word.
    */
   private boolean verifyMatcherEndingByAWord(Matcher matcher, String matchedString) {
     return matcher.end(0) == matchedString.length() ||
@@ -416,11 +421,6 @@ public class MassiveWebSecurityFilter implements Filter {
             String.valueOf(matchedString.charAt(matcher.end(0)))).find();
   }
 
-  /**
-   * Just for code reading.
-   * @param request
-   * @return
-   */
   private String pathOf(HttpServletRequest request) {
     return request.getRequestURI();
   }

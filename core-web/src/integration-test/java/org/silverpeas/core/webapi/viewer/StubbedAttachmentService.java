@@ -60,18 +60,18 @@ public class StubbedAttachmentService extends SimpleDocumentService {
   static String ATTACHMENT_ID_DOESNT_EXISTS = "8";
 
   @Override
-  public SimpleDocument searchDocumentById(final SimpleDocumentPK attachmentPK,
+  public SimpleDocument searchDocumentById(final SimpleDocumentPK docPk,
       final String lang) {
     SimpleDocument attachmentDetail = null;
-    if (!ATTACHMENT_ID_DOESNT_EXISTS.equals(attachmentPK.getId())) {
+    if (!ATTACHMENT_ID_DOESNT_EXISTS.equals(docPk.getId())) {
       attachmentDetail = mock(SimpleDocument.class);
-      when(attachmentDetail.getPk()).thenReturn(attachmentPK);
-      when(attachmentDetail.getId()).thenReturn(attachmentPK.getId());
-      when(attachmentDetail.getOldSilverpeasId()).thenReturn(Long.parseLong(attachmentPK.getId()));
+      when(attachmentDetail.getPk()).thenReturn(docPk);
+      when(attachmentDetail.getId()).thenReturn(docPk.getId());
+      when(attachmentDetail.getOldSilverpeasId()).thenReturn(Long.parseLong(docPk.getId()));
       when(attachmentDetail.getAttachment()).thenReturn(SimpleAttachment.builder().build());
       final String language = attachmentDetail.getAttachment().getLanguage();
       when(attachmentDetail.getLanguage()).thenReturn(language);
-      final String filename = "originalFileName" + attachmentPK.getId();
+      final String filename = "originalFileName" + docPk.getId();
       when(attachmentDetail.getFilename()).thenReturn(filename);
       when(attachmentDetail.getAttachmentPath()).thenReturn(new File(getUploadPath(), filename).getPath());
       final ComponentInst linkedComponentInst = SilverpeasEnvironmentTest.get()
