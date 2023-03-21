@@ -175,7 +175,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
       RepositoryException {
     Node rootNode = session.getRootNode();
     try {
-      /* Two cases here because of the analysis of {@link SimpleDocument#getWebdavJcrPath()}... */
+      // Two cases here because of the analysis of SimpleDocument#getWebdavJcrPath()...
       Node fileNode = getDocumentIdentifierNode(session, attachment);
       if (fileNode == null) {
         fileNode = rootNode.getNode(attachment.getWebdavJcrPath());
@@ -259,7 +259,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param parent the parent node
    * @param name the name of the new node
    * @return the created node.
-   * @throws RepositoryException if an error occurs in the JCR
+   * @throws RepositoryException if an error occurs while adding the node in the JCR.
    */
   protected Node addFolder(Node parent, String name) throws RepositoryException {
     try {
@@ -278,7 +278,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param parent the parent node
    * @param name the name of the new node
    * @return the created or already existing node.
-   * @throws RepositoryException if an error occurs in the JCR
+   * @throws RepositoryException if an error occurs while adding the node in the JCR.
    */
   protected Node addExclusiveFolder(Node parent, String name) throws RepositoryException {
     try {
@@ -301,8 +301,8 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param folder the folder node containing the file node.
    * @param attachment the attachment for the file.
    * @return the created node.
-   * @throws RepositoryException if an error occurs in the JCR
-   * @throws IOException if an error occurs while adding the file in the filesystem
+   * @throws RepositoryException if an error occurs while adding the attachment node in the JCR.
+   * @throws IOException if an error occurs while adding the file content.
    */
   protected Node addFile(Node folder, SimpleDocument attachment) throws RepositoryException,
       IOException {

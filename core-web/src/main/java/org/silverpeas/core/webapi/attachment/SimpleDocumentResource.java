@@ -41,13 +41,13 @@ import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
-import org.silverpeas.core.web.attachment.WebDavTokenProducer;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.UserPrivilegeValidator;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
+import org.silverpeas.jcr.webdav.WebDavTokenGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -127,9 +127,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
   /**
    * Updates the document identified by the requested URI.
-   *
+   * <p>
    * A {@link SimpleDocumentUploadData} is extracted from request parameters.
-   *
+   * </p>
    * @return an HTTP response embodied an entity in a format expected by the client (that is
    * identified by the <code>xRequestedWith</code> parameter).
    * @throws IOException if an error occurs while updating the document.
@@ -141,7 +141,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     SimpleDocumentUploadData uploadData = decode(getHttpRequest());
 
     try {
-
       // Update the attachment
       String normalizedFileName = StringUtil.normalize(filename);
       SimpleDocumentEntity entity = updateSimpleDocument(uploadData, normalizedFileName);
@@ -236,7 +235,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     }
     AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
     if (isWebdav) {
-      WebDavTokenProducer.deleteToken(getUser(), document.getId());
+      WebDavTokenGenerator.getFor(getUser()).deleteToken(document.getId());
     }
   }
 
@@ -288,7 +287,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @GET
   @Path("translations")
   @Produces(MediaType.APPLICATION_JSON)
-  public SimpleDocumentEntity[] getDocumentTanslations() {
+  public SimpleDocumentEntity[] getDocumentTranslations() {
     List<SimpleDocumentEntity> result = new ArrayList<>(I18NHelper.getNumberOfLanguages());
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       SimpleDocument attachment = getSimpleDocument(lang);
@@ -297,18 +296,18 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         result.add(SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri));
       }
     }
-    return result.toArray(new SimpleDocumentEntity[result.size()]);
+    return result.toArray(new SimpleDocumentEntity[0]);
   }
 
   /**
    * Validates the authorization of the user to request this web service. For doing, the user must
    * have the rights to access the component instance that manages this web resource. The validation
    * is actually delegated to the validation service by passing it the required information.
-   *
+   * <p>
    * This method should be invoked for web service requiring an authorized access. For doing, the
-   * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
+   * authentication of the user must be first validated. Otherwise, the annotation Authorized can be
    * also used instead at class level for both authentication and authorization.
-   *
+   * </p>
    * @see UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the rights of the user are not enough to access this web
@@ -358,10 +357,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
 
-  /**
-   * @param document
-   * @return
-   */
   private List<SimpleDocument> getListDocuments(SimpleDocument document) {
     return
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
@@ -369,10 +364,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
             DEFAULT_LANGUAGE);
   }
 
-  /**
-   * @param docs
-   * @return
-   */
   private String reorderDocuments(List<SimpleDocument> docs) {
     AttachmentServiceProvider.getAttachmentService().reorderDocuments(docs);
     return MessageFormat.format("'{'\"status\":{0}}", true);
@@ -443,7 +434,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     }
     boolean result = AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
     if (result) {
-      WebDavTokenProducer.deleteToken(getUser(), document.getId());
+      WebDavTokenGenerator.getFor(getUser()).deleteToken(document.getId());
     }
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         result, document.getOldSilverpeasId(), document.getId());
@@ -540,9 +531,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   }
 
   /**
-   * Return the current document
-   * @param lang
-   * @return SimpleDocument
+   * Gets the current document in the specified language
+   * @param lang the ISO-631 code of the language.
+   * @return the {@link SimpleDocument} object representing the current document in the given
+   * language.
    */
   private SimpleDocument getSimpleDocument(String lang) {
     String language = (lang == null ? DEFAULT_LANGUAGE : lang);

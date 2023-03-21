@@ -211,10 +211,10 @@ public class SimpleDocumentService
   }
 
   @Override
-  public void unindexAttachmentsOfExternalObject(ResourceReference foreignKey) {
+  public void unindexAttachmentsOfExternalObject(ResourceReference externalResource) {
     try (JCRSession session = JCRSession.openSystemSession()) {
-      List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, foreignKey.
-          getInstanceId(), foreignKey.getId(), I18NHelper.DEFAULT_LANGUAGE);
+      List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, externalResource.
+          getInstanceId(), externalResource.getId(), I18NHelper.DEFAULT_LANGUAGE);
       for (SimpleDocument doc : docs) {
         deleteIndex(doc, I18NHelper.DEFAULT_LANGUAGE);
       }
@@ -236,13 +236,6 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Create file attached to an object who is identified by the foreignId.
-   * @param document the document to be created.
-   * @param content the binary content of the document.
-   * @return the stored document.
-   * @throws AttachmentException if an error occurs in the process
-   */
   @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
@@ -252,15 +245,7 @@ public class SimpleDocumentService
     return createAttachment(document, content, true);
   }
 
-  /**
-   * Create file attached to an object who is identified by the foreignId.
-   * @param document the document to be created.
-   * @param content the binary content of the document.
-   * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwise.
-   * @return the stored document.
-   */
-  @PreventAttachmentHugeProcess
+   @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -269,16 +254,6 @@ public class SimpleDocumentService
     return createAttachment(document, content, indexIt, true);
   }
 
-  /**
-   * Create file attached to an object who is identified by the foreignId.
-   * @param document the document to be created.
-   * @param content the binary content of the document.
-   * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwise.
-   * @param notify <code>true</code> to notify about the creation of an attachment,
-   * <code>false</code> otherwise.
-   * @return the stored document.
-   */
   @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
@@ -307,10 +282,6 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Delete a given attachment.
-   * @param document the document to delete.
-   */
   @PreventAttachmentHugeProcess
   @Override
   public void deleteAttachment(@SourceObject SimpleDocument document) {
@@ -326,12 +297,6 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Delete a given attachment.
-   * @param document the attachmentDetail object to delete.
-   * @param notify <code>true</code> to notify about the deletion of an attachment,
-   * <code>false</code> otherwise.</code>
-   */
   @PreventAttachmentHugeProcess
   @Override
   public void deleteAttachment(@SourceObject SimpleDocument document, boolean notify) {
@@ -359,17 +324,17 @@ public class SimpleDocumentService
   }
 
   @Override
-  public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
+  public SimpleDocument searchDocumentById(SimpleDocumentPK docPk, String lang) {
     try (JCRSession session = JCRSession.openSystemSession()) {
-      if (StringUtil.isDefined(primaryKey.getId()) && !StringUtil.isLong(primaryKey.getId())) {
-        return repository.findDocumentById(session, primaryKey, lang);
+      if (StringUtil.isDefined(docPk.getId()) && !StringUtil.isLong(docPk.getId())) {
+        return repository.findDocumentById(session, docPk, lang);
       }
       SimpleDocument doc = repository
-          .findDocumentByOldSilverpeasId(session, primaryKey.getComponentName(),
-              primaryKey.getOldSilverpeasId(), false, lang);
+          .findDocumentByOldSilverpeasId(session, docPk.getComponentName(),
+              docPk.getOldSilverpeasId(), false, lang);
       if (doc == null) {
-        doc = repository.findDocumentByOldSilverpeasId(session, primaryKey.getComponentName(),
-            primaryKey.getOldSilverpeasId(), true, lang);
+        doc = repository.findDocumentByOldSilverpeasId(session, docPk.getComponentName(),
+            docPk.getOldSilverpeasId(), true, lang);
       }
       return doc;
     } catch (RepositoryException ex) {
@@ -417,7 +382,7 @@ public class SimpleDocumentService
       repository.updateDocument(session, document, true);
       if (!oldAttachment.isVersioned() && document.isOpenOfficeCompatible() &&
           document.isEdited()) {
-        // the file is renaming
+        // the file is renamed
         if (!oldAttachment.getFilename().equals(document.getFilename())) {
           webdavRepository.deleteAttachmentNode(session, oldAttachment);
           webdavRepository.createAttachmentNode(session, document);
@@ -528,14 +493,6 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Clones the document and attaches it to the resource referred by the specified identifier. The
-   * resource has to be in the same component instance that the document to clone.
-   * @param original the document to clone.
-   * @param foreignCloneId the unique identifier of the resource to which the clone has to be
-   * attached.
-   * @return the unique identifier of the clone.
-   */
   @PreventAttachmentHugeProcess
   @Override
   public SimpleDocumentPK cloneDocument(@SourceObject SimpleDocument original, String foreignCloneId) {
@@ -553,24 +510,18 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Copy the document and attaches it to the specified resource.
-   * @param original the document to copy.
-   * @param targetPk the resource to which the document has to be attached.
-   * @return the identifier of the copy.
-   */
   @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
   public SimpleDocumentPK copyDocument(@SourceObject SimpleDocument original,
-      @TargetPK ResourceReference targetPk) {
+      @TargetPK ResourceReference targetResource) {
     try (JCRSession session = JCRSession.openSystemSession()) {
       SimpleDocumentPK copyPk;
       if (original instanceof HistorisedDocument) {
-        copyPk = repository.copyDocument(session, (HistorisedDocument) original, targetPk);
+        copyPk = repository.copyDocument(session, (HistorisedDocument) original, targetResource);
       } else {
-        copyPk = repository.copyDocument(session, original, targetPk);
+        copyPk = repository.copyDocument(session, original, targetResource);
       }
       session.save();
       SimpleDocument copy = repository.findDocumentById(session, copyPk, null);
@@ -591,22 +542,17 @@ public class SimpleDocumentService
   @Action(ActionType.COPY)
   @Override
   public List<Pair<SimpleDocumentPK, SimpleDocumentPK>> copyAllDocuments(
-      @SourcePK ResourceReference resourceSourcePk,
-      @TargetPK ResourceReference targetDestinationPk) {
-    return listAllDocumentsByForeignKey(resourceSourcePk, null)
+      @SourcePK ResourceReference sourceResource,
+      @TargetPK ResourceReference destinationResource) {
+    return listAllDocumentsByForeignKey(sourceResource, null)
         .stream()
         .map(s -> {
           final SimpleDocumentPK copyPK =
-              copyDocument(s, new ResourceReference(targetDestinationPk));
+              copyDocument(s, new ResourceReference(destinationResource));
           return Pair.of(s.getPk(), copyPK);
         }).collect(Collectors.toList());
   }
 
-  /**
-   * Reorder the attachments according to the order in the list.
-   * @param pks the list of document identifiers.
-   * @throws AttachmentException if an error occurs in the process
-   */
   @Override
   public void reorderAttachments(List<SimpleDocumentPK> pks) {
     try (JCRSession session = JCRSession.openSystemSession()) {
@@ -626,11 +572,6 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Reorder the attachments according to the order in the list.
-   * @param documents a list of documents.
-   * @throws AttachmentException if an error occurs in the process
-   */
   @Override
   public void reorderDocuments(List<SimpleDocument> documents) {
     final AttachmentHugeProcessManager attachmentHugeProcessManager = AttachmentHugeProcessManager.get();
@@ -768,12 +709,6 @@ public class SimpleDocumentService
     }
   }
 
-  /**
-   * Release a locked file.
-   * @param context the unlock parameters.
-   * @return false if the file is locked, true if the unlocking succeeded.
-   * @throws AttachmentException if an error occurs in the process
-   */
   @Override
   public boolean unlock(UnlockContext context) {
     try (JCRSession session = JCRSession.openSystemSession()) {
@@ -867,14 +802,6 @@ public class SimpleDocumentService
         getUserId());
   }
 
-  /**
-   * Locks a file, so it can be edited by the user locking it.
-   * @param attachmentId the unique identifier of the attached file.
-   * @param userId the unique identifier of the user locking the file.
-   * @param language the language in which the attached file is written.
-   * @return false if the attachment is already checkout, true if the attachment was successfully
-   * checked out.
-   */
   @Override
   public boolean lock(String attachmentId, String userId, String language) {
     try (JCRSession session = JCRSession.openSystemSession()) {
@@ -884,7 +811,7 @@ public class SimpleDocumentService
       if (document.isEdited()) {
         return document.getEditedBy().equals(userId);
       }
-      repository.lock(session, document, document.getEditedBy());
+      repository.lock(session, document, userId);
       document.edit(userId);
       if (document.isOpenOfficeCompatible()) {
         webdavRepository.createAttachmentNode(session, document);
@@ -993,13 +920,13 @@ public class SimpleDocumentService
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
-  public List<SimpleDocumentPK> moveAllDocuments(@SourcePK ResourceReference resourceSourcePk,
-      @TargetPK ResourceReference targetDestinationPk) {
+  public List<SimpleDocumentPK> moveAllDocuments(@SourcePK ResourceReference sourceResource,
+      @TargetPK ResourceReference destinationResource) {
     List<SimpleDocumentPK> movedDocumentKeys = new ArrayList<>();
-    List<SimpleDocument> documentsToMove = listAllDocumentsByForeignKey(resourceSourcePk, null);
+    List<SimpleDocument> documentsToMove = listAllDocumentsByForeignKey(sourceResource, null);
     for (SimpleDocument documentToMove : documentsToMove) {
       movedDocumentKeys.add(
-          moveDocument(documentToMove, new ResourceReference(targetDestinationPk)));
+          moveDocument(documentToMove, new ResourceReference(destinationResource)));
     }
     return movedDocumentKeys;
   }
@@ -1030,9 +957,9 @@ public class SimpleDocumentService
   }
 
   @Override
-  public void indexAllDocuments(ResourceReference fk, Date startOfVisibilityPeriod,
+  public void indexAllDocuments(ResourceReference resource, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
-    List<SimpleDocument> documents = listAllDocumentsByForeignKey(fk, null);
+    List<SimpleDocument> documents = listAllDocumentsByForeignKey(resource, null);
     for (SimpleDocument currentDocument : documents) {
       createIndex(currentDocument, startOfVisibilityPeriod, endOfVisibilityPeriod);
     }
@@ -1040,13 +967,14 @@ public class SimpleDocumentService
 
   @PreventAttachmentHugeProcess
   @Override
-  public Map<String, String> mergeDocuments(@SourcePK ResourceReference originalForeignKey,
-      @TargetPK ResourceReference cloneForeignKey, DocumentType type) {
+  public Map<String, String> mergeDocuments(@SourcePK ResourceReference originalResource,
+      @TargetPK ResourceReference clonedResource,
+      DocumentType type) {
     try (JCRSession session = JCRSession.openSystemSession()) {
       // starts from the original files
       List<SimpleDocument> attachments =
-          listDocumentsByForeignKeyAndType(originalForeignKey, type, null);
-      Map<String, SimpleDocument> clones = listDocumentsOfClone(cloneForeignKey, type);
+          listDocumentsByForeignKeyAndType(originalResource, type, null);
+      Map<String, SimpleDocument> clones = listDocumentsOfClone(clonedResource, type);
       Map<String, String> ids = new HashMap<>(clones.size());
       // looking for updates and deletions
       for (SimpleDocument attachment : attachments) {
@@ -1069,7 +997,7 @@ public class SimpleDocumentService
       if (!clones.isEmpty()) {
         for (SimpleDocument clone : clones.values()) {
           clone.setCloneId(null);
-          clone.setForeignId(originalForeignKey.getId());
+          clone.setForeignId(originalResource.getId());
           updateAttachment(clone, false, false);
         }
       }
@@ -1098,14 +1026,14 @@ public class SimpleDocumentService
 
   @AttachmentHugeProcess
   @Override
-  public void switchComponentBehaviour(@SourceObject String componentId, boolean toVersioning) {
+  public void switchComponentBehaviour(@SourceObject String componentId, boolean versioned) {
     try (JCRSession session = JCRSession.openSystemSession()) {
       // starts from the original files
       List<SimpleDocument> attachments = repository
           .listDocumentsByComponentIdAndType(session, componentId, DocumentType.attachment,
               I18NHelper.DEFAULT_LANGUAGE);
       for (SimpleDocument attachment : attachments) {
-        if (attachment.isVersioned() != toVersioning) {
+        if (attachment.isVersioned() != versioned) {
           repository.changeVersionState(session, attachment.getPk(), "");
         }
       }
@@ -1188,11 +1116,6 @@ public class SimpleDocumentService
     return requestedNotify;
   }
 
-  /**
-   * Deletes the resources belonging to the specified component instance. This method is invoked by
-   * Silverpeas when a component instance is being deleted.
-   * @param componentInstanceId the unique identifier of a component instance.
-   */
   @Override
   public void delete(final String componentInstanceId) {
     deleteAllAttachments(componentInstanceId);

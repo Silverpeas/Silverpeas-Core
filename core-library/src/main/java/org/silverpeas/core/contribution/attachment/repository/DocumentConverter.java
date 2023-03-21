@@ -53,7 +53,6 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
-import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
@@ -79,45 +78,41 @@ class DocumentConverter extends AbstractJcrConverter {
    */
   HistorisedDocument buildHistorizedDocument(Node rootVersionNode, String lang)
       throws RepositoryException {
-
     VersionManager versionManager = rootVersionNode.getSession().getWorkspace().getVersionManager();
     HistorisedDocument historisedDocument =
         new HistorisedDocument(fillDocument(rootVersionNode, lang));
 
     try {
-
       String path = rootVersionNode.getPath();
+
+      Version baseVersion = versionManager.getBaseVersion(path);
+      String baseVersionId = baseVersion == null ? "" : baseVersion.getIdentifier();
+
       VersionHistory history = versionManager.getVersionHistory(path);
-      Version root = history.getRootVersion();
-      String rootId = "";
-      if (root != null) {
-        rootId = root.getIdentifier();
-      }
-      Version base = versionManager.getBaseVersion(path);
-      String baseId = "";
-      if (base != null) {
-        baseId = base.getIdentifier();
-      }
-      VersionIterator versionsIterator = history.getAllVersions();
+      VersionIterator versionsIterator = history.getAllLinearVersions();
       // VersionIterator#getSize() support depends on the JCR implementation: if it isn't supported,
       // VersionIterator#getSize() returns -1. We have to take into account this particularity.
       int capacity = versionsIterator.getSize() == -1 ? 10 : (int) versionsIterator.getSize();
       List<SimpleDocumentVersion> documentHistory = new ArrayList<>(capacity);
-
       int versionIndex = 0;
       SimpleDocumentVersion previousVersion = null;
+      if (versionsIterator.hasNext()) {
+        // we skip the root version which is the eldest one in the history
+        versionsIterator.nextVersion();
+      }
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
-        if (!version.getIdentifier().equals(rootId) && !version.getIdentifier().equals(baseId)) {
-          SimpleDocumentVersion versionDocument =
-              new SimpleDocumentVersion(fillDocument(version.getFrozenNode(), lang),
-                  historisedDocument);
-          versionDocument.setNodeName(rootVersionNode.getName());
-          versionDocument.setVersionIndex(versionIndex++);
-          versionDocument.setPreviousVersion(previousVersion);
-          documentHistory.add(versionDocument);
-          previousVersion = versionDocument;
+        if (!baseVersionId.isEmpty() && baseVersionId.equals(version.getIdentifier())) {
+          continue;
         }
+        SimpleDocumentVersion versionDocument =
+            new SimpleDocumentVersion(fillDocument(version.getFrozenNode(), lang),
+                historisedDocument);
+        versionDocument.setNodeName(rootVersionNode.getName());
+        versionDocument.setVersionIndex(versionIndex++);
+        versionDocument.setPreviousVersion(previousVersion);
+        documentHistory.add(versionDocument);
+        previousVersion = versionDocument;
       }
 
       HistoryDocumentSorter.sortHistory(documentHistory);
@@ -134,11 +129,6 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
-    if (isMixinApplied(node, MIX_SIMPLE_VERSIONABLE) && !isMixinApplied(node, MIX_VERSIONABLE)) {
-      // convert mixin
-      node.addMixin(MIX_VERSIONABLE);
-      node.getSession().save();
-    }
     if (isVersionedMaster(node)) {
       return buildHistorizedDocument(node, lang);
     }
@@ -154,7 +144,7 @@ class DocumentConverter extends AbstractJcrConverter {
         return new HistorisedDocumentVersion(version);
       }
       throw new PathNotFoundException(
-          "Version identified by " + node.getIdentifier() + " has not been found.");
+          "Version identified by " + parentNode.getIdentifier() + " has not been found.");
     }
     return fillDocument(node, lang);
   }

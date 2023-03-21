@@ -34,6 +34,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -50,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Optional;
 
 /**
@@ -104,7 +106,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
       throws IllegalAccessException, FileNotFoundException {
     SilverpeasFile file = getWantedAttachment(restRequest);
     if (file == SilverpeasFile.NO_FILE) {
-      file = getWantedVersionnedDocument(restRequest);
+      file = getWantedVersionedDocument(restRequest);
     }
     if (file == SilverpeasFile.NO_FILE) {
       throw new FileNotFoundException();
@@ -115,7 +117,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
   private SilverpeasFile getWantedAttachment(RestRequest restRequest)
       throws IllegalAccessException {
     String componentId = restRequest.getElementValue("componentId");
-    String attachmentId = restRequest.getElementValue("attachmentId");
+    String attachmentId =
+        URLDecoder.decode(restRequest.getElementValue("attachmentId"), Charsets.UTF_8);
     String language = restRequest.getElementValue("lang");
     String size = restRequest.getElementValue("size");
     SilverpeasFile file = SilverpeasFile.NO_FILE;
@@ -137,7 +140,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return file;
   }
 
-  private SilverpeasFile getWantedVersionnedDocument(RestRequest restRequest)
+  private SilverpeasFile getWantedVersionedDocument(RestRequest restRequest)
       throws IllegalAccessException {
     String componentId = restRequest.getElementValue("componentId");
     String documentId = restRequest.getElementValue("documentId");

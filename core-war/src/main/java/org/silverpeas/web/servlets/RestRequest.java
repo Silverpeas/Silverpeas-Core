@@ -61,13 +61,13 @@ public class RestRequest {
   }
 
   private String id;
-  private Map<String, String[]> elements;
+  private final Map<String, String[]> elements;
   private Action action;
-  private HttpServletRequest request;
+  private final HttpServletRequest request;
 
   public RestRequest(HttpServletRequest request, String componentId) {
     this.request = request;
-    elements = new HashMap<String, String[]>(10);
+    elements = new HashMap<>(10);
 
     String pathInfo = getPathInfo(request, componentId);
     String[] pathItems = pathInfo.split("/");
@@ -84,12 +84,14 @@ public class RestRequest {
         itemParsingStartIndex = 1;
       }
       // last, parse the other path parts for key-value parameters
-      for (int i = itemParsingStartIndex; i < pathItems.length; i++) {
+      int i = itemParsingStartIndex;
+      while(i < pathItems.length) {
         String key = pathItems[i++];
         if (i < pathItems.length) {
           String value = pathItems[i];
           this.elements.put(key, new String[]{value});
         }
+        i++;
       }
     }
 
