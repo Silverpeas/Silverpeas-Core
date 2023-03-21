@@ -400,7 +400,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
             getDescription());
         translation.setNodeId(nd.getId());
         String translationId = nd.getTranslationId();
-        if (translationId != null && !"-1".equals(translationId)) {
+        if (translationId != null && !"-1".equals(translationId) && !"null".equals(translationId)) {
           // update translation
           translation.setId(translationId);
           translation.setNodeId(nd.getId());
