@@ -101,7 +101,9 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     Map<String, String> parameters = template.getParameters(language);
 
     String defaultValue = getDefaultValue(template, pageContext);
-    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+    String value = defaultValue;
+    if (field != null)
+      value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
 
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
