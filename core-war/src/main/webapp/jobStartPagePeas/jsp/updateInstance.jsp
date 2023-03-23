@@ -54,8 +54,10 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 			checked = "checked=\"checked\"";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+ checked + disabled + ">");
-    if (StringUtil.isDefined(parameter.getWarning())) {
-      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
+    if (parameter.getWarning().isPresent()) {
+      out.println("<div style=\"display: none;\" id=\"warning-" + parameter.getName() + "\"" +
+          " always=\"" + parameter.getWarning().get().isAlways() + "\"" +
+          " initialParamValue=\"" + StringUtil.getBooleanValue(parameter.getValue()) + "\">" + parameter.getWarning().get().getValue() + "</div>");
     }
 	} else if (parameter.isSelect() || parameter.isXmlTemplate()) {
 		List<LocalizedOption> options = parameter.getOptions();
@@ -75,8 +77,10 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 				out.println("<option value=\""+value+"\" "+selected+">"+name+"</option>");
 			}
 			out.println("</select>");
-      if (StringUtil.isDefined(parameter.getWarning())) {
-        out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\" initialParamValue=\""+parameter.getValue()+"\">"+parameter.getWarning()+"</div>");
+      if (parameter.getWarning().isPresent()) {
+        out.println("<div style=\"display: none;\" id=\"warning-" + parameter.getName() + "\"" +
+            " always=\"" + parameter.getWarning().get().isAlways() + "\"" +
+            " initialParamValue=\"" + parameter.getValue() + "\">" + parameter.getWarning().get().getValue() + "</div>");
       }
     }
 	} else if (parameter.isRadio()) {
@@ -149,17 +153,14 @@ for (ProfileInst theProfile : m_Profiles) {
 }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-<link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
+<view:link href="/jobStartPagePeas/jsp/stylesheet/component.css"/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script type="text/javascript" src="javascript/component.js"></script>
-<script type="text/javascript" src="javascript/messages.js"></script>
+<view:script src="/util/javaScript/i18n.js"/>
+<view:script src="/jobStartPagePeas/jsp/javascript/component.js"/>
+<view:script src="/jobStartPagePeas/jsp/javascript/messages.js"/>
 <script type="text/javascript">
 function cancel() {
 	location.href = "GoToCurrentComponent";
@@ -179,6 +180,7 @@ function validate() {
 		    <% } %>
 			document.infoInstance.<%=parameter.getName()%>.disabled = false;
 		<% } %>
+		spProgressMessage.show();
 		document.infoInstance.submit();
   });
 }
@@ -231,7 +233,9 @@ function ifCorrectFormExecute(callback) {
 }
 
 function toDoOnLoad() {
+  setTimeout(function() {
     document.infoInstance.NameObject.focus();
+  }, 0);
 }
 
 <%
@@ -256,8 +260,8 @@ function removeTranslation() {
 	clear:both;
 }
 </style>
-</head>
-<body id="admin-component" onload="javascript:toDoOnLoad()" class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part id="admin-component" onLoad="toDoOnLoad()" cssClass="page_content_admin">
 <form name="infoInstance" action="EffectiveUpdateInstance" method="post">
 <%
 out.println(window.printBefore());
@@ -353,5 +357,6 @@ out.println(tabbedPane.print());
     out.println(window.printAfter());
 %>
 </form>
-</body>
-</html>
+<view:progressMessage />
+</view:sp-body-part>
+</view:sp-page>

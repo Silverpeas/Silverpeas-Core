@@ -165,12 +165,17 @@ class WAComponentRegistryTest {
     assertThat(kmelia.getSuite().get("fr"), is("01 Gestion Documentaire"));
     assertThat(kmelia.getParameters().size(), is(40));
     Parameter paramWithXMLTemplate = null;
+    Parameter versionControl = null;
     for (Parameter parameter : kmelia.getParameters()) {
       if ("XmlFormForFiles".equals(parameter.getName())) {
         paramWithXMLTemplate = parameter;
       }
+      if ("versionControl".equals(parameter.getName())) {
+        versionControl = parameter;
+      }
     }
     assertThat(paramWithXMLTemplate, is(notNullValue()));
+    assertThat(paramWithXMLTemplate.getWarning().isPresent(), is(false));
     assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
     GlobalContext context = new GlobalContext("WA1");
     context.setComponentName("kmelia");
@@ -179,7 +184,6 @@ class WAComponentRegistryTest {
     assertThat(paramWithXMLTemplate, is(notNullValue()));
     List<Option> options = paramWithXMLTemplate.getOptions();
     assertThat(options.size(), is(3));
-
     options.sort(new OptionComparator());
     Option option = options.get(0);
     assertThat(option.getValue(), is("classifieds.xml"));
@@ -190,6 +194,11 @@ class WAComponentRegistryTest {
     option = options.get(2);
     assertThat(option.getValue(), is("template.xml"));
     assertThat(option.getName().get("fr"), is("template"));
+
+    assertThat(versionControl, is(notNullValue()));
+    assertThat(versionControl.getWarning().isPresent(), is(true));
+    assertThat(versionControl.getWarning().get().isAlways(), is(true));
+    assertThat(versionControl.getWarning().get().getMessages(), aMapWithSize(3));
   }
 
   @Test

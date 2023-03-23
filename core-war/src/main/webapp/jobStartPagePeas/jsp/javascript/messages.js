@@ -22,7 +22,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var messageTriggers = {
+const messageTriggers = {
   initialized : false,
   doInitialize : function() {
     if (!messageTriggers.initialized) {
@@ -32,42 +32,61 @@ var messageTriggers = {
   },
   attach : function() {
     messageTriggers.doInitialize();
-    var $warnings = $('div[id^="warning"]');
+    const $warnings = $('div[id^="warning"]');
+    function __alwaysWarning(event) {
+      const always = $('#warning-' + event.target.name).attr('always');
+      return (always && always === "true") || false;
+    }
+    function __getDefaultSelectValueAsString(event) {
+      return $('select[name="' + event.target.name + '"] option:first').val();
+    }
+    function __getInitialValueAsString(event, defaultValue) {
+      return $('#warning-' + event.target.name).attr('initialParamValue') || defaultValue;
+    }
+    function __displayConfirmation(event, rollbackCallback) {
+      event.stopPropagation();
+      let __rollback = rollbackCallback;
+      $('#warning-' + event.target.name).popup('confirmation', {
+        callback : function() {
+          __rollback = undefined;
+          return true;
+        },
+        callbackOnClose : function() {
+          if (typeof __rollback === 'function') {
+            __rollback();
+          }
+        }
+      });
+      return false;
+    }
     $warnings
         .on(
             'addConfirmationMessageEnds',
             function() {
-              var $this = $(this);
-              var html = $this.html()
-                  + '<br/><br/>'
-                  + sp.i18n.get('Warning.dialog.confirmation.message.end');
+              const $this = $(this);
+              const html = $this.html()
+                  + '<p>'
+                  + sp.i18n.get('Warning.dialog.confirmation.message.end')
+                  + '</p>';
               $this.html(html);
             }).prev().change(function(event) {
-              if (event.target.type == "checkbox") {
-                if (event.target.checked) {
-                  event.stopPropagation();
-                  event.target.checked = false;
-                  $('#warning-' + event.target.name).popup('confirmation', {
-                    callback : function() {
-                      event.target.checked = true;
-                      return true;
-                    }
+              const always = __alwaysWarning(event);
+              if (event.target.type === "checkbox") {
+                const newChecked = event.target.checked;
+                const previousChecked = __getInitialValueAsString(event, "false") === "true";
+                if (newChecked !== previousChecked && (always || newChecked)) {
+                  return __displayConfirmation(event, function() {
+                    event.target.checked = previousChecked;
                   });
-                  return false;
                 }
-              } else if (event.target.type == "select-one") {
-                if (event.target.value != "0") {
-                  var newValue = event.target.value;
-                  var previousValue = $('#warning-'+event.target.name).attr('initialParamValue');
-                  event.stopPropagation();
-                  event.target.value = previousValue;
-                  $('#warning-' + event.target.name).popup('confirmation', {
-                    callback : function() {
-                      event.target.value = newValue;
-                      return true;
-                    }
+              } else if (event.target.type === "select-one") {
+                const newValue = event.target.value;
+                const defaultValue = __getDefaultSelectValueAsString(event);
+                const previousValue = __getInitialValueAsString(event, defaultValue);
+                if (newValue !== previousValue && (always || newValue !== defaultValue)) {
+                  return __displayConfirmation(event, function() {
+                    event.target.value = previousValue;
                   });
-                  return false;
                 }
               }
               return true;

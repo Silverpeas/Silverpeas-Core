@@ -37,10 +37,14 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Instance parameter defined for an application component. An instance parameter is a
@@ -73,8 +77,7 @@ public class Parameter {
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected Map<String, String> help;
-  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected Map<String, String> warning;
+  protected Warning warning;
   protected String personalSpaceValue;
 
   public Parameter() {
@@ -95,13 +98,12 @@ public class Parameter {
     this.personalSpaceValue = param.personalSpaceValue;
 
     this.setHelp(new HashMap<>(param.getHelp()));
-    this.setWarning(new HashMap<>(param.getWarning()));
+    this.warning = ofNullable(param.warning).map(Warning::new).orElse(null);
     this.setLabel(new HashMap<>(param.getLabel()));
-    if (param.options == null) {
-      this.options = new ArrayList<>();
-    } else {
-      this.options = param.options.stream().map(Option::new).collect(Collectors.toList());
-    }
+    this.options = ofNullable(param.options).stream()
+        .flatMap(Collection::stream)
+        .map(Option::new)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -291,30 +293,19 @@ public class Parameter {
   }
 
   /**
-   * Gets the value of the warning property.
-   * @return possible object is {@link Multilang }
+   * Gets the warning data.
+   * @return {@link Warning} if any, null otherwise.
    */
-  public Map<String, String> getWarning() {
-    if (warning == null) {
-      warning = new HashMap<>();
-    }
-    return warning;
-  }
-
-  @SuppressWarnings("unused")
-  public String getWarning(String lang) {
-    if (getWarning().containsKey(lang)) {
-      return getWarning().get(lang);
-    }
-    return getWarning().get(DisplayI18NHelper.getDefaultLanguage());
+  public Optional<Warning> getWarning() {
+    return ofNullable(warning);
   }
 
   /**
    * Sets the value of the warning property.
-   * @param value allowed object is {@link Multilang }
+   * @param warning allowed object is {@link Warning }
    */
-  public void setWarning(Map<String, String> value) {
-    this.warning = value;
+  public void setWarning(Warning warning) {
+    this.warning = warning;
   }
 
   /**
@@ -391,5 +382,4 @@ public class Parameter {
       SilverLogger.getLogger(this).error("Error in loading XML templates. Parameter: " + name, ex);
     }
   }
-
 }

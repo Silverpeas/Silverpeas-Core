@@ -61,8 +61,8 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 			checked = "checked=\"checked\"";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
-    if (StringUtil.isDefined(parameter.getWarning())) {
-      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
+    if (parameter.getWarning().isPresent()) {
+      out.println("<div style=\"display: none;\" id=\"warning-" + parameter.getName() + "\">" + parameter.getWarning().get().getValue() + "</div>");
     }
 	} else if (parameter.isSelect() || parameter.isXmlTemplate()) {
 		List<LocalizedOption> options = parameter.getOptions();
@@ -82,9 +82,9 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 				out.println("<option value=\""+value+"\" "+selected+">"+name+"</option>");
 			}
 			out.println("</select>");
-      if (StringUtil.isDefined(parameter.getWarning())) {
-        out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\" initialParamValue=\"" +
-            parameter.getValue() + "\">"+parameter.getWarning()+"</div>");
+      if (parameter.getWarning().isPresent()) {
+        out.println("<div style=\"display: none;\" id=\"warning-" + parameter.getName() + "\"" +
+            " initialParamValue=\"" + parameter.getValue() + "\">" + parameter.getWarning().get().getValue() + "</div>");
       }
 		}
 	} else if (parameter.isRadio()) {
@@ -144,16 +144,13 @@ browseBar.setClickable(false);
 browseBar.setPath(resource.getString("JSPP.creationInstance"));
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-<link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
+<view:link href="/jobStartPagePeas/jsp/stylesheet/component.css"/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="javascript/component.js"></script>
-<script type="text/javascript" src="javascript/messages.js"></script>
+<view:script src="/jobStartPagePeas/jsp/javascript/component.js"/>
+<view:script src="/jobStartPagePeas/jsp/javascript/messages.js"/>
 <script type="text/javascript">
 function B_ANNULER_ONCLICK() {
 	location.href = "ListComponent";
@@ -227,11 +224,13 @@ function ifCorrectFormExecute(callback) {
 }
 
 function toDoOnLoad() {
+  setTimeout(function() {
     document.infoInstance.NameObject.focus();
+  }, 0);
 }
 </script>
-</head>
-<body id="admin-component" onload="javascript:toDoOnLoad()" class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part id="admin-component" onLoad="toDoOnLoad()" cssClass="page_content_admin">
 <form name="infoInstance" action="EffectiveCreateInstance" method="post">
 	<input type="hidden" name="ComponentName" value="<%=component.getName()%>"/>
 <%
@@ -336,5 +335,5 @@ out.println(window.printBefore());
 	out.println(window.printAfter());
 %>
 </form>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
