@@ -47,7 +47,7 @@ public class DefaultInstanceAccessControlExtension
       final String componentId, final AccessControlContext context,
       final Set<SilverpeasRole> userRoles) {
     final Optional<SilverpeasComponentInstance> optionalInstance = dataManager.getComponentInstance(componentId);
-    if (optionalInstance.isEmpty() || (!canAnonymousAccessInstance() && user.isAnonymous())) {
+    if (optionalInstance.isEmpty() || (!canAnonymousAccessInstance(context) && user.isAnonymous())) {
       return true;
     }
 
@@ -79,7 +79,7 @@ public class DefaultInstanceAccessControlExtension
     return false;
   }
 
-  protected boolean canAnonymousAccessInstance() {
+  protected boolean canAnonymousAccessInstance(final AccessControlContext context) {
     return true;
   }
 }
