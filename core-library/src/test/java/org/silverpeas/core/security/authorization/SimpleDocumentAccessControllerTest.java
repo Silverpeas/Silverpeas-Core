@@ -1910,7 +1910,7 @@ class SimpleDocumentAccessControllerTest {
       final PublicationAccessControl publicationAccessController =
           new PublicationAccessController(componentAccessController, nodeAccessController);
       testInstance =
-          new SimpleDocumentAccessController(componentAccessController, nodeAccessController,
+          new SimpleDocumentAccessController4Test(componentAccessController, nodeAccessController,
               publicationAccessController);
       userIsAnonymous = false;
       userHasGuestAccess = false;
@@ -2135,5 +2135,24 @@ class SimpleDocumentAccessControllerTest {
           times(Math.max(nbCallOfPublicationBmGetMainLocation, nbCallOfPublicationBmGetAllAliases)))
           .getAllLocations(any(PublicationPK.class));
     }
+  }
+
+  private static class SimpleDocumentAccessController4Test extends SimpleDocumentAccessController {
+
+    SimpleDocumentAccessController4Test(final ComponentAccessControl componentAccessController,
+        final NodeAccessControl nodeAccessController,
+        final PublicationAccessControl publicationAccessController) {
+      super(componentAccessController, nodeAccessController, publicationAccessController);
+    }
+
+    @Override
+    ComponentInstanceSimpleDocumentAccessControlExtension getComponentExtension(
+        final String instanceId) {
+      return new DefaultInstanceSimpleDocumentAccessControlExtension4Test();
+    }
+  }
+
+  private static class DefaultInstanceSimpleDocumentAccessControlExtension4Test
+      extends DefaultInstanceSimpleDocumentAccessControlExtension {
   }
 }

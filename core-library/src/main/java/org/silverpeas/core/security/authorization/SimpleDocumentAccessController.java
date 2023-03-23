@@ -78,6 +78,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   @Override
   public boolean isUserAuthorized(String userId, SimpleDocument object,
       final AccessControlContext context) {
+    getComponentExtension(object.getInstanceId()).beforeComputingAuthorizations(context);
     Set<SilverpeasRole> componentUserRoles = null;
     boolean componentAccessAuthorized = false;
 
@@ -195,6 +196,10 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
       }
     }
     return authorized;
+  }
+
+  ComponentInstanceSimpleDocumentAccessControlExtension getComponentExtension(final String instanceId) {
+    return ComponentInstanceSimpleDocumentAccessControlExtension.getByInstanceId(instanceId);
   }
 
   private boolean isFileAttachedToWysiwygDescriptionOfNode(String foreignId) {
