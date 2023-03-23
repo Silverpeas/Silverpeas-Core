@@ -28,8 +28,12 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * @author ehugonnet
@@ -39,6 +43,7 @@ public class LocalizedParameter {
   private final String lang;
   private final Parameter realParameter;
   private List<LocalizedOption> localizedOptions;
+  private LocalizedWarning localizedWarning;
 
   public LocalizedParameter(Parameter parameter, String lang) {
     this.realParameter = parameter;
@@ -52,11 +57,13 @@ public class LocalizedParameter {
     return realParameter.getHelp().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
-  public String getWarning() {
-    if (realParameter.getWarning().containsKey(lang)) {
-      return realParameter.getWarning().get(lang);
+  public Optional<LocalizedWarning> getWarning() {
+    if (localizedWarning == null) {
+      localizedWarning = realParameter.getWarning()
+          .map(w -> new LocalizedWarning(w, lang))
+          .orElse(null);
     }
-    return realParameter.getWarning().get(DisplayI18NHelper.getDefaultLanguage());
+    return ofNullable(localizedWarning);
   }
 
   public String getLabel() {

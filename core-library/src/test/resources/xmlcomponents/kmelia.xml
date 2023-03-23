@@ -282,6 +282,37 @@
         <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</message>
         <message lang="en">Attachments are versioned. This parameter isdefined on the creation of the component and can't be updated.</message>
       </help>
+      <warning always="true">
+        <message lang="fr">Le fait d'activer le suivi de versions entraîne la création d'une
+          version publique (v1.0) pour chaque fichier contenu dans l'application.&lt;/br&gt;A
+          l'inverse, si le suivi de versions est désactivé alors chaque fichier joint
+          versionné ne le sera plus. Dans ce cas, la dernière version publique sera préservée.
+          Toutes les autres versions (publiques ou de travail) seront définitivement
+          supprimées.&lt;p&gt;Que ce paramètre soit coché ou non, il est également possible
+          d'activer/désactiver le suivi de versions au niveau de chaque fichier dans
+          l'application.&lt;/p&gt;&lt;p&gt;Attention, le temps de traitement est en rapport
+          avec la volumétrie (fichiers) de l'application.&lt;/p&gt;
+        </message>
+        <message lang="en">Enabling version tracking will create a public version (v1.0) for
+          each file in the application.&lt;/br&gt;Conversely, if version tracking is disabled
+          then each versioned attachment will no longer be versioned. In this case, the latest
+          public version will be preserved. All other versions (public or working) will be
+          permanently deleted.&lt;p&gt;Whether this setting is checked or not, it is also
+          possible to enable/disable version tracking at the level of each file in the
+          application.&lt;/p&gt;&lt;p&gt;Please note that the processing time is related to
+          the volume (files) of the application.&lt;/p&gt;
+        </message>
+        <message lang="de">Wenn Sie die Versionsverfolgung aktivieren, wird für jede Datei in
+          der Anwendung eine öffentliche Version (v1.0) erstellt.&lt;/br&gt;Ist die
+          Versionsverfolgung hingegen deaktiviert, wird jeder versionierte Anhang nicht mehr
+          versioniert. In diesem Fall wird die letzte öffentliche Version beibehalten. Alle
+          anderen Versionen (öffentlich oder in Arbeit) werden dauerhaft gelöscht.&lt;p&gt;Unabhängig
+          davon, ob diese Einstellung aktiviert ist oder nicht, ist es auch möglich, die
+          Versionskontrolle auf der Ebene der einzelnen Dateien in der Anwendung zu
+          aktivieren/deaktivieren.&lt;/p&gt;&lt;p&gt;Bitte beachten Sie, dass die
+          Bearbeitungszeit vom Umfang (Dateien) des Antrags abhängt.&lt;/p&gt;
+        </message>
+      </warning>
     </parameter>
     <parameter>
       <name>versionUseFileRights</name>
