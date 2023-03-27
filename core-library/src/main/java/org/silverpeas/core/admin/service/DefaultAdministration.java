@@ -842,7 +842,7 @@ class DefaultAdministration implements Administration {
   public ComponentInst getComponentInst(String sClientComponentId) throws AdminException {
     try {
       ComponentInst componentInst =
-          getComponentInst(getDriverComponentId(sClientComponentId), null);
+          getComponentInst(getDriverComponentId(sClientComponentId));
       componentInst =
           checkComponentInstanceById(componentInst, sClientComponentId, nullComponentInstSupplier);
       Objects.requireNonNull(componentInst);
@@ -882,22 +882,21 @@ class DefaultAdministration implements Administration {
 
   private final Supplier<ComponentInst> nullComponentInstSupplier = () -> {
     try {
-      return getComponentInst(-1, -1);
+      return getComponentInst(-1);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
       return null;
     }
   };
 
-  private ComponentInst getComponentInst(int componentId, Integer fatherDriverSpaceId)
-      throws AdminException {
+  private ComponentInst getComponentInst(int componentId) throws AdminException {
     try {
       // Get the component instance
       Optional<ComponentInst> optionalInstance = cache.getComponentInst(componentId);
       final ComponentInst componentInst;
       if (optionalInstance.isEmpty()) {
         // Get component instance from database
-        componentInst = componentManager.getComponentInst(componentId, fatherDriverSpaceId);
+        componentInst = componentManager.getComponentInst(componentId);
         // Store component instance in cache
         cache.putComponentInst(componentInst);
       } else {
@@ -1120,7 +1119,7 @@ class DefaultAdministration implements Administration {
       int sDriverComponentId = getDriverComponentId(componentId);
 
       // Get the component to delete
-      ComponentInst componentInst = getComponentInst(sDriverComponentId, null);
+      ComponentInst componentInst = getComponentInst(sDriverComponentId);
       componentInst =
           checkComponentInstanceById(componentInst, componentId, nullComponentInstSupplier);
       Objects.requireNonNull(componentInst);
@@ -1759,7 +1758,7 @@ class DefaultAdministration implements Administration {
       profileInst.setId(sProfileId);
 
       if (profileInst.getObjectId().isNotDefined() || profileInst.getObjectId().isRootNode()) {
-        ComponentInst componentInstFather = getComponentInst(driverFatherId, null);
+        ComponentInst componentInstFather = getComponentInst(driverFatherId);
         componentInstFather =
             checkComponentInstanceById(componentInstFather, String.valueOf(driverFatherId),
                 nullComponentInstSupplier);
@@ -1789,7 +1788,7 @@ class DefaultAdministration implements Administration {
       if (StringUtil.isDefined(userId) &&
           (profile.getObjectId().isNotDefined() || profile.getObjectId().isRootNode())) {
         final int driverFatherId = profile.getComponentFatherId();
-        ComponentInst component = getComponentInst(driverFatherId, null);
+        ComponentInst component = getComponentInst(driverFatherId);
         component = checkComponentInstanceById(component, String.valueOf(driverFatherId),
             nullComponentInstSupplier);
         Objects.requireNonNull(component);
@@ -1824,7 +1823,7 @@ class DefaultAdministration implements Administration {
       if (StringUtil.isDefined(userId) &&
           (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode())) {
         final int driverFatherId = newProfile.getComponentFatherId();
-        ComponentInst component = getComponentInst(driverFatherId, null);
+        ComponentInst component = getComponentInst(driverFatherId);
         component = checkComponentInstanceById(component, String.valueOf(driverFatherId),
             nullComponentInstSupplier);
         Objects.requireNonNull(component);
@@ -3783,7 +3782,7 @@ class DefaultAdministration implements Administration {
       final List<Integer> componentIds = componentManager.getComponentIds(param);
       final List<ComponentInstLight> components = new ArrayList<>();
       for (Integer id : componentIds) {
-        ComponentInst component = getComponentInst(id, null);
+        ComponentInst component = getComponentInst(id);
         // check TreeCache to know if component is not removed nor is into a removed space
         Optional<ComponentInstLight> componentLight = treeCache.getComponent(component.getId());
         componentLight.filter(c -> !c.isRemoved()).ifPresent(components::add);
@@ -3882,13 +3881,12 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public UserDetail[] getUsers(boolean bAllProfiles, String sProfile, String sClientSpaceId,
-      String sClientComponentId) throws AdminException {
+  public UserDetail[] getUsers(boolean bAllProfiles, String sProfile, String sClientComponentId)
+      throws AdminException {
     ArrayList<String> alUserIds = new ArrayList<>();
 
     try {
-      ComponentInst componentInst = getComponentInst(getDriverComponentId(sClientComponentId),
-          getDriverSpaceId(sClientSpaceId));
+      ComponentInst componentInst = getComponentInst(getDriverComponentId(sClientComponentId));
       componentInst =
           checkComponentInstanceById(componentInst, sClientComponentId, nullComponentInstSupplier);
       Objects.requireNonNull(componentInst);
@@ -5825,7 +5823,7 @@ class DefaultAdministration implements Administration {
     for (String profileId : sourceComponentProfileIds) {
       ProfileInst currentSourceProfile = getProfileInst(profileId);
       ComponentInst currentComponent =
-          getComponentInst(currentSourceProfile.getComponentFatherId(), null);
+          getComponentInst(currentSourceProfile.getComponentFatherId());
       String spaceId = currentComponent.getDomainFatherId();
       SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
       if (currentComponent.getStatus() == null && spaceInst != null &&
@@ -5869,7 +5867,7 @@ class DefaultAdministration implements Administration {
     for (String profileId : componentProfileIdsForTarget) {
       ProfileInst currentTargetProfile = getProfileInst(profileId);
       ComponentInst currentComponent =
-          getComponentInst(currentTargetProfile.getComponentFatherId(), null);
+          getComponentInst(currentTargetProfile.getComponentFatherId());
       String spaceId = currentComponent.getDomainFatherId();
       SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
 

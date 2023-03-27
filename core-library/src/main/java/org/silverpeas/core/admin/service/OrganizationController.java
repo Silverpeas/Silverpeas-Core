@@ -280,7 +280,7 @@ public interface OrganizationController extends java.io.Serializable {
    * Return all the users with the given profile allowed to access the given component of the given
    * space
    */
-  <T extends User> T[] getUsers(String sPrefixTableName, String sComponentName, String sProfile);
+  <T extends User> T[] getUsers(String componentId, String profile);
 
   /**
    * Gets the collection of silverpeas roles the given user has on the component instance

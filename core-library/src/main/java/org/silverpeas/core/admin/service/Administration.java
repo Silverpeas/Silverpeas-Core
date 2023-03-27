@@ -1228,12 +1228,10 @@ public interface Administration {
    * given component if bAllProfiles = false, return the user details only for the given profile for
    * the given space and given component
    * @param sProfile the identifier of a profile
-   * @param sClientSpaceId the unique identifier of a space
    * @param sClientComponentId the unique identifier of a component instance.
    * @throws AdminException if an error occurs
    */
-  UserDetail[] getUsers(boolean bAllProfiles, String sProfile, String sClientSpaceId,
-      String sClientComponentId) throws AdminException;
+  UserDetail[] getUsers(boolean bAllProfiles, String sProfile, String sClientComponentId) throws AdminException;
 
   /**
    * For use in userPanel : return the direct {@link GroupState#VALID} subgroups.

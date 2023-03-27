@@ -329,7 +329,7 @@ public class DefaultOrganizationController implements OrganizationController {
   public UserDetail[] getAllUsers(String componentId) {
     try {
       if (componentId != null) {
-        return getAdminService().getUsers(true, null, null, componentId);
+        return getAdminService().getUsers(true, null, componentId);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -464,14 +464,11 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @SuppressWarnings("unchecked")
   @Override
-  public UserDetail[] getUsers(String sPrefixTableName, String sComponentName, String sProfile) {
+  public UserDetail[] getUsers(String componentId, String profile) {
     try {
       UserDetail[] aUserDetail = null;
-
-      if (sPrefixTableName != null && sComponentName != null) {
-        aUserDetail = getAdminService().getUsers(false, sProfile, sPrefixTableName,
-            sComponentName);
-
+      if (componentId != null) {
+        aUserDetail = getAdminService().getUsers(false, profile, componentId);
       }
       return aUserDetail;
     } catch (Exception e) {

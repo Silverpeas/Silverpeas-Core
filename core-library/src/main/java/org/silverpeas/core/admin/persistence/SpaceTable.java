@@ -208,19 +208,6 @@ public class SpaceTable extends Table<SpaceRow> {
           SpaceInst.STATUS_REMOVED + "'" + " order by removeTime desc";
 
   /**
-   * Returns the Space of a given component instance.
-   * @param instanceId
-   * @return the Space of a given component instance.
-   * @throws SQLException
-   */
-  public SpaceRow getSpaceOfInstance(int instanceId) throws SQLException {
-    return getUniqueRow(SELECT_INSTANCE_SPACE, instanceId);
-  }
-
-  private static final String SELECT_INSTANCE_SPACE = SELECT + aliasColumns("s", SPACE_COLUMNS) +
-      " from ST_Space s, ST_ComponentInstance i where s.id = i.spaceId and i.id = ?";
-
-  /**
    * Returns all the space ids having a given superSpace.
    * @param superSpaceId
    * @return all the space ids having a given superSpace.
