@@ -33,7 +33,6 @@ import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNo
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
-import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.annotation.Service;
@@ -221,32 +220,63 @@ public class ComponentInstManager {
   }
 
   /**
-   * Get component instance with the given id
-   *
-   * @param localComponentId
-   * @param spaceLocalId
-   * @return
-   * @throws AdminException
+   * Get component instance with the given id.
+   * @param componentId the unique component instance id.
+   * @return {@link ComponentInst} instance.
+   * @throws AdminException in case of technical error.
    */
-  public ComponentInst getComponentInst(int localComponentId, Integer spaceLocalId)
-      throws AdminException {
-    Integer fatherLocalId = spaceLocalId;
-    if (fatherLocalId == null) {
-      try {
-        SpaceRow space = organizationSchema.space().getSpaceOfInstance(localComponentId);
-        if (space == null) {
-          space = new SpaceRow();
-        }
-        fatherLocalId = space.id;
-      } catch (Exception e) {
-        throw new AdminException(failureOnGetting(COMPONENT, String.valueOf(localComponentId)), e);
-      }
-    }
-
-    ComponentInst componentInst = new ComponentInst();
+  public ComponentInst getComponentInst(int componentId) throws AdminException {
+    final ComponentInst componentInst = new ComponentInst();
     componentInst.removeAllProfilesInst();
-    this.setComponentInst(componentInst, localComponentId, fatherLocalId);
-
+    try {
+      // Load the component detail
+      final ComponentInstanceRow instance = organizationSchema.instance()
+          .getComponentInstance(componentId);
+      if (instance != null) {
+        // Set the attributes of the component Inst
+        componentInst.setLocalId(instance.id);
+        componentInst.setName(instance.componentName);
+        componentInst.setLabel(instance.name);
+        componentInst.setDescription(instance.description);
+        componentInst.setDomainFatherId(idAsString(instance.spaceId));
+        componentInst.setOrderNum(instance.orderNum);
+        if (instance.createTime != null) {
+          componentInst.setCreationDate(new Date(Long.parseLong(instance.createTime)));
+        }
+        if (instance.updateTime != null) {
+          componentInst.setLastUpdateDate(new Date(Long.parseLong(instance.updateTime)));
+        }
+        if (instance.removeTime != null) {
+          componentInst.setRemovalDate(new Date(Long.parseLong(instance.removeTime)));
+        }
+        componentInst.setCreatorUserId(idAsString(instance.createdBy));
+        componentInst.setUpdaterUserId(idAsString(instance.updatedBy));
+        componentInst.setRemoverUserId(idAsString(instance.removedBy));
+        componentInst.setStatus(instance.status);
+        // Get the parameters if any
+        final List<Parameter> parameters = organizationSchema.instanceData()
+            .getAllParametersInComponent(componentId);
+        componentInst.setParameters(parameters);
+        // Get the profiles
+        final String[] asProfileIds = organizationSchema.userRole()
+            .getAllUserRoleIdsOfInstance(componentInst.getLocalId());
+        // Insert the profileInst in the componentInst
+        for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
+          final ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
+          componentInst.addProfileInst(profileInst);
+        }
+        componentInst.setLanguage(instance.lang);
+        // translations
+        loadTranslations(componentInst, instance);
+        componentInst.setPublic(instance.publicAccess == 1);
+        componentInst.setHidden(instance.hidden == 1);
+        componentInst.setInheritanceBlocked(instance.inheritanceBlocked == 1);
+      } else {
+        SilverLogger.getLogger(this).error("Component instance " + componentId + " not found!");
+      }
+    } catch (SQLException e) {
+      throw new AdminException(failureOnUpdate(COMPONENT, componentId), e);
+    }
     return componentInst;
   }
 
@@ -289,72 +319,6 @@ public class ComponentInstManager {
       throw new AdminException(failureOnGetting(COMPONENT, compLocalId), e);
     }
     return compoLight;
-  }
-
-  /*
-   * Get component instance information with given component id
-   */
-  public void setComponentInst(ComponentInst componentInst, int compLocalId, int fatherId)
-      throws AdminException {
-    try {
-      // Load the component detail
-      ComponentInstanceRow instance = organizationSchema.instance().getComponentInstance(
-          compLocalId);
-
-      if (instance != null) {
-        // Set the attributes of the component Inst
-        componentInst.setLocalId(instance.id);
-        componentInst.setName(instance.componentName);
-        componentInst.setLabel(instance.name);
-        componentInst.setDescription(instance.description);
-        componentInst.setDomainFatherId(idAsString(fatherId));
-        componentInst.setOrderNum(instance.orderNum);
-
-        if (instance.createTime != null) {
-          componentInst.setCreationDate(new Date(Long.parseLong(instance.createTime)));
-        }
-        if (instance.updateTime != null) {
-          componentInst.setLastUpdateDate(new Date(Long.parseLong(instance.updateTime)));
-        }
-        if (instance.removeTime != null) {
-          componentInst.setRemovalDate(new Date(Long.parseLong(instance.removeTime)));
-        }
-
-        componentInst.setCreatorUserId(idAsString(instance.createdBy));
-        componentInst.setUpdaterUserId(idAsString(instance.updatedBy));
-        componentInst.setRemoverUserId(idAsString(instance.removedBy));
-
-        componentInst.setStatus(instance.status);
-
-        // Get the parameters if any
-        List<Parameter> parameters = organizationSchema.instanceData()
-            .getAllParametersInComponent(compLocalId);
-        componentInst.setParameters(parameters);
-
-        // Get the profiles
-        String[] asProfileIds = organizationSchema.userRole().getAllUserRoleIdsOfInstance(
-            componentInst.getLocalId());
-
-        // Insert the profileInst in the componentInst
-        for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
-          ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
-          componentInst.addProfileInst(profileInst);
-        }
-
-        componentInst.setLanguage(instance.lang);
-
-        // translations
-        loadTranslations(componentInst, instance);
-
-        componentInst.setPublic(instance.publicAccess == 1);
-        componentInst.setHidden(instance.hidden == 1);
-        componentInst.setInheritanceBlocked(instance.inheritanceBlocked == 1);
-      } else {
-        SilverLogger.getLogger(this).error("Component instance " + compLocalId + " not found!");
-      }
-    } catch (SQLException e) {
-      throw new AdminException(failureOnUpdate(COMPONENT, compLocalId), e);
-    }
   }
 
   /**

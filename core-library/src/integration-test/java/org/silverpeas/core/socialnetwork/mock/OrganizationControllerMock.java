@@ -256,8 +256,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] getUsers(final String sPrefixTableName, final String sComponentName,
-      final String sProfile) {
+  public UserDetail[] getUsers(final String componentId, final String profile) {
     return new UserDetail[0];
   }
 

@@ -227,8 +227,7 @@ public class SpaceInstManager {
           spaceInstLocalId);
       final List<ComponentInst> components = new ArrayList<>(asCompoIds.length);
       for (String componentId : asCompoIds) {
-        ComponentInst componentInst =
-            componentInstManager.getComponentInst(idAsInt(componentId), spaceInstLocalId);
+        ComponentInst componentInst = componentInstManager.getComponentInst(idAsInt(componentId));
         WAComponent.getByName(componentInst.getName())
             .ifPresent(waComponent -> components.add(componentInst));
       }
