@@ -41,6 +41,7 @@
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="java.util.Objects" %>
 <%@ page import="java.util.stream.Collectors" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManager" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.HistorisedDocument" %>
@@ -87,7 +88,9 @@
   <view:settings var="onlineEditingWithCustomProtocolAlert" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${true}" key="attachment.onlineEditing.customProtocol.alert" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
   <c:set var="dndDisabledLocally" value="${silfn:isDefined(param.dnd) and not silfn:booleanValue(param.dnd)}" scope="page"/>
-  <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable && not dndDisabledLocally}" />
+  <c:set var="isHugeProcessProcessing" value='<%=AttachmentHugeProcessManager.get().isOneRunningOnInstance(request.getParameter("ComponentId"))%>' />
+  <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled and dAndDropEnable and not dndDisabledLocally}" />
+  <c:set var="dragAndDropEnable" value="${dragAndDropEnable and not isHugeProcessProcessing}" />
 
   <c:set var="handledSubscriptionType" value="${param.HandledSubscriptionType}"/>
   <c:set var="handledSubscriptionResourceId" value="${param.HandledSubscriptionResourceId}"/>
@@ -113,6 +116,7 @@
   <jsp:useBean id="userProfile" type="java.lang.String"/>
   <c:set var="highestUserRole" value='<%=SilverpeasRole.fromString(request.getParameter("Profile"))%>' scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
+  <c:set var="contextualMenuEnabled" value="${contextualMenuEnabled and not isHugeProcessProcessing}" scope="page" />
   <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
   <c:choose>
     <c:when test="${contextualMenuEnabled}">
@@ -241,6 +245,11 @@
 <c:if test="${!empty pageScope.attachments || 'user' != userProfile}">
 <div id="attachmentDragAndDrop${domIdSuffix}" class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
+  <c:if test="${isHugeProcessProcessing}">
+    <div class="attachment-creation-actions inlineMessage">
+      <fmt:message key="attachment.treatment.huge.processing"/>
+    </div>
+  </c:if>
   <c:if test="${contextualMenuEnabled}">
   <div class="attachment-creation-actions">
     <a class="menubar-creation-actions-item menubar-creation-actions-move-ignored"
@@ -273,7 +282,9 @@
                              fromAlias="${fromAlias}"
                              userRole="${highestUserRole}"/>
         <span class="lineMain ${forbiddenDownloadClass}">
-            <img alt="" id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
+            <c:if test="${not isHugeProcessProcessing}">
+              <img alt="" id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
+            </c:if>
             <c:if test="${showIcon}">
               <img alt="" id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
             </c:if>

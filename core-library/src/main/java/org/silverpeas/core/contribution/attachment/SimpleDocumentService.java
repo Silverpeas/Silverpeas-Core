@@ -38,6 +38,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEventNotifier;
 import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
+import org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcess;
+import org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManager;
+import org.silverpeas.core.contribution.attachment.process.huge.PreventAttachmentHugeProcess;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
@@ -226,8 +229,9 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName) {
+  public void addXmlForm(@SourcePK SimpleDocumentPK pk, String language, String xmlFormName) {
     try (JcrSession session = openSystemSession()) {
       SimpleDocument doc = repository.findDocumentById(session, pk, language);
       doc.setXmlFormId(xmlFormName);
@@ -245,6 +249,7 @@ public class SimpleDocumentService
    * @return the stored document.
    * @throws AttachmentException
    */
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -261,6 +266,7 @@ public class SimpleDocumentService
    * otherwhise.
    * @return the stored document.
    */
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -279,6 +285,7 @@ public class SimpleDocumentService
    * <code>false</code> otherwise.
    * @return the stored document.
    */
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -310,8 +317,9 @@ public class SimpleDocumentService
    * Delete a given attachment.
    * @param document the document to deleted.
    */
+  @PreventAttachmentHugeProcess
   @Override
-  public void deleteAttachment(SimpleDocument document) {
+  public void deleteAttachment(@SourceObject SimpleDocument document) {
     deleteAttachment(document, true);
   }
 
@@ -330,8 +338,9 @@ public class SimpleDocumentService
    * @param notify <code>true</code> to notify about the deletion of an attachment,
    * <code>false</code> otherwise.</code>
    */
+  @PreventAttachmentHugeProcess
   @Override
-  public void deleteAttachment(SimpleDocument document, boolean notify) {
+  public void deleteAttachment(@SourceObject SimpleDocument document, boolean notify) {
     try (JcrSession session = openSystemSession()) {
       deleteAttachment(session, document, notify);
       session.save();
@@ -399,6 +408,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.UPDATE)
   @Override
@@ -435,6 +445,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.UPDATE)
   @Override
@@ -478,8 +489,9 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public void removeContent(SimpleDocument document, String lang, boolean notify) {
+  public void removeContent(@SourceObject SimpleDocument document, String lang, boolean notify) {
     try (JcrSession session = openSystemSession()) {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
@@ -527,8 +539,9 @@ public class SimpleDocumentService
    * @param foreignCloneId
    * @return
    */
+  @PreventAttachmentHugeProcess
   @Override
-  public SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId) {
+  public SimpleDocumentPK cloneDocument(@SourceObject SimpleDocument original, String foreignCloneId) {
     try (JcrSession session = openSystemSession();
          InputStream in = new FileInputStream(original.getAttachmentPath())) {
       SimpleDocumentPK clonePk = repository
@@ -549,6 +562,7 @@ public class SimpleDocumentService
    * @param targetPk
    * @return
    */
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -575,6 +589,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -601,6 +616,11 @@ public class SimpleDocumentService
       for (SimpleDocumentPK pk : pks) {
         list.add(repository.findDocumentById(session, pk, null));
       }
+      final AttachmentHugeProcessManager attachmentHugeProcessManager = AttachmentHugeProcessManager.get();
+      list.stream()
+          .map(SimpleDocument::getInstanceId)
+          .distinct()
+          .forEach(attachmentHugeProcessManager::checkNoOneIsRunningOnInstance);
       reorderDocuments(session, list);
       session.save();
     } catch (RepositoryException ex) {
@@ -615,6 +635,11 @@ public class SimpleDocumentService
    */
   @Override
   public void reorderDocuments(List<SimpleDocument> documents) {
+    final AttachmentHugeProcessManager attachmentHugeProcessManager = AttachmentHugeProcessManager.get();
+    documents.stream()
+        .map(SimpleDocument::getInstanceId)
+        .distinct()
+        .forEach(attachmentHugeProcessManager::checkNoOneIsRunningOnInstance);
     try (JcrSession session = openSystemSession()) {
       reorderDocuments(session, documents);
       session.save();
@@ -692,6 +717,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.UPDATE)
   @Override
@@ -713,6 +739,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -721,6 +748,7 @@ public class SimpleDocumentService
     return createAttachment(document, content, true);
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -729,6 +757,7 @@ public class SimpleDocumentService
     return createAttachment(document, content, indexIt, true);
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
@@ -755,6 +784,7 @@ public class SimpleDocumentService
       SimpleDocument document = repository
           .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
               contentLanguage);
+      AttachmentHugeProcessManager.get().checkNoOneIsRunningOnInstance(document.getInstanceId());
       SimpleDocument docBeforeUpdate = new SimpleDocument(document);
       contentLanguage = document.getLanguage();
       boolean updateOfficeContentFromWebDav =
@@ -853,6 +883,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId);
       SimpleDocument document = repository.findDocumentById(session, pk, language);
+      AttachmentHugeProcessManager.get().checkNoOneIsRunningOnInstance(document.getInstanceId());
       if (document.isEdited()) {
         return document.getEditedBy().equals(userId);
       }
@@ -881,8 +912,9 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
+  public SimpleDocumentPK changeVersionState(@SourcePK SimpleDocumentPK pk, String comment) {
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK updatedPk = repository.changeVersionState(session, pk, comment);
       session.save();
@@ -940,6 +972,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -959,6 +992,7 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1006,9 +1040,10 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public Map<String, String> mergeDocuments(ResourceReference originalForeignKey, ResourceReference cloneForeignKey,
-      DocumentType type) {
+  public Map<String, String> mergeDocuments(@SourcePK ResourceReference originalForeignKey,
+      @TargetPK ResourceReference cloneForeignKey, DocumentType type) {
     try (JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
       List<SimpleDocument> attachments =
@@ -1062,8 +1097,9 @@ public class SimpleDocumentService
     return result;
   }
 
+  @AttachmentHugeProcess
   @Override
-  public void switchComponentBehaviour(String componentId, boolean toVersionning) {
+  public void switchComponentBehaviour(@SourceObject String componentId, boolean toVersionning) {
     try (JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
       List<SimpleDocument> attachments = repository
@@ -1080,8 +1116,9 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk, final boolean allowing) {
+  public void switchAllowingDownloadForReaders(@SourcePK final SimpleDocumentPK pk, final boolean allowing) {
     SimpleDocument document = searchDocumentById(pk, null);
     final boolean documentUpdateRequired;
     if (allowing) {
@@ -1103,8 +1140,9 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public void switchEnableDisplayAsContent(final SimpleDocumentPK pk, final boolean enable) {
+  public void switchEnableDisplayAsContent(@SourcePK final SimpleDocumentPK pk, final boolean enable) {
     SimpleDocument document = searchDocumentById(pk, null);
     final boolean documentUpdateRequired = enable != document.isDisplayableAsContent();
 
@@ -1120,8 +1158,9 @@ public class SimpleDocumentService
     }
   }
 
+  @PreventAttachmentHugeProcess
   @Override
-  public void switchEnableEditSimultaneously(final SimpleDocumentPK pk, final boolean enable) {
+  public void switchEnableEditSimultaneously(@SourcePK final SimpleDocumentPK pk, final boolean enable) {
     SimpleDocument document = searchDocumentById(pk, null);
     document.editableSimultaneously().ifPresent(e -> {
       final boolean documentUpdateRequired = enable != e;
