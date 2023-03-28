@@ -38,13 +38,14 @@
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.core.ResourceReference" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManager" %>
 <%@ include file="checkAttachment.jsp"%>
 <view:setConstant var="spinfire" constant="org.silverpeas.core.util.MimeTypes.SPINFIRE_MIME_TYPE" />
 <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
-<view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
 <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
-<c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
+<c:set var="isHugeProcessProcessing" value='<%=AttachmentHugeProcessManager.get().isOneRunningOnInstance(request.getParameter("ComponentId"))%>' />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
+<c:set var="dragAndDropEnable" value="${dragAndDropEnable and not isHugeProcessProcessing}" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <c:set var="id" value="${param.Id}" />
@@ -117,7 +118,9 @@
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
-<script type="text/javascript" language='Javascript'>
+<script type="text/javascript">
+
+<c:if test="${not isHugeProcessProcessing}">
 
   function moveAttachmentUp(id) {
     $.ajax({
@@ -380,6 +383,7 @@
       width : 400
     });
   });
+</c:if>
 
   function reloadPage() {
     location.reload();
@@ -399,6 +403,11 @@
 </script>
 <div style="text-align: center;">
   <view:board classes="attachmentDragAndDrop${id}">
+  <c:if test="${isHugeProcessProcessing}">
+    <div class="attachment-creation-actions inlineMessage" style="margin-bottom: 10px">
+      <fmt:message key="attachment.treatment.huge.processing"/>
+    </div>
+  </c:if>
   <table border="0" width="100%">
     <tr>
       <td><!--formulaire de gestion des fichiers joints -->
@@ -413,7 +422,9 @@
               <td align="left"><b><fmt:message key="GML.description" /></b></td>
               <td align="left"><b><fmt:message key="GML.size" /></b></td>
               <td align="left"><b><fmt:message key="uploadDate" /></b></td>
-              <td align="center"><b><fmt:message key="GML.operations" /></b></td>
+              <c:if test="${not isHugeProcessProcessing}">
+                <td align="center"><b><fmt:message key="GML.operations" /></b></td>
+              </c:if>
             </tr>
             <tr>
               <td colspan="8" align="center" class="intfdcolor" height="1"><img src='${noColorPix}' alt="" /></td>
@@ -485,28 +496,30 @@
                 </td>
                 <td class="odd" align="left"><c:out value="${view:humanReadableSize(varAttachment.size)}" /></td>
                 <td class="odd" align="left"><view:formatDate language="${sessionScope.SilverSessionController.favoriteLanguage}" value="${varAttachment.creationDate}"/></td>
-                <td class="odd" align="right">
-                  <view:icons>
-                    <view:icon iconName="${updateIcon}" altText="${updateIconMsg}" action="javascript:updateAttachment(\'${varAttachment.id}\', \'${varAttachment.language}\');"/>
-                    <view:icon iconName="${deleteIcon}" altText="${deleteIconMsg}" action="javascript:deleteAttachment(\'${varAttachment.id}\',\'${silfn:escapeJs(varAttachment.filename)}\');"/>
-                    <c:choose>
-                      <c:when test="${! attachmentIterStatus.last}">
-                        <view:icon iconName="${moveDownIcon}" altText="${moveDownIconMsg}" action="javascript:moveAttachmentDown(\'${varAttachment.id}\');"/>
-                      </c:when>
-                      <c:otherwise>
-                        <view:icon iconName="${ArrayPnoColorPix}" altText="" action=""/>
-                      </c:otherwise>
-                    </c:choose>
-                   <c:choose>
-                      <c:when test="${! attachmentIterStatus.first}">
-                        <view:icon iconName="${moveUpIcon}" altText="${moveUpIconMsg}" action="javascript:moveAttachmentUp(\'${varAttachment.id}\');"/>
-                      </c:when>
-                      <c:otherwise>
-                        <view:icon iconName="${ArrayPnoColorPix}" altText="" action=""/>
-                      </c:otherwise>
-                    </c:choose>
-                  </view:icons>
-                </td>
+                <c:if test="${not isHugeProcessProcessing}">
+                  <td class="odd" align="right">
+                    <view:icons>
+                      <view:icon iconName="${updateIcon}" altText="${updateIconMsg}" action="javascript:updateAttachment(\'${varAttachment.id}\', \'${varAttachment.language}\');"/>
+                      <view:icon iconName="${deleteIcon}" altText="${deleteIconMsg}" action="javascript:deleteAttachment(\'${varAttachment.id}\',\'${silfn:escapeJs(varAttachment.filename)}\');"/>
+                      <c:choose>
+                        <c:when test="${! attachmentIterStatus.last}">
+                          <view:icon iconName="${moveDownIcon}" altText="${moveDownIconMsg}" action="javascript:moveAttachmentDown(\'${varAttachment.id}\');"/>
+                        </c:when>
+                        <c:otherwise>
+                          <view:icon iconName="${ArrayPnoColorPix}" altText="" action=""/>
+                        </c:otherwise>
+                      </c:choose>
+                     <c:choose>
+                        <c:when test="${! attachmentIterStatus.first}">
+                          <view:icon iconName="${moveUpIcon}" altText="${moveUpIconMsg}" action="javascript:moveAttachmentUp(\'${varAttachment.id}\');"/>
+                        </c:when>
+                        <c:otherwise>
+                          <view:icon iconName="${ArrayPnoColorPix}" altText="" action=""/>
+                        </c:otherwise>
+                      </c:choose>
+                    </view:icons>
+                  </td>
+                </c:if>
               </tr>
             </c:forEach>
           <tr>
@@ -517,48 +530,51 @@
     </tr>
   </table>
 </view:board>
-<br />
+<c:if test="${not isHugeProcessProcessing}">
+  <br />
   <fmt:message key="GML.add" var="addLabel" />
   <view:buttonPane>
     <view:button action="javascript:addAttachment()" label="${addLabel}" />
   </view:buttonPane>
+</c:if>
 </div>
 
+<c:if test="${not isHugeProcessProcessing}">
+  <div id="dialog-attachment-update" style="display:none">
+    <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
+      <label for="fileName"><fmt:message key="GML.file" /></label><br/>
+      <span id="fileName"></span><br/>
+      <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
+      <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
+      <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
+      <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" includeLabel="true" /><br/>
+      <label for="fileTitle"><fmt:message key="Title"/></label><br/>
+      <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
+      <label for="fileDescription"><fmt:message key="GML.description" /></label><br/>
+      <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
+      <input type="submit" value="Submit" style="display:none" />
+    </form>
+  </div>
+  <div id="dialog-attachment-add" style="display:none">
+    <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
+      <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
+      <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
+      <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />
+      <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
+      <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>
+      <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" includeLabel="true" /><br/>
+      <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
+      <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
+      <label for="fileDescriptionCreate"><fmt:message key="GML.description" /></label><br/>
+      <textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea><br/>
+      <input type="submit" value="Submit" style="display:none" />
+    </form>
+  </div>
 
-<div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
-    <label for="fileName"><fmt:message key="GML.file" /></label><br/>
-    <span id="fileName"></span><br/>
-    <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
-    <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
-    <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
-    <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" includeLabel="true" /><br/>
-    <label for="fileTitle"><fmt:message key="Title"/></label><br/>
-    <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
-    <label for="fileDescription"><fmt:message key="GML.description" /></label><br/>
-    <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
-    <input type="submit" value="Submit" style="display:none" />
-  </form>
-</div>
-<div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
-    <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
-    <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />
-    <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
-    <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>
-    <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" includeLabel="true" /><br/>
-    <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
-    <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
-    <label for="fileDescriptionCreate"><fmt:message key="GML.description" /></label><br/>
-    <textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea><br/>
-    <input type="submit" value="Submit" style="display:none" />
-  </form>
-</div>
-
-<div id="dialog-attachment-delete" style="display:none">
-  <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-</div>
+  <div id="dialog-attachment-delete" style="display:none">
+    <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
+  </div>
+</c:if>
 
 <view:progressMessage/>
 

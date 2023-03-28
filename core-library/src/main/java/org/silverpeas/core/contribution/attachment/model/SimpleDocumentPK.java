@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.util.StringUtil;
-
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  *
  * @author ehugonnet
  */
-public class SimpleDocumentPK extends WAPrimaryKey {
+public class SimpleDocumentPK extends ResourceReference {
 
   private static final long serialVersionUID = 5609285040251527744L;
   private long oldSilverpeasId = -1L;
@@ -52,7 +52,7 @@ public class SimpleDocumentPK extends WAPrimaryKey {
   }
 
   public SimpleDocumentPK(String id, WAPrimaryKey pk) {
-    super(id, pk);
+    super(id, pk.getInstanceId());
     if (StringUtil.isLong(id)) {
       this.oldSilverpeasId = Long.parseLong(id);
     }
