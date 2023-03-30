@@ -41,6 +41,10 @@
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="java.util.Objects" %>
 <%@ page import="java.util.stream.Collectors" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManager" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.HistorisedDocument" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -207,19 +211,28 @@
   <c:set var="_isI18nHandled" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}" />
 <%
   final String userProfileForLambda = userProfile;
+  final Map<String, Boolean> viewAllVersions = new HashMap<>();
   final List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ResourceReference(request.getParameter("Id"), request.getParameter("ComponentId")),
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage")).stream()
       .map(a -> {
-        if (a.isVersioned() && SilverpeasRole.USER.getName().equals(userProfileForLambda)) {
-          return a.getLastPublicVersion();
+        if (a.isVersioned()) {
+          if (SilverpeasRole.USER.getName().equals(userProfileForLambda)) {
+            viewAllVersions.put(a.getId(), !((HistorisedDocument) a).getPublicVersions().isEmpty());
+            return a.getLastPublicVersion();
+          } else {
+            viewAllVersions.put(a.getId(), !((HistorisedDocument) a).getFunctionalHistory().isEmpty());
+          }
+        } else {
+          viewAllVersions.put(a.getId(), false);
         }
         return a;
       })
       .filter(Objects::nonNull)
       .collect(Collectors.toList());
   pageContext.setAttribute("attachments", attachments);
+  pageContext.setAttribute("viewAllVersions", viewAllVersions);
 %>
 
 <fmt:message key="attachment.suppressionConfirmation" var="deleteConfirmMsg" />
@@ -329,8 +342,8 @@
           </c:if>
           <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
           <c:set var="shouldHideAllVersionsLink" scope="page" value="${silfn:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
-          <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.functionalHistory))}" />
-          <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
+          <c:set var="shouldShowAllVersionLink" scope="page" value="${pageScope.viewAllVersions[currentAttachment.id]}" />
+          <c:if test="${shouldShowAllVersionLink and not shouldHideAllVersionsLink}" >
               <span class="linkAllVersions">
                 <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:_afManager${domIdSuffix}.viewPublicVersions('<c:out value="${currentAttachment.id}" />')"><fmt:message key="allVersions" /></a>
               </span>
