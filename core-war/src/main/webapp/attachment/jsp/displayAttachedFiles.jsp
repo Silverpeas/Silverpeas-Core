@@ -41,7 +41,6 @@
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="java.util.Objects" %>
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManager" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.HistorisedDocument" %>
