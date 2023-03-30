@@ -350,6 +350,17 @@ public class LDAPSettings implements DriverSettings {
     }
   }
 
+  public String getUsersManualFilter(Collection<String> values) {
+    if (values.size() == 1) {
+      return getUsersManualFilter(values.iterator().next());
+    }
+    return values.stream().map(this::getUsersManualFilter).collect(joining(StringUtil.EMPTY, "(|", ")"));
+  }
+
+  public String getUsersManualFilter(String value) {
+    return "(&" + getUsersFullFilter() + "(" + LDAPUtility.normalizeFilterValue(value) + "))";
+  }
+
   public String getUsersIdFilter(Collection<String> values) {
     if (values.size() == 1) {
       return getUsersIdFilter(values.iterator().next());
