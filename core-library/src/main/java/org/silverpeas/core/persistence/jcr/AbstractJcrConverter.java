@@ -48,7 +48,7 @@ import java.util.Date;
 
 import static javax.jcr.Property.*;
 import static javax.jcr.nodetype.NodeType.NT_FOLDER;
-import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_PROPERTY_NAME;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.SLV_PROPERTY_NAME;
 
 /**
  *

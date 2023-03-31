@@ -36,7 +36,7 @@ import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.jcr.webdav.WebDavProtocol;
+import org.silverpeas.core.jcr.webdav.WebDavProtocol;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

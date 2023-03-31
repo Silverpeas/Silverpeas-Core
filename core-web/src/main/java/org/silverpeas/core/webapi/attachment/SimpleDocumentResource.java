@@ -47,7 +47,7 @@ import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.UserPrivilegeValidator;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
-import org.silverpeas.jcr.webdav.WebDavTokenGenerator;
+import org.silverpeas.core.jcr.webdav.WebDavTokenGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;

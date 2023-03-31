@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -56,8 +56,8 @@ import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_OWNABLE_MIXIN;
-import static org.silverpeas.jcr.util.SilverpeasProperty.SLV_PROPERTY_OWNER;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.SLV_OWNABLE_MIXIN;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.SLV_PROPERTY_OWNER;
 
 @RunWith(Arquillian.class)
 public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {

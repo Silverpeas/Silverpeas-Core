@@ -48,7 +48,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -79,7 +79,7 @@ import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
-import static org.silverpeas.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 @RunWith(Arquillian.class)
 public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {

@@ -276,6 +276,7 @@
     <module>core-configuration</module>
     <module>core-api</module>
     <module>core-test</module>
+    <module>core-jcr</module>
     <module>core-library</module>
     <module>core-services</module>
     <module>core-rs</module>

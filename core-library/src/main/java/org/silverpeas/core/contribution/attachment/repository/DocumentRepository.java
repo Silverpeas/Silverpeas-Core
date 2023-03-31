@@ -45,7 +45,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -89,7 +89,7 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCa
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
-import static org.silverpeas.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 /**
  * Repository of documents attached to some contributions in Silverpeas. This repository abstracts

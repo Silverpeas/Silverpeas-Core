@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
  */
 public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
 
-  private SimpleDocument document;
+  private final SimpleDocument document;
 
   @Override
   public boolean matches(Object item) {
@@ -103,19 +103,16 @@ public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
         equals(other.getAttachment()))) {
       return false;
     }
-    if ((document.getForbiddenDownloadForRoles() == null &&
-        other.getForbiddenDownloadForRoles() != null) ||
-        (document.getForbiddenDownloadForRoles() != null &&
-            other.getForbiddenDownloadForRoles() == null) ||
-        (document.getForbiddenDownloadForRoles() != null &&
-            other.getForbiddenDownloadForRoles() != null &&
-            document.getForbiddenDownloadForRoles().size() ==
-                other.getForbiddenDownloadForRoles().size() && CollectionUtils
+    return (document.getForbiddenDownloadForRoles() != null ||
+        other.getForbiddenDownloadForRoles() == null) &&
+        (document.getForbiddenDownloadForRoles() == null ||
+            other.getForbiddenDownloadForRoles() != null) &&
+        (document.getForbiddenDownloadForRoles() == null ||
+            other.getForbiddenDownloadForRoles() == null ||
+            document.getForbiddenDownloadForRoles().size() !=
+                other.getForbiddenDownloadForRoles().size() || CollectionUtils
             .intersection(document.getForbiddenDownloadForRoles(),
-                other.getForbiddenDownloadForRoles()).size() !=
-            document.getForbiddenDownloadForRoles().size())) {
-      return false;
-    }
-    return true;
+                other.getForbiddenDownloadForRoles()).size() ==
+            document.getForbiddenDownloadForRoles().size());
   }
 }

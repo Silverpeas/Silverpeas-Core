@@ -365,7 +365,7 @@ public interface AttachmentService extends DocumentIndexing {
       DocumentType type, String lang);
 
   /**
-   * Unindex all the attachments of the specified resource.
+   * Remove indexes on all the attachments of the specified resource.
    * @param externalResource a reference to the resource.
    */
   void unindexAttachmentsOfExternalObject(ResourceReference externalResource);

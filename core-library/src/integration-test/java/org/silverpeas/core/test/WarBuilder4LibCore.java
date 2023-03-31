@@ -442,7 +442,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addPublicationTemplateFeatures();
     addImageToolFeatures();
     addWbeManagementFeatures();
-    addMavenDependencies("org.silverpeas.jcr:silverpeas-jcr");
+    addMavenDependencies("org.silverpeas.core:silverpeas-core-jcr");
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrIntegrationIT.class)) {
       addClasses(FormException.class, JcrIntegrationIT.class, JcrContext.class,
