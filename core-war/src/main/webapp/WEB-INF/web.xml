@@ -382,7 +382,7 @@
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository.</description>
     <servlet-name>Webdav</servlet-name>
-    <servlet-class>org.silverpeas.jcr.webdav.JCRWebDavServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.jcr.webdav.JCRWebDavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>
@@ -398,7 +398,7 @@
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository for Office 2000.</description>
     <servlet-name>BasicWebdav</servlet-name>
-    <servlet-class>org.silverpeas.jcr.webdav.JCRWebDavServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.jcr.webdav.JCRWebDavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>

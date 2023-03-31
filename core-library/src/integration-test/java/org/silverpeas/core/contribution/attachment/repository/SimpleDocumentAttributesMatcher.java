@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
  */
 public class SimpleDocumentAttributesMatcher extends BaseMatcher<SimpleDocument> {
 
-  private SimpleDocument document;
+  private final SimpleDocument document;
   @Override
   public boolean matches(Object item) {
     boolean match = false;
@@ -93,10 +93,8 @@ public class SimpleDocumentAttributesMatcher extends BaseMatcher<SimpleDocument>
         getExpiry().equals(other.getExpiry()))) {
       return false;
     }
-    if (document.getAttachment() != other.getAttachment() && (document.getAttachment() == null || !document.getAttachment().
-        equals(other.getAttachment()))) {
-      return false;
-    }
-    return true;
+    return document.getAttachment() == other.getAttachment() ||
+        (document.getAttachment() != null && document.getAttachment().
+            equals(other.getAttachment()));
   }
 }

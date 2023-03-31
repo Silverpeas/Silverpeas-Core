@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;

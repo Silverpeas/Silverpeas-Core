@@ -33,7 +33,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
-import org.silverpeas.jcr.webdav.WebDavAccessOpener;
+import org.silverpeas.core.jcr.webdav.WebDavAccessOpener;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;

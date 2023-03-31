@@ -56,7 +56,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static javax.jcr.Node.JCR_CONTENT;
 import static javax.jcr.nodetype.NodeType.*;
-import static org.silverpeas.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 @Repository
 public class WebdavDocumentRepository implements WebdavRepository {

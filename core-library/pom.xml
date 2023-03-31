@@ -46,6 +46,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-jcr</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.cache</groupId>
       <artifactId>cache-api</artifactId>
     </dependency>
@@ -120,10 +126,6 @@
     <dependency>
       <groupId>com.novell.ldap</groupId>
       <artifactId>jldap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.jcr</groupId>
-      <artifactId>silverpeas-jcr</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>

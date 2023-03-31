@@ -57,7 +57,7 @@ import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 /**
  * A converter of node representing documents to {@link SimpleDocument} or

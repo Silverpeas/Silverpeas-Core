@@ -36,7 +36,7 @@ import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.jcr.Node;
 import java.util.Calendar;
@@ -46,7 +46,7 @@ import static javax.jcr.nodetype.NodeType.NT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.silverpeas.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 @RunWith(Arquillian.class)
 public class SimpleAttachmentConverterIT extends JcrIntegrationIT {

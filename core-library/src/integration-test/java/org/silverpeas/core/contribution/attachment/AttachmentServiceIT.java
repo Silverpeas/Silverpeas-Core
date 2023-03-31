@@ -46,7 +46,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.Node;

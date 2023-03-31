@@ -29,7 +29,7 @@ import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import static org.silverpeas.jcr.util.SilverpeasProperty.*;
+import static org.silverpeas.core.jcr.util.SilverpeasProperty.*;
 
 /**
  * A converter of nodes representing files in the JCR to {@link SimpleAttachment} objects in

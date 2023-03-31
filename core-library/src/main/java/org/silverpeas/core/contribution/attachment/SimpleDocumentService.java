@@ -66,7 +66,7 @@ import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.jcr.JCRSession;
+import org.silverpeas.core.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
