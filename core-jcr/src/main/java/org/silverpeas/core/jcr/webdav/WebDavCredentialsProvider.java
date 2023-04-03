@@ -27,10 +27,13 @@ package org.silverpeas.core.jcr.webdav;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserReference;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.jcr.security.JCRUserCredentialsProvider;
 import org.silverpeas.core.jcr.security.WebDavAccessContext;
+import org.silverpeas.core.security.token.exception.TokenException;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -61,7 +64,13 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
           .getCache()
           .get(accessToken, User.class);
       if (user != null) {
-        String authToken = user.getToken();
+        String authToken;
+        try {
+          UserReference ref = UserReference.fromUser(user);
+          authToken = PersistentResourceToken.getOrCreateToken(ref).getValue();
+        } catch (TokenException e) {
+          throw new LoginException("Failure to get the API token of user " + user.getId(), e);
+        }
         credentials = (TokenCredentials) JCRUserCredentialsProvider.getUserCredentials(authToken);
         String documentURL =
             webdavContext.getDocumentURL().replaceFirst("^/[^/]+", "");

@@ -78,11 +78,6 @@ public class MyUser implements User {
   }
 
   @Override
-  public String getToken() {
-    return null;
-  }
-
-  @Override
   public String getLogin() {
     return firstName + "." + lastName;
   }

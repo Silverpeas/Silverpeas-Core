@@ -112,7 +112,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
   public String getDestinationOnFirstLogin(HttpServletRequest request) {
     AuthenticationResponse.Status error = isThatUserMustFillEmailAddressOnFirstLogin ?
         AuthenticationResponse.Status.PASSWORD_EMAIL_TO_CHANGE_ON_FIRST_LOGIN :
-        AuthenticationResponse.Status.PASSWORD_TO_CHANGE;
+        AuthenticationResponse.Status.PASSWORD_TO_CHANGE_ON_FIRST_LOGIN;
     if (request != null) {
       String language = (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
           getUser().getUserPreferences().getLanguage() : I18NHelper.DEFAULT_LANGUAGE;
