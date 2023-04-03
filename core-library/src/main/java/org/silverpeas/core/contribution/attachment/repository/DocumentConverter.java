@@ -41,6 +41,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
@@ -118,7 +119,7 @@ class DocumentConverter extends AbstractJcrConverter {
       HistoryDocumentSorter.sortHistory(documentHistory);
       historisedDocument.setHistory(documentHistory);
       historisedDocument.setVersionIndex(versionIndex);
-    } catch (PathNotFoundException ex) {
+    } catch (PathNotFoundException | UnsupportedRepositoryOperationException ex) {
       performBrokenHistory(historisedDocument);
     }
     return historisedDocument;

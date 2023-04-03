@@ -105,11 +105,6 @@ public class TestUser implements User {
   }
 
   @Override
-  public String getToken() {
-    return token;
-  }
-
-  @Override
   public String getLogin() {
     return login;
   }
