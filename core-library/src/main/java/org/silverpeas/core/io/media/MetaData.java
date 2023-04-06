@@ -81,6 +81,18 @@ public class MetaData {
   }
 
   /**
+   * Gets the content type set in the media's metadata.
+   * @return the content type if such information is available in the metadata, null otherwise.
+   */
+  public String getContentType() {
+    String contentType = tikaMetadata.get(HttpHeaders.CONTENT_TYPE);
+    if (StringUtil.isNotDefined(contentType)) {
+      contentType = tikaMetadata.get(TikaCoreProperties.FORMAT);
+    }
+    return contentType;
+  }
+
+  /**
    * Gets the subject as set in the media's metadata. Because the subject can be covered by a
    * property that differs from a media format to another one, this property is seeked for each of
    * them. And because the property in which the subject is set can also refer others values than

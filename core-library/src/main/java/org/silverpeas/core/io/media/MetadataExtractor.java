@@ -37,6 +37,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 
@@ -77,8 +78,22 @@ public class MetadataExtractor {
    * @return a {@link MetaData} instance that handles the metadata extracted from the given file.
    */
   public MetaData extractMetadata(File file) {
+    return apply(m -> getTikaService().parse(file, m));
+  }
+
+  /**
+   * Extracts Metadata of a content provided by an input stream on the content of a document.
+   * @param content an input stream on the content of a document.
+   * @return a {@link MetaData} instance that handles the metadata extracted from the given document content. .
+   */
+  @SuppressWarnings("unused")
+  public MetaData extractMetadata(InputStream content) {
+    return apply(m -> getTikaService().parse(content, m));
+  }
+
+  private MetaData apply(MetadataFetcher fetcher) {
     Metadata metadata = new Metadata();
-    try (@SuppressWarnings("unused") Reader reader = getTikaService().parse(file, metadata)) {
+    try (@SuppressWarnings("unused") Reader reader = fetcher.fetch(metadata)) {
       return adjust(metadata);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).warn(ex);
@@ -129,5 +144,10 @@ public class MetadataExtractor {
 
   private Tika getTikaService() {
     return tika;
+  }
+
+  @FunctionalInterface
+  private interface MetadataFetcher {
+    Reader fetch(final Metadata metadata) throws IOException;
   }
 }
