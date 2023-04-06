@@ -29,6 +29,12 @@ import org.apache.jackrabbit.webdav.DavConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.compile;
 
 /**
  * A wrapper of an incoming HTTP request. Its goal is to fix the broken lock token crafted by some
@@ -38,6 +44,9 @@ import javax.servlet.http.HttpServletRequestWrapper;
  * @author mmoquillon
  */
 public class HttpRequestFixer extends HttpServletRequestWrapper {
+
+  private static final Pattern UPPERCASE_ENCODED_CHARS_PATTERN = compile("%[0-9A-F][0-9A-F]");
+
   /**
    * Constructs a request object wrapping the given request.
    * @param request the {@link HttpServletRequest} to be wrapped.
@@ -52,7 +61,20 @@ public class HttpRequestFixer extends HttpServletRequestWrapper {
     String value = super.getHeader(name);
     if ((DavConstants.HEADER_LOCK_TOKEN.equals(name) || DavConstants.HEADER_IF.equals(name))
         && value != null) {
-      value = value.replace("%2F", "%2f");
+      final Map<String, String> fixes = new HashMap<>();
+      final Matcher matcher = UPPERCASE_ENCODED_CHARS_PATTERN.matcher(value);
+      while (matcher.find()) {
+        final String match = matcher.group();
+        if (!fixes.containsKey(match)) {
+          final String lowerCase = match.toLowerCase();
+          if (!match.equals(lowerCase)) {
+            fixes.put(match, lowerCase);
+          }
+        }
+      }
+      for (Map.Entry<String, String> entry : fixes.entrySet()) {
+        value = value.replace(entry.getKey(), entry.getValue());
+      }
     }
     return value;
   }
