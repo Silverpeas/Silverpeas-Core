@@ -40,17 +40,25 @@ import org.apache.jackrabbit.oak.spi.commit.Observer;
 import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeState;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.SegmentNodeStoreConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.StorageType;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.Map;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Factory of a {@link org.apache.jackrabbit.oak.segment.SegmentNodeStore} instance. This is for the
@@ -104,18 +112,38 @@ public class SegmentNodeStoreFactory implements NodeStoreFactory {
               .setEstimationDisabled(parameters.isCompactionDisableEstimation())
               .setMemoryThreshold(parameters.getCompactionMemoryThreshold())
               .setGCLogInterval(parameters.getCompactionProgressLog()))
+          .withGCMonitor(new GCLogger())
           .build();
-    } catch (InvalidFileStoreVersionException | IOException e) {
+      initializeCompaction(segmentStore, fs, parameters);
+    } catch (InvalidFileStoreVersionException | IOException | ParseException e) {
       throw new SilverpeasRuntimeException(e);
     }
     return new SegmentNodeStoreWrapper(SegmentNodeStoreBuilders.builder(fs).build(), fs);
   }
 
+  private void initializeCompaction(final Path segmentStore, final FileStore fs,
+      final SegmentNodeStoreConfiguration parameters) throws ParseException {
+    // schedule compaction process
+    if (!parameters.isPauseCompaction()) {
+      final SegmentNodeStoreCleaner cleaner = new SegmentNodeStoreCleaner(segmentStore, fs,
+          parameters);
+      try {
+        cleaner.execute(null);
+        if (isDefined(parameters.getCompactionCRON())) {
+          final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+          scheduler.scheduleJob(cleaner, JobTrigger.triggerAt(parameters.getCompactionCRON()));
+        }
+      } catch (SilverpeasException e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+  }
+
   /**
-   * Disposes the specified {@link SegmentNodeStore}. It unlock the underlying segment storage so it
-   * can be reused by another {@link SegmentNodeStore} instance. It is mandatory to dispose the
+   * Disposes the specified {@link SegmentNodeStore}. It unlocks the underlying segment storage, so
+   * it can be reused by another {@link SegmentNodeStore} instance. It is mandatory to dispose the
    * storage at application shutdown otherwise the storage couldn't be anymore reused by the
-   * application and it is yet locked by a previous, not more existing, {@link SegmentNodeStore}
+   * application, and it is yet locked by a previous, not more existing, {@link SegmentNodeStore}
    * instance.
    * @param store the {@link NodeStore} instance to dispose.
    * @see NodeStoreFactory#dispose(NodeStore)

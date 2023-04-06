@@ -29,6 +29,7 @@ import org.apache.jackrabbit.oak.segment.CachingSegmentReader;
 import org.apache.jackrabbit.oak.segment.SegmentCache;
 import org.apache.jackrabbit.oak.segment.compaction.SegmentGCOptions;
 import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Properties;
 
@@ -92,6 +93,8 @@ public class SegmentNodeStoreConfiguration extends NodeStoreConfiguration {
     public static final int TEMPLATE_DEDUPLICATION_CACHE_SIZE = 3000;
     public static final int NODE_DEDUPLICATION_CACHE_SIZE = 1048576;
     public static final boolean COMPACTION_PAUSE = SegmentGCOptions.PAUSE_DEFAULT;
+    public static final String COMPACTION_CRON = StringUtil.EMPTY;
+    public static final int COMPACTION_BACKUP_FILE_AGE_THRESHOLD = -1;
     public static final int COMPACTION_RETRY_COUNT = SegmentGCOptions.RETRY_COUNT_DEFAULT;
     public static final int COMPACTION_FORCE_TIMEOUT = SegmentGCOptions.FORCE_TIMEOUT_DEFAULT;
     public static final long COMPACTION_SIZE_DELTA_ESTIMATION =
@@ -201,6 +204,28 @@ public class SegmentNodeStoreConfiguration extends NodeStoreConfiguration {
    */
   public boolean isPauseCompaction() {
     return getBoolean("segment.compaction.pause", DefaultValues.COMPACTION_PAUSE);
+  }
+
+  /**
+   * Gets the CRON to schedule ONLINE compaction process. The backup file deletion is also taken
+   * in charge if {@link #isPauseCompaction()} return false.
+   * Empty value means no schedule of compaction process.
+   * @return a string representing a CRON. Empty to deactivate the scheduling.
+   */
+  public String getCompactionCRON() {
+    return getString("segment.compaction.cron", DefaultValues.COMPACTION_CRON);
+  }
+
+  /**
+   * The minimum number of days old a backup file MUST be aged to be deleted during the
+   * compaction process.
+   * <p>-1 value means that the backup file deletion process MUST not be performed</p>
+   * <p>0 value means that all backup file are taken into account by deletion process, whatever
+   * their age</p>
+   * @return an integer representing a number of day.
+   */
+  public int getBackupFileAgeThreshold() {
+    return getInteger("segment.compaction.backup.age", DefaultValues.COMPACTION_BACKUP_FILE_AGE_THRESHOLD);
   }
 
   /**

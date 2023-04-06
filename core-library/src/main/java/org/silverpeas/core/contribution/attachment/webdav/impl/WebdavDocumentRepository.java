@@ -389,7 +389,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
       final Node fileNode = webdavFileNode.get().getFirst();
       final Node contentNode = fileNode.getNode(JCR_CONTENT);
       final WebdavContentDescriptor descriptor = new WebdavContentDescriptor(attachment);
-      final String identifier = fileNode.getIdentifier();
+      final String identifier = contentNode.getIdentifier();
       final String language = webdavFileNode.get().getSecond();
       final long size = contentNode.getProperty(JCR_DATA).getBinary().getSize();
       final Date time = contentNode.getProperty(JCR_LAST_MODIFIED).getDate().getTime();

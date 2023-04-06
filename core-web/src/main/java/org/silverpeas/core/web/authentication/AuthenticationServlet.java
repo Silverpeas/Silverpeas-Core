@@ -358,7 +358,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     if (StringUtil.isNotDefined(key)) {
       AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
           authenticationParameters.getLogin());
-      AuthenticationResponse result;
+      final AuthenticationResponse result;
       if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
           isSsoMode() || authenticationParameters.isCasMode()) {
         result = authService.authenticate(
