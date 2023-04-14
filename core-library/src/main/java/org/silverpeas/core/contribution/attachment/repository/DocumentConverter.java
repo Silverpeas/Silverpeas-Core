@@ -38,6 +38,7 @@ import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -122,7 +123,8 @@ class DocumentConverter extends AbstractJcrConverter {
       historisedDocument.setHistory(documentHistory);
       historisedDocument.setVersionIndex(versionIndex);
     } catch (RepositoryException ex) {
-      if (ex.getCause() instanceof NoSuchItemStateException) {
+      if (ex.getCause() instanceof NoSuchItemStateException ||
+          ex instanceof ItemNotFoundException) {
         historisedDocument.setHistory(new ArrayList<SimpleDocumentVersion>(0));
       } else {
         throw ex;
