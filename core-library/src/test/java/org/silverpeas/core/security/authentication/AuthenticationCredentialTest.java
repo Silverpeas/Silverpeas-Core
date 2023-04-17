@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SettingBundleStub;
 
@@ -58,13 +59,13 @@ class AuthenticationCredentialTest {
 
   @Test
   @DisplayName("When no setting exists, the login case is taken into account on user authentication")
-  void loginCaseBehaviorWhenNoSetting() {
+  void loginCaseBehaviorWhenNoSetting() throws AuthenticationException {
     assertThat(getCredentials().loginIgnoreCase(), is(false));
   }
 
   @Test
   @DisplayName("When default setting exists, it is taken into account")
-  void loginCaseBehaviorWhenDefaultOneExists() {
+  void loginCaseBehaviorWhenDefaultOneExists() throws AuthenticationException {
     authenticationSettings.put(DEFAULT_PARAM, FALSE);
     assertThat(getCredentials().loginIgnoreCase(), is(false));
     authenticationSettings.put(DEFAULT_PARAM, TRUE);
@@ -73,7 +74,7 @@ class AuthenticationCredentialTest {
 
   @Test
   @DisplayName("When specific domain setting exists, it is taken into account")
-  void loginCaseBehaviorWhenDomainSpecificOneExists() {
+  void loginCaseBehaviorWhenDomainSpecificOneExists() throws AuthenticationException {
     authenticationSettings.put(DOMAIN_SPECIFIC_PARAM_PREFIX + OTHER_DOMAIN_ID, FALSE);
     assertThat(getCredentials().loginIgnoreCase(), is(false));
     authenticationSettings.put(DOMAIN_SPECIFIC_PARAM_PREFIX + DOMAIN_ID, TRUE);
@@ -82,14 +83,14 @@ class AuthenticationCredentialTest {
 
   @Test
   @DisplayName("When specific domain and default settings exist, specific domain is taken into account")
-  void loginCaseBehaviorWhenDomainSpecificAndDefaultOnesExist() {
+  void loginCaseBehaviorWhenDomainSpecificAndDefaultOnesExist() throws AuthenticationException {
     authenticationSettings.put(DEFAULT_PARAM, TRUE);
     assertThat(getCredentials().loginIgnoreCase(), is(true));
     authenticationSettings.put(DOMAIN_SPECIFIC_PARAM_PREFIX + DOMAIN_ID, FALSE);
     assertThat(getCredentials().loginIgnoreCase(), is(false));
   }
 
-  private AuthenticationCredential getCredentials() {
+  private AuthenticationCredential getCredentials() throws AuthenticationException {
     return AuthenticationCredential.newWithAsLogin("loginTest").withAsDomainId(DOMAIN_ID);
   }
 }

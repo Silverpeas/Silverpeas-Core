@@ -90,7 +90,7 @@ public class AuthenticationUserVerifierFactory {
   public static UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
       AuthenticationCredential credential) {
     User user = getUserByCredential(credential);
-    if (user == null) {
+    if (user == null && credential != null) {
       // Dummy user (but contains user credentials)
       UserDetail dummy = new UserDetail();
       dummy.setLogin(credential.getLogin());

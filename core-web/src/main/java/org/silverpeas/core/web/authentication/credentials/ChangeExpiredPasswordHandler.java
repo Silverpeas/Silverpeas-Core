@@ -44,10 +44,12 @@ public class ChangeExpiredPasswordHandler extends ChangePasswordFunctionHandler 
     String domainId = request.getParameter("domainId");
     String oldPassword = request.getParameter("oldPassword");
     String newPassword = request.getParameter("newPassword");
-    AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
-        .withAsPassword(oldPassword).withAsDomainId(domainId);
+    AuthenticationCredential credential = null;
     try {
       // Change password.
+      credential = AuthenticationCredential.newWithAsLogin(login)
+          .withAsPassword(oldPassword)
+          .withAsDomainId(domainId);
       AuthenticationService authenticator = AuthenticationServiceProvider.getService();
       authenticator.changePassword(credential, newPassword);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="

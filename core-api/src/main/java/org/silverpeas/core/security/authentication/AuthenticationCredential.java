@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.security.authentication;
 
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -31,6 +33,7 @@ import org.silverpeas.core.util.annotation.Defined;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 
@@ -38,16 +41,19 @@ import static java.util.Optional.ofNullable;
  * A credential is a set of security-related capabilities for a given user, it contains information
  * used to authenticate him.
  * <p>
- * This credential defines, among the attributes, the password, the login and the domain to which the
+ * This credential defines, among the attributes, the password, the login and the domain to which
+ * the
  * user belongs. The domain is a repository of users having its own security policy and then its own
- * authentication server. The login is the minimum information used in an authentication; indeed, for
+ * authentication server. The login is the minimum information used in an authentication; indeed,
+ * for
  * some security policies, the login can be a unique security token identifying uniquely a user in
  * Silverpeas, whatever its domain, and that is known only by the user himself. For other security
  * policies, only the login and the domain are required to authenticate the user, like in NTLM
  * negotiation. By default, to open a WEB session with Silverpeas, the user has to authenticate
  * himself by using both his login, his password and the domain to which he belongs.
  * <p>
- * The credential may also contain data that simply enable certain security-related capabilities like,
+ * The credential may also contain data that simply enable certain security-related capabilities
+ * like,
  * for example, the password change. These capabilities are generally set by the authentication
  * process from the response of the authentication server related to the user domain, once the user
  * is successfully authenticated.
@@ -69,9 +75,12 @@ public class AuthenticationCredential {
    * Creates a new authentication credential with the specified login.
    * @param login the login of the user to authenticate
    * @return an AuthenticationCredential instance.
+   * @throws AuthenticationException if the specified login isn't defined.
    */
-  public static AuthenticationCredential newWithAsLogin(@Defined String login) {
-    StringUtil.requireDefined(login, "The login should be defined!");
+  public static AuthenticationCredential newWithAsLogin(@Defined String login)
+      throws AuthenticationException {
+    StringUtil.requireDefined(login,
+        () -> new AuthenticationException("The user login isn't defined!"));
     AuthenticationCredential credential = new AuthenticationCredential();
     credential.setLogin(login);
     return credential;
@@ -139,10 +148,13 @@ public class AuthenticationCredential {
    */
   public boolean loginIgnoreCase() {
     return ofNullable(getDomainId()).filter(StringUtil::isDefined)
-        .map(d -> authenticationSettings.getString("loginIgnoreCaseOnUserAuthentication.domain" + d, null))
+        .map(d -> authenticationSettings.getString("loginIgnoreCaseOnUserAuthentication.domain" + d,
+            null))
         .filter(StringUtil::isDefined)
         .map(StringUtil::getBooleanValue)
-        .orElseGet(() -> authenticationSettings.getBoolean("loginIgnoreCaseOnUserAuthentication.default", false));
+        .orElseGet(
+            () -> authenticationSettings.getBoolean("loginIgnoreCaseOnUserAuthentication.default",
+                false));
   }
 
   private void setLogin(String login) {
@@ -167,7 +179,8 @@ public class AuthenticationCredential {
 
   /**
    * Is the password set in this credential?
-   * According to some security policy, the password isn't required to participate in an authentication;
+   * According to some security policy, the password isn't required to participate in an
+   * authentication;
    * for example in an NTLM negotiation.
    * @return true if the password attribute is set in this credential, false otherwise.
    */

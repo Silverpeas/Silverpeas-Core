@@ -30,16 +30,13 @@ import org.silverpeas.core.security.authentication.AuthenticationProtocol;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.AuthenticationService;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
-import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
@@ -356,8 +353,10 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       AuthenticationParameters authenticationParameters) {
     final String key = request.getParameter("TestKey");
     if (StringUtil.isNotDefined(key)) {
-      AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
-          authenticationParameters.getLogin());
+      AuthenticationCredential credential = getAuthenticationCredential(authenticationParameters);
+      if (credential == null) {
+        return AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD);
+      }
       final AuthenticationResponse result;
       if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
           isSsoMode() || authenticationParameters.isCasMode()) {
@@ -416,5 +415,13 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
     HttpSession newSession = request.getSession(true);
     attrs.forEach(newSession::setAttribute);
+  }
+
+  private AuthenticationCredential getAuthenticationCredential(final AuthenticationParameters parameters) {
+    try {
+      return AuthenticationCredential.newWithAsLogin(parameters.getLogin());
+    } catch (AuthenticationException e) {
+      return null;
+    }
   }
 }

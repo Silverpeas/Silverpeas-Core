@@ -187,35 +187,36 @@ public class HTTPAuthentication {
     final int passwordPart = 3;
     final int domainIdPart = 2;
     if (matcher.matches() && matcher.groupCount() == credentialPartCount) {
-
       // All expected parts detected, so getting an authentication key
-      AuthenticationCredential credential =
-          AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
-              .withAsPassword(matcher.group(passwordPart))
-              .withAsDomainId(matcher.group(domainIdPart));
-      Authentication authenticator = Authentication.get();
-      AuthenticationResponse result = authenticator.authenticate(credential);
-      if (result.getStatus().succeeded()) {
-        try {
+      try {
+        AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
+                matcher.group(loginPart))
+            .withAsPassword(matcher.group(passwordPart))
+            .withAsDomainId(matcher.group(domainIdPart));
+        Authentication authenticator = Authentication.get();
+        AuthenticationResponse result = authenticator.authenticate(credential);
+        if (result.getStatus().succeeded()) {
           User user = authenticator.getUserByAuthToken(result.getToken());
           final SessionInfo session;
           if (!user.isAnonymous()) {
             session = SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());
             context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
             context.getHttpServletResponse()
-                .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
+                .addHeader("Access-Control-Expose-Headers",
+                    UserPrivilegeValidation.HTTP_SESSIONKEY);
             SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
             tokenService.setUpSessionTokens(session);
             Token token = tokenService.getSessionToken(session);
             context.getHttpServletResponse()
                 .addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
           } else {
-            session = SessionManagementProvider.getSessionManagement().openAnonymousSession(context.getHttpServletRequest());
+            session = SessionManagementProvider.getSessionManagement()
+                .openAnonymousSession(context.getHttpServletRequest());
           }
           return session;
-        } catch (AuthenticationException e) {
-          throw new AuthenticationInternalException(e.getMessage(), e);
         }
+      } catch (AuthenticationException e) {
+        throw new AuthenticationInternalException(e.getMessage(), e);
       }
     }
     return null;

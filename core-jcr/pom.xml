@@ -38,7 +38,7 @@
   <artifactId>silverpeas-core-jcr</artifactId>
   <packaging>jar</packaging>
 
-  <name>JCR provider for Silverpeas</name>
+  <name>Silverpeas Core JCR Provider ${project.version}</name>
   <description>
     A library that wraps the specific implementation of the JCR to be used by Silverpeas and that
     provides custom facilities for working with the JCR by taking into account the specificities of

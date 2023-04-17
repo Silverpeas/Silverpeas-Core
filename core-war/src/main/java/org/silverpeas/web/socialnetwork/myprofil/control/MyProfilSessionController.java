@@ -63,12 +63,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.silverpeas.core.admin.user.constant.UserState.*;
 
@@ -77,9 +72,9 @@ import static org.silverpeas.core.admin.user.constant.UserState.*;
  */
 public class MyProfilSessionController extends AbstractComponentSessionController {
 
-  private AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
-  private RelationShipService relationShipService = RelationShipService.get();
-  private InvitationService invitationService = InvitationService.get();
+  private final AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
+  private final RelationShipService relationShipService = RelationShipService.get();
+  private final InvitationService invitationService = InvitationService.get();
   private long domainActions = -1;
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
@@ -131,7 +126,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         AuthenticationCredential.newWithAsLogin(user.getLogin()).withAsPassword(oldPassword)
             .withAsDomainId(user.getDomainId());
     if (isUserDomainRW()) {
-      // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
+      // the user didn't set a new password, so no need to change it
       if (newPassword != null && newPassword.length() != 0) {
         // In this case, this method checks if oldPassword and actual password match !
         changePassword(credential, newPassword);
@@ -145,7 +140,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       theModifiedUser.seteMail(userEMail);
       theModifiedUser.setLoginQuestion(userLoginQuestion);
       theModifiedUser.setLoginAnswer(userLoginAnswer);
-      // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
+      // the user didn't set a new password, so no need to change it
       if (newPassword != null && newPassword.length() != 0) {
         theModifiedUser.setPassword(newPassword);
       }
@@ -159,7 +154,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         parameterName = parameters.nextElement();
         if (parameterName.startsWith(propertiesPrefix)) {
           // remove prefix
-          property = parameterName.substring(propertiesPrefix.length(), parameterName.length());
+          property = parameterName.substring(propertiesPrefix.length());
           if (theModifiedUser.isPropertyUpdatableByUser(property) ||
               (isAdmin() && theModifiedUser.isPropertyUpdatableByAdmin(property))) {
             theModifiedUser.setValue(property, request.getParameter(parameterName));
@@ -236,7 +231,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * Get all social networks linked to current user account
-   * @return
+   * @return a dictionary in which each social network is mapped to an account of this user in this social network.
    */
   public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
     Map<SocialNetworkID, ExternalAccount> networks = new EnumMap<>(SocialNetworkID.class);
@@ -276,7 +271,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
     if (forgetMe) {
       try {
-        admin.blankDeletedUsers(currentUser.getDomainId(), Arrays.asList(getUserId()));
+        admin.blankDeletedUsers(currentUser.getDomainId(), Collections.singletonList(getUserId()));
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }

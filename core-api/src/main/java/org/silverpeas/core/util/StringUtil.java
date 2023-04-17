@@ -24,6 +24,7 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.SilverpeasException;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import static java.util.Optional.ofNullable;
@@ -212,6 +214,18 @@ public class StringUtil extends StringUtils {
   public static void requireDefined(final String str, final String message) {
     if (isNotDefined(str)) {
       throw new AssertionError(message);
+    }
+  }
+
+  /**
+   * Requires the specified string to be defined, otherwise throws the supplied exception.
+   * @param str the string to check.
+   * @param exceptionSupplier a supplier of the Silverpeas exception to throw if the string isn't defined.
+   */
+  public static <T extends SilverpeasException> void requireDefined(final String str,
+          final Supplier<T> exceptionSupplier) throws T {
+    if (isNotDefined(str)) {
+      throw exceptionSupplier.get();
     }
   }
 
