@@ -25,23 +25,16 @@
 
 package org.silverpeas.core.jcr.impl.oak.factories;
 
-import org.apache.jackrabbit.oak.api.Blob;
-import org.apache.jackrabbit.oak.api.CommitFailedException;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
 import org.apache.jackrabbit.oak.segment.compaction.SegmentGCOptions;
 import org.apache.jackrabbit.oak.segment.file.FileStore;
 import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
-import org.apache.jackrabbit.oak.spi.commit.CommitHook;
-import org.apache.jackrabbit.oak.spi.commit.CommitInfo;
-import org.apache.jackrabbit.oak.spi.commit.Observable;
-import org.apache.jackrabbit.oak.spi.commit.Observer;
-import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
-import org.apache.jackrabbit.oak.spi.state.NodeState;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.SegmentNodeStoreConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.StorageType;
@@ -50,13 +43,9 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.util.Map;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -115,10 +104,14 @@ public class SegmentNodeStoreFactory implements NodeStoreFactory {
           .withGCMonitor(new GCLogger())
           .build();
       initializeCompaction(segmentStore, fs, parameters);
+
+      ResourcesCloser.get().register(fs);
+
     } catch (InvalidFileStoreVersionException | IOException | ParseException e) {
       throw new SilverpeasRuntimeException(e);
     }
-    return new SegmentNodeStoreWrapper(SegmentNodeStoreBuilders.builder(fs).build(), fs);
+
+    return SegmentNodeStoreBuilders.builder(fs).build();
   }
 
   private void initializeCompaction(final Path segmentStore, final FileStore fs,
@@ -136,130 +129,6 @@ public class SegmentNodeStoreFactory implements NodeStoreFactory {
       } catch (SilverpeasException e) {
         SilverLogger.getLogger(this).error(e);
       }
-    }
-  }
-
-  /**
-   * Disposes the specified {@link SegmentNodeStore}. It unlocks the underlying segment storage, so
-   * it can be reused by another {@link SegmentNodeStore} instance. It is mandatory to dispose the
-   * storage at application shutdown otherwise the storage couldn't be anymore reused by the
-   * application, and it is yet locked by a previous, not more existing, {@link SegmentNodeStore}
-   * instance.
-   * @param store the {@link NodeStore} instance to dispose.
-   * @see NodeStoreFactory#dispose(NodeStore)
-   */
-  @Override
-  public void dispose(final NodeStore store) {
-    if (store instanceof SegmentNodeStoreWrapper) {
-      ((SegmentNodeStoreWrapper) store).dispose();
-    } else {
-      throw new IllegalArgumentException(
-          "The specified store isn't a SegmentStore managed by Silverpeas");
-    }
-  }
-
-  /**
-   * Wrapper of the {@link SegmentNodeStore} created by Oak over a {@link FileStore} to manage the
-   * content of a JCR. This wrapper is to keep in memory both the {@link SegmentNodeStore} and the
-   * {@link FileStore} objects used as backend for the JCR in order to close them once their usage
-   * isn't more required (id est when the application is shutdown). Indeed, the {@link FileStore}
-   * maintains a lock to ensure it is the single entry point to the content of the JCR. Hence, to
-   * open another {@link FileStore}, it is required the lock was previously removed.
-   */
-  private static class SegmentNodeStoreWrapper implements NodeStore, Observable {
-
-    private final SegmentNodeStore sns;
-    private final FileStore fs;
-
-    public SegmentNodeStoreWrapper(final SegmentNodeStore segmentNodeStore, FileStore fileStore) {
-      this.fs = fileStore;
-      this.sns = segmentNodeStore;
-    }
-
-    public void dispose() {
-      this.fs.close();
-    }
-
-    @Override
-    public Closeable addObserver(final Observer observer) {
-      return sns.addObserver(observer);
-    }
-
-    @Override
-    @Nonnull
-    public NodeState getRoot() {
-      return sns.getRoot();
-    }
-
-    @Override
-    @Nonnull
-    public NodeState merge(
-        @Nonnull final NodeBuilder builder,
-        @Nonnull final CommitHook commitHook,
-        @Nonnull final CommitInfo info) throws CommitFailedException {
-      return sns.merge(builder, commitHook, info);
-    }
-
-    @Override
-    @Nonnull
-    public NodeState rebase(
-        @Nonnull final NodeBuilder builder) {
-      return sns.rebase(builder);
-    }
-
-    @Override
-    public NodeState reset(
-        @Nonnull final NodeBuilder builder) {
-      return sns.reset(builder);
-    }
-
-    @Override
-    @Nonnull
-    public Blob createBlob(final InputStream stream)
-        throws IOException {
-      return sns.createBlob(stream);
-    }
-
-    @Override
-    public Blob getBlob(@Nonnull final String reference) {
-      return sns.getBlob(reference);
-    }
-
-    @Override
-    @Nonnull
-    public String checkpoint(final long lifetime,
-        @Nonnull final Map<String, String> properties) {
-      return sns.checkpoint(lifetime, properties);
-    }
-
-    @Override
-    @Nonnull
-    public String checkpoint(final long lifetime) {
-      return sns.checkpoint(lifetime);
-    }
-
-    @Override
-    @Nonnull
-    public Map<String, String> checkpointInfo(
-        @Nonnull final String checkpoint) {
-      return sns.checkpointInfo(checkpoint);
-    }
-
-    @Override
-    @Nonnull
-    public Iterable<String> checkpoints() {
-      return sns.checkpoints();
-    }
-
-    @Override
-    public NodeState retrieve(
-        @Nonnull final String checkpoint) {
-      return sns.retrieve(checkpoint);
-    }
-
-    @Override
-    public boolean release(@Nonnull final String checkpoint) {
-      return sns.release(checkpoint);
     }
   }
 }

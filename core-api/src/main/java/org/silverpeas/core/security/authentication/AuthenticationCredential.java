@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -33,7 +32,6 @@ import org.silverpeas.core.util.annotation.Defined;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 
@@ -42,21 +40,19 @@ import static java.util.Optional.ofNullable;
  * used to authenticate him.
  * <p>
  * This credential defines, among the attributes, the password, the login and the domain to which
- * the
- * user belongs. The domain is a repository of users having its own security policy and then its own
- * authentication server. The login is the minimum information used in an authentication; indeed,
- * for
- * some security policies, the login can be a unique security token identifying uniquely a user in
- * Silverpeas, whatever its domain, and that is known only by the user himself. For other security
- * policies, only the login and the domain are required to authenticate the user, like in NTLM
- * negotiation. By default, to open a WEB session with Silverpeas, the user has to authenticate
- * himself by using both his login, his password and the domain to which he belongs.
+ * the user belongs. The domain is a repository of users having its own security policy and then
+ * its own authentication server. The login is the minimum information used in an authentication;
+ * indeed, for some security policies, the login can be a unique security token identifying
+ * uniquely a user in Silverpeas, whatever its domain, and that is known only by the user himself.
+ * For other security policies, only the login and the domain are required to authenticate the
+ * user, like in NTLM negotiation. By default, to open a WEB session with Silverpeas, the user
+ * has to authenticate himself by using both his login, his password and the domain to which he
+ * belongs.
  * <p>
  * The credential may also contain data that simply enable certain security-related capabilities
- * like,
- * for example, the password change. These capabilities are generally set by the authentication
- * process from the response of the authentication server related to the user domain, once the user
- * is successfully authenticated.
+ * like, for example, the password change. These capabilities are generally set by the
+ * authentication process from the response of the authentication server related to the user
+ * domain, once the user is successfully authenticated.
  */
 public class AuthenticationCredential {
 

@@ -28,8 +28,10 @@ package org.silverpeas.core.jcr;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SystemProperty;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -48,6 +50,7 @@ import static org.silverpeas.core.jcr.RepositoryProviderTest.OAK_CONFIG;
 @EnableSilverTestEnv
 @SystemProperty(key = RepositorySettings.JCR_HOME, value = JCR_HOME)
 @SystemProperty(key = RepositorySettings.JCR_CONF, value = OAK_CONFIG)
+@TestManagedBeans({ResourcesCloser.class})
 class RepositoryProviderTest {
 
   public static final String JCR_HOME = "target/";

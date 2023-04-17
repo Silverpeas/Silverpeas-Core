@@ -44,6 +44,7 @@ public class CDIContainer implements BeanContainer {
   @Override
   public <T> T getBeanByName(final String name) throws IllegalStateException {
     BeanManager beanManager = CDI.current().getBeanManager();
+    //noinspection RedundantCast,rawtypes
     Bean<T> bean = beanManager.resolve((Set) beanManager.getBeans(name));
     if (bean == null) {
       throw new IllegalStateException("Cannot find an instance of name " + name);
@@ -63,6 +64,7 @@ public class CDIContainer implements BeanContainer {
   public <T> T getBeanByType(final Class<T> type, Annotation... qualifiers)
       throws IllegalStateException {
     BeanManager beanManager = CDI.current().getBeanManager();
+    //noinspection RedundantCast,rawtypes
     Bean<T> bean = beanManager.resolve((Set) beanManager.getBeans(type, qualifiers));
     if (bean == null) {
       throw new IllegalStateException("Cannot find an instance of type " + type.getName());
@@ -77,7 +79,7 @@ public class CDIContainer implements BeanContainer {
   public <T> Set<T> getAllBeansByType(final Class<T> type, Annotation... qualifiers) {
     BeanManager beanManager = CDI.current().getBeanManager();
     return beanManager.getBeans(type, qualifiers).stream().map(bean -> {
-          CreationalContext ctx = beanManager.createCreationalContext(bean);
+          CreationalContext<?> ctx = beanManager.createCreationalContext(bean);
           return (T) beanManager.getReference(bean, type, ctx);
         })
         .collect(Collectors.toSet());

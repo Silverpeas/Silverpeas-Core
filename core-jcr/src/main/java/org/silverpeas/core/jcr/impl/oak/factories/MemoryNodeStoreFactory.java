@@ -40,9 +40,4 @@ public class MemoryNodeStoreFactory implements NodeStoreFactory {
   public NodeStore create(final String jcrHomePath, final OakRepositoryConfiguration conf) {
     return new MemoryNodeStore();
   }
-
-  @Override
-  public void dispose(final NodeStore store) {
-    // nothing to do here
-  }
 }

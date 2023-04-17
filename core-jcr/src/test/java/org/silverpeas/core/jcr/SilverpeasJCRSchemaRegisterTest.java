@@ -29,6 +29,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.security.SecurityTest;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
 import org.silverpeas.core.test.extention.SystemProperty;
@@ -50,7 +51,7 @@ import static org.silverpeas.core.jcr.RepositoryProviderTest.OAK_CONFIG;
  */
 @SystemProperty(key = RepositorySettings.JCR_HOME, value = JCR_HOME)
 @SystemProperty(key = RepositorySettings.JCR_CONF, value = OAK_CONFIG)
-@TestManagedBeans({RepositoryProvider.class})
+@TestManagedBeans({ResourcesCloser.class, RepositoryProvider.class})
 class SilverpeasJCRSchemaRegisterTest extends SecurityTest {
 
   @TestedBean

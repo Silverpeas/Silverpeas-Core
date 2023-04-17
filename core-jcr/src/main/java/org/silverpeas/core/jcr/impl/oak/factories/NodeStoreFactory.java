@@ -49,11 +49,4 @@ public interface NodeStoreFactory {
    */
   NodeStore create(final String jcrHomePath, final OakRepositoryConfiguration conf);
 
-  /**
-   * Disposes the specified {@link NodeStore} instance. The access to the related storage is then
-   * closed. It is very important to close the storage at the application shutdown otherwise the
-   * underlying storage can be in a stale state.
-   * @param store the {@link NodeStore} instance to dispose.
-   */
-  void dispose(final NodeStore store);
 }

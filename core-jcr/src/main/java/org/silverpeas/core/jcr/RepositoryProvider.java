@@ -31,7 +31,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Produces;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -58,8 +57,6 @@ public class RepositoryProvider {
 
   private SilverpeasRepository repository;
 
-  private SilverpeasRepositoryFactory factory;
-
   /**
    * Gets an instance of the {@link RepositoryProvider}.
    * @return a {@link RepositoryProvider} instance.
@@ -82,7 +79,7 @@ public class RepositoryProvider {
         throw new SilverpeasRuntimeException(e);
       }
     };
-    factory = ServiceLoader.load(RepositoryFactory.class).stream()
+    SilverpeasRepositoryFactory factory = ServiceLoader.load(RepositoryFactory.class).stream()
         .map(ServiceLoader.Provider::get)
         .filter(SilverpeasRepositoryFactory.class::isInstance)
         .map(SilverpeasRepositoryFactory.class::cast)
@@ -94,12 +91,6 @@ public class RepositoryProvider {
 
     SilverLogger.getLogger(this).info("Open connection to the JCR");
     repository = SilverpeasRepository.wrap(jcr);
-  }
-
-  @PreDestroy
-  private void closeRepository() {
-    SilverLogger.getLogger(this).info("Close connection to the JCR");
-    factory.closeRepository(repository);
   }
 
   @Produces

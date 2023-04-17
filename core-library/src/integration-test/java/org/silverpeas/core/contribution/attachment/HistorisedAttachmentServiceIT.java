@@ -118,7 +118,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
         document =
             documentRepository.findDocumentById(session, existingFrDoc, document.getLanguage());
         document.setPublicDocument(true);
-        document = documentRepository.unlock(session, document, false);
+        document = documentRepository.checkin(session, document, false);
         documentRepository.storeContent(document, content);
         content.close();
         document.setPK(existingFrDoc);
@@ -147,7 +147,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
         document =
             documentRepository.findDocumentById(session, existingEnDoc, document.getLanguage());
         document.setPublicDocument(true);
-        document = documentRepository.unlock(session, document, false);
+        document = documentRepository.checkin(session, document, false);
         documentRepository.storeContent(document, content);
         document.setPK(existingEnDoc);
         content.close();

@@ -25,11 +25,11 @@
 
 package org.silverpeas.core.jcr.impl.oak;
 
-import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.jcr.SilverpeasRepositoryFactory;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.StorageType;
 import org.silverpeas.core.jcr.impl.oak.factories.CompositeNodeStoreFactory;
@@ -83,21 +83,16 @@ public class OakRepositoryFactory implements SilverpeasRepositoryFactory {
       OakRepositoryConfiguration conf = OakRepositoryConfiguration.load(confPath);
       NodeStoreFactory nodeStoreFactory = nodeStoreFactories.getOrDefault(conf.getStorageType(),
           InvalidNodeStoreFactory::new).get();
-      return OakRepository.createConnection(nodeStoreFactory).connect(jcrHomePath, conf);
+
+
+      NodeStore nodeStore = nodeStoreFactory.create(jcrHomePath, conf);
+      OakRepository repository = OakRepository.create(nodeStore);
+
+      ResourcesCloser.get().register(repository::shutdown);
+
+      return repository;
     } catch (SilverpeasRuntimeException | IOException e) {
       throw new RepositoryException(e);
-    }
-  }
-
-  @Override
-  public void closeRepository(final Repository repository) {
-    if (repository instanceof OakRepository) {
-      ((OakRepository) repository).shutdown();
-    } else if (repository instanceof JackrabbitRepository) {
-      ((JackrabbitRepository) repository).shutdown();
-    } else {
-      throw new IllegalArgumentException(
-          "The specified repository wasn't created by this factory!");
     }
   }
 
@@ -106,11 +101,6 @@ public class OakRepositoryFactory implements SilverpeasRepositoryFactory {
     public NodeStore create(final String jcrHomePath, final OakRepositoryConfiguration conf) {
       SilverLogger.getLogger(this).error("Invalid storage type: " + conf.getStorageType());
       return null;
-    }
-
-    @Override
-    public void dispose(final NodeStore store) {
-      // nothing to do
     }
   }
 }

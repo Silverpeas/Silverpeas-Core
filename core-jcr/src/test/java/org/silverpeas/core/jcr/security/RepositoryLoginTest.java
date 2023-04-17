@@ -31,10 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.test.extention.SystemProperty;
 import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.jcr.RepositoryProvider;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -62,6 +64,7 @@ import static org.silverpeas.core.jcr.security.RepositoryLoginTest.OAK_CONFIG;
  */
 @SystemProperty(key = RepositorySettings.JCR_HOME, value = JCR_HOME)
 @SystemProperty(key = RepositorySettings.JCR_CONF, value = OAK_CONFIG)
+@TestManagedBeans({ResourcesCloser.class})
 class RepositoryLoginTest extends SecurityTest {
 
   public static final String JCR_HOME = "target/";

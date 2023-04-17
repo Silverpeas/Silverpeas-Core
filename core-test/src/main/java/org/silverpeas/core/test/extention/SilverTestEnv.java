@@ -133,6 +133,7 @@ public class SilverTestEnv
   public void postProcessTestInstance(final Object testInstance, final ExtensionContext context)
       throws Exception {
     reset(TestBeanContainer.getMockedBeanContainer());
+    CacheServiceProvider.clearAllThreadCaches();
     mockCommonBeans(testInstance);
 
     SystemProperty[] systemProperties =
@@ -238,7 +239,6 @@ public class SilverTestEnv
    */
   @Override
   public void beforeEach(final ExtensionContext context) throws Exception {
-    CacheServiceProvider.clearAllThreadCaches();
     Class<?> test = context.getRequiredTestClass();
     UserProvider mock =
         TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);

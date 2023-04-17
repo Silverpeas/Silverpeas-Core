@@ -38,22 +38,25 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCa
 /**
  * A provider of Silverpeas services such as repositories, controllers, transactional services, and
  * so on.
- *
+ *<p>
  * This provider is an adaptor to the underlying IoD subsystem used to manage the life-cycle
  * and the dependencies of the objects in Silverpeas. Usually, defining injection points is enough
  * for a bean to access the services in Silverpeas, but these injection points work only for beans
  * managed themselves by the IoD subsystem. Hence, this provider is for unmanaged beans in order
  * they have access all of the services available in Silverpeas.
- *
+ * </p>
+ * <p>
  * The provider can be either used directly by the unmanaged beans or through a more typed-specific
  * provider. This latest solution is our preferred way.
- *
+ * </p>
+ * <p>
  * The service provider doesn't use directly the IoD subsystem to fetch the asked service. Instead
  * it delegates the service fetching to another object, a {@code BeanContainer} instance that is
  * a wrapper of the actual IoD subsystem in use. The bind between the {@code BeanContainer}
  * interface and its implementation is performed by the Java SPI (Java Service Provider Interface).
  * Only the first available bean container implementation is loaded by the {@code ServiceProvider}
  * class.
+ * </p>
  * @author mmoquillon
  */
 public final class ServiceProvider {

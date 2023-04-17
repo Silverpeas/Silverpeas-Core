@@ -153,10 +153,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       documentRepository.deleteDocument(session, expResult);
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(nullValue()));
@@ -308,10 +308,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       HistorisedDocument doc = (HistorisedDocument) documentRepository.findDocumentById(session,
           result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -429,9 +429,9 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       createVersionedDocument(session, docOwn25_1, content);
       docOwn25_1.setMajorVersion(1);
       session.save();
-      documentRepository.lock(session, docOwn10_1, docOwn10_1.getEditedBy());
-      documentRepository.lock(session, docOwn10_2, docOwn10_2.getEditedBy());
-      documentRepository.lock(session, docOwn25_1, docOwn25_1.getEditedBy());
+      documentRepository.checkout(session, docOwn10_1, docOwn10_1.getEditedBy());
+      documentRepository.checkout(session, docOwn10_2, docOwn10_2.getEditedBy());
+      documentRepository.checkout(session, docOwn25_1, docOwn25_1.getEditedBy());
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsByOwnerIdAndComponentId(session,
           instanceId, "10");
@@ -457,11 +457,11 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       attachment = createFrenchVersionedAttachment();
       document.setPK(result);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.addContent(session, result, attachment);
       documentRepository.storeContent(document, content);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       checkFrenchSimpleDocument(doc);
       doc = documentRepository.findDocumentById(session, result, "en");
@@ -483,12 +483,12 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document.setPK(result);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.addContent(session, result, attachment);
       documentRepository.storeContent(document, content);
       session.save();
-      documentRepository.unlock(session, document, false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkin(session, document, false);
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.removeContent(session, result, "fr");
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       checkEnglishSimpleDocument(doc);
@@ -567,10 +567,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       createVersionedDocument(session, docOwn25_2, content);
       docOwn25_2.setMajorVersion(1);
       session.save();
-      documentRepository.lock(session, docOwn10_1, docOwn10_1.getEditedBy());
-      documentRepository.lock(session, docOwn10_2, docOwn10_2.getEditedBy());
-      documentRepository.lock(session, docOwn25_1, docOwn25_1.getEditedBy());
-      documentRepository.lock(session, docOwn25_2, docOwn25_2.getEditedBy());
+      documentRepository.checkout(session, docOwn10_1, docOwn10_1.getEditedBy());
+      documentRepository.checkout(session, docOwn10_2, docOwn10_2.getEditedBy());
+      documentRepository.checkout(session, docOwn25_1, docOwn25_1.getEditedBy());
+      documentRepository.checkout(session, docOwn25_2, docOwn25_2.getEditedBy());
       session.save();
       List<SimpleDocument> docs = documentRepository
           .listComponentDocumentsByOwner(session, instanceId, owner, "fr");
@@ -595,7 +595,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       expiringDoc1.setExpiry(today.getTime());
       createVersionedDocument(session, expiringDoc1, content);
       expiringDoc1.setMajorVersion(1);
-      documentRepository.lock(session, expiringDoc1, owner);
+      documentRepository.checkout(session, expiringDoc1, owner);
       documentRepository.updateDocument(session, expiringDoc1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -605,7 +605,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
       createVersionedDocument(session, notExpiringDoc2, content);
       notExpiringDoc2.setMajorVersion(1);
-      documentRepository.lock(session, notExpiringDoc2, owner);
+      documentRepository.checkout(session, notExpiringDoc2, owner);
       documentRepository.updateDocument(session, notExpiringDoc2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishVersionedAttachment();
@@ -615,7 +615,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       expiringDoc3.setExpiry(today.getTime());
       createVersionedDocument(session, expiringDoc3, content);
       expiringDoc3.setMajorVersion(1);
-      documentRepository.lock(session, expiringDoc3, owner);
+      documentRepository.checkout(session, expiringDoc3, owner);
       documentRepository.updateDocument(session, expiringDoc3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -626,7 +626,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       notExpiringDoc4.setExpiry(beforeDate.getTime());
       createVersionedDocument(session, notExpiringDoc4, content);
       notExpiringDoc4.setMajorVersion(1);
-      documentRepository.lock(session, notExpiringDoc4, owner);
+      documentRepository.checkout(session, notExpiringDoc4, owner);
       documentRepository.updateDocument(session, notExpiringDoc4, true);
       session.save();
       List<SimpleDocument> docs = documentRepository.listExpiringDocuments(session, today.getTime(),
@@ -651,7 +651,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           attachment);
       expiringDoc1.setExpiry(today.getTime());
       createVersionedDocument(session, expiringDoc1, content);
-      documentRepository.lock(session, expiringDoc1, owner);
+      documentRepository.checkout(session, expiringDoc1, owner);
       documentRepository.updateDocument(session, expiringDoc1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -660,7 +660,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           attachment);
       notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
       createVersionedDocument(session, notExpiringDoc2, content);
-      documentRepository.lock(session, notExpiringDoc2, owner);
+      documentRepository.checkout(session, notExpiringDoc2, owner);
       documentRepository.updateDocument(session, notExpiringDoc2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishVersionedAttachment();
@@ -668,7 +668,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           attachment);
       expiringDoc3.setExpiry(today.getTime());
       createVersionedDocument(session, expiringDoc3, content);
-      documentRepository.lock(session, expiringDoc3, owner);
+      documentRepository.checkout(session, expiringDoc3, owner);
       documentRepository.updateDocument(session, expiringDoc3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -678,7 +678,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
       notExpiringDoc4.setExpiry(beforeDate.getTime());
       createVersionedDocument(session, notExpiringDoc4, content);
-      documentRepository.lock(session, notExpiringDoc4, owner);
+      documentRepository.checkout(session, notExpiringDoc4, owner);
       documentRepository.updateDocument(session, notExpiringDoc4, true);
       session.save();
       NodeIterator nodes = documentRepository.selectExpiringDocuments(session, today.getTime());
@@ -705,7 +705,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToLeaveLocked1.setExpiry(today.getTime());
       createVersionedDocument(session, docToLeaveLocked1, content);
       docToLeaveLocked1.setMajorVersion(1);
-      documentRepository.lock(session, docToLeaveLocked1, owner);
+      documentRepository.checkout(session, docToLeaveLocked1, owner);
       documentRepository.updateDocument(session, docToLeaveLocked1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -715,7 +715,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       createVersionedDocument(session, docToUnlock2, content);
       docToUnlock2.setMajorVersion(1);
-      documentRepository.lock(session, docToUnlock2, owner);
+      documentRepository.checkout(session, docToUnlock2, owner);
       documentRepository.updateDocument(session, docToUnlock2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishVersionedAttachment();
@@ -725,7 +725,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       createVersionedDocument(session, docToUnlock3, content);
       docToUnlock3.setMajorVersion(1);
-      documentRepository.lock(session, docToUnlock3, owner);
+      documentRepository.checkout(session, docToUnlock3, owner);
       documentRepository.updateDocument(session, docToUnlock3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -736,7 +736,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       createVersionedDocument(session, docToLeaveLocked4, content);
       docToLeaveLocked4.setMajorVersion(1);
-      documentRepository.lock(session, docToLeaveLocked4, owner);
+      documentRepository.checkout(session, docToLeaveLocked4, owner);
       documentRepository.updateDocument(session, docToLeaveLocked4, true);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsToUnlock(session, today.getTime(),
@@ -763,7 +763,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToLeaveLocked1.setExpiry(today.getTime());
       createVersionedDocument(session, docToLeaveLocked1, content);
       docToLeaveLocked1.setMajorVersion(1);
-      documentRepository.lock(session, docToLeaveLocked1, owner);
+      documentRepository.checkout(session, docToLeaveLocked1, owner);
       documentRepository.updateDocument(session, docToLeaveLocked1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -773,7 +773,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       createVersionedDocument(session, docToUnlock2, content);
       docToUnlock2.setMajorVersion(1);
-      documentRepository.lock(session, docToUnlock2, owner);
+      documentRepository.checkout(session, docToUnlock2, owner);
       documentRepository.updateDocument(session, docToUnlock2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishVersionedAttachment();
@@ -783,7 +783,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       createVersionedDocument(session, docToUnlock3, content);
       docToUnlock3.setMajorVersion(1);
-      documentRepository.lock(session, docToUnlock3, owner);
+      documentRepository.checkout(session, docToUnlock3, owner);
       documentRepository.updateDocument(session, docToUnlock3, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -794,7 +794,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       documentRepository.createDocument(session, docToLeaveLocked4);
       documentRepository.storeContent(docToLeaveLocked4, content);
-      documentRepository.lock(session, docToLeaveLocked4, owner);
+      documentRepository.checkout(session, docToLeaveLocked4, owner);
       documentRepository.updateDocument(session, docToLeaveLocked4, true);
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsRequiringUnlocking(session, today.
@@ -993,7 +993,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
 
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       session.save();
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
@@ -1101,10 +1101,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getVersionIndex(), is(0));
       assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
 
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1433,10 +1433,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getHistory().get(0).getRepositoryPath(),
           is(String.format(versionPathPattern, "1.0")));
 
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1456,10 +1456,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.1")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1479,10 +1479,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.2")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1502,10 +1502,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.3")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1545,10 +1545,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.5")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1765,10 +1765,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.0")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1788,10 +1788,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.1")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1811,10 +1811,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.2")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1834,10 +1834,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.3")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -1877,10 +1877,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.5")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -2271,10 +2271,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getVersionIndex(), is(0));
       assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
 
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -2561,10 +2561,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getHistory().get(0).getRepositoryPath(),
           is(String.format(versionPathPattern, "1.0")));
 
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document = (HistorisedDocument) documentRepository
           .findDocumentById(session, sourcePk, language);
 
@@ -2584,10 +2584,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.1")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document = (HistorisedDocument) documentRepository
           .findDocumentById(session, sourcePk, language);
 
@@ -2607,10 +2607,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.2")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document = (HistorisedDocument) documentRepository
           .findDocumentById(session, sourcePk, language);
 
@@ -2630,10 +2630,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.3")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document = (HistorisedDocument) documentRepository
           .findDocumentById(session, sourcePk, language);
 
@@ -2673,10 +2673,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.5")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document = (HistorisedDocument) documentRepository
           .findDocumentById(session, sourcePk, language);
 
@@ -2873,10 +2873,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.0")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -2896,10 +2896,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.1")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -2919,10 +2919,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.2")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -2942,10 +2942,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.3")));
 
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -2985,10 +2985,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           is(String.format(versionPathPattern, "1.5")));
 
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       document =
           (HistorisedDocument) documentRepository.findDocumentById(session, sourcePk, language);
 
@@ -3203,7 +3203,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       warningDoc1.setAlert(today.getTime());
       createVersionedDocument(session, warningDoc1, content);
       warningDoc1.setMajorVersion(1);
-      documentRepository.lock(session, warningDoc1, owner);
+      documentRepository.checkout(session, warningDoc1, owner);
       documentRepository.updateDocument(session, warningDoc1, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionedAttachment();
@@ -3213,7 +3213,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
       createVersionedDocument(session, notWarningDoc2, content);
       notWarningDoc2.setMajorVersion(1);
-      documentRepository.lock(session, notWarningDoc2, owner);
+      documentRepository.checkout(session, notWarningDoc2, owner);
       documentRepository.updateDocument(session, notWarningDoc2, true);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishVersionedAttachment();
@@ -3222,7 +3222,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
           attachment);
       warningDoc3.setAlert(today.getTime());
       createVersionedDocument(session, warningDoc3, content);
-      documentRepository.lock(session, warningDoc3, owner);
+      documentRepository.checkout(session, warningDoc3, owner);
       documentRepository.updateDocument(session, warningDoc3, true);
       warningDoc3.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -3234,7 +3234,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       notWarningDoc4.setAlert(beforeDate.getTime());
       createVersionedDocument(session, notWarningDoc4, content);
       notWarningDoc4.setMajorVersion(1);
-      documentRepository.lock(session, notWarningDoc4, owner);
+      documentRepository.checkout(session, notWarningDoc4, owner);
       documentRepository.updateDocument(session, notWarningDoc4, true);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsRequiringWarning(session, today.
@@ -3290,10 +3290,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       HistorisedDocument doc =
           (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -3314,10 +3314,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOrder(), is(15));
@@ -3429,10 +3429,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       HistorisedDocument doc =
           (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -3453,10 +3453,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOrder(), is(15));
@@ -3566,10 +3566,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(true);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       HistorisedDocument doc =
           (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -3590,10 +3590,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOrder(), is(15));
@@ -3724,10 +3724,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
             document.setPublicDocument(false);
             minor++;
           }
-          documentRepository.lock(session, document, document.getEditedBy());
+          documentRepository.checkout(session, document, document.getEditedBy());
           documentRepository.updateDocument(session, document, true);
           session.save();
-          documentRepository.unlock(session, document, false);
+          documentRepository.checkin(session, document, false);
         }
 
         // Functional version number is not incremented (but still the technical)
@@ -3857,10 +3857,10 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
       attachment = createFrenchVersionedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
-      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.checkout(session, document, document.getEditedBy());
       documentRepository.updateDocument(session, document, true);
       session.save();
-      documentRepository.unlock(session, document, false);
+      documentRepository.checkin(session, document, false);
       HistorisedDocument doc = (HistorisedDocument) documentRepository.findDocumentById(session,
           result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -3965,7 +3965,7 @@ public class HistorizedDocumentRepositoryIT extends JcrIntegrationIT {
     documentRepository.storeContent(document, content);
     document.setPK(result);
     session.save();
-    documentRepository.unlock(session, document, false);
+    documentRepository.checkin(session, document, false);
     return result;
   }
 

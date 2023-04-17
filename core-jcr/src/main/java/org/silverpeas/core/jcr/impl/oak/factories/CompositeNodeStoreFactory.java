@@ -43,8 +43,4 @@ public class CompositeNodeStoreFactory implements NodeStoreFactory {
     throw new NotSupportedException("The composite node storage isn't yet supported!");
   }
 
-  @Override
-  public void dispose(final NodeStore store) {
-    throw new NotSupportedException("The composite node storage isn't yet supported!");
-  }
 }
