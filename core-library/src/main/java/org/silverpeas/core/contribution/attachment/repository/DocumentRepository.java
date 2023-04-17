@@ -37,6 +37,7 @@ import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.OrientationOption;
+import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.persistence.jcr.util.NodeIterable;
 import org.silverpeas.core.persistence.jcr.util.PropertyIterable;
 import org.silverpeas.core.util.DateUtil;
@@ -45,7 +46,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.jcr.JCRSession;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -147,8 +147,8 @@ public class DocumentRepository {
         }
       });
     }
-    Node docsNode = prepareComponentAttachments(session, document.getInstanceId(), document.
-        getFolder());
+    Node docsNode = prepareComponentAttachments(session, document.getInstanceId(),
+        document.getFolder());
     Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
     document.setUpdatedBy(document.getCreatedBy());
     document.setLastUpdateDate(document.getCreationDate());
@@ -198,8 +198,8 @@ public class DocumentRepository {
     }
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY,
         destination.getLocalId());
-    converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
-        getComponentInstanceId());
+    converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID,
+        destination.getComponentInstanceId());
     if (converter.isVersionedMaster(targetDocumentNode) && targetDocumentNode.isCheckedOut()) {
       session.save();
       if (mustCheckInVersion) {
@@ -280,7 +280,7 @@ public class DocumentRepository {
       if (I18NHelper.isI18nContentEnabled()) {
         addAttachmentInSupportedLanguages(session, document, targetDoc);
       }
-      unlock(session, targetDoc, false);
+      checkin(session, targetDoc, false);
       VersionManager versionManager = session.getWorkspace().getVersionManager();
       String previousVersion = targetDoc.getVersion();
       for (SimpleDocument doc : history) {
@@ -294,9 +294,9 @@ public class DocumentRepository {
         Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
         if (!previousVersion.equals(docToConsider.getVersion())) {
           // In this case, a functional version is performed, so the common tools are used
-          lock(session, targetDoc, docToConsider.getUpdatedBy());
+          checkout(session, targetDoc, docToConsider.getUpdatedBy());
           converter.fillNode(targetHistorizedDoc, masterDocumentNode);
-          unlock(session, targetHistorizedDoc, false);
+          checkin(session, targetHistorizedDoc, false);
           previousVersion = targetHistorizedDoc.getVersion();
         } else {
           // In this case, the version is a technical one (setOrder for example) and technical
@@ -343,8 +343,8 @@ public class DocumentRepository {
     checkedLanguages.add(targetDoc.getLanguage());
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       if (!checkedLanguages.contains(language)) {
-        HistorisedDocument temp =
-            (HistorisedDocument) findDocumentById(session, document.getPk(), language);
+        HistorisedDocument temp = (HistorisedDocument) findDocumentById(session, document.getPk(),
+            language);
         List<SimpleDocumentVersion> versions = temp.getHistory();
         if (!versions.isEmpty()) {
           SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
@@ -520,8 +520,9 @@ public class DocumentRepository {
       Node parent = documentNode.getParent();
       if (parent instanceof Version) {
         Version selectedVersion = (Version) parent;
-        VersionManager versionManager =
-            documentNode.getSession().getWorkspace().getVersionManager();
+        VersionManager versionManager = documentNode.getSession()
+            .getWorkspace()
+            .getVersionManager();
         versionManager.restore(selectedVersion, true);
         documentNode = session.getNodeByIdentifier(
             selectedVersion.getContainingHistory().getVersionableIdentifier());
@@ -532,17 +533,26 @@ public class DocumentRepository {
       if (StringUtil.isDefined(comment)) {
         documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       }
+
       final SimpleDocument origin = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
       if (versionedNode) {
-        removeHistory(documentNode);
+        VersionHistory history = session.getWorkspace()
+            .getVersionManager()
+            .getVersionHistory(documentNode.getPath());
+
         documentNode.removeMixin(MIX_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
+
+        session.save();
+
+        removeHistory(history);
+
         final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
         moveMultilangContent(origin, target);
-        File currentDocumentDir =
-            new File(target.getDirectoryPath(DEFAULT_LANGUAGE)).getParentFile();
+        File currentDocumentDir = new File(
+            target.getDirectoryPath(DEFAULT_LANGUAGE)).getParentFile();
         final Optional<File[]> files = ofNullable(currentDocumentDir.getParentFile().listFiles());
         final File[] safeContents = files.orElseGet(() -> {
           SilverLogger.getLogger(this)
@@ -563,11 +573,12 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_VERSIONABLE);
         final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
-        VersionManager versionManager =
-            documentNode.getSession().getWorkspace().getVersionManager();
-        documentNode.getSession().save();
-        moveMultilangContent(origin, target);
+        VersionManager versionManager = documentNode.getSession()
+            .getWorkspace()
+            .getVersionManager();
+        session.save();
         versionManager.checkin(documentNode.getPath());
+        moveMultilangContent(origin, target);
       }
       return new SimpleDocumentPK(documentNode.getIdentifier(), documentPk);
     } catch (ItemNotFoundException e) {
@@ -577,10 +588,21 @@ public class DocumentRepository {
 
   private void deleteDocumentNode(Node documentNode) throws RepositoryException {
     if (null != documentNode) {
-      if (converter.isVersionedMaster(documentNode)) {
-        removeHistory(documentNode);
-      }
+      Session session = documentNode.getSession();
+
+      VersionHistory history = converter.isVersionedMaster(documentNode) ?
+          documentNode.getSession()
+              .getWorkspace()
+              .getVersionManager()
+              .getVersionHistory(documentNode.getPath()) :
+          null;
+
       documentNode.remove();
+      session.save();
+
+      if (history != null) {
+        removeHistory(history);
+      }
     }
   }
 
@@ -625,16 +647,14 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    DescendantNode descendantNodeConstraint =
-        factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath() + instanceId);
-    Comparison oldSilverpeasIdComparison =
-        getComparison(factory, SLV_PROPERTY_OLD_ID,
-            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
-            session.getValueFactory().createValue(oldSilverpeasId));
-    Comparison versionedComparison =
-        getComparison(factory, SLV_PROPERTY_VERSIONED,
-            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
-            session.getValueFactory().createValue(versioned));
+    DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId);
+    Comparison oldSilverpeasIdComparison = getComparison(factory, SLV_PROPERTY_OLD_ID,
+        QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
+        session.getValueFactory().createValue(oldSilverpeasId));
+    Comparison versionedComparison = getComparison(factory, SLV_PROPERTY_VERSIONED,
+        QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
+        session.getValueFactory().createValue(versioned));
 
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
         factory.and(oldSilverpeasIdComparison, versionedComparison)), null, null);
@@ -658,8 +678,8 @@ public class DocumentRepository {
   @SuppressWarnings("SameParameterValue")
   SimpleDocument findLast(Session session, String instanceId, String foreignId,
       final DocumentType documentType) throws RepositoryException {
-    final NodeIterator iter =
-        selectDocumentsByForeignIdAndType(session, instanceId, foreignId, documentType);
+    final NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        documentType);
     while (iter.hasNext()) {
       final Node node = iter.nextNode();
       if (!iter.hasNext()) {
@@ -682,8 +702,8 @@ public class DocumentRepository {
    */
   Optional<Pair<Integer, Integer>> getMinMaxOrderIndexes(Session session, String instanceId,
       String foreignId, final DocumentType documentType) throws RepositoryException {
-    final NodeIterator iter =
-        selectDocumentsByForeignIdAndType(session, instanceId, foreignId, documentType);
+    final NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        documentType);
     int min = Integer.MAX_VALUE;
     int max = Integer.MIN_VALUE;
     while (iter.hasNext()) {
@@ -708,8 +728,8 @@ public class DocumentRepository {
    */
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignId(Session session,
       String instanceId, String foreignId, String language) throws RepositoryException {
-    NodeIterator iter =
-        selectDocumentsByForeignIdAndType(session, instanceId, foreignId, DocumentType.attachment);
+    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        DocumentType.attachment);
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -809,8 +829,8 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-        getPath() + instanceId + '/' + type.getFolderName());
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId + '/' + type.getFolderName());
     return getNodeIteratorByProperty(factory, source, childNodeConstraint, SLV_PROPERTY_FOREIGN_KEY,
         session.getValueFactory().createValue(foreignId));
   }
@@ -819,8 +839,7 @@ public class DocumentRepository {
       final String slvProperty, final String jcrOperatorEqualTo, final Value session)
       throws RepositoryException {
     return factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, slvProperty),
-        jcrOperatorEqualTo, factory.
-            literal(session));
+        jcrOperatorEqualTo, factory.literal(session));
   }
 
   /**
@@ -836,11 +855,10 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.
-        getRootNode().getPath() + instanceId + '/');
+    DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId + '/');
     return getNodeIteratorByProperty(factory, source, descendantNodeConstraint,
-        SLV_PROPERTY_FOREIGN_KEY,
-        session.getValueFactory().createValue(foreignId));
+        SLV_PROPERTY_FOREIGN_KEY, session.getValueFactory().createValue(foreignId));
   }
 
   /**
@@ -856,12 +874,12 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-        getPath() + instanceId + '/' + type.getFolderName());
-    Ordering order =
-        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
-    QueryObjectModel query =
-        factory.createQuery(source, childNodeConstraint, new Ordering[]{order}, null);
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId + '/' + type.getFolderName());
+    Ordering order = factory.ascending(
+        factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, childNodeConstraint, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -879,13 +897,12 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    DescendantNode childNodeConstraint =
-        factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-            getPath() + instanceId);
-    Ordering order =
-        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
-    QueryObjectModel query =
-        factory.createQuery(source, childNodeConstraint, new Ordering[]{order}, null);
+    DescendantNode childNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId);
+    Ordering order = factory.ascending(
+        factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, childNodeConstraint, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -931,8 +948,7 @@ public class DocumentRepository {
   }
 
   private NodeIterator getNodeIteratorByDateProperty(final Session session,
-      final String slvPropertyDate,
-      final Date date) throws RepositoryException {
+      final String slvPropertyDate, final Date date) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Calendar expiry = Calendar.getInstance();
@@ -945,16 +961,13 @@ public class DocumentRepository {
   private NodeIterator getNodeIteratorByProperty(final QueryObjectModelFactory factory,
       final Selector source, final Constraint anotherConstraint, final String slvProperty,
       final Value value) throws RepositoryException {
-    Comparison comparison =
-        getComparison(factory, slvProperty,
-            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
-            value);
-    Ordering order =
-        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Comparison comparison = getComparison(factory, slvProperty,
+        QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, value);
+    Ordering order = factory.ascending(
+        factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     Constraint constraint =
         anotherConstraint == null ? comparison : factory.and(anotherConstraint, comparison);
-    QueryObjectModel query =
-        factory.createQuery(source, constraint, new Ordering[]{order}, null);
+    QueryObjectModel query = factory.createQuery(source, constraint, new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -993,14 +1006,13 @@ public class DocumentRepository {
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    Comparison foreignIdComparison =
-        getComparison(factory, SLV_PROPERTY_EXPIRY_DATE,
-            QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN,
-            session.getValueFactory().createValue(expiry));
-    Ordering order =
-        factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
-    QueryObjectModel query =
-        factory.createQuery(source, foreignIdComparison, new Ordering[]{order}, null);
+    Comparison foreignIdComparison = getComparison(factory, SLV_PROPERTY_EXPIRY_DATE,
+        QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN,
+        session.getValueFactory().createValue(expiry));
+    Ordering order = factory.ascending(
+        factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -1029,8 +1041,9 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-        getPath() + instanceId + '/' + DocumentType.attachment.getFolderName());
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId + '/' +
+            DocumentType.attachment.getFolderName());
     return getNodeIteratorByProperty(factory, source, childNodeConstraint, SLV_PROPERTY_OWNER,
         session.getValueFactory().createValue(owner));
   }
@@ -1047,8 +1060,8 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    return getNodeIteratorByProperty(factory, source, SLV_PROPERTY_OWNER, session.
-        getValueFactory().createValue(owner));
+    return getNodeIteratorByProperty(factory, source, SLV_PROPERTY_OWNER,
+        session.getValueFactory().createValue(owner));
   }
 
   /**
@@ -1117,14 +1130,22 @@ public class DocumentRepository {
   }
 
   /**
-   * Lock a document if it is versioned to create a new work in progress version.
+   * Checkout the specified document if it is versioned to create a new work in progress version.
+   * In the JCR the versioned documents are protected for direct modifications. The checking out
+   * mechanism is a way to create a working copy of the document on which the modification will
+   * be done. Once the modifications done, don't forget to invoke one of the checkin methods to
+   * create a new version of the document from its modified working copy.
+   * <p>
+   * Any non-versioned documents are by default modifiable and hence doesn't required to be
+   * explicitly checked out.
+   * </p>
    * @param session the session in the JCR
    * @param document the document to lock.
-   * @param owner the user locking the node.
-   * @return true if node has be checked out - false otherwise.
+   * @param owner the user asking to checkout the node.
+   * @return true if node has be checked out, false otherwise.
    * @throws RepositoryException if an error occurs in the JCR
    */
-  public boolean lock(Session session, SimpleDocument document, String owner)
+  public boolean checkout(Session session, SimpleDocument document, String owner)
       throws RepositoryException {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
@@ -1137,35 +1158,36 @@ public class DocumentRepository {
   }
 
   /**
-   * Unlock a document if it is versioned to create a new version or to restore a previous one. By
-   * using this method, the metadata of the content are always updated.
+   * Checkin the specified document if it is versioned to create a new version or to restore a
+   * previous one. By using this method, the metadata of the content are always updated.
    * @param session the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
    * @param restore true to restore the previous version if any.
-   * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
+   * @return document updated.
    * @throws RepositoryException if an error occurs in the JCR
    */
-  public SimpleDocument unlock(Session session, SimpleDocument document, boolean restore)
+  public SimpleDocument checkin(Session session, SimpleDocument document, boolean restore)
       throws RepositoryException {
-    return unlock(session, document, restore, false);
+    return checkin(session, document, restore, false);
   }
 
   /**
-   * Unlock a document if it is versioned from a context into which a language content has just been
-   * deleted. This method does not update the metadata of the content in order to obtain an
+   * Checkin a document if it is versioned from a context into which a language content has just
+   * been deleted. This method does not update the metadata of the content in order to obtain an
    * efficient content deletion.
    * @param session the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
-   * @return the result of {@link #unlock(Session, SimpleDocument, boolean, boolean)} execution.
+   * @return the document updated.
    * @throws RepositoryException if an error occurs in the JCR
    */
-  public SimpleDocument unlockFromContentDeletion(Session session, SimpleDocument document)
+  public SimpleDocument checkinFromContentDeletion(Session session, SimpleDocument document)
       throws RepositoryException {
-    return unlock(session, document, false, true);
+    return checkin(session, document, false, true);
   }
 
   /**
-   * Unlock a document if it is versioned to create a new version or to restore a previous one.
+   * Checkin the specified document if it is versioned to create a new version or to restore a
+   * previous one.
    * @param session the current JCR open session to perform actions.
    * @param document the document data from which all needed identifiers are retrieved.
    * @param restore true to restore the previous version if any.
@@ -1174,7 +1196,7 @@ public class DocumentRepository {
    * @return the document updated.
    * @throws RepositoryException if an error occurs in the JCR
    */
-  private SimpleDocument unlock(Session session, SimpleDocument document, boolean restore,
+  private SimpleDocument checkin(Session session, SimpleDocument document, boolean restore,
       boolean skipContentMetadataUpdate) throws RepositoryException {
     Node documentNode;
     try {
@@ -1185,8 +1207,10 @@ public class DocumentRepository {
     }
     if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
-        VersionIterator iter = session.getWorkspace().getVersionManager().
-            getVersionHistory(document.getFullJcrPath()).getAllVersions();
+        VersionIterator iter = session.getWorkspace()
+            .getVersionManager()
+            .getVersionHistory(document.getFullJcrPath())
+            .getAllVersions();
         Version lastVersion = null;
         while (iter.hasNext()) {
           lastVersion = iter.nextVersion();
@@ -1244,9 +1268,7 @@ public class DocumentRepository {
     return converter.convertNode(documentNode, lang);
   }
 
-  void removeHistory(Node documentNode) throws RepositoryException {
-    VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
-        getVersionHistory(documentNode.getPath());
+  void removeHistory(VersionHistory history) throws RepositoryException {
     Version root = history.getRootVersion();
     VersionIterator versions = history.getAllVersions();
     while (versions.hasNext()) {

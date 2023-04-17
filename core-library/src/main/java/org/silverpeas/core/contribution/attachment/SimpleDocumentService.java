@@ -267,7 +267,7 @@ public class SimpleDocumentService
       SimpleDocument createdDocument = repository.findDocumentById(session, docPk, document.
           getLanguage());
       createdDocument.setPublicDocument(document.isPublic());
-      SimpleDocument finalDocument = repository.unlock(session, createdDocument, false);
+      SimpleDocument finalDocument = repository.checkin(session, createdDocument, false);
       repository.storeContent(finalDocument, content, false);
       if (reallyNotifying(document, notify) &&
           StringUtil.isDefined(document.getCreatedBy())) {
@@ -417,7 +417,7 @@ public class SimpleDocumentService
       if (!StringUtil.isDefined(owner)) {
         owner = document.getUpdatedBy();
       }
-      boolean checkinRequired = repository.lock(session, document, owner);
+      boolean checkinRequired = repository.checkout(session, document, owner);
       SimpleDocument docBeforeUpdate =
           repository.findDocumentById(session, document.getPk(), document.getLanguage());
       repository.updateDocument(session, document, true);
@@ -425,7 +425,7 @@ public class SimpleDocumentService
       repository.fillNodeName(session, document);
       SimpleDocument finalDocument = document;
       if (checkinRequired) {
-        finalDocument = repository.unlock(session, document, false);
+        finalDocument = repository.checkin(session, document, false);
       }
       repository.storeContent(finalDocument, in, true);
       if (document.isOpenOfficeCompatible() && finalDocument.isEdited()) {
@@ -453,7 +453,7 @@ public class SimpleDocumentService
   @Override
   public void removeContent(@SourceObject SimpleDocument document, String lang, boolean notify) {
     try (JCRSession session = JCRSession.openSystemSession()) {
-      boolean requireLock = repository.lock(session, document, document.getEditedBy());
+      boolean requireLock = repository.checkout(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isEdited()) {
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
@@ -473,7 +473,7 @@ public class SimpleDocumentService
       }
       SimpleDocument finalDocument = document;
       if (requireLock) {
-        finalDocument = repository.unlockFromContentDeletion(session, document);
+        finalDocument = repository.checkinFromContentDeletion(session, document);
         if (existsOtherContents) {
           repository.duplicateContent(document, finalDocument);
         }
@@ -759,7 +759,7 @@ public class SimpleDocumentService
   private void unlockDocumentInRepo(final JCRSession session, final UnlockContext context,
       final SimpleDocument document, final boolean restorePreviousVersion,
       final boolean updateOfficeContentFromWebDav) throws RepositoryException, IOException {
-    SimpleDocument finalDocument = repository.unlock(session, document, restorePreviousVersion);
+    SimpleDocument finalDocument = repository.checkin(session, document, restorePreviousVersion);
     if (updateOfficeContentFromWebDav) {
       webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
       webdavRepository.deleteAttachmentNode(session, finalDocument);
@@ -811,7 +811,7 @@ public class SimpleDocumentService
       if (document.isEdited()) {
         return document.getEditedBy().equals(userId);
       }
-      repository.lock(session, document, userId);
+      repository.checkout(session, document, userId);
       document.edit(userId);
       if (document.isOpenOfficeCompatible()) {
         webdavRepository.createAttachmentNode(session, document);

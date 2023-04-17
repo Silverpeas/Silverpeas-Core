@@ -20,12 +20,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
 package org.silverpeas.core.jcr;
 
-import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 
 /**
@@ -38,12 +36,4 @@ import javax.jcr.RepositoryFactory;
  */
 public interface SilverpeasRepositoryFactory extends RepositoryFactory {
 
-  /**
-   * Attempts to close the connection with the JCR represented by the specified repository.
-   * This method is dedicated to release any resources used to open and access the JCR. With
-   * some implementations of the JCR, closing the repository could be required to avoid any stale
-   * state of the JCR.
-   * @param repository the repository to close.
-   */
-  void closeRepository(final Repository repository);
 }

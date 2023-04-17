@@ -35,6 +35,7 @@ import org.apache.jackrabbit.oak.plugins.document.Path;
 import org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.impl.oak.configuration.DocumentNodeStoreConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.StorageType;
@@ -76,15 +77,6 @@ public class DocumentNodeStoreFactory implements NodeStoreFactory {
         .apply(docNodeConf);
   }
 
-  @Override
-  public void dispose(final NodeStore store) {
-    if (store instanceof DocumentNodeStore) {
-      ((DocumentNodeStore) store).dispose();
-    } else {
-      throw new IllegalArgumentException("The specified store isn't a DocumentNodeStore");
-    }
-  }
-
   private DocumentNodeStore createMongoNodeStore(final DocumentNodeStoreConfiguration conf) {
     DocumentNodeStoreBuilder<?> builder =
         MongoDocumentNodeStoreBuilder.newMongoDocumentNodeStoreBuilder()
@@ -108,8 +100,11 @@ public class DocumentNodeStoreFactory implements NodeStoreFactory {
             .setLeaseCheckMode(LeaseCheckMode.valueOf(conf.getLeaseCheckMode()))
             .setNodeCachePathPredicate(createCachePredicate(conf))
             .setUpdateLimit(conf.getUpdateNbLimit());
+    DocumentNodeStore store = builder.build();
 
-    return builder.build();
+    ResourcesCloser.get().register(store::dispose);
+
+    return store;
   }
 
   @SuppressWarnings("Guava")

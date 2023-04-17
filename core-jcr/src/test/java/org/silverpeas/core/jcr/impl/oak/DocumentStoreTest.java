@@ -38,6 +38,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
+import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.test.extention.SystemProperty;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.jcr.JCRSession;
@@ -69,7 +70,7 @@ import static org.silverpeas.core.jcr.impl.oak.DocumentStoreTest.OAK_CONFIG;
  */
 @SystemProperty(key = RepositorySettings.JCR_HOME, value = JCR_HOME)
 @SystemProperty(key = RepositorySettings.JCR_CONF, value = OAK_CONFIG)
-@TestManagedBeans({RepositoryProvider.class})
+@TestManagedBeans({ResourcesCloser.class, RepositoryProvider.class})
 public class DocumentStoreTest extends SecurityTest {
 
   public static final String JCR_HOME = "/tmp/jcr";
@@ -192,12 +193,11 @@ public class DocumentStoreTest extends SecurityTest {
         // be sure of his return value
         if (versionIterator.getSize() == -1L) {
           assertThat(versionIterator.hasNext(), is(true));
-          Version version = versionIterator.nextVersion();
-          assertThat(version, notNullValue());
-          assertThat(version.getIdentifier(), is(rootVersion.getIdentifier()));
+          assertThat(versionIterator.nextVersion().isSame(rootVersion), is(true));
           assertThat(versionIterator.hasNext(), is(false));
         } else {
           assertThat(versionIterator.getSize(), is(1L));
+          assertThat(versionIterator.nextVersion().isSame(rootVersion), is(true));
         }
       }
     });
