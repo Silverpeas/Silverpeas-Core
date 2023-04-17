@@ -31,6 +31,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import javax.annotation.Nullable;
 import java.util.MissingResourceException;
 import java.util.Optional;
 
@@ -80,7 +81,11 @@ class AbstractAuthenticationVerifier {
    * @param credential the credentials
    * @return the user with the specified credentials
    */
-  static User getUserByCredential(AuthenticationCredential credential) {
+  @Nullable
+  static User getUserByCredential(@Nullable AuthenticationCredential credential) {
+    if (credential == null) {
+      return null;
+    }
     final String cacheKey = cacheKey(credential.getLogin(), credential.getDomainId());
     return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class, () -> {
         final User user = UserProvider.get().getUserByLoginAndDomainId(credential.getLogin(),

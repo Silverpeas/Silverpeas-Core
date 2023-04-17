@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.annotation.Defined;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.credentials.*;
 
@@ -100,11 +102,12 @@ public class CredentialsServlet extends HttpServlet {
         String login = request.getParameter("Login");
         String domainId = request.getParameter("DomainId");
         String destinationPage = "";
-        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearSession(request);
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier((User) null)
+            .clearSession(request);
         if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
           // Verify that the user can login
-          UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory.getUserCanLoginVerifier(
-              AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
+          UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
+                  .getUserCanLoginVerifier(getAuthenticationCredential(login, domainId));
           user = userStateVerifier.getUser();
           destinationPage = checkUserState(destinationPage, userStateVerifier);
         }
@@ -165,5 +168,15 @@ public class CredentialsServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     doGet(request, response);
+  }
+
+  private AuthenticationCredential getAuthenticationCredential(@Defined final String login,
+      @Defined final String domain) {
+    try {
+      return AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domain);
+    } catch (AuthenticationException e) {
+      // shouldn't be thrown
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 }

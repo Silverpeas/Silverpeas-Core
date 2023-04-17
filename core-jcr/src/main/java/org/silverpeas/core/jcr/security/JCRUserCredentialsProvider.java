@@ -27,6 +27,7 @@ package org.silverpeas.core.jcr.security;
 
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.jcr.Credentials;
@@ -94,9 +95,12 @@ public final class JCRUserCredentialsProvider {
     if (userIdParts.length != 2) {
       return null;
     }
-    return AuthenticationCredential
-        .newWithAsLogin(userIdParts[0])
-        .withAsDomainId(userIdParts[1])
-        .withAsPassword(String.valueOf(credentials.getPassword()));
+    try {
+      return AuthenticationCredential.newWithAsLogin(userIdParts[0])
+          .withAsDomainId(userIdParts[1])
+          .withAsPassword(String.valueOf(credentials.getPassword()));
+    } catch (AuthenticationException e) {
+      return null;
+    }
   }
 }

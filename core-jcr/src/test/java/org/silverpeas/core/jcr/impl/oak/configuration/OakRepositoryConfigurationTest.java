@@ -93,8 +93,7 @@ class OakRepositoryConfigurationTest {
         Matchers.is(SegmentNodeStoreConfiguration.DefaultValues.TEMPLATE_DEDUPLICATION_CACHE_SIZE));
     assertThat(segmentStoreConf.getNodeDeduplicationCacheSize(),
         Matchers.is(SegmentNodeStoreConfiguration.DefaultValues.NODE_DEDUPLICATION_CACHE_SIZE));
-    assertThat(segmentStoreConf.isPauseCompaction(),
-        Matchers.is(SegmentNodeStoreConfiguration.DefaultValues.COMPACTION_PAUSE));
+    assertThat(segmentStoreConf.isPauseCompaction(), Matchers.is(true));
     assertThat(segmentStoreConf.getCompactionCRON(),
         Matchers.is(SegmentNodeStoreConfiguration.DefaultValues.COMPACTION_CRON));
     assertThat(segmentStoreConf.getBackupFileAgeThreshold(),

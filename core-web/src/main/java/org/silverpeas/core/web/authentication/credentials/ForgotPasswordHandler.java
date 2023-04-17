@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.AuthDomain;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
@@ -78,22 +79,21 @@ public class ForgotPasswordHandler extends FunctionHandler {
 
   private String sendUserResetMail(final HttpServletRequest request, final String login,
       final String domainId, final String userId) throws ForgottenPasswordException {
-    // Envoi d'un mail contenant un lien permettant de lancer la réinitialisation
-    // automatique du mot de passe.
+    // send a mail to the user in which a link allow him to reset automatically his password
     try {
       ForgottenPasswordMailParameters parameters = getMailParameters(userId);
       parameters.setLink(
           getContextPath(request) + "/ResetPassword?key=" + getAuthenticationKey(login, domainId));
       forgottenPasswordMailManager.sendResetPasswordRequestMail(parameters);
       return getGeneral().getString("forgottenPasswordChangeAllowed");
-    } catch (AdminException e) {
+    } catch (AdminException | AuthenticationException e) {
       throw new ForgottenPasswordException(
           "CredentialsServlet.forgotPasswordHandler.doAction()",
           "forgottenPassword.EX_GET_USER_DETAIL", "userId=" + userId, e);
     }
   }
 
-  private String getAuthenticationKey(final String login, final String domainId) {
+  private String getAuthenticationKey(final String login, final String domainId) throws AuthenticationException {
       return authenticator.getAuthToken(
           AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
   }

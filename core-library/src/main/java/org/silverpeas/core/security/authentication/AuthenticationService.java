@@ -157,11 +157,6 @@ public class AuthenticationService implements Authentication {
 
   @Override
   public AuthenticationResponse authenticate(final AuthenticationCredential userCredential) {
-    if (StringUtil.isNotDefined(userCredential.getLogin())) {
-      SilverLogger.getLogger(this).error("No login is passed in the user credentials!");
-      return AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
-    }
-
     AuthenticationResponse result;
     try {
       String token = checkAuthentication(userCredential);
@@ -222,7 +217,7 @@ public class AuthenticationService implements Authentication {
     String password = credential.getPassword();
     String domainId = credential.getDomainId();
     if (password == null || domainId == null) {
-      return null;
+      throw  new AuthenticationException("No login or no domain is specified!");
     }
 
     // Verify that the user can log in
@@ -260,7 +255,7 @@ public class AuthenticationService implements Authentication {
     String login = credential.getLogin();
     String domainId = credential.getDomainId();
     if (domainId == null) {
-      return null;
+      throw new AuthenticationException("No domain is specified!");
     }
     final boolean authenticationOK;
     try (Connection connection = openConnection()) {
@@ -323,8 +318,7 @@ public class AuthenticationService implements Authentication {
     String oldPassword = credential.getPassword();
     String domainId = credential.getDomainId();
     if (oldPassword == null || domainId == null || newPassword == null) {
-      throw new AuthenticationBadCredentialException(
-          "The login, the password or the domain isn't set!");
+      throw new AuthenticationBadCredentialException("The password or the domain isn't set!");
     }
 
     // Verify that the user can log in

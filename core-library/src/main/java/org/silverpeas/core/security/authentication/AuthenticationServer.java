@@ -23,16 +23,9 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationExceptionVisitor;
-import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.core.security.authentication.exception.*;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.lang.reflect.Constructor;
@@ -206,10 +199,6 @@ public class AuthenticationServer {
   }
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
-    if (!StringUtil.isDefined(op.getAuthenticationCredential().getLogin())) {
-      throw new AuthenticationException("The login of the user isn't set!");
-    }
-
     boolean serverNotFound = true;
     AuthenticationException lastException = null;
     for (AuthenticationProtocol authProtocol : authProtocols) {
@@ -251,6 +240,7 @@ public class AuthenticationServer {
       this.name = operationName;
     }
 
+    @SuppressWarnings("unused")
     public String getName() {
       return name;
     }
