@@ -27,6 +27,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
@@ -72,7 +73,8 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
       Date tmpDate = (Date) keyValue.get(NotificationParameterNames.DATE.toString());
       SILVERMAILMessage sm = new SILVERMAILMessage();
       sm.setUserId(Integer.parseInt(data.getTargetReceipt()));
-      sm.setSenderName(data.getSenderName());
+      String senderName = StringUtil.isDefined(data.getSenderName()) ? data.getSenderName() : "";
+      sm.setSenderName(senderName);
       sm.setSubject(tmpSubjectString);
       sm.setUrl(tmpUrlString);
       sm.setSource(tmpSourceString);
