@@ -490,9 +490,10 @@ public class DocumentRepository {
   public void deleteDocument(Session session, SimpleDocumentPK documentPk)
       throws RepositoryException {
     try {
-      Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-      deleteContent(documentNode, documentPk.getInstanceId());
+      final Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+      final String documentNodeName = documentNode.getName();
       deleteDocumentNode(documentNode);
+      deleteContent(documentPk.getInstanceId(), documentNodeName);
     } catch (ItemNotFoundException e) {
       SilverLogger.getLogger(this).silent(e);
     }

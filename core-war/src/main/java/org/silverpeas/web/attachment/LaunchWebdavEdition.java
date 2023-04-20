@@ -28,13 +28,16 @@ import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavWbeFile;
+import org.silverpeas.core.contribution.attachment.webdav.impl.WebDavDocumentService;
+import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavContentDescriptor;
+import org.silverpeas.core.jcr.webdav.WebDavAccessOpener;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
-import org.silverpeas.core.jcr.webdav.WebDavAccessOpener;
 
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +50,9 @@ import java.util.Optional;
  */
 public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 3738081252893759397L;
+
+  @Inject
+  private WebDavDocumentService webdavService;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -75,7 +81,12 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
         final RequestDispatcher requestDispatcher =
             request.getRequestDispatcher(wbeEditorUrl.get());
         requestDispatcher.forward(request, response);
-      } else {
+      } else if (!wbe) {
+        if (document.isEditedBy(user) && webdavService.getDescriptor(document)
+            .map(WebdavContentDescriptor::isOfficeEditorLock)
+            .orElse(false)) {
+          webdavService.unlockOfficeEditor(document);
+        }
         String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();
         new WebDavAccessOpener().open(user, documentUrl, response);
       }
