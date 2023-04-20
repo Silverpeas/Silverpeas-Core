@@ -1329,8 +1329,8 @@ public class DocumentRepository {
     }
   }
 
-  public void deleteContent(Node documentNode, String instanceId) throws RepositoryException {
-    String directory = FileRepositoryManager.getAbsolutePath(instanceId) + documentNode.getName();
+  public void deleteContent(String instanceId, final String nodeName) {
+    String directory = FileRepositoryManager.getAbsolutePath(instanceId) + nodeName;
     directory = directory.replace('/', File.separatorChar);
     File documentDirectory = new File(directory);
     if (documentDirectory.exists() && documentDirectory.isDirectory()) {

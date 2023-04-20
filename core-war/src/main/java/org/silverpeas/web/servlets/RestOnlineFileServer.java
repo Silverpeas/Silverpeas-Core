@@ -34,10 +34,10 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -51,7 +51,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.Optional;
 
 /**
@@ -117,8 +116,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
   private SilverpeasFile getWantedAttachment(RestRequest restRequest)
       throws IllegalAccessException {
     String componentId = restRequest.getElementValue("componentId");
-    String attachmentId =
-        URLDecoder.decode(restRequest.getElementValue("attachmentId"), Charsets.UTF_8);
+    String attachmentId = URLUtil.decode(restRequest.getElementValue("attachmentId"));
     String language = restRequest.getElementValue("lang");
     String size = restRequest.getElementValue("size");
     SilverpeasFile file = SilverpeasFile.NO_FILE;
