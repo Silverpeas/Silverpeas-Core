@@ -93,4 +93,13 @@ public interface WebdavService {
    * @throws IOException when it is not possible to write physically the data.
    */
   void loadContentInto(final SimpleDocument document, final OutputStream output) throws IOException;
+
+  /**
+   * Remove the lock on the given document set by the office editor.
+   * <p>
+   *   Nothing is done if the document is already unlocked.
+   * </p>
+   * @param document the locked document.
+   */
+  void unlockOfficeEditor(SimpleDocument document);
 }

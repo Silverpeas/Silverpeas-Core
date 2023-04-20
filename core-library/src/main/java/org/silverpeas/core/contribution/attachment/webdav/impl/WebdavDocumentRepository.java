@@ -232,7 +232,10 @@ public class WebdavDocumentRepository implements WebdavRepository {
     if (isNodeLocked(session, attachment)) {
       final Optional<Node> webdavNode = getWebdavNode(session, attachment).map(Pair::getFirst);
       if (webdavNode.isPresent()) {
-        session.getWorkspace().getLockManager().unlock(webdavNode.get().getPath());
+        webdavNode.get().removeMixin(MIX_LOCKABLE);
+        session.save();
+        webdavNode.get().addMixin(MIX_LOCKABLE);
+        session.save();
         return isNodeLocked(session, attachment);
       }
     }

@@ -41,6 +41,7 @@ import java.util.Optional;
 public class WebDavDocumentService implements WebdavService {
 
   private static final String DOCUMENT_NOT_FOUND = "Document not found";
+  private static final String UNLOCK_FAILURE = "Unlock failure";
   @Inject
   private WebdavRepository webdavRepository;
 
@@ -98,6 +99,15 @@ public class WebDavDocumentService implements WebdavService {
       webdavRepository.loadContentInto(session, document, output);
     } catch (RepositoryException ex) {
       throw new AttachmentException(DOCUMENT_NOT_FOUND, ex);
+    }
+  }
+
+  @Override
+  public void unlockOfficeEditor(final SimpleDocument document) {
+    try(JCRSession session = JCRSession.openSystemSession()) {
+      webdavRepository.unlockLockedNode(session, document);
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(UNLOCK_FAILURE, ex);
     }
   }
 }

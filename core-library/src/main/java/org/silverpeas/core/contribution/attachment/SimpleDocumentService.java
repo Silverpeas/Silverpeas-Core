@@ -53,6 +53,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.Charsets;
@@ -66,7 +67,6 @@ import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.jcr.JCRSession;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -735,13 +735,13 @@ public class SimpleDocumentService
                 contentLanguage);
       }
 
-      if (!canBeUnlocked(context, session, document)) {
+      if (!canBeCheckedIn(context, session, document)) {
         return false;
       }
 
       boolean notify =
-          prepareDocumentForUnlocking(context, document, updateOfficeContentFromWebDav);
-      unlockDocumentInRepo(session, context, document, restorePreviousVersion,
+          prepareDocumentForCheckin(context, document, updateOfficeContentFromWebDav);
+      checkinDocumentInRepo(session, context, document, restorePreviousVersion,
           updateOfficeContentFromWebDav);
       if (document.isPublic()) {
         String userId = context.getUserId();
@@ -756,7 +756,7 @@ public class SimpleDocumentService
     return true;
   }
 
-  private void unlockDocumentInRepo(final JCRSession session, final UnlockContext context,
+  private void checkinDocumentInRepo(final JCRSession session, final UnlockContext context,
       final SimpleDocument document, final boolean restorePreviousVersion,
       final boolean updateOfficeContentFromWebDav) throws RepositoryException, IOException {
     SimpleDocument finalDocument = repository.checkin(session, document, restorePreviousVersion);
@@ -776,7 +776,7 @@ public class SimpleDocumentService
     session.save();
   }
 
-  private boolean prepareDocumentForUnlocking(final UnlockContext context,
+  private boolean prepareDocumentForCheckin(final UnlockContext context,
       final SimpleDocument document, final boolean updateOfficeContentFromWebDav) {
     boolean notify = false;
     if (context.isWebdav() || context.isUpload()) {
@@ -792,11 +792,11 @@ public class SimpleDocumentService
     return notify;
   }
 
-  private boolean canBeUnlocked(final UnlockContext context, final JCRSession session,
+  private boolean canBeCheckedIn(final UnlockContext context, final JCRSession session,
       final SimpleDocument document) throws RepositoryException {
     if (document.isOpenOfficeCompatible() && !context.isForce() &&
         webdavRepository.isNodeLocked(session, document)) {
-      return false;
+      return context.getUserId().equals(document.getEditedBy());
     }
     return context.isForce() || !document.isEdited() || document.getEditedBy().equals(context.
         getUserId());
