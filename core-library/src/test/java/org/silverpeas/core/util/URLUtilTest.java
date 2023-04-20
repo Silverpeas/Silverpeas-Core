@@ -41,6 +41,8 @@ import static java.time.ZoneId.systemDefault;
 import static java.time.temporal.ChronoField.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.URLUtil.*;
 
 /**
@@ -67,6 +69,18 @@ class URLUtilTest {
   void clean() throws Exception {
     FileUtils.deleteQuietly(tempFile);
     urlSettings.afterEach(null);
+  }
+
+  @Test
+  void verifyDecode() {
+    assertThrows(NullPointerException.class, () -> URLUtil.decode(null));
+    assertThat(URLUtil.decode(EMPTY), is(EMPTY));
+    assertThat(URLUtil.decode(
+        ".../ef387a5d-096a-4c9e-833f-42e023adb6fa%2Fjcr:frozenNode/lang/fr/name/Document%20versionn%C3%A9.odt?t_=1680690628805"), is(
+        ".../ef387a5d-096a-4c9e-833f-42e023adb6fa/jcr:frozenNode/lang/fr/name/Document versionné.odt?t_=1680690628805"));
+    assertThat(URLUtil.decode(
+        "ef387a5d-096a-4c9e-833f-42e023adb6fa%252Fjcr:frozenNode"), is(
+        "ef387a5d-096a-4c9e-833f-42e023adb6fa/jcr:frozenNode"));
   }
 
   @Test

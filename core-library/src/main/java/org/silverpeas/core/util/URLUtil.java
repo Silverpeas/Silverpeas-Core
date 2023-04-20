@@ -37,6 +37,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
@@ -126,6 +127,43 @@ public class URLUtil {
 
   private static SimpleCache getRequestCache() {
     return getRequestCacheService().getCache();
+  }
+
+  /**
+   * Decodes an {@code application/x-www-form-urlencoded} string using
+   * {@linkplain Charsets#UTF_8 UTF-8 charsets}. The supplied charset is used to determine what
+   * characters are represented by any consecutive sequences of the form "<i>{@code %xy}</i>".
+   * <p>
+   * <em><strong>Note:</strong> The
+   * <a href= "http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
+   * World Wide Web Consortium Recommendation</a> states that
+   * UTF-8 should be used. Not doing so may introduce
+   * incompatibilities.</em>
+   * <p>
+   *   IMPORTANT:<br/>
+   *   This implementation is calling several times
+   *   {@linkplain URLDecoder#decode(String, String) URLDecoder.decode(url, Charsets.UTF_8)}
+   *   until the decoding operation does not decode anything.<br/>
+   *   This useful with WEB services communicating encoded URLs which could have been encoded
+   *   several times, such as attachment WEB services.
+   * </p>
+   * @param url the {@code String} to decode.
+   * @return the newly decoded {@code String}.
+   * @throws NullPointerException if {@code url} or {@code charset} is {@code null}.
+   * @throws IllegalArgumentException if the implementation encounters illegal characters.
+   * @implNote This implementation will throw an {@link java.lang.IllegalArgumentException}
+   * when illegal strings are encountered.
+   * @see URLDecoder#decode(java.lang.String, java.nio.charset.Charset)
+   * @since 10
+   */
+  public static String decode(final String url) {
+    String decodedUrl = url;
+    String check = EMPTY;
+    while (!check.equals(decodedUrl)) {
+      check = decodedUrl;
+      decodedUrl = URLDecoder.decode(decodedUrl, Charsets.UTF_8);
+    }
+    return decodedUrl;
   }
 
   /**
