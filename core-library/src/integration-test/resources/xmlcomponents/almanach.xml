@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -13,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,52 +22,66 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
-    <message lang="fr">Almanach</message>
-    <message lang="en">Almanach</message>
-  </label>
+    <message lang="fr">Calendrier</message>
+    <message lang="en">Calendar</message>
+    <message lang="de">Kalender</message>
+  <message lang="uk">Календар</message></label>
   <description>
-    <message lang="fr">Permet de créer et de visualiser les différents agendas d'événements définis dans les
-      espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers
-      joints. La visualisation s'effectue sur plusieurs échelles de temps.
+    <message lang="fr">Les différentes vues proposées présentent des événements ponctuels
+      ou périodiques. L’application permet l’agrégation et l’accès rapide vers d’autres
+      calendriers. Tous les événements peuvent être exportés au format iCal.
     </message>
-    <message lang="en">Enable to create and aggregate agendas from collaborative spaces or subspaces. Events can
-      have attachments. You can viw events using different time scales.
+    <message lang="en">Enable to create and aggregate calendars from collaborative spaces or
+      subspaces. Events can
+      have attachments. You can view events using different time scales.
     </message>
-  </description>
+    <message lang="de">Ermöglicht Ihnen das Erstellen und Anzeigen der verschiedenen Agenden von
+      Veranstaltungen in den definierten
+      Räume und Unterräume der kollaborativen Räumen. Jedes Ereignis kann mit Dateien verknüpft
+      werden.
+      Die Visualisierung wurd auf mehreren Zeitskalen durchgeführt.
+    </message>
+  <message lang="uk">Різні запропоновані погляди представляють конкретні або періодичні події. Програма дозволяє агрегувати та швидко отримувати доступ до інших календарів. Усі події можна експортувати у формат iCal.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
-  </suite>
+    <message lang="de">02 kollaborative Verwaltung</message>
+  <message lang="uk">02 Спільне управління</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
-      </label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
+      <message lang="uk">Менеджери</message></label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
-      </help>
+        <message lang="fr">Les gestionnaires créent des événements et paramêtrent l'usage du Plan de
+          Classement.
+        </message>
+        <message lang="en">Managers create events and set up the classification scheme.</message>
+        <message lang="de">Managers create events and set up the classification scheme.</message>
+      <message lang="uk">Менеджери створюють події та налаштовують використання плану рейтингу.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
-      </label>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
+        <message lang="de">Herausgeber</message>
+      <message lang="uk">Видавці</message></label>
       <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
-      </help>
+        <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements.
+        </message>
+        <message lang="en">Publishers can create, update and delete events.</message>
+        <message lang="de">Herausgeber</message>
+      <message lang="uk">Видавці можуть створювати, редагувати та видаляти події.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -76,13 +89,18 @@
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
-      </label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      <message lang="uk">Читачі</message></label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
-      </help>
+        <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues
+          offertes.
+        </message>
+        <message lang="en">Readers consult the events throughout the different views available.
+        </message>
+        <message lang="de">Leser</message>
+      <message lang="uk">Читачі ознайомлюються з подіями через різні запропоновані погляди.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -94,118 +112,253 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
-      </label>
+        <message lang="de">Klassierungsplan</message>
+      <message lang="uk">Класифікація PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les événements saisis au sein de cette instance pourront être classés sur le Plan de
+        <message lang="fr">Les événements saisis au sein de cette instance pourront être classés sur
+          le Plan de
           Classement
         </message>
         <message lang="en">The events will be classified on the classification scheme.</message>
-      </help>
+        <message lang="de">Die Ereignisse werden auf dem KP klassifiziert werden</message>
+      <message lang="uk">Події, введені в цей екземпляр, можна класифікувати в класифікаційному плані</message></help>
     </parameter>
     <parameter>
-      <name>useAgregation</name>
+      <name>filterOnPdc</name>
       <label>
-        <message lang="fr">Agrégation d'Almanachs</message>
-        <message lang="en">Almanach Aggregation</message>
-      </label>
+        <message lang="fr">Filtrage PDC</message>
+        <message lang="en">Classification filter</message>
+        <message lang="de">Classification filter</message>
+      <message lang="uk">Фільтрація PDC</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces
-          de l'espace de cet Almanach.
+        <message lang="fr">Si activé, le PDC permet de filtrer les événements présentés.</message>
+        <message lang="en">If activated, the Classification engine permits to filter displayed
+          events.
         </message>
-        <message lang="en">This almanach can aggregate events from other almanachs in subspaces of the space
-          containing this almanach.
+        <message lang="de">If activated, the Classification engine permits to filter displayed
+          events.
         </message>
-      </help>
+      <message lang="uk">Якщо активовано, PDC дозволяє фільтрувати представлені події.</message></help>
     </parameter>
     <parameter>
-      <name>weekendNotVisible</name>
+      <name>useAgregation</name>
       <label>
-        <message lang="fr">Masquer les week-ends</message>
-        <message lang="en">Hide week-ends</message>
-      </label>
+        <message lang="fr">Agrégation</message>
+        <message lang="en">Aggregation</message>
+        <message lang="de">Aggregierung</message>
+      <message lang="uk">Агрегація</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</message>
+        <message lang="fr">Cette application pourra afficher des évènements d'autres Calendriers
+          selon le
+          paramétrage de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la
+          plate-forme) ou
+          selon si le paramètre 'Agrégation sur mesure' est renseigné.
+        </message>
+        <message lang="en">This application can aggregate events from other Calendars according to
+          the
+          platform settings (calendars in subspaces, in the space or from the whole platform) or
+          according to 'Custom aggregation' parameter if it is filled.
+        </message>
+        <message lang="de">This application can aggregate events from other Calendars according to
+          the
+          platform settings (calendars in subspaces, in the space or from the whole platform) or
+          according to 'Custom aggregation' parameter if it is filled.
+        </message>
+      <message lang="uk">Ця програма зможе відображати події з інших календарів залежно від конфігурації платформи (календари підпросторів, простору чи всієї платформи) або залежно від того, чи заповнено параметр «Спеціальна агрегація».</message></help>
+    </parameter>
+    <parameter>
+      <name>customAggregation</name>
+      <label>
+        <message lang="fr">Agrégation sur mesure</message>
+        <message lang="en">Custom aggregation</message>
+        <message lang="de">Custom aggregation</message>
+      <message lang="uk">Індивідуальне агрегування</message></label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si renseigné et que le paramètre 'Agrégation' est activé, le paramétrage
+          de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la plate-forme)
+          est ignoré et seuls les calendriers indiqués sont pris en compte
+          (identifiants d'instance séparés par des virgules).
+        </message>
+        <message lang="en">If filled and if 'Aggregation' parameter is activated, the
+          platform settings (calendars in subspaces, in the space or from the whole platform) is
+          ignored and indicated calendars are taken into account (instance identifiers separated by
+          comma).
+        </message>
+        <message lang="de">If filled and if 'Aggregation' parameter is activated, the
+          platform settings (calendars in subspaces, in the space or from the whole platform) is
+          ignored and indicated calendars are taken into account (instance identifiers separated by
+          comma).
+        </message>
+      <message lang="uk">Якщо заповнено та активовано параметр «Агрегація», налаштування платформи (календари для підпросторів, простору або всієї платформи) ігноруються, і враховуються лише вказані календарі (ідентифікатори екземплярів, розділені комами).</message></help>
+    </parameter>
+    <parameter>
+      <name>weekendNotVisible</name>
+      <label>
+        <message lang="fr">Masquer les week-ends</message>
+        <message lang="en">Hide week-ends</message>
+        <message lang="de">Wochenenden Verstecken</message>
+      <message lang="uk">Приховати вихідні</message></label>
+      <order>5</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la
+          semaine
+        </message>
         <message lang="en">Hide week-ends, thus lightening the GUI.</message>
-      </help>
+        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes
+          der Woche zu optimieren
+        </message>
+      <message lang="uk">Дозволяє полегшити інтерфейс і оптимізувати відображення решти тижня</message></help>
+    </parameter>
+    <parameter>
+      <name>defaultView</name>
+      <label>
+        <message lang="fr">Vue par défaut</message>
+        <message lang="en">Default view</message>
+        <message lang="de">Standard-Ansicht</message>
+      <message lang="uk">Перегляд за замовчуванням</message></label>
+      <order>6</order>
+      <mandatory>true</mandatory>
+      <value>MONTHLY</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Hebdomadaire</message>
+            <message lang="en">Weekly</message>
+            <message lang="de">Wöchentlich</message>
+          <message lang="uk">Щотижня</message></name>
+          <value>WEEKLY</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Mensuelle</message>
+            <message lang="en">Monthly</message>
+            <message lang="de">Monatlich</message>
+          <message lang="uk">Щомісяця</message></name>
+          <value>MONTHLY</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Evénements à venir</message>
+            <message lang="en">Next events</message>
+            <message lang="de">Nächstes Ereigniss</message>
+          <message lang="uk">Майбутні події</message></name>
+          <value>NEXT_EVENTS</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque
+          l'utilisateur accède au calendrier.
+        </message>
+        <message lang="en">Choose the view to displayed by default when the user accesses the
+          calendar.
+        </message>
+        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der
+          Benutzer auf die Kalender.
+        </message>
+      <message lang="uk">Дозволяє вибрати вид календаря, який відображатиметься за замовчуванням, коли користувач відкриває календар.</message></help>
     </parameter>
     <parameter>
       <name>rss</name>
       <label>
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
-      </label>
-      <order>4</order>
+        <message lang="de">RSS</message>
+      <message lang="uk">RSS канал</message></label>
+      <order>7</order>
       <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
-      <updatable>always</updatable>
+      <updatable>hidden</updatable>
       <help>
-        <message lang="fr">Permet de générer un flux RSS des événements de cet Almanach.</message>
-        <message lang="en">Produce a RSS stream for the events of this almanach.</message>
-      </help>
+        <message lang="fr">Permet de générer un flux RSS des événements de ce calendrier.</message>
+        <message lang="en">Produce a RSS stream for the events of this calendar.</message>
+        <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Kalender.
+        </message>
+      <message lang="uk">Дозволяє створити RSS-канал подій цього календаря.</message></help>
     </parameter>
     <parameter>
       <name>directAccess</name>
       <label>
         <message lang="fr">Accès transversal</message>
         <message lang="en">Aggregation type</message>
-      </label>
-      <order>5</order>
+        <message lang="de">Aggregierung-Typ</message>
+      <message lang="uk">Поперечний доступ</message></label>
+      <order>8</order>
       <mandatory>false</mandatory>
-      <value>0</value>
+      <value>3</value>
       <options>
         <option>
           <name>
             <message lang="fr">Tous</message>
             <message lang="en">All</message>
-          </name>
+            <message lang="de">Alle</message>
+          <message lang="uk">все</message></name>
           <value>0</value>
         </option>
         <option>
           <name>
             <message lang="fr">Ceux de l'espace</message>
             <message lang="en">Those from the same space</message>
-          </name>
+            <message lang="de">Die aus dem gleichen Bereich</message>
+          <message lang="uk">простору</message></name>
           <value>1</value>
         </option>
         <option>
           <name>
             <message lang="fr">Ceux de l'espace et sous espaces</message>
             <message lang="en">Those from the same space and its subspaces.</message>
-          </name>
+            <message lang="de">Die aus dem gleichen Bereich und seine Unterräume</message>
+          <message lang="uk">Ті простору та підпросторів</message></name>
           <value>2</value>
         </option>
         <option>
           <name>
             <message lang="fr">Aucun</message>
             <message lang="en">None</message>
-          </name>
+            <message lang="de">Keine</message>
+          <message lang="uk">Жодного</message></name>
           <value>3</value>
         </option>
       </options>
       <type>select</type>
-      <updatable>always</updatable>
+      <updatable>hidden</updatable>
       <help>
-        <message lang="fr">Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis
+        <message lang="fr">Permet de choisir quelles autres instances de l'application Calendrier
+          sont accessibles depuis
           la liste déroulante.
         </message>
-        <message lang="en">Choose which almanachs can be aggregated into this almanach.</message>
-      </help>
+        <message lang="en">Choose which calendars can be aggregated into this calendar.</message>
+        <message lang="de">Wählen Sie die Kalender, die in diesem Kalender aggregiert werden
+          können.
+        </message>
+      <message lang="uk">Дозволяє вибрати інші екземпляри програми «Календар» із розкривного списку.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

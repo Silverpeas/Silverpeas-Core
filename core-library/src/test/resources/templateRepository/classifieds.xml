@@ -22,20 +22,19 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 -->
 <publicationTemplate>
-    <name>Classifieds</name>
-    <description>Donn�es compl�mentaires pour les petites annonces</description>
-	<image>/weblib/xmlForms/model1.gif</image>
-    <visible>true</visible>
-	<applications>
-        <application>classifieds</application>
-    </applications>
-    <viewFileName>classifieds/view.xml</viewFileName>
-    <viewTypeFile></viewTypeFile>
-    <updateFileName>classifieds/update.xml</updateFileName>
-    <updateTypeFile></updateTypeFile>
-    <searchFileName>classifieds/search.xml</searchFileName>
-    <dataFileName>classifieds/data.xml</dataFileName>
+  <name>Classifieds</name>
+  <description>Donn�es compl�mentaires pour les petites annonces</description>
+  <image>/weblib/xmlForms/model1.gif</image>
+  <visible>true</visible>
+  <applications>
+    <application>classifieds</application>
+  </applications>
+  <viewFileName>classifieds/view.xml</viewFileName>
+  <viewTypeFile></viewTypeFile>
+  <updateFileName>classifieds/update.xml</updateFileName>
+  <updateTypeFile></updateTypeFile>
+  <searchFileName>classifieds/search.xml</searchFileName>
+  <dataFileName>classifieds/data.xml</dataFileName>
 </publicationTemplate>
