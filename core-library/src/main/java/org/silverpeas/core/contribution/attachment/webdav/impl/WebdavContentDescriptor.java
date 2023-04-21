@@ -40,10 +40,11 @@ public class WebdavContentDescriptor extends RemoteContentDescriptor {
   }
 
   void set(final String id, final String language, final long size,
-      final OffsetDateTime lastModificationDate) {
+      final OffsetDateTime lastModificationDate, final boolean officeEditorLock) {
     setId(id);
     setLanguage(language);
     setSize(size);
     setLastModificationDate(lastModificationDate);
+    setOfficeEditorLock(officeEditorLock);
   }
 }

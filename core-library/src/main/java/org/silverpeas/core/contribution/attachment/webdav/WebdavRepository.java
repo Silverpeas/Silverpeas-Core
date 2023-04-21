@@ -110,6 +110,18 @@ public interface WebdavRepository {
   boolean isNodeLocked(Session session, SimpleDocument attachment) throws RepositoryException;
 
   /**
+   * Unlock the node for the specified attachment is currently locked (for example by Office in
+   * the case of a webdav online edition).
+   * <p>
+   *   Nothing is done if node is already unlocked.
+   * </p>
+   * @param session the JCR session.
+   * @param attachment the attachment.
+   * @return true if the node has been effectively locked - false otherwise.
+   */
+  boolean unlockLockedNode(Session session, SimpleDocument attachment) throws RepositoryException;
+
+  /**
    * Gets the current content edition language of the specified attachment.
    * If several webdav document exists (several content languages), then the one which has the
    * highest modified date is taken into account.
