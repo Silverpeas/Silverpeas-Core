@@ -54,6 +54,7 @@ import static java.time.OffsetDateTime.ofInstant;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.apache.jackrabbit.JcrConstants.MIX_LOCKABLE;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @Repository
@@ -221,13 +222,23 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override
   public boolean isNodeLocked(Session session, SimpleDocument attachment) throws RepositoryException {
-    Node rootNode = session.getRootNode();
-    try {
-      Node fileNode = rootNode.getNode(attachment.getWebdavJcrPath());
-      return fileNode.isLocked();
-    } catch (PathNotFoundException pex) {
-      return false;
+    return getDescriptor(session, attachment)
+        .map(WebdavContentDescriptor::isOfficeEditorLock)
+        .orElse(false);
+  }
+
+  @Override
+  public boolean unlockLockedNode(final Session session, final SimpleDocument attachment)
+      throws RepositoryException {
+    if (isNodeLocked(session, attachment)) {
+      final Optional<Node> webdavNode = getWebdavNode(session, attachment).map(Pair::getFirst);
+      if (webdavNode.isPresent()) {
+        webdavNode.get().removeMixin(MIX_LOCKABLE);
+        session.save();
+        return isNodeLocked(session, attachment);
+      }
     }
+    return false;
   }
 
   @Override
@@ -384,7 +395,8 @@ public class WebdavDocumentRepository implements WebdavRepository {
       final String language = webdavFileNode.get().getSecond();
       final long size = contentNode.getProperty(JCR_DATA).getBinary().getSize();
       final Date time = contentNode.getProperty(JCR_LAST_MODIFIED).getDate().getTime();
-      descriptor.set(identifier, language, size, ofInstant(time.toInstant(), systemDefault()));
+      descriptor.set(identifier, language, size, ofInstant(time.toInstant(), systemDefault()),
+          fileNode.isLocked());
       // result
       return Optional.of(descriptor);
     }
