@@ -36,6 +36,7 @@ public class RemoteContentDescriptor {
   private String language;
   private long size;
   private OffsetDateTime lastModificationDate;
+  private boolean officeEditorLock;
 
   protected RemoteContentDescriptor(final SimpleDocument document) {
     this.document = document;
@@ -95,5 +96,17 @@ public class RemoteContentDescriptor {
 
   protected void setLastModificationDate(final OffsetDateTime lastModificationDate) {
     this.lastModificationDate = lastModificationDate;
+  }
+
+  /**
+   * Indicates if an document office editor is locking the file.
+   * @return true if locking file, false otherwise.
+   */
+  public boolean isOfficeEditorLock() {
+    return officeEditorLock;
+  }
+
+  protected void setOfficeEditorLock(final boolean officeEditorLock) {
+    this.officeEditorLock = officeEditorLock;
   }
 }
