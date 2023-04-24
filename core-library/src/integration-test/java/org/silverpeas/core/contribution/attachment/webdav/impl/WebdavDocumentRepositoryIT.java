@@ -827,17 +827,12 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       String relativeWebDavJcrPath =
           "webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf";
       assertThat(document.getWebdavJcrPath(), is(relativeWebDavJcrPath));
-      String[] jcrPathParts = document.getWebdavJcrPath().split("/");
-      Node webdavDocumentNode = rootNode;
-      for (String jcrPathPart : jcrPathParts) {
-        if (webdavDocumentNode != rootNode) {
-          assertThat(webdavDocumentNode.hasNodes(), is(false));
-        }
-        webdavDocumentNode = webdavDocumentNode.addNode(jcrPathPart);
-      }
+      webdavRepository.createAttachmentNode(session, document);
       session.save();
+      String fullWebDavJcrPath = "/" + relativeWebDavJcrPath;
+      Node webdavDocumentNode = session.getNode(fullWebDavJcrPath);
 
-      assertThat(webdavDocumentNode.getPath(), is("/" + document.getWebdavJcrPath()));
+      assertThat(webdavDocumentNode, notNullValue());
       assertThat(getJcr().getRelativeNode(rootNode, document.getWebdavJcrPath()).getPath(),
           is(webdavDocumentNode.getPath()));
       assertThat(webdavRepository.isNodeLocked(session, document), is(false));
@@ -847,30 +842,105 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
 
       session.getWorkspace().getLockManager()
           .lock(webdavDocumentNode.getPath(), false, true, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
       assertThat(webdavRepository.isNodeLocked(session, document), is(true));
 
       session.getWorkspace().getLockManager().unlock(webdavDocumentNode.getPath());
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
       assertThat(webdavRepository.isNodeLocked(session, document), is(false));
 
       session.getWorkspace().getLockManager()
           .lock(webdavDocumentNode.getPath(), true, false, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
       assertThat(webdavRepository.isNodeLocked(session, document), is(true));
 
       session.getWorkspace().getLockManager().unlock(webdavDocumentNode.getPath());
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
       assertThat(webdavRepository.isNodeLocked(session, document), is(false));
 
       session.getWorkspace().getLockManager()
           .lock(webdavDocumentNode.getPath(), false, false, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
       assertThat(webdavRepository.isNodeLocked(session, document), is(true));
 
       session.getWorkspace().getLockManager().unlock(webdavDocumentNode.getPath());
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
       assertThat(webdavRepository.isNodeLocked(session, document), is(false));
 
       session.getWorkspace().getLockManager()
           .lock(webdavDocumentNode.getPath(), true, true, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
       assertThat(webdavRepository.isNodeLocked(session, document), is(true));
 
       session.getWorkspace().getLockManager().unlock(webdavDocumentNode.getPath());
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(false));
+    });
+  }
+
+  @Test
+  public void testUnlockLockedNode() throws Exception {
+    execute((session, webdavRepository) -> {
+      SimpleAttachment enDocumentContent = getJcr().defaultENContent();
+      SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
+      document = getJcr().createAttachmentForTest(document, enDocumentContent, "A super content !");
+      getJcr().assertContent(document.getId(), "fr", null);
+      getJcr().assertContent(document.getId(), "en", "A super content !");
+
+      Node rootNode = session.getRootNode();
+      assertThat(getJcr().getRelativeNode(rootNode, document.getWebdavJcrPath()), nullValue());
+      assertThat(webdavRepository.isNodeLocked(session, document), is(false));
+
+      String relativeWebDavJcrPath =
+          "webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf";
+      assertThat(document.getWebdavJcrPath(), is(relativeWebDavJcrPath));
+      webdavRepository.createAttachmentNode(session, document);
+      session.save();
+      String fullWebDavJcrPath = "/" + relativeWebDavJcrPath;
+      Node webdavDocumentNode = session.getNode(fullWebDavJcrPath);
+
+      assertThat(webdavDocumentNode, notNullValue());
+      assertThat(getJcr().getRelativeNode(rootNode, document.getWebdavJcrPath()).getPath(),
+          is(webdavDocumentNode.getPath()));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(false));
+
+      webdavDocumentNode.addMixin(NodeType.MIX_LOCKABLE);
+      session.save();
+
+      session.getWorkspace().getLockManager()
+          .lock(webdavDocumentNode.getPath(), false, true, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(true));
+
+      webdavRepository.unlockLockedNode(session, document);
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(false));
+
+      session.getWorkspace().getLockManager()
+          .lock(webdavDocumentNode.getPath(), true, false, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(true));
+
+      webdavRepository.unlockLockedNode(session, document);
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(false));
+
+      session.getWorkspace().getLockManager()
+          .lock(webdavDocumentNode.getPath(), false, false, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(true));
+
+      webdavRepository.unlockLockedNode(session, document);
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(false));
+
+      session.getWorkspace().getLockManager()
+          .lock(webdavDocumentNode.getPath(), true, true, 60, "26");
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(true));
+      assertThat(webdavRepository.isNodeLocked(session, document), is(true));
+
+      webdavRepository.unlockLockedNode(session, document);
+      assertThat(session.getWorkspace().getLockManager().isLocked(fullWebDavJcrPath), is(false));
       assertThat(webdavRepository.isNodeLocked(session, document), is(false));
     });
   }
