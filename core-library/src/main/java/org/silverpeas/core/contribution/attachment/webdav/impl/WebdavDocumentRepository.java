@@ -54,7 +54,6 @@ import static java.time.OffsetDateTime.ofInstant;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.apache.jackrabbit.JcrConstants.MIX_LOCKABLE;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @Repository
@@ -233,8 +232,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     if (isNodeLocked(session, attachment)) {
       final Optional<Node> webdavNode = getWebdavNode(session, attachment).map(Pair::getFirst);
       if (webdavNode.isPresent()) {
-        webdavNode.get().removeMixin(MIX_LOCKABLE);
-        session.save();
+        session.getWorkspace().getLockManager().unlock(webdavNode.get().getPath());
         return isNodeLocked(session, attachment);
       }
     }
