@@ -383,22 +383,6 @@
       </help>
     </parameter>
     <parameter>
-      <name>webContent</name>
-      <label>
-        <message lang="fr">Orienté contenu Web</message>
-        <message lang="en">Content for web</message>
-      </label>
-      <order>14</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes).</message>
-        <message lang="en">Activate functionalities for managing web content (wysiwyg for themes, and themes visibility).</message>
-      </help>
-    </parameter>
-    <parameter>
       <name>delegatedTopicManagement</name>
       <label>
         <message lang="fr">Gestion déléguée des thèmes</message>
