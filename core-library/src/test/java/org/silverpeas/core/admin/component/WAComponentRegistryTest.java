@@ -163,7 +163,7 @@ class WAComponentRegistryTest {
     assertThat(kmelia.isVisible(), is(true));
     assertThat(kmelia.isVisibleInPersonalSpace(), is(true));
     assertThat(kmelia.getSuite().get("fr"), is("01 Gestion Documentaire"));
-    assertThat(kmelia.getParameters().size(), is(40));
+    assertThat(kmelia.getParameters().size(), is(39));
     Parameter paramWithXMLTemplate = null;
     Parameter versionControl = null;
     for (Parameter parameter : kmelia.getParameters()) {
