@@ -29,7 +29,6 @@ import org.silverpeas.core.web.treemenu.model.TreeFilterDefault;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Allows getting a TreeFilter implementation
@@ -58,9 +57,7 @@ public class TreeFilterFactory {
       try {
         return (TreeFilter) Class.forName(className).newInstance();
       } catch (Exception e) {
-        throw new MenuRuntimeException("TreeFilterFactory.getTreeFilter()",
-            SilverpeasRuntimeException.ERROR,
-            "treeMenu.EX_BUILDING_MENU_FAILED", e);
+        throw new MenuRuntimeException("TreeFilterFactory.getTreeFilter()", e);
       }
     }
     return filter;

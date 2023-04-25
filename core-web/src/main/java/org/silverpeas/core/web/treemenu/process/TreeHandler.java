@@ -31,7 +31,6 @@ import org.silverpeas.core.web.treemenu.model.MenuItem;
 import org.silverpeas.core.web.treemenu.model.NodeType;
 
 import javax.servlet.http.HttpServletRequest;
-import java.rmi.RemoteException;
 
 import static org.silverpeas.core.web.treemenu.model.MenuConstants.*;
 
@@ -47,14 +46,18 @@ public class TreeHandler {
   private TreeHandler() {
   }
 
+  static boolean useOrder = false;
+
   /**
    * get information from request and build a level menu
-   * @param request
-   * @param menuType
-   * @return
-   * @throws RemoteException
+   * @param request httpRequest
+   * @param menuType type of menu
+   * @see org.silverpeas.core.web.treemenu.model.MenuConstants
+   * @param useCurrentOrder currentOrder of items
+   * @return Json Array of the menu
    */
-  public static String ProcessMenu(HttpServletRequest request, String menuType) {
+  public static String processMenu(HttpServletRequest request, String menuType, boolean useCurrentOrder) {
+    useOrder = useCurrentOrder;
     SilverpeasWebUtil webUtil = ServiceProvider.getSingleton(SilverpeasWebUtil.class);
     MainSessionController mainSessionCtrl = webUtil.getMainSessionController(request);
     String userId = mainSessionCtrl.getUserId();
@@ -65,6 +68,17 @@ public class TreeHandler {
 
     // transform the children to json
     return TreeMenuJSON.getListAsJSONArray(items.getChildren());
+  }
+
+  /**
+   * get information from request and build a level menu
+   * @param request httpRequest
+   * @param menuType type of menu
+   * @see org.silverpeas.core.web.treemenu.model.MenuConstants
+   * @return Json Array of the menu
+   */
+  public static String processMenu(HttpServletRequest request, String menuType) {
+    return processMenu(request, menuType, false);
   }
 
   /**
