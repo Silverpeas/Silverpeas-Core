@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.treemenu.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
  *
@@ -31,60 +31,17 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
  */
 public class MenuRuntimeException extends SilverpeasRuntimeException {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 9022228330909407307L;
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   */
-  public MenuRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public MenuRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public MenuRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public MenuRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public MenuRuntimeException(String callingClass, int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public MenuRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public MenuRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
-   */
-  @Override
-  public String getModule() {
-    return "treeMenu";
-  }
-
 }
