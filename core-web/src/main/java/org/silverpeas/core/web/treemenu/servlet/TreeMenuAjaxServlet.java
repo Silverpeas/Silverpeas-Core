@@ -69,7 +69,7 @@ public class TreeMenuAjaxServlet extends HttpServlet {
           menuType = DEFAULT_MENU_TYPE;
         }
       }
-      out.write(TreeHandler.ProcessMenu(request, menuType));
+      out.write(TreeHandler.processMenu(request, menuType));
     } finally {
       out.close();
     }

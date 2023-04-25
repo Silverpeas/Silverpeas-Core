@@ -35,12 +35,12 @@ import org.silverpeas.core.node.model.NodePK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.silverpeas.core.web.treemenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
@@ -50,6 +50,9 @@ import static org.silverpeas.core.web.treemenu.model.MenuConstants.ICON_STYLE_PR
  * @author david derigent
  */
 public class TreeBuilder {
+
+  private static final String KMELIA = "kmelia";
+  private static final OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
 
   private TreeBuilder() {
   }
@@ -61,7 +64,6 @@ public class TreeBuilder {
    * @param father the father of menu level to build
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
-   * @throws RemoteException throws if a error occurred during a ejb call
    */
   public static MenuItem buildLevelMenu(TreeFilter filter, MenuItem father, String userId,
       String language) {
@@ -83,7 +85,6 @@ public class TreeBuilder {
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
    * @return a level of the menu
-   * @throws RemoteException
    */
   private static MenuItem buildOtherLevel(TreeFilter filter, MenuItem father, String userId,
       String language) {
@@ -112,48 +113,11 @@ public class TreeBuilder {
     }
     // the space displaying
     if (father.getType() == NodeType.SPACE) {
-      OrganizationController controller =
-          OrganizationControllerProvider.getOrganisationController();
-      // gets the sub space
-      List<SpaceInstLight> subspaces =
-          controller.getSubSpacesContainingComponent(father.getKey(), userId, "kmelia");
-      for (SpaceInstLight space : subspaces) {
-        MenuItem item =
-            new MenuItem(space.getName(language), space.getId(), space.getLevel(),
-            NodeType.SPACE, false, father, null);
-        children.add(item);
-      }
-      // gets the component
-      String[] componentIds = controller.getAvailCompoIdsAtRoot(father.getKey(),
-          userId);
-      int level = father.getLevel() + 1;
-      boolean isLeaf = false;
-      List<String> allowedComponents = filter.getComponents();
-      for (String componentId : componentIds) {
+      // gets the sub spaces
+      children.addAll(getSubSpacesContainingComponent(father, userId, language));
 
-        ComponentInstLight component = controller.getComponentInstLight(componentId);
-        // Default case : display all the component in the menu
-        if (allowedComponents.isEmpty() && filter.acceptNodeType(NodeType.COMPONENT)) {
-          isLeaf = getLeafValue(componentId);
-
-          MenuItem item =
-              new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
-              NodeType.COMPONENT, isLeaf, father, null);
-          item.setComponentName(component.getName());
-          item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
-          children.add(item);
-        } else {
-          // Alternative case : filter the component to display in the menu
-          if (allowedComponents.contains(component.getName())) {
-            MenuItem item =
-                new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
-                NodeType.COMPONENT, isLeaf, father, componentId);
-            item.setComponentName(component.getName());
-            item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
-            children.add(item);
-          }
-        }
-      }
+      // gets the components
+      children.addAll(getComponents(father, userId, filter, language));
     }
     // the sub theme
     if (father.getType() == NodeType.THEME && filter.acceptNodeType(NodeType.THEME)) {
@@ -162,8 +126,8 @@ public class TreeBuilder {
       for (NodeDetail nodeDetail : nodeDetails) {
         MenuItem menuItem =
             new MenuItem(Encode.forHtml(nodeDetail.getName(language)),
-            nodeDetail.getNodePK().getId(),
-            nodeDetail.getLevel(), NodeType.THEME, false, father, father.getComponentId());
+                nodeDetail.getNodePK().getId(),
+                nodeDetail.getLevel(), NodeType.THEME, false, father, father.getComponentId());
         menuItem.setNbObjects(nodeDetail.getNbObjects());
         children.add(menuItem);
       }
@@ -179,7 +143,7 @@ public class TreeBuilder {
    * @return true if the component is a leaf
    */
   private static boolean getLeafValue(String componentId) {
-    return !componentId.startsWith("kmelia");
+    return !componentId.startsWith(KMELIA);
   }
 
   /**
@@ -198,41 +162,116 @@ public class TreeBuilder {
     OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     if (filter.acceptNodeType(NodeType.SPACE)) {
       List<SpaceInstLight> rootSpaces =
-          controller.getRootSpacesContainingComponent(userId, "kmelia");
+          controller.getRootSpacesContainingComponent(userId, KMELIA);
+
+      sortIfAsked(rootSpaces, SpaceInstLight::getOrderNum);
+
       for (SpaceInstLight space : rootSpaces) {
         if (space != null) {
-          MenuItem subElement =
-              new MenuItem(space.getName(language), space.getId(), 0,
-              NodeType.SPACE, false, null, null);
-          children.add(subElement);
+            MenuItem subElement =
+                new MenuItem(space.getName(language), space.getId(), 0,
+                  NodeType.SPACE, false, null, null);
+            children.add(subElement);
         }
       }// the component
     } else if (filter.acceptNodeType(NodeType.COMPONENT) && !filter.getComponents().isEmpty()) {
-      for (String componentName : filter.getComponents()) {
-        List<ComponentInstLight> componentList =
-            controller.getAvailComponentInstLights(userId, componentName);
-        // FIXME : externalize components specific in a properties
+    for (String componentName : filter.getComponents()) {
+        List<ComponentInstLight> componentList = controller.getAvailComponentInstLights(userId,
+            componentName);
+
+        sortIfAsked(componentList, ComponentInstLight::getOrderNum);
+
         boolean isLeaf = getLeafValue(componentName);
         for (ComponentInstLight compo : componentList) {
-          MenuItem subElement =
-              new MenuItem(Encode.forHtml(compo.getLabel(language)), compo.getId(), 0,
+          MenuItem subElement = new MenuItem(Encode.forHtml(compo.getLabel(language)), compo.getId(), 0,
               NodeType.COMPONENT, isLeaf, null, null);
           item.setComponentName(compo.getName());
           item.setLabelStyle(ICON_STYLE_PREFIX + compo.getName());
           children.add(subElement);
         }
       }
-
     }
     return item;
+  }
+
+
+  /**
+   * Get sub spaces containing component
+   * @param father MenuItem parent
+   * @param userId the user identifier to display only the authorized item menu
+   * @param language the user language to display the label menu in the correct language
+   * @return a list of spaces MenuItem
+   */
+  private static List<MenuItem> getSubSpacesContainingComponent(MenuItem father, String userId, String language) {
+    List<MenuItem> subElements = new ArrayList<>();
+    List<SpaceInstLight> subspaces =
+        controller.getSubSpacesContainingComponent(father.getKey(), userId, KMELIA);
+
+    sortIfAsked(subspaces, SpaceInstLight::getOrderNum);
+
+    for (SpaceInstLight space : subspaces) {
+      MenuItem item =
+          new MenuItem(space.getName(language), space.getId(), space.getLevel(),
+              NodeType.SPACE, false, father, null);
+      subElements.add(item);
+    }
+    return subElements;
+  }
+
+  /**
+   *  Get a list of component MenuItem
+   * @param father father MenuItem parent
+   * @param userId userId the user identifier to display only the authorized item menu
+   * @param filter language the user language to display the label menu in the correct language
+   * @param language filter determines what type of node and/or component must be display in the menu
+   * @return @return a list of components MenuItem
+   */
+  private static List<MenuItem> getComponents(MenuItem father, String userId, TreeFilter filter, String language) {
+    List<MenuItem> subElements = new ArrayList<>();
+    String[] componentIds = controller.getAvailCompoIdsAtRoot(father.getKey(),
+        userId);
+    int level = father.getLevel() + 1;
+    boolean isLeaf = false;
+    List<String> allowedComponents = filter.getComponents();
+    for (String componentId : componentIds) {
+
+      ComponentInstLight component = controller.getComponentInstLight(componentId);
+      // Default case : display all the component in the menu
+      if (allowedComponents.isEmpty() && filter.acceptNodeType(NodeType.COMPONENT)) {
+        isLeaf = getLeafValue(componentId);
+
+        MenuItem item =
+            new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
+                NodeType.COMPONENT, isLeaf, father, null);
+        item.setComponentName(component.getName());
+        item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
+        subElements.add(item);
+      } else {
+        // Alternative case : filter the component to display in the menu
+        if (allowedComponents.contains(component.getName())) {
+          MenuItem item =
+              new MenuItem(Encode.forHtml(component.getLabel(language)), componentId, level,
+                  NodeType.COMPONENT, isLeaf, father, componentId);
+          item.setComponentName(component.getName());
+          item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
+          subElements.add(item);
+        }
+      }
+    }
+    return subElements;
   }
 
   private static NodeService getNodeBm() {
     try {
       return NodeService.get();
     } catch (Exception e) {
-      throw new MenuRuntimeException("TreeBuilder.getNodeService()", SilverpeasRuntimeException.ERROR,
-          "treeMenu.EX_FAILED_BUILDING_NODEBM_HOME", e);
+      throw new MenuRuntimeException("TreeBuilder.getNodeService()", e);
+    }
+  }
+
+  private static <T> void sortIfAsked(List<T> resources, Function<T, Integer> order) {
+    if (TreeHandler.useOrder) {
+      resources.sort(Comparator.comparing(order));
     }
   }
 }
