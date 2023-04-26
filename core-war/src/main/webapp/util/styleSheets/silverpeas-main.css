@@ -92,6 +92,7 @@ textarea {
   font-size: 1em;
   color:#333;
   border: 1px solid #999;
+  max-width:100%;
 }
 
 Label,legend {
