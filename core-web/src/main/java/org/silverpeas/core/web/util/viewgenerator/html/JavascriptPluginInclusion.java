@@ -55,6 +55,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdC
 import org.silverpeas.core.webapi.documenttemplate.DocumentTemplateWebManager;
 
 import java.text.MessageFormat;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
@@ -538,10 +539,39 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includePagination(final ElementContainer xhtml) {
+  static ElementContainer includePagination(final ElementContainer xhtml, final String language) {
+    final LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.util.viewGenerator.multilang.graphicElementFactoryBundle", language);
+    xhtml.addElement(scriptContent(bundleVariableName("PaginationBundle")
+        .add("g.p.f", multilang.getString("GEF.pagination.firstPage"))
+        .add("g.p.p", multilang.getString("GEF.pagination.previousPage"))
+        .add("g.p.n", multilang.getString("GEF.pagination.nextPage"))
+        .add("g.p.l", multilang.getString("GEF.pagination.lastPage"))
+        .add("g.p.p.p", multilang.getString("GEF.pagination.perPage"))
+        .add("g.p.a", multilang.getString("GEF.pagination.all"))
+        .add("g.p.a.t", multilang.getString("GEF.pagination.all.title"))
+        .produce()));
+    final SettingBundle settings = GraphicElementFactory.getSettings();
+    Stream<Integer> nbItemsPerPage = Stream.empty();
+    int index = 1;
+    int currentNbItemsPerPage;
+    while((currentNbItemsPerPage = settings.getInteger("Pagination.NbItemPerPage." + index++, -1)) > -1) {
+      nbItemsPerPage = Stream.concat(nbItemsPerPage, Stream.of(currentNbItemsPerPage));
+    }
+    xhtml.addElement(scriptContent(settingVariableName("PaginationSettings")
+        .add("p.i.p", settings.getString("IconsPath"))
+        .add("p.n.o.p.a", settings.getInteger("Pagination.NumberOfPagesAround", 3))
+        .add("p.i.t", settings.getInteger("Pagination.IndexThreshold", 5))
+        .add("p.n.p.p.t", settings.getInteger("Pagination.NumberPerPageThreshold", 25))
+        .add("p.j.t", settings.getInteger("Pagination.JumperThreshold", 12))
+        .add("p.n.i.p.p", nbItemsPerPage, false)
+        .add("p.p.a.t", settings.getInteger("Pagination.PaginationAllThreshold", 500))
+        .produce()));
     xhtml.addElement(link(JQUERY_CSS_PATH + PAGINATION_TOOL + ".css"));
     xhtml.addElement(script(JQUERY_PATH + PAGINATION_TOOL + ".js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + SILVERPEAS_PAGINATOR));
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "silverpeas-pagination.css"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + SILVERPEAS_PAGINATOR));
     return xhtml;
   }
 

@@ -62,7 +62,7 @@
                 navigate(currentPage);
                 initialized = true;
                 function showLabels(pageIndex) {
-                    container.find('span').remove();
+                    container.find('.pages_indication').remove();
                     var upper = (pageIndex + 1) * settings.recordsperpage;
                     if (upper > settings.totalrecords) upper = settings.totalrecords;
                     container.append($('<div/>').addClass('pages_indication')

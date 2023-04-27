@@ -54,7 +54,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(MEDIAPLAYER, (x, l) -> includeMediaPlayer(x));
     add(QTIP, JavascriptPluginInclusion::includeQTip);
     add(DATEPICKER, JavascriptPluginInclusion::includeDatePicker);
-    add(PAGINATION, (x, l) -> includePagination(x));
+    add(PAGINATION, JavascriptPluginInclusion::includePagination);
     add(BREADCRUMB, (x, l) -> includeBreadCrumb(x));
     add(USERZOOM, JavascriptPluginInclusion::includeUserZoom);
     add(RELATIONSHIP, JavascriptPluginInclusion::includeRelationship);
