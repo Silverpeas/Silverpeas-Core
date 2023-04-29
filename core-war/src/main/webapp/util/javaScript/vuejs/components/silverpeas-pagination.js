@@ -115,7 +115,7 @@
           },
           page : function() {
             if (this.currentPage > this.nbPages) {
-              this.currentPage = this.nbPages;
+              this.currentPage = Math.max(1, this.nbPages);
             }
             const page = {
               numPage : this.currentPage,
@@ -154,36 +154,18 @@
         },
         data : function() {
           return {
+            smartPaginationApi : undefined,
             jumperEnabled : false
           }
         },
         mounted : function() {
           this.extendApiWith({
-            loadPagination : this.loadPagination
+            loadPagination : function() {
+              this.smartPaginationApi.loadPagination();
+            }
           });
-          this.loadPagination();
         },
         methods : {
-          loadPagination : function() {
-            const $container = jQuery(this.$refs.pagination);
-            $container.html('');
-            $container.smartpaginator({
-              display: 'single',
-              totalrecords: this.page.nbAllItems,
-              recordsperpage: this.page.nbItemsPerPage,
-              length: 6,
-              initval : this.page.numPage,
-              first: __createImage(ICON_PATH + '/arrows/arrowDoubleLeft.png', sp.i18n.get('g.p.f')),
-              prev: __createImage(ICON_PATH + '/arrows/arrowLeft.png', sp.i18n.get('g.p.p')),
-              next: __createImage(ICON_PATH + '/arrows/arrowRight.png', sp.i18n.get('g.p.n')),
-              last: __createImage(ICON_PATH + '/arrows/arrowDoubleRight.png', sp.i18n.get('g.p.l')),
-              theme: 'pageNav',
-              onchange: function(pageNb) {
-                this.$emit('change', pageNb)
-                return true;
-              }.bind(this)
-            });
-          },
           toggleGotoPage : function() {
             this.jumperEnabled = !this.jumperEnabled;
             if (this.jumperEnabled) {
@@ -196,10 +178,7 @@
           },
           gotoPage : function() {
             const numPage = this.$refs.pageJumper.value;
-            const $shortText = this.$refs.pagination.querySelector('.short input[type="text"]');
-            const $shortButton = this.$refs.pagination.querySelector('.short input[type="button"]');
-            $shortText.value = numPage;
-            $shortButton.click();
+            this.smartPaginationApi.gotoPage(numPage);
             this.$refs.pageJumper.select();
           }
         },
@@ -234,6 +213,53 @@
               });
             }
             return list;
+          }
+        }
+      }));
+
+  SpVue.component('silverpeas-smartpaginator',
+      commonAsyncComponentRepository.get('smartpaginator', {
+        mixins : [VuejsApiMixin],
+        emits : ['change'],
+        props : {
+          page : {
+            'type' : Object,
+            'required' : true
+          }
+        },
+        mounted : function() {
+          this.extendApiWith({
+            loadPagination : this.loadPagination,
+            gotoPage : this.gotoPage
+          });
+          this.loadPagination();
+        },
+        methods : {
+          loadPagination : function() {
+            this.$el.innerHTML = '';
+            const $container = jQuery(this.$el);
+            $container.smartpaginator({
+              display: 'single',
+              totalrecords: this.page.nbAllItems,
+              recordsperpage: this.page.nbItemsPerPage,
+              length: 6,
+              initval : this.page.numPage,
+              first: __createImage(ICON_PATH + '/arrows/arrowDoubleLeft.png', sp.i18n.get('g.p.f')),
+              prev: __createImage(ICON_PATH + '/arrows/arrowLeft.png', sp.i18n.get('g.p.p')),
+              next: __createImage(ICON_PATH + '/arrows/arrowRight.png', sp.i18n.get('g.p.n')),
+              last: __createImage(ICON_PATH + '/arrows/arrowDoubleRight.png', sp.i18n.get('g.p.l')),
+              theme: 'pageNav',
+              onchange: function(pageNb) {
+                this.$emit('change', pageNb)
+                return true;
+              }.bind(this)
+            });
+          },
+          gotoPage : function(numPage) {
+            const $shortText = this.$el.querySelector('.short input[type="text"]');
+            const $shortButton = this.$el.querySelector('.short input[type="button"]');
+            $shortText.value = numPage;
+            $shortButton.click();
           }
         }
       }));

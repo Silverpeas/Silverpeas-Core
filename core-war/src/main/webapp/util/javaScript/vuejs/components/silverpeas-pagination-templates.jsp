@@ -65,7 +65,9 @@
       <div v-if="displayPageOn" class="pageIndex">
         <span>${pageOnLabel}</span>
       </div>
-      <div class="pageNav_silverpeas" ref="pagination"></div>
+      <silverpeas-smartpaginator v-bind:page="page"
+                                 v-on:api="smartPaginationApi = $event"
+                                 v-on:change="$emit('change', $event)"></silverpeas-smartpaginator>
       <div v-if="displayNumberPerPage" class="pageIndex numberPerPage">
         <a href="javascript:void(0)"
            v-for="pageItem in numberPerPageList"
@@ -83,4 +85,9 @@
       </div>
     </div>
   </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="smartpaginator">
+  <div class="pageNav_silverpeas"></div>
 </silverpeas-component-template>
