@@ -125,12 +125,16 @@ class DocumentConverter extends AbstractJcrConverter {
     } catch (RepositoryException ex) {
       if (ex.getCause() instanceof NoSuchItemStateException ||
           ex instanceof ItemNotFoundException) {
-        historisedDocument.setHistory(new ArrayList<>(0));
+        performBrokenHistory(historisedDocument);
       } else {
         throw ex;
       }
     }
     return historisedDocument;
+  }
+
+  protected void performBrokenHistory(final HistorisedDocument historisedDocument) {
+    historisedDocument.setHistory(new ArrayList<>(0));
   }
 
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
