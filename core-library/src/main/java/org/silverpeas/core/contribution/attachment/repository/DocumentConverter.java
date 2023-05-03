@@ -189,9 +189,13 @@ class DocumentConverter extends AbstractJcrConverter {
       }
     }
 
+    String nodeName = node.getName();
+    final boolean isFrozenNode = "jcr:frozenNode".equals(nodeName);
+    final boolean isVersioned = isFrozenNode ?
+        getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false) :
+        isVersionedMaster(node);
     SimpleDocument doc = new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
-        getIntProperty(node, SLV_PROPERTY_ORDER),
-        getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
+        getIntProperty(node, SLV_PROPERTY_ORDER), isVersioned,
         getStringProperty(node, SLV_PROPERTY_OWNER), file);
     doc.setReservation(getDateProperty(node, SLV_PROPERTY_RESERVATION_DATE));
     doc.setAlert(getDateProperty(node, SLV_PROPERTY_ALERT_DATE));
@@ -203,8 +207,7 @@ class DocumentConverter extends AbstractJcrConverter {
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
     doc.setStatus(getStringProperty(node, SLV_PROPERTY_STATUS));
     doc.setDocumentType(DocumentType.fromFolderName(node.getParent().getName()));
-    String nodeName = node.getName();
-    if ("jcr:frozenNode".equals(nodeName)) {
+    if (isFrozenNode) {
       nodeName = doc.computeNodeName();
       doc.setNodeName(nodeName);
       if (!node.getSession().nodeExists(doc.getFullJcrPath())) {
