@@ -77,7 +77,7 @@
 
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
-    <next.release>6.4</next.release>
+    <next.release>6.4-JR</next.release>
   </properties>
 
   <dependencies>
