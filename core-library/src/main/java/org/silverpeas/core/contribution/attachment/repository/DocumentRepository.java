@@ -96,7 +96,15 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 public class DocumentRepository {
 
   private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";
-  final DocumentConverter converter = new DocumentConverter();
+  final DocumentConverter converter;
+
+  public DocumentRepository() {
+    this(new DocumentConverter());
+  }
+
+  protected DocumentRepository(final DocumentConverter converter) {
+    this.converter = converter;
+  }
 
   public void prepareComponentAttachments(String instanceId, String folder)
       throws RepositoryException {
