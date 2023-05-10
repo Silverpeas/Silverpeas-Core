@@ -71,7 +71,7 @@ public class DefaultWbeHostManager implements WbeHostManager {
 
   @Override
   public List<Pair<String, String>> getClientAdministrationAccesses(final String language) {
-    return getClients()
+    return getEnabledClients()
         .flatMap(m -> m.getAdministrationUrl().stream().map(u -> Pair.of(m.getName(language), u)))
         .collect(Collectors.toList());
   }
@@ -104,7 +104,7 @@ public class DefaultWbeHostManager implements WbeHostManager {
 
   @Override
   public boolean isEnabled() {
-    return enabled && getClients().findAny().isPresent();
+    return getEnabledClients().findAny().isPresent();
   }
 
   @Override
@@ -179,12 +179,12 @@ public class DefaultWbeHostManager implements WbeHostManager {
     clients.forEach(WbeClientManager::clear);
   }
 
-  private Stream<WbeClientManager> getClients() {
-    return clients.stream().filter(WbeClientManager::isEnabled);
+  private Stream<WbeClientManager> getEnabledClients() {
+    return enabled ? clients.stream().filter(WbeClientManager::isEnabled) : Stream.empty();
   }
 
   private Optional<WbeClientManager> getClientFor(final WbeFile file) {
-    return getClients().filter(c -> c.isHandled(file)).findFirst();
+    return getEnabledClients().filter(c -> c.isHandled(file)).findFirst();
   }
 
   public static class WbeCacheCleanerJob extends Job implements Initialization {
