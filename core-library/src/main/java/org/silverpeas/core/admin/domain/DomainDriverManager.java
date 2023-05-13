@@ -258,6 +258,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
           .map(u -> {
             final T user = domainUsersBySpecificId.get(format("%s@%s", u.getSpecificId(), u.getDomainId()));
             if (user == null) {
+              SilverLogger.getLogger(this)
+                  .error("Cannot find user " + u.getSpecificId() + " in domain " + u.getDomainId());
               return null;
             }
             // Fill silverpeas info of user details
@@ -322,27 +324,21 @@ public class DomainDriverManager extends AbstractDomainDriver {
           (List<T>) driver.listUserFulls(specificIds) :
           (List<T>) driver.listUsers(specificIds)).stream()
           .map(u -> {
+            if (StringUtil.isNotDefined(u.getSpecificId())) {
+              return null;
+            }
             u.setDomainId(identifier);
             return u;
           })
+          .filter(Objects::nonNull)
           .collect(toMap(T::getSpecificId, u -> u)));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
       domainUsersBySpecificId.set(emptyMap());
     }
     return silverpeasUsers.stream()
-        .map(u -> {
-          T user = domainUsersBySpecificId.get().get(u.getSpecificId());
-          if (user == null) {
-            SilverLogger.getLogger(this)
-                .error("Cannot find user " + u.getSpecificId() + " in domain " + u.getDomainId());
-            user = (T) (isUserFull ? new UserFull(driver) : new UserDetail());
-            user.setFirstName(u.getFirstName());
-            user.setLastName(u.getLastName());
-            user.seteMail(u.geteMail());
-          }
-          return user;
-        })
+        .map(u -> domainUsersBySpecificId.get().get(u.getSpecificId()))
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
