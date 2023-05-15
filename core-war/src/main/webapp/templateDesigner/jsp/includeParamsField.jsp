@@ -33,6 +33,7 @@ Iterator<FieldTemplate> existingFields = (Iterator<FieldTemplate>) request.getAt
 
 String name = "";
 String mandatoryChecked = "";
+String hiddenChecked = "";
 int nbMaxValues = 1;
 String multivaluableChecked = "";
 String searchable = "";
@@ -76,6 +77,10 @@ if (field != null) {
 	if (field.isUsedAsFacet()) {
 		usedAsFacet = checked;
 	}
+
+  if (field.isHidden()) {
+    hiddenChecked = "checked";
+  }
 }
 %>
 
