@@ -164,13 +164,18 @@ public class XmlForm extends AbstractForm {
 
         boolean displayField = true;
         boolean richContent = false;
-        if (isViewForm() && !Util.isEmptyFieldsDisplayed()) {
-          displayField = StringUtil.isDefined(field.getStringValue());
-          if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
-            // special case about WYSIWYG field
-            String fileName = field.getStringValue().substring(WysiwygFCKFieldDisplayer.DB_KEY.length());
-            displayField = isWYSIWYGFieldDefined(fileName, pageContext);
-            richContent = true;
+
+        if (!pageContext.isDesignMode() && fieldTemplate.isHidden()) {
+          displayField = false;
+        } else {
+          if (isViewForm() && !Util.isEmptyFieldsDisplayed()) {
+            displayField = (StringUtil.isDefined(field.getStringValue()));
+            if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
+              // special case about WYSIWYG field
+              String fileName = field.getStringValue().substring(WysiwygFCKFieldDisplayer.DB_KEY.length());
+              displayField = isWYSIWYGFieldDefined(fileName, pageContext);
+              richContent = true;
+            }
           }
         }
 
