@@ -61,7 +61,7 @@ ul, li, p, h1, h2 {
      top: 115px;
      width: 100%;
      z-index: 100;
-	 height:33px;
+	height:33px;
 }
 
 #breadcrumb .validityInfo{
@@ -295,7 +295,7 @@ ul, li, p, h1, h2 {
 }
 .bgDegradeGris p b, .bgDegradeGris .paragraphe b {
     color: #333;
-    font-weight: 100;
+    font-weight: 500;
 }
 
 #publication  .attachments {
@@ -435,9 +435,13 @@ ul, li, p, h1, h2 {
 
 
 /*** Rich Content ******/
-#richContent ul, #richContent li, #richContent p, #richContent h1, #richContent h2 {
-     margin:inherit;
-     padding: inherit;
+#richContent ul, #richContent li  {
+	margin: 0 0 0 0.5em;
+	padding: 0.25em 0;
+}
+ #richContent p, #richContent h1, #richContent h2 {
+       margin:1em 0 0 0;
+       padding:0 0 0.5em 0;
 }
 
 /*** Style WYSIWYG ******/
