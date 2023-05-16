@@ -34,7 +34,6 @@ import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToH
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
@@ -56,9 +55,6 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 @UnitTest
 @BenchmarkOptions(benchmarkRounds = 500, warmupRounds = 500)
 public class ImageUrlAccordingToHtmlSizeDirectiveTest {
-
-  @Rule
-  public CommonAPITestRule commonAPIRule = new CommonAPITestRule();
 
   @Rule
   public BenchmarkRule benchmarkRule = new BenchmarkRule();
@@ -136,7 +132,7 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
    * That was the precedent implementation (it contains some code error, but the aim here is to
    * compare the performances).
    */
-  public String updateURLOfImagesAccordingToSizes(String transformedWysiwygContent) {
+  public void updateURLOfImagesAccordingToSizes(String transformedWysiwygContent) {
     Source source = new Source(transformedWysiwygContent);
     //get all images
     List<Element> images = source.getAllElements(HTMLElementName.IMG);
@@ -183,7 +179,7 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
             if (i != -1) {
               newSrc = src.substring(0, i);
               newSrc += "/size/" + width + "x";
-              newSrc += src.substring(i, src.length());
+              newSrc += src.substring(i);
               replacements.put(src, newSrc);
             }
           }
@@ -196,8 +192,6 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
             transformedWysiwygContent.replaceAll(url, replacements.get(url));
       }
     }
-
-    return transformedWysiwygContent;
   }
 
 

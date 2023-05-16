@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalTypeBasicEntity;
@@ -463,16 +462,5 @@ public class BasicJpaEntityRepositoryIT {
     AnimalBasicEntity animalBasicEntityReloaded =
         basicJpaEntityServiceTest.getAnimalById(animalBasicEntities.get(0).getId());
     assertThat(animalBasicEntityReloaded, nullValue());
-  }
-
-  /**
-   * Create a user.
-   * @param userId the identifier of the user to create.
-   * @return the created user.
-   */
-  private static UserDetail createUser(String userId) {
-    UserDetail user = new UserDetail();
-    user.setId(userId);
-    return user;
   }
 }

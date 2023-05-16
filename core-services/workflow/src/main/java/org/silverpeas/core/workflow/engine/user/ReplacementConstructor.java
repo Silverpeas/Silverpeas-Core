@@ -57,6 +57,7 @@ public class ReplacementConstructor implements Replacement.Constructor {
     return this;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public ReplacementImpl during(final Period period) {
     Objects.requireNonNull(replacement.getIncumbent(),

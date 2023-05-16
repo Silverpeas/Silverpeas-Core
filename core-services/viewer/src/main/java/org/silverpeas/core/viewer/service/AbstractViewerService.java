@@ -59,23 +59,27 @@ public abstract class AbstractViewerService {
   private static final Semaphore EXECUTION_SEM = new Semaphore(executionSemCount);
 
   /**
-   * Generate a tmp file
-   * @param fileExtension
-   * @return
+   * Generates a temporary file.
+   * @param fileExtension the extension of the temporary file.
+   * @return the generated temporary file.
    */
   protected File generateTmpFile(final ViewerContext viewerContext, final String fileExtension) {
     TemporaryWorkspaceTranslation workspace = viewerContext.getWorkspace();
     if (!workspace.exists()) {
       // It is a not cached treatment, there is no need to use workspace translation.
-      workspace.getRootPath().mkdirs();
-    }
-    return new File(workspace.getRootPath(), "file." + fileExtension);
+      boolean created = workspace.getRootPath().mkdirs();
+      if (!created) {
+        throw new SilverpeasRuntimeException(
+            "Unable to create the root directory of the temporary workspace " +
+                workspace.getRootPath());
+      }
+    } return new File(workspace.getRootPath(), "file." + fileExtension);
   }
 
   /**
-   * Changes the extension of a file
-   * @param fileExtension
-   * @return
+   * Changes the extension of the specified file with the given one.
+   * @param fileExtension the extension to use.
+   * @return the file with the new extension.
    */
   protected File changeFileExtension(final File file, final String fileExtension) {
     return new File(
@@ -83,16 +87,16 @@ public abstract class AbstractViewerService {
   }
 
   /**
-   * This method permits to start the setting of a {@link ViewerTreatment}.<br>
-   * It manages also a cache mechanism in order to avoid taking too much resources at a same time
-   * and also in order to preserve memory space of filesystem.
+   * This method allows to start the setting of a {@link ViewerTreatment}.<br>
+   * It manages also a cache mechanism in order to avoid taking too much resources at the same time
+   * and also in order to preserve space in the filesystem.
    * @param processName the name of the process (preview for example).
    * @param viewerTreatment the treatment to perform.
-   * @param <R>
-   * @return
+   * @param <R> the concrete type of the object on which the treatment works.
+   * @return the result of the process.
    */
-  protected <R extends Serializable> ViewerProcess<R> process(
-      String processName, ViewerTreatment<R> viewerTreatment) {
+  protected <R extends Serializable> ViewerProcess<R> process(String processName,
+      ViewerTreatment<R> viewerTreatment) {
     return new ViewerProcess<>(processName, viewerTreatment);
   }
 
@@ -114,9 +118,8 @@ public abstract class AbstractViewerService {
    * This class handles the execution of a {@link ViewerTreatment}.
    * It provides the centralization of caching synchronization.
    * @param <R> the type of the value returned by the viewer treatment.
-   * @return the value computed by the specified viewer treatment.
    */
-  protected final class ViewerProcess<R extends Serializable> {
+  protected static final class ViewerProcess<R extends Serializable> {
     private static final String CACHE_WORKSPACE_KEY_PREFIX = "workspace_viewer_services_";
     private static final String CACHE_RESULT_KEY = "cache_result";
     private final String processName;
@@ -124,11 +127,10 @@ public abstract class AbstractViewerService {
 
     /**
      * Default constructor.
-     * @param processName
-     * @param viewerTreatment
+     * @param processName the name of the process.
+     * @param viewerTreatment the treatment to operate by the viewer.
      */
-    protected ViewerProcess(final String processName,
-        final ViewerTreatment<R> viewerTreatment) {
+    private ViewerProcess(final String processName, final ViewerTreatment<R> viewerTreatment) {
       this.processName = processName;
       this.viewerTreatment = viewerTreatment;
     }
@@ -144,8 +146,9 @@ public abstract class AbstractViewerService {
         final String workspaceCacheKey = CACHE_WORKSPACE_KEY_PREFIX + viewerContext.getViewId();
         getLogger(this).debug(
             () -> format("initializing workspace of view context {0}", viewerContext.getViewId()));
-        final TemporaryWorkspaceTranslation workspace = (TemporaryWorkspaceTranslation) cache
-            .computeIfAbsent(workspaceCacheKey, k -> viewerContext.getWorkspace());
+        final TemporaryWorkspaceTranslation workspace =
+            (TemporaryWorkspaceTranslation) cache.computeIfAbsent(workspaceCacheKey,
+                k -> viewerContext.getWorkspace());
 
         // If the workspace already exists, then retrieving the semaphore of a working process if
         // any, creating a new one otherwise (in the second case and for a same resource, a request
@@ -216,8 +219,8 @@ public abstract class AbstractViewerService {
         }
       }
       // Data exists in cache, returning a new Semaphore
-      getLogger(this)
-          .debug(() -> format("creating semaphore for workspace {0}", workspaceCacheKey));
+      getLogger(this).debug(
+          () -> format("creating semaphore for workspace {0}", workspaceCacheKey));
       return Pair.of(workspace, new Semaphore(1));
     }
 
@@ -304,8 +307,8 @@ public abstract class AbstractViewerService {
         EXECUTION_SEM.acquire();
         synchronized (EXECUTION_SEM_MUTEX) {
           executionSemCount = executionSemCount - 1;
-          getLogger(this)
-              .debug(() -> format("acquiring access (new count of {0})", executionSemCount));
+          getLogger(this).debug(
+              () -> format("acquiring access (new count of {0})", executionSemCount));
         }
         return viewerTreatment.execute();
       } catch (Exception e) {
@@ -318,8 +321,8 @@ public abstract class AbstractViewerService {
         EXECUTION_SEM.release();
         synchronized (EXECUTION_SEM_MUTEX) {
           executionSemCount = executionSemCount + 1;
-          getLogger(this)
-              .debug(() -> format("releasing access (new count of {0})", executionSemCount));
+          getLogger(this).debug(
+              () -> format("releasing access (new count of {0})", executionSemCount));
         }
       }
     }

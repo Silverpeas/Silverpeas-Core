@@ -23,29 +23,18 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.viewer.model.Preview;
-import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 
-@RunWith(Arquillian.class)
 public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   @Inject
   private PreviewService previewService;
@@ -53,17 +42,8 @@ public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
   @Before
   public void setup() {
     clearTemporaryPath();
-    //noinspection ResultOfMethodCallIgnored
-    getTemporaryPath().mkdirs();
-    final SettingBundle mockedSettings =
-        reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
-    when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getInteger(eq("preview.height.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(true);
-    when(mockedSettings.getBoolean(eq("viewer.cache.conversion.silent.enabled"), anyBoolean()))
-        .thenReturn(false);
-    when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
-        .thenReturn(false);
+    boolean isOk = getTemporaryPath().mkdirs();
+    assertThat(isOk, is(true));
   }
 
   @After
@@ -72,187 +52,177 @@ public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testOdtFile() {
+  public void previewOdtFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.odt", getDocumentNamed("file.odt")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testOdtFileFromSimpleDocument() {
+  public void previewOdtFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.odt")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testDocFile() {
+  public void previewDocFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.doc", getDocumentNamed("file.doc")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testDocFileFromSimpleDocument() {
+  public void previewDocFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.doc")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testDocxFile() {
+  public void previewDocxFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.docx", getDocumentNamed("file.docx")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testDocxFileFromSimpleDocument() {
+  public void previewDocxFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.docx")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testDocxFileWithSpecialChars() {
+  public void previewDocxFileWithSpecialChars() {
     final Preview preview = previewService
         .getPreview(createViewerContext("file ' - '' .docx", getDocumentNamed("file ' - '' .docx")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testDocxFileWithSpecialCharsFromSimpleDocument() {
+  public void previewDocxFileWithSpecialCharsFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file ' - '' .docx")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testOdpFile() {
+  public void previewOdpFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.odp", getDocumentNamed("file.odp")));
     assertPptDocumentPreview(preview);
   }
 
   @Test
-  public void testOdpFileFromSimpleDocument() {
+  public void previewOdpFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.odp")));
     assertPptDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testPptFile() {
+  public void previewPptFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.ppt", getDocumentNamed("file.ppt")));
     assertPptDocumentPreview(preview);
   }
 
   @Test
-  public void testPptFileFromSimpleDocument() {
+  public void previewPptFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.ppt")));
     assertPptDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testPptxFile() {
+  public void previewPptxFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.pptx", getDocumentNamed("file.pptx")));
     assertPptDocumentPreview(preview);
   }
 
   @Test
-  public void testPptxFileFromSimpleDocument() {
+  public void previewPptxFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.pptx")));
     assertPptDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testOdsFile() {
+  public void previewOdsFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.ods", getDocumentNamed("file.ods")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testOdsFileFromSimpleDocument() {
+  public void previewOdsFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.ods")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testXlsFile() {
+  public void previewXlsFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.xls", getDocumentNamed("file.xls")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testXlsFileFromSimpleDocument() {
+  public void previewXlsFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.xls")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testXlsxFile() {
+  public void previewXlsxFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.xlsx", getDocumentNamed("file.xlsx")));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName(), startsWith("file."));
-//    The following assertions are comented out as the result size depends on the OpenOffice version
-//    (OpenOffice.org or LibreOffice)
-//    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
-//    assertThat(previewSize[0], is("595"));
-//    assertThat(previewSize[1], is("842"));
   }
 
   @Test
-  public void testXlsxFileFromSimpleDocument() {
+  public void previewXlsxFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.xlsx")));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName(), startsWith("file."));
-//    The following assertions are comented out as the result size depends on the OpenOffice version
-//    (OpenOffice.org or LibreOffice)
-//    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
-//    assertThat(previewSize[0], is("595"));
-//    assertThat(previewSize[1], is("842"));
   }
 
   @Test
-  public void testJpgFile() {
+  public void previewJpgFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.jpg", getDocumentNamed("file.jpg")));
     assertImageDocumentPreview(preview);
   }
 
   @Test
-  public void testJpgFileFromSimpleDocument() {
+  public void previewJpgFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.jpg")));
     assertImageDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testJpgFileWithSpecialChars() {
+  public void previewJpgFileWithSpecialChars() {
     final Preview preview = previewService
         .getPreview(createViewerContext("file ' - '' .jpg", getDocumentNamed("file ' - '' .jpg")));
     assertImageDocumentPreview(preview);
   }
 
   @Test
-  public void testJpgFileWithSpecialCharsFromSimpleDocument() {
+  public void previewJpgFileWithSpecialCharsFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file ' - '' .jpg")));
     assertImageDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testJpegFile() {
+  public void previewJpegFile() {
     // The uppercase letter of the following file extension is not a mistake
     final Preview preview =
         previewService.getPreview(createViewerContext("file.jpEg", getDocumentNamed("file.jpEg")));
@@ -260,7 +230,7 @@ public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testJpegFileFromSimpleDocument() {
+  public void previewJpegFileFromSimpleDocument() {
     // The uppercase letter of the following file extension is not a mistake
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.jpEg")));
@@ -268,28 +238,28 @@ public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testPdfFile() {
+  public void previewPdfFile() {
     final Preview preview =
         previewService.getPreview(createViewerContext("file.pdf", getDocumentNamed("file.pdf")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testPdfFileFromSimpleDocument() {
+  public void previewPdfFileFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);
   }
 
   @Test
-  public void testPdfFileWithSpecialChars() {
+  public void previewPdfFileWithSpecialChars() {
     final Preview preview = previewService
         .getPreview(createViewerContext("file ' - '' .pdf", getDocumentNamed("file ' - '' .pdf")));
     assertOfficeOrPdfDocumentPreview(preview);
   }
 
   @Test
-  public void testPdfFileWithSpecialCharsFromSimpleDocument() {
+  public void previewPdfFileWithSpecialCharsFromSimpleDocument() {
     final Preview preview =
         previewService.getPreview(ViewerContext.from(getSimpleDocumentNamed("file ' - '' .pdf")));
     assertOfficeOrPdfDocumentPreviewWithCacheManagement(preview);

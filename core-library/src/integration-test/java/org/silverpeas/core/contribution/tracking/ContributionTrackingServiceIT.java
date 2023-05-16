@@ -35,10 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.contribution.ContributionModificationContextHandler;
-import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
-import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
@@ -47,13 +43,10 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Integration tests on the operations provided by the {@link ContributionTrackingService} object in

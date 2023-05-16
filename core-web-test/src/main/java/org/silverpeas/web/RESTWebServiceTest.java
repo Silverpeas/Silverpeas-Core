@@ -39,7 +39,7 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
-import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
+import org.silverpeas.web.environment.SilverpeasTestEnvironment;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -152,14 +152,14 @@ public abstract class RESTWebServiceTest {
     return UriBuilder.fromUri(getBaseURI()).path("silverpeas").path("services");
   }
 
-  public SilverpeasEnvironmentTest getSilverpeasEnvironmentTest() {
-    return SilverpeasEnvironmentTest.get();
+  public SilverpeasTestEnvironment getSilverpeasEnvironmentTest() {
+    return SilverpeasTestEnvironment.get();
   }
 
   /**
    * <p>
    * Gets (and initializes if necessary) the token key of the given user.<br> The user must exist
-   * into database (use {@link SilverpeasEnvironmentTest#createDefaultUser()} to add a user, and use
+   * into database (use {@link SilverpeasTestEnvironment#createDefaultUser()} to add a user, and use
    * {@link #getSilverpeasEnvironmentTest()} to get the silverpeas environment manager instance).
    * </p>
    * <p>

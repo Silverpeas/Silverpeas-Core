@@ -50,11 +50,11 @@ public class SwfUtil extends ExternalExecution {
   private static final String TO_SWF_ENDING_COMMAND = "-f -T 9 -t -s storeallcharacters";
 
   /**
-   * Indicates if pdf2swf tool is activated
-   * @return
+   * Indicates if the pdf2swf tool is activated
+   * @return true if the tool is activated. False otherwise.
    */
   public static boolean isPdfToSwfActivated() {
-    return SwfToolManager.isActivated();
+    return SwfToolManager.get().isActivated();
   }
 
   /**
@@ -75,12 +75,14 @@ public class SwfUtil extends ExternalExecution {
    * @param fileIn the pdf file
    * @param fileOut the swf file
    * @param oneFilePerPage if true it activates one swf file per page
-   * @param endingCommand
+   * @param endingCommand additional arguments to pass to the conversion tool.
    */
+  @SuppressWarnings("SameParameterValue")
   private static void fromPdfToSwf(final File fileIn, final File fileOut,
       final boolean oneFilePerPage, final String endingCommand) {
     File outputFile = fileOut;
     if (oneFilePerPage) {
+      //noinspection StringBufferReplaceableByString
       final StringBuilder onePageFile = new StringBuilder(512);
       onePageFile.append(getFullPath(fileOut.getPath()));
       onePageFile.append(getBaseName(fileOut.getPath()));

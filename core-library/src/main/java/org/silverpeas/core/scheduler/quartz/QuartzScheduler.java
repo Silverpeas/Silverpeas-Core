@@ -103,6 +103,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
    */
   final void setUpQuartzScheduler(final String quartzProperties) {
     try {
+      System.out.println("PROUT 1");
       StdSchedulerFactory quartzSchedulerFactory = new StdSchedulerFactory();
       if (StringUtil.isDefined(quartzProperties)) {
         quartzSchedulerFactory.initialize(

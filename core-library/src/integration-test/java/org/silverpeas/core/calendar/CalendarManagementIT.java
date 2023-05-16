@@ -38,10 +38,8 @@ import org.silverpeas.core.test.util.SQLRequester.ResultLine;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -69,11 +67,11 @@ public class CalendarManagementIT extends BaseCalendarTest {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarTableLines(), hasSize(5));
     assertThat(Calendar.getByComponentInstanceId(INSTANCE_ID), empty());
-    OperationContext.fromUser(getMockedUser());
+    OperationContext.fromUser(getUser());
   }
 
   @Test
-  public void getCalendarByComponentInstanceIdShouldWorkAndCalendarsAreSorted() throws Exception {
+  public void getCalendarByComponentInstanceIdShouldWorkAndCalendarsAreSorted() {
     List<Calendar> calendars = Calendar.getByComponentInstanceId("instance_B");
     assertThat(calendars, hasSize(1));
     Calendar calendar = calendars.get(0);
@@ -140,7 +138,7 @@ public class CalendarManagementIT extends BaseCalendarTest {
     Date createDate = persistedCalendar.get("createDate");
     String createdBy = persistedCalendar.get("createdBy");
     assertThat(createDate, greaterThanOrEqualTo(testStartingDate));
-    assertThat(createdBy, is(getMockedUser().getId()));
+    assertThat(createdBy, is(getUser().getId()));
     assertThat(persistedCalendar.get("lastUpdateDate"), is(createDate));
     assertThat(persistedCalendar.get("lastUpdatedBy"), is(createdBy));
     assertThat(persistedCalendar.get("version"), is(0L));

@@ -23,11 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-/**
- * Integration test on the persistence of the occurrences of calendar events.
- * @author mmoquillon
- */
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -43,24 +38,27 @@ import org.silverpeas.core.test.util.SQLRequester;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TimeZone;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
+/**
+ * Integration test on the persistence of the occurrences of calendar events.
+ * @author mmoquillon
+ */
 @RunWith(Arquillian.class)
 public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
 
   private static final String CALENDAR_ID = "ID_1";
   private CalendarEvent event;
-  private List<CalendarEventOccurrence> expectedOccurrences = new ArrayList<>();
+  private final List<CalendarEventOccurrence> expectedOccurrences = new ArrayList<>();
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -95,7 +93,7 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
   public void getAllPersistedOccurrencesOfAGivenEvent() {
     List<CalendarEventOccurrence> occurrences = Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.getAll(Arrays.asList(event),
+      return repository.getAll(Collections.singletonList(event),
           Period.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 28)));
     });
 

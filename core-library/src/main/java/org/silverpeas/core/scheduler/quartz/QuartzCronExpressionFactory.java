@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
+import org.silverpeas.core.annotation.Provider;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.scheduler.trigger.CronExpression;
 import org.silverpeas.core.scheduler.trigger.CronExpressionFactory;
 
@@ -31,6 +33,8 @@ import java.text.ParseException;
 /**
  * Implementation of the CronExpressionFactory for the Quartz engine.
  */
+@Technical
+@Provider
 public class QuartzCronExpressionFactory implements CronExpressionFactory {
   /**
    * Creates a CronExpression instance from a String representation of a cron expression.

@@ -25,26 +25,42 @@ package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecution.Config;
-import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.util.Map;
 
 /**
+ * A manager of the PDF to JSON toolkit. Its aim is to check the pdf2json tool is installed on
+ * the host and it works fine in order to be used by the Viewer service of Silverpeas.
+ * <p>
+ * The goal of the tool is to split PDF files into fragments in JSON, ready to be processed by
+ * the viwer service.
+ * </p>
  * @author Yohann Chastagnier
  */
+@Technical
 @Service
+@Singleton
 public class JsonPdfToolManager implements Initialization {
 
-  private static boolean isActivated = false;
+  public static JsonPdfToolManager get() {
+    return ServiceProvider.getSingleton(JsonPdfToolManager.class);
+  }
+
+  private boolean isActivated = false;
 
   @Override
   public void init() throws Exception {
 
     // pdf2json settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
-      if ("path".equals(entry.getKey().toLowerCase())) {
+      if ("path".equalsIgnoreCase(entry.getKey())) {
         try {
           CommandLine commandLine = new CommandLine("pdf2json");
           commandLine.addArgument("-v");
@@ -53,17 +69,18 @@ public class JsonPdfToolManager implements Initialization {
           isActivated = true;
         } catch (final Exception e) {
           // pdf2json is not installed
-          System.err.println("pdf2json is not installed");
+          SilverLogger.getLogger(this).error("pdf2json is not installed");
         }
       }
     }
   }
 
   /**
-   * Indicates if im4java is activated
-   * @return
+   * If the PDF to JSON conversion activated?
+   * @return true if the PDF to JSON toolkit is installed and works fine on the host. False
+   * otherwise.
    */
-  public static boolean isActivated() {
+  public boolean isActivated() {
     return isActivated;
   }
 }

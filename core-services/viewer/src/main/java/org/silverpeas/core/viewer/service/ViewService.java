@@ -29,6 +29,8 @@ import org.silverpeas.core.viewer.model.DocumentView;
 import java.io.File;
 
 /**
+ * The view service. Its goal is to generate a view of a document without having to download it or
+ * to open it with a dedicated program.
  * @author Yohann Chastagnier
  */
 public interface ViewService {

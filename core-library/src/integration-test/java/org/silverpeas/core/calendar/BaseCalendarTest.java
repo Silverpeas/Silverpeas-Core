@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 import org.junit.After;
 import org.junit.Before;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -37,8 +38,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Base class for tests in the calendar engine.
@@ -54,8 +53,6 @@ public abstract class BaseCalendarTest extends DataSetTest {
 
   protected static final String INSTANCE_ID = "anInstanceId";
 
-  private User mockedUser;
-
   @Override
   protected String getDbSetupTableCreationSqlScript() {
     return TABLE_CREATION_SCRIPT;
@@ -67,13 +64,14 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return INITIALIZATION_SCRIPT;
   }
 
+  private final UserDetail user = new UserDetail();
+
   @Before
   public void setUp() throws Exception {
-    mockedUser = mock(User.class);
-    when(mockedUser.getId()).thenReturn("26");
+    user.setId("26");
     CacheServiceProvider.clearAllThreadCaches();
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
-        .newSessionCache(mockedUser);
+        .newSessionCache(user);
   }
 
   @After
@@ -81,13 +79,9 @@ public abstract class BaseCalendarTest extends DataSetTest {
     CacheServiceProvider.clearAllThreadCaches();
   }
 
-  protected User getMockedUser() {
-    return mockedUser;
+  protected User getUser() {
+    return user;
   }
-
-  /*protected OrganizationController getOrganisationControllerMock() {
-    return StubbedOrganizationController.getMock();
-  }*/
 
   /**
    * Returns the list of calendar lines persisted into sb_cal_calendar table.
@@ -191,38 +185,38 @@ public abstract class BaseCalendarTest extends DataSetTest {
     assertThat(actual.isRecurrent(), is(false));
   }
 
-  protected void assertEventIsOnlyUpdated(OperationResult result) {
+  protected void assertEventIsOnlyUpdated(OperationResult<?, ?> result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.created().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
   }
 
-  protected void assertAnEventIsOnlyCreated(OperationResult result) {
+  protected void assertAnEventIsOnlyCreated(OperationResult<?, ?> result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(false));
     assertThat(result.created().isPresent(), is(true));
   }
 
-  protected void assertOccurrenceIsUpdated(OperationResult result) {
+  protected void assertOccurrenceIsUpdated(OperationResult<?, ?> result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.created().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(false));
     assertThat(result.instance().isPresent(), is(true));
   }
 
-  protected void assertEventIsUpdated(OperationResult result) {
+  protected void assertEventIsUpdated(OperationResult<?, ?> result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.updated().isPresent(), is(true));
   }
 
-  protected void assertAnEventIsCreated(OperationResult result) {
+  protected void assertAnEventIsCreated(OperationResult<?, ?> result) {
     assertThat(result.isEmpty(), is(false));
     assertThat(result.created().isPresent(), is(true));
   }
 
-  protected void assertEventIsDeleted(final OperationResult result) {
+  protected void assertEventIsDeleted(final OperationResult<?, ?> result) {
     assertThat(result.created().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(false));
     assertThat(result.instance().isPresent(), is(false));

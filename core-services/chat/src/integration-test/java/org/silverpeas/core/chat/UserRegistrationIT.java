@@ -56,6 +56,7 @@ public class UserRegistrationIT {
   public DbSetupRule dbSetupRule =
       DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT).loadInitialDataSetFrom(DATASET_SCRIPT);
 
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
   @DefaultChatServer
   private ChatServer server;

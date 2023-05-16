@@ -29,6 +29,7 @@ import org.silverpeas.core.viewer.model.Preview;
 import java.io.File;
 
 /**
+ * The preview service. Its goal is to generate a preview of a document.
  * @author Yohann Chastagnier
  */
 public interface PreviewService {

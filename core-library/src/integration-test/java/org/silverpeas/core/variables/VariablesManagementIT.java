@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -40,16 +40,14 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Integration tests on the management of {@link Variable} with their
@@ -82,9 +80,9 @@ public class VariablesManagementIT {
   }
 
   @Before
-  public void setUpTest() throws Exception {
-    User user = mock(User.class);
-    when(user.getId()).thenReturn("26");
+  public void setUpTest() {
+    UserDetail user = new UserDetail();
+    user.setId("26");
     CacheServiceProvider.clearAllThreadCaches();
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     OperationContext.fromUser(user);
@@ -92,7 +90,7 @@ public class VariablesManagementIT {
 
   @Test
   public void empty() {
-    // just to test the war with the tests is deployed correctly
+    assertThat(true, is(true));
   }
 
   @Test
@@ -111,7 +109,7 @@ public class VariablesManagementIT {
   }
 
   @Test
-  public void createAValuedVariableInAFixedPeriod() throws SQLException {
+  public void createAValuedVariableInAFixedPeriod() {
     final String label = "A Label";
     final String description = "A short description about the variable";
     final LocalDate yesterday = LocalDate.now().minusDays(1);

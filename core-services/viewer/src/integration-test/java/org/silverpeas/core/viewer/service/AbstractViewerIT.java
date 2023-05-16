@@ -24,11 +24,15 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -40,26 +44,31 @@ import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ImageUtil;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.fail;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * @author Yohann Chastagnier
  */
+@RunWith(Arquillian.class)
 public abstract class AbstractViewerIT {
 
   public static final String CONVERSION_DURATION_FILE_NAME = "CONVERSION_DURATION";
@@ -72,6 +81,9 @@ public abstract class AbstractViewerIT {
   static final DimensionOption IMG_PORTRAIT = DimensionOption.widthAndHeight(595, 842);
   static final DimensionOption IMG_LANDSCAPE = DimensionOption.widthAndHeight(612, 792);
 
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
+
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4Viewer.onWarForTestClass(AbstractViewerIT.class).build();
@@ -79,11 +91,9 @@ public abstract class AbstractViewerIT {
 
   private static File tempPath;
   private static File resourceTestDir;
-  private static List<Class<? extends Initialization>> services = Arrays.asList(
-      Im4javaManager.class,
-      SwfToolManager.class,
-      JsonPdfToolManager.class,
-      OpenOfficeService.class);
+  private final static List<Class<? extends Initialization>> services =
+      Arrays.asList(Im4javaManager.class, SwfToolManager.class, JsonPdfToolManager.class,
+          OpenOfficeService.class);
 
   private static void init() {
     if (tempPath == null) {
@@ -106,7 +116,7 @@ public abstract class AbstractViewerIT {
   @Before
   public void initCommonServices() throws Exception {
     init();
-    for (Class<? extends Initialization> service: services) {
+    for (Class<? extends Initialization> service : services) {
       Initialization serviceToInitialize = ServiceProvider.getService(service);
       serviceToInitialize.init();
     }
@@ -114,15 +124,24 @@ public abstract class AbstractViewerIT {
 
   @After
   public void releaseCommonServices() throws Exception {
-    for (Class<? extends Initialization> service: services) {
+    for (Class<? extends Initialization> service : services) {
       Initialization serviceToInitialize = ServiceProvider.getService(service);
       serviceToInitialize.release();
     }
   }
 
+  void setViewerSettings(final String viewerSettings) {
+    SettingBundle settings = ResourceLocator.getSettingBundle(viewerSettings);
+    try {
+      FieldUtils.writeStaticField(ViewerSettings.class, "settings", settings, true);
+    } catch (IllegalAccessException e) {
+      fail(e.getMessage());
+    }
+  }
+
   protected void clearTemporaryPath() {
     FileUtils.deleteQuietly(getTemporaryPath());
-    await().pollDelay(250, MILLISECONDS).until(() -> true);
+    awaitUntil(250, TimeUnit.MILLISECONDS);
   }
 
   File getDocumentNamed(final String name) {
@@ -151,7 +170,7 @@ public abstract class AbstractViewerIT {
   }
 
   boolean canPerformViewConversionTest() {
-    if (SwfToolManager.isActivated()) {
+    if (SwfToolManager.get().isActivated()) {
       return true;
     }
     Logger.getAnonymousLogger().severe("SwfTools are not available, test is skipped.");
@@ -160,7 +179,8 @@ public abstract class AbstractViewerIT {
   }
 
   void saveInTemporaryPath(String simpleFileName, String value) throws Exception {
-    FileUtils.writeStringToFile(new File(getTemporaryPath(), simpleFileName), value);
+    FileUtils.writeStringToFile(new File(getTemporaryPath(), simpleFileName), value,
+        Charsets.UTF_8);
   }
 
   String readAndRemoveFromTemporaryPath(String simpleFileName) throws Exception {
@@ -172,6 +192,7 @@ public abstract class AbstractViewerIT {
     }
   }
 
+  @SuppressWarnings("SameParameterValue")
   Long readAndRemoveFromTemporaryPathAsLong(String simpleFileName) throws Exception {
     return Long.valueOf(readAndRemoveFromTemporaryPath(simpleFileName));
   }
@@ -181,25 +202,21 @@ public abstract class AbstractViewerIT {
   }
 
   void assertPreviewDimensions(final Preview preview, final DimensionOption... dimensions) {
-    final List<Integer> widths = Stream.of(dimensions)
-        .map(DimensionOption::getWidth)
-        .collect(Collectors.toList());
-    final List<Integer> heights = Stream.of(dimensions)
-        .map(DimensionOption::getHeight)
-        .collect(Collectors.toList());
-    assertThat(widths.stream().anyMatch(w ->
-        Matchers.closeTo(w, 1.0).matches(asDouble(preview.getWidth()))
-    ), is(true));
-    assertThat(heights.stream().anyMatch(h ->
-        Matchers.closeTo(h, 1.0).matches(asDouble(preview.getHeight()))
-    ), is(true));
+    final List<Integer> widths =
+        Stream.of(dimensions).map(DimensionOption::getWidth).collect(Collectors.toList());
+    final List<Integer> heights =
+        Stream.of(dimensions).map(DimensionOption::getHeight).collect(Collectors.toList());
+    assertThat(widths.stream()
+        .anyMatch(w -> Matchers.closeTo(w, 1.0).matches(asDouble(preview.getWidth()))), is(true));
+    assertThat(heights.stream()
+        .anyMatch(h -> Matchers.closeTo(h, 1.0).matches(asDouble(preview.getHeight()))), is(true));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
-    assertThat(widths.stream().anyMatch(w ->
-        Matchers.closeTo(w, 1.0).matches(asDouble(previewSize[0]))
-    ), is(true));
-    assertThat(heights.stream().anyMatch(h ->
-        Matchers.closeTo(h, 1.0).matches(asDouble(previewSize[1]))
-    ), is(true));
+    assertThat(
+        widths.stream().anyMatch(w -> Matchers.closeTo(w, 1.0).matches(asDouble(previewSize[0]))),
+        is(true));
+    assertThat(
+        heights.stream().anyMatch(h -> Matchers.closeTo(h, 1.0).matches(asDouble(previewSize[1]))),
+        is(true));
   }
 
   private static double asDouble(final String nb) {

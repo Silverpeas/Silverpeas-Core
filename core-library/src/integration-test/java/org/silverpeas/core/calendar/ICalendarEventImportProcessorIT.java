@@ -46,6 +46,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -96,7 +97,9 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
 
     List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
-    CalendarEvent event = calendar.externalEvent(events.get(0).get("externalId")).get();
+    Optional<CalendarEvent> maybeEvent = calendar.externalEvent(events.get(0).get("externalId"));
+    assertThat(maybeEvent.isPresent(), is(true));
+    CalendarEvent event = maybeEvent.get();
     assertThat(event.getExternalId(), is("cc412802-843c-43bb-8249-7f626ba608cb"));
     assertThat(event.getTitle(), is("Déjeuner en famille"));
     assertThat(event.getLocation(), is("A la maison"));
@@ -120,7 +123,9 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.updated(), is(0));
 
     List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
-    CalendarEvent addedEvent = calendar.externalEvent(events.get(0).get("externalId")).get();
+    Optional<CalendarEvent> maybeEvent = calendar.externalEvent(events.get(0).get("externalId"));
+    assertThat(maybeEvent.isPresent(), is(true));
+    CalendarEvent addedEvent = maybeEvent.get();
 
     result = importProcessor.importInto(calendar, iCalEventsFrom(ics));
     assertThat(result.added(), is(0));
@@ -128,7 +133,9 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
 
     events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
-    CalendarEvent event = calendar.externalEvent(events.get(0).get("externalId")).get();
+    maybeEvent = calendar.externalEvent(events.get(0).get("externalId"));
+    assertThat(maybeEvent.isPresent(), is(true));
+    CalendarEvent event = maybeEvent.get();
     assertThat(event, is(addedEvent));
   }
 
@@ -148,7 +155,9 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
 
     List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
-    CalendarEvent event = calendar.externalEvent(events.get(0).get("externalId")).get();
+    Optional<CalendarEvent> maybeEvent = calendar.externalEvent(events.get(0).get("externalId"));
+    assertThat(maybeEvent.isPresent(), is(true));
+    CalendarEvent event = maybeEvent.get();
     assertThat(event.getTitle(), is("Déjeuner avec Fanny"));
   }
 

@@ -53,6 +53,7 @@ import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 
 /**
+ * Default implementation of the preview service.
  * @author Yohann Chastagnier
  */
 @Service
@@ -107,9 +108,9 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         // 1 - converting it into PDF document
         // 2 - converting the previous result into PNG image
         if (toPDFConverter.isDocumentSupported(viewerContext.getOriginalSourceFile().getPath())) {
-          final File pdfFile = toPdf(viewerContext.getOriginalSourceFile(),
+          final File pdfFile = convertToPdf(viewerContext.getOriginalSourceFile(),
               generateTmpFile(viewerContext, PDF_DOCUMENT_EXTENSION));
-          resultFile = toImage(pdfFile, changeFileExtension(pdfFile, PNG_IMAGE_EXTENSION));
+          resultFile = convertToImage(pdfFile, changeFileExtension(pdfFile, PNG_IMAGE_EXTENSION));
           deleteQuietly(pdfFile);
         }
 
@@ -117,14 +118,14 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         // 1 - convert it into PNG resized image.
         else if (FileUtil.isPdf(viewerContext.getOriginalFileName()) || PLAIN_TEXT_MIME_TYPE
             .equals(FileUtil.getMimeType(viewerContext.getOriginalSourceFile().getPath()))) {
-          resultFile = toImage(viewerContext.getOriginalSourceFile(),
+          resultFile = convertToImage(viewerContext.getOriginalSourceFile(),
               generateTmpFile(viewerContext, PNG_IMAGE_EXTENSION));
         }
 
         // If the document is an image
         // 1 - convert it into JPG resized image.
         else {
-          resultFile = toImage(viewerContext.getOriginalSourceFile(),
+          resultFile = convertToImage(viewerContext.getOriginalSourceFile(),
               generateTmpFile(viewerContext, JPG_IMAGE_EXTENSION));
         }
 
@@ -136,9 +137,8 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
       public Preview performAfterSuccess(final Preview result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             ViewService.get().isViewable(viewerContext.getOriginalSourceFile()))
-          ManagedThreadPool.getPool().invoke(() -> {
-            ViewService.get().getDocumentView(viewerContext.copy());
-          });
+          ManagedThreadPool.getPool().invoke((Runnable) () ->
+            ViewService.get().getDocumentView(viewerContext.copy()));
         return ViewerTreatment.super.performAfterSuccess(result);
       }
     }).execute(viewerContext);
@@ -151,22 +151,12 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         .ifPresent(TemporaryWorkspaceTranslation::remove);
   }
 
-  /**
-   * Convert into PDF
-   * @param source
-   * @return
-   */
-  private File toPdf(final File source, final File destination) {
+  private File convertToPdf(final File source, final File destination) {
     toPDFConverter.convert(source, destination, DocumentFormat.pdf, new SinglePageSelection(1));
     return destination;
   }
 
-  /**
-   * Convert into Image
-   * @param source
-   * @return
-   */
-  private File toImage(File source, File destination) {
+  private File convertToImage(File source, File destination) {
     boolean deleteSource = false;
     if (FileUtil.isPdf(source.getPath())) {
       PdfUtil.firstPageAsImage(source, destination);

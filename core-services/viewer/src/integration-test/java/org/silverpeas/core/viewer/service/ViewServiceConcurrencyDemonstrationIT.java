@@ -24,16 +24,10 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedThreadFactory;
@@ -45,14 +39,9 @@ import java.util.concurrent.ConcurrentMap;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
-@RunWith(Arquillian.class)
 public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   @Inject
   private ViewService viewService;
@@ -63,16 +52,8 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
   @Before
   public void setup() {
     clearTemporaryPath();
-    getTemporaryPath().mkdirs();
-    final SettingBundle mockedSettings =
-        reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
-    when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getInteger(eq("preview.height.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(true);
-    when(mockedSettings.getBoolean(eq("viewer.cache.conversion.silent.enabled"), anyBoolean()))
-        .thenReturn(false);
-    when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
-        .thenReturn(false);
+    boolean isOk = getTemporaryPath().mkdirs();
+    assertThat(isOk, is(true));
   }
 
   @After
@@ -95,7 +76,6 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
       final int LAST_REQUEST_INDEX = NB_VIEW_CALLS - 1;
       final long durationToIncreaseChancesToPerformThreadBefore = 50;
 
-      final long[] durationTimes = new long[NB_VIEW_CALLS];
       final long[] endTimes = new long[NB_VIEW_CALLS];
       final DocumentView[] results = new DocumentView[NB_VIEW_CALLS];
 
@@ -103,11 +83,9 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
         final int index = i;
         SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
           try {
-            final long startThreadTime = System.currentTimeMillis();
             final DocumentView viewFirstRequest = viewService
                 .getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.ppt")));
             final long endThreadTime = System.currentTimeMillis();
-            durationTimes[index] = endThreadTime - startThreadTime;
             endTimes[index] = endThreadTime;
             results[index] = viewFirstRequest;
           } catch (Exception e) {
@@ -133,11 +111,9 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
 
       awaitUntil(durationToIncreaseChancesToPerformThreadBefore, MILLISECONDS);
 
-      final long startLastRequestTime = System.currentTimeMillis();
       final DocumentView viewLastRequest =
           viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.ppt")));
       final long endLastRequestTime = System.currentTimeMillis();
-      durationTimes[LAST_REQUEST_INDEX] = endLastRequestTime - startLastRequestTime;
       endTimes[LAST_REQUEST_INDEX] = endLastRequestTime;
       results[LAST_REQUEST_INDEX] = viewLastRequest;
 
@@ -294,10 +270,6 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
 
   private static class SubThreadManager {
     private static final List<Thread> threads = new ArrayList<>();
-
-    public static void add(Thread thread) {
-      threads.add(thread);
-    }
 
     public static void addAndStart(Thread thread) {
       threads.add(thread);

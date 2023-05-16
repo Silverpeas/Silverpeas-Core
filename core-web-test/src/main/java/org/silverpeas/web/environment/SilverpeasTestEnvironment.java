@@ -42,7 +42,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import javax.inject.Singleton;
 
 /**
- * This class permits to load easily a Silverpeas Environment:
+ * This class allows to load easily a Silverpeas environment dedicated to the tests:
  * <ul>
  * <li>Spaces</li>
  * <li>Components</li>
@@ -53,7 +53,7 @@ import javax.inject.Singleton;
 @Technical
 @Bean
 @Singleton
-public class SilverpeasEnvironmentTest {
+public class SilverpeasTestEnvironment {
 
   public static final String DEFAULT_DOMAIN = "0";
 
@@ -61,8 +61,8 @@ public class SilverpeasEnvironmentTest {
    * Gets the Silverpeas environment.
    * @return the instance of the Silverpeas environment.
    */
-  public static SilverpeasEnvironmentTest get() {
-    return ServiceProvider.getService(SilverpeasEnvironmentTest.class);
+  public static SilverpeasTestEnvironment get() {
+    return ServiceProvider.getService(SilverpeasTestEnvironment.class);
   }
 
   /**

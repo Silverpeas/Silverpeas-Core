@@ -70,16 +70,16 @@ public class MavenTargetDirectoryRule implements TestRule {
   }
 
   /**
-   * Gets the resource path of test execution context.
-   * @return the resource path.
+   * Gets the path of the Wildfly home directory.
+   * @return the Wildfly home directory.
    */
   public File getWildflyHomeFile() {
     return getWildflyHomeFile(getMavenProperties());
   }
 
   /**
-   * Gets the path of the Wildfly home directory.
-   * @return the Wildfly home directory.
+   * Gets the resource path of test execution context.
+   * @return the resource path.
    */
   public File getResourceTestDirFile() {
     return getResourceTestDirFile(getMavenProperties());

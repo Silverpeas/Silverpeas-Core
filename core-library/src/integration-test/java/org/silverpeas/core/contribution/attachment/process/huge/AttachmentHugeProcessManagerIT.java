@@ -49,11 +49,11 @@ import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManagerIT.AttachmentServiceImpl4Test.getService;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * @author silveryocha
@@ -201,7 +201,7 @@ public class AttachmentHugeProcessManagerIT {
 
 
   private static void waitFor1Second() {
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
   }
 
   public static class AppSemaphore extends Semaphore {
@@ -275,10 +275,7 @@ public class AttachmentHugeProcessManagerIT {
       return ServiceProvider.getService(AttachmentServiceImpl4Test.class);
     }
 
-    public void doNormalTreatment(AppSemaphore instanceId) {
-      // nothing to do
-    }
-
+    @SuppressWarnings("unused")
     @AttachmentHugeProcess
     public void doHugeTreatmentWithAllKindOfSourcesOrTargets(
         @SourceObject AppSemaphore app, @SourcePK ResourceReference pk,

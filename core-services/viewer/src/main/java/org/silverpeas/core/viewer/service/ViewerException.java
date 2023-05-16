@@ -23,37 +23,20 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
+ * Exception thrown when an error occurred while generating a view or a preview of a document.
  * @author Yohann Chastagnier
  */
 public class ViewerException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = 2259738068129938704L;
+  private static final long serialVersionUID = -6527133340753366326L;
 
-  /**
-   * Default constructor
-   * @param e
-   */
-  public ViewerException(final Exception e) {
-    super("Viewer", SilverpeasException.ERROR, e.getMessage(), e);
-  }
-
-  /**
-   * Default constructor
-   * @param message
-   */
   public ViewerException(final String message) {
-    super("Viewer", SilverpeasException.ERROR, message);
+    super(message);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.exception.SilverpeasException#getModule()
-   */
-  @Override
-  public String getModule() {
-    return "viewer";
+  public ViewerException(final Throwable cause) {
+    super(cause);
   }
 }

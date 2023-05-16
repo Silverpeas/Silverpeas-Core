@@ -21,23 +21,48 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.test.rule;
+package org.silverpeas.core.socialnetwork.stub;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
+import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
+
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * @author Yohann Chastagnier
  */
-public class LibCoreCommonAPIRule extends CommonAPITestRule {
+@Service
+@Singleton
+@Alternative
+@Priority(APPLICATION + 10)
+@Named("organizationController")
+public class StubOrganizationController extends DefaultOrganizationController {
+  private static final long serialVersionUID = 1L;
 
   @Override
-  protected void beforeEvaluate() {
-    super.beforeEvaluate();
-    clearCacheData();
+  public UserDetail getUserDetail(final String sUserId) {
+    UserDetail user = new UserDetail();
+    user.setId(sUserId);
+    if ("11".equals(sUserId) || "13".equals(sUserId)) {
+      user.setState(UserState.VALID);
+    } else if ("12".equals(sUserId)) {
+      user.setState(UserState.DELETED);
+    } else {
+      return null;
+    }
+    return user;
   }
 
-  private void clearCacheData() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+  @Override
+  public String[] getUserProfiles(final String userId, final String componentId) {
+    return new String[0];
   }
 }

@@ -32,7 +32,7 @@ import java.io.File;
 import static org.silverpeas.core.viewer.model.ViewerSettings.isCacheEnabled;
 
 /**
- * This class permits to handled a context during the conversion processes.
+ * The context of a conversion process.
  * @author Yohann Chastagnier
  */
 public class ViewerContext {

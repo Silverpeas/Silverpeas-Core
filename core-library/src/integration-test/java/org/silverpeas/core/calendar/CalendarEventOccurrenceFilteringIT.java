@@ -32,9 +32,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

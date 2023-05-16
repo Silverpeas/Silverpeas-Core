@@ -46,8 +46,6 @@ import java.io.File;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
@@ -57,92 +55,91 @@ import static org.mockito.Mockito.when;
 @RunWith(Arquillian.class)
 public class PreviewGettingIT extends ResourceGettingTest {
 
-  private String tokenKey;
-  private Preview expected;
-  private ComponentInst component;
+    private String tokenKey;
+    private Preview expected;
+    private ComponentInst component;
 
-  private static String ATTACHMENT_ID = "7";
+    private static final String ATTACHMENT_ID = "7";
 
-  @Deployment
-  public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarForTestClass(PreviewGettingIT.class)
-        .addRESTWebServiceEnvironment().testFocusedOn(warBuilder -> {
-          warBuilder.addClasses(SimpleDocumentEmbedMediaViewProvider.class);
-          warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
-          warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
-        }).build();
-  }
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        return WarBuilder4WebCore.onWarForTestClass(PreviewGettingIT.class)
+                .addRESTWebServiceEnvironment().testFocusedOn(warBuilder -> {
+                    warBuilder.addClasses(SimpleDocumentEmbedMediaViewProvider.class);
+                    warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
+                    warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
+                }).build();
+    }
 
-  @Before
-  public void setup() throws Exception {
-    ServiceProvider.getSingleton(SimpleDocumentEmbedMediaViewProvider.class).init();
-  }
+    @Before
+    public void setup() throws Exception {
+        ServiceProvider.getSingleton(SimpleDocumentEmbedMediaViewProvider.class).init();
+    }
 
-  @Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
-  public static class StubbedPreviewService extends DefaultPreviewService {
-    @Override
-    public Preview getPreview(final ViewerContext viewerContext) {
-      final String originalFileName = viewerContext.getOriginalFileName();
-      final File physicalFile = viewerContext.getOriginalSourceFile();
-      final Preview preview = mock(Preview.class);
-      when(preview.getOriginalFileName()).thenReturn(originalFileName);
-      when(preview.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
-      return preview;
+    @Singleton
+    @Alternative
+    @Priority(APPLICATION + 10)
+    public static class StubbedPreviewService extends DefaultPreviewService {
+        @Override
+        public Preview getPreview(final ViewerContext viewerContext) {
+            final String originalFileName = viewerContext.getOriginalFileName();
+            final File physicalFile = viewerContext.getOriginalSourceFile();
+            return PreviewBuilder.getPreviewBuilder()
+                    .buildFileName(physicalFile.getName(), originalFileName);
+        }
+
+        @Override
+        public void removePreview(final ViewerContext viewerContext) {
+
+        }
+    }
+
+    @Before
+    public void prepareTestResources() {
+        component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
+        tokenKey = getTokenKeyOf(getSilverpeasEnvironmentTest().createDefaultUser());
+        expected = PreviewBuilder.getPreviewBuilder().buildFileName("previewId", "originalFileName7");
+    }
+
+    @Test
+    public void getPreview() {
+        final PreviewEntity entity = getAt(aResourceURI(), PreviewEntity.class);
+        assertNotNull(entity);
+        assertThat(entity, PreviewEntityMatcher.matches(expected));
     }
 
     @Override
-    public void removePreview(final ViewerContext viewerContext) {
-
+    public String aResourceURI() {
+        return aResourceURI(ATTACHMENT_ID);
     }
-  }
 
-  @Before
-  public void prepareTestResources() {
-    component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
-    tokenKey = getTokenKeyOf(getSilverpeasEnvironmentTest().createDefaultUser());
-    expected = PreviewBuilder.getPreviewBuilder().buildFileName("previewId", "originalFileName7");
-  }
+    private String aResourceURI(final String attachmentId) {
+        return "preview/attachment/" + attachmentId;
+    }
 
-  @Test
-  public void getPreview() {
-    final PreviewEntity entity = getAt(aResourceURI(), PreviewEntity.class);
-    assertNotNull(entity);
-    assertThat(entity, PreviewEntityMatcher.matches(expected));
-  }
+    @Override
+    public String anUnexistingResourceURI() {
+        return aResourceURI(StubbedAttachmentService.ATTACHMENT_ID_DOESNT_EXISTS);
+    }
 
-  @Override
-  public String aResourceURI() {
-    return aResourceURI(ATTACHMENT_ID);
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public Preview aResource() {
+        return expected;
+    }
 
-  private String aResourceURI(final String attachmentId) {
-    return "preview/attachment/" + attachmentId;
-  }
+    @Override
+    public String getAPITokenValue() {
+        return tokenKey;
+    }
 
-  @Override
-  public String anUnexistingResourceURI() {
-    return aResourceURI(StubbedAttachmentService.ATTACHMENT_ID_DOESNT_EXISTS);
-  }
+    @Override
+    public Class<?> getWebEntityClass() {
+        return PreviewEntity.class;
+    }
 
-  @Override
-  public Preview aResource() {
-    return expected;
-  }
-
-  @Override
-  public String getAPITokenValue() {
-    return tokenKey;
-  }
-
-  @Override
-  public Class<?> getWebEntityClass() {
-    return PreviewEntity.class;
-  }
-
-  @Override
-  public String[] getExistingComponentInstances() {
-    return new String[]{component.getId()};
-  }
+    @Override
+    public String[] getExistingComponentInstances() {
+        return new String[]{component.getId()};
+    }
 }

@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
  */
 @EnableSilverTestEnv
 @TestManagedBeans(ReplacementConstructor.class)
-public class ReplacementUserNotificationTest {
+class ReplacementUserNotificationTest {
 
   private static final String INSTANCE_ID = "workflow26";
   private static final String FR = "fr";
@@ -89,7 +89,6 @@ public class ReplacementUserNotificationTest {
   private final org.silverpeas.core.workflow.api.user.User userB = mock(
       org.silverpeas.core.workflow.api.user.User.class);
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
   public void setup(@TestManagedMock UserProvider userProvider,
       @TestManagedMock UserManager userManager,
@@ -123,8 +122,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void createToIncumbentOnOneDay() {
-    final Replacement replacement = initOnDayReplacement();
+  void createToIncumbentOnOneDay() {
+    final Replacement<?> replacement = initOnDayReplacement();
     final UserNotification notification = new ToIncumbentReplacementNotificationBuilder(replacement,
         NotifAction.CREATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -138,8 +137,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void createToIncumbentOnSeveralDays() {
-    final Replacement replacement = initSeveralDayReplacement();
+  void createToIncumbentOnSeveralDays() {
+    final Replacement<?> replacement = initSeveralDayReplacement();
     final UserNotification notification = new ToIncumbentReplacementNotificationBuilder(replacement,
         NotifAction.CREATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -153,8 +152,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void updateToIncumbentOnOneDay() {
-    final Replacement replacement = initOnDayReplacement();
+  void updateToIncumbentOnOneDay() {
+    final Replacement<?> replacement = initOnDayReplacement();
     final UserNotification notification = new ToIncumbentReplacementNotificationBuilder(replacement,
         NotifAction.UPDATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -168,8 +167,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void deleteToIncumbentOnOneDay() {
-    final Replacement replacement = initOnDayReplacement();
+  void deleteToIncumbentOnOneDay() {
+    final Replacement<?> replacement = initOnDayReplacement();
     final UserNotification notification = new ToIncumbentReplacementNotificationBuilder(replacement,
         NotifAction.DELETE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -183,8 +182,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void createToSubstituteOnOneDay() {
-    final Replacement replacement = initOnDayReplacement();
+  void createToSubstituteOnOneDay() {
+    final Replacement<?> replacement = initOnDayReplacement();
     final UserNotification notification = new ToSubstituteReplacementNotificationBuilder(replacement,
         NotifAction.CREATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -198,8 +197,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void updateToSubstituteOnOneDay() {
-    final Replacement replacement = initOnDayReplacement();
+  void updateToSubstituteOnOneDay() {
+    final Replacement<?> replacement = initOnDayReplacement();
     final UserNotification notification = new ToSubstituteReplacementNotificationBuilder(replacement,
         NotifAction.UPDATE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -213,8 +212,8 @@ public class ReplacementUserNotificationTest {
   }
 
   @Test
-  public void deleteToSubstituteOnOneDay() {
-    final Replacement replacement = initOnDayReplacement();
+  void deleteToSubstituteOnOneDay() {
+    final Replacement<?> replacement = initOnDayReplacement();
     final UserNotification notification = new ToSubstituteReplacementNotificationBuilder(replacement,
         NotifAction.DELETE).build();
     final Map<String, String> titles = computeNotificationTitles(notification);
@@ -227,12 +226,12 @@ public class ReplacementUserNotificationTest {
     assertThat(contents.get(FR), is("Suppression de votre remplacement en tant que <b>incumbent</b> le <b>24/06/2018</b>."));
   }
 
-  private Replacement initOnDayReplacement() {
+  private Replacement<?> initOnDayReplacement() {
     return Replacement.between(userA, userB).inWorkflow(INSTANCE_ID)
         .during(Period.between(LocalDate.of(2018, 6, 24), LocalDate.of(2018, 6, 25)));
   }
 
-  private Replacement initSeveralDayReplacement() {
+  private Replacement<?> initSeveralDayReplacement() {
     return Replacement.between(userA, userB).inWorkflow(INSTANCE_ID)
         .during(Period.between(LocalDate.of(2018, 6, 24), LocalDate.of(2018, 6, 26)));
   }

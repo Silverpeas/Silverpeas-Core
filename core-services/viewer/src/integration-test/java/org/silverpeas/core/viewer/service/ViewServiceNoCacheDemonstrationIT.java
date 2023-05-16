@@ -24,35 +24,23 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.SerializationUtil;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
-@RunWith(Arquillian.class)
 public class ViewServiceNoCacheDemonstrationIT extends AbstractViewerIT {
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   @Inject
   private ViewService viewService;
@@ -60,16 +48,10 @@ public class ViewServiceNoCacheDemonstrationIT extends AbstractViewerIT {
   @Before
   public void setup() {
     clearTemporaryPath();
-    getTemporaryPath().mkdirs();
-    final SettingBundle mockedSettings =
-        reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
-    when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getInteger(eq("preview.height.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(false);
-    when(mockedSettings.getBoolean(eq("viewer.cache.conversion.silent.enabled"), anyBoolean()))
-        .thenReturn(false);
-    when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
-        .thenReturn(false);
+    boolean isOk = getTemporaryPath().mkdirs();
+    assertThat(isOk, is(true));
+
+    setViewerSettings("org.silverpeas.viewer.viewer_without_cache");
   }
 
   @After
@@ -115,11 +97,10 @@ public class ViewServiceNoCacheDemonstrationIT extends AbstractViewerIT {
 
   private void secondStep() throws Exception {
     if (canPerformViewConversionTest()) {
-      long conversionDurationFromBefore =
-          readAndRemoveFromTemporaryPathAsLong(CONVERSION_DURATION_FILE_NAME);
+      readAndRemoveFromTemporaryPathAsLong(CONVERSION_DURATION_FILE_NAME);
       DocumentView documentViewFromBefore = SerializationUtil
           .deserializeFromString(readAndRemoveFromTemporaryPath(DOCUMENT_VIEW_FILE_NAME));
-      await().pollDelay(1001, TimeUnit.MILLISECONDS).until(() -> true);
+      awaitUntil(1001, TimeUnit.MILLISECONDS);
       SimpleDocument document = getSimpleDocumentNamed("file.odt");
       long start = System.currentTimeMillis();
       final DocumentView view = viewService.getDocumentView(ViewerContext.from(document));

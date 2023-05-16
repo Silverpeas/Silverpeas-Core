@@ -41,15 +41,12 @@ import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalBasicEntity;
-import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalTypeBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Timestamp;
@@ -62,9 +59,6 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * This class of tests are verified :
@@ -134,18 +128,6 @@ public class SilverpeasJpaEntityRepositoryIT {
   public void setup() {
     CacheServiceProvider.clearAllThreadCaches();
     jpaEntityServiceTest = ServiceProvider.getSingleton(JpaEntityServiceTest.class);
-    when(StubbedOrganizationController.getMock().getUserDetail(anyString()))
-        .thenAnswer(invocation -> {
-          UserDetail user = new UserDetail();
-          String id = (String) invocation.getArguments()[0];
-          try {
-            Integer.parseInt(id);
-            user.setId(id);
-            return user;
-          } catch (Exception e) {
-            return null;
-          }
-        });
     OperationContext.fromUser("0");
   }
 
@@ -578,8 +560,8 @@ public class SilverpeasJpaEntityRepositoryIT {
     assertThat(person1.hasBeenModified(), is(false));
 
     // Putting a current requester for the next actions of this test.
-    User user = mock(User.class);
-    when(user.getId()).thenReturn("400");
+    UserDetail user = new UserDetail();
+    user.setId("400");
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
         .newSessionCache(user);
     OperationContext.fromUser(user);

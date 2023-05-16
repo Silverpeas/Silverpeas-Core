@@ -68,7 +68,6 @@ class ReplacementListTest {
 
   private ReplacementList<ReplacementImpl> replacements;
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
   void populate() throws IllegalAccessException {
     final List<ReplacementImpl> list = new ArrayList<>();
@@ -76,7 +75,7 @@ class ReplacementListTest {
     list.add(replacement("3", "4", LocalDate.parse("2019-04-13"), LocalDate.parse("2019-04-13")));
     list.add(replacement("5", "6", LocalDate.parse("2019-04-11"), LocalDate.parse("2019-04-13")));
     list.add(replacement("1", "3", LocalDate.parse("2019-04-12"), LocalDate.parse("2019-04-13")));
-    replacements = new ReplacementList(list);
+    replacements = new ReplacementList<>(list);
   }
 
   @BeforeEach

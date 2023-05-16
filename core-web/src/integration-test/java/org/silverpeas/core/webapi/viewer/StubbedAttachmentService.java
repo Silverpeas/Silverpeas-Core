@@ -31,21 +31,15 @@ import org.silverpeas.core.contribution.attachment.SimpleDocumentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.filter.FilterManager;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
+import org.silverpeas.web.environment.SilverpeasTestEnvironment;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
-
 import java.io.File;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 
 /**
@@ -62,26 +56,50 @@ public class StubbedAttachmentService extends SimpleDocumentService {
   @Override
   public SimpleDocument searchDocumentById(final SimpleDocumentPK docPk,
       final String lang) {
-    SimpleDocument attachmentDetail = null;
+    SimpleDocument doc = null;
     if (!ATTACHMENT_ID_DOESNT_EXISTS.equals(docPk.getId())) {
-      attachmentDetail = mock(SimpleDocument.class);
-      when(attachmentDetail.getPk()).thenReturn(docPk);
-      when(attachmentDetail.getId()).thenReturn(docPk.getId());
-      when(attachmentDetail.getOldSilverpeasId()).thenReturn(Long.parseLong(docPk.getId()));
-      when(attachmentDetail.getAttachment()).thenReturn(SimpleAttachment.builder().build());
-      final String language = attachmentDetail.getAttachment().getLanguage();
-      when(attachmentDetail.getLanguage()).thenReturn(language);
-      final String filename = "originalFileName" + docPk.getId();
-      when(attachmentDetail.getFilename()).thenReturn(filename);
-      when(attachmentDetail.getAttachmentPath()).thenReturn(new File(getUploadPath(), filename).getPath());
-      final ComponentInst linkedComponentInst = SilverpeasEnvironmentTest.get()
-          .getDummyPublicComponent();
-      final boolean canAccess = ComponentAccessControl.get().isUserAuthorized(
-          User.getCurrentRequester().getId(), linkedComponentInst.getId());
-      when(attachmentDetail.canBeAccessedBy(any(User.class))).thenReturn(canAccess);
-      when(attachmentDetail.canBeModifiedBy(any(User.class))).thenReturn(canAccess);
+      doc = new TestSimpleDocument();
+      doc.setPK(docPk);
+
+      SimpleAttachment attachment = SimpleAttachment.builder(lang)
+          .setFilename("originalFileName" + docPk.getId())
+          .build();
+      doc.setAttachment(attachment);
     }
-    return attachmentDetail;
+    return doc;
+  }
+
+  private static class TestSimpleDocument extends SimpleDocument {
+
+    @Override
+    public long getOldSilverpeasId() {
+      return Long.parseLong(getPk().getId());
+    }
+
+    @Override
+    public String getAttachmentPath() {
+      return new File(getUploadPath(), getFilename()).getPath();
+    }
+
+    @Override
+    public boolean canBeAccessedBy(final User user) {
+      return isAllowed(user);
+    }
+
+    @Override
+    public boolean canBeModifiedBy(final User user) {
+      return isAllowed(user);
+    }
+
+    private boolean isAllowed(final User user) {
+      if (user == null) {
+        return false;
+      }
+      final ComponentInst linkedComponentInst = SilverpeasTestEnvironment.get()
+          .getDummyPublicComponent();
+      return ComponentAccessControl.get().isUserAuthorized(
+          user.getId(), linkedComponentInst.getId());
+    }
   }
 }
   

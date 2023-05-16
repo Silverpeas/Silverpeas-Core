@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMocks;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 
@@ -34,6 +37,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.silverpeas.core.workflow.engine.user.TestContext.WORKFLOW_ID;
 import static org.silverpeas.core.workflow.engine.user.TestContext.aUser;
 
@@ -41,19 +45,26 @@ import static org.silverpeas.core.workflow.engine.user.TestContext.aUser;
  * Unit tests on the replacement of users by another ones in a workflow instance.
  * @author mmoquillon
  */
-public class ReplacementTest {
+@EnableSilverTestEnv
+@TestManagedBeans({ReplacementConstructor.class})
+class ReplacementTest {
 
   private final User anIncumbent = aUser("3");
   private final User aSubstitute = aUser("5");
   private final Period aPeriod =
       Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusDays(8));
 
-  @Rule
-  public TestContext ctx = new TestContext(anIncumbent, aSubstitute);
+  public TestContext ctx;
+
+  @BeforeEach
+  public void init() {
+    ctx = new TestContext(anIncumbent, aSubstitute);
+    ctx.init();
+  }
 
   @Test
-  public void createAReplacementOfAUserByAnotherOne() {
-    Replacement replacement = Replacement.between(anIncumbent, aSubstitute)
+  void createAReplacementOfAUserByAnotherOne() {
+    Replacement<?> replacement = Replacement.between(anIncumbent, aSubstitute)
         .inWorkflow(WORKFLOW_ID)
         .during(aPeriod);
     assertThat(replacement.getIncumbent(), is(anIncumbent));
@@ -62,80 +73,86 @@ public class ReplacementTest {
     assertThat(replacement.getPeriod(), is(aPeriod));
   }
 
-  @Test(expected = NullPointerException.class)
-  public void createBadlyAReplacementWithANullIncumbent() {
-    Replacement.between(null, aSubstitute)
-        .inWorkflow(WORKFLOW_ID)
-        .during(aPeriod);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void createBadlyADelegationWithANullSubstitute() {
-    Replacement.between(anIncumbent, null)
-        .inWorkflow(WORKFLOW_ID)
-        .during(aPeriod);
-  }
-
-  @Test(expected = AssertionError.class)
-  public void createBadlyAReplacementWithAnNullWorkflowId() {
-    Replacement.between(anIncumbent, aSubstitute)
-        .inWorkflow(null)
-        .during(aPeriod);
-  }
-
-  @Test(expected = AssertionError.class)
-  public void createBadlyAReplacementByMissingAWorkflowId() {
-    Replacement.between(anIncumbent, aSubstitute)
-        .during(aPeriod);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void createAReplacementInAnUndefinedPeriod() {
-    Replacement.between(anIncumbent, aSubstitute)
-        .inWorkflow(WORKFLOW_ID)
-        .during(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void createAReplacementToHimself() {
-    Replacement.between(anIncumbent, anIncumbent)
-        .inWorkflow(WORKFLOW_ID)
-        .during(aPeriod);
+  @Test
+  void createBadlyAReplacementWithANullIncumbent() {
+    assertThrows(NullPointerException.class, () ->
+        Replacement.between(null, aSubstitute)
+            .inWorkflow(WORKFLOW_ID)
+            .during(aPeriod));
   }
 
   @Test
-  public void getAllEmptyReplacementsOfAUser() {
-    List<Replacement> replacements = Replacement.getAllOf(aUser("32"), WORKFLOW_ID);
+  void createBadlyADelegationWithANullSubstitute() {
+    assertThrows(NullPointerException.class, () ->
+        Replacement.between(anIncumbent, null)
+          .inWorkflow(WORKFLOW_ID)
+          .during(aPeriod));
+  }
+
+  @Test
+  void createBadlyAReplacementWithAnNullWorkflowId() {
+    assertThrows(AssertionError.class, () ->
+        Replacement.between(anIncumbent, aSubstitute)
+          .inWorkflow(null)
+          .during(aPeriod));
+  }
+
+  @Test
+  void createBadlyAReplacementByMissingAWorkflowId() {
+    assertThrows(AssertionError.class, () ->
+        Replacement.between(anIncumbent, aSubstitute)
+          .during(aPeriod));
+  }
+
+  @Test
+  void createAReplacementInAnUndefinedPeriod() {
+    assertThrows(NullPointerException.class, () ->
+        Replacement.between(anIncumbent, aSubstitute)
+            .inWorkflow(WORKFLOW_ID)
+            .during(null));
+  }
+
+  @Test
+  void createAReplacementToHimself() {
+    assertThrows(IllegalArgumentException.class, () ->
+        Replacement.between(anIncumbent, anIncumbent)
+            .inWorkflow(WORKFLOW_ID)
+            .during(aPeriod));
+  }
+
+  @Test
+  void getAllEmptyReplacementsOfAUser() {
+    List<? extends Replacement<?>> replacements = Replacement.getAllOf(aUser("32"), WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(true));
   }
 
   @Test
-  public void getAllReplacementsOfAUser() {
-    List<Replacement> replacements = Replacement.getAllOf(anIncumbent, WORKFLOW_ID);
+  void getAllReplacementsOfAUser() {
+    List<? extends Replacement<?>> replacements = Replacement.getAllOf(anIncumbent, WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(false));
   }
 
   @Test
-  public void getAllEmptyReplacementsByAUser() {
-    List<? extends Replacement> replacements = Replacement.getAllBy(aUser("32"), WORKFLOW_ID);
+  void getAllEmptyReplacementsByAUser() {
+    List<? extends Replacement<?>> replacements = Replacement.getAllBy(aUser("32"), WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(true));
   }
 
   @Test
-  public void getAllReplacementsByAUser() {
-    List<Replacement> replacements = Replacement.getAllBy(aSubstitute, WORKFLOW_ID);
+  void getAllReplacementsByAUser() {
+    List<? extends Replacement<?>> replacements = Replacement.getAllBy(aSubstitute, WORKFLOW_ID);
     assertThat(replacements.isEmpty(), is(false));
   }
 
   @Test
-  public void getEmptyReplacementsOfAUserInNonMatchingWorkflowInstance() {
-    List<Replacement> replacements = Replacement.getAllOf(anIncumbent, "toto23");
+  void getEmptyReplacementsOfAUserInNonMatchingWorkflowInstance() {
+    List<? extends Replacement<?>> replacements = Replacement.getAllOf(anIncumbent, "toto23");
     assertThat(replacements.isEmpty(), is(true));
   }
 
   @Test
-  public void getEmptyReplacementsByAUserInNonMatchingWorflowInstance() {
-    List<Replacement> replacements = Replacement.getAllBy(aSubstitute, "toto23");
+  void getEmptyReplacementsByAUserInNonMatchingWorkflowInstance() {
+    List<? extends Replacement<?>> replacements = Replacement.getAllBy(aSubstitute, "toto23");
     assertThat(replacements.isEmpty(), is(true));
   }
 }

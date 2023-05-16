@@ -24,7 +24,8 @@
 
 /**
  * Provides various JUnit 5 extensions to prepare and configure the context of execution of unit
- * tests.
+ * tests. These extensions use the Mockito framework and as such they cannot be used (and shouldn't
+ * be used) in the integration tests.
  * @author mmoquillon
  */
 package org.silverpeas.core.test.extention;

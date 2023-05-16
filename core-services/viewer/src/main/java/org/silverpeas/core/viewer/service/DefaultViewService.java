@@ -40,6 +40,7 @@ import org.silverpeas.core.viewer.util.JsonPdfUtil;
 import org.silverpeas.core.viewer.util.SwfUtil;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 
@@ -52,12 +53,16 @@ import static org.silverpeas.core.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
  * @author Yohann Chastagnier
  */
 @Service
+@Singleton
 public class DefaultViewService extends AbstractViewerService implements ViewService {
 
   private static final String PROCESS_NAME = "VIEW";
 
   @Inject
   private ToPDFConverter toPDFConverter;
+
+  @Inject
+  private JsonPdfToolManager jsonPdfToolManager;
 
   private static boolean isSwfNeeded() {
     return isDefined(getLicenceKey()) || !pdfViewerEnabled();
@@ -131,9 +136,8 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       public DocumentView performAfterSuccess(final DocumentView result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             PreviewService.get().isPreviewable(viewerContext.getOriginalSourceFile())) {
-          ManagedThreadPool.getPool().invoke(() -> {
-            PreviewService.get().getPreview(viewerContext.copy());
-          });
+          ManagedThreadPool.getPool().invoke((Runnable) () ->
+              PreviewService.get().getPreview(viewerContext.copy()));
         }
         return ViewerTreatment.super.performAfterSuccess(result);
       }
@@ -170,9 +174,12 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
     final DocumentInfo info = PdfUtil.getDocumentInfo(pdfSource);
 
     File swfFile = changeFileExtension(pdfSource, SWF_DOCUMENT_EXTENSION);
-    swfFile.getParentFile().mkdirs();
+    boolean created = swfFile.getParentFile().mkdirs();
+    if (!created) {
+      SilverLogger.getLogger(this).warn("Unable to create directory " + swfFile.getParentFile());
+    }
 
-    boolean jsonConversion = JsonPdfToolManager.isActivated();
+    boolean jsonConversion = jsonPdfToolManager.isActivated();
     boolean splitMode = isSplitStrategyEnabled();
 
     // Create SWF data

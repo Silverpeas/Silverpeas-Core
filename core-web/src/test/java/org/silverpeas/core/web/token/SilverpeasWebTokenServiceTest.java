@@ -41,9 +41,9 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.shuffle;
 import static java.util.UUID.randomUUID;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 import static org.silverpeas.core.web.token.SilverpeasWebTokenService.MAX_TOKENS_PER_ID;
 
 /**
@@ -101,10 +101,7 @@ class SilverpeasWebTokenServiceTest {
     final int nbCalls = MAX_TOKENS_PER_ID + 10;
     final List<WebToken> generatedTokens = IntStream.range(0, nbCalls)
         .mapToObj(i -> service.generateFor(DEFAULT_ID))
-        .map(s -> {
-          await().pollDelay(20, TimeUnit.MILLISECONDS).until(() -> true);
-          return s;
-        })
+        .peek(s -> awaitUntil(20, TimeUnit.MILLISECONDS))
         .collect(Collectors.toList());
     final WebToken[] expectedTokens = generatedTokens.stream()
         .skip(generatedTokens.size() - MAX_TOKENS_PER_ID)
@@ -139,10 +136,7 @@ class SilverpeasWebTokenServiceTest {
     shuffle(identifiers);
     final List<WebToken> generatedTokens = identifiers.stream()
         .map(service::generateFor)
-        .map(s -> {
-          await().pollDelay(20, TimeUnit.MILLISECONDS).until(() -> true);
-          return s;
-        })
+        .peek(s -> awaitUntil(20, TimeUnit.MILLISECONDS))
         .collect(Collectors.toList());
     final Map<String, WebToken> byTokensMap = repositoryView.getByTokensMap();
     assertThat(byTokensMap.size(), is(NB_IDENTIFIERS));
@@ -152,7 +146,7 @@ class SilverpeasWebTokenServiceTest {
     });
     final Map<String, Set<WebToken>> byIdsMap = repositoryView.getByIdsMap();
     assertThat(byIdsMap.size(), is(NB_IDENTIFIERS));
-    byIdsMap.entrySet().stream().forEach(e -> assertThat(e.getValue(), hasSize(1)));
+    byIdsMap.forEach((key, value) -> assertThat(value, hasSize(1)));
   }
 
   @Test
@@ -163,7 +157,7 @@ class SilverpeasWebTokenServiceTest {
     assertThat(byTokensMap.size(), is(NB_IDENTIFIERS - 1));
     final Map<String, Set<WebToken>> byIdsMap = repositoryView.getByIdsMap();
     assertThat(byIdsMap.size(), is(NB_IDENTIFIERS - 1));
-    byIdsMap.entrySet().stream().forEach(e -> assertThat(e.getValue(), hasSize(1)));
+    byIdsMap.forEach((key, value) -> assertThat(value, hasSize(1)));
   }
 
   private void assertMapAreNotEmpty() {
@@ -171,6 +165,7 @@ class SilverpeasWebTokenServiceTest {
     assertThat(repositoryView.getByIdsMap(), not(anEmptyMap()));
   }
 
+  @SuppressWarnings("SameParameterValue")
   private WebToken generateOneTokenWith(final String id) {
     final WebToken webToken = service.generateFor(id);
     assertThat(webToken, notNullValue());

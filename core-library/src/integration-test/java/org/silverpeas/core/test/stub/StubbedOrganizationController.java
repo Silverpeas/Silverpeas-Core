@@ -24,17 +24,15 @@
 package org.silverpeas.core.test.stub;
 
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
@@ -45,20 +43,18 @@ import static org.mockito.Mockito.mock;
 @Priority(APPLICATION + 10)
 public class StubbedOrganizationController extends DefaultOrganizationController {
 
-  private OrganizationController mock = mock(OrganizationController.class);
-
-  public static OrganizationController getMock() {
-    return ((StubbedOrganizationController) ServiceProvider
-        .getService(OrganizationController.class)).mock;
-  }
-
   @Override
   public UserDetail getUserDetail(final String sUserId) {
-    return mock.getUserDetail(sUserId);
+    if (StringUtil.isDefined(sUserId)) {
+      UserDetail user = new UserDetail();
+      user.setId(sUserId);
+      return user;
+    }
+    return null;
   }
 
   @Override
   public String[] getUserProfiles(final String userId, final String componentId) {
-    return mock.getUserProfiles(userId, componentId);
+    return new String[0];
   }
 }

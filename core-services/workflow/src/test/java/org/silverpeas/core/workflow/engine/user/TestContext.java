@@ -24,13 +24,11 @@
 
 package org.silverpeas.core.workflow.engine.user;
 
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.mockito.invocation.InvocationOnMock;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.test.util.JpaMocker;
+import org.silverpeas.core.test.util.TestBeanContainerInjector;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -41,7 +39,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +48,7 @@ import static org.mockito.Mockito.when;
  * Context of unit tests on the delegation API.
  * @author mmoquillon
  */
-public class TestContext extends CommonAPITestRule {
+public class TestContext {
 
   static final String WORKFLOW_ID = "workflow42";
   private final User anIncumbent;
@@ -63,22 +62,10 @@ public class TestContext extends CommonAPITestRule {
     this.anIncumbent = aSubstitute;
   }
 
-  @Override
-  public Statement apply(final Statement base, final Description description) {
-    return new Statement() {
-      @Override
-      public void evaluate() throws Throwable {
-        init();
-        base.evaluate();
-      }
-    };
-  }
-
   public void init() {
     try {
       CacheServiceProvider.clearAllThreadCaches();
       mockUserManager();
-      mockReplacementConstructor();
       mockReplacementPersistence();
     } catch (Exception e) {
       throw new IllegalStateException(e);
@@ -91,26 +78,20 @@ public class TestContext extends CommonAPITestRule {
     return user;
   }
 
-  private void mockReplacementConstructor() {
-    injectIntoMockedBeanContainer(new ReplacementConstructor());
-  }
-
   private void mockReplacementPersistence() {
-    JpaMocker jpa = new JpaMocker(this);
-    jpa.mockJPA(savedReplacement, ReplacementImpl.class);
-    mockReplacementRepository(jpa, savedReplacement);
+    JpaMocker.mockJPA(savedReplacement, ReplacementImpl.class);
+    mockReplacementRepository(savedReplacement);
   }
 
-  private void mockReplacementRepository(final JpaMocker jpaMocker,
-      final Mutable<ReplacementImpl> savedReplacement) {
+  private void mockReplacementRepository(final Mutable<ReplacementImpl> savedReplacement) {
     // Mocking persistence repository of delegations...
     ReplacementRepository repository =
-        jpaMocker.mockRepository(ReplacementRepository.class, savedReplacement);
+        JpaMocker.mockRepository(ReplacementRepository.class, savedReplacement);
     when(repository.findAllByIncumbentAndByWorkflow(any(User.class), anyString())).thenAnswer(
         invocation -> computeReplacementsFor(invocation, aSubstitute));
     when(repository.findAllBySubstituteAndByWorkflow(any(User.class), anyString())).thenAnswer(
         invocation -> computeReplacementsFor(invocation, anIncumbent));
-    injectIntoMockedBeanContainer(repository);
+    TestBeanContainerInjector.inject(repository);
   }
 
   private UserManager mockUserManager() throws WorkflowException {
@@ -126,7 +107,7 @@ public class TestContext extends CommonAPITestRule {
         return aUser(id);
       }
     });
-    injectIntoMockedBeanContainer(userManager);
+    TestBeanContainerInjector.inject(userManager);
     return userManager;
   }
 

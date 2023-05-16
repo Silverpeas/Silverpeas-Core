@@ -34,13 +34,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaEntityServiceTest;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
@@ -48,8 +46,6 @@ import java.sql.Connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
 import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
@@ -108,12 +104,6 @@ public class TransactionIT {
   @Before
   public void setup() {
     jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
-    when(StubbedOrganizationController.getMock().getUserDetail(anyString()))
-        .thenAnswer(invocation -> {
-          UserDetail user = new UserDetail();
-          user.setId((String) invocation.getArguments()[0]);
-          return user;
-        });
     OperationContext.fromUser("0");
   }
 
@@ -208,17 +198,6 @@ public class TransactionIT {
       assertThat(table.getValue(index, "firstName"), is("Yohann"));
       assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
     }
-  }
-
-  /**
-   * Create a user.
-   * @param userId the identifier of the user to create.
-   * @return the created user.
-   */
-  private static UserDetail createUser(String userId) {
-    UserDetail user = new UserDetail();
-    user.setId(userId);
-    return user;
   }
 
   private int getTableIndexForId(ITable table, Object id) throws Exception {

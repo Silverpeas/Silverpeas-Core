@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author ehugonnet
  */
 @EnableSilverTestEnv
-public class ProcessModelManagerImplTest {
+class ProcessModelManagerImplTest {
 
   @TestedBean
   private ProcessModelManagerImpl instance;
@@ -61,7 +61,7 @@ public class ProcessModelManagerImplTest {
    * Test of loadProcessModel method, of class ProcessModelManagerImpl.
    */
   @Test
-  public void testLoadProcessModel() throws Exception {
+  void loadProcessModel() throws Exception {
     System.out.println("loadProcessModel");
     String processFileName = "DemandeCongesSimple.xml";
 
@@ -105,14 +105,14 @@ public class ProcessModelManagerImplTest {
     State[] targetStates = consequence.getTargetStates();
     assertEquals(1, targetStates.length);
     State targetState = targetStates[0];
-    assertEquals(targetState.getName(), "Acceptee");
+    assertEquals("Acceptee", targetState.getName());
   }
 
   /**
    * Test of saveProcessModel method, of class ProcessModelManagerImpl.
    */
   @Test
-  public void testSaveProcessModel() throws Exception {
+  void saveProcessModel() throws Exception {
     System.out.println("saveProcessModel");
     String processFileName = "DemandeCongesSimple.xml";
     ProcessModel process = instance.loadProcessModel(processFileName);
@@ -125,7 +125,7 @@ public class ProcessModelManagerImplTest {
    * Test of getProcessModelDir method, of class ProcessModelManagerImpl.
    */
   @Test
-  public void testGetProcessModelDir(final MavenTestEnv mavenTestEnv) {
+  void getProcessModelDir(final MavenTestEnv mavenTestEnv) {
     System.out.println("getProcessModelDir");
     String expResult =
         new File(mavenTestEnv.getBuildDirFile(), "test-classes").getPath() + File.separator;

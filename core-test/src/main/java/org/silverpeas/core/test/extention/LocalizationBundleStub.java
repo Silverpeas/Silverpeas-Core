@@ -33,6 +33,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SilverpeasBundle;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -94,7 +95,7 @@ public class LocalizationBundleStub implements BeforeEachCallback, AfterEachCall
     Locale.setDefault(Locale.FRANCE);
     final String newDefaultLocale = Locale.getDefault().getLanguage();
     reflectionRule.setField(DisplayI18NHelper.class, newDefaultLocale, "defaultLanguage");
-    bundleCache = (Map) FieldUtils.readStaticField(ResourceLocator.class, "bundles", true);
+    bundleCache = (Map<String, SilverpeasBundle>) FieldUtils.readStaticField(ResourceLocator.class, "bundles", true);
     bundleCache.put(bundleName, new LocalizationBundleTest(newDefaultLocale, bundleMap));
     bundleNames.add(bundleName);
     DisplayI18NHelper.getLanguages().forEach(l -> {
@@ -119,7 +120,7 @@ public class LocalizationBundleStub implements BeforeEachCallback, AfterEachCall
     return bundleMap.computeIfAbsent(locale.getLanguage(), l -> new HashMap<>());
   }
 
-  private class LocalizationBundleTest extends LocalizationBundle {
+  private static class LocalizationBundleTest extends LocalizationBundle {
     private final Map<String, Map<String, String>> bundleMap;
 
     private LocalizationBundleTest(String locale,
@@ -129,7 +130,7 @@ public class LocalizationBundleStub implements BeforeEachCallback, AfterEachCall
     }
 
     @Override
-    protected Object handleGetObject(final String key) {
+    protected Object handleGetObject(@Nonnull final String key) {
       final Map<String, String> localeOne = getBundleMap(getLocale(), bundleMap);
       Object result = localeOne.get(key);
       if (result == null) {

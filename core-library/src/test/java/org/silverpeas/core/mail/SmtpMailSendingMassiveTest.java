@@ -49,12 +49,12 @@ import javax.inject.Singleton;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @EnableSilverTestEnv
 @ExtendWith(LoggerExtension.class)
@@ -76,6 +76,7 @@ class SmtpMailSendingMassiveTest {
     getStubbedSmtpMailSender().setTestInstance(this);
   }
 
+  @SuppressWarnings("JUnitMalformedDeclaration")
   @Test
   void sendingSeveralMailsSynchronouslyAndAsynchronouslyAndVerifyingSendingPerformedOneByOne(
       GreenMailOperations mail) throws Exception {
@@ -93,7 +94,7 @@ class SmtpMailSendingMassiveTest {
 
     // Starting threads
     for (Thread thread : threads) {
-      await().pollDelay(50, MILLISECONDS).until(() -> true);
+      awaitUntil(50, TimeUnit.MILLISECONDS);
       thread.start();
     }
 
@@ -109,7 +110,7 @@ class SmtpMailSendingMassiveTest {
 
     // Verifying that mails has been sent
     mail.waitForIncomingEmail(60000, runnables.size());
-    await().pollDelay(100, MILLISECONDS).until(() -> true);
+    awaitUntil(100, TimeUnit.MILLISECONDS);
     assertMailSentOneByOne(runnables);
 
     MimeMessage[] messages = mail.getReceivedMessages();
@@ -193,7 +194,7 @@ class SmtpMailSendingMassiveTest {
 
     @Override
     public void send(final MailToSend mail) {
-      await().pollDelay(5, MILLISECONDS).until(() -> true);
+      awaitUntil(5, TimeUnit.MILLISECONDS);
       tagOneByOne("TIC");
       testInstance.log(mail.getSubject() + " - " + (mail.isAsynchronous() ? "asynchronously" : "synchronously") +
           " - sending...");

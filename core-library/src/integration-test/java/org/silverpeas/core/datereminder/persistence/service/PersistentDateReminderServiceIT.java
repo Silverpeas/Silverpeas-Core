@@ -39,7 +39,6 @@ import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -64,9 +63,6 @@ public class PersistentDateReminderServiceIT {
   @Rule
   public DbSetupRule dbSetupRule =
       DbSetupRule.createTablesFrom(TABLES_CREATION).loadInitialDataSetFrom(DATASET_CREATION);
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   @Deployment
   public static Archive<?> createTestArchive() {

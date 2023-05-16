@@ -27,8 +27,15 @@ package org.silverpeas.core.chat.servers;
 import org.silverpeas.core.admin.user.model.User;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 /**
  *
@@ -38,35 +45,54 @@ import static org.mockito.Mockito.mock;
 @Singleton
 public class DummyChatServer implements ChatServer {
 
-  private final ChatServer mock = mock(ChatServer.class);
+  private final Map<String, User[]> events = new HashMap<>();
 
-  public ChatServer getMock() {
-    return mock;
+  private final List<User> existingUsers = new ArrayList<>();
+
+  /**
+   * Adds the specified user as an existing one for tests.
+   * @param user a user to add among the already existing users.
+   */
+  public void addExistingUser(final User user) {
+    this.existingUsers.add(user);
+  }
+
+  /**
+   * Was the specified method of the {@link ChatServer} executed with the given parameters
+   * during the test?
+   * @param method the name of a method of {@link ChatServer}.
+   * @param users the users specified as the parameters of the method.
+   * @return true if the specified method has been well invoked with the given parameters.
+   */
+  public boolean wasExecuted(final String method, final User ... users) {
+    User[] usersInArg = events.getOrDefault(method, new User[0]);
+    assertThat(users.length, is(equalTo(usersInArg.length)));
+    return Arrays.equals(users, usersInArg);
   }
 
   @Override
   public void createUser(final User user) {
-    mock.createUser(user);
+    events.put("createUser", new User[] {user});
   }
 
   @Override
   public void deleteUser(final User user) {
-    mock.deleteUser(user);
+    events.put("deleteUser", new User[] {user});
   }
 
   @Override
   public void createRelationShip(final User user1, final User user2) {
-    mock.createRelationShip(user1, user2);
+    events.put("createRelationShip", new User[] {user1, user2});
   }
 
   @Override
   public void deleteRelationShip(final User user1, final User user2) {
-    mock.createRelationShip(user1, user2);
+    events.put("deleteRelationShip", new User[] {user1, user2});
   }
 
   @Override
   public boolean isUserExisting(final User user) {
-    return mock.isUserExisting(user);
+    return existingUsers.contains(user);
   }
 
 }

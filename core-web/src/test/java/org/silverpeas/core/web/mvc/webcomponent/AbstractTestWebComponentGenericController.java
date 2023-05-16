@@ -27,6 +27,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -39,13 +40,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public abstract class AbstractTestWebComponentGenericController<WEB_COMPONENT_REQUEST_CONTEXT
-    extends WebComponentRequestContext>
+    extends WebComponentRequestContext<?>>
     extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT> {
 
-  private LocalizationBundle4Test resourceLocatorMock;
+  private final LocalizationBundle4Test resourceLocatorMock;
 
   /**
    * Standard Session Controller Constructor
@@ -73,7 +74,7 @@ public abstract class AbstractTestWebComponentGenericController<WEB_COMPONENT_RE
    */
   public static class LocalizationBundle4Test extends LocalizationBundle {
 
-    private Map<String, Integer> counters = new HashMap<>();
+    private final Map<String, Integer> counters = new HashMap<>();
 
     private LocalizationBundle4Test() {
       this(null, null, null);
@@ -85,7 +86,7 @@ public abstract class AbstractTestWebComponentGenericController<WEB_COMPONENT_RE
     }
 
     @Override
-    public Object handleGetObject(final String key) {
+    public Object handleGetObject(@Nonnull final String key) {
       counters.put(key, (counters.getOrDefault(key, 0) + 1));
       return "";
     }

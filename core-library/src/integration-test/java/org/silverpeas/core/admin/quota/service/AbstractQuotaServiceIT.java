@@ -46,13 +46,12 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * @author Yohann Chastagnier
@@ -68,8 +67,10 @@ public class AbstractQuotaServiceIT {
    * This integration test is one of the firsts that have been done. This dummy service exists here
    * to verify the right behaviour of CDI injection according to generic type specifying.
    */
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
   private QuotaService<TestQuotaKey> quotaServiceForInjectionVerification;
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
   private QuotaService<TestDummyQuotaKey> dummyQuotaServiceForInjectionVerification;
 
@@ -111,14 +112,14 @@ public class AbstractQuotaServiceIT {
 
   private void waitForTenMillis() {
     long start = System.currentTimeMillis();
-    await().atLeast(10, TimeUnit.MILLISECONDS).untilTrue(new AtomicBoolean(true));
+    awaitUntil(10, TimeUnit.MILLISECONDS);
     Logger.getLogger(AbstractQuotaServiceIT.class.getName())
         .log(Level.INFO, "waitForTenMillis -> {0}",
             new Object[]{System.currentTimeMillis() - start});
   }
 
   @Test
-  public void testGet() throws QuotaException {
+  public void getQuota() throws QuotaException {
     Date date = new Date();
     assertThat(quotaService.get(dummyKey), notNullValue());
     assertThat(quotaService.get(dummyKey).exists(), is(false));
@@ -152,13 +153,13 @@ public class AbstractQuotaServiceIT {
   }
 
   @Test
-  public void testInitializeNotValid() throws Exception {
+  public void initializeNotValid() throws Exception {
     assertThat(quotaService.initialize(newKey, -1, 0).exists(), is(false));
     assertInitializeException(newKey, 0, -1);
     assertInitializeException(newKey, 2, 1);
   }
 
-  private <T extends SilverpeasException> void assertInitializeException(
+  private void assertInitializeException(
       final TestQuotaKey quotaKey, final int minCount, final int maxCount) {
     boolean isException = false;
     try {
@@ -170,7 +171,7 @@ public class AbstractQuotaServiceIT {
   }
 
   @Test
-  public void testInitializeMaxCountAlreadyExists() {
+  public void initializeMaxCountAlreadyExists() {
     try {
       final Date date = new Date();
       final Quota existingQuota = quotaService.get(existingKey);
@@ -193,7 +194,7 @@ public class AbstractQuotaServiceIT {
   }
 
   @Test
-  public void testInitializeMaxCount() {
+  public void initializeMaxCount() {
     try {
       final Date date = new Date();
       assertThat(quotaService.get(newKey), notNullValue());
@@ -214,7 +215,7 @@ public class AbstractQuotaServiceIT {
   }
 
   @Test
-  public void testInitializeMinCountMaxCount() {
+  public void initializeMinCountMaxCount() {
     try {
       final Date date = new Date();
       assertThat(quotaService.get(newKey), notNullValue());
@@ -235,7 +236,7 @@ public class AbstractQuotaServiceIT {
   }
 
   @Test
-  public void testVerify() throws QuotaException {
+  public void verify() throws QuotaException {
     quotaService.setCount(23);
     Quota notExistingQuota = quotaService.verify(newKey);
     assertThat(notExistingQuota, notNullValue());
@@ -292,7 +293,7 @@ public class AbstractQuotaServiceIT {
   }
 
   @Test
-  public void testRemove() throws QuotaException {
+  public void remove() throws QuotaException {
     Quota quota = quotaService.get(existingKey);
     assertThat(quota, notNullValue());
     assertThat(quota.exists(), is(true));

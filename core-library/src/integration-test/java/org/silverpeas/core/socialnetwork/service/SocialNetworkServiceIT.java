@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.socialnetwork.mock.OrganizationControllerMock;
+import org.silverpeas.core.socialnetwork.stub.StubOrganizationController;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.test.WarBuilder4LibCore;
@@ -46,9 +46,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Arquillian.class)
 public class SocialNetworkServiceIT {
-
-  @Inject
-  OrganizationControllerMock organisationController;
 
   @Inject
   SocialNetworkService service;
@@ -77,7 +74,7 @@ public class SocialNetworkServiceIT {
         .addMavenDependencies("org.springframework.social:spring-social-linkedin",
             "org.springframework.social:spring-social-facebook").testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.util.exception");
-          warBuilder.addClasses(OrganizationControllerMock.class);
+          warBuilder.addClasses(StubOrganizationController.class);
           warBuilder.testFocusedOn(
               war -> war.addPackages(true, "org.silverpeas.core.socialnetwork.service")
                   .addPackages(true, "org.silverpeas.core.socialnetwork.qualifiers")
@@ -92,7 +89,7 @@ public class SocialNetworkServiceIT {
 
 
   @Test
-  public void testReadByPrimaryKeyUnexistingUser() throws Exception {
+  public void readByPrimaryKeyNonExistingUser() {
     Transaction.performInOne(() -> {
       ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1233");
       assertThat(account, nullValue());
@@ -102,7 +99,7 @@ public class SocialNetworkServiceIT {
 
   @Test
   @Transactional
-  public void testReadByPrimaryKeyValidUser() throws Exception {
+  public void readByPrimaryKeyValidUser() {
     ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1234");
     assertThat(account.getSilverpeasUserId(), is("11"));
     assertThat(account.getNetworkId(), is(SocialNetworkID.LINKEDIN));
@@ -110,7 +107,7 @@ public class SocialNetworkServiceIT {
 
   @Test
   @Transactional
-  public void testCreateExternalAccount() throws Exception {
+  public void createExternalAccount() {
     Transaction.performInOne(() -> {
       service.createExternalAccount(SocialNetworkID.FACEBOOK, "13", "1345");
       return null;

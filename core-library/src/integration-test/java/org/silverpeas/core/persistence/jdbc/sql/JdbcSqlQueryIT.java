@@ -223,7 +223,7 @@ public class JdbcSqlQueryIT {
     assertThat(countAll().from("a_table").where("id != ?", 8).execute(),
         is(NB_ROW_AT_BEGINNING - 1));
     assertThat(countAll().from("a_table").where("id != ?", 8).and("LENGTH(value) <= ?", 7).execute(),
-        is(9l));
+        is(9L));
   }
 
   @Test
@@ -253,7 +253,9 @@ public class JdbcSqlQueryIT {
     List<Pair<Long, String>> rows = select("*").from("a_table").where("id = ?", 30)
         .execute(new TableResultProcess());
     assertThat(rows, hasSize(1));
-    assertThat(unique(rows).getLeft(), is(30L));
+    var uniqueRow = unique(rows);
+    assertThat(uniqueRow, is(notNullValue()));
+    assertThat(uniqueRow.getLeft(), is(30L));
     rows = select("*").from("a_table").where("id = ?", 200).execute(new TableResultProcess());
     assertThat(rows, hasSize(0));
     assertThat(unique(rows), nullValue());
@@ -264,7 +266,9 @@ public class JdbcSqlQueryIT {
     List<Pair<Long, String>> rows =
         select("*").from("a_table").where("id = ?", 26).execute(new TableResultProcess());
     assertThat(rows, hasSize(1));
-    assertThat(unique(rows).getLeft(), is(26L));
+    var uniqueRow = unique(rows);
+    assertThat(uniqueRow, is(notNullValue()));
+    assertThat(uniqueRow.getLeft(), is(26L));
   }
 
   @Test
@@ -285,7 +289,7 @@ public class JdbcSqlQueryIT {
 
   private static class TableResultProcess implements SelectResultRowProcess<Pair<Long, String>> {
     private int rowIndex = 0;
-    private boolean assertion = false;
+    private boolean assertion;
 
     TableResultProcess() {
       this(true);

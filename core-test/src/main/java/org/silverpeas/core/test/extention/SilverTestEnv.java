@@ -51,6 +51,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
@@ -367,8 +368,7 @@ public class SilverTestEnv
     manageBean(bean, type);
   }
 
-  private void mockInjectedDependency(final Object bean)
-      throws ReflectiveOperationException {
+  private void mockInjectedDependency(final Object bean) throws ReflectiveOperationException {
     loopInheritance(bean.getClass(), typeToLookup -> {
       Field[] beanFields = typeToLookup.getDeclaredFields();
       for (Field dependency : beanFields) {
@@ -490,8 +490,8 @@ public class SilverTestEnv
   private void mockLoggingSystem() {
     StubbedLoggerConfigurationManager configurationManager =
         new StubbedLoggerConfigurationManager();
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(LoggerConfigurationManager.class))
-        .thenReturn(configurationManager);
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(LoggerConfigurationManager.class)).thenReturn(configurationManager);
 
     StubbedSilverLoggerProvider loggerProvider =
         new StubbedSilverLoggerProvider(configurationManager);
@@ -550,18 +550,16 @@ public class SilverTestEnv
           });
 
       if (!clazz.isInterface()) {
-        loopInheritance(clazz.getSuperclass(), c ->
-            Stream.of(typesFinder.apply(c))
-                .filter(t -> Modifier.isAbstract(t.getModifiers()))
-                .filter(t -> t.getTypeParameters().length == 0)
-                .forEach(t -> {
-                  try {
-                    registerer.consume(t);
-                  } catch (ReflectiveOperationException e) {
-                    throw new SilverpeasRuntimeException(e);
-                  }
-                })
-        );
+        loopInheritance(clazz.getSuperclass(), c -> Stream.of(typesFinder.apply(c))
+            .filter(t -> Modifier.isAbstract(t.getModifiers()))
+            .filter(t -> t.getTypeParameters().length == 0)
+            .forEach(t -> {
+              try {
+                registerer.consume(t);
+              } catch (ReflectiveOperationException e) {
+                throw new SilverpeasRuntimeException(e);
+              }
+            }));
       }
     } catch (ReflectiveOperationException e) {
       throw new SilverpeasRuntimeException(e);
@@ -585,6 +583,10 @@ public class SilverTestEnv
     } else {
       when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenReturn(
           bean);
+      if (qualifiers != null && qualifiers.length == 1 &&
+          qualifiers[0].annotationType().equals(Default.class)) {
+        when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type)).thenReturn(bean);
+      }
       when(TestBeanContainer.getMockedBeanContainer()
           .getAllBeansByType(type, qualifiers)).thenReturn(
           Stream.of(bean).collect(Collectors.toSet()));
@@ -594,8 +596,7 @@ public class SilverTestEnv
   private void loopInheritance(final Class<?> fromType, final TypeConsumer consumer)
       throws ReflectiveOperationException {
     Class<?> type = fromType;
-    while (type != null && !type.isInterface() &&
-        !type.equals(Object.class)) {
+    while (type != null && !type.isInterface() && !type.equals(Object.class)) {
       consumer.consume(type);
       type = type.getSuperclass();
     }

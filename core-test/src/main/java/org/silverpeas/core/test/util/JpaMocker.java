@@ -30,7 +30,6 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.jpa.AbstractJpaEntityRepository;
-import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.Mutable;
 
 import javax.persistence.EntityManager;
@@ -42,19 +41,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A mocker of the JPA environment.
+ * A mocker of the JPA environment for unit tests and only for unit tests; it must not be used in
+ * integration tests.
  * @author mmoquillon
  */
 public class JpaMocker {
 
-  private final CommonAPITestRule commonAPITestRule;
+  private JpaMocker() {
 
-  /**
-   * Constructs a mocker for the JPA environment context.
-   * @param commonAPITestRule the {@link CommonAPITestRule} rule used in the test.
-   */
-  public JpaMocker(final CommonAPITestRule commonAPITestRule) {
-    this.commonAPITestRule = commonAPITestRule;
   }
 
   /**
@@ -67,7 +61,7 @@ public class JpaMocker {
    * @return a mocked repository.
    */
   @SuppressWarnings("unchecked")
-  public <T extends AbstractJpaEntityRepository<E>, E extends AbstractJpaEntity<E, ?>> T mockRepository(
+  public static  <T extends AbstractJpaEntityRepository<E>, E extends AbstractJpaEntity<E, ?>> T mockRepository(
       final Class<T> repoType, final Mutable<E> savedEntity) {
     T repository = mock(repoType);
     Class<E> entityType =
@@ -77,7 +71,7 @@ public class JpaMocker {
       savedEntity.set(EntityIdSetter.setIdTo(entity, UuidIdentifier.class));
       return savedEntity.get();
     });
-    commonAPITestRule.injectIntoMockedBeanContainer(repository);
+    TestBeanContainerInjector.inject(repository);
     return repository;
   }
 
@@ -88,7 +82,7 @@ public class JpaMocker {
    * @param entityType the actual class of the entity.
    * @param <T> the type of the entity
    */
-  public <T extends Entity<T, ?>> void mockJPA(final Mutable<T> savedEntity, Class<T> entityType) {
+  public static  <T extends Entity<T, ?>> void mockJPA(final Mutable<T> savedEntity, Class<T> entityType) {
     EntityManagerProvider entityManagerProvider = mock(EntityManagerProvider.class);
     EntityManager entityManager = mock(EntityManager.class);
     when(entityManagerProvider.getEntityManager()).thenReturn(entityManager);
@@ -102,8 +96,8 @@ public class JpaMocker {
       }
       return entity;
     });
-    commonAPITestRule.injectIntoMockedBeanContainer(entityManagerProvider);
-    commonAPITestRule.injectIntoMockedBeanContainer(new Transaction());
+    TestBeanContainerInjector.inject(entityManagerProvider);
+    TestBeanContainerInjector.inject(new Transaction());
   }
 }
   

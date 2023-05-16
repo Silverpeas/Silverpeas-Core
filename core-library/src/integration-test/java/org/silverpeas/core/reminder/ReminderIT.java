@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessLogger;
@@ -44,12 +43,10 @@ import org.silverpeas.core.notification.user.builder.AbstractContributionTemplat
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.DefaultPersonalizationService;
-import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
 
@@ -68,11 +65,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * Integration tests on the reminders
@@ -134,12 +129,6 @@ public class ReminderIT {
     CacheServiceProvider.clearAllThreadCaches();
 
     SchedulerInitializer.get().init();
-    when(StubbedPersonalizationService.getMock().getUserSettings(anyString()))
-        .then((Answer<UserPreferences>) i -> {
-          final String userId = (String) i.getArguments()[0];
-          return new UserPreferences(userId, "fr", ZoneId.of("UTC"), "", "", false, false, false,
-              UserMenuDisplay.DEFAULT);
-        });
     KmeliaService manager = KmeliaService.get();
     User aUser = User.getById(USER_ID);
     manager.clearAll();
@@ -515,7 +504,7 @@ public class ReminderIT {
   }
 
   private void waitForSchedulerStateUpdate() {
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
   }
 
   /**
@@ -526,16 +515,10 @@ public class ReminderIT {
   @Priority(APPLICATION + 10)
   public static class StubbedPersonalizationService extends DefaultPersonalizationService {
 
-    private final PersonalizationService mock = mock(PersonalizationService.class);
-
-    static PersonalizationService getMock() {
-      return ((StubbedPersonalizationService) ServiceProvider
-          .getService(PersonalizationService.class)).mock;
-    }
-
     @Override
     public UserPreferences getUserSettings(final String userId) {
-      return mock.getUserSettings(userId);
+      return new UserPreferences(userId, "fr", ZoneId.of("UTC"), "", "", false, false, false,
+          UserMenuDisplay.DEFAULT);
     }
   }
 }

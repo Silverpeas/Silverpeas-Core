@@ -50,8 +50,8 @@ public class SettingBundle implements SilverpeasBundle {
 
   public static final String GENERAL_BUNDLE_NAME = "org.silverpeas.general";
 
-  private String name;
-  private Function<String, ResourceBundle> loader;
+  private final String name;
+  private final Function<String, ResourceBundle> loader;
 
   protected SettingBundle(final String name, final Function<String, ResourceBundle> loader) {
     this.name = name;

@@ -89,7 +89,7 @@ public class ViewerSettings {
    */
   public static boolean isSplitStrategyEnabled() {
     return settings.getBoolean("viewer.conversion.strategy.split.enabled", true) &&
-        JsonPdfToolManager.isActivated();
+        JsonPdfToolManager.get().isActivated();
   }
 
   /**

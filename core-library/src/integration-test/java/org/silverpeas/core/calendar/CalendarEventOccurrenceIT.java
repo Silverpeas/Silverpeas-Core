@@ -69,8 +69,7 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CalendarWarBuilder.onWarForTestClass(
-        CalendarEventOccurrenceIT.class)
+    return CalendarWarBuilder.onWarForTestClass(CalendarEventOccurrenceIT.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
@@ -110,16 +109,13 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
         CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-09T00:00:00Z");
     assertThat(optionalOccurrence.isPresent(), is(false));
     // Not Exists
-    optionalOccurrence =
-        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-10");
+    optionalOccurrence = CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-10");
     assertThat(optionalOccurrence.isPresent(), is(false));
     // Exception
-    optionalOccurrence =
-        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-16");
+    optionalOccurrence = CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-16");
     assertThat(optionalOccurrence.isPresent(), is(false));
     // No exception
-    optionalOccurrence =
-        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-23");
+    optionalOccurrence = CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-23");
     assertThat(optionalOccurrence.isPresent(), is(true));
   }
 
@@ -154,7 +150,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
 
-    CalendarEvent anEvent = Calendar.getById(CALENDAR_ID).event(event.getId()).get();
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).event(event.getId());
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent anEvent = mayBeEvent.get();
     assertThat(anEvent.getDescription(), is(newDescription));
     assertThat(anEvent.getAttendees().size(), is(2));
     assertThat(anEvent.getAttendees().get(INITIAL_ATTENDEE).isPresent(), is(true));
@@ -184,12 +182,15 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
 
-    CalendarEvent anEvent = Calendar.getById(CALENDAR_ID).event(event.getId()).get();
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).event(event.getId());
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent anEvent = mayBeEvent.get();
     assertThat(anEvent.getStartDate(), is(newPeriod.getStartDate()));
     assertThat(anEvent.getEndDate(), is(newPeriod.getEndDate()));
     assertThat(anEvent.getAttendees().size(), is(1));
-    assertThat(anEvent.getAttendees().get(INITIAL_ATTENDEE).get().getParticipationStatus(),
-        is(AWAITING));
+    Optional<Attendee> mayBeAttendee = anEvent.getAttendees().get(INITIAL_ATTENDEE);
+    assertThat(mayBeAttendee.isPresent(), is(true));
+    assertThat(mayBeAttendee.get().getParticipationStatus(), is(AWAITING));
   }
 
   @Test
@@ -208,7 +209,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
 
-    CalendarEvent anEvent = Calendar.getById(CALENDAR_ID).event(event.getId()).get();
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).event(event.getId());
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent anEvent = mayBeEvent.get();
     assertThat(anEvent.getDescription(), is(newDescription));
     assertThat(anEvent.getAttendees().size(), is(2));
     assertThat(anEvent.getAttendees().get(INITIAL_ATTENDEE).isPresent(), is(true));
@@ -238,12 +241,15 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
 
-    CalendarEvent anEvent = Calendar.getById(CALENDAR_ID).event(event.getId()).get();
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).event(event.getId());
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent anEvent = mayBeEvent.get();
     assertThat(anEvent.getStartDate(), is(newPeriod.getStartDate()));
     assertThat(anEvent.getEndDate(), is(newPeriod.getEndDate()));
     assertThat(anEvent.getAttendees().size(), is(1));
-    assertThat(anEvent.getAttendees().get(INITIAL_ATTENDEE).get().getParticipationStatus(),
-        is(AWAITING));
+    Optional<Attendee> maybeAttendee = anEvent.getAttendees().get(INITIAL_ATTENDEE);
+    assertThat(maybeAttendee.isPresent(), is(true));
+    assertThat(maybeAttendee.get().getParticipationStatus(), is(AWAITING));
   }
 
   @Test
@@ -311,7 +317,10 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.instance().isPresent(), is(false));
     assertThat(result.updated().isPresent(), is(true));
 
-    CalendarEvent actualEvent = Calendar.getById(CALENDAR_ID).event(recurrentEvent.getId()).get();
+    Optional<CalendarEvent> mayBeEvent =
+        Calendar.getById(CALENDAR_ID).event(recurrentEvent.getId());
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent actualEvent = mayBeEvent.get();
     assertThat(actualEvent.getTitle(), is(newTitle));
     assertThat(actualEvent.getStartDate(), is(newPeriod.getStartDate()));
     assertThat(actualEvent.getEndDate(), is(newPeriod.getEndDate()));
@@ -322,7 +331,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     final String newLocation = "Belledonne Room";
 
     List<CalendarEventOccurrence> occurrences = allOccurrencesOf(recurrentEvent);
-    final Temporal recurrenceEndDate = recurrentEvent.getRecurrence().getEndDate().get();
+    Optional<Temporal> maybeEndDate = recurrentEvent.getRecurrence().getEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    final Temporal recurrenceEndDate = maybeEndDate.get();
     CalendarEventOccurrence anOccurrence = occurrences.get(7);
     anOccurrence.setLocation(newLocation);
     anOccurrence.getAttendees().add(NEW_ATTENDEE);
@@ -333,12 +344,15 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.created().get().getStartDate(), is(anOccurrence.getStartDate()));
     assertThat(result.created().get().isRecurrent(), is(true));
     assertThat(result.created().get().getRecurrence().isEndless(), is(false));
-    assertThat(result.created().get().getRecurrence().getRecurrenceEndDate().get(), is(recurrenceEndDate));
+    maybeEndDate = result.created().get().getRecurrence().getRecurrenceEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    assertThat(maybeEndDate.get(), is(recurrenceEndDate));
     // the original event is updated: its recurrence ends at the previous occurrence of the one
     // since which the occurrences were all modified.
     assertThat(result.updated().isPresent(), is(true));
-    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
-        is(anOccurrence.getStartDate().minus(1, ChronoUnit.DAYS)));
+    maybeEndDate = result.updated().get().getRecurrence().getRecurrenceEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    assertThat(maybeEndDate.get(), is(anOccurrence.getStartDate().minus(1, ChronoUnit.DAYS)));
 
     // the previous event has now 7 occurrences
     occurrences = allOccurrencesOf(recurrentEvent);
@@ -365,7 +379,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
   @Test
   public void changeTheDateOffAllOccurrencesSinceAGivenOccurrenceShouldPersistAllOfThem() {
     List<CalendarEventOccurrence> occurrences = allOccurrencesOf(recurrentEvent);
-    final Temporal recurrenceEndDate = recurrentEvent.getRecurrence().getEndDate().get();
+    Optional<Temporal> maybeEndDate = recurrentEvent.getRecurrence().getEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    final Temporal recurrenceEndDate = maybeEndDate.get();
     CalendarEventOccurrence firstOccurrence = occurrences.get(0);
     CalendarEventOccurrence anOccurrence = occurrences.get(7);
     Period newPeriod = Period.between(LocalDate.from(anOccurrence.getStartDate()).plusDays(1),
@@ -378,11 +394,15 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.created().get().getStartDate(), is(anOccurrence.getStartDate()));
     assertThat(result.created().get().isRecurrent(), is(true));
     assertThat(result.created().get().getRecurrence().isEndless(), is(false));
-    assertThat(result.created().get().getRecurrence().getRecurrenceEndDate().get(), is(recurrenceEndDate));
+    maybeEndDate = result.created().get().getRecurrence().getRecurrenceEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    assertThat(maybeEndDate.get(), is(recurrenceEndDate));
     // the original event is updated: its recurrence ends at the previous occurrence of the one
     // since which the occurrences were all modified.
     assertThat(result.updated().isPresent(), is(true));
-    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
+    maybeEndDate = result.updated().get().getRecurrence().getRecurrenceEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    assertThat(maybeEndDate.get(),
         is(anOccurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS)));
 
     // the previous event has now 7 occurrences
@@ -416,7 +436,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
     assertThat(result.updated().isPresent(), is(true));
     assertThat(result.created().isPresent(), is(false));
 
-    CalendarEvent actualEvent = Calendar.getById(CALENDAR_ID).event(recurrentEvent.getId()).get();
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).event(recurrentEvent.getId());
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent actualEvent = mayBeEvent.get();
     assertThat(actualEvent.getTitle(), is(newTitle));
     assertThat(actualEvent.getStartDate(), is(newPeriod.getStartDate()));
     assertThat(actualEvent.getEndDate(), is(newPeriod.getEndDate()));
@@ -523,7 +545,7 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
   }
 
   @Test
-  public void deleteSinceOneOccurrenceShouldUpdateTheEventRecurrenceEndDate() throws Exception {
+  public void deleteSinceOneOccurrenceShouldUpdateTheEventRecurrenceEndDate() {
     List<CalendarEventOccurrence> occurrences = allOccurrencesOf(recurrentEvent);
     CalendarEventOccurrence occurrence = occurrences.get(8);
 
@@ -532,8 +554,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
 
     occurrences = allOccurrencesOf(recurrentEvent);
     assertThat(occurrences.size(), is(OCCURRENCE_COUNT - 8));
-    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
-        is(occurrence.getStartDate().minus(1, ChronoUnit.DAYS)));
+    Optional<Temporal> maybeEndDate = result.updated().get().getRecurrence().getRecurrenceEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    assertThat(maybeEndDate.get(), is(occurrence.getStartDate().minus(1, ChronoUnit.DAYS)));
   }
 
   @Test
@@ -549,9 +572,11 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
 
     occurrences = allOccurrencesOf(recurrentEvent);
     assertThat(occurrences.size(), is(OCCURRENCE_COUNT - 8));
-    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
+    Optional<Temporal> maybeEndDate = result.updated().get().getRecurrence().getRecurrenceEndDate();
+    assertThat(maybeEndDate.isPresent(), is(true));
+    assertThat(maybeEndDate.get(),
         is(modifiedOccurrences.get(0).getOriginalStartDate().minus(1, ChronoUnit.DAYS)));
-    for(CalendarEventOccurrence modifiedOccurrence: modifiedOccurrences) {
+    for (CalendarEventOccurrence modifiedOccurrence : modifiedOccurrences) {
       assertThat(getCalendarOccurrenceTableLineById(modifiedOccurrence.getId()), nullValue());
     }
   }

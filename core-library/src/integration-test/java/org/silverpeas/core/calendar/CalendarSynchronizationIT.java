@@ -49,6 +49,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -162,14 +163,18 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
   @Test
   public void synchronizeASecondTimeFromANonEmptyCalendarShouldDoesNothing() throws Exception {
     Calendar calendar = prepareSynchronizedCalendar();
-    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Optional<Instant> maybeSyncDate = calendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant lastSynchronizationDate = maybeSyncDate.get();
 
     ICalendarImportResult result = calendar.synchronize();
     assertThat(result.isEmpty(), is(true));
 
     Calendar synchronizedCalendar = Calendar.getById(CALENDAR_ID);
-    assertThat(synchronizedCalendar.getLastSynchronizationDate().get(),
-        greaterThan(lastSynchronizationDate));
+    maybeSyncDate = synchronizedCalendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant actualLastSynchronizationDate = maybeSyncDate.get();
+    assertThat(actualLastSynchronizationDate, greaterThan(lastSynchronizationDate));
     assertThat(synchronizedCalendar.isEmpty(), is(false));
 
     List<CalendarEvent> events = Calendar.getEvents()
@@ -186,9 +191,11 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     final Calendar calendar = prepareSynchronizedCalendar();
     Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().orElse(null);
 
-    CalendarEvent event =
-        Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream().findFirst().get();
-    updateLastUpdateDate(event, UPDATE_DATETIME);
+    Optional<CalendarEvent> maybeEvent =
+        Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream().findFirst();
+    assertThat(maybeEvent.isPresent(), is(true));
+    CalendarEvent event = maybeEvent.get();
+    updateLastUpdateDate(event);
 
     ICalendarImportResult result = calendar.synchronize();
     assertThat(result.added(), is(0));
@@ -196,14 +203,18 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     assertThat(result.deleted(), is(0));
 
     Calendar synchronizedCalendar = Calendar.getById(CALENDAR_ID);
-    assertThat(synchronizedCalendar.getLastSynchronizationDate().get(),
-        greaterThan(lastSynchronizationDate));
+    Optional<Instant> maybeSyncDate = synchronizedCalendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant actualLastSynchronizationDate = maybeSyncDate.get();
+    assertThat(actualLastSynchronizationDate, greaterThan(lastSynchronizationDate));
   }
 
   @Test
   public void eventDeletionAfterSynchronization() throws Exception {
     final Calendar calendar = prepareSynchronizedCalendar();
-    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Optional<Instant> maybeSyncDate = calendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant lastSynchronizationDate = maybeSyncDate.get();
 
     CalendarEvent nextDeletedEvent = addExternalEventIn(calendar);
 
@@ -213,8 +224,10 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     assertThat(result.deleted(), is(1));
 
     Calendar synchronizedCalendar = Calendar.getById(CALENDAR_ID);
-    assertThat(synchronizedCalendar.getLastSynchronizationDate().get(),
-        greaterThan(lastSynchronizationDate));
+    maybeSyncDate = synchronizedCalendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant actualLastSynchronizationDate = maybeSyncDate.get();
+    assertThat(actualLastSynchronizationDate, greaterThan(lastSynchronizationDate));
     assertThat(synchronizedCalendar.externalEvent(nextDeletedEvent.getExternalId()).isPresent(),
         is(false));
     assertThat(synchronizedCalendar.event(nextDeletedEvent.getId()).isPresent(), is(false));
@@ -223,14 +236,16 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
   @Test
   public void eventAddingUpdateAndDeletionAfterSynchronization() throws Exception {
     final Calendar calendar = prepareSynchronizedCalendar();
-    Instant lastSynchronizationDate = calendar.getLastSynchronizationDate().get();
+    Optional<Instant> maybeSyncDate = calendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant lastSynchronizationDate = maybeSyncDate.get();
 
     List<CalendarEvent> events = Calendar.getEvents()
         .filter(f -> f.onCalendar(calendar))
         .stream()
         .collect(Collectors.toList());
     final String externalId = UUID.randomUUID().toString();
-    updateLastUpdateDate(events.get(0), UPDATE_DATETIME);
+    updateLastUpdateDate(events.get(0));
     updateExternalId(events.get(1), externalId);
 
     ICalendarImportResult result = calendar.synchronize();
@@ -239,8 +254,10 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     assertThat(result.deleted(), is(1));
 
     Calendar synchronizedCalendar = Calendar.getById(CALENDAR_ID);
-    assertThat(synchronizedCalendar.getLastSynchronizationDate().get(),
-        greaterThan(lastSynchronizationDate));
+    maybeSyncDate = synchronizedCalendar.getLastSynchronizationDate();
+    assertThat(maybeSyncDate.isPresent(), is(true));
+    Instant actualLastSynchronizationDate = maybeSyncDate.get();
+    assertThat(actualLastSynchronizationDate, greaterThan(lastSynchronizationDate));
     assertThat(synchronizedCalendar.externalEvent(externalId).isPresent(), is(false));
     assertThat(synchronizedCalendar.event(externalId).isPresent(), is(false));
 
@@ -262,23 +279,6 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     calendar.save();
 
     assertThat(calendar.getLastSynchronizationDate().isPresent(), is(false));
-
-    /*calendar = Calendar.getById("ID_2");
-    externalCalendarUrl = getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-YCH-2017-05-02_00.ics");
-    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
-    calendar.save();
-
-    calendar = Calendar.getById("ID_3");
-    externalCalendarUrl =
-        getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-YCH-2017-05-02_01_EXCEP.ics");
-    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
-    calendar.save();
-
-    calendar = Calendar.getById("ID_4");
-    externalCalendarUrl =
-        getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-YCH-2017-05-02_02_EXC_ATTENDEE.ics");
-    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
-    calendar.save();*/
 
     synchronization.synchronizeAll();
 
@@ -305,11 +305,11 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
     return calendar;
   }
 
-  private void updateLastUpdateDate(final CalendarEvent event, final Instant dateTime) {
+  private void updateLastUpdateDate(final CalendarEvent event) {
     final String componentId = event.asCalendarComponent().getId();
     Transaction.performInOne(() -> {
       JdbcSqlQuery.update("sb_cal_components")
-          .withUpdateParam("lastUpdateDate", dateTime)
+          .withUpdateParam("lastUpdateDate", UPDATE_DATETIME)
           .where("id = ?", componentId)
           .execute();
       return null;

@@ -66,10 +66,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.filefilter.TrueFileFilter.TRUE;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.io.temp.TemporaryDataCleanerSchedulerInitializer.JOB_NAME;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * @author Yohann Chastagnier
@@ -84,6 +84,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
 
   private File rootTempFile;
 
+  @SuppressWarnings("CdiInjectionPointsInspection")
   @Inject
   private Scheduler scheduler;
 
@@ -99,11 +100,9 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
         .addCommonBasicUtilities()
         .addSchedulerFeatures()
         .addFileRepositoryFeatures()
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.io.temp")
-              .addAsResource("org/silverpeas/util/data")
-              .addAsResource("org/silverpeas/core/io/temp/");
-        }).build();
+        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.io.temp")
+            .addAsResource("org/silverpeas/util/data")
+            .addAsResource("org/silverpeas/core/io/temp/")).build();
   }
 
   @Before
@@ -123,7 +122,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
   }
 
   @Test
-  public void testJobInitializationWithDeletion() throws Exception {
+  public void jobInitializationWithDeletion() throws Exception {
     initializer.init();
     assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
     waitingForStartTaskProcessing();
@@ -132,7 +131,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
   }
 
   @Test
-  public void testJobInitializationWithoutDeletion() throws Exception {
+  public void jobInitializationWithoutDeletion() throws Exception {
     settings.put("temporaryData.cleaner.job.start.file.age.hours", "-1");
     initializer.init();
     assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
@@ -143,7 +142,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
   }
 
   @Test
-  public void testJobInitializationWithOneHourOffset() throws Exception {
+  public void jobInitializationWithOneHourOffset() throws Exception {
     settings.put("temporaryData.cleaner.job.start.file.age.hours", "1");
     initializer.init();
     assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
@@ -154,26 +153,24 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
   }
 
   @Test
-  public void testSeveralInvocationsAtSameInstant() throws Exception {
+  public void severalInvocationsAtSameInstant() throws Exception {
     final TemporaryDataCleanerJob job = new TemporaryDataCleanerJob();
     final int nbThreads = 1000;
     final CountDownLatch latch = new CountDownLatch(1);
     final AtomicInteger counter = new AtomicInteger(0);
     final List<Thread> threads = new ArrayList<>(nbThreads);
     final List<Future<Void>> results = synchronizedList(new ArrayList<>(nbThreads));
-    IntStream.range(0, nbThreads).forEach(i -> {
-      threads.add(new Thread(() -> {
-        try {
-          latch.await();
-          results.add(job.startCleanProcess(0));
-          final int count = counter.incrementAndGet();
-          log(String.format("job execution n°%s", count));
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          throw new SilverpeasRuntimeException(e);
-        }
-      }));
-    });
+    IntStream.range(0, nbThreads).forEach(i -> threads.add(new Thread(() -> {
+      try {
+        latch.await();
+        results.add(job.startCleanProcess(0));
+        final int count = counter.incrementAndGet();
+        log(String.format("job execution n°%s", count));
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new SilverpeasRuntimeException(e);
+      }
+    })));
 
     log("STARTING THREADS...");
     Collections.shuffle(threads);
@@ -182,7 +179,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
     }
     log(threads.size() + " THREADS STARTED");
     log("WAITING 1s...");
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
     latch.countDown();
 
     log("WAITING ENDING OF THREADS...");
@@ -216,6 +213,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
     for (final String fileName : new String[]{"file.jpg", "rep1/file.jpg", "rep2/file.jpg"}) {
       try (InputStream inputStream = TemporaryDataCleanerSchedulerInitializerIT.class
           .getClassLoader().getResourceAsStream("org/silverpeas/core/io/temp/" + fileName)) {
+        assertThat(inputStream, is(notNullValue()));
         FileUtils.copyInputStreamToFile(inputStream, new File(rootTempFile, fileName));
       }
     }

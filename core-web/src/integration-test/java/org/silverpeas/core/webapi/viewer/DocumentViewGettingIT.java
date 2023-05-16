@@ -42,13 +42,10 @@ import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import java.io.File;
-import java.nio.file.Paths;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
@@ -86,18 +83,12 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
     public DocumentView getDocumentView(final ViewerContext viewerContext) {
       final String originalFileName = viewerContext.getOriginalFileName();
       final File physicalFile = viewerContext.getOriginalSourceFile();
-      final DocumentView documentView = mock(DocumentView.class);
-      when(documentView.getDocumentId()).thenReturn(ATTACHMENT_ID);
-      when(documentView.getOriginalFileName()).thenReturn(originalFileName);
-      when(documentView.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
-      when(documentView.getServerFilePath()).thenReturn(Paths.get(originalFileName));
-      when(documentView.getLanguage()).thenReturn("fr");
-      return documentView;
+      return DocumentViewBuilder.getDocumentViewBuilder()
+          .buildFileName(physicalFile.getName(), originalFileName);
     }
 
     @Override
     public void removeDocumentView(final ViewerContext viewerContext) {
-
     }
   }
 
@@ -130,6 +121,7 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
     return aResourceURI(StubbedAttachmentService.ATTACHMENT_ID_DOESNT_EXISTS);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public DocumentView aResource() {
     return expected;

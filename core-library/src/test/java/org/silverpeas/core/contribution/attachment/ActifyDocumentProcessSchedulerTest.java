@@ -24,63 +24,59 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.contribution.attachment.mock.AttachmentServiceMockWrapper;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.scheduler.quartz.QuartzCronExpressionFactory;
+import org.silverpeas.core.scheduler.quartz.VolatileQuartScheduler;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.MimeTypes;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the scheduling of the tasks on the documents handled by Actify.
- *
  * @author mmoquillon
  */
-@RunWith(Arquillian.class)
-public class ActifyDocumentProcessSchedulerIT {
+@EnableSilverTestEnv
+@TestManagedBeans({ActifyDocumentProcessor.class, QuartzCronExpressionFactory.class})
+class ActifyDocumentProcessSchedulerTest {
 
+  @TestManagedBean
+  private VolatileQuartScheduler volatileQuartScheduler;
+
+  @TestManagedMock
   private AttachmentService attachmentService;
 
-  @Deployment
-  public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(ActifyDocumentProcessSchedulerIT.class)
-        .addJcrFeatures()
-        .addSchedulerFeatures()
-        .testFocusedOn(war -> war.addClasses(AttachmentServiceMockWrapper.class))
-        .build();
-  }
+  @TestedBean
+  private ActifyDocumentProcessScheduler processScheduler;
 
   private static void initActifyDirectories() {
     File dir = new File(ActifyDocumentProcessor.getActifyResultPath());
@@ -93,46 +89,43 @@ public class ActifyDocumentProcessSchedulerIT {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUpTest() {
-    SchedulerInitializer.get().init(SchedulerInitializer.SchedulerType.VOLATILE);
+    volatileQuartScheduler.init();
     initActifyDirectories();
 
     attachmentService = AttachmentServiceProvider.getAttachmentService();
     assertThat(attachmentService, not(nullValue()));
-    assertThat(attachmentService.getClass().getName(), is(AttachmentServiceMockWrapper.class.
-        getName()));
-    attachmentService = ((AttachmentServiceMockWrapper) attachmentService).
-        getAttachmentServiceMock();
     reset(attachmentService);
+
+    processScheduler.init();
   }
 
-  @After
+  @AfterEach
   public void cleanUpActifyResultDirectory() {
     File dir = new File(ActifyDocumentProcessor.getActifyResultPath());
     File[] children = dir.listFiles();
+    assertThat(children, is(notNullValue()));
     for (File child : children) {
       FileUtils.deleteQuietly(child);
     }
   }
 
   @Test
-  public void importWithoutAnyFiles() throws Exception {
+  void importWithoutAnyFiles() throws Exception {
     TestContext ctx = new TestContext().withoutAnyActifyDocuments();
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job importer = scheduler.getActifyDocumentImporter();
+    Job importer = processScheduler.getActifyDocumentImporter();
     importer.execute(inAnyContext());
 
     assertThat(ctx.noneActifyDocuments(), is(true));
   }
 
   @Test
-  public void importSomeNonVersionedActifyDocuments() throws Exception {
+  void importSomeNonVersionedActifyDocuments() throws Exception {
     TestContext ctx = new TestContext().withSomeActifyDocuments(3);
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job importer = scheduler.getActifyDocumentImporter();
+    Job importer = processScheduler.getActifyDocumentImporter();
     importer.execute(inAnyContext());
 
     assertThat(ctx.noneActifyDocuments(), is(true));
@@ -140,11 +133,10 @@ public class ActifyDocumentProcessSchedulerIT {
   }
 
   @Test
-  public void importSomeVersionedActifyDocuments() throws Exception {
+  void importSomeVersionedActifyDocuments() throws Exception {
     TestContext ctx = new TestContext().withSomeVersionedActifyDocuments(3);
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job importer = scheduler.getActifyDocumentImporter();
+    Job importer = processScheduler.getActifyDocumentImporter();
     importer.execute(inAnyContext());
 
     assertThat(ctx.noneActifyDocuments(), is(true));
@@ -152,12 +144,11 @@ public class ActifyDocumentProcessSchedulerIT {
   }
 
   @Test
-  public void importSomeActifyDocuments() throws Exception {
-    TestContext ctx = new TestContext().withSomeActifyDocuments(3).withSomeVersionedActifyDocuments(
-        3);
+  void importSomeActifyDocuments() throws Exception {
+    TestContext ctx =
+        new TestContext().withSomeActifyDocuments(3).withSomeVersionedActifyDocuments(3);
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job importer = scheduler.getActifyDocumentImporter();
+    Job importer = processScheduler.getActifyDocumentImporter();
     importer.execute(inAnyContext());
 
     assertThat(ctx.noneActifyDocuments(), is(true));
@@ -165,13 +156,10 @@ public class ActifyDocumentProcessSchedulerIT {
   }
 
   @Test
-  public void jobSchedulingAtInitialization() throws SchedulerException {
-    ActifyDocumentProcessScheduler actifyDocumentProcessor = new ActifyDocumentProcessScheduler();
-    actifyDocumentProcessor.init();
-
+  void jobSchedulingAtInitialization() throws SchedulerException {
     Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-    Job importer = actifyDocumentProcessor.getActifyDocumentImporter();
-    Job cleaner = actifyDocumentProcessor.getActifyDocumentCleaner();
+    Job importer = processScheduler.getActifyDocumentImporter();
+    Job cleaner = processScheduler.getActifyDocumentCleaner();
     assertThat(scheduler.isJobScheduled(importer.getName()), is(true));
     assertThat(scheduler.isJobScheduled(cleaner.getName()), is(true));
 
@@ -179,40 +167,37 @@ public class ActifyDocumentProcessSchedulerIT {
   }
 
   @Test
-  public void purgeEmptyActifySourceDirectory() throws Exception {
+  void purgeEmptyActifySourceDirectory() throws Exception {
     TestContext ctx = new TestContext().withoutAnyCADDocuments();
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job cleaner = scheduler.getActifyDocumentCleaner();
+    Job cleaner = processScheduler.getActifyDocumentCleaner();
     cleaner.execute(inAnyContext());
 
     assertThat(ctx.noneCADDocuments(), is(true));
   }
 
   @Test
-  public void purgeActifySourceDirectoryWithSomeCADDocuments() throws Exception {
+  void purgeActifySourceDirectoryWithSomeCADDocuments() throws Exception {
     TestContext ctx = new TestContext().withSomeCADDocuments(5);
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job cleaner = scheduler.getActifyDocumentCleaner();
+    Job cleaner = processScheduler.getActifyDocumentCleaner();
     cleaner.execute(inAnyContext());
 
     assertThat(ctx.noneCADDocuments(), is(true));
   }
 
   @Test
-  public void purgeActifySourceDirectoryWithSomeVersionedCADDocuments() throws Exception {
+  void purgeActifySourceDirectoryWithSomeVersionedCADDocuments() throws Exception {
     TestContext ctx = new TestContext().withSomeVersionedCADDocuments(5);
 
-    ActifyDocumentProcessScheduler scheduler = new ActifyDocumentProcessScheduler();
-    Job cleaner = scheduler.getActifyDocumentCleaner();
+    Job cleaner = processScheduler.getActifyDocumentCleaner();
     cleaner.execute(inAnyContext());
 
     assertThat(ctx.noneCADDocuments(), is(true));
   }
 
   private JobExecutionContext inAnyContext() {
-    return JobExecutionContext.createWith("A test job", DateTime.now());
+    return JobExecutionContext.createWith("A test job", new Date());
   }
 
   /**
@@ -232,15 +217,11 @@ public class ActifyDocumentProcessSchedulerIT {
       this.instanceId = "kmelia42";
     }
 
-    public TestContext(String publicationId, String componentInstanceId) {
-      this.publicationId = publicationId;
-      this.instanceId = componentInstanceId;
-    }
-
     public TestContext withoutAnyCADDocuments() {
       File dir = new File(ActifyDocumentProcessor.getActifySourcePath());
       if (dir.exists()) {
         File[] children = dir.listFiles();
+        assertThat(children, is(notNullValue()));
         for (File child : children) {
           FileUtils.deleteQuietly(child);
         }
@@ -252,6 +233,7 @@ public class ActifyDocumentProcessSchedulerIT {
       File dir = new File(ActifyDocumentProcessor.getActifyResultPath());
       if (dir.exists()) {
         File[] children = dir.listFiles();
+        assertThat(children, is(notNullValue()));
         for (File child : children) {
           FileUtils.deleteQuietly(child);
         }
@@ -314,20 +296,20 @@ public class ActifyDocumentProcessSchedulerIT {
       ArgumentCaptor<SimpleDocument> updateDoc = ArgumentCaptor.forClass(SimpleDocument.class);
       ArgumentCaptor<File> updateFile = ArgumentCaptor.forClass(File.class);
       ArgumentCaptor<UnlockContext> unlockCtx = ArgumentCaptor.forClass(UnlockContext.class);
-      verify(attachmentService, times(updateCount)).
-          updateAttachment(updateDoc.capture(), updateFile.capture(), eq(false), eq(false));
+      verify(attachmentService, times(updateCount)).updateAttachment(updateDoc.capture(),
+          updateFile.capture(), eq(false), eq(false));
       verify(attachmentService, times(updateCount)).unlock(unlockCtx.capture());
 
       for (SimpleDocument document : creationDoc.getAllValues()) {
-        assertThat(document.getPk().getInstanceId().equals(instanceId) && document.getForeignId().
-            equals(publicationId), is(true));
+        assertThat(document.getPk().getInstanceId().equals(instanceId) &&
+            document.getForeignId().equals(publicationId), is(true));
       }
       for (SimpleDocument document : updateDoc.getAllValues()) {
-        assertThat(document.getPk().getInstanceId().equals(instanceId) && document.getForeignId().
-            equals(publicationId), is(true));
+        assertThat(document.getPk().getInstanceId().equals(instanceId) &&
+            document.getForeignId().equals(publicationId), is(true));
       }
 
-      List<String> filenames = new ArrayList<String>();
+      List<String> filenames = new ArrayList<>();
       for (int i = 0; i < creationCount; i++) {
         filenames.add(ACTIFY_DOCUMENT_PREFIX + i + ".3d");
       }
@@ -335,20 +317,25 @@ public class ActifyDocumentProcessSchedulerIT {
         assertThat(filenames.contains(aFile.getName()), is(true));
       }
       if (updateCount > 0) {
-        assertThat(updateFile.getValue().getName().equals(ACTIFY_DOCUMENT_PREFIX + (actifyDocuments
-            - 1) + ".3d"), is(true));
+        assertThat(updateFile.getValue()
+            .getName()
+            .equals(ACTIFY_DOCUMENT_PREFIX + (actifyDocuments - 1) + ".3d"), is(true));
         assertThat(unlockCtx.getValue().isUpload(), is(true));
       }
     }
 
     private boolean noneActifyDocuments() {
       File resultDir = new File(ActifyDocumentProcessor.getActifyResultPath());
-      return !resultDir.exists() || resultDir.list().length == 0;
+      String[] files = resultDir.list();
+      assertThat(files, is(notNullValue()));
+      return !resultDir.exists() || files.length == 0;
     }
 
     private boolean noneCADDocuments() {
       File sourceDir = new File(ActifyDocumentProcessor.getActifySourcePath());
-      return !sourceDir.exists() || sourceDir.list().length == 0;
+      String[] files = sourceDir.list();
+      assertThat(files, is(notNullValue()));
+      return !sourceDir.exists() || files.length == 0;
     }
 
     /**
@@ -356,10 +343,11 @@ public class ActifyDocumentProcessSchedulerIT {
      * then should require a new version (an update).
      */
     private void prepareMock() {
-      when(attachmentService.listDocumentsByForeignKey(any(ResourceReference.class), eq((String) null)))
-          .thenReturn(new SimpleDocumentList<>());
+      when(attachmentService.listDocumentsByForeignKey(any(ResourceReference.class),
+          eq(null))).thenReturn(new SimpleDocumentList<>());
       if (isVersioned()) {
-        java.util.Date yesterday = java.util.Date.from(OffsetDateTime.now().minusDays(1).toInstant());
+        java.util.Date yesterday =
+            java.util.Date.from(OffsetDateTime.now().minusDays(1).toInstant());
         String lastFilename = ACTIFY_DOCUMENT_PREFIX + (actifyDocuments - 1) + ".3d";
         SimpleAttachment existingAttachment = SimpleAttachment.builder()
             .setFilename(lastFilename)
@@ -367,10 +355,11 @@ public class ActifyDocumentProcessSchedulerIT {
             .setContentType(MimeTypes.SPINFIRE_MIME_TYPE)
             .setCreationData(null, yesterday)
             .build();
-        SimpleDocument existingDocument = new SimpleDocument(new SimpleDocumentPK(UUID.randomUUID().
-            toString(), instanceId), publicationId, 0, versioned, existingAttachment);
+        SimpleDocument existingDocument =
+            new SimpleDocument(new SimpleDocumentPK(UUID.randomUUID().toString(), instanceId),
+                publicationId, 0, versioned, existingAttachment);
         when(attachmentService.findExistingDocument(any(SimpleDocumentPK.class), eq(lastFilename),
-            any(ResourceReference.class), (String) eq(null))).thenReturn(existingDocument);
+            any(ResourceReference.class), eq(null))).thenReturn(existingDocument);
       }
     }
 
@@ -399,17 +388,17 @@ public class ActifyDocumentProcessSchedulerIT {
     }
 
     private File getFileInActifyResultFolder(String... pathNode) {
-      String path = "";
+      StringBuilder path = new StringBuilder();
       for (String aNode : pathNode) {
-        path += File.separator + aNode;
+        path.append(File.separator).append(aNode);
       }
       return new File(ActifyDocumentProcessor.getActifyResultPath() + path);
     }
 
     private File getFileInActifySourceFolder(String... pathNode) {
-      String path = "";
+      StringBuilder path = new StringBuilder();
       for (String aNode : pathNode) {
-        path += File.separator + aNode;
+        path.append(File.separator).append(aNode);
       }
       return new File(ActifyDocumentProcessor.getActifySourcePath() + path);
     }

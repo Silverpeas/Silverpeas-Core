@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.util;
 
+import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -45,9 +47,10 @@ public class Either<T, U> {
    * @return either an object of type T or an object of type U but whose the actual value is of
    * type T.
    */
-  public static <T, U> Either<T, U> left(T left) {
-    assert left != null;
-    return new Either<T, U>(left, null);
+  @Nonnull
+  public static <T, U> Either<T, U> left(@Nonnull T left) {
+    Objects.requireNonNull(left);
+    return new Either<>(left, null);
   }
 
   /**
@@ -58,9 +61,10 @@ public class Either<T, U> {
    * @return either an object of type T or an object of type U but whose the actual value is of
    * type U.
    */
-  public static <T, U> Either<T, U> right(U right) {
-    assert right != null;
-    return new Either<T, U>(null, right);
+  @Nonnull
+  public static <T, U> Either<T, U> right(@Nonnull U right) {
+    Objects.requireNonNull(right);
+    return new Either<>(null, right);
   }
 
   /**
@@ -84,6 +88,7 @@ public class Either<T, U> {
    * NoSuchElementException}.
    * @return the left-object of this Either.
    */
+  @Nonnull
   public T getLeft() {
     if (left == null) {
       throw new NoSuchElementException("No value present");
@@ -96,6 +101,7 @@ public class Either<T, U> {
    * NoSuchElementException}.
    * @return the right-object of this Either.
    */
+  @Nonnull
   public U getRight() {
     if (right == null) {
       throw new NoSuchElementException("No value present");
@@ -126,8 +132,8 @@ public class Either<T, U> {
    * @return the object computed by one of the specified functions according to the actual value
    * of this Either.
    */
-  public <R> R apply(Function<? super T, ? extends R> leftFunction,
-      Function<? super U, ? extends R> rightFunction) {
+  public <R> R apply(@Nonnull Function<? super T, ? extends R> leftFunction,
+      @Nonnull Function<? super U, ? extends R> rightFunction) {
     if (isLeft()) {
       return leftFunction.apply(left);
     } else {

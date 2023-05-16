@@ -39,7 +39,7 @@ public abstract class PersistenceOperation {
    * data before being serialized to a datasource.
    * @param entity an entity.
    */
-  protected abstract void applyTechnicalDataTo(final Entity entity);
+  protected abstract void applyTechnicalDataTo(final Entity<?, ?> entity);
 
   /**
    * Sets manually the specified technical data of the specified entity.
@@ -47,7 +47,7 @@ public abstract class PersistenceOperation {
    * @param user the user for which the persistence operation will be performed.
    * @param date the date at which the persistence operation will be considered as performed.
    */
-  protected abstract void setManuallyTechnicalDataFor(final Entity entity, final User user,
+  protected abstract void setManuallyTechnicalDataFor(final Entity<?, ?> entity, final User user,
       final Date date);
 
   /**
@@ -55,5 +55,5 @@ public abstract class PersistenceOperation {
    * set will be lost.
    * @param entity the entity.
    */
-  protected abstract void clear(final Entity entity);
+  protected abstract void clear(final Entity<?, ?> entity);
 }

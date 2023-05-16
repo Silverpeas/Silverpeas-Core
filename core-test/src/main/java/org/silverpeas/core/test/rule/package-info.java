@@ -23,7 +23,9 @@
  */
 
 /**
- * It contains all the JUnit 4 rules used in the execution of unit tests.
+ * It contains all the JUnit 4 rules to be used in the integration tests. The requirement is the
+ * Mockito framework hasn't to be used. For integration tests, if some stuffs require to be mocked,
+ * then use instead stubs of your own.
  * @author mmoquillon
  */
 package org.silverpeas.core.test.rule;

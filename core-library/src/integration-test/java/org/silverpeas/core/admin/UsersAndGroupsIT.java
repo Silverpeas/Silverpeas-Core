@@ -64,11 +64,11 @@ import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnDeleting;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
 public class UsersAndGroupsIT {
@@ -303,7 +303,7 @@ public class UsersAndGroupsIT {
   }
 
   @Test
-  public void testGetUsers() throws Exception {
+  public void getUsers() throws Exception {
     List<UserDetail> users = admin.getAllUsers();
     assertThat(users.size(), is(4));
     assertThat(users.get(0).getId(), is("1"));
@@ -352,7 +352,7 @@ public class UsersAndGroupsIT {
   }
 
   @Test
-  public void testUpdateGroup() throws Exception {
+  public void updateGroup() throws Exception {
     String desc = "New description";
     GroupDetail group = admin.getGroup("1");
     group.setDescription(desc);
@@ -389,7 +389,7 @@ public class UsersAndGroupsIT {
   public void shouldDeleteAllSubGroups() throws Exception {
     final List<GroupDetail> path = createSubGroupsAndGetSortedPath();
     // Removing first (group1)
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
     final List<GroupDetail> deleted = admin.deleteGroupById(path.get(0).getId());
     // Verifying all deleted
     assertThat(deleted, hasSize(path.size()));
@@ -416,7 +416,7 @@ public class UsersAndGroupsIT {
   public void shouldRemoveAllSubGroups() throws Exception {
     final List<GroupDetail> path = createSubGroupsAndGetSortedPath();
     // Removing first (group1)
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
     List<GroupDetail> removed = admin.removeGroup(path.get(0).getId());
     // Verifying all removed
     assertThat(removed, hasSize(path.size()));
@@ -459,7 +459,7 @@ public class UsersAndGroupsIT {
     assertThat(path.get(0).getSuperGroupId(), is(path.get(1).getId()));
     assertThat(path.get(1).getSuperGroupId(), is(path.get(2).getId()));
     // Restoring Sub Group Of Sub Group Of 1
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
     List<GroupDetail> restored = admin.restoreGroup(path.get(0).getId());
     // Verifying all restored
     assertThat(restored, hasSize(path.size()));
@@ -525,7 +525,7 @@ public class UsersAndGroupsIT {
   }
 
   @Test
-  public void testGetGroups() throws Exception {
+  public void getGroups() throws Exception {
     List<String> groupIds = admin.getAllGroups()
         .stream()
         .map(GroupDetail::getId)
@@ -547,7 +547,7 @@ public class UsersAndGroupsIT {
   }
 
   @Test
-  public void testGetGroupsWithChildren() throws Exception {
+  public void getGroupsWithChildren() throws Exception {
     createSubGroupsAndGetSortedPath();
     List<String> groupIds = admin.getAllRootGroups()
         .stream()
@@ -576,7 +576,7 @@ public class UsersAndGroupsIT {
   }
 
   @Test
-  public void testIsGroupExist() throws Exception {
+  public void isGroupExist() throws Exception {
     // Valid one
     assertThat(admin.isGroupExist("Groupe 10"), is(true));
     // Removed one
@@ -584,7 +584,7 @@ public class UsersAndGroupsIT {
   }
 
   @Test
-  public void testGroupManager() throws AdminException {
+  public void groupManager() throws AdminException {
     GroupProfileInst profile = admin.getGroupProfileInst("1");
     profile.addUser("1");
     admin.updateGroupProfileInst(profile);
@@ -597,7 +597,7 @@ public class UsersAndGroupsIT {
    * - Group 1
    * --- Sub Group Of 1
    * ------ Sub Group Of Sub Group Of 1
-   * @throws AdminException
+   * @throws AdminException if an error occurs
    */
   private List<GroupDetail> createSubGroupsAndGetSortedPath() throws AdminException {
     GroupDetail group1 = admin.getGroup("1");

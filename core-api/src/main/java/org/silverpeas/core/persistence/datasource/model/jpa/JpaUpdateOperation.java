@@ -49,13 +49,14 @@ import java.util.Optional;
 @Bean
 public class JpaUpdateOperation extends PersistenceOperation {
 
-  private List<SilverpeasJpaEntity> entities = new ArrayList<>();
+  private final List<SilverpeasJpaEntity<?, ?>> entities = new ArrayList<>();
 
   /**
    * Applying information of the context to the given entity on a update operation.
    * @param entity an entity.
    */
-  protected void applyTechnicalDataTo(Entity entity) {
+  @Override
+  protected void applyTechnicalDataTo(Entity<?, ?> entity) {
     String errorMessage = "the user identifier must exist when performing update operation";
     User user = OperationContext.getFromCache().getUser();
     ArgumentAssertion.assertTrue(Transaction.isTransactionActive(),
@@ -63,8 +64,8 @@ public class JpaUpdateOperation extends PersistenceOperation {
     ArgumentAssertion.assertNotNull(user, errorMessage);
     ArgumentAssertion.assertDefined(user.getId(), errorMessage);
     if (entity instanceof SilverpeasJpaEntity) {
-      SilverpeasJpaEntity jpaEntity = (SilverpeasJpaEntity) entity;
-      Optional<SilverpeasJpaEntity> optional = find(jpaEntity);
+      SilverpeasJpaEntity<?, ?> jpaEntity = (SilverpeasJpaEntity<?, ?>) entity;
+      Optional<SilverpeasJpaEntity<?, ?>> optional = find(jpaEntity);
       if (optional.isPresent()) {
         if (optional.get() != jpaEntity) {
           jpaEntity.setLastUpdater(optional.get().getLastUpdater())
@@ -78,23 +79,25 @@ public class JpaUpdateOperation extends PersistenceOperation {
     }
   }
 
-  public void setManuallyTechnicalDataFor(final Entity entity, final User updater,
+  @Override
+  public void setManuallyTechnicalDataFor(final Entity<?, ?> entity, final User updater,
       final Date updateDate) {
     if (entity instanceof SilverpeasJpaEntity) {
-      SilverpeasJpaEntity jpaEntity = (SilverpeasJpaEntity) entity;
+      SilverpeasJpaEntity<?, ?> jpaEntity = (SilverpeasJpaEntity<?, ?>) entity;
       JpaEntityReflection.setUpdateData(jpaEntity, updater, updateDate);
-      if (!find(jpaEntity).isPresent()) {
+      if (find(jpaEntity).isEmpty()) {
         this.entities.add(jpaEntity);
       }
     }
   }
 
-  private Optional<SilverpeasJpaEntity> find(final Entity entity) {
+  private Optional<SilverpeasJpaEntity<?, ?>> find(final Entity<?, ?> entity) {
     return this.entities.stream().filter(e -> StringUtil.isDefined(e.getId()) && e.equals(entity))
         .findFirst();
   }
 
-  public void clear(final Entity entity) {
+  @Override
+  public void clear(final Entity<?, ?> entity) {
     entities.removeIf(
         e -> e.getClass().equals(entity.getClass()) && StringUtil.isDefined(e.getId()) &&
             e.getId().equals(entity.getId()));

@@ -46,8 +46,6 @@ import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Integration tests on the listening of events coming from the adding of a user in a users group
@@ -76,10 +74,8 @@ public class ChatGroupUserLinkEventListenerIT {
   @Inject
   private GroupCache cache;
 
-  private String mappedDomainId = "0";
-  private String nonMappedDomainId = "1";
-  private String[] allowedGroups = new String[] {"1", "3"};
-  private String[] notAllowedGroups = new String[] {"2", "4"};
+  private final String[] allowedGroups = new String[] {"1", "3"};
+  private final String[] notAllowedGroups = new String[] {"2", "4"};
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -92,7 +88,6 @@ public class ChatGroupUserLinkEventListenerIT {
   public void setUp() {
     assertThat(server, notNullValue());
     assertThat(groupManager, notNullValue());
-    when(server.getMock().isUserExisting(any(User.class))).thenReturn(false);
   }
 
   @After
@@ -106,7 +101,7 @@ public class ChatGroupUserLinkEventListenerIT {
   }
 
   @Test
-  public void aUserHasBeenAddedIntoANotAllowedGroup() throws Exception {
+  public void aUserHasBeenAddedIntoANotAllowedGroup() {
     final String userId = "1";
     final String groupId = notAllowedGroups[0];
     doInTransaction(() -> {
@@ -115,11 +110,11 @@ public class ChatGroupUserLinkEventListenerIT {
     });
 
     final User user = User.getById(userId);
-    verify(server.getMock(), never()).createUser(user);
+    assertThat(server.wasExecuted("createUser", user), is(false));
   }
 
   @Test
-  public void aUserHasBeenAddedIntoAnAllowedGroup() throws Exception {
+  public void aUserHasBeenAddedIntoAnAllowedGroup() {
     final String userId = "2";
     final String groupId = allowedGroups[0];
     doInTransaction(() -> {
@@ -128,10 +123,10 @@ public class ChatGroupUserLinkEventListenerIT {
     });
 
     final User user = User.getById(userId);
-    verify(server.getMock()).createUser(user);
+    assertThat(server.wasExecuted("createUser", user), is(true));
   }
 
-  private void doInTransaction(final MyFunction function) throws Exception {
+  private void doInTransaction(final MyFunction function) {
     Transaction.performInNew(() -> {
       function.apply();
       return null;

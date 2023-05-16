@@ -37,7 +37,6 @@ import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.util.TestRuntime;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -45,8 +44,9 @@ import java.time.Instant;
 import java.util.Date;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * Integration test on the asynchronous mode of the Silverpeas API Notification.
@@ -102,10 +102,11 @@ public class AsynchronousNotificationIT {
   @Test
   public void emptyTest() {
     // just to test the deployment into wildfly works fine.
+    assertThat(true, is(true));
   }
 
   @Test
-  public void asynchronousWithQueueNotificationShouldWork() throws InterruptedException {
+  public void asynchronousWithQueueNotificationShouldWork() {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
         setupAdditionalParameter(event, ADDITIONAL_PARAMETER.NONE);
@@ -117,7 +118,7 @@ public class AsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousWithTopicsNotificationShouldWork() throws InterruptedException {
+  public void asynchronousWithTopicsNotificationShouldWork() {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
         setupAdditionalParameter(event, ADDITIONAL_PARAMETER.WITHOUT_VALUE);
@@ -129,7 +130,7 @@ public class AsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousNotificationFromSynchronousOneShouldWork() throws InterruptedException {
+  public void asynchronousNotificationFromSynchronousOneShouldWork() {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
         setupAdditionalParameter(event, ADDITIONAL_PARAMETER.WITH_VALUE);
@@ -141,7 +142,7 @@ public class AsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousNotificationOnCreationShouldWork() throws InterruptedException {
+  public void asynchronousNotificationOnCreationShouldWork() {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
         setupAdditionalParameter(event, ADDITIONAL_PARAMETER.NONE);
@@ -155,7 +156,7 @@ public class AsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousNotificationOnUpdateShouldWork() throws InterruptedException {
+  public void asynchronousNotificationOnUpdateShouldWork() {
     TestResourceEvent event =
         new TestResourceEvent(ResourceEvent.Type.UPDATE, aTestResource(), aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
@@ -170,7 +171,7 @@ public class AsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousNotificationOnRemovingShouldWork() throws InterruptedException {
+  public void asynchronousNotificationOnRemovingShouldWork() {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.REMOVING, aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
         setupAdditionalParameter(event, ADDITIONAL_PARAMETER.WITHOUT_VALUE);
@@ -184,7 +185,7 @@ public class AsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousNotificationOnDeletionShouldWork() throws InterruptedException {
+  public void asynchronousNotificationOnDeletionShouldWork() {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.DELETION, aTestResource());
     ADDITIONAL_PARAMETER additionalParameter =
         setupAdditionalParameter(event, ADDITIONAL_PARAMETER.WITH_VALUE);
@@ -224,7 +225,7 @@ public class AsynchronousNotificationIT {
   }
 
   private void waitForReception() {
-    TestRuntime.awaitUntil(1000, MILLISECONDS);
+    awaitUntil(1000, MILLISECONDS);
   }
 
   private void assertThatEventIsWellReceived(int count, TestResourceEvent event,

@@ -94,7 +94,7 @@ public class DocumentViewBuilder {
      */
     @Override
     public String getURLAsString() throws ViewerException {
-      return "/URL/" + fileName;
+      return "/URL/" + uriId;
     }
 
     /*

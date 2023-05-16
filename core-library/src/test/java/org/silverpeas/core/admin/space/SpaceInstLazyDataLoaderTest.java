@@ -41,9 +41,9 @@ import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * @author silveryocha
@@ -189,7 +189,7 @@ class SpaceInstLazyDataLoaderTest {
     }
     log(threads.size() + " THREADS STARTED");
     log("WAITING 1s...");
-    await().pollDelay(1, SECONDS).until(() -> true);
+    awaitUntil(1, SECONDS);
     latch.countDown();
 
     log("WAITING ENDING OF THREADS...");

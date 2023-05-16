@@ -116,6 +116,7 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
     return findByNamedQuery("Replacement.findAllByUsersAndByWorkflow", parameters);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public ReplacementImpl findById(final String replacementId) {
     return super.getById(replacementId);

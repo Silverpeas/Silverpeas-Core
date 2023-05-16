@@ -45,13 +45,12 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Integration tests on the notification sent when some actions were operated in a calendar event:
@@ -138,7 +137,9 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void deletingACalendarEventSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
     assertThat(event.getAttendees().size(), is(2));
     event.delete();
 
@@ -156,7 +157,9 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void updatingCalendarEventSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
     event.recur(Recurrence.every(TimeUnit.MONTH));
     event.update();
 
@@ -177,7 +180,9 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void addingAnAttendeeSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
     event.withAttendee(User.getById("2"));
     event.update();
 
@@ -196,8 +201,12 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void removingAnAttendeeSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
-    Attendee attendee = event.getAttendees().stream().findFirst().get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
+    Optional<Attendee> mayBeAttendee = event.getAttendees().stream().findFirst();
+    assertThat(mayBeAttendee.isPresent(), is(true));
+    Attendee attendee = mayBeAttendee.get();
     event.getAttendees().remove(attendee);
     event.update();
 
@@ -216,8 +225,12 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void updateAttendeeParticipationSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
-    Attendee attendee = event.getAttendees().stream().findFirst().get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
+    Optional<Attendee> mayBeAttendee = event.getAttendees().stream().findFirst();
+    assertThat(mayBeAttendee.isPresent(), is(true));
+    Attendee attendee = mayBeAttendee.get();
     attendee.decline();
     event.update();
 
@@ -236,8 +249,12 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void delegateParticipationSendTwoNotifications() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
-    Attendee attendee = event.getAttendees().stream().findFirst().get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
+    Optional<Attendee> mayBeAttendee = event.getAttendees().stream().findFirst();
+    assertThat(mayBeAttendee.isPresent(), is(true));
+    Attendee attendee = mayBeAttendee.get();
     attendee.delegateTo(User.getById("2"));
     event.update();
 
@@ -257,8 +274,12 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Test
   public void updateAttendeePresenceSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_ID).get();
-    Attendee attendee = event.getAttendees().stream().findFirst().get();
+    Optional<CalendarEvent> mayBeEvent = calendar.event(EVENT_ID);
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
+    Optional<Attendee> mayBeAttendee = event.getAttendees().stream().findFirst();
+    assertThat(mayBeAttendee.isPresent(), is(true));
+    Attendee attendee = mayBeAttendee.get();
     attendee.setPresenceStatus(Attendee.PresenceStatus.INFORMATIVE);
     event.update();
 
@@ -279,7 +300,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
       AbstractNotifier<AttendeeLifeCycleEvent> {
 
 
-    private List<NotifAction> notifAction = new ArrayList<>(2);
+    private final List<NotifAction> notifAction = new ArrayList<>(2);
 
     protected void reset() {
       notifAction.clear();
@@ -294,19 +315,19 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     }
 
     @Override
-    public void onDeletion(final AttendeeLifeCycleEvent event) throws Exception {
+    public void onDeletion(final AttendeeLifeCycleEvent event) {
       notifAction.add(NotifAction.DELETE);
     }
 
     @Override
-    public void onUpdate(final AttendeeLifeCycleEvent event) throws Exception {
+    public void onUpdate(final AttendeeLifeCycleEvent event) {
       notifAction.add(NotifAction.UPDATE);
       assertThat(event.getTransition().getBefore(), notNullValue());
       assertThat(event.getTransition().getAfter(), notNullValue());
     }
 
     @Override
-    public void onCreation(final AttendeeLifeCycleEvent event) throws Exception {
+    public void onCreation(final AttendeeLifeCycleEvent event) {
       notifAction.add(NotifAction.CREATE);
     }
   }
@@ -336,12 +357,12 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     }
 
     @Override
-    public void onDeletion(final CalendarEventLifeCycleEvent event) throws Exception {
+    public void onDeletion(final CalendarEventLifeCycleEvent event) {
       notifAction = NotifAction.DELETE;
     }
 
     @Override
-    public void onUpdate(final CalendarEventLifeCycleEvent event) throws Exception {
+    public void onUpdate(final CalendarEventLifeCycleEvent event) {
       CalendarEvent before = event.getTransition().getBefore();
       CalendarEvent after = event.getTransition().getAfter();
       assertThat(event.getTransition().getBefore(), notNullValue());
@@ -358,7 +379,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     }
 
     @Override
-    public void onCreation(final CalendarEventLifeCycleEvent event) throws Exception {
+    public void onCreation(final CalendarEventLifeCycleEvent event) {
       notifAction = NotifAction.CREATE;
     }
   }
@@ -379,21 +400,17 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
       notifAction = null;
     }
 
-    public NotifAction getRecievedNotifAction() {
-      return this.notifAction;
-    }
-
     public boolean hasBeenNotified() {
       return this.notifAction != null;
     }
 
     @Override
-    public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
+    public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) {
       notifAction = NotifAction.DELETE;
     }
 
     @Override
-    public void onUpdate(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
+    public void onUpdate(final CalendarEventOccurrenceLifeCycleEvent event) {
       CalendarEventOccurrence before = event.getTransition().getBefore();
       CalendarEventOccurrence after = event.getTransition().getAfter();
       assertThat(event.getTransition().getBefore(), notNullValue());
@@ -410,7 +427,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     }
 
     @Override
-    public void onCreation(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
+    public void onCreation(final CalendarEventOccurrenceLifeCycleEvent event) {
       notifAction = NotifAction.CREATE;
     }
   }

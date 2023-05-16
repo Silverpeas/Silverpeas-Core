@@ -25,20 +25,31 @@ package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecution.Config;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.util.Map;
 
 /**
+ * A manager of the SWF toolkit. Its aim is to check the tool is installed on the host and it works
+ * fine in order to be used by the Viewer service of Silverpeas.
  * @author Yohann Chastagnier
  */
+@Technical
 @Service
+@Singleton
 public class SwfToolManager implements Initialization {
 
-  private static boolean isActivated = false;
+  public static SwfToolManager get() {
+    return ServiceProvider.getSingleton(SwfToolManager.class);
+  }
+
+  private boolean isActivated = false;
 
   @Override
   public synchronized void init() {
@@ -60,10 +71,10 @@ public class SwfToolManager implements Initialization {
   }
 
   /**
-   * Indicates if pdf2swf is activated
-   * @return
+   * If the SWF conversion activated?
+   * @return true if the SWF toolkit is installed and works fine on the host. False otherwise.
    */
-  public static boolean isActivated() {
+  public boolean isActivated() {
     return isActivated;
   }
 }

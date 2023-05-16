@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.test.util;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -62,8 +64,7 @@ public class SilverProperties extends Properties {
       try (InputStream is = baseClass.getClassLoader().getResourceAsStream(propertyFilePath)) {
         load(is);
       } catch (Exception ex) {
-        Logger.getLogger(baseClass.getName()).log(Level.SEVERE, "Class " + baseClass, ex);
-        throw new RuntimeException(ex);
+        throw new SilverpeasRuntimeException(ex);
       }
     }
     return this;

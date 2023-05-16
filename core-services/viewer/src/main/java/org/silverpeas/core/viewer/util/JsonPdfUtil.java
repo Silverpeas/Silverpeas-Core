@@ -44,11 +44,11 @@ public class JsonPdfUtil extends ExternalExecution {
   private static final String PDF_TO_JSON_COMMON_PARAMS = "-enc UTF-8 -compress -split 10";
 
   /**
-   * Indicates if tool that permits to convert PDF into JSon data is activated.
-   * @return
+   * Indicates if the tool that allows to convert PDF into JSon data is activated.
+   * @return true if the tool is activated. False otherwise.
    */
   public static boolean isActivated() {
-    return JsonPdfToolManager.isActivated();
+    return JsonPdfToolManager.get().isActivated();
   }
 
   /**
@@ -70,7 +70,7 @@ public class JsonPdfUtil extends ExternalExecution {
   }
 
   static CommandLine buildJsonPdfCommandLine(File inputFile, File outputFile) {
-    Map<String, File> files = new HashMap<String, File>(2);
+    Map<String, File> files = new HashMap<>(2);
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("pdf2json");

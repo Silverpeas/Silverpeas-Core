@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util;
 
+import javax.annotation.Nonnull;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -56,20 +57,21 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
 
   private static final ResourceBundle NONE = new ResourceBundle() {
     @Override
-    protected Object handleGetObject(final String key) {
+    protected Object handleGetObject(@Nonnull final String key) {
       return null;
     }
 
     @Override
+    @Nonnull
     public Enumeration<String> getKeys() {
       return Collections.emptyEnumeration();
     }
   };
 
-  private String name;
+  private final String name;
   private Locale locale;
-  private BiFunction<String, Locale, ResourceBundle> loader;
-  private boolean mandatory;
+  private final BiFunction<String, Locale, ResourceBundle> loader;
+  private final boolean mandatory;
 
   protected LocalizationBundle(String name, Locale locale,
       BiFunction<String, Locale, ResourceBundle> loader, boolean mandatory) {
@@ -116,7 +118,7 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
    * @since 1.6
    */
   @Override
-  public boolean containsKey(final String key) {
+  public boolean containsKey(@Nonnull final String key) {
     ResourceBundle bundle = getWrappedBundle();
     ResourceBundle generalBundle = getGeneralWrappedBundle();
     return bundle.containsKey(key) || generalBundle.containsKey(key);
@@ -201,7 +203,7 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   }
 
   @Override
-  protected Object handleGetObject(String key) {
+  protected Object handleGetObject(@Nonnull String key) {
     ResourceBundle bundle = getWrappedBundle();
     ResourceBundle generalBundle = getGeneralWrappedBundle();
     Object result = null;

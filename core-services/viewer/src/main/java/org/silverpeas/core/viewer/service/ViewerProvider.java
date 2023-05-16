@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.viewer.service;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
 
 /**
- * Viewer factory which provides preview and view services.
+ * A provider of an instance of the view and a preview services.
  * @author Yohann Chastagnier
  */
+@Provider
 public class ViewerProvider {
 
   private ViewerProvider() {
@@ -47,7 +49,7 @@ public class ViewerProvider {
 
   /**
    * Indicates if file is previewable.
-   * @param file
+   * @param file a file in the filesystem.
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isPreviewable(File file) {
@@ -56,7 +58,7 @@ public class ViewerProvider {
 
    /**
    * Indicates if file is previewable.
-   * @param path
+   * @param path the path to the file in the filesystem.
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isPreviewable(String path) {
@@ -66,7 +68,7 @@ public class ViewerProvider {
 
   /**
    * Indicates if file is displayable with FlexPaper.
-   * @param file
+   * @param file a file in the filesystem.
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isViewable(File file) {
@@ -75,7 +77,7 @@ public class ViewerProvider {
 
    /**
    * Indicates if file is displayable with FlexPaper.
-   * @param path
+   * @param path the path of the file in the filesystem.
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isViewable(String path) {

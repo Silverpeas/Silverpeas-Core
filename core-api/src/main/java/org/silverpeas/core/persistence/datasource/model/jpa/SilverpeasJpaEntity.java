@@ -355,7 +355,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
     ArgumentAssertion.assertDefined(getCreatorId(),
         "createdBy attribute of entity " + getClass().getName() + " must exists on insert");
     ArgumentAssertion.assertDefined(getLastUpdaterId(),
-        "lastUpdateBy attribute of entity " + getClass().getName() + " must exists on insert");
+        "lastUpdatedBy attribute of entity " + getClass().getName() + " must exists on insert");
     clearSystemData();
   }
 
