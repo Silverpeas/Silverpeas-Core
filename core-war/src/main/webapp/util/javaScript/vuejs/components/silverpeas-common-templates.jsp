@@ -225,6 +225,32 @@
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->
+<silverpeas-component-template name="query-input-select">
+  <div class="silverpeas-query-input-select">
+    <silverpeas-attached-popin v-if="display"
+                               v-bind:toElement="toElement"
+                               v-bind:minWidth="minWidth"
+                               v-bind:maxWidth="maxWidth"
+                               v-bind:minHeight="minHeight"
+                               v-bind:maxHeight="maxHeight"
+                               v-bind:scrollEndEvent="scrollEndEvent"
+                               v-bind:anchor="anchor"
+                               v-bind:fadeDurationType="fadeDurationType">
+      <silverpeas-list v-bind:items="items"
+                       v-bind:with-fade-transition="true">
+        <silverpeas-list-item v-for="(item, index) in items"
+                              v-on:mouseleave="mouseOver = false"
+                              v-on:mouseenter="mouseOver = true;setActiveIndex(index)"
+                              v-on:click="selectCurrent()"
+                              v-bind:class="{active:index===activeIndex}">
+          <slot v-bind:item="item"></slot>
+        </silverpeas-list-item>
+      </silverpeas-list>
+    </silverpeas-attached-popin>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
 <silverpeas-component-template name="link">
   <a href="javascript:void(0)" v-bind:alt="help" v-on:click="hideTitle"><slot></slot></a>
 </silverpeas-component-template>

@@ -103,7 +103,6 @@
                 return sp.promise.rejectDirectlyWith(warningMsg);
               }
               const data = {
-                osm : osmResponse,
                 lonLat : lonLat,
                 street : osmResponse.address.road ? osmResponse.address.road.split(',') : [],
                 postalCode : osmResponse.address.postcode,
@@ -158,7 +157,8 @@
   };
 
   /**
-   * Object representing an address. The given data object SHOULD contains following structure:
+   * Object representing an address. The data parameter given to the class constructor MUST
+   * contain the structure expected by {@link AddressItem} class with the additional attributes:
    * <pre>
    *   {
    *     street : [street on several lines],
@@ -170,64 +170,17 @@
    * @param data the structured address data.
    * @constructor
    */
-  window.MapAddress = function(data) {
-    let lonLatPromise;
-    this.promiseLonLat = function() {
-      if (!lonLatPromise) {
-        if (data.lonLat instanceof MapLonLat) {
-          lonLatPromise = sp.promise.resolveDirectlyWith(data.lonLat);
+  window.MapAddress = AddressItem.extend({
+    promiseLonLat : function() {
+      if (!this.__context.lonLatPromise) {
+        const lonLat = this.__context.data.lonLat;
+        if (lonLat instanceof MapLonLat) {
+          this.__context.lonLatPromise = sp.promise.resolveDirectlyWith(lonLat);
         } else {
-          lonLatPromise = MapAddressService.getLonLatFromAddress(this);
+          this.__context.lonLatPromise = MapAddressService.getLonLatFromAddress(this);
         }
       }
-      return lonLatPromise;
+      return this.__context.lonLatPromise;
     }
-
-    /**
-     * Gets the street data as an array.
-     * @returns {[]|*|*[]}
-     */
-    this.getStreet = function() {
-      return data.street || [];
-    };
-
-    /**
-     * Gets the postal code of the city.
-     * @returns {*|string}
-     */
-    this.getPostalCode = function() {
-      return data.postalCode || '';
-    };
-
-    /**
-     * Gets the name of the city
-     * @returns {*|string}
-     */
-    this.getCity = function() {
-      return data.city || '';
-    };
-
-    /**
-     * Gets the name of the country.
-     * @returns {*|string}
-     */
-    this.getCountry = function() {
-      return data.country || 'France';
-    };
-
-    /**
-     * Formats the address data.
-     */
-    this.format = function () {
-      const data = [];
-      Array.prototype.push.apply(data, this.getStreet());
-      data.push(
-          StringUtil.defaultStringIfNotDefined(this.getPostalCode()) + ' ' +
-          StringUtil.defaultStringIfNotDefined(this.getCity()));
-      data.push(this.getCountry())
-      return data.filter(function(line) {
-        return StringUtil.isDefined(line)
-      }).join('<br/>');
-    };
-  };
+  });
 })();

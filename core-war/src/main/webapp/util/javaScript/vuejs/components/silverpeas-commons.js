@@ -557,13 +557,12 @@
    * silverpeas-attached-popin handles the display of a popin attached to an HTML element.
    *
    * It defines several attributes:
-   * {relatedId} - String or HTML element - .
+   * {toElement} - String or HTML element - the css selector of the INPUT instance to manage.
    * {minWidth} - Number (optional) - the minimal width of the popin.
    * {maxWidth} - Number (optional) - the maximal width of the popin.
    * {minHeight} - Number (optional) -  the minimal height of the popin.
    * {maxHeight} - Number (optional) -  the maximal height of the popin.
-   * {openPromise} - Promise (optional) - a promise which MUST be resolved before displaying the
-   * popin.
+   * {openPromise} - Promise (optional) - a promise which MUST be resolved before displaying the popin.
    * {scrollEndEvent} - Number (optional) - If filled, it activates the management of scroll event
    * which permits to send event when the scroll is at end (or almost). The value to filled is the
    * size in pixel before the real scroll end at which 'scroll-end' event is emitted.
@@ -571,42 +570,45 @@
    * The following example illustrates the only one possible use of the directive:
    * <silverpeas-attached-popin ...>...</silverpeas-attached-popin>
    */
+  const VuejsAttachedPopinMixin = {
+    emits : ['scroll-end'],
+    props : {
+      'toElement' : {
+        'required' : true
+      },
+      'minWidth' : {
+        'type' : Number,
+        'default' : undefined
+      },
+      'maxWidth' : {
+        'type' : Number,
+        'default' : undefined
+      },
+      'minHeight' : {
+        'type' : Number,
+        'default' : undefined
+      },
+      'maxHeight' : {
+        'type' : Number,
+        'default' : undefined
+      },
+      scrollEndEvent : {
+        'type' : Number,
+        'default' : undefined
+      },
+      anchor : {
+        'type' : String,
+        'default' : 'left'
+      },
+      fadeDurationType : {
+        'type' : String,
+        'default' : 'normal'
+      }
+    }
+  };
   SpVue.component('silverpeas-attached-popin',
     commonAsyncComponentRepository.get('attached-popin', {
-      emits : ['scroll-end'],
-      props : {
-        'toElement' : {
-          'required' : true
-        },
-        'minWidth' : {
-          'type' : Number,
-          'default' : undefined
-        },
-        'maxWidth' : {
-          'type' : Number,
-          'default' : undefined
-        },
-        'minHeight' : {
-          'type' : Number,
-          'default' : undefined
-        },
-        'maxHeight' : {
-          'type' : Number,
-          'default' : undefined
-        },
-        scrollEndEvent : {
-          'type' : Number,
-          'default' : undefined
-        },
-        anchor : {
-          'type' : String,
-          'default' : 'left'
-        },
-        fadeDurationType : {
-          'type' : String,
-          'default' : 'normal'
-        }
-      },
+      mixins : [VuejsAttachedPopinMixin],
       data : function() {
         return {
           elBase : undefined,
@@ -669,6 +671,150 @@
           }
           positionMonitor.setOptions(__options);
           return positionMonitor;
+        }
+      }
+    }));
+
+  /**
+   * silverpeas-query-input-select handles the display of a popin attached to an INPUT element
+   * dedicated to perform simple text queries.
+   *
+   * The component will not create an input into the DOM but will decorate an existant one with
+   * additional behavior. When the user enter new characters into the input, 'query' event with the
+   * query value is triggered if it exists a minimum of characters (5 by default) and after a
+   * debounce time. When the caller gives the list of items, each item is displayed into an
+   * attached popin, as a list. When the user selects an item, 'select' event with item instance is
+   * triggered.
+   *
+   * The attributes of silverpeas-attached-popin are exposed.
+   * It defines also additional attributes:
+   * {inputTitle} - String (optional) - a title to set to input.
+   * {inputPlaceholder} - String (optional) - a placeholder to set to input.
+   * {items} - Array - an array of elements to be displayed
+   * {minQueryLength} - Number (optional) - the length threshold to reach before the query is taken
+   *                    into account.
+   * {queryDebounce} - Number (optional) - the time in ms after that the query is taken into
+   *                   account. 300ms by default.
+   *
+   * The following example illustrates a use of the component:
+   * @example:
+   * <silverpeas-query-input-select v-bind:toElement="target"
+   *                                v-bind:items="addresses"
+   *                                v-bind:min-query-length="5"
+   *                                v-bind:query-debounce="500"
+   *                                v-on:query="performQuery"
+   *                                v-on:select="$emit('select', $event)"
+   *                                v-slot="{ item }">
+   *   {{ item.getLabel() }}
+   * </silverpeas-query-input-select>
+   */
+  SpVue.component('silverpeas-query-input-select',
+    commonAsyncComponentRepository.get('query-input-select', {
+      emits : ['query', 'select'],
+      mixins : [VuejsAttachedPopinMixin],
+      props : {
+        inputTitle : {
+          'type' : String,
+          'default' : undefined
+        },
+        inputPlaceholder : {
+          'type' : String,
+          'default' : undefined
+        },
+        items : {
+          'type' : Array,
+          'required' : true
+        },
+        minQueryLength : {
+          'type' : Number,
+          'default' : 3
+        },
+        queryDebounce : {
+          'type' : Number,
+          'default' : 300
+        }
+      },
+      data : function() {
+        return {
+          activeIndex : -1,
+          lastValue : undefined,
+          mouseOver : false,
+          forceClose : false
+        };
+      },
+      mounted : function() {
+        if (StringUtil.isDefined(this.inputTitle)) {
+          this.toElement.setAttribute('title', this.inputTitle);
+        }
+        if (StringUtil.isDefined(this.inputPlaceholder)) {
+          this.toElement.setAttribute('placeholder', this.inputPlaceholder);
+        }
+        this.toElement.setAttribute('autocomplete', 'off');
+        this.toElement.addEventListener('focus', function() {
+          this.mouseOver = false;
+          this.forceClose = false;
+        }.bind(this));
+        this.toElement.addEventListener('blur', function() {
+          if (!this.mouseOver) {
+            this.forceClose = true;
+          }
+        }.bind(this));
+        this.toElement.addEventListener('keyup', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.keyCode === 13) {
+            this.selectCurrent();
+          } else if (e.keyCode === 38) {
+            this.previousActive();
+          } else if (e.keyCode === 40) {
+            this.nextActive();
+          }
+        }.bind(this));
+        this.toElement.addEventListener('keyup', sp.debounce(function(e) {
+          this.lastValue = this.value;
+          this.value = e.target.value;
+          if (e.keyCode !== 13 && this.lastValue !== this.value && StringUtil.isDefined(this.value) &&
+              this.value.length >= this.minQueryLength) {
+            this.forceClose = false;
+            this.$emit('query', this.value);
+          }
+        }.bind(this), this.queryDebounce));
+      },
+      methods : {
+        setActiveIndex : function(index) {
+          this.activeIndex = index;
+        },
+        previousActive : function() {
+          if (this.display) {
+            if (this.activeIndex === 0) {
+              this.activeIndex = this.items.length - 1;
+            } else {
+              this.activeIndex--;
+            }
+          }
+        },
+        nextActive : function() {
+          if (this.display) {
+            if (this.activeIndex === (this.items.length - 1)) {
+              this.activeIndex = 0;
+            } else {
+              this.activeIndex++;
+            }
+          }
+        },
+        selectCurrent : function() {
+          if (this.display && this.activeIndex !== -1) {
+            this.forceClose = true;
+            this.$emit('select', this.items[this.activeIndex]);
+          }
+        }
+      },
+      computed : {
+        display : function() {
+          if (this.items && this.activeIndex > (this.items.length - 1)) {
+            this.activeIndex = this.items.length - 1;
+          }
+          return !this.forceClose && this.items && this.items.length > 0;
         }
       }
     }));

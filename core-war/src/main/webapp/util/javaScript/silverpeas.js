@@ -803,6 +803,13 @@ if (!window.SilverpeasAjaxConfig) {
     initialize : function(url) {
       this._super(url);
       this.headers = {};
+      this.headersOnGetOnly = {
+        'If-Modified-Since' : 0
+      };
+    },
+    noAutomaticHeaders : function() {
+      this.headersOnGetOnly = {};
+      return this;
     },
     withHeaders : function(headerParams) {
       this.headers = extendsObject({}, headerParams);
@@ -816,6 +823,9 @@ if (!window.SilverpeasAjaxConfig) {
     },
     getHeaders : function() {
       return this.headers;
+    },
+    getHeadersOnGetOnly : function() {
+      return this.headersOnGetOnly;
     },
     byPostMethod : function() {
       this.method = 'POST';
@@ -888,10 +898,12 @@ if (typeof window.silverpeasAjax === 'undefined') {
       options = {url : options};
     }
     let params;
+    let headersOnGetOnly = undefined;
     if (typeof options.getUrl !== 'function') {
       params = extendsObject({"method" : "GET", url : '', headers : {}}, options);
     } else {
       const ajaxConfig = options;
+      headersOnGetOnly = ajaxConfig.getHeadersOnGetOnly();
       params = {
         url : ajaxConfig.getUrl(),
         method : ajaxConfig.getMethod(),
@@ -916,8 +928,10 @@ if (typeof window.silverpeasAjax === 'undefined') {
         }
       }
     }
-    if (params.method === 'GET') {
-      params.headers['If-Modified-Since'] = 0;
+    if (params.method === 'GET' && headersOnGetOnly) {
+      for (let key in headersOnGetOnly) {
+        params.headers[key] = headersOnGetOnly[key];
+      }
     }
     return new Promise(function(resolve, reject) {
 
@@ -2054,6 +2068,38 @@ if (typeof window.sp === 'undefined') {
         return new DOMParser().parseFromString(htmlAsString, 'text/html');
       },
       /**
+       * Inserts dynamically css styles into the DOM.
+       * @param cssTarget the target.
+       * @param directives CSS directives.
+       */
+      insertStyle : function(cssTarget, directives) {
+        sp.dom.insertStyles([{
+          cssTarget : cssTarget,
+          directives : directives
+        }]);
+      },
+      /**
+       * Inserts dynamically css styles into the DOM.
+       * @param cssStyles an array of css styles. Each style is an object of two attributes:
+       * {
+       *    cssTarget: 'the css selector of targets',
+       *    directives : 'the css directives'
+       * }
+       */
+      insertStyles : function(cssStyles) {
+        const $sheet = document.createElement('style');
+        let css = '';
+        cssStyles.forEach(function(style) {
+          css += style.cssTarget + '{';
+          for (let key in style.directives) {
+            css += key + ': ' + style.directives[key] + ';';
+          }
+          css += '}\n';
+        });
+        $sheet.innerHTML = css;
+        document.body.appendChild($sheet);
+      },
+      /**
        * Includes Silverpeas's registered plugins into DOM.
        * @param pluginNames {string|[string]} a plugin name as string or several as array of string.
        * @returns {Promise<unknown>} when inserted.
@@ -2189,6 +2235,12 @@ if (typeof window.sp === 'undefined') {
           element.focus();
           element.tabIndex = oldTabIndex;
         }, 0);
+      },
+      insertAfter : function(newNode, referenceNodeOrCssSelector) {
+        const referenceNode = typeof referenceNodeOrCssSelector === 'string'
+            ? document.querySelector(referenceNodeOrCssSelector)
+            : referenceNodeOrCssSelector;
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
       },
       cloneAndReplace: function(elementOrCssSelector, beforeReplaceCallback) {
         const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
