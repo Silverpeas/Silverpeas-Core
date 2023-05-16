@@ -393,6 +393,7 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(script(VUEJS_PATH + VUE_JS));
     }
     xhtml.addElement(script(VUEJS_PATH + SILVERPEAS_VUE_JS));
+    xhtml.addElement(link(VUEJS_COMPONENT_PATH + "silverpeas-commons.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-commons.js"));
     return xhtml;
   }
@@ -991,6 +992,30 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Includes all the scripts and stylesheets that made up the Silverpeas address search.
+   * @param xhtml the Web document as container of HTML elements.
+   * @param language the user language.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeAddressSearch(final ElementContainer xhtml, final String language) {
+    final LocalizationBundle bundle = ResourceLocator.getLocalizationBundle("org.silverpeas.address.multilang.addressBundle", language);
+    final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.address.settings.address");
+    final JavascriptSettingProducer settingBundle = settingVariableName("AddressSearchSettings");
+    xhtml.addElement(scriptContent(JavascriptBundleProducer.bundleVariableName("AddressSearchBundle")
+        .add("a.s.i.t", bundle.getString("address.search.input.title"))
+        .add("a.s.i.p", bundle.getString("address.search.input.placeholder"))
+        .produce()));
+    xhtml.addElement(scriptContent(settingBundle
+        .add("a.s.a.u.b", settings.getString("address.search.api.url.base", EMPTY))
+        .add("a.s.a.r.l", settings.getInteger("address.search.api.result.limit", 20))
+        .produce()));
+    xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-commons.js"));
+    xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-search-service.js"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "address/silverpeas-address-search-input.js"));
+    return xhtml;
+  }
+
+  /**
    * Includes all the scripts and stylesheets that made up the Silverpeas Map display.
    * @param xhtml the Web document as container of HTML elements.
    * @param language the user language.
@@ -1038,6 +1063,7 @@ public class JavascriptPluginInclusion {
         .add("c.d.tfs", settings.getString("clusters.default.textFontStyle", EMPTY))
         .add("c.d.z.p", settings.getInteger("clusters.default.zoom.padding", 200))
         .produce()));
+    xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-commons.js"));
     xhtml.addElement(link(mapDir + "css/silverpeas-map.css"));
     xhtml.addElement(script(mapDir + "js/services/silverpeas-map-address-service.js"));
     xhtml.addElement(script(mapDir + "js/services/silverpeas-map-user-service.js"));

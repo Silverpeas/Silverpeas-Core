@@ -101,6 +101,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
     add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
     add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
+    add(ADDRESSSEARCH, JavascriptPluginInclusion::includeAddressSearch);
     add(MAP, JavascriptPluginInclusion::includeMap);
   }
 }

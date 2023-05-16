@@ -236,9 +236,12 @@ function notyRegistredMessages(registredKey) {
 function notySetupRequestComplete(request) {
   if (!request.notySetupAjaxMessagesCompleteDone) {
     request.notySetupAjaxMessagesCompleteDone = true;
-    var registredKeyOfMessages = request.getResponseHeader('X-Silverpeas-MessageKey');
-    if (registredKeyOfMessages) {
-      notyRegistredMessages(registredKeyOfMessages);
+    const allHeaders = request.getAllResponseHeaders();
+    if (allHeaders && allHeaders.toLowerCase().indexOf('x-silverpeas-messagekey') > -1) {
+      const registeredKeyOfMessages = request.getResponseHeader('X-Silverpeas-MessageKey');
+      if (registeredKeyOfMessages) {
+        notyRegistredMessages(registeredKeyOfMessages);
+      }
     }
   }
 }
