@@ -39,7 +39,7 @@ import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.TestStatisticRule;
+import org.silverpeas.core.test.integration.rule.TestStatisticRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;

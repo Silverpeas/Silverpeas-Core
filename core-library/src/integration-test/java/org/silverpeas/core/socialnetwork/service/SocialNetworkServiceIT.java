@@ -36,7 +36,7 @@ import org.silverpeas.core.socialnetwork.stub.StubOrganizationController;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

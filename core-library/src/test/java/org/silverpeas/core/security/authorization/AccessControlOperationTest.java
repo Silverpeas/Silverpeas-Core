@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.authorization;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.util.EnumSet;
 import java.util.Set;

@@ -32,11 +32,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
-import org.silverpeas.core.test.extention.SystemProperty;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.SystemProperty;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
 import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.jcr.RepositoryProvider;
-import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;

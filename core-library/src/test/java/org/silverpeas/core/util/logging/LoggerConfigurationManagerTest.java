@@ -24,8 +24,8 @@
 package org.silverpeas.core.util.logging;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 
 import static org.hamcrest.CoreMatchers.nullValue;

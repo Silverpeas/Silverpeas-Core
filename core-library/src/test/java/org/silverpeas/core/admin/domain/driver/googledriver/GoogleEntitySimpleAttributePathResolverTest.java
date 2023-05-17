@@ -28,7 +28,7 @@ import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.AttributePathDecoder;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.SimpleAttributePathDecoder;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.util.List;
 

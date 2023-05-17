@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;

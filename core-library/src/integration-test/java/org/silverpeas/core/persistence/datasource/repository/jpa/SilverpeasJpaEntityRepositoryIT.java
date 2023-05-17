@@ -46,7 +46,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalTyp
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Timestamp;

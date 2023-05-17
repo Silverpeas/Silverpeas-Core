@@ -41,7 +41,7 @@ import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.Equi
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityServiceTest;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;

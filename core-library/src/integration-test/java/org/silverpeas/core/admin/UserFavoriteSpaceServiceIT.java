@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.List;
 

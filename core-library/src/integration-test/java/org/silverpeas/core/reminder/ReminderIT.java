@@ -45,8 +45,8 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.DefaultPersonalizationService;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
 

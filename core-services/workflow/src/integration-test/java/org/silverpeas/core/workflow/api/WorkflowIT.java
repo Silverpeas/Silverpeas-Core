@@ -52,7 +52,7 @@ public class WorkflowIT {
 
 
   @Test
-  public void testGetWorkflowEngine() throws Exception {
+  public void testGetWorkflowEngine() {
     WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
     assertThat(wfEngine, notNullValue());
   }

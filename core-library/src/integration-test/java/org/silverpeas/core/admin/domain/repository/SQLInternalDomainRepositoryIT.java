@@ -35,10 +35,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.DataSetTest;
+import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.lang.SystemWrapper;
 

@@ -29,8 +29,8 @@ import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 
 import static java.io.File.separatorChar;
 import static org.hamcrest.Matchers.is;

@@ -34,17 +34,17 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.util.SQLRequester;
+import org.silverpeas.core.test.integration.SQLRequester;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.api.user.ReplacementList;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -84,13 +84,13 @@ public class ReplacementIT {
 
   @Test
   public void getNoReplacementsOfAUserWithoutAnyReplacements() {
-    List<Replacement> replacements = Replacement.getAllOf(aUser("0"), WORKFLOW_INSTANCE_ID);
+    ReplacementList<?> replacements = Replacement.getAllOf(aUser("0"), WORKFLOW_INSTANCE_ID);
     assertThat(replacements.isEmpty(), is(true));
   }
 
   @Test
   public void getNoReplacementsByAUserWithoutAnyReplacements() {
-    List<Replacement> replacements = Replacement.getAllBy(aUser("0"), WORKFLOW_INSTANCE_ID);
+    ReplacementList<?> replacements = Replacement.getAllBy(aUser("0"), WORKFLOW_INSTANCE_ID);
     assertThat(replacements.isEmpty(), is(true));
   }
 
@@ -98,7 +98,7 @@ public class ReplacementIT {
   public void saveNewReplacementBetweenTwoUsersShouldPersistAllItsData() throws SQLException {
     final LocalDate tomorrow = LocalDate.now().plusDays(1);
     OperationContext.fromUser("0");
-    Replacement savedReplacement = Replacement.between(aUser("1"), aUser("0"))
+    Replacement<?> savedReplacement = Replacement.between(aUser("1"), aUser("0"))
                                               .inWorkflow(WORKFLOW_INSTANCE_ID)
                                               .during(
                                                   Period.between(tomorrow, tomorrow.plusWeeks(2)))
@@ -124,9 +124,9 @@ public class ReplacementIT {
   public void updateAReplacement() throws SQLException {
     final String id = "c550ffb1-6e76-4947-9fe3-b69777d758b6";
     OperationContext.fromUser("0");
-    final Replacement replacement =
+    final Replacement<?> replacement =
         Replacement.get(id).orElseThrow(() -> new AssertionError("No replacement of id " + id));
-    final Replacement expected = replacement.setSubstitute(aUser("3"))
+    final Replacement<?> expected = replacement.setSubstitute(aUser("3"))
         .setPeriod(Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusMonths(1)))
         .save();
     Map<String, Object> actual =
@@ -147,7 +147,7 @@ public class ReplacementIT {
   @Test
   public void getReplacementsOfAReplacedUserShouldReturnAllOfThem() {
     final User incumbent = aUser("1");
-    List<Replacement> replacements = Replacement.getAllOf(incumbent, WORKFLOW_INSTANCE_ID);
+    ReplacementList<?> replacements = Replacement.getAllOf(incumbent, WORKFLOW_INSTANCE_ID);
     assertThat(replacements.isEmpty(), is(false));
     assertThat(replacements.size(), is(2));
     assertThat(replacements.stream()
@@ -159,7 +159,7 @@ public class ReplacementIT {
   @Test
   public void getReplacementsByASubstituteShouldReturnAllOfThem() {
     final User substitute = aUser("2");
-    List<Replacement> replacements = Replacement.getAllBy(substitute, WORKFLOW_INSTANCE_ID);
+    ReplacementList<?> replacements = Replacement.getAllBy(substitute, WORKFLOW_INSTANCE_ID);
     assertThat(replacements.isEmpty(), is(false));
     assertThat(replacements.size(), is(2));
     assertThat(replacements.stream()
@@ -170,7 +170,7 @@ public class ReplacementIT {
 
   @Test
   public void getAllReplacementsInAWorkflowInstanceShouldReturnAllOfThem() {
-    List<Replacement> replacements = Replacement.getAll(WORKFLOW_INSTANCE_ID);
+    ReplacementList<?> replacements = Replacement.getAll(WORKFLOW_INSTANCE_ID);
     assertThat(replacements.isEmpty(), is(false));
     assertThat(replacements.size(), is(4));
     assertThat(
@@ -182,7 +182,7 @@ public class ReplacementIT {
   public void getAllReplacementsWithGivenUsersInAWorkflowInstanceShouldReturnAllOfThem() {
     final User incumbent = aUser("1");
     final User substitute = aUser("2");
-    List<Replacement> replacements =
+    ReplacementList<?> replacements =
         Replacement.getAllWith(incumbent, substitute, WORKFLOW_INSTANCE_ID);
     assertThat(replacements.isEmpty(), is(false));
     assertThat(replacements.size(), is(1));
@@ -195,6 +195,7 @@ public class ReplacementIT {
   @Test
   public void getAReplacementByItsId() {
     final String id = "c550ffb1-6e76-4947-9fe3-b69777d758b6";
+    //noinspection unchecked
     Optional<Replacement> replacement = Replacement.get(id);
     assertThat(replacement.isPresent(), is(true));
 

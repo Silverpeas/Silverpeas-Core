@@ -27,8 +27,8 @@ package org.silverpeas.core.web.token;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
 import org.silverpeas.core.web.token.SilverpeasWebTokenService.WebToken;
 
 import java.util.List;

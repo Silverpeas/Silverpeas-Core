@@ -37,8 +37,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.test.util.SQLRequester;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.SQLRequester;
 
 import javax.inject.Inject;
 import java.net.MalformedURLException;

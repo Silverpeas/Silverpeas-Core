@@ -37,8 +37,8 @@ import org.silverpeas.core.io.temp.TemporaryDataCleanerSchedulerInitializer.Temp
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.extention.SettingBundleStub;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.unit.extention.SettingBundleStub;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;

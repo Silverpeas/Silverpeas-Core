@@ -41,10 +41,10 @@ import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.test.rule.TestStatisticRule;
-import org.silverpeas.core.test.util.SQLRequester;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.TestStatisticRule;
+import org.silverpeas.core.test.integration.SQLRequester;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;

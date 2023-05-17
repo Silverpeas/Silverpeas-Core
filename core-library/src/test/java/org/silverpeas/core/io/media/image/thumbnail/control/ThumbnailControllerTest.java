@@ -26,9 +26,9 @@ package org.silverpeas.core.io.media.image.thumbnail.control;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;

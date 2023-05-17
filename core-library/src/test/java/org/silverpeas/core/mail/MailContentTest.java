@@ -26,7 +26,7 @@ package org.silverpeas.core.mail;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.util.Charsets;
 
 import javax.activation.DataHandler;

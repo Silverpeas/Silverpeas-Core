@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import java.util.List;
 import java.util.stream.Collectors;

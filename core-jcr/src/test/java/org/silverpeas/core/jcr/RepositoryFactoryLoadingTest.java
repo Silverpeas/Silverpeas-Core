@@ -28,7 +28,7 @@ package org.silverpeas.core.jcr;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.jcr.impl.oak.OakRepositoryFactory;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import javax.jcr.RepositoryFactory;
 import java.util.ServiceLoader;

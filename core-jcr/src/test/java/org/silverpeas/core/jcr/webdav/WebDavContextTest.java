@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheService;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

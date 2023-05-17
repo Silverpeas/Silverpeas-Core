@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.test.WarBuilder4Chat;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
 

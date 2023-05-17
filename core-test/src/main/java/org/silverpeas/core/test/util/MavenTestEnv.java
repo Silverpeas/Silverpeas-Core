@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.test.util;
 
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 
 /**
  * @author mmoquillon

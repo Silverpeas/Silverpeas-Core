@@ -37,7 +37,7 @@ import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.exec.CollectingLogOutputStream;
 import org.silverpeas.core.util.exec.ExternalExecution;

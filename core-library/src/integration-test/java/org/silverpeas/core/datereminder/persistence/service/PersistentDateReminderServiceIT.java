@@ -38,7 +38,7 @@ import org.silverpeas.core.datereminder.persistence.PersistentResourceDateRemind
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.Date;

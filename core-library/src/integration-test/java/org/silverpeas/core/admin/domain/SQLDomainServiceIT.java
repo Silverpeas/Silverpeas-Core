@@ -39,9 +39,9 @@ import org.silverpeas.core.admin.domain.exception.DomainAuthenticationProperties
 import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.test.DataSetTest;
+import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;

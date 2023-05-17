@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.personalorganizer.test.WarBuilder4PersonalOrganizer;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;

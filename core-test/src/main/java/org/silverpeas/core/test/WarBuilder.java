@@ -37,7 +37,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.test.integration.SilverpeasJcrInitializationListener;
 import org.silverpeas.core.test.integration.SilverpeasLoggerInitializationListener;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;

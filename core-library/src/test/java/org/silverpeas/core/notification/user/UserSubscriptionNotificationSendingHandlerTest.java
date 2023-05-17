@@ -27,8 +27,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;

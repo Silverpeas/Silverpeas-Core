@@ -35,10 +35,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.TestManagedMocks;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 
 import java.util.ArrayList;
 import java.util.Arrays;

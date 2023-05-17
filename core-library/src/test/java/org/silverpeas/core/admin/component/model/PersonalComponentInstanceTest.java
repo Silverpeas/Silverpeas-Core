@@ -30,9 +30,9 @@ import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
-import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 
 import java.util.Optional;
 

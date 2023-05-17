@@ -25,7 +25,7 @@ package org.silverpeas.core.admin;
 
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.*;

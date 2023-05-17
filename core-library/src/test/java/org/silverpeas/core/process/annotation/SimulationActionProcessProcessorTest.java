@@ -36,9 +36,9 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.management.ProcessManagement;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
-import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -40,7 +40,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.contribution.tracking.TestContext.TrackingEventRecord;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.Date;

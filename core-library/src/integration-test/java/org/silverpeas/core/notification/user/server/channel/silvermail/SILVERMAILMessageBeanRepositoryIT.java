@@ -36,8 +36,8 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.util.SQLRequester;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.SQLRequester;
 
 import javax.inject.Inject;
 import java.util.List;

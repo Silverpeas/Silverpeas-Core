@@ -39,10 +39,10 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTr
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.SettingBundleStub;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.TestBeanContainer;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.SettingBundleStub;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
 

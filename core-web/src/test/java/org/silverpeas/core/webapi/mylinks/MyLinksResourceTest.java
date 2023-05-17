@@ -33,10 +33,10 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.Mutable;
 
 import javax.ws.rs.WebApplicationException;

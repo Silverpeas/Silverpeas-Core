@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment.repository;
 
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import java.util.Arrays;
 import java.util.List;

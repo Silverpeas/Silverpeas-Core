@@ -29,7 +29,7 @@ import com.google.api.services.directory.model.User;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import javax.annotation.Nonnull;
 import java.util.List;

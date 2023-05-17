@@ -25,7 +25,7 @@ package org.silverpeas.core.template;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.util.MavenTestEnv;
 
 import java.io.File;

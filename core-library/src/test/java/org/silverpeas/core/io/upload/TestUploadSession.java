@@ -32,8 +32,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

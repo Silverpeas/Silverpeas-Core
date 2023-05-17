@@ -32,7 +32,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
 /**
  * @author ehugonnet

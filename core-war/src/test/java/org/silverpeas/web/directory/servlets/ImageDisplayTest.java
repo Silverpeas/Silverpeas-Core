@@ -26,7 +26,7 @@ package org.silverpeas.web.directory.servlets;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import javax.servlet.http.HttpServletRequest;
 

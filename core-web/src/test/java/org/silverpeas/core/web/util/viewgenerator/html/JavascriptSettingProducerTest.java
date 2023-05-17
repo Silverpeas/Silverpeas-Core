@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.util.SilverpeasBundle;
 
 import java.math.BigDecimal;

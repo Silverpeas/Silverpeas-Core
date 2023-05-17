@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
 
@@ -51,7 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static junit.framework.TestCase.*;
-import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
 /**
  * @author ehugonnet

@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.math.BigDecimal;
 

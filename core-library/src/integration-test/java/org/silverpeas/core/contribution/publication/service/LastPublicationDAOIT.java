@@ -40,7 +40,7 @@ import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.sql.Connection;
 import java.time.OffsetDateTime;
@@ -54,7 +54,7 @@ import static java.util.Calendar.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
 /**
  *

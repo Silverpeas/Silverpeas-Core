@@ -26,7 +26,7 @@ package org.silverpeas.core.admin;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import static org.hamcrest.Matchers.is;
 

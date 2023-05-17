@@ -24,7 +24,7 @@
 package org.silverpeas.core.cache.service;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import java.util.HashSet;
 import java.util.Set;

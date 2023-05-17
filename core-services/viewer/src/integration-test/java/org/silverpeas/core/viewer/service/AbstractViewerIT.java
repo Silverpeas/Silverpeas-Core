@@ -40,7 +40,7 @@ import org.silverpeas.core.contribution.converter.openoffice.OpenOfficeService;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ImageUtil;

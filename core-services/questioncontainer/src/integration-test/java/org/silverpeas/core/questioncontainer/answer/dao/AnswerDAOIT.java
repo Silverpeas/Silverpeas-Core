@@ -36,7 +36,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.DataSetTest;
+import org.silverpeas.core.test.integration.DataSetTest;
 
 import java.sql.Connection;
 import java.util.Collection;

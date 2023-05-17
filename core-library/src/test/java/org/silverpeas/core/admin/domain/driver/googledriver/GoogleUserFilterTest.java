@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserFilter.UserFilterException;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.util.ArrayList;
 import java.util.List;

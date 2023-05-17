@@ -22,4 +22,4 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-org.silverpeas.core.test.TestBeanContainer
+org.silverpeas.core.test.unit.TestBeanContainer

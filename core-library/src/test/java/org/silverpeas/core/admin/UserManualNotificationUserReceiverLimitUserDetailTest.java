@@ -29,8 +29,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.core.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;

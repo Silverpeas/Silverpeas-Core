@@ -32,8 +32,8 @@ import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 import org.silverpeas.core.process.session.DefaultProcessSession;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;

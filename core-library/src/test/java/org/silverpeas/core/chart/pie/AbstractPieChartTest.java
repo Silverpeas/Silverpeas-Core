@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chart.pie;
 
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 

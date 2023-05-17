@@ -36,7 +36,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.util.SQLRequester;
+import org.silverpeas.core.test.integration.SQLRequester;
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.ArrayList;

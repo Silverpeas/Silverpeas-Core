@@ -45,8 +45,8 @@ import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.lang.SystemWrapper;
 

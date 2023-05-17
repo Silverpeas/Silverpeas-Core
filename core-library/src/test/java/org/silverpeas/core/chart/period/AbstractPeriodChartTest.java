@@ -25,7 +25,7 @@ package org.silverpeas.core.chart.period;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 

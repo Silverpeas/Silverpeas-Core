@@ -25,7 +25,7 @@ package org.silverpeas.core.web.http;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.web.http.FileResponse.encodeAttachmentFilenameAsUtf8;

@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.mylinks.model.CategoryDetail;
 import org.silverpeas.core.mylinks.test.WarBuilder4MyLinks;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
 import javax.inject.Inject;
 import java.util.List;

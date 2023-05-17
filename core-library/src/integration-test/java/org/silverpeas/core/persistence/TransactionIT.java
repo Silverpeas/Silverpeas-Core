@@ -38,7 +38,7 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaEntityServiceTest;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
@@ -46,8 +46,8 @@ import java.sql.Connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
-import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
 /**
  * @author Yohann Chastagnier

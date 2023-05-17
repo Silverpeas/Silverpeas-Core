@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.silverpeas.core.node.model.NodeDetail.NO_RIGHTS_DEPENDENCY;
-import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getSafeConnection;
 
 /**
  *

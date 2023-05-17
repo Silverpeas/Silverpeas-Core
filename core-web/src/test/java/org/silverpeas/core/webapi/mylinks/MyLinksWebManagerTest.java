@@ -35,11 +35,11 @@ import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.LocalizationBundleStub;
-import org.silverpeas.core.test.extention.RequesterProvider;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.LocalizationBundleStub;
+import org.silverpeas.core.test.unit.extention.RequesterProvider;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 
 import javax.ws.rs.WebApplicationException;
 

@@ -25,7 +25,7 @@ package org.silverpeas.core.util.annotation;
 
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;

@@ -41,7 +41,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.Date;

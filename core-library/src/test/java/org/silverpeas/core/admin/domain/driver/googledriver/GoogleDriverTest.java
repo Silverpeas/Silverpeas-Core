@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;

@@ -25,10 +25,8 @@
 package org.silverpeas.core.media.streaming;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.media.streaming.StreamingProvider;
-import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 
 import java.util.Optional;
 

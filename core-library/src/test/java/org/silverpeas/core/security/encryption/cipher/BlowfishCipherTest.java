@@ -25,7 +25,7 @@ package org.silverpeas.core.security.encryption.cipher;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.KeyGenerator;

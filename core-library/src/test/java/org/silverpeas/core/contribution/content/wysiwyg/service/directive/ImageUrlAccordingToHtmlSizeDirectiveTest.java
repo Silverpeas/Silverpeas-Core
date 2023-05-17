@@ -32,8 +32,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
-import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.TestBeanContainer;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 

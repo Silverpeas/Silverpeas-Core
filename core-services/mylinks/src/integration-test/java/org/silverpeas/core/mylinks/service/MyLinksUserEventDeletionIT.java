@@ -26,22 +26,16 @@ package org.silverpeas.core.mylinks.service;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.mylinks.test.WarBuilder4MyLinks;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.silverpeas.core.mylinks.service.MyLinksServiceITUtil.*;
 
 /**

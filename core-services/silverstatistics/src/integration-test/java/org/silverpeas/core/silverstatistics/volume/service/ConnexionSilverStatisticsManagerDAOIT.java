@@ -38,7 +38,7 @@ import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsManagerDA
 import org.silverpeas.core.silverstatistics.volume.model.DataStatsCumul;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
-import org.silverpeas.core.test.DataSetTest;
+import org.silverpeas.core.test.integration.DataSetTest;
 
 import java.sql.Connection;
 import java.util.Arrays;

@@ -24,8 +24,7 @@
 package org.silverpeas.core.util.logging.sys;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
 

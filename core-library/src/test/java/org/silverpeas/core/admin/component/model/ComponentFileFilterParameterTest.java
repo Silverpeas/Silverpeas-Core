@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.net.URL;

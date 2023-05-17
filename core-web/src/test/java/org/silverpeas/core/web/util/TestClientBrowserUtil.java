@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 
 import javax.servlet.http.HttpServletRequest;
 

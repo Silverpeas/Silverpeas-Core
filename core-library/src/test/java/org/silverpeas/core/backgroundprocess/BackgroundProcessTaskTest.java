@@ -30,11 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.silverpeas.core.test.extention.LoggerExtension;
-import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
-import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.LoggerExtension;
+import org.silverpeas.core.test.unit.extention.LoggerLevel;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
 

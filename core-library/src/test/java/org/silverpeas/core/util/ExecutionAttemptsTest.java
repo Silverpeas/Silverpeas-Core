@@ -24,7 +24,7 @@
 package org.silverpeas.core.util;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.ExecutionAttempts.Job;
 
 import static org.hamcrest.Matchers.is;

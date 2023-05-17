@@ -33,7 +33,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.util.SQLRequester.ResultLine;
+import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
 
 import java.time.Instant;
 import java.time.LocalDate;

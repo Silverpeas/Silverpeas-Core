@@ -25,8 +25,8 @@
 package org.silverpeas.core.admin.service;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.util.List;
 import java.util.Set;

@@ -25,7 +25,7 @@
 package org.silverpeas.core.notification.user.model;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;

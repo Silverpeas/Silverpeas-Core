@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.user;
 
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.util.EnumSet;
 

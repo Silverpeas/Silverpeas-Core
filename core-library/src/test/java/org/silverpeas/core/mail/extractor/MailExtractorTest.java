@@ -24,7 +24,7 @@
 package org.silverpeas.core.mail.extractor;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.net.URISyntaxException;

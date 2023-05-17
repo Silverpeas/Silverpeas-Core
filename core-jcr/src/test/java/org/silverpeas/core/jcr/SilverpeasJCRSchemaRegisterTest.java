@@ -32,9 +32,9 @@ import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.security.SecurityTest;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
-import org.silverpeas.core.test.extention.SystemProperty;
-import org.silverpeas.core.test.extention.TestManagedBeans;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.SystemProperty;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.test.TestUser;
 
 import javax.jcr.Node;

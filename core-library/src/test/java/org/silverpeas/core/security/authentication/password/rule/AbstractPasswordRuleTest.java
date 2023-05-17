@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.authentication.password.rule;
 
 import org.junit.jupiter.api.AfterEach;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.lang.reflect.Constructor;

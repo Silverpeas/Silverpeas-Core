@@ -26,7 +26,7 @@ package org.silverpeas.core.thread;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
 

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore.Container;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore.Content;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;

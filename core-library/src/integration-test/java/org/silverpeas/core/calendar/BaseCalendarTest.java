@@ -30,8 +30,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.DataSetTest;
-import org.silverpeas.core.test.util.SQLRequester.ResultLine;
+import org.silverpeas.core.test.integration.DataSetTest;
+import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
 
 import java.sql.SQLException;
 import java.util.List;

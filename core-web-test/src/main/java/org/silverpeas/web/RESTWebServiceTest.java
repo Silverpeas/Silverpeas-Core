@@ -36,7 +36,7 @@ import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.web.environment.SilverpeasTestEnvironment;

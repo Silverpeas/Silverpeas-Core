@@ -32,10 +32,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.RequesterProvider;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.RequesterProvider;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 
 import java.sql.Connection;
 import java.util.ArrayList;

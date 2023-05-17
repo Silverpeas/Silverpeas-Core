@@ -40,7 +40,7 @@ import org.silverpeas.core.sharing.model.DownloadDetail;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.test.WarBuilder4Sharing;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.CollectionUtil;
 

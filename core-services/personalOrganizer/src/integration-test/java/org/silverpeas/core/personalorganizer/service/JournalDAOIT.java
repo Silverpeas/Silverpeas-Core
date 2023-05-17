@@ -35,7 +35,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
 import org.silverpeas.core.personalorganizer.test.WarBuilder4PersonalOrganizer;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Connection;

@@ -35,7 +35,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.util.SQLRequester.ResultLine;
+import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
