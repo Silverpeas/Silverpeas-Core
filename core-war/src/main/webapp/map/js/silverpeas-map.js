@@ -235,14 +235,25 @@
             }
           }
         });
-      });
+        this.dispatchEvent('click', e);
+      }.bind(this));
       // change mouse cursor when over marker
       __map.on('pointermove', function(e) {
         const pixel = __map.getEventPixel(e.originalEvent);
         const hit = __map.hasFeatureAtPixel(pixel);
         __map.getTarget().style.cursor = hit ? 'pointer' : '';
       });
-    }, 0);
+    }.bind(this), 0);
+
+    /**
+     * Removes all the registered markers.
+     */
+    this.clearMarkers = function() {
+      __markers.forEach(function(marker) {
+        marker.removeOverlays();
+      });
+      __markers.length = 0;
+    };
 
     /**
      * Gets the registered markers.
@@ -279,11 +290,16 @@
       const __coordinates = __getCoordinatesForViewFitting();
       if (__coordinates.length) {
         const boundingExtent = ol.extent.boundingExtent(__coordinates);
-        __map.getView().fit(boundingExtent, {
+        const fitOptions = {
           size : __map.getSize(),
-          minResolution : __map.getView().getResolution(),
           padding : INITIAL_VIEW_FIT_PADDING
-        });
+        };
+        if (this.getOptions().autoFitMaxZoom !== -1) {
+          fitOptions.maxZoom = this.getOptions().autoFitMaxZoom;
+        } else {
+          fitOptions.minResolution = __map.getView().getResolution();
+        }
+        __map.getView().fit(boundingExtent, fitOptions);
       }
     };
 
@@ -451,6 +467,7 @@
         __layerApi = new MapLayerApi();
         // merging default options with given ones
         const options = extendsObject(false, {
+          autoFitMaxZoom : this.settings.get('v.f.a.z.max'),
           minZoom : this.settings.get('v.z.min'),
           maxZoom : this.settings.get('v.z.max'),
           defaultZoom : this.settings.get('v.z.d'),
@@ -458,6 +475,12 @@
           clusters : {},
           center : __defaultCoordinates
         }, mapParams);
+        if (options.autoFitMaxZoom === '') {
+          options.autoFitMaxZoom = this.settings.get('v.f.a.z.max');
+        }
+        if (options.center instanceof MapLonLat) {
+          options.center = mapParams.center.asOlData();
+        }
         options.groups = extendsObject({
           color : this.settings.get('g.d.c'),
           opacity : this.settings.get('g.d.o'),
@@ -745,6 +768,9 @@
       aloneInCluster : !mapApi.getOptions().clusters.enabled,
       contentPromise : undefined
     }, options);
+    if (__options.position instanceof MapLonLat) {
+      __options.position = __options.position.asOlData();
+    }
     let __marker, __markerDetail, __$markerDetail;
     this.getCoordinates = function() {
       return __options.position;
@@ -768,6 +794,12 @@
       __options.visible = true;
       __refreshVisibility();
       mapApi.refresh();
+    };
+    this.removeOverlays = function() {
+      __map.removeOverlay(__marker);
+      if (__markerDetail) {
+        __map.removeOverlay(__markerDetail);
+      }
     };
     this.setAloneInCluster = function(aloneInCluster) {
       __options.aloneInCluster = aloneInCluster;
@@ -834,16 +866,30 @@
         $tipComponent.setAttribute('v-bind:marker', 'marker');
         if (typeof content === 'string') {
           $tipComponent.innerHTML = content;
+        } else if (typeof content.vuejs_def === 'object') {
+          const $div = document.createElement('div');
+          if (typeof content.vuejs_def.template === 'string') {
+            $div.innerHTML = content.vuejs_def.template;
+          } else {
+            $div.appendChild(content.vuejs_def.template);
+          }
+          $div.childNodes.forEach(function(child) {
+            $tipComponent.appendChild(child);
+          })
         } else {
           $tipComponent.appendChild(content);
         }
         __$markerDetail.appendChild($tipComponent);
         return __createVueJsInstance(__map, __$markerDetail, {
           data : function() {
-            return {
+            const data = {
               marker : __self,
               api : undefined
             };
+            if (typeof content.vuejs_def === 'object') {
+              return extendsObject(data, content.vuejs_def.data());
+            }
+            return data;
           }
         });
       }.bind(this)));

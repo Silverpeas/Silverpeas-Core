@@ -1078,6 +1078,29 @@ Style Utilise par le ViewGenerator
   line-height: 17px;
 }
 
+.sp_button.openMap {
+  background: #e9e9ed linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
+  padding: 1px 8px 0 8px;
+  margin: 0;
+  cursor: pointer;
+  border: 1px solid #8f8f9d;
+  height: 26px;
+  line-height: 24px;
+  display: inline-block;
+  border-radius: 4px;
+  color: #333;
+}
+
+.sp_button.openMap:before {
+  content: ' ';
+  display: inline-block;
+  background: transparent url(../icons/marker.gif) 0 2px no-repeat;
+  margin-right: 2px;
+  width: 16px;
+  height: 20px;
+  vertical-align: middle;
+}
+
 /* Objet Tabs */
 
 #gef-tabs {
