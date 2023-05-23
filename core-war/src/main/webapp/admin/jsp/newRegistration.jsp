@@ -38,7 +38,7 @@
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 <view:includePlugin name="virtualkeyboard"/>
 <view:includePlugin name="popup"/>
-<style type="text/css">
+<style>
 .titre {
     left: 375px;
 }
@@ -58,7 +58,7 @@
 <script type="text/javascript">
 
 //whitespace characters
-var whitespace = " \t\n\r";
+const whitespace = " \t\n\r";
 
 
 // Check whether string s is empty.
@@ -69,18 +69,15 @@ function isEmpty(s) {
 //Returns true if string s is empty or
 //whitespace characters only.
 function isWhitespace (s) {
-
-	var i;
-
  // Is s empty?
  if (isEmpty(s)) return true;
 
  // Search through string's characters one by one
  // until we find a non-whitespace character.
  // When we do, return false; if we don't, return true.
- for (i = 0; i < s.length; i++) {
+ for (let i = 0; i < s.length; i++) {
      // Check that current character isn't whitespace.
-     var c = s.charAt(i);
+     const c = s.charAt(i);
      if (whitespace.indexOf(c) === -1) return false;
  }
 
@@ -88,38 +85,13 @@ function isWhitespace (s) {
  return true;
 }
 
-//WORKAROUND FUNCTION FOR NAVIGATOR 2.0.2 COMPATIBILITY.
-//
-// The below function *should* be unnecessary.  In general,
-// avoid using it.  Use the standard method indexOf instead.
-//
-// However, because of an apparent bug in indexOf on
-// Navigator 2.0.2, the below loop does not work as the
-// body of stripInitialWhitespace:
-//
-// while ((i < s.length) && (whitespace.indexOf(s.charAt(i)) != -1))
-//   i++;
-//
-// ... so we provide this workaround function charInString
-// instead.
-//
-// charInString (CHARACTER c, STRING s)
-//
-// Returns true if single character c (actually a string)
-// is contained within string s.
-function charInString (c, s) {
-	for (i = 0; i < s.length; i++) {
-		if (s.charAt(i) === c) return true;
-  }
-  return false;
-}
 
 // Removes initial (leading) whitespace characters from s.
 // Global variable whitespace (see above)
 // defines which characters are considered whitespace.
 function stripInitialWhitespace (s) {
-	var i = 0;
-    while ((i < s.length) && charInString (s.charAt(i), whitespace))
+    let i = 0;
+    while ((i < s.length) && whitespace.includes(s.charAt(i)))
        i++;
 
     return s.substring (i, s.length);
@@ -133,8 +105,8 @@ function checkIsNotEmpty(text) {
 
 function checkEmailIsCorrectlyFormatted(src) {
   return new Promise(function(resolve, reject) {
-    var regex = /^[a-z0-9A-Z\_\.\-]{1,}[\@@]{1}[a-z0-9A-Z\_\.\-]*[a-z0-9A-Z]{1}[\.]{1}[a-zA-Z]{2,6}$/;
-    resolve(!isEmpty(src) && src.match(regex) != null);
+      const regex = /^[a-z0-9A-Z_.\-]+@[a-z0-9A-Z_.\-]*[a-z0-9A-Z][.][a-zA-Z]{2,6}$/;
+      resolve(!isEmpty(src) && src.match(regex) != null);
   });
 }
 
@@ -143,17 +115,17 @@ function checkEmailDoesNotExist(email) {
     $.get("<c:url value="/MailExists"/>?email=" + escape(email),
         function(data) {
           console.info("Check if " + email + " exists: " + data);
-          resolve(data.indexOf('MailExists') == -1);
+          resolve(data.indexOf('MailExists') === -1);
       });
   });
 }
 
 function checkForm()
 {
-    var form = document.getElementById("EDform");
-    var lastName = stripInitialWhitespace(form.elements["lastName"].value);
-    var firstName = stripInitialWhitespace(form.elements["firstName"].value);
-    var email = stripInitialWhitespace(form.elements["email"].value);
+    const form = document.getElementById("EDform");
+    const lastName = stripInitialWhitespace(form.elements["lastName"].value);
+    const firstName = stripInitialWhitespace(form.elements["firstName"].value);
+    const email = stripInitialWhitespace(form.elements["email"].value);
 
     function checkResult(result, errorMessage) {
       if (!result) {
@@ -189,8 +161,8 @@ function checkForm()
 
 function checkSubmit(ev)
 {
-	var touche = ev.keyCode;
-	if (touche === 13) {
+    const touche = ev.keyCode;
+    if (touche === 13) {
       checkForm();
     }
 }
