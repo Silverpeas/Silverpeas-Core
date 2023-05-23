@@ -104,10 +104,17 @@
               }
               const data = {
                 lonLat : lonLat,
-                street : osmResponse.address.road ? osmResponse.address.road.split(',') : [],
-                postalCode : osmResponse.address.postcode,
-                city : osmResponse.address.town,
+                house_number : osmResponse.address.house_number,
+                road : osmResponse.address.road,
+                neighbourhood : osmResponse.address.neighbourhood,
+                amenity : osmResponse.address.amenity,
+                suburb : osmResponse.address.suburb,
+                postcode : osmResponse.address.postcode,
+                city : osmResponse.address.city || osmResponse.address.town || osmResponse.address.village,
+                county : osmResponse.address.county,
+                state : osmResponse.address.state,
                 country : osmResponse.address.country,
+                country_code : osmResponse.address.country_code,
               };
               return new MapAddress(data);
             });
@@ -158,15 +165,7 @@
 
   /**
    * Object representing an address. The data parameter given to the class constructor MUST
-   * contain the structure expected by {@link AddressItem} class with the additional attributes:
-   * <pre>
-   *   {
-   *     street : [street on several lines],
-   *     postalCode : 'postal code of the city',
-   *     city : 'name of the city',
-   *     country : 'name of the country, France by default'
-   *   }
-   * </pre>
+   * contain the structure expected by {@link AddressItem} class (cf. AddressItem#initialize).
    * @param data the structured address data.
    * @constructor
    */

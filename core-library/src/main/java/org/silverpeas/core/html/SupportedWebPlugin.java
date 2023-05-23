@@ -289,6 +289,10 @@ public interface SupportedWebPlugin {
      */
     public static final SupportedWebPlugin VIRTUALKEYBOARD = () -> "VIRTUALKEYBOARD";
     /**
+     * Silverpeas plugin to manage common stuffs of address management.
+     */
+    public static final SupportedWebPlugin ADDRESSCOMMONS = () -> "ADDRESSCOMMONS";
+    /**
      * Silverpeas plugin to manage search of addresses.
      */
     public static final SupportedWebPlugin ADDRESSSEARCH = () -> "ADDRESSSEARCH";
