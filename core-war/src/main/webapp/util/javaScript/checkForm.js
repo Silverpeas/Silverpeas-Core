@@ -244,3 +244,24 @@ function checkemail(email) {
 	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return email === '' || !re.test(email) ? false : true;
 }
+
+/**
+ * Verifies some transversal rules about file upload.
+ * @param $fileInput the instance of the input into the DOM.
+ * @returns {Promise<*>}
+ */
+window.verifyFileInput = function($fileInput){
+    const [mediaFile] = $fileInput.files;
+    if (mediaFile) {
+        const data = new FormData();
+        data.append('fullPath', mediaFile.fullPath);
+        data.append('name', mediaFile.name);
+        data.append('size', mediaFile.size);
+        return silverpeasAjax({
+            method: 'POST',
+            url: (webContext + '/services/fileUpload/verify'),
+            data: data
+        });
+    }
+    return sp.promise.resolveDirectlyWith();
+}
