@@ -91,9 +91,11 @@
         label : data.properties.label,
         lat : data.geometry.coordinates[1],
         lon : data.geometry.coordinates[0],
-        street : [data.properties.name],
-        postalCode : data.properties.postcode,
-        city : data.properties.city
+        house_number : data.properties.housenumber,
+        road : data.properties.street,
+        postcode : data.properties.postcode,
+        city : data.properties.city,
+        country_code : 'FR'
       }));
     });
     return addresses;

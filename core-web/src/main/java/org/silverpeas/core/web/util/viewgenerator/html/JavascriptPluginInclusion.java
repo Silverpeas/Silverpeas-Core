@@ -994,10 +994,28 @@ public class JavascriptPluginInclusion {
   /**
    * Includes all the scripts and stylesheets that made up the Silverpeas address search.
    * @param xhtml the Web document as container of HTML elements.
+   * @return the completed parent container.
+   */
+  static ElementContainer includeAddressCommons(final ElementContainer xhtml, final String language) {
+    final JavascriptSettingProducer settingBundle = settingVariableName("AddressFormatSettings");
+    final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.address.settings.address");
+    xhtml.addElement(scriptContent(settingBundle
+        .add("a.f.c.c", language.toUpperCase())
+        .add("a.f.a", settings.getBoolean("address.format.abbreviate", false))
+        .produce()));
+    xhtml.addElement(script(SERVICE_PATH + "address/address-formatter.min.js"));
+    xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-commons.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes all the scripts and stylesheets that made up the Silverpeas address search.
+   * @param xhtml the Web document as container of HTML elements.
    * @param language the user language.
    * @return the completed parent container.
    */
   static ElementContainer includeAddressSearch(final ElementContainer xhtml, final String language) {
+    includeAddressCommons(xhtml, language);
     final LocalizationBundle bundle = ResourceLocator.getLocalizationBundle("org.silverpeas.address.multilang.addressBundle", language);
     final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.address.settings.address");
     final JavascriptSettingProducer settingBundle = settingVariableName("AddressSearchSettings");
@@ -1009,7 +1027,6 @@ public class JavascriptPluginInclusion {
         .add("a.s.a.u.b", settings.getString("address.search.api.url.base", EMPTY))
         .add("a.s.a.r.l", settings.getInteger("address.search.api.result.limit", 20))
         .produce()));
-    xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-commons.js"));
     xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-search-service.js"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "address/silverpeas-address-search-input.js"));
     return xhtml;
@@ -1022,6 +1039,7 @@ public class JavascriptPluginInclusion {
    * @return the completed parent container.
    */
   static ElementContainer includeMap(final ElementContainer xhtml, final String language) {
+    includeAddressCommons(xhtml, language);
     final LocalizationBundle mapBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.map.multilang.mapBundle", language);
     final SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.map.settings.map");
     final JavascriptSettingProducer settingBundle = settingVariableName("MapSettings");
@@ -1036,6 +1054,7 @@ public class JavascriptPluginInclusion {
         .produce()));
     xhtml.addElement(scriptContent(settingBundle
         .add("ip.c.c", JSONCodec.encode(settings.getList("view.infoPoint.category.colors", new String[0], ",")))
+        .add("v.f.a.z.max", settings.getInteger("view.fit.auto.zoom.max", 15))
         .add("v.z.min", settings.getInteger("view.zoom.min", 5))
         .add("v.z.max", settings.getInteger("view.zoom.max", 20))
         .add("v.z.d", settings.getInteger("view.zoom.default", 10))
@@ -1063,16 +1082,16 @@ public class JavascriptPluginInclusion {
         .add("c.d.tfs", settings.getString("clusters.default.textFontStyle", EMPTY))
         .add("c.d.z.p", settings.getInteger("clusters.default.zoom.padding", 200))
         .produce()));
-    xhtml.addElement(script(SERVICE_PATH + "address/silverpeas-address-commons.js"));
     xhtml.addElement(link(mapDir + "css/silverpeas-map.css"));
     xhtml.addElement(script(mapDir + "js/services/silverpeas-map-address-service.js"));
     xhtml.addElement(script(mapDir + "js/services/silverpeas-map-user-service.js"));
+    xhtml.addElement(script(mapDir + "js/silverpeas-map.js"));
+    xhtml.addElement(script(mapDir + "js/silverpeas-map-form.js"));
     xhtml.addElement(script(mapDir + "js/vuejs/silverpeas-map-common.js"));
     xhtml.addElement(script(mapDir + "js/vuejs/silverpeas-map-form-common.js"));
     xhtml.addElement(script(mapDir + "js/vuejs/components/silverpeas-map-common.js"));
     xhtml.addElement(script(mapDir + "js/vuejs/components/silverpeas-map-form-common.js"));
-    xhtml.addElement(script(mapDir + "js/silverpeas-map.js"));
-    xhtml.addElement(script(mapDir + "js/silverpeas-map-form.js"));
+    xhtml.addElement(script(mapDir + "js/vuejs/components/silverpeas-map-target-point.js"));
     return xhtml;
   }
 

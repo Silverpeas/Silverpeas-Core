@@ -22,9 +22,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//# sourceURL=/util/javaScript/services/address/silverpeas-address-search-service.js
+//# sourceURL=/util/javaScript/services/address/silverpeas-address-commons.js
 
 (function() {
+
+  const ADDRESS_FORMATTER_DATA = [
+    'house_number',
+    'road',
+    'neighbourhood',
+    'amenity',
+    'suburb',
+    'postcode',
+    'city',
+    'county',
+    'state',
+    'country',
+    'country_code'
+  ];
 
   /**
    * Object representing an address.
@@ -35,10 +49,17 @@
      * contain the following attributes:
      * <pre>
      *   {
-     *     street : [street on several lines],
-     *     postalCode : 'postal code of the city',
-     *     city : 'name of the city',
-     *     country : 'name of the country, France by default'
+     *     house_number:  17
+     *     road:          Rue du Médecin-Colonel Calbairac
+     *     amenity:       Place du Soleil
+     *     neighbourhood: Lafourguette
+     *     suburb:        Toulouse Ouest
+     *     postcode:      31000
+     *     city:          Toulouse
+     *     county:        Toulouse
+     *     state:         Midi-Pyrénées
+     *     country:       France
+     *     country_code:  FR
      *   }
      * </pre>
      * @param data the structured address data.
@@ -54,14 +75,21 @@
      * @returns {[]|*|*[]}
      */
     getStreet : function() {
-      return this.__context.data.street || [];
+      return this.toArray().filter(function(part) {
+        return [
+            this.__context.data.road,
+            this.__context.data.amenity,
+            this.__context.data.neighbourhood].filter(function(data) {
+              return !!data && part.indexOf(data) > -1;
+            }).length > 0;
+      }.bind(this));
     },
     /**
      * Gets the postal code of the city.
      * @returns {*|string}
      */
     getPostalCode : function() {
-      return this.__context.data.postalCode || '';
+      return this.__context.data.postcode || '';
     },
     /**
      * Gets the name of the city
@@ -75,38 +103,60 @@
      * @returns {*|string}
      */
     getCountry : function() {
-      return this.__context.data.country || 'France';
+      return this.__context.data.country || '';
+    },
+    /**
+     * Gets the code of the country.
+     * @returns {*|string}
+     */
+    getCountryCode : function() {
+      return (this.__context.data.country_code || '').toUpperCase();
+    },
+    /**
+     * Gets the format options.
+     * This method can be overridden in order to change the behavior against the context use.
+     * @returns {Object}
+     */
+    getFormatOptions : function() {
+      const fallbackCountryCode = AddressFormatSettings.get('a.f.c.c');
+      return {
+        appendCountry: this.getCountryCode() !== fallbackCountryCode,
+        abbreviate: AddressFormatSettings.get('a.f.a'),
+        fallbackCountryCode: AddressFormatSettings.get('a.f.c.c')
+      }
     },
     /**
      * Gets the address parts as an array.
+     * @param formatOptions the format options.
      * @returns {String[]}
      */
-    toArray : function() {
-      const data = [];
-      Array.prototype.push.apply(data, this.getStreet());
-      data.push(
-          StringUtil.defaultStringIfNotDefined(this.getPostalCode()) + ' ' +
-          StringUtil.defaultStringIfNotDefined(this.getCity()));
-      data.push(this.getCountry())
-      return data.filter(function(line) {
-        return StringUtil.isDefined(line)
-      });
+    toArray : function(formatOptions) {
+      const options = typeof formatOptions === 'object' ? formatOptions : this.getFormatOptions();
+      options.output = 'array';
+      const data = {};
+      ADDRESS_FORMATTER_DATA.forEach(function(attr) {
+        const value = this.__context.data[attr];
+        if (!!value && (attr !== 'country' || options.appendCountry)) {
+          data[attr] = (attr === 'country_code') ? value.toUpperCase() : value;
+        }
+      }.bind(this));
+      return window.addressFormatter.format(data, options);
     },
     /**
      * Formats the address data into a text of single line.
      * @returns {string}
      */
-    toText : function() {
-      return this.toArray().join(' ');
+    toText : function(formatOptions) {
+      return this.toArray(formatOptions).join(' ');
     },
     /**
      * Gets the address parts into an {@link HTMLDivElement}.
      * Each part is represented into an {@link HTMLParagraphElement}.
      * @returns {HTMLDivElement}
      */
-    toHtml : function() {
+    toHtml : function(formatOptions) {
       const $parts = document.createElement('div');
-      this.toArray().forEach(function(part) {
+      this.toArray(formatOptions).forEach(function(part) {
         const $part = document.createElement('p');
         $part.innerText = part;
         $parts.appendChild($part);

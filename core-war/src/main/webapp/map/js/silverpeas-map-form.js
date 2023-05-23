@@ -88,7 +88,7 @@
   });
 
   /**
-   * Object that handle information and redering of a point.
+   * Object that handle information and rendering of a point.
    * @type {(function(): *)|*}
    */
   window.MapInfoPoint = SilverpeasClass.extend({
@@ -119,21 +119,37 @@
     getLocation : function() {
     },
     /**
-     * Indicates if it is a VueJs rendering.<br/>
-     * If true, <silverpeas-info-point> is automatically inserted.<br/>
-     * The implementation of a such component MUST use the mixin:
-     * {@link FormCartoMarkerComponentMixin}
-     * @returns {boolean}
-     */
-    isVueJsRendering : function() {
-      return false;
-    },
-    /**
-     * If {@link #isVueJsRendering()} returns false, this method is used for HTML rendering.
-     * Promises the render of the form data item.
-     * @returns {Promise<HTMLBaseElement>}
+     * Promises a content wich could be one of following:
+     * - an {@link HTMLElement}, representing directly the DOM.
+     * - a {@link String}, representing directly the DOM.
+     * - an object containing the attribute 'vuejs_def' which is a vuejs definition (data and template)
+     *   @example
+     *   {
+     *     vuejs_def : {
+     *       data : function() {
+     *         return {
+     *           ...
+     *         }
+     *       },
+     *       template : '...'
+     *     }
+     *   }
+     * @returns {Promise<*>}
      */
     promiseRender : function() {
+      const formDataItem = this.formDataItem;
+      if (formDataItem) {
+        return sp.promise.resolveDirectlyWith({
+          vuejs_def : {
+            data : function() {
+              return {
+                formDataItem : formDataItem
+              }
+            },
+            template : '<silverpeas-info-point v-bind:form-data-item="formDataItem"></silverpeas-info-point>'
+          }
+        });
+      }
       return sp.promise.resolveDirectlyWith(document.createElement('div'));
     }
   });
@@ -308,9 +324,6 @@
           },
           getLocation : function() {
             return mapInfoPoint.getLocation();
-          },
-          isVueJsRendering : function() {
-            return mapInfoPoint.isVueJsRendering();
           }
         }))();
         return mapInfoPoint;
@@ -342,39 +355,35 @@
         return;
       }
       const category = infoPoint.getCategory();
-      const infoPointMarkers = categories.getInfoPointMarkers(category);
-      let contentPromise;
-      const $baseContainer = document.createElement('div');
-      $baseContainer.classList.add('info-window');
-      categories.getCssClassList(category).forEach(function(css) {
-        $baseContainer.classList.add(css);
-      });
-      if (infoPoint.isVueJsRendering()) {
-        const $vueJsDoc = document.createElement('div');
-        $baseContainer.appendChild($vueJsDoc);
-        contentPromise = sp.promise.resolveDirectlyWith($baseContainer);
-        __createVueJsInstance(cmpInstance, $vueJsDoc, {
-          data : function() {
-            return {
-              formDataItem : infoPoint.formDataItem
-            }
-          },
-          template : '<silverpeas-info-point v-bind:form-data-item="formDataItem"></silverpeas-info-point>'
-        });
-      } else {
-        contentPromise = infoPoint.promiseRender().then(function($content) {
-          $baseContainer.appendChild($content);
-          return $baseContainer;
-        });
-      }
       const marker = cmpInstance.mapApi.addNewMarker({
         color : categories.getColor(category),
         classList : categories.getCssClassList(category),
         title : infoPoint.getName(),
         position : lonLat.asOlData(),
         visible : infoPoint.visible,
-        contentPromise : contentPromise
+        contentPromise : infoPoint.promiseRender().then(function(content) {
+          const $baseContainer = document.createElement('div');
+          $baseContainer.classList.add('info-window');
+          categories.getCssClassList(category).forEach(function(css) {
+            $baseContainer.classList.add(css);
+          });
+          if (typeof content.vuejs_def === 'object') {
+            if (typeof content.vuejs_def.template ===  'string') {
+              $baseContainer.innerHTML = content.vuejs_def.template;
+            } else {
+              $baseContainer.appendChild(content.vuejs_def.template);
+            }
+            content.vuejs_def.template = $baseContainer;
+            return content;
+          } else if (typeof content === 'string') {
+            $baseContainer.innerHTML = content;
+          } else {
+            $baseContainer.appendChild(content);
+          }
+          return $baseContainer;
+        })
       });
+      const infoPointMarkers = categories.getInfoPointMarkers(category);
       infoPointMarkers.push({point : infoPoint, marker : marker});
       infoPointMarkers.visible = infoPoint.visible;
       return marker.promise;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2022 Silverpeas
+ * Copyright (C) 2000 - 2023 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #container {
@@ -43,7 +43,7 @@
   top: 2.3em;
   right: 0;
   height: calc(100% - 2.3em);
-  pointer-events : none;
+  pointer-events: none;
 }
 
 .ol-marker {
@@ -120,7 +120,7 @@
   background-color: #efefef;
   opacity: 0.8;
   font-weight: bold;
-  pointer-events : initial;
+  pointer-events: initial;
 }
 
 .mapping-filters .category {
@@ -154,7 +154,7 @@
   opacity: 0.8;
   font-weight: bold;
   white-space: nowrap;
-  pointer-events : initial;
+  pointer-events: initial;
 }
 
 .mapping-layers .not-selected {
@@ -340,4 +340,58 @@
 
 .info-window .horizontal-centered {
   text-align: left;
+}
+
+/**
+TARGET-POINT
+ */
+
+.silverpeas-map-target-point-popin {
+  width: 800px;
+  height: 600px;
+}
+
+.silverpeas-map-target-point-map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-marker.target-point {
+  width: auto;
+  height: 28px;
+  border: 1px solid #f92727;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+  background: rgb(255, 85, 85);
+  background: linear-gradient(180deg, rgba(255, 85, 85, 1) 0%, rgba(249, 39, 39, 1) 100%);
+  padding: 8px 7px 0 7px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.map-marker.target-point .pointer {
+  display: none;
+}
+
+.map-marker.target-point a {
+  opacity: 1;
+}
+
+.map-marker.target-point a:before {
+  content: ' ';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: transparent url(../icons/map-marker.png) 3px 0 no-repeat;
+}
+
+.map-tip-marker-content .target-point .address {
+  padding: 0 0.5em;
+  border-left: 4px solid #ddd;
+  margin-top: 0.5em;
+}
+
+.map-tip-marker-content .target-point .address p {
+  margin: 0;
 }
