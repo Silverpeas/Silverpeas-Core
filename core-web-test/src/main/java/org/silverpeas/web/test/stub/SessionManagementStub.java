@@ -113,6 +113,13 @@ public class SessionManagementStub implements SessionManagement {
   }
 
   @Override
+  public SessionInfo openOneShotSession(final User user, final HttpServletRequest request) {
+    SessionInfo session = openSession(user, request);
+    session.setAsOneShot();
+    return session;
+  }
+
+  @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest httpServletRequest) {
     UserDetail anonymousUser = UserDetail.getAnonymousUser();
     if (anonymousUser != null) {

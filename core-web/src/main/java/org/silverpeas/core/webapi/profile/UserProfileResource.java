@@ -67,10 +67,11 @@ import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_B
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
  * way to access a representation of one or several user profile. This representation is vehiculed
  * as a Web entity in the HTTP requests and responses.
- *
+ * <p>
  * The users that are published depend on some parameters whose the domain isolation and the profile
  * of the user behind the requesting. The domain isolation defines the visibility of a user or a
  * group of users in a given domain to the others domains in Silverpeas.
+ * </p>
  */
 @WebService
 @Path(USERS_BASE_URI)
@@ -94,7 +95,12 @@ public class UserProfileResource extends RESTWebService {
   private RelationShipService relationShipService;
 
   /**
-   * @return The user entity corresponding to the token specified in the URI.
+   * Gets the profile of the user whose the API token is either passed in the {@code Authorization} HTTP header (Bearer
+   * authentication scheme, IETF RFC 6750) or with the query parameter {@code access_token} (see IETF RFC 6750).
+   * <p>
+   * This endpoint works also with a basic authentication instead of a bearer one.
+   * </p>
+   * @return The user entity corresponding to the token specified in the request.
    */
   @GET
   @Path("token")
@@ -112,14 +118,15 @@ public class UserProfileResource extends RESTWebService {
   /**
    * Gets the users defined in Silverpeas and that matches the specified optional query parameters.
    * If no query parameters are set, then all the users in Silverpeas are sent back.
-   *
+   * <p>
    * The users to sent back can be filtered by a pattern their name has to satisfy, by the group
    * they must belong to, and by some pagination parameters.
-   *
+   * </p>
+   * <p>
    * In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
-   *
+   * </p>
    * @param userIds requested user identifiers
    * @param groupIds the identifier of the groups the users must belong to. The particular
    * identifier "all" means all user groups.
@@ -226,14 +233,15 @@ public class UserProfileResource extends RESTWebService {
    * Gets the profiles of the users that have access to the specified Silverpeas component instance
    * and that matches the specified optional query parameters. If no query parameters are set, then
    * all the users with the rights to access the component instance are sent back.
-   *
+   * <p>
    * The users to sent back can be filtered by a pattern their name has to satisfy, by the group
    * they must belong to, and by some pagination parameters.
-   *
+   * </p>
+   * <p>
    * In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
-   *
+   * </p>
    * @param instanceId the unique identifier of the component instance the users should have access
    * to.
    * @param groupId the unique identifier of the group the users must belong to. The particular
@@ -273,11 +281,9 @@ public class UserProfileResource extends RESTWebService {
     List<String> domainIds = new ArrayList<>();
     if (isDefined(groupId) && !QUERY_ALL_GROUPS.equals(groupId)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
+      // Limitation: when a group on MIXED domain if found, the filter on domain id is ignored
       if (StringUtil.isDefined(group.getDomainId())) {
         domainIds.add(group.getDomainId());
-      } else {
-        // Limitation: when a group on MIXED domain if found, the filter on domain id is ignored
-        domainIds.clear();
       }
     }
     if (getUser().isDomainRestricted()) {

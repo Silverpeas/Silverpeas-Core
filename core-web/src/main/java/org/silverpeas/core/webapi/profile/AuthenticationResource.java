@@ -25,10 +25,8 @@ package org.silverpeas.core.webapi.profile;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.web.rs.HTTPAuthentication;
-import org.silverpeas.core.web.rs.HTTPAuthentication.AuthenticationContext;
 import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;
@@ -37,18 +35,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- * A REST-based Web service that handles the authentication of a user to the data server.
- * If the authentication matches the basic authentication scheme, then a session is opened in
- * Silverpeas for the user behind the request and that session can be used both for browsing
+ * A REST-based Web service to authenticate a user in Silverpeas.
+ * <p>
+ * If the authentication matches the {@code Basic} authentication scheme, then a session is opened
+ * in Silverpeas for the user behind the request and this session can be used both for browsing
  * the Silverpeas web portal or to access the REST API by the same client. If the authentication
- * matches a bearer authentication scheme, then a session is created just for the HTTP request. The
- * latter is then pertinent only to check the authorization of the user to access the REST API of
+ * matches a {@code Bearer} authentication scheme, then a session is created just for the HTTP
+ * request. Latter is hence pertinent only to check the the user can access the REST API of
  * Silverpeas.
+ * </p>
  * <p>
  * This service is only interesting for opening an HTTP session before performing several tasks
  * in Silverpeas. It avoids to authenticate the user by its login and password for each HTTP request
  * against the REST API of Silverpeas. Nevertheless, the recommended (and better) way to consume the
- * REST API is to use the bearer authentication scheme with the API token of the user; the token
+ * REST API is to use the Bearer authentication scheme with the API token of the user; the token
  * can be passed in each request against the REST API in the {@code Authorization} HTTP header
  * without passing through the heaver authentication mechanism by user credentials
  * (login/domain/password).
@@ -61,25 +61,25 @@ public class AuthenticationResource extends RESTWebService {
   static final String PATH = "authentication";
 
   @Inject
-  private HTTPAuthentication authentication;
+  private UserPrivilegeValidation privilegeValidation;
 
   /**
-   * Authenticates the user identified either by its credentials passed through the Authorization
-   * HTTP header.
+   * Authenticates the user from his credentials passed through the {@code Authorization}
+   * HTTP header, opens a new HTTP session in Silverpeas in the case of a Basic authentication
+   * scheme, or throws a {@link javax.ws.rs.WebApplicationException} exception. If the user has
+   * already opened a session in Silverpeas and the request carries the session identifier, then
+   * nothing is done.
    * @return The profile of the user once authenticated.
    */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity authenticate() {
-    AuthenticationContext context =
-        new AuthenticationContext(getHttpServletRequest(),
-            getHttpServletResponse());
-    SessionInfo session = authentication.authenticate(context);
-    // Returning the user profile
-    User user = session.getUserDetail();
+    validateUserAuthentication(privilegeValidation);
+    User user = getUser();
     return UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId()));
   }
+
 
   @Override
   protected String getResourceBasePath() {

@@ -44,7 +44,8 @@ public abstract class SessionInfo implements SilverpeasUserSession {
    * A non defined session. To use instead of null or to represent a session info not bound to any
    * user session.
    */
-  public static final SessionInfo NoneSession = new SessionInfo() {};
+  public static final SessionInfo NoneSession = new SessionInfo() {
+  };
 
   // Object on which to synchronize (the instance indeed)
   private final Object mutex;
@@ -128,22 +129,35 @@ public abstract class SessionInfo implements SilverpeasUserSession {
   }
 
   /**
-   * Gets the last duration of its idle time.
+   * Gets the last duration of its idle time. A one-shot session cannot be in idle state. Invoking
+   * this method on such a session will throw an {@link IllegalStateException} exception.
    * @return the session alive timestamp.
    */
   public long getLastIdleDuration() {
+    checkIsNotOneShot();
     synchronized (mutex) {
       return System.currentTimeMillis() - idleTimestamp;
     }
   }
 
   /**
-   * Sets this session as currently idle. A session is idle if it is not used since a given time,
-   * but it is still in alive.
+   * Sets this session as currently idle. A one-shot session cannot be in idle state. Invoking
+   * this method on such a session will throw an {@link IllegalStateException} exception.
    */
   public void setAsIdle() {
+    checkIsNotOneShot();
     synchronized (mutex) {
       idleTimestamp = System.currentTimeMillis();
+    }
+  }
+
+  /**
+   * Sets this session as a one-shot one. A one-shot session cannot become a long-living session
+   * after.
+   */
+  public void setAsOneShot() {
+    synchronized (mutex) {
+      idleTimestamp = -1;
     }
   }
 
@@ -164,9 +178,11 @@ public abstract class SessionInfo implements SilverpeasUserSession {
   }
 
   /**
-   * Updates the last access timestamp.
+   * Updates the last access timestamp. A one-shot session cannot used in several user calls.
+   * Invoking this method on such a session will throw an {@link IllegalStateException} exception.
    */
   public void updateLastAccess() {
+    checkIsNotOneShot();
     synchronized (mutex) {
       this.lastAccessTimestamp = System.currentTimeMillis();
       this.idleTimestamp = 0;
@@ -220,6 +236,7 @@ public abstract class SessionInfo implements SilverpeasUserSession {
    * Silverpeas.
    * @return true if this session is defined, false otherwise.
    */
+  @Override
   public boolean isDefined() {
     return this != NoneSession && this.getUserDetail() != null;
   }
@@ -230,8 +247,19 @@ public abstract class SessionInfo implements SilverpeasUserSession {
    * transparent anonymous user account.
    * @return true if this session is a defined anonymous one, false otherwise.
    */
+  @Override
   public boolean isAnonymous() {
     return this.getUserDetail() != null && this.getUserDetail().isAnonymous();
+  }
+
+  /**
+   * Is this session a one-shot one? A one-shot session is a short time living session that doesn't
+   * live over the scope of a functional call (id est over the scope of an HTTP request).
+   * @return true if this session is a one-shot one, false otherwise.
+   */
+  @Override
+  public boolean isOneShot() {
+    return this.idleTimestamp == -1;
   }
 
   /**
@@ -240,5 +268,11 @@ public abstract class SessionInfo implements SilverpeasUserSession {
    */
   public SimpleCache getCache() {
     return cache;
+  }
+
+  private void checkIsNotOneShot() {
+    if (isOneShot()) {
+      throw new IllegalStateException("Such operation isn't allowed with one-shot session");
+    }
   }
 }

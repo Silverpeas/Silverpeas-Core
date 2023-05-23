@@ -109,6 +109,17 @@ public interface SessionManagement {
   SessionInfo openSession(final User user, final HttpServletRequest request);
 
   /**
+   * Opens a new session for the specified user with the specified HTTP request at the origin of the
+   * session ask. The opened session is only for the given HTTP request and it will be closed once
+   * the request processing is done.
+   * @param user the user for which an HTTP session with Silverpeas has to be opened.
+   * @param request the HTTP request at the origin of the session opening ask.
+   * @return a SessionInfo instance representing the current opened session with information about
+   * that session.
+   */
+  SessionInfo openOneShotSession(final User user, final HttpServletRequest request);
+
+  /**
    * Opens explicitly a new anonymous session. The opened session is built upon an HTTP one managed
    * directly by the underlying HTTP server/container. In Silverpeas, any anonymous access to it is
    * done under the cover of a peculiar and specific user account, the anonymous user account. This

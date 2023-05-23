@@ -70,4 +70,28 @@ public interface SilverpeasUserSession {
    * @param name the name of the attribute to unset.
    */
   void unsetAttribute(String name);
+
+  /**
+   * Is this session defined? A session is defined if it's a session opened for a user in
+   * Silverpeas.
+   * @return true if this session is defined, false otherwise.
+   */
+  boolean isDefined();
+
+  /**
+   * Is this session an anonymous one? A session is anonymous when no users are explicitly
+   * authenticated and hence identified. In such a situation, the users uses Silverpeas under the
+   * cover of a transparent anonymous user account.
+   * @return true if this session is a defined anonymous one, false otherwise.
+   */
+  boolean isAnonymous();
+
+  /**
+   * Is this session a one-shot one? A one-shot session is a short time living session that doesn't
+   * live over the scope of a single user call (id est over the scope of an HTTP request for web
+   * accesses). Usually a one-shot session is opened when accessing the Silverpeas Web resources
+   * API.
+   * @return true if this session is a one-shot one, false otherwise.
+   */
+  boolean isOneShot();
 }

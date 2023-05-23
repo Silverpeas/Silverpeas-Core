@@ -510,15 +510,51 @@ public class SessionManager implements SessionManagement, Initialization {
     };
   }
 
-  /**
-   * This method is dedicated to the authentication of users behind a WEB browser.
-   *
-   * @param user the user for which the session has to be opened
-   * @param request the HTTP servlet request in which the authentication is performed.
-   * @return a SessionInfo instance representing the opened session.
-   */
   @Override
   public SessionInfo openSession(User user, HttpServletRequest request) {
+    SessionInfo si = createUserSessionInfo(user, request);
+    try {
+      registerSession(si);
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+    }
+    return si;
+  }
+
+  @Override
+  public SessionInfo openOneShotSession(final User user, final HttpServletRequest request) {
+    SessionInfo sessionInfo = createUserSessionInfo(user, request);
+    sessionInfo.setAsOneShot();
+    return sessionInfo;
+  }
+
+  @Override
+  public SessionInfo openAnonymousSession(final HttpServletRequest request) {
+    SessionInfo sessionInfo = createAnonymousSession(request);
+    if (!sessionInfo.isDefined()) {
+      throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
+    }
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
+        sessionInfo.getCache());
+    anonymousSessions.put(sessionInfo.getId(), sessionInfo);
+    return sessionInfo;
+  }
+
+  /**
+   * Registers internally the session described by the specified information about that session.
+   * @param sessionInfo information about the session to open.
+   */
+  private void registerSession(SessionInfo sessionInfo) {
+    if (!sessionInfo.isAnonymous()) {
+      // anonymous session aren't related to any identified Silverpeas user. Only non-anonymous
+      // user session requires to be monitored by the session manager.
+      userDataSessions.put(sessionInfo.getSessionId(), sessionInfo);
+      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(sessionInfo));
+    }
+  }
+
+  @Nonnull
+  private SessionInfo createUserSessionInfo(final User user, final HttpServletRequest request) {
     if (user.isAnonymous()) {
       throw new IllegalArgumentException("Connection with anonymous access is invoked here!");
     }
@@ -538,39 +574,7 @@ public class SessionManager implements SessionManagement, Initialization {
     }
 
     HttpSession session = request.getSession();
-    HTTPSessionInfo si = new HTTPSessionInfo(session, anIP, user);
-    try {
-      openSession(si);
-    } catch (Exception ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    }
-    return si;
-  }
-
-  @Override
-  public SessionInfo openAnonymousSession(final HttpServletRequest request) {
-    SessionInfo sessionInfo = createAnonymousSession(request);
-    if (!sessionInfo.isDefined()) {
-      throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
-    }
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
-        sessionInfo.getCache());
-    anonymousSessions.put(sessionInfo.getId(), sessionInfo);
-    return sessionInfo;
-  }
-
-  /**
-   * Opens internally the session described by the specified information about that session.
-   *
-   * @param sessionInfo information about the session to open.
-   */
-  private void openSession(SessionInfo sessionInfo) {
-    if (!sessionInfo.isAnonymous()) {
-      // anonymous session aren't related to any identified Silverpeas user. Only non-anonymous
-      // user session requires to be monitored by the session manager.
-      userDataSessions.put(sessionInfo.getSessionId(), sessionInfo);
-      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(sessionInfo));
-    }
+    return new HTTPSessionInfo(session, anIP, user);
   }
 
   /**

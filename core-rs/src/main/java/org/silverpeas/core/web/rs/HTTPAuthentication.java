@@ -56,22 +56,35 @@ import java.util.regex.Pattern;
 import static org.silverpeas.core.web.rs.UserPrivilegeValidation.*;
 
 /**
- * An HTTP authentication mechanism for Silverpeas. It implements the authentication mechanism
- * in Silverpeas from an incoming HTTP request. This HTTP request can be as well an explicit
- * authentication call as a Silverpeas API consume. The HTTP request is expected either to contain
+ * An HTTP authentication mechanism for Silverpeas to allow users to consume the Silverpeas Web API.
+ * It implements the authentication process for any incoming HTTPs requests targeting a web resource
+ * of the Silverpeas Web API. This HTTP request can be as well an explicit
+ * authentication ask as a Silverpeas API consume. The HTTP request is expected either to contain
  * the HTTP header {@code Authorization} valued with the authentication scheme and the user
- * credentials as expected by the IETF RFC 2617 or to target a URI with the query parameter
- * {@code access_token} (see IETF RFC 6750).
+ * credentials as expected by the IETF RFC 2617 or to target a web resource URI with the query
+ * parameter {@code access_token} (see IETF RFC 6750).
  * <p>
- * Actually, Silverpeas supports two HTTP authentication schemes: the {@code Basic} one
- * (covered by the IETF RFC 2617) and the Bearer one (covered by the IETF RFC 6750). The API token
- * of the users must be passed with the {@code Bearer} scheme to access the REST API of
- * Silverpeas.
+ * Actually, Silverpeas supports for its web resources two HTTP authentication schemes: the
+ * {@code Basic} one (covered by the IETF RFC 2617) and the Bearer one (covered by the IETF RFC
+ * 6750). The API token of the users must be passed with the {@code Bearer} scheme to access the
+ * REST API of Silverpeas. Any other authentication schemes throws a {@link WebApplicationException}
+ * exception with the status {@link Response.Status#UNAUTHORIZED}.
  * </p>
  * <p>
- * The authentication opens a new session when succeeded, otherwise a
- * {@link WebApplicationException} exception is thrown with the status
- * {@link Response.Status#UNAUTHORIZED}.
+ * The two ways to authenticate with Silverpeas are for different purposes:
+ * </p>
+ * <ul>
+ *   <li>The authentication by credentials (carried by the {@code Basic} authentication scheme)
+ *   is for opening a session in Silverpeas in order to perform one or several Web API invocations.
+ *   The user behind will be then counted as a connected user.</li>
+ *   <li>The authentication by the API token (carried either by the query parameter
+ *   {@code access_token} or by the {@code Bearer} authentication scheme) is for a one-shot API
+ *   call and for doing it doesn't require a session to be opened. It is usually used by external
+ *   tools interacting with Silverpeas in the behalf of the user.</li>
+ * </ul>
+ * <p>
+ * The failure of the authentication throws a {@link WebApplicationException} exception with the
+ * status {@link Response.Status#UNAUTHORIZED}.
  * </p>
  * @author mmoquillon
  */
@@ -97,26 +110,26 @@ public class HTTPAuthentication {
   }
 
   /**
-   * Authenticates the user behind the incoming HTTP request according to the specified
+   * Authenticates the user that sent the incoming HTTP request according to the specified
    * authentication context.
    * <p>
    * The context is defined for the incoming HTTP request and for the HTTP response to send. The
    * HTTP request contains the elements required to authenticate the user at the source of the
    * request. The mandatory element is either the {@code Authorization} HTTP header that must be
-   * valued with an authentication scheme and with the credentials of the user or the
-   * {@code access_token} URI query parameter or the {@code access_token} form-encoded body
+   * valued with an authentication scheme and with the credentials of the user, or the
+   * {@code access_token} URI query parameter, or the {@code access_token} form-encoded body
    * parameter.
    * </p>
    * <p>
    * A {@link WebApplicationException} is thrown with the status
-   * {@link Response.Status#UNAUTHORIZED} in the following case:
+   * {@link Response.Status#UNAUTHORIZED} in the following cases:
    * </p>
    * <ul>
-   *   <li>No {@code Authentication} header and no {@code access_token} parameter</li>
-   *   <li>The authentication scheme isn't supported</li>
-   *   <li>the credentials passed in the {@code Authentication} header are invalid</li>
-   *   <li>the user API token passed in the {@code access_token} parameter is invalid</li>
-   *   <li>the user account in Silverpeas isn't valid (blocked, deactivated, ...)</li>
+   *   <li>No {@code Authentication} header and no {@code access_token} parameter;</li>
+   *   <li>The authentication scheme isn't supported;</li>
+   *   <li>The credentials passed in the {@code Authentication} header are invalid;</li>
+   *   <li>The user API token passed in the {@code access_token} parameter is invalid;</li>
+   *   <li>The user account in Silverpeas isn't in a valid state (blocked, deactivated, ...).</li>
    * </ul>
    * <p>
    * If the authentication process succeeds, then a session is created and returned. For a basic
@@ -126,13 +139,14 @@ public class HTTPAuthentication {
    * HTTP response; the session life will span over several HTTP requests and it will be closed
    * either explicitly or by the default session timeout. For a bearer authentication scheme and for
    * an authentication from the {@code access_token} parameter, the
-   * session is just created for the specific incoming request and will expire at the end of it.
+   * session is just created for the specific incoming request and will expire at the end of it;
+   * this is why the session identifier is not sent back to the user with the HTTP response.
    * </p>
    * <p>
    * At the end of the authentication, the context is alimented with the user credentials and with
    * the authentication scheme that were fetched from the HTTP request. They can then be retrieved
    * for further operation by the invoker of this method. In the case of an authentication from
-   * the {@code access_token} parameter, the authentication scheme is in the context is set as
+   * the {@code access_token} parameter, the authentication scheme in the context is set as
    * a bearer authentication scheme.
    * </p>
    * @param context the context of the authentication with the HTTP request and with the HTTP
@@ -189,17 +203,18 @@ public class HTTPAuthentication {
     if (matcher.matches() && matcher.groupCount() == credentialPartCount) {
       // All expected parts detected, so getting an authentication key
       try {
-        AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
-                matcher.group(loginPart))
-            .withAsPassword(matcher.group(passwordPart))
-            .withAsDomainId(matcher.group(domainIdPart));
+        AuthenticationCredential credential =
+            AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
+                .withAsPassword(matcher.group(passwordPart))
+                .withAsDomainId(matcher.group(domainIdPart));
         Authentication authenticator = Authentication.get();
         AuthenticationResponse result = authenticator.authenticate(credential);
         if (result.getStatus().succeeded()) {
           User user = authenticator.getUserByAuthToken(result.getToken());
           final SessionInfo session;
           if (!user.isAnonymous()) {
-            session = SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());
+            session = SessionManagementProvider.getSessionManagement()
+                .openSession(user, context.getHttpServletRequest());
             context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
             context.getHttpServletResponse()
                 .addHeader("Access-Control-Expose-Headers",
@@ -227,12 +242,8 @@ public class HTTPAuthentication {
     final User user = UserProvider.get().getUserByToken(token);
     if (user != null) {
       verifyUserCanLogin(user);
-      final SessionInfo session =
-          SessionManagementProvider.getSessionManagement().openSession(user, context.getHttpServletRequest());
-      context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
-      context.getHttpServletResponse()
-          .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
-      return session;
+      return SessionManagementProvider.getSessionManagement()
+          .openOneShotSession(user, context.getHttpServletRequest());
     }
     return null;
   }
