@@ -23,10 +23,9 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
@@ -39,6 +38,9 @@ import java.util.Map;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GroupOfParametersType", propOrder = { "label", "description", "help", "order", "parameters" })
 public class GroupOfParameters {
+
+  @XmlAttribute
+  protected String name = "noname";
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
@@ -65,6 +67,7 @@ public class GroupOfParameters {
   }
 
   public GroupOfParameters(final GroupOfParameters groupOfParameters) {
+    setName(groupOfParameters.getName());
     setLabel(new HashMap<>(groupOfParameters.getLabel()));
     setDescription(new HashMap<>(groupOfParameters.getDescription()));
     setHelp(new HashMap<>(groupOfParameters.getHelp()));
@@ -73,28 +76,37 @@ public class GroupOfParameters {
   }
 
   /**
+   * Gets the group name.
+   * @return a string.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Sets the group name.
+   * @param name a group name.
+   */
+  public void setName(final String name) {
+    this.name = name;
+  }
+
+  /**
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getLabel() {
+  protected Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
     return label;
   }
 
-  public String getLabel(String lang) {
-    if (getLabel().containsKey(lang)) {
-      return getLabel().get(lang);
-    }
-    return getLabel().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
   /**
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setLabel(Map<String, String> value) {
+  private void setLabel(Map<String, String> value) {
     this.label = value;
   }
 
@@ -102,25 +114,18 @@ public class GroupOfParameters {
    * Gets the value of the description property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getDescription() {
+  protected Map<String, String> getDescription() {
     if (description == null) {
       description = new HashMap<>();
     }
     return description;
   }
 
-  public String getDescription(String lang) {
-    if (getDescription().containsKey(lang)) {
-      return getDescription().get(lang);
-    }
-    return getDescription().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
   /**
    * Sets the value of the description property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setDescription(Map<String, String> value) {
+  private void setDescription(Map<String, String> value) {
     this.description = value;
   }
 
@@ -128,7 +133,7 @@ public class GroupOfParameters {
    * Gets the value of the help property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getHelp() {
+  protected Map<String, String> getHelp() {
     if (help == null) {
       help = new HashMap<>();
     }
@@ -139,7 +144,7 @@ public class GroupOfParameters {
    * Sets the value of the help property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setHelp(Map<String, String> value) {
+  private void setHelp(Map<String, String> value) {
     this.help = value;
   }
 
@@ -183,9 +188,4 @@ public class GroupOfParameters {
   public boolean isVisible() {
     return getParameterList().isVisible();
   }
-
-  public LocalizedGroupOfParameters localize(String lang) {
-    return new LocalizedGroupOfParameters(this, lang);
-  }
-
 }

@@ -200,7 +200,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
   private UnaryOperator<JSONObject> getWAComponentAsJSONObject(
       WAComponent component, LookHelper helper) {
     return (jsonObject -> jsonObject.put("name", component.getName())
-        .put(DESCRIPTION, component.getDescription().get(helper.getLanguage()))
+        .put(DESCRIPTION, component.getDescription(helper.getLanguage()))
         .put(LABEL, getComponentLabel(component.getName(), helper)));
   }
 

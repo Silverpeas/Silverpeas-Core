@@ -45,8 +45,7 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
 
   private PersonalComponentEntity(final SilverpeasComponent component, final String componentLabel,
       final String language) {
-    super(TYPE, "", 0, component.getName(), componentLabel, component.getDescription()
-        .get(language), "");
+    super(TYPE, "", 0, component.getName(), componentLabel, component.getDescription(language), "");
   }
 
   private PersonalComponentEntity(final SilverpeasComponentInstance component) {

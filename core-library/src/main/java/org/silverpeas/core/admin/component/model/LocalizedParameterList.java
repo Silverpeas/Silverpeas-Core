@@ -25,20 +25,27 @@ package org.silverpeas.core.admin.component.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Nicolas Eysseric
  */
 public class LocalizedParameterList extends ArrayList<LocalizedParameter> {
+  private static final long serialVersionUID = 8621941317822315512L;
 
-  private String lang;
+  private final String lang;
 
-  public LocalizedParameterList() {
-    super();
+  protected LocalizedParameterList(LocalizedGroupOfParameters bundle, ParameterList parameters) {
+    super(parameters.stream()
+        .map(p -> new LocalizedParameter(bundle, p))
+        .collect(Collectors.toList()));
+    this.lang = bundle.getLanguage();
   }
 
-  public LocalizedParameterList(ParameterList parameters, String lang) {
-    super(parameters.localize(lang));
+  public LocalizedParameterList(SilverpeasComponent component, ParameterList parameters, String lang) {
+    super(parameters.stream()
+        .map(p -> new LocalizedParameter(component, p, lang))
+        .collect(Collectors.toList()));
     this.lang = lang;
   }
 
@@ -68,5 +75,15 @@ public class LocalizedParameterList extends ArrayList<LocalizedParameter> {
 
   public String getLanguage() {
     return lang;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

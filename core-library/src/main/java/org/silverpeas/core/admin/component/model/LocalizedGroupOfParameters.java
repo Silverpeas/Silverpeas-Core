@@ -26,26 +26,33 @@ package org.silverpeas.core.admin.component.model;
 /**
  * @author Nicolas Eysseric
  */
-public class LocalizedGroupOfParameters {
+public class LocalizedGroupOfParameters extends ComponentLocalization {
 
-  private final String lang;
   private final GroupOfParameters group;
 
-  public LocalizedGroupOfParameters(GroupOfParameters group, String lang) {
+  public LocalizedGroupOfParameters(SilverpeasComponent component, GroupOfParameters group, String lang) {
+    super(component, lang);
     this.group = group;
-    this.lang = lang;
+  }
+
+  protected String getBundleKeyPrefix() {
+    return "parameterGroup." + group.getName();
   }
 
   public String getLabel() {
-    return group.getLabel(lang);
+    return getLocalized(getBundleKeyPrefix() + ".label", group.getLabel());
   }
 
   public String getDescription() {
-    return group.getDescription(lang);
+    return getLocalized(getBundleKeyPrefix() + ".description", group.getDescription());
+  }
+
+  public String getHelp() {
+    return getLocalized(getBundleKeyPrefix() + ".help", group.getHelp());
   }
 
   public LocalizedParameterList getParameters() {
-    return group.getParameterList().localize(lang);
+    return new LocalizedParameterList(this, group.getParameterList());
   }
 
 }

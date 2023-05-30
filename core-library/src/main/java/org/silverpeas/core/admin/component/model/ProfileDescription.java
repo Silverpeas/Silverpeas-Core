@@ -32,6 +32,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
+
 /**
  * Description of a user profile. It defines the common properties of such profile. A profile
  * defines the access rights of a user in an application instance according to the role he plays.
@@ -56,7 +58,7 @@ public class ProfileDescription {
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getLabel() {
+  protected Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
@@ -64,18 +66,19 @@ public class ProfileDescription {
   }
 
   /**
-   * Sets the value of the label property.
-   * @param value allowed object is {@link Multilang }
+   * Puts a localized label directly linked to the {@link ProfileDescription} instance.
+   * @param language the language the label is localized into.
+   * @param label a localized label.
    */
-  public void setLabel(Map<String, String> value) {
-    this.label = value;
+  public void putLabel(final String language, final String label) {
+    getLabel().put(checkLanguage(language), label);
   }
 
   /**
    * Gets the value of the help property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getHelp() {
+  protected Map<String, String> getHelp() {
     if (help == null) {
       help = new HashMap<>();
     }
@@ -83,11 +86,12 @@ public class ProfileDescription {
   }
 
   /**
-   * Sets the value of the help property.
-   * @param value allowed object is {@link Multilang }
+   * Puts a localized help directly linked to the {@link ProfileDescription} instance.
+   * @param language the language the help is localized into.
+   * @param help a localized help.
    */
-  public void setHelp(Map<String, String> value) {
-    this.help = value;
+  public void putHelp(final String language, final String help) {
+    getHelp().put(checkLanguage(language), help);
   }
 
   /**

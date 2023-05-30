@@ -75,7 +75,7 @@ public class Tool extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public Map<String, String> getLabel() {
+  protected Map<String, String> getLabel() {
     return Collections.emptyMap();
   }
 
@@ -90,7 +90,7 @@ public class Tool extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public Map<String, String> getDescription() {
+  protected Map<String, String> getDescription() {
     return Collections.emptyMap();
   }
 

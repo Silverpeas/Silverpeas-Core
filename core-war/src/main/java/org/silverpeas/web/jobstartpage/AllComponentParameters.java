@@ -26,6 +26,8 @@ package org.silverpeas.web.jobstartpage;
 import org.silverpeas.core.admin.component.model.LocalizedGroupOfParameters;
 import org.silverpeas.core.admin.component.model.LocalizedParameter;
 import org.silverpeas.core.admin.component.model.LocalizedParameterList;
+import org.silverpeas.core.admin.component.model.ParameterList;
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 
 import java.util.List;
 
@@ -34,10 +36,13 @@ import java.util.List;
  */
 public class AllComponentParameters {
 
+  private final SilverpeasComponent component;
   private LocalizedParameterList parameters;
   private List<LocalizedGroupOfParameters> groupsOfParameters;
 
-  public AllComponentParameters(LocalizedParameterList parameters, List<LocalizedGroupOfParameters> groups) {
+  public AllComponentParameters(SilverpeasComponent component, LocalizedParameterList parameters,
+      List<LocalizedGroupOfParameters> groups) {
+    this.component = component;
     this.parameters = parameters;
     this.groupsOfParameters = groups;
   }
@@ -51,7 +56,8 @@ public class AllComponentParameters {
   }
 
   public LocalizedParameterList getParameters() {
-    LocalizedParameterList allParameters = new LocalizedParameterList();
+    final LocalizedParameterList allParameters = new LocalizedParameterList(component,
+        new ParameterList(), parameters.getLanguage());
     allParameters.addAll(parameters);
     for (LocalizedGroupOfParameters group : groupsOfParameters) {
       allParameters.addAll(group.getParameters());
