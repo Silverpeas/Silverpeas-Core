@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * <p>
@@ -157,7 +158,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * @return possible object is {@link Multilang }
    */
   @Override
-  public Map<String, String> getLabel() {
+  protected Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
@@ -165,11 +166,12 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Sets the value of the label property.
-   * @param value allowed object is {@link Multilang }
+   * Puts a localized label directly linked to the {@link WAComponent} instance.
+   * @param language the language the label is localized into.
+   * @param label a localized label.
    */
-  public void setLabel(Map<String, String> value) {
-    this.label = value;
+  public void putLabel(final String language, final String label) {
+    getLabel().put(checkLanguage(language), label);
   }
 
   /**
@@ -177,7 +179,7 @@ public class WAComponent extends AbstractSilverpeasComponent {
    * @return possible object is {@link Multilang }
    */
   @Override
-  public Map<String, String> getDescription() {
+  protected Map<String, String> getDescription() {
     if (description == null) {
       description = new HashMap<>();
     }
@@ -185,38 +187,32 @@ public class WAComponent extends AbstractSilverpeasComponent {
   }
 
   /**
-   * Sets the value of the description property.
-   * @param value allowed object is {@link Multilang }
+   * Puts a localized description directly linked to the {@link WAComponent} instance.
+   * @param language the language the description is localized into.
+   * @param description a localized description.
    */
-  public void setDescription(Map<String, String> value) {
-    this.description = value;
+  public void putDescription(final String language, final String description) {
+    getDescription().put(checkLanguage(language), description);
   }
 
   /**
    * Gets the value of the suite property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getSuite() {
+  protected Map<String, String> getSuite() {
     if (suite == null) {
       suite = new HashMap<>();
     }
     return suite;
   }
 
-  @SuppressWarnings("unused")
-  public String getSuite(String lang) {
-    if (getSuite().containsKey(lang)) {
-      return getSuite().get(lang);
-    }
-    return getSuite().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
   /**
-   * Sets the value of the suite property.
-   * @param value allowed object is {@link Multilang }
+   * Puts a localized suite directly linked to the {@link WAComponent} instance.
+   * @param language the language the suite is localized into.
+   * @param suite a localized suite.
    */
-  public void setSuite(Map<String, String> value) {
-    this.suite = value;
+  public void putSuite(final String language, final String suite) {
+    getSuite().put(checkLanguage(language), suite);
   }
 
   /**

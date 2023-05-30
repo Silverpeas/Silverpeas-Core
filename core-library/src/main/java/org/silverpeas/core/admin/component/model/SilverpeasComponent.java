@@ -24,11 +24,9 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -79,40 +77,18 @@ public interface SilverpeasComponent {
   String getName();
 
   /**
-   * Gets the value of the label property.
-   * @return possible object is {@link Multilang }
-   */
-  Map<String, String> getLabel();
-
-  /**
    * Gets the value of the label property according to a given language.
    * @param lang the language into which the label must be translated.
    * @return possible object is {@link Multilang }
    */
-  default String getLabel(String lang) {
-    if (getLabel().containsKey(lang)) {
-      return getLabel().get(lang);
-    }
-    return getLabel().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
-  /**
-   * Gets the value of the description property.
-   * @return possible object is {@link Multilang }
-   */
-  Map<String, String> getDescription();
+  String getLabel(String lang);
 
   /**
    * Gets the value of the description property according to a given language.
    * @param lang the language into which the description must be translated.
    * @return possible object is {@link Multilang }
    */
-  default String getDescription(String lang) {
-    if (getDescription().containsKey(lang)) {
-      return getDescription().get(lang);
-    }
-    return getDescription().get(DisplayI18NHelper.getDefaultLanguage());
-  }
+  String getDescription(String lang);
 
   /**
    * Indicates if the component instance is a personal one.<br>

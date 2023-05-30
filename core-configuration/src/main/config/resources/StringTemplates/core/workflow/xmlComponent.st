@@ -7,25 +7,27 @@
     <behavior>workflow</behavior>
   </behaviors>
   <label>
-    $WAComponent.label.keys:{k| <message lang="$k$">$WAComponent.label.(k)$</message>};separator="\n"$
+    $LocalizedCmpLabels:{<message lang="$it.language$">$it.label$</message>};separator="\n"$
   </label>
   <description>
-    $WAComponent.description.keys:{k| <message lang="$k$">$WAComponent.description.(k)$</message>};separator="\n"$
+    $LocalizedCmpDescriptions:{<message lang="$it.language$">$it.description$</message>};separator="\n"$
   </description>
   <suite>
     <message lang="fr">05 Workflow</message>
   </suite>
+  <inheritSpaceRightsByDefault>true</inheritSpaceRightsByDefault>
+  <publicByDefault>false</publicByDefault>
   <visible>true</visible>
   <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>false</portlet>
   <router>RprocessManager</router>
   <profiles>
-    $WAComponent.profiles:{<profile name="$it.name$">
+    $LocalizedCmpProfiles.keys:{k|<profile name="$k$">
   <label>
-    $it.label.keys:{k| <message lang="$k$">$it.label.(k)$</message>};separator="\n"$
+    $LocalizedCmpProfiles.(k):{<message lang="$it.language$">$it.label$</message>};separator="\n"$
   </label>
   <help>
-    $it.help.keys:{k| <message lang="$k$">$it.help.(k)$</message>};separator="\n"$
+    $LocalizedCmpProfiles.(k):{$if(it.help)$<message lang="$it.language$">$it.help$</message>$endif$};separator="\n"$
   </help>
 </profile>};separator="\n"$
   </profiles>

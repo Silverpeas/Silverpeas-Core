@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class managing a collection of ContextualDesigantion objects.
@@ -41,8 +40,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class SpecificLabelListHelper implements ContextualDesignations, Serializable {
   private static final long serialVersionUID = -4580671511307866063L;
+  private static final String DEFAULT = "default";
+
   @XmlElement(type = SpecificLabel.class)
-  List<ContextualDesignation> labels = null;
+  private List<ContextualDesignation> labels;
 
   /**
    * Constructor
@@ -63,22 +64,23 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    * @see ContextualDesignations#getLabel(java. lang.String,
    * java.lang.String)
    */
+  @Override
   public String getLabel(String role, String language) {
     ContextualDesignation label = getSpecificLabel(role, language);
 
     if (label != null) {
       return label.getContent();
     }
-    label = getSpecificLabel(role, "default"); //$NON-NLS-1$
+    label = getSpecificLabel(role, DEFAULT); //$NON-NLS-1$
     if (label != null) {
       return label.getContent();
     }
-    label = getSpecificLabel("default", language); //$NON-NLS-1$
+    label = getSpecificLabel(DEFAULT, language); //$NON-NLS-1$
     if (label != null) {
       return label.getContent();
     }
     //$NON-NLS-1$ //$NON-NLS-2$
-    label = getSpecificLabel("default", "default");
+    label = getSpecificLabel(DEFAULT, DEFAULT);
     if (label != null) {
       return label.getContent();
     }
@@ -90,6 +92,7 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    * @see ContextualDesignations#getSpecificLabel
    * (java.lang.String, java.lang.String)
    */
+  @Override
   public ContextualDesignation getSpecificLabel(String role, String language) {
     SpecificLabel label = null;
     for (int l = 0; l < labels.size(); l++) {
@@ -107,6 +110,7 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    * @seecom.silverpeas.workflow.api.model.ContextualDesignations# addContextualDesignation
    * (ContextualDesignation)
    */
+  @Override
   public void addContextualDesignation(
       ContextualDesignation contextualDesignation) {
     labels.add(contextualDesignation);
@@ -116,6 +120,7 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    * (non-Javadoc)
    * @seecom.silverpeas.workflow.api.model.ContextualDesignations# createContextualDesignation()
    */
+  @Override
   public ContextualDesignation createContextualDesignation() {
     return new SpecificLabel();
   }
@@ -124,6 +129,7 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    * (non-Javadoc)
    * @seecom.silverpeas.workflow.api.model.ContextualDesignations# iterateContextualDesignation()
    */
+  @Override
   public Iterator<ContextualDesignation> iterateContextualDesignation() {
     if (labels == null) {
       return null;
@@ -137,12 +143,15 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
    * @seecom.silverpeas.workflow.api.model.ContextualDesignations#
    * removeContextualDesignation(java.lang.String)
    */
+  @Override
   public void removeContextualDesignation(
       ContextualDesignation contextualDesignation) throws WorkflowException {
     if (labels == null) {
       return;
     }
-    if (!labels.remove(contextualDesignation)) {
+    if (!labels.removeIf(d ->
+        d.getRole().equals(contextualDesignation.getRole()) &&
+        d.getLanguage().equals(contextualDesignation.getLanguage()))) {
       throw new WorkflowException("SpecificLabelListHelper.removeContextualDesignation()",
           //$NON-NLS-1$
           "workflowEngine.EX_DESIGNATION_NOT_FOUND", // $NON-NLS-1$

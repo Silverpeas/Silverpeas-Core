@@ -28,11 +28,15 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.ComponentSpaceProfileMapping;
 import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.component.model.LocalizedProfile;
+import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
+import org.silverpeas.core.admin.component.model.Message;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.Profile;
@@ -49,9 +53,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -86,15 +92,18 @@ class WAComponentRegistryTest {
     assertThat(result.isPresent(), is(true));
 
     WAComponent almanach = result.get();
+    LocalizedWAComponent frAlmanach = new LocalizedWAComponent(almanach, "fr");
+    LocalizedWAComponent enAlmanach = new LocalizedWAComponent(almanach, "en");
     assertThat(almanach.getName(), is("almanach"));
-    assertThat(almanach.getDescription(), hasKey("fr"));
-    assertThat(almanach.getDescription(), hasKey("en"));
+    assertThat(frAlmanach.getDescription(), not(emptyString()));
+    assertThat(enAlmanach.getDescription(), not(emptyString()));
+    assertThat(frAlmanach.getDescription(), not(is(enAlmanach.getDescription())));
     assertThat(almanach.isPortlet(), is(true));
     assertThat(almanach.isInheritSpaceRightsByDefault(), is(true));
     assertThat(almanach.isPublicByDefault(), is(false));
     assertThat(almanach.isVisible(), is(true));
     assertThat(almanach.isVisibleInPersonalSpace(), is(false));
-    assertThat(almanach.getSuite().get("fr"), is("02 Gestion Collaborative"));
+    assertThat(frAlmanach.getSuite(), is("02 Gestion Collaborative"));
     assertThat(almanach.getParameters().size(), is(5));
     Parameter paramWithOption = null;
     for (Parameter parameter : almanach.getParameters()) {
@@ -107,8 +116,11 @@ class WAComponentRegistryTest {
     final List<Profile> profiles = almanach.getProfiles();
     assertThat(profiles.size(), is(3));
     Profile profile = profiles.get(0);
+    LocalizedProfile enProfile = enAlmanach.getProfile("admin");
+    assertThat(enProfile, notNullValue());
     assertThat(profile.getName(), is("admin"));
-    assertThat(profile.getHelp("en"), nullValue());
+    assertThat(profile.getName(), is(enProfile.getName()));
+    assertThat(enProfile.getHelp(), nullValue());
     assertThat(profile.getSpaceProfileMapping(), notNullValue());
     assertThat(profile.getSpaceProfileMapping().getProfiles().size(), is(1));
     assertThat(profile.getSpaceProfileMapping().getProfiles().get(0).getValue(),
@@ -121,28 +133,35 @@ class WAComponentRegistryTest {
     assertThat(result.isPresent(), is(true));
 
     WAComponent component = result.get();
+    LocalizedWAComponent frComponent = new LocalizedWAComponent(component, "fr");
+    LocalizedWAComponent enComponent = new LocalizedWAComponent(component, "en");
     assertThat(component.getName(), is("testComponent"));
-    assertThat(component.getDescription(), hasKey("fr"));
-    assertThat(component.getDescription(), hasKey("en"));
+    assertThat(frComponent.getDescription(), not(emptyString()));
+    assertThat(enComponent.getDescription(), not(emptyString()));
+    assertThat(frComponent.getDescription(), not(is(enComponent.getDescription())));
     assertThat(component.isPortlet(), is(true));
     assertThat(component.isInheritSpaceRightsByDefault(), is(false));
     assertThat(component.isPublicByDefault(), is(true));
     assertThat(component.isVisible(), is(true));
     assertThat(component.isVisibleInPersonalSpace(), is(false));
-    assertThat(component.getSuite().get("fr"), is("10 Tests unitaires"));
+    assertThat(frComponent.getSuite(), is("10 Tests unitaires"));
     assertThat(component.getParameters(), empty());
     final List<Profile> profiles = component.getProfiles();
     assertThat(profiles.size(), is(3));
     Profile profile = profiles.get(0);
+    LocalizedProfile enProfile = enComponent.getProfile("admin");
     assertThat(profile.getName(), is("admin"));
-    assertThat(profile.getHelp("en"), nullValue());
+    assertThat(profile.getName(), is(enProfile.getName()));
+    assertThat(enProfile.getHelp(), nullValue());
     ComponentSpaceProfileMapping spaceMapping = profile.getSpaceProfileMapping();
     assertThat(spaceMapping, notNullValue());
     assertThat(spaceMapping.getProfiles().size(), is(1));
     assertThat(spaceMapping.getProfiles().get(0).getValue(), is("admin"));
     profile = profiles.get(2);
+    enProfile = enComponent.getProfile("user");
     assertThat(profile.getName(), is("user"));
-    assertThat(profile.getHelp("en"), is("Reader (read only)"));
+    assertThat(profile.getName(), is(enProfile.getName()));
+    assertThat(enProfile.getHelp(), is("Reader (read only)"));
     spaceMapping = profile.getSpaceProfileMapping();
     assertThat(spaceMapping, notNullValue());
     assertThat(spaceMapping.getProfiles().size(), is(2));
@@ -150,19 +169,22 @@ class WAComponentRegistryTest {
     assertThat(spaceMapping.getProfiles().get(1).getValue(), is("reader"));
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   void testLoadComponentWithXmlTemplates() throws Exception {
     Optional<WAComponent> result = registry.getWAComponent("kmelia");
     assertThat(result.isPresent(), is(true));
     WAComponent kmelia = result.get();
-
+    LocalizedWAComponent frKmelia = new LocalizedWAComponent(kmelia, "fr");
+    LocalizedWAComponent enKmelia = new LocalizedWAComponent(kmelia, "en");
     assertThat(kmelia.getName(), is("kmelia"));
-    assertThat(kmelia.getDescription(), hasKey("fr"));
-    assertThat(kmelia.getDescription(), hasKey("en"));
+    assertThat(frKmelia.getDescription(), not(emptyString()));
+    assertThat(enKmelia.getDescription(), not(emptyString()));
+    assertThat(frKmelia.getDescription(), not(is(enKmelia.getDescription())));
     assertThat(kmelia.isPortlet(), is(true));
     assertThat(kmelia.isVisible(), is(true));
     assertThat(kmelia.isVisibleInPersonalSpace(), is(true));
-    assertThat(kmelia.getSuite().get("fr"), is("01 Gestion Documentaire"));
+    assertThat(frKmelia.getSuite(), is("01 Gestion Documentaire"));
     assertThat(kmelia.getParameters().size(), is(39));
     Parameter paramWithXMLTemplate = null;
     Parameter versionControl = null;
@@ -186,21 +208,27 @@ class WAComponentRegistryTest {
     assertThat(options.size(), is(3));
     options.sort(new OptionComparator());
     Option option = options.get(0);
+    Map<String, String> optionalLabels = (Map<String, String>) readDeclaredField(option, "name", true);
     assertThat(option.getValue(), is("classifieds.xml"));
-    assertThat(option.getName().get("fr"), is("Classifieds"));
+    assertThat(optionalLabels.get("fr"), is("Classifieds"));
     option = options.get(1);
+    optionalLabels = (Map<String, String>) readDeclaredField(option, "name", true);
     assertThat(option.getValue(), is("sandbox.xml"));
-    assertThat(option.getName().get("fr"), is("Sandbox"));
+    assertThat(optionalLabels.get("fr"), is("Sandbox"));
     option = options.get(2);
+    optionalLabels = (Map<String, String>) readDeclaredField(option, "name", true);
     assertThat(option.getValue(), is("template.xml"));
-    assertThat(option.getName().get("fr"), is("template"));
+    assertThat(optionalLabels.get("fr"), is("template"));
 
     assertThat(versionControl, is(notNullValue()));
     assertThat(versionControl.getWarning().isPresent(), is(true));
     assertThat(versionControl.getWarning().get().isAlways(), is(true));
-    assertThat(versionControl.getWarning().get().getMessages(), aMapWithSize(3));
+    final List<Message> message = (List<Message>) readDeclaredField(
+        versionControl.getWarning().get(), "message", true);
+    assertThat(message, hasSize(3));
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   void testLoadComponentWithOneTemplate() throws Exception {
     Optional<WAComponent> result = registry.getWAComponent("classifieds");
@@ -233,8 +261,9 @@ class WAComponentRegistryTest {
     }
     assertThat(visibleOptions.size(), is(1));
     Option option = options.get(0);
+    Map<String, String> optionalLabels = (Map<String, String>) readDeclaredField(option, "name", true);
     assertThat(option.getValue(), is("classifieds.xml"));
-    assertThat(option.getName().get("fr"), is("Classifieds"));
+    assertThat(optionalLabels.get("fr"), is("Classifieds"));
   }
 
   @Test
@@ -245,12 +274,14 @@ class WAComponentRegistryTest {
     assertThat(Files.exists(expectedDescriptor), is(false));
     assertThat(streamComponentDescriptors(componentName).count(), is(0L));
     String label = "Nouveau Workflow";
+    String description = "Le nouveau workflow";
+    String suite = "80 Nouvelles applications";
 
     WAComponent component = new WAComponent();
     component.setName(componentName);
-    component.getLabel().put("fr", label);
-    component.getDescription().put("fr", "Le nouveau workflow");
-    component.getSuite().put("fr", "80 Nouvelles applications");
+    component.putLabel("fr", label);
+    component.putDescription("fr", description);
+    component.putSuite("fr", suite);
     component.setPublicByDefault(true);
     component.setInheritSpaceRightsByDefault(false);
     component.setVisible(true);
@@ -259,8 +290,11 @@ class WAComponentRegistryTest {
     registry.putWorkflow(component);
     Optional<WAComponent> result = registry.getWAComponent(componentName);
     assertThat(result.isPresent(), is(true));
-    assertThat(result.get().getLabel().get("fr"), is(label));
-    assertThat(registry.getAllWAComponents().size(), is(6));
+    LocalizedWAComponent frComponent = new LocalizedWAComponent(result.get(), "fr");
+    assertThat(frComponent.getLabel(), is(label));
+    assertThat(frComponent.getDescription(), is(description));
+    assertThat(frComponent.getSuite(), is(suite));
+    assertThat(registry.getAllWAComponents().size(), is(7));
     assertThat(Files.exists(expectedDescriptor), is(true));
     assertThat(streamComponentDescriptors(componentName).count(), is(1L));
 

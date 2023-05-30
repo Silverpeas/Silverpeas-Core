@@ -45,6 +45,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * Instance parameter defined for an application component. An instance parameter is a
@@ -126,25 +127,27 @@ public class Parameter {
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getLabel() {
+  protected Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
     return label;
   }
 
-  public String getLabel(String lang) {
-    if (getLabel().containsKey(lang)) {
-      return getLabel().get(lang);
-    }
-    return getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+  /**
+   * Puts a localized label directly linked to the {@link Parameter} instance.
+   * @param language the language the label is localized into.
+   * @param label a localized label.
+   */
+  public void putLabel(final String language, final String label) {
+    getLabel().put(checkLanguage(language), label);
   }
 
   /**
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setLabel(Map<String, String> value) {
+  private void setLabel(Map<String, String> value) {
     this.label = value;
   }
 
@@ -266,18 +269,11 @@ public class Parameter {
     this.updatable = value;
   }
 
-  public String getHelp(String lang) {
-    if (getHelp().containsKey(lang)) {
-      return getHelp().get(lang);
-    }
-    return getHelp().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
   /**
    * Gets the value of the help property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getHelp() {
+  protected Map<String, String> getHelp() {
     if (help == null) {
       help = new HashMap<>();
     }
@@ -285,10 +281,19 @@ public class Parameter {
   }
 
   /**
+   * Puts a localized help directly linked to the {@link Parameter} instance.
+   * @param language the language the help is localized into.
+   * @param help a localized help.
+   */
+  public void putHelp(final String language, final String help) {
+    getHelp().put(checkLanguage(language), help);
+  }
+
+  /**
    * Sets the value of the help property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setHelp(Map<String, String> value) {
+  private void setHelp(Map<String, String> value) {
     this.help = value;
   }
 

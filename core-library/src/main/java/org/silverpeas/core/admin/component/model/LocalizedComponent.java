@@ -23,84 +23,31 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author ehugonnet
  */
-public class LocalizedComponent {
+public class LocalizedComponent extends ComponentLocalization {
 
-  private final String lang;
-  private final WAComponent realComponent;
+  private final AbstractSilverpeasComponent realComponent;
 
-  public LocalizedComponent(WAComponent component, String lang) {
+  public LocalizedComponent(AbstractSilverpeasComponent component, String lang) {
+    super(component, lang);
     this.realComponent = component;
-    this.lang = lang;
   }
 
   public String getDescription() {
-    if (realComponent.getDescription().containsKey(lang)) {
-      return realComponent.getDescription().get(lang);
-    }
-    return realComponent.getDescription().get(DisplayI18NHelper.getDefaultLanguage());
+    return getLocalized("description", realComponent.getDescription());
   }
 
   public String getLabel() {
-    if (realComponent.getLabel().containsKey(lang)) {
-      return realComponent.getLabel().get(lang);
-    }
-    return realComponent.getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+    return getLocalized("label", realComponent.getLabel());
   }
 
   public String getName() {
-    return realComponent.getName();
-  }
-
-  public List<LocalizedProfile> getProfiles() {
-    List<LocalizedProfile> localizedProfiles = new ArrayList<>();
-    for (Profile profile : realComponent.getProfiles()) {
-      localizedProfiles.add(new LocalizedProfile(profile, lang));
-    }
-    return localizedProfiles;
-  }
-
-  public LocalizedProfile getProfile(String name) {
-    List<LocalizedProfile> profiles = getProfiles();
-    for (LocalizedProfile profile : profiles) {
-      if (name.equals(profile.getName())) {
-        return profile;
-      }
-    }
-    return null;
-  }
-
-  public String getRouter() {
-    return realComponent.getRouter();
-  }
-
-  public String getSuite() {
-    if (realComponent.getSuite().containsKey(lang)) {
-      return realComponent.getSuite().get(lang);
-    }
-    return realComponent.getSuite().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
-  public boolean isPortlet() {
-    return realComponent.isPortlet();
+    return getComponentName();
   }
 
   public boolean isVisible() {
     return realComponent.isVisible();
-  }
-
-  @SuppressWarnings("unused")
-  public boolean isVisibleInPersonalSpace() {
-    return realComponent.isVisibleInPersonalSpace();
-  }
-
-  public String getLanguage() {
-    return lang;
   }
 }

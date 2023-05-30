@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-
-import java.util.Map;
-
 /**
  * This localized warning allows to provide data of {@link Warning} instances on the Silverpeas's
  * user interfaces without having to manage the user language, which is carried by the localized
@@ -37,14 +33,15 @@ import java.util.Map;
  * </p>
  * @author silveryocha
  */
-public class LocalizedWarning {
+public class LocalizedWarning extends ComponentLocalization {
 
+  private final String bundleKeyPrefix;
   private final Warning warning;
-  private final String lang;
 
-  LocalizedWarning(Warning warning, String lang) {
+  LocalizedWarning(LocalizedParameter bundle, Warning warning) {
+    super(bundle);
+    this.bundleKeyPrefix = bundle.getBundleKeyPrefix();
     this.warning = warning;
-    this.lang = lang;
   }
 
   /**
@@ -61,10 +58,6 @@ public class LocalizedWarning {
    * @see Warning#getMessages()
    */
   public String getValue() {
-    final Map<String, String> messages = warning.getMessages();
-    if (messages.containsKey(lang)) {
-      return messages.get(lang);
-    }
-    return messages.get(DisplayI18NHelper.getDefaultLanguage());
+    return getLocalized(bundleKeyPrefix + ".warning", warning.getMessages());
   }
 }

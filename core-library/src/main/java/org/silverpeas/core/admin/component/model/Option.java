@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -59,25 +57,18 @@ public class Option {
    * Gets the value of the name property.
    * @return possible object is {@link Multilang }
    */
-  public Map<String, String> getName() {
+  protected Map<String, String> getName() {
     if (name == null) {
       name = new HashMap<>();
     }
     return name;
   }
 
-  public String getName(String lang) {
-    if (getName().containsKey(lang)) {
-      return getName().get(lang);
-    }
-    return getName().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
   /**
    * Sets the value of the name property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setName(Map<String, String> value) {
+  private void setName(Map<String, String> value) {
     this.name = value;
   }
 

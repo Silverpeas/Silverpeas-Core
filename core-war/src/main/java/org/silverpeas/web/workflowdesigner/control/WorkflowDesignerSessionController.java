@@ -25,6 +25,8 @@ package org.silverpeas.web.workflowdesigner.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.admin.component.model.LocalizedProfile;
+import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.content.form.TypeManager;
@@ -55,6 +57,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
@@ -2526,7 +2529,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(strtok.nextToken());
     }
 
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2548,7 +2551,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
       list.add(inLocale.getDisplayLanguage(locale));
     }
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2583,7 +2586,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(strtok.nextToken());
     }
 
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2598,7 +2601,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(strtok.nextToken());
     }
 
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   public Map<String, List<String>> retrieveTypesAndDisplayers() {
@@ -2623,7 +2626,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         list.add(iterAction.next().getName());
       }
     }
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2648,7 +2651,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         list.add(iterRole.next().getName());
       }
     }
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2669,7 +2672,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         list.add(iterState.next().getName());
       }
     }
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2691,7 +2694,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         list.add(iterParticipant.next().getName());
       }
     }
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2719,7 +2722,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       }
     }
 
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2749,7 +2752,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       }
     }
 
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   public List<Item> retrieveFolderItems() {
@@ -2781,7 +2784,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         }
       }
     }
-    return list.toArray(new String[list.size()]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2795,6 +2798,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     template.setAttribute("processModelFileName", sureProcessModelFileName);
 
     final WAComponent waComponent = new WAComponent();
+    final LocalizedWAComponentRegistry localizedCmpRegistry = new LocalizedWAComponentRegistry(waComponent);
+    final List<LocalizedWAComponent> stLocalizedCmpLabels = new ArrayList<>();
+    final List<LocalizedWAComponent> stLocalizedCmpDescriptions = new ArrayList<>();
+    final Map<String, List<LocalizedProfile>> stLocalizedCmpProfiles = new HashMap<>();
     final String componentName = ofNullable(findComponentDescriptor(sureProcessModelFileName))
         .orElseGet(() -> {
           final String fileName = FileUtil.getFilename(sureProcessModelFileName);
@@ -2806,50 +2813,70 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         processModel.getLabels().iterateContextualDesignation();
     while (labels.hasNext()) {
       ContextualDesignation label = labels.next();
-      waComponent.getLabel().put(getSureLanguage(label.getLanguage()), label.getContent());
+      final String language = getSureLanguage(label.getLanguage());
+      waComponent.putLabel(language, label.getContent());
+      stLocalizedCmpLabels.add(localizedCmpRegistry.getByLanguage(language));
     }
-    if (waComponent.getLabel().isEmpty()) {
+    final LocalizedWAComponent defaultLocalizedComponent = localizedCmpRegistry.getDefault();
+    if (notExistLocalization(defaultLocalizedComponent, LocalizedWAComponent::getLabel)) {
       // no explicit labels, use name of process
-      waComponent.getLabel().put(I18NHelper.DEFAULT_LANGUAGE, processModel.getName());
+      waComponent.putLabel(defaultLocalizedComponent.getLanguage(), processModel.getName());
+      stLocalizedCmpLabels.add(defaultLocalizedComponent);
     }
 
     Iterator<ContextualDesignation> descriptions =
         processModel.getDescriptions().iterateContextualDesignation();
     while (descriptions.hasNext()) {
       ContextualDesignation description = descriptions.next();
-      waComponent.getDescription()
-          .put(getSureLanguage(description.getLanguage()), description.getContent());
+      final String language = getSureLanguage(description.getLanguage());
+      waComponent.putDescription(language, description.getContent());
+      stLocalizedCmpDescriptions.add(localizedCmpRegistry.getByLanguage(language));
     }
-    if (waComponent.getDescription().isEmpty()) {
+    if (notExistLocalization(defaultLocalizedComponent, LocalizedWAComponent::getDescription)) {
       // no explicit description, use name of process
-      waComponent.getDescription().put(I18NHelper.DEFAULT_LANGUAGE, processModel.getName());
+      waComponent.putDescription(defaultLocalizedComponent.getLanguage(), processModel.getName());
+      stLocalizedCmpDescriptions.add(defaultLocalizedComponent);
     }
 
     // Create the list of roles, to be placed as profiles in the component descriptor
     List<Profile> listSPProfile = new ArrayList<>();
+    waComponent.setProfiles(listSPProfile);
+    final Runnable supervisorRoleCase = () -> {
+      final Profile supervisorProfile = getSupervisorProfile();
+      listSPProfile.add(supervisorProfile);
+      stLocalizedCmpProfiles.computeIfAbsent(supervisorProfile.getName(), r -> new ArrayList<>())
+          .add(localizedCmpRegistry.getDefault().getProfile(supervisorProfile.getName()));
+    };
     if (processModel.getRolesEx() != null) {
       // 'supervisor' must be present in the list
       if (processModel.getRolesEx().getRole("supervisor") == null) {
-        listSPProfile.add(getSupervisorProfile());
+        supervisorRoleCase.run();
       }
 
       for (Role role : processModel.getRolesEx().getRoles()) {
         Profile profile = new Profile();
         profile.setName(role.getName());
+        listSPProfile.add(profile);
         Iterator<ContextualDesignation> pLabels = role.getLabels().iterateContextualDesignation();
         while (pLabels.hasNext()) {
           ContextualDesignation label = pLabels.next();
-          profile.getLabel().put(getSureLanguage(label.getLanguage()), label.getContent());
-          profile.getHelp().put(getSureLanguage(label.getLanguage()), label.getContent());
+          final String language = getSureLanguage(label.getLanguage());
+          final String content = label.getContent();
+          profile.putLabel(language, content);
+          profile.putHelp(language,
+              ofNullable(role.getDescription(role.getName(), label.getLanguage())).orElse(content));
+          stLocalizedCmpProfiles.computeIfAbsent(profile.getName(), r -> new ArrayList<>())
+              .add(localizedCmpRegistry.getByLanguage(language).getProfile(profile.getName()));
         }
-        listSPProfile.add(profile);
       }
     } else {
-      listSPProfile.add(getSupervisorProfile());
+      supervisorRoleCase.run();
     }
-    waComponent.setProfiles(listSPProfile);
 
     template.setAttribute("WAComponent", waComponent);
+    template.setAttribute("LocalizedCmpLabels", stLocalizedCmpLabels);
+    template.setAttribute("LocalizedCmpDescriptions", stLocalizedCmpDescriptions);
+    template.setAttribute("LocalizedCmpProfiles", stLocalizedCmpProfiles);
 
     final File xmlComponentTemp = new File(getTemporaryPath(), sureProcessModelFileName);
     Optional.of(xmlComponentTemp.getParentFile())
@@ -2875,20 +2902,29 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
   }
 
+  private boolean notExistLocalization(final LocalizedWAComponent localizedComponent,
+      final Consumer<LocalizedWAComponent> consumer) {
+    try {
+      consumer.accept(localizedComponent);
+    } catch (MissingResourceException mre) {
+      return true;
+    }
+    return false;
+  }
+
   private String getSureLanguage(String language) {
     if (language.equalsIgnoreCase("default")) {
       return I18NHelper.DEFAULT_LANGUAGE;
     }
-    return language;
+    return I18NHelper.checkLanguage(language);
   }
 
   private Profile getSupervisorProfile() {
     Profile profile = new Profile();
     profile.setName("supervisor");
-    profile.getLabel().put(I18NHelper.DEFAULT_LANGUAGE, getSettings().getString(
-        "componentDescriptor.supervisor"));
-    profile.getHelp().put(I18NHelper.DEFAULT_LANGUAGE, getSettings().getString(
-        "componentDescriptor.supervisor"));
+    final String supervisorLabel = getSettings().getString("componentDescriptor.supervisor");
+    profile.putLabel(I18NHelper.DEFAULT_LANGUAGE, supervisorLabel);
+    profile.putHelp(I18NHelper.DEFAULT_LANGUAGE, supervisorLabel);
     return profile;
   }
 
@@ -2977,5 +3013,22 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
   public static String replaceSpecialChars(String toParse) {
     return FileServerUtils.replaceInvalidPathChars(toParse);
+  }
+
+  private static class LocalizedWAComponentRegistry {
+    private final WAComponent component;
+    private final Map<String, LocalizedWAComponent> registry = new HashMap<>();
+
+    private LocalizedWAComponentRegistry(final WAComponent component) {
+      this.component = component;
+    }
+
+    LocalizedWAComponent getByLanguage(final String language) {
+      return registry.computeIfAbsent(language, l -> new LocalizedWAComponent(component, l));
+    }
+
+    LocalizedWAComponent getDefault() {
+      return getByLanguage(I18NHelper.DEFAULT_LANGUAGE);
+    }
   }
 }

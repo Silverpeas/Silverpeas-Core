@@ -23,25 +23,53 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author ehugonnet
  */
-public class LocalizedOption extends ComponentLocalization {
+public class LocalizedWAComponent extends LocalizedComponent {
 
-  private final String bundleKeyPrefix;
-  private final Option realOption;
+  private final WAComponent realComponent;
 
-  LocalizedOption(LocalizedParameter bundle, Option option) {
-    super(bundle);
-    this.bundleKeyPrefix = bundle.getBundleKeyPrefix();
-    this.realOption = option;
+  public LocalizedWAComponent(WAComponent component, String lang) {
+    super(component, lang);
+    this.realComponent = component;
   }
 
-  public String getName() {
-    return getLocalized(bundleKeyPrefix + ".option." + getValue() + ".name", realOption.getName());
+  public List<LocalizedProfile> getProfiles() {
+    List<LocalizedProfile> localizedProfiles = new ArrayList<>();
+    for (Profile profile : realComponent.getProfiles()) {
+      localizedProfiles.add(new LocalizedProfile(this, profile));
+    }
+    return localizedProfiles;
   }
 
-  public String getValue() {
-    return realOption.getValue();
+  public LocalizedProfile getProfile(String name) {
+    List<LocalizedProfile> profiles = getProfiles();
+    for (LocalizedProfile profile : profiles) {
+      if (name.equals(profile.getName())) {
+        return profile;
+      }
+    }
+    return null;
+  }
+
+  public String getRouter() {
+    return realComponent.getRouter();
+  }
+
+  public String getSuite() {
+    return getLocalized("suite", realComponent.getSuite());
+  }
+
+  public boolean isPortlet() {
+    return realComponent.isPortlet();
+  }
+
+  @SuppressWarnings("unused")
+  public boolean isVisibleInPersonalSpace() {
+    return realComponent.isVisibleInPersonalSpace();
   }
 }

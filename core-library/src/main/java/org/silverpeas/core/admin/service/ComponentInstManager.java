@@ -27,8 +27,10 @@ import org.silverpeas.core.admin.component.dao.ComponentDAO;
 import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.LocalizedParameter;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
@@ -161,10 +163,13 @@ public class ComponentInstManager {
 
       // Add the parameters if necessary
       List<Parameter> parameters = componentInst.getParameters();
-
-      for (Parameter parameter : parameters) {
-        organizationSchema.instanceData().createInstanceData(
-            componentInst.getLocalId(), parameter);
+      if (!parameters.isEmpty()) {
+        final WAComponent waComponent = getWaComponentFrom(componentInst);
+        for (Parameter parameter : parameters) {
+          organizationSchema.instanceData()
+              .createInstanceData(componentInst.getLocalId(),
+                  new LocalizedParameter(waComponent, parameter, I18NHelper.DEFAULT_LANGUAGE));
+        }
       }
 
       // Create the profile nodes
@@ -373,9 +378,13 @@ public class ComponentInstManager {
       throws AdminException {
     try {
       List<Parameter> parameters = compoInstNew.getParameters();
-      for (Parameter parameter : parameters) {
-        organizationSchema.instanceData().updateInstanceData(compoInstNew.getLocalId(),
-            parameter);
+      if (!parameters.isEmpty()) {
+        final WAComponent waComponent = getWaComponentFrom(compoInstOld);
+        for (Parameter parameter : parameters) {
+          organizationSchema.instanceData()
+              .updateInstanceData(compoInstNew.getLocalId(),
+                  new LocalizedParameter(waComponent, parameter, I18NHelper.DEFAULT_LANGUAGE));
+        }
       }
       // Create the component node
       ComponentInstanceRow changedInstance = makeComponentInstanceRow(compoInstNew);
@@ -394,6 +403,12 @@ public class ComponentInstManager {
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate(COMPONENT, compoInstNew.getLocalId()), e);
     }
+  }
+
+  private static WAComponent getWaComponentFrom(final ComponentInst compoInstOld) {
+    return WAComponent.getByInstanceId(compoInstOld.getId())
+        .orElseThrow(() -> new IllegalArgumentException(
+            compoInstOld.getId() + " does not correspond to a registered component"));
   }
 
   private void updateTranslation(final ComponentInst compoInstNew,

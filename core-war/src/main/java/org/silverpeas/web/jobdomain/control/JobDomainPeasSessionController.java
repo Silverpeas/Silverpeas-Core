@@ -27,7 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.xhtml.br;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.LocalizedComponent;
+import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriver.UserFilterManager;
@@ -155,7 +155,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       Arrays.asList("Admin", "AdminPdc", "AdminDomain", "User", "Guest");
   private static final String BR_ELEMENT = new br().toString();
 
-  private Map<String, LocalizedComponent> localizedComponents = new HashMap<>();
+  private Map<String, LocalizedWAComponent> localizedComponents = new HashMap<>();
 
   /**
    * Standard Session Controller Constructeur
@@ -2238,8 +2238,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         ComponentInstLight currentComponent =
             adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
         if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
-          LocalizedComponent localizedComponent = getLocalizedComponent(currentComponent.getName());
-          componentProfiles = new ComponentProfiles(currentComponent, localizedComponent);
+          LocalizedWAComponent localizedWAComponent = getLocalizedComponent(currentComponent.getName());
+          componentProfiles = new ComponentProfiles(currentComponent, localizedWAComponent);
           SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
           componentProfiles.setSpace(space);
           allProfiles.add(componentProfiles);
@@ -2260,21 +2260,21 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return allProfiles;
   }
 
-  private LocalizedComponent getLocalizedComponent(String name) {
-    LocalizedComponent localizedComponent = localizedComponents.get(name);
-    if (localizedComponent == null) {
+  private LocalizedWAComponent getLocalizedComponent(String name) {
+    LocalizedWAComponent localizedWAComponent = localizedComponents.get(name);
+    if (localizedWAComponent == null) {
       try {
         Optional<WAComponent> optionalComponent = WAComponent.getByName(name);
         if (optionalComponent.isPresent()) {
           WAComponent component = optionalComponent.get();
-          localizedComponent = new LocalizedComponent(component, getLanguage());
-          localizedComponents.put(name, localizedComponent);
+          localizedWAComponent = new LocalizedWAComponent(component, getLanguage());
+          localizedComponents.put(name, localizedWAComponent);
         }
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
       }
     }
-    return localizedComponent;
+    return localizedWAComponent;
   }
 
   public boolean isRightCopyReplaceEnabled() {

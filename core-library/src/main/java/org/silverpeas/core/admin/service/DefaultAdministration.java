@@ -1654,16 +1654,12 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public String getProfileLabelFromName(String sComponentName, String sProfileName, String lang) {
-    return componentRegistry.getWAComponent(sComponentName).map(wac -> {
-      List<Profile> profiles = wac.getProfiles();
-      for (Profile profile : profiles) {
-        if (profile.getName().equals(sProfileName)) {
-          return profile.getLabel().get(lang);
-        }
-      }
-      return sProfileName;
-    }).orElse(sProfileName);
+  public String getProfileLabelFromName(String componentName, String profileName, String lang) {
+    return componentRegistry.getWAComponent(componentName)
+        .map(c -> new LocalizedWAComponent(c, lang))
+        .map(l -> l.getProfile(profileName))
+        .map(LocalizedProfile::getLabel)
+        .orElse(profileName);
   }
 
   @Override
