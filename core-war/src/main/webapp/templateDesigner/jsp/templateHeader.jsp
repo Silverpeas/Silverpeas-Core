@@ -23,7 +23,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.admin.component.model.LocalizedComponent"%>
+<%@page import="org.silverpeas.core.admin.component.model.LocalizedWAComponent"%>
 <%@page import="org.apache.commons.io.FilenameUtils"%>
 <%@page import="org.silverpeas.core.security.encryption.cipher.CryptoException"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -48,7 +48,7 @@
 <%@ include file="check.jsp" %>
 <%
 PublicationTemplate template = (PublicationTemplate) request.getAttribute("Template");
-List<LocalizedComponent> components = (List<LocalizedComponent>) request.getAttribute("ComponentsUsingForms");
+List<LocalizedWAComponent> components = (List<LocalizedWAComponent>) request.getAttribute("ComponentsUsingForms");
 boolean encryptionAvailable = (Boolean) request.getAttribute("EncryptionAvailable");
 CryptoException cryptoException = (CryptoException) request.getAttribute("CryptoException");
 
@@ -347,7 +347,7 @@ $(function () {
 <tr id="applications-visibility" class="notApplicableToDirectory">
 	<td class="txtlibform"><fmt:message key="templateDesigner.header.visible.applications"/> </td>
 	<td><ul id="template-apps-visibility">
-		<% for (LocalizedComponent component : components) {
+		<% for (LocalizedWAComponent component : components) {
 			String checked = "";
 			if (visibilityApplications != null && visibilityApplications.contains(component.getName())) {
 			  checked = "checked=\"checked\"";

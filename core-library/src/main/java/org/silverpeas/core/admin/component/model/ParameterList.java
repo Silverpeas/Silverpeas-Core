@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ParameterList extends ArrayList<Parameter> {
+  private static final long serialVersionUID = -2159180306618082474L;
 
   public static ParameterList copy(List<Parameter> parameters) {
     return new ParameterList(parameters.stream().map(Parameter::new).collect(Collectors.toList()));
@@ -93,14 +94,6 @@ public class ParameterList extends ArrayList<Parameter> {
       }
     }
     return false;
-  }
-
-  public LocalizedParameterList localize(String lang) {
-    LocalizedParameterList localized = new LocalizedParameterList();
-    for (Parameter param : this) {
-      localized.add(new LocalizedParameter(param, lang));
-    }
-    return localized;
   }
 
   public ParameterList copy() {

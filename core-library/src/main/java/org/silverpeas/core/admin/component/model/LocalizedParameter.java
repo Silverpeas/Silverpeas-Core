@@ -27,7 +27,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,39 +38,44 @@ import static java.util.Optional.ofNullable;
 /**
  * @author ehugonnet
  */
-public class LocalizedParameter {
+public class LocalizedParameter extends ComponentLocalization {
 
-  private final String lang;
   private final Parameter realParameter;
+  private final String localizedGroupPrefixKey;
   private List<LocalizedOption> localizedOptions;
   private LocalizedWarning localizedWarning;
 
-  public LocalizedParameter(Parameter parameter, String lang) {
+  public LocalizedParameter(LocalizedGroupOfParameters bundle, Parameter parameter) {
+    super(bundle);
     this.realParameter = parameter;
-    this.lang = lang;
+    this.localizedGroupPrefixKey = bundle.getBundleKeyPrefix() + ".";
+  }
+
+  public LocalizedParameter(SilverpeasComponent component, Parameter parameter, String lang) {
+    super(component, lang);
+    this.realParameter = parameter;
+    this.localizedGroupPrefixKey = StringUtil.EMPTY;
+  }
+
+  protected String getBundleKeyPrefix() {
+    return localizedGroupPrefixKey + "parameter." + getName();
   }
 
   public String getHelp() {
-    if (realParameter.getHelp().containsKey(lang)) {
-      return realParameter.getHelp().get(lang);
-    }
-    return realParameter.getHelp().get(DisplayI18NHelper.getDefaultLanguage());
+    return getLocalized(getBundleKeyPrefix() + ".help", realParameter.getHelp());
   }
 
   public Optional<LocalizedWarning> getWarning() {
     if (localizedWarning == null) {
       localizedWarning = realParameter.getWarning()
-          .map(w -> new LocalizedWarning(w, lang))
+          .map(w -> new LocalizedWarning(this, w))
           .orElse(null);
     }
     return ofNullable(localizedWarning);
   }
 
   public String getLabel() {
-    if (realParameter.getLabel().containsKey(lang)) {
-      return realParameter.getLabel().get(lang);
-    }
-    return realParameter.getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+    return getLocalized(getBundleKeyPrefix() + ".label", realParameter.getLabel());
   }
 
   public String getName() {
@@ -81,7 +86,7 @@ public class LocalizedParameter {
     if (localizedOptions == null) {
       localizedOptions = new ArrayList<>();
       for (Option option : realParameter.getOptions()) {
-        localizedOptions.add(new LocalizedOption(option, lang));
+        localizedOptions.add(new LocalizedOption(this, option));
       }
     }
     return localizedOptions;

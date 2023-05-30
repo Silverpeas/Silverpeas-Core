@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
+import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * A list of message with an attribute to specify whether the warning message MUST be displayed
@@ -83,11 +83,7 @@ public class Warning {
    * Gets a copy of registered messages.
    * @return messages indexed by languages.
    */
-  public Map<String, String> getMessages() {
-    return Map.copyOf(safeMessages());
-  }
-
-  private Map<String, String> safeMessages() {
+  protected Map<String, String> getMessages() {
     if (messages == null) {
       messages = message.stream().collect(toMap(Message::getLang, Message::getValue));
     }
@@ -95,16 +91,22 @@ public class Warning {
   }
 
   /**
-   * Sets messages.
-   * @param messages a map of messages indexed by languages.
+   * Puts a localized message directly linked to the {@link Warning} instance.
+   * @param language the language the message is localized into.
+   * @param message a localized message.
    */
-  public void setMessages(final Map<String, String> messages) {
+  public void putMessage(final String language, final String message) {
     this.messages = null;
-    this.message = messages.entrySet().stream().map(e -> {
-      final Message msg = new Message();
-      msg.setLang(e.getKey());
-      msg.setValue(e.getValue());
-      return msg;
-    }).collect(Collectors.toList());
+    final String safeLanguage = checkLanguage(language);
+    this.message.stream()
+        .filter(m -> m.getLang().equals(safeLanguage))
+        .findFirst()
+        .orElseGet(() -> {
+          final Message msg = new Message();
+          msg.setLang(safeLanguage);
+          this.message.add(msg);
+          return msg;
+        })
+        .setValue(message);
   }
 }

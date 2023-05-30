@@ -23,19 +23,23 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import static java.util.Optional.of;
+import static java.util.function.Predicate.not;
 
 /**
  * @author ehugonnet
  */
-public class LocalizedProfile {
+public class LocalizedProfile extends ComponentLocalization {
 
   private final Profile realProfile;
-  private final String lang;
 
-  LocalizedProfile(Profile realProfile, String lang) {
+  LocalizedProfile(ComponentLocalization bundle, Profile realProfile) {
+    super(bundle);
     this.realProfile = realProfile;
-    this.lang = lang;
+  }
+
+  private String getBundleKeyPrefix() {
+    return "profile." + getName();
   }
 
   public String getName() {
@@ -43,17 +47,12 @@ public class LocalizedProfile {
   }
 
   public String getHelp() {
-    if (realProfile.getHelp().containsKey(lang)) {
-      return realProfile.getHelp().get(lang);
-    }
-    return realProfile.getHelp().get(DisplayI18NHelper.getDefaultLanguage());
+    return of(getLocalized(getBundleKeyPrefix() + ".help", realProfile.getHelp()))
+        .filter(not(h -> h.equals(getLabel())))
+        .orElse(null);
   }
 
   public String getLabel() {
-    if (realProfile.getLabel().containsKey(lang)) {
-      return realProfile.getLabel().get(lang);
-    }
-    return realProfile.getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+    return getLocalized(getBundleKeyPrefix()  + ".label", realProfile.getLabel());
   }
-
 }

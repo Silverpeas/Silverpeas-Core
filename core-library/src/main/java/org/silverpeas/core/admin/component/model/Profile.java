@@ -29,8 +29,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import org.silverpeas.core.util.StringUtil;
-
 /**
  * A user profile defined in an application component. A user profile is a mix between a role and
  * some privileges. The name of the profile denotes the name of the role. If the application can
@@ -67,19 +65,6 @@ public class Profile extends ProfileDescription {
    */
   public void setName(String value) {
     this.name = value;
-  }
-
-  public String getHelp(String lang) {
-    String help = getHelp().get(lang);
-    String label = getLabel().get(lang);
-    if (!StringUtil.isDefined(help)) {
-      help = getHelp().get("en");
-      label = getLabel().get("en");
-    }
-    if (!help.equals(label)) {
-      return help;
-    }
-    return null;
   }
 
   /**

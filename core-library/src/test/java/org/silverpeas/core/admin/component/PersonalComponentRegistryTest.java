@@ -30,13 +30,15 @@ package org.silverpeas.core.admin.component;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unit test on the services provided by the PersonalComponentRegistry.
@@ -59,24 +61,22 @@ class PersonalComponentRegistryTest {
     assertThat(registry.getAllPersonalComponents().size(), is(2));
   }
 
-  @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Test
   void getUserCalendarPersonalComponentShouldWork() {
     Optional<PersonalComponent> result = registry.getPersonalComponent("userCalendar");
     assertThat(result.isPresent(), is(true));
 
     PersonalComponent userCalendar = result.get();
+    LocalizedComponent frUserCalendar = new LocalizedComponent(userCalendar, "fr");
+    LocalizedComponent enUserCalendar = new LocalizedComponent(userCalendar, "en");
+    LocalizedComponent deUserCalendar = new LocalizedComponent(userCalendar, "de");
     assertThat(userCalendar.getName(), is("userCalendar"));
-    assertThat(userCalendar.getLabel(), hasKey("fr"));
-    assertThat(userCalendar.getLabel("fr"), is("Mes agendas"));
-    assertThat(userCalendar.getLabel(), hasKey("en"));
-    assertThat(userCalendar.getLabel("en"), is("My diaries"));
-    assertThat(userCalendar.getLabel(), hasKey("de"));
-    assertThat(userCalendar.getDescription(), hasKey("fr"));
-    assertThat(userCalendar.getDescription("fr"), is("Vos agendas personnels."));
-    assertThat(userCalendar.getDescription(), hasKey("en"));
-    assertThat(userCalendar.getDescription("en"), is("Your personal diaries."));
-    assertThat(userCalendar.getDescription(), hasKey("de"));
+    assertThat(frUserCalendar.getLabel(), is("Mes agendas"));
+    assertThat(enUserCalendar.getLabel(), is("My diaries"));
+    assertThat(deUserCalendar.getLabel(), is("My diaries"));
+    assertThat(frUserCalendar.getDescription(), is("Vos agendas personnels."));
+    assertThat(enUserCalendar.getDescription(), is("Your personal diaries."));
+    assertThat(deUserCalendar.getDescription(), is("Your personal diaries."));
     assertThat(userCalendar.isVisible(), is(true));
     assertThat(userCalendar.getParameters(), is(empty()));
   }

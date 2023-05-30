@@ -49,6 +49,7 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.MemoizedSupplier;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.HashMap;
@@ -62,6 +63,35 @@ public abstract class AbstractSilverpeasComponent implements SilverpeasComponent
 
   @XmlTransient
   protected Map<String, Parameter> indexedParametersByName = new HashMap<>();
+
+  @XmlTransient
+  private final MemoizedSupplier<Map<String, LocalizedComponent>> localized = new MemoizedSupplier<>(HashMap::new);
+
+  private LocalizedComponent getLocalized(final String lang) {
+    return localized.get().computeIfAbsent(lang, l -> new LocalizedComponent(this, l));
+  }
+
+  /**
+   * Gets the value of the label property.
+   * @return possible object is {@link Multilang }
+   */
+  protected abstract Map<String, String> getLabel();
+
+  @Override
+  public String getLabel(final String lang) {
+    return getLocalized(lang).getLabel();
+  }
+
+  /**
+   * Gets the value of the description property.
+   * @return possible object is {@link Multilang }
+   */
+  protected abstract Map<String, String> getDescription();
+
+  @Override
+  public String getDescription(final String lang) {
+    return getLocalized(lang).getDescription();
+  }
 
   /**
    * Gets defined parameters indexed by their names.

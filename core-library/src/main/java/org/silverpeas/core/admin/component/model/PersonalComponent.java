@@ -105,7 +105,7 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public Map<String, String> getLabel() {
+  protected Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
@@ -147,7 +147,7 @@ public class PersonalComponent extends AbstractSilverpeasComponent {
   }
 
   @Override
-  public Map<String, String> getDescription() {
+  protected Map<String, String> getDescription() {
     if (description == null) {
       description = new HashMap<>();
     }

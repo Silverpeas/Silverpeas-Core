@@ -25,10 +25,10 @@ package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -64,8 +64,8 @@ public class SilverStatisticsPeasDAOVolumeServices {
    */
   private static Collection[] getCollectionArrayFromResultset(ResultSet rs)
       throws SQLException {
-    List<String> apps = new ArrayList<String>();
-    List<String> counts = new ArrayList<String>();
+    List<String> apps = new ArrayList<>();
+    List<String> counts = new ArrayList<>();
     long count = 0;
     Map<String, WAComponent> components = AdministrationServiceProvider.getAdminService().getAllWAComponents();
     String label = null;
@@ -73,7 +73,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
       String componentName = rs.getString(1);
       WAComponent compo = components.get(componentName);
       if (compo != null) {
-        String value = compo.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
+        String value = compo.getLabel(I18NHelper.DEFAULT_LANGUAGE);
         if (StringUtil.isDefined(value)) {
           label = (value.indexOf("-") == -1) ? value : value.substring(value.indexOf("-") + 1);
         } else {

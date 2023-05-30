@@ -52,7 +52,6 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -84,7 +83,15 @@ import org.silverpeas.web.jobstartpage.SpaceLookHelper;
 import java.io.File;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 
@@ -285,8 +292,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public String getManagedProfileHelp(String componentName) {
-    return getComponentByName(componentName).getProfile(getManagedProfile().getName()).getHelp(
-        getLanguage());
+    return new LocalizedWAComponent(getComponentByName(componentName), getLanguage())
+        .getProfile(getManagedProfile().getName())
+        .getHelp();
   }
 
   public ProfileInst getManagedInheritedProfile() {
@@ -357,7 +365,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   // Get spaces "manageable" by the current user (ie spaces in maintenance or current space)
   public SpaceInst[] getUserManageableSpacesIds() {
-    List<SpaceInst> vManageableSpaces = new ArrayList<SpaceInst>();
+    List<SpaceInst> vManageableSpaces = new ArrayList<>();
     String[] sids = getUserManageableSpaceIds();
     SpaceInst currentSpace = getSpaceInstById();
     String currentSpaceId = (currentSpace == null) ? "-1" : currentSpace.getId();
@@ -455,7 +463,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     try {
       files = (List<File>) FileFolderManager.getAllFile(getSpaceLookBasePath());
     } catch (org.silverpeas.core.util.UtilException e) {
-      files = new ArrayList<File>();
+      files = new ArrayList<>();
     }
 
     SpaceLookHelper slh = new SpaceLookHelper("Space" + getManagedSpaceId());
@@ -796,46 +804,23 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     m_NavBarMgr.resetSpaceCache(getManagedSpaceId());
   }
 
-  public WAComponent[] getAllComponents() {
+  public List<LocalizedWAComponent> getAllLocalizedComponents() {
     // liste des composants triés ordre alphabétique
     Map<String, WAComponent> resTable = adminController.getAllComponents();
-    WAComponent[] componentsModels = resTable.values().toArray(new WAComponent[resTable.size()]);
-    Arrays.sort(componentsModels, (o1, o2) -> {
-      String valcomp1 = o1.getSuite() + o1.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
-      String valcomp2 = o2.getSuite() + o2.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
-      return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-    });
-    return componentsModels;
-  }
-
-  public List<LocalizedComponent> getAllLocalizedComponents() {
-    // liste des composants triés ordre alphabétique
-    Map<String, WAComponent> resTable = adminController.getAllComponents();
-    List<LocalizedComponent> result = new ArrayList<LocalizedComponent>(resTable.size());
+    List<LocalizedWAComponent> result = new ArrayList<>(resTable.size());
     for (WAComponent component : resTable.values()) {
-      result.add(new LocalizedComponent(component, getLanguage()));
+      result.add(new LocalizedWAComponent(component, getLanguage()));
     }
-    Collections.sort(result, new Comparator<LocalizedComponent>() {
-      @Override
-      public int compare(LocalizedComponent o1, LocalizedComponent o2) {
-        String valcomp1 = o1.getSuite() + o1.getLabel();
-        String valcomp2 = o2.getSuite() + o2.getLabel();
-        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-      }
+    result.sort((o1, o2) -> {
+      String valComp1 = o1.getSuite() + o1.getLabel();
+      String valComp2 = o2.getSuite() + o2.getLabel();
+      return valComp1.toUpperCase().compareTo(valComp2.toUpperCase());
     });
     return result;
   }
 
   public WAComponent getComponentByName(String name) {
-    WAComponent[] compos = getAllComponents();
-    if (compos != null) {
-      for (WAComponent compo : compos) {
-        if (compo.getName().equals(name)) {
-          return compo;
-        }
-      }
-    }
-    return null;
+    return adminController.getAllComponents().get(name);
   }
 
   private void setParameterOptions(ParameterList parameterList, String appName) {
@@ -858,7 +843,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public AllComponentParameters getParameters(WAComponent component, boolean creation) {
     LocalizedParameterList parameters = getUngroupedParameters(component, creation);
-    return new AllComponentParameters(parameters, getGroupsOfParameters(component));
+    return new AllComponentParameters(component, parameters, getGroupsOfParameters(component));
   }
 
   private LocalizedParameterList getUngroupedParameters(WAComponent component, boolean creation) {
@@ -867,13 +852,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     setParameterOptions(parameterList, component.getName());
     setParameterValues(parameterList);
 
-    LocalizedParameterList localized = new LocalizedParameterList(parameterList, getLanguage());
+    LocalizedParameterList localized = new LocalizedParameterList(component, parameterList, getLanguage());
 
     ComponentInst existingComponent = null;
     if (!creation) {
       existingComponent = getComponentInst(getManagedInstanceId());
     }
-    localized.add(0, createIsHiddenParam(existingComponent));
+    localized.add(0, createIsHiddenParam(component, existingComponent));
     if (JobStartPagePeasSettings.isPublicParameterEnable) {
       localized.add(0, createIsPublicParam(component, existingComponent));
     }
@@ -890,7 +875,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       parameters.sort();
       setParameterOptions(parameters, component.getName());
       setParameterValues(parameters);
-      localizedGroups.add(clonedGroup.localize(getLanguage()));
+      localizedGroups.add(new LocalizedGroupOfParameters(component, clonedGroup, getLanguage()));
     }
     return localizedGroups;
   }
@@ -900,7 +885,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     aContext.setComponentName(appName);
     PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
     List<Option> options = parameter.getOptions();
-    List<Option> visibleOptions = new ArrayList<Option>();
+    List<Option> visibleOptions = new ArrayList<>();
     for (Option option : options) {
       String templateName = option.getValue();
       try {
@@ -941,7 +926,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   // role non cree : id vide - name - label (identique à name)
   // role cree : id non vide - name - label
   public List<ProfileInst> getAllProfiles(ComponentInst m_FatherComponentInst) {
-    ArrayList<ProfileInst> alShowProfile = new ArrayList<ProfileInst>();
+    ArrayList<ProfileInst> alShowProfile = new ArrayList<>();
     String sComponentName = m_FatherComponentInst.getName();
     // profils dispo
     String[] asAvailProfileNames = adminController.getAllProfilesNames(sComponentName);
@@ -1000,7 +985,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public List<Group> groupIds2groups(List<String> groupIds) {
-    List<Group> res = new ArrayList<Group>();
+    List<Group> res = new ArrayList<>();
     Group theGroup;
 
     for (int nI = 0; groupIds != null && nI < groupIds.size(); nI++) {
@@ -1014,7 +999,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public List<UserDetail> userIds2users(List<String> userIds) {
-    List<UserDetail> res = new ArrayList<UserDetail>();
+    List<UserDetail> res = new ArrayList<>();
     UserDetail user;
 
     for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
@@ -1184,7 +1169,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @throws JobStartPagePeasException
    */
   public Set<String> getCopiedComponents() throws JobStartPagePeasException {
-    Set<String> copiedComponents = new HashSet<String>();
+    Set<String> copiedComponents = new HashSet<>();
     try {
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
@@ -1304,7 +1289,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return template;
   }
 
-  private LocalizedParameter createIsHiddenParam(ComponentInst component) {
+  private LocalizedParameter createIsHiddenParam(WAComponent descriptor, ComponentInst component) {
     String isHidden = "no";
     if (component != null && component.isHidden()) {
       isHidden = "yes";
@@ -1316,13 +1301,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     hiddenParam.setUpdatable("always");
     hiddenParam.setType(ParameterInputType.checkbox.toString());
     hiddenParam.setValue(isHidden);
-    hiddenParam.getLabel().put(getLanguage(), getString("JSPP.hiddenComponent"));
-    hiddenParam.getHelp().put(getLanguage(), null);
+    hiddenParam.putLabel(getLanguage(), getString("JSPP.hiddenComponent"));
+    hiddenParam.putHelp(getLanguage(), null);
     Warning warning = new Warning();
-    warning.setMessages(Map.of(getLanguage(), getString("Warning.hiddenComponent")));
+    warning.putMessage(getLanguage(), getString("Warning.hiddenComponent"));
     hiddenParam.setWarning(warning);
-
-    return new LocalizedParameter(hiddenParam, getLanguage());
+    return new LocalizedParameter(descriptor, hiddenParam, getLanguage());
   }
 
   private LocalizedParameter createIsPublicParam(final WAComponent descriptor, ComponentInst component) {
@@ -1338,13 +1322,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     publicParam.setUpdatable("always");
     publicParam.setType(ParameterInputType.checkbox.toString());
     publicParam.setValue(isPublic);
-
-    publicParam.getLabel().put(getLanguage(), getString("JSPP.publicComponent"));
-    publicParam.getHelp().put(getLanguage(), null);
+    publicParam.putLabel(getLanguage(), getString("JSPP.publicComponent"));
+    publicParam.putHelp(getLanguage(), null);
     Warning warning = new Warning();
-    warning.setMessages(Map.of(getLanguage(), getString("Warning.publicComponent")));
+    warning.putMessage(getLanguage(), getString("Warning.publicComponent"));
     publicParam.setWarning(warning);
-
-    return new LocalizedParameter(publicParam, getLanguage());
+    return new LocalizedParameter(descriptor, publicParam, getLanguage());
   }
 }

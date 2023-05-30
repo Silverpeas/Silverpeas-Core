@@ -25,7 +25,7 @@ package org.silverpeas.web.templatedesigner.control;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.admin.component.model.LocalizedComponent;
+import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -555,16 +555,16 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         .contains(fieldName);
   }
 
-  public List<LocalizedComponent> getComponentsUsingForms() {
+  public List<LocalizedWAComponent> getComponentsUsingForms() {
     Map<String, WAComponent> components = adminController.getAllComponents();
     String[] names =
         {"kmelia", "kmax", "classifieds", "gallery", "formsOnline", "resourcesManager", "webPages",
             "yellowpages"};
-    List<LocalizedComponent> result = new ArrayList<>();
+    List<LocalizedWAComponent> result = new ArrayList<>();
     for (String name : names) {
       WAComponent component = components.get(name);
       if (component != null) {
-        result.add(new LocalizedComponent(component, getLanguage()));
+        result.add(new LocalizedWAComponent(component, getLanguage()));
       }
     }
     if (!result.isEmpty()) {

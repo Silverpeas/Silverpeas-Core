@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.admin.component.model.LocalizedParameter;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -69,13 +70,12 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   /**
    * Inserts in the database a new instanceData row.
    */
-  public void createInstanceData(int componentId, Parameter parameter) throws SQLException {
+  public void createInstanceData(int componentId, LocalizedParameter parameter) throws SQLException {
     InstanceDataRow idr = new InstanceDataRow();
-
     idr.id = getNextId();
     idr.componentId = componentId;
     idr.name = parameter.getName();
-    idr.label = parameter.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
+    idr.label = parameter.getLabel();
     idr.value = parameter.getValue();
 
     insertRow(INSERT_INSTANCEDATA, idr);
@@ -105,9 +105,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     Parameter param = new Parameter();
     param.setName(row.name);
     param.setValue(row.value);
-    HashMap<String, String> multilang = new HashMap<>();
-    multilang.put(I18NHelper.DEFAULT_LANGUAGE, row.label);
-    param.setLabel(multilang);
+    param.putLabel(I18NHelper.DEFAULT_LANGUAGE, row.label);
     return param;
   }
 
@@ -187,7 +185,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   /**
    * Updates a instance data row.
    */
-  public void updateInstanceData(int componentId, Parameter parameter) throws SQLException {
+  public void updateInstanceData(int componentId, LocalizedParameter parameter) throws SQLException {
     InstanceDataRow idr = new InstanceDataRow();
 
     idr.componentId = componentId;
