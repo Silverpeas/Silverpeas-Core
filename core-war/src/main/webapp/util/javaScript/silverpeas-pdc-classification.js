@@ -414,16 +414,21 @@
                   openEditionBox($this, classification.uri, position);
                 },
                 onDeletion: function(position) {
-                  var classification = $this.data('classification');
-                  deletePosition(classification.uri, position, settings.deletion.confirmation,
-                          function() {
-                            removePosition(position, classification.positions);
-                            $this.pdcPositions('refresh', classification.positions);
-                          }, function(error) {
-                    if (error.status === 409) {
-                      notyError(settings.messages.contentMustHaveAPosition);
-                    }
-                  });
+                  const classification = $this.data('classification');
+                  const __removePosition = function() {
+                    removePosition(position, classification.positions);
+                    $this.pdcPositions('refresh', classification.positions);
+                  };
+                  if (settings.externalManagement) {
+                    __removePosition();
+                  } else {
+                    deletePosition(classification.uri, position, settings.deletion.confirmation,
+                        __removePosition, function(error) {
+                          if (error.status === 409) {
+                            notyError(settings.messages.contentMustHaveAPosition);
+                          }
+                        });
+                  }
                 }
               });
             }
@@ -645,8 +650,8 @@
           selection = [];
           break;
         } else {
-          if (settings.mode !== 'edition') {
-            var location = findPosition(position.values, classification.positions);
+          if (settings.mode !== 'edition' || settings.externalManagement) {
+            const location = position && findPosition(position.values, classification.positions);
             if (location) {
               classification.positions[location.index] = selectedPosition;
             } else {
@@ -659,7 +664,7 @@
       }
       if (settings.mode === 'predefinition') {
         submitClassification($this, uri);
-      } else if (settings.mode === 'creation') {
+      } else if (settings.mode === 'creation' || settings.externalManagement) {
         $this.pdcPositions('refresh', classification.positions);
       } else if (selection.length > 0) {
         for (var s = 0; s < selection.length; s++) {
