@@ -222,8 +222,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       if (objectIdList.get(i) != -1) {
         final List<Position<Value>> positions = getPositions(objectIdList.get(i), instanceId);
         for (int j = 0; j < positions.size() && !hasOnePosition; j++) {
-          final Value value = positions.get(i).getValueByAxis(usedAxis.
-              getAxisId());
+          final Value value = positions.get(j).getValueByAxis(usedAxis.getAxisId());
           final String onePath = value.getValue();
           if (onePath != null && onePath.contains(newBaseValue)) {
             hasOnePosition = true;

@@ -265,6 +265,20 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>Is this classification on the PdC be handled by external manager? By default, if
+        not set, it means that no external manager handles the PDC persistence. Then each time a
+        user modify a pdc classification, ajax requests are performed to persist the modifications.
+        If true, an external manager is in charge of the PDC persistence. Then no ajax request is
+        performed to update the classification on each user modification, and the modified
+        classification is persisted by the external manager. If 'editable' attribute is false, this
+        attribute is ignored.
+      </description>
+      <name>externalManagement</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to print out the HTML/javascript widget within which a preview of the

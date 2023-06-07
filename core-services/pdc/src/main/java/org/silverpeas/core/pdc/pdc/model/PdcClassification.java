@@ -369,15 +369,43 @@ public class PdcClassification
   }
 
   /**
-   * Classifies the specified content on the PdC with this classification. If the content
-   * is already classified, then the given classification replaces the existing one. The content
-   * must exist in Silverpeas before being classified. If an error occurs while classifying the
-   * content, a runtime exception PdcRuntimeException is thrown.
+   * Classifies the specified content on the PdC with this classification. If the content is
+   * already classified, then the given classification replaces the existing one. If the current
+   * instance is empty, then nothing is performed. The content must exist in Silverpeas before
+   * being classified. If an error occurs while classifying the content, a runtime exception
+   * PdcRuntimeException is thrown.
    * Subscribers are notified if at least one of their subscription matches given classification.
    * @param content the Silverpeas content to classify.
    */
   public void classifyContent(final Contribution content) {
     classifyContent(content, true);
+  }
+
+  /**
+   * Classifies the specified content on the PdC with this classification. If the content is
+   * already classified, then the given classification replaces the existing one. If the current
+   * instance is empty, then nothing is performed. The content must exist in Silverpeas before
+   * being classified. If an error occurs while classifying the content, a runtime exception
+   * PdcRuntimeException is thrown.
+   * @param content the Silverpeas content to classify.
+   * @param alertSubscribers indicates if subscribers must be notified or not
+   */
+  public void classifyContent(final Contribution content, boolean alertSubscribers) {
+    classifyContent(content, alertSubscribers, false);
+  }
+
+  /**
+   * Classifies the specified content on the PdC with this classification. If the content is
+   * already classified, then the given classification replaces the existing one. If the content
+   * is already classified but no position is registered into the current instance, then the
+   * content is unclassified. The content must exist in Silverpeas before being classified. If an
+   * error occurs while classifying the content, a runtime exception PdcRuntimeException is thrown.
+   * Subscribers are notified if at least one of their subscription matches given classification.
+   * @param content the Silverpeas content to classify.
+   * @param alertSubscribers indicates if subscribers must be notified or not
+   */
+  public void classifyContentOrClearClassificationIfEmpty(final Contribution content, boolean alertSubscribers) {
+    classifyContent(content, alertSubscribers, true);
   }
 
   /**
@@ -387,9 +415,13 @@ public class PdcClassification
    * content, a runtime exception PdcRuntimeException is thrown.
    * @param content the Silverpeas content to classify.
    * @param alertSubscribers indicates if subscribers must be notified or not
+   * @param clearIfEmpty if true then the content is unclassified if {@link #isEmpty()}
+   * returns true (which means no position). In other cases, the content is not unclassified in
+   * any case.
    */
-  public void classifyContent(final Contribution content, boolean alertSubscribers) {
-    if (!isEmpty()) {
+  private void classifyContent(final Contribution content, boolean alertSubscribers,
+      boolean clearIfEmpty) {
+    if (!isEmpty() || clearIfEmpty) {
       PdcClassificationService service = PdcClassificationService.get();
       service.classifyContent(content, this, alertSubscribers);
     }
