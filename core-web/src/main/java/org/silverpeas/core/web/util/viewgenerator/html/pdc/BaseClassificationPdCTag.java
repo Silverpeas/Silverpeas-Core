@@ -66,6 +66,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   private String contentId;
   private String nodeId;
   private String pdcWidgetId = PDC_CLASSIFICATION_WIDGET_TAG_ID;
+  private boolean externalManagement = false;
 
   public BaseClassificationPdCTag() {
   }
@@ -149,6 +150,22 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    */
   public void setNodeId(String nodeId) {
     this.nodeId = nodeId;
+  }
+
+  /**
+   * Is the PDC classification handled by an external manager?
+   * @return true if handled into form transaction, false otherwise.
+   */
+  public boolean isExternalManagement() {
+    return externalManagement;
+  }
+
+  /**
+   * Indicates if the PDC classification is handled by an external manager.
+   * @param externalManagement true if handled by external manager, false otherwise.
+   */
+  public void setExternalManagement(final boolean externalManagement) {
+    this.externalManagement = externalManagement;
   }
 
   /**
@@ -256,6 +273,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
             + resources.getString("pdcPeas.positionAlreadyExist")
             + "\", positionMustBeValued: \""
             + resources.getString("GML.selectAValue") + "\" }"
+            + ", externalManagement: " + isExternalManagement()
             + ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "',"
             + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
             + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
