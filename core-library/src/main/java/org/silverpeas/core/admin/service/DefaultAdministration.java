@@ -1868,7 +1868,7 @@ class DefaultAdministration implements Administration {
   public String addSpaceProfileInst(SpaceProfileInst spaceProfile, String userId)
       throws AdminException {
     try {
-      Integer spaceId = getDriverComponentId(spaceProfile.getSpaceFatherId());
+      int spaceId = getDriverComponentId(spaceProfile.getSpaceFatherId());
       String sSpaceProfileId = spaceProfileManager.createSpaceProfileInst(spaceProfile, spaceId);
       spaceProfile.setId(sSpaceProfileId);
       if (StringUtil.isDefined(userId)) {
@@ -1925,7 +1925,7 @@ class DefaultAdministration implements Administration {
       cache.opRemoveSpaceProfile(spaceProfileInst);
       spaceProfileInst.removeAllGroups();
       spaceProfileInst.removeAllUsers();
-      Integer spaceId = getDriverComponentId(spaceProfileInst.getSpaceFatherId());
+      int spaceId = getDriverComponentId(spaceProfileInst.getSpaceFatherId());
       if (StringUtil.isDefined(userId)) {
         SpaceInst spaceInstFather = getSpaceInstById(spaceId);
         spaceInstFather.setUpdaterUserId(userId);
@@ -2737,9 +2737,9 @@ class DefaultAdministration implements Administration {
     return asClientSpaceIds;
   }
 
-  private Integer getDriverComponentId(String sClientComponentId) {
+  private int getDriverComponentId(String sClientComponentId) {
     if (sClientComponentId == null) {
-      return null;
+      return -1;
     }
 
     return getTableClientComponentIdFromClientComponentId(sClientComponentId);
@@ -2748,7 +2748,7 @@ class DefaultAdministration implements Administration {
   /**
    * @return 23 for parameter kmelia23
    */
-  private Integer getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
+  private int getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
     String sTableClientId = "";
 
     // Remove the component name to get the table client id

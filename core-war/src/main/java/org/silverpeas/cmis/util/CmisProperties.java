@@ -44,11 +44,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringImpl
 import org.silverpeas.core.cmis.model.TypeId;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -178,7 +174,7 @@ public class CmisProperties {
    */
   public boolean isIndexed() {
     Boolean indexed = getValue("IS_INDEXED", PropertyBoolean.class);
-    return indexed != null && indexed;
+    return Objects.requireNonNullElse(indexed, false);
   }
 
   /**
@@ -414,6 +410,7 @@ public class CmisProperties {
    */
   private long getDateTime(String propertyName) {
     GregorianCalendar value = getValue(propertyName, PropertyDateTime.class);
+    Objects.requireNonNull(value);
     return CmisDateConverter.calendarToMillis(value);
   }
 
