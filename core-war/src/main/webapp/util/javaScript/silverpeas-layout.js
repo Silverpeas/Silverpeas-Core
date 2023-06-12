@@ -224,7 +224,7 @@
           __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
-          this._super(eventName, listener);
+          this._super(eventName, listener, listenerId);
       }
     },
     resize : function() {
@@ -375,7 +375,7 @@
           __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
-          this._super(eventName, listener);
+          this._super(eventName, listener, listenerId);
       }
     },
     hideNavigationToggle : function() {
@@ -420,7 +420,7 @@
         var normalizedEventName = this.normalizeEventName(eventName);
         __eventManager.addEventListener(normalizedEventName, listener, listenerId);
       } else {
-        this._super(eventName, listener);
+        this._super(eventName, listener, listenerId);
       }
     },
     hide : function(options) {
@@ -549,7 +549,7 @@
           __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
-          this._super(eventName, listener);
+          this._super(eventName, listener, listenerId);
       }
     }
   });
@@ -663,7 +663,7 @@
         var normalizedEventName = this.normalizeEventName(eventName);
         __eventManager.addEventListener(normalizedEventName, listener, listenerId);
       } else {
-        this._super(eventName, listener);
+        this._super(eventName, listener, listenerId);
       }
     },
     muteMouseEvents : function() {
