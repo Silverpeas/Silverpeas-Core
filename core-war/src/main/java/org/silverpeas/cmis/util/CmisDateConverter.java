@@ -24,7 +24,9 @@
 
 package org.silverpeas.cmis.util;
 
+import javax.annotation.Nonnull;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -53,8 +55,9 @@ public class CmisDateConverter {
    * @param calendar a {@link GregorianCalendar} object.
    * @return the number of milliseconds from Epoch.
    */
-  public static long calendarToMillis(GregorianCalendar calendar) {
-    return calendar != null ? calendar.getTimeInMillis() : null;
+  public static long calendarToMillis(@Nonnull GregorianCalendar calendar) {
+    Objects.requireNonNull(calendar);
+    return calendar.getTimeInMillis();
   }
 }
   

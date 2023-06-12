@@ -24,11 +24,9 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
@@ -41,8 +39,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;item&gt; element of a Process Model.
@@ -297,44 +293,51 @@ public class ItemImpl implements Item, Serializable {
   }
 
   public Map<String, String> getKeyValuePairs() {
+    if (parameters == null || parameters.isEmpty()) {
+      return Collections.emptyMap();
+    }
     Map<String, String> keyValuePairs = new HashMap<>();
+    Pair<String, String> keyValue = extractKeyValuePair(parameters);
 
-    if (parameters != null && !parameters.isEmpty()) {
-      String keys = null;
-      String values = null;
+    String keys = keyValue.getFirst();
+    String values = keyValue.getSecond();
 
-      for (Parameter parameter : parameters) {
-        if (parameter != null && "keys".equals(parameter.getName())) {
-          keys = parameter.getValue();
-        }
-        if (parameter != null && "values".equals(parameter.getName())) {
-          values = parameter.getValue();
-        }
+    if (keys != null && values != null) {
+      StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
+      StringTokenizer vTokenizer = new StringTokenizer(values, "##");
+      while (kTokenizer.hasMoreTokens()) {
+        String key = kTokenizer.nextToken();
+        String value = vTokenizer.nextToken();
+        keyValuePairs.put(key, value);
       }
-
-      if (keys != null && values != null) {
-        StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-        StringTokenizer vTokenizer = new StringTokenizer(values, "##");
-        while (kTokenizer.hasMoreTokens()) {
-          String key = kTokenizer.nextToken();
-          String value = vTokenizer.nextToken();
-          keyValuePairs.put(key, value);
-        }
-      } else if (keys != null && values == null) {
-        StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
-        while (kTokenizer.hasMoreTokens()) {
-          String key = kTokenizer.nextToken();
-          keyValuePairs.put(key, key);
-        }
-      } else if (keys == null && values != null) {
-        StringTokenizer vTokenizer = new StringTokenizer(values, "##");
-        while (vTokenizer.hasMoreTokens()) {
-          String value = vTokenizer.nextToken();
-          keyValuePairs.put(value, value);
-        }
+    } else if (keys != null) {
+      StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
+      while (kTokenizer.hasMoreTokens()) {
+        String key = kTokenizer.nextToken();
+        keyValuePairs.put(key, key);
+      }
+    } else if (values != null) {
+      StringTokenizer vTokenizer = new StringTokenizer(values, "##");
+      while (vTokenizer.hasMoreTokens()) {
+        String value = vTokenizer.nextToken();
+        keyValuePairs.put(value, value);
       }
     }
     return keyValuePairs;
+  }
+
+  private Pair<String, String> extractKeyValuePair(List<Parameter> parameters) {
+    String keys = null;
+    String values = null;
+    for (Parameter parameter : parameters) {
+      if (parameter != null && "keys".equals(parameter.getName())) {
+        keys = parameter.getValue();
+      }
+      if (parameter != null && "values".equals(parameter.getName())) {
+        values = parameter.getValue();
+      }
+    }
+    return Pair.of(keys, values);
   }
 
   @Override

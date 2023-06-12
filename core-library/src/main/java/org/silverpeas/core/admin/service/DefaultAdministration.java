@@ -2736,9 +2736,9 @@ class DefaultAdministration implements Administration {
     return asClientSpaceIds;
   }
 
-  private Integer getDriverComponentId(String sClientComponentId) {
+  private int getDriverComponentId(String sClientComponentId) {
     if (sClientComponentId == null) {
-      return null;
+      return -1;
     }
 
     return getTableClientComponentIdFromClientComponentId(sClientComponentId);
