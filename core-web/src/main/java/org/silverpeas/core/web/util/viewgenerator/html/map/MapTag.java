@@ -37,6 +37,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import static org.silverpeas.core.admin.component.model.ComponentInstLight.getIcon;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 public class MapTag extends TagSupport {
 
@@ -49,6 +50,8 @@ public class MapTag extends TagSupport {
   private String callbackJSForSubspaces;
   private boolean megaMenu = false;
   private Boolean forceHidingComponents;
+  private boolean skipSubSpaces = false;
+  private boolean skipComponents = false;
 
   public String getSpaceId() {
     return spaceId;
@@ -110,6 +113,22 @@ public class MapTag extends TagSupport {
     this.forceHidingComponents = forceHidingComponents;
   }
 
+  public boolean isSkipSubSpaces() {
+    return skipSubSpaces;
+  }
+
+  public void setSkipSubSpaces(final boolean skipSubSpaces) {
+    this.skipSubSpaces = skipSubSpaces;
+  }
+
+  public boolean isSkipComponents() {
+    return skipComponents;
+  }
+
+  public void setSkipComponents(final boolean skipComponents) {
+    this.skipComponents = skipComponents;
+  }
+
   @Override
   public int doStartTag() throws JspException {
     try {
@@ -161,8 +180,8 @@ public class MapTag extends TagSupport {
 
       result.append(getSpaceDescription(spaceInst, language));
 
-      String apps = printApps(space, showHiddenComponents);
-      String subspaces = printSubspaces(space, showHiddenComponents);
+      String apps = isSkipComponents() ? EMPTY : printApps(space, showHiddenComponents);
+      String subspaces = isSkipSubSpaces() ? EMPTY : printSubspaces(space, showHiddenComponents);
 
       if (StringUtil.isDefined(apps) || StringUtil.isDefined(subspaces)) {
         result.append("<ul class=\"" + megaMenuUL + "\">");

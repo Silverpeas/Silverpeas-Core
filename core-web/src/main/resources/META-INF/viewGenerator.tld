@@ -2008,6 +2008,20 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>Skips the display of sub-spaces</description>
+      <name>skipSubSpaces</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Skips the display of the component instances</description>
+      <name>skipComponents</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that checks the validity of the current session and forwards to the error page.</description>
