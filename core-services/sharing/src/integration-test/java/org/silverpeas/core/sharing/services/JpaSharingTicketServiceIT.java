@@ -33,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.backgroundprocess.BackgroundProcessLogger;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.sharing.model.DownloadDetail;
@@ -53,8 +52,8 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.emptyList;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author ehugonnet
@@ -75,8 +74,7 @@ public class JpaSharingTicketServiceIT {
       new DbUnitLoadingRule("create-database.sql", "sharing_dataset.xml");
 
   @Before
-  public void generalSetUp() throws Exception {
-    new BackgroundProcessLogger().init();
+  public void generalSetUp() {
     creator = new UserDetail();
     creator.setId("0");
   }

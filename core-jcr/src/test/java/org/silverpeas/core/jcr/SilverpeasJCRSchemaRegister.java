@@ -26,8 +26,6 @@
 package org.silverpeas.core.jcr;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.InputStream;
@@ -42,13 +40,12 @@ import java.util.Objects;
  * is defined in the file silverpeas-jcr.cnd in the classpath of this library.
  * @author mmoquillon
  */
-@Service
-public class SilverpeasJCRSchemaRegister implements Initialization {
+public class SilverpeasJCRSchemaRegister {
 
   private static final String SILVERPEAS_JCR_SCHEMA = "/silverpeas-jcr.cnd";
 
-  @Override
   public void init() throws Exception {
+    SilverLogger.getLogger(this).warn("NOTHING TO DO");
     InputStream schema = getClass().getResourceAsStream(SILVERPEAS_JCR_SCHEMA);
     Objects.requireNonNull(schema, "No file " + SILVERPEAS_JCR_SCHEMA + " found in the classpath!");
 

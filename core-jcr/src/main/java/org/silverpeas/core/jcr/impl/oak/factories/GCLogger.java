@@ -31,45 +31,50 @@ import static org.silverpeas.core.util.UnitUtil.formatMemSize;
 import static org.slf4j.helpers.MessageFormatter.arrayFormat;
 
 /**
+ * Logger of garbage collection activity. By putting, modifying and removing some items in the JCR, in order to keep
+ * reasonable the performances and the resources allocated by Oak, some compactions are required and mainly with the
+ * segment storage. For doing Oak uses a garbage collector. The logger here monitors the activity of this garbage
+ * collector and logs messages about this activity.
+ *
  * @author silveryocha
  */
 public class GCLogger implements GCMonitor {
 
-  private final SilverLogger logger = SilverLogger.getLogger(this);
+    private final SilverLogger logger = SilverLogger.getLogger(this);
 
-  @Override
-  public void info(final String message, final Object... arguments) {
-    logger.info(arrayFormat(message, arguments).getMessage());
-  }
+    @Override
+    public void info(final String message, final Object... arguments) {
+        logger.info(arrayFormat(message, arguments).getMessage());
+    }
 
-  @Override
-  public void warn(final String message, final Object... arguments) {
-    logger.warn(arrayFormat(message, arguments).getMessage());
-  }
+    @Override
+    public void warn(final String message, final Object... arguments) {
+        logger.warn(arrayFormat(message, arguments).getMessage());
+    }
 
-  @Override
-  public void error(final String message, final Exception exception) {
-    logger.error(message, exception);
-  }
+    @Override
+    public void error(final String message, final Exception exception) {
+        logger.error(message, exception);
+    }
 
-  @Override
-  public void skipped(final String reason, final Object... arguments) {
-    logger.info(arrayFormat(reason, arguments).getMessage());
-  }
+    @Override
+    public void skipped(final String reason, final Object... arguments) {
+        logger.info(arrayFormat(reason, arguments).getMessage());
+    }
 
-  @Override
-  public void compacted() {
-    logger.info("File store compacted");
-  }
+    @Override
+    public void compacted() {
+        logger.info("File store compacted");
+    }
 
-  @Override
-  public void cleaned(final long reclaimedSize, final long currentSize) {
-    logger.info("File store cleaned with reclaimed size of {0}. New current size of {1}",
-        formatMemSize(reclaimedSize), formatMemSize(currentSize));
-  }
+    @Override
+    public void cleaned(final long reclaimedSize, final long currentSize) {
+        logger.info("File store cleaned with reclaimed size of {0}. New current size of {1}",
+                formatMemSize(reclaimedSize), formatMemSize(currentSize));
+    }
 
-  @Override
-  public void updateStatus(final String status) {
-    logger.info("Current garbage collector status: {0}", status);
-  }
+    @Override
+    public void updateStatus(final String status) {
+        logger.info("Current garbage collector status: {0}", status);
+    }
 }

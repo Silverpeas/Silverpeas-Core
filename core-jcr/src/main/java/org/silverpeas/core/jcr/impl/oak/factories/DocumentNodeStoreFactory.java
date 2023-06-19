@@ -25,9 +25,9 @@
 
 package org.silverpeas.core.jcr.impl.oak.factories;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.util.concurrent.MoreExecutors;
+import org.apache.jackrabbit.guava.common.base.Predicate;
+import org.apache.jackrabbit.guava.common.base.Predicates;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.plugins.document.LeaseCheckMode;
@@ -107,7 +107,6 @@ public class DocumentNodeStoreFactory implements NodeStoreFactory {
     return store;
   }
 
-  @SuppressWarnings("Guava")
   private Predicate<Path> createCachePredicate(final DocumentNodeStoreConfiguration config) {
     List<String> subtrees = config.getSubtreesInPersistentCache();
     if (subtrees.isEmpty()) {

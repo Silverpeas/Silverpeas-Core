@@ -23,35 +23,28 @@
  */
 package org.silverpeas.core.backgroundprocess;
 
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
+ * Logger provider for background processes. The logger is here initialized and wrapped in order to be used in
+ * different threads; each thread accesses the same logger.
  * @author silveryocha
  */
-@Service
-public class BackgroundProcessLogger implements Initialization {
+public class BackgroundProcessLogger {
 
   private static SilverLogger silverLogger;
 
-  static void initLogger() {
+  private BackgroundProcessLogger() {
+  }
+
+  private static void init() {
     if (silverLogger == null) {
       silverLogger = SilverLogger.getLogger(BackgroundProcessLogger.class);
     }
   }
 
   public static SilverLogger get() {
+    init();
     return silverLogger;
-  }
-
-  @Override
-  public int getPriority() {
-    return 50;
-  }
-
-  @Override
-  public void init() throws Exception {
-    initLogger();
   }
 }

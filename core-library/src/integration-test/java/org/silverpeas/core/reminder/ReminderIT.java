@@ -135,7 +135,6 @@ public class ReminderIT {
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_NOW).authoredBy(aUser));
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_LATER).authoredBy(aUser)
         .publishAt(OffsetDateTime.now().plusSeconds(45)));
-    new BackgroundProcessLogger().init();
     BackgroundProcessLogger.get().setLevel(Level.DEBUG);
   }
 

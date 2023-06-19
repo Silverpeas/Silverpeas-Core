@@ -30,11 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.silverpeas.core.test.unit.extention.LoggerExtension;
-import org.silverpeas.core.test.unit.extention.LoggerLevel;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
-import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.*;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
 
@@ -49,6 +45,7 @@ import static java.util.Collections.synchronizedList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @author silveryocha
@@ -68,7 +65,6 @@ class BackgroundProcessTaskTest {
 
   @BeforeEach
   public void setup() {
-    BackgroundProcessLogger.initLogger();
     BackgroundProcessTask.synchronizedContexts.clear();
     processedRequest.clear();
   }
@@ -268,7 +264,8 @@ class BackgroundProcessTaskTest {
     assertIds(allExpected);
     DurationProcessRequest4Test durationRequest =
         (DurationProcessRequest4Test) processedRequest.stream()
-            .filter(r -> r instanceof DurationProcessRequest4Test).findFirst().get();
+            .filter(r -> r instanceof DurationProcessRequest4Test).findFirst().orElse(null);
+    assertThat(durationRequest, notNullValue());
     assertThat(durationRequest.num, is(26000));
   }
 
@@ -288,7 +285,7 @@ class BackgroundProcessTaskTest {
 
   private void assertNums(final List<DurationProcessRequest4Test> expected) {
     final String expectedResult = expected.stream()
-        .map(r -> "" + r.num)
+        .map(r -> String.valueOf(r.num))
         .sorted()
         .collect(Collectors.joining(","));
 
