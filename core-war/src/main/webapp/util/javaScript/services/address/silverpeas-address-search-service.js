@@ -43,13 +43,17 @@
     /**
      * Gets the list of {@link AddressItem} instance from given address.
      * @param query a string query.
+     * @param filters an optional instance of {@link AddressSearchService.Filters}.
      * @returns {*}
      */
-    this.search = function(query) {
-      return sp.ajaxRequest(API_BASE_URL + '/search')
+    this.search = function(query, filters) {
+      if(!filters) {
+        filters = new this.Filters();
+      }
+      return filters.applyOnRequest(sp.ajaxRequest(API_BASE_URL + '/search')
           .noAutomaticHeaders()
           .withParam(QUERY_PARAM, query)
-          .withParam(LIMIT_PARAM, LIMIT)
+          .withParam(LIMIT_PARAM, LIMIT))
           .sendAndPromiseJsonResponse()
           .then(function(result) {
             return __performResult(result, function() {
@@ -79,6 +83,37 @@
     };
   };
 
+  /**
+   * Filters dedicated to {@link AddressSearchService#search} service.
+   * @constructor
+   */
+  AddressSearchService.Filters = function() {
+    let typeFilter = undefined;
+    let cityCodeFilter = undefined;
+    let postCodeFilter = undefined;
+    this.filterOnType = function(type) {
+      typeFilter = type;
+    };
+    this.filterOnCityCode = function(cityCode) {
+      cityCodeFilter = cityCode;
+    };
+    this.filterOnPostCode = function(postCode) {
+      postCodeFilter = postCode;
+    };
+    this.applyOnRequest = function(request) {
+      if (typeFilter) {
+        request.withParam('type', typeFilter);
+      }
+      if (cityCodeFilter) {
+        request.withParam('citycode', cityCodeFilter);
+      }
+      if (postCodeFilter) {
+        request.withParam('postcode', postCodeFilter);
+      }
+      return request;
+    }
+  }
+
   function __performResult(result, errorSuffixCallback) {
     if (typeof result !== 'object' || !Array.isArray(result.features)) {
       const warningMsg = 'Silverpeas Address Search - no address found ' + errorSuffixCallback();
@@ -95,6 +130,7 @@
         road : data.properties.street,
         postcode : data.properties.postcode,
         city : data.properties.city,
+        citycode : data.properties.citycode,
         country_code : 'FR'
       }));
     });
@@ -107,6 +143,7 @@
    * <pre>
    *   {
    *     label : 'a label naming the address',
+   *     cityCode : code INSEE of the city,
    *     lat : latitude,
    *     lon : longitude
    *   }
@@ -121,6 +158,13 @@
      */
     getLabel : function() {
       return this.__context.data.label || '';
+    },
+    /**
+     * Gets the code INSEE of the city.
+     * @returns {*|string}
+     */
+    getCityCode : function() {
+      return this.__context.data.citycode || '';
     },
     /**
      * Gets the longitude if any, 0.0 otherwise.
