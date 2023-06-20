@@ -36,6 +36,7 @@
                                v-bind:items="addresses"
                                v-bind:min-query-length="5"
                                v-bind:query-debounce="500"
+                               v-on:api="qiApi = $event"
                                v-on:query="performQuery"
                                v-on:select="$emit('select', $event)"
                                v-slot="{ item }">

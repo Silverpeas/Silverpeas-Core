@@ -711,7 +711,7 @@
   SpVue.component('silverpeas-query-input-select',
     commonAsyncComponentRepository.get('query-input-select', {
       emits : ['query', 'select'],
-      mixins : [VuejsAttachedPopinMixin],
+      mixins : [VuejsApiMixin, VuejsAttachedPopinMixin],
       props : {
         inputTitle : {
           'type' : String,
@@ -741,6 +741,13 @@
           mouseOver : false,
           forceClose : false
         };
+      },
+      created : function() {
+        this.extendApiWith({
+          replayQuery : function() {
+            this.performQuery();
+          }
+        });
       },
       mounted : function() {
         if (StringUtil.isDefined(this.inputTitle)) {
@@ -773,10 +780,8 @@
         this.toElement.addEventListener('keyup', sp.debounce(function(e) {
           this.lastValue = this.value;
           this.value = e.target.value;
-          if (e.keyCode !== 13 && this.lastValue !== this.value && StringUtil.isDefined(this.value) &&
-              this.value.length >= this.minQueryLength) {
+          if (e.keyCode !== 13 && this.lastValue !== this.value && this.performQuery()) {
             this.forceClose = false;
-            this.$emit('query', this.value);
           }
         }.bind(this), this.queryDebounce));
       },
@@ -807,6 +812,13 @@
             this.forceClose = true;
             this.$emit('select', this.items[this.activeIndex]);
           }
+        },
+        performQuery : function() {
+          if (StringUtil.isDefined(this.value) && this.value.length >= this.minQueryLength) {
+            this.$emit('query', this.value);
+            return true;
+          }
+          return false;
         }
       },
       computed : {

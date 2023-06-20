@@ -34,16 +34,29 @@
           target : {
             'type' : HTMLElement,
             'required' : true
+          },
+          typeFilter : {
+            'type' : String,
+            'default' : undefined
+          },
+          cityCodeFilter : {
+            'type' : String,
+            'default' : undefined
+          },
+          postCodeFilter : {
+            'type' : String,
+            'default' : undefined
           }
         },
         data : function() {
           return {
+            qiApi : undefined,
             addresses : undefined
           }
         },
         methods : {
           performQuery : function(query) {
-            return AddressSearchService.search(query).then(function(addresses) {
+            return AddressSearchService.search(query, this.addressSearchFilters).then(function(addresses) {
               if (addresses.length) {
                 this.addresses = addresses;
               } else {
@@ -60,6 +73,18 @@
           },
           placeholder : function() {
             return sp.i18n.get('a.s.i.p');
+          },
+          addressSearchFilters : function() {
+            const filters = new AddressSearchService.Filters();
+            filters.filterOnType(this.typeFilter);
+            filters.filterOnCityCode(this.cityCodeFilter);
+            filters.filterOnPostCode(this.postCodeFilter);
+            return filters;
+          }
+        },
+        watch : {
+          addressSearchFilters : function() {
+            this.qiApi.replayQuery();
           }
         }
       }));
@@ -95,18 +120,33 @@
       const $app = document.createElement('div');
       const $decorator = document.createElement('silverpeas-address-search-input-decorator');
       $decorator.setAttribute('v-bind:target', 'target');
+      $decorator.setAttribute('v-bind:type-filter', 'typeFilter');
+      $decorator.setAttribute('v-bind:city-code-filter', 'cityCodeFilter');
+      $decorator.setAttribute('v-bind:post-code-filter', 'postCodeFilter');
       $decorator.setAttribute('v-on:select', 'performSelected');
       $app.appendChild($decorator);
       sp.element.insertAfter($app, $input);
       const app = SpVue.createApp({
         data : function() {
           return {
-            target : $input
+            target : $input,
+            typeFilter : undefined,
+            cityCodeFilter : undefined,
+            postCodeFilter : undefined
           };
         },
         methods : {
           performSelected : function(address) {
             app.dispatchEvent('select', address);
+          },
+          setTypeFilter : function(type) {
+            this.typeFilter = type;
+          },
+          setCityCodeFilter : function(cityCode) {
+            this.cityCodeFilter = cityCode;
+          },
+          setPostCodeFilter : function(postCode) {
+            this.postCodeFilter = postCode;
           }
         }
       }).mount($app);

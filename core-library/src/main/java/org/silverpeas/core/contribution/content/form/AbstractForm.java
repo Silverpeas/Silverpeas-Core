@@ -165,9 +165,13 @@ public abstract class AbstractForm implements Form {
         functionName = "ifCorrectForm"+pagesContext.getFormIndex()+"Execute";
       }
 
+      String initFunctionName = functionName.replaceAll("Execute$", "Init");
       out.append("function ").append(functionName).append("(callback) {\n")
           .append("  errorMsg = \"\";\n")
           .append("  errorNb = 0;\n")
+          .append("  if (typeof ").append(initFunctionName).append(" === 'function') {\n")
+          .append("    ").append(initFunctionName).append("();\n")
+          .append("  }\n")
           .append("  var field;\n")
           .append("\n\n");
 
