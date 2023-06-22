@@ -68,13 +68,17 @@
       adapterClass : {
         'type' : Function,
         'default' : CartoTargetPointComponentAdapter
+      },
+      readOnly : {
+        'type' : Boolean,
+        'default' : false
       }
     }
   }
 
   SpVue.component('silverpeas-map-target-point-button',
       templateRepository.get('target-point-button', {
-        mixins : [VuejsApiMixin, MapTargetPointMixin],
+        mixins : [VuejsApiMixin ,VuejsI18nTemplateMixin, MapTargetPointMixin],
         emits : ['before-open'],
         data : function() {
           return {
@@ -91,11 +95,17 @@
             this.$emit('before-open');
             this.popinApi.open();
           }
+        },
+        computed : {
+          title : function() {
+            return this.readOnly ? this.messages.targetPointReadOnlyTitle : this.messages.targetPointTitle;
+          }
         }
       }));
 
   window.MapTargetPointButton = new function() {
-    const __instantiate = function(cssSelectorOrInputElement, mapOptions, insertCallback) {
+    const __instantiate = function(cssSelectorOrInputElement, mapOptions, readOnly, insertCallback) {
+      readOnly = typeof readOnly === 'undefined' ?  false : readOnly;
       const $input = typeof cssSelectorOrInputElement === 'string'
           ? document.querySelector(cssSelectorOrInputElement)
           : cssSelectorOrInputElement;
@@ -103,6 +113,7 @@
       const $decorator = document.createElement('silverpeas-map-target-point-button');
       $decorator.setAttribute('v-bind:initial-map-location', 'initialMapLocation');
       $decorator.setAttribute('v-bind:map-options', 'mapOptions');
+      $decorator.setAttribute('v-bind:read-only', 'readOnly');
       $decorator.setAttribute('v-on:before-open', 'performBeforeOpen');
       $decorator.setAttribute('v-on:map-lon-lat-target', 'performTargeted');
       $app.appendChild($decorator);
@@ -112,7 +123,8 @@
           return {
             target : $input,
             mapOptions : mapOptions,
-            initialMapLocation : undefined
+            initialMapLocation : undefined,
+            readOnly : readOnly
           };
         },
         methods : {
@@ -131,8 +143,8 @@
       applyEventDispatchingBehaviorOn(app);
       return app;
     };
-    this.insertAfter = function(cssSelectorOrInputElement, mapOptions) {
-      return __instantiate(cssSelectorOrInputElement, mapOptions, function($app, $input) {
+    this.insertAfter = function(cssSelectorOrInputElement, mapOptions, readOnly) {
+      return __instantiate(cssSelectorOrInputElement, mapOptions, readOnly, function($app, $input) {
         sp.element.insertAfter($app, $input);
       });
     };
@@ -180,11 +192,13 @@
         mounted : function() {
           this.mapApi = new MapApi(this.$el);
           this.mapApi.render(this.mapOptions).then(function() {
-            this.mapApi.addEventListener('click', function(e) {
-              const mapEvent = e.detail.data;
-              const projection = this.mapApi.proj.fromCoordinates(mapEvent.coordinate);
-              this.setMapLonLat(new MapLonLat(projection.lon(), projection.lat()), true);
-            }.bind(this));
+            if (!this.readOnly) {
+              this.mapApi.addEventListener('click', function(e) {
+                const mapEvent = e.detail.data;
+                const projection = this.mapApi.proj.fromCoordinates(mapEvent.coordinate);
+                this.setMapLonLat(new MapLonLat(projection.lon(), projection.lat()));
+              }.bind(this));
+            }
             let promise = sp.promise.resolveDirectlyWith();
             if (this.initialMapLocation) {
               promise = this.initialMapLocation.promiseLonLat();
@@ -200,12 +214,10 @@
           }.bind(this));
         },
         methods : {
-          setMapLonLat : function(mapLonLat, notify) {
+          setMapLonLat : function(mapLonLat) {
             this.mapApi.clearMarkers();
             __createMarker(this.mapApi, this.adapter.createInfoPoint(mapLonLat)).then(function() {
-              if (notify) {
-                this.$emit('map-lon-lat-target', mapLonLat);
-              }
+              this.$emit('map-lon-lat-target', mapLonLat);
             }.bind(this));
           }
         },

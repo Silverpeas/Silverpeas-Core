@@ -31,19 +31,26 @@
 <view:setBundle basename="org.silverpeas.map.multilang.mapBundle"/>
 
 <fmt:message key="map.target.point.title" var="targetPointTitle"/>
+<fmt:message key="map.target.point.title.readOnly" var="targetPointReadOnlyTitle"/>
 <fmt:message key="map.target.point.none" var="noTargetMsg"/>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="target-point-button">
-  <silverpeas-button class="openMap"
-                     v-bind:title="'${silfn:escapeJs(targetPointTitle)}'"
-                     v-on:click="open">
-    ${targetPointTitle}
+  <div class="silverpeas-form-pane">
+    <div v-sp-init>
+      {{addMessages({
+      targetPointTitle : '${silfn:escapeJs(targetPointTitle)}',
+      targetPointReadOnlyTitle : '${silfn:escapeJs(targetPointReadOnlyTitle)}'
+    })}}
+    </div>
+  <silverpeas-button class="openMap" v-bind:title="title" v-on:click="open">
+    {{ title }}
   </silverpeas-button>
   <silverpeas-map-target-point-popin v-on:api="popinApi = $event"
                                      v-bind:initial-map-location="initialMapLocation"
                                      v-bind:map-options="mapOptions"
                                      v-bind:adapter-class="adapterClass"
+                                     v-bind:read-only="readOnly"
                                      v-on:map-lon-lat-target="$emit('map-lon-lat-target', $event)"></silverpeas-map-target-point-popin>
 </silverpeas-component-template>
 
@@ -59,12 +66,13 @@
                     v-bind:max-width="1000"
                     v-on:open="isOpen = true"
                     v-on:close="isOpen = false"
-                    type="validation">
+                    v-bind:type="readOnly ? 'information' : 'validation'">
     <div class="silverpeas-map-target-point-popin">
       <silverpeas-map-target-point-map v-if="isOpen"
                                        v-bind:initial-map-location="initialMapLocation"
                                        v-bind:map-options="mapOptions"
                                        v-bind:adapter-class="adapterClass"
+                                       v-bind:read-only="readOnly"
                                        v-on:map-lon-lat-target="currentTarget = $event"></silverpeas-map-target-point-map>
     </div>
   </silverpeas-popin>
