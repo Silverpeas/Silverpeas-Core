@@ -103,25 +103,26 @@
         }
       }));
 
-  window.MapTargetPointButton = new function() {
+  const MapTargetPointComponentStarter = function(componentName) {
     const __instantiate = function(cssSelectorOrInputElement, mapOptions, readOnly, insertCallback) {
       readOnly = typeof readOnly === 'undefined' ?  false : readOnly;
-      const $input = typeof cssSelectorOrInputElement === 'string'
+      const $sibling = typeof cssSelectorOrInputElement === 'string'
           ? document.querySelector(cssSelectorOrInputElement)
           : cssSelectorOrInputElement;
       const $app = document.createElement('div');
-      const $decorator = document.createElement('silverpeas-map-target-point-button');
+      $app.classList.add(componentName + '-app');
+      const $decorator = document.createElement(componentName);
       $decorator.setAttribute('v-bind:initial-map-location', 'initialMapLocation');
       $decorator.setAttribute('v-bind:map-options', 'mapOptions');
       $decorator.setAttribute('v-bind:read-only', 'readOnly');
       $decorator.setAttribute('v-on:before-open', 'performBeforeOpen');
       $decorator.setAttribute('v-on:map-lon-lat-target', 'performTargeted');
       $app.appendChild($decorator);
-      insertCallback($app, $input);
+      insertCallback($app, $sibling);
       const app = SpVue.createApp({
         data : function() {
           return {
-            target : $input,
+            target : $sibling,
             mapOptions : mapOptions,
             initialMapLocation : undefined,
             readOnly : readOnly
@@ -143,12 +144,24 @@
       applyEventDispatchingBehaviorOn(app);
       return app;
     };
+    this.appendInto = function(cssSelectorOrInputElement, mapOptions, readOnly) {
+      return __instantiate(cssSelectorOrInputElement, mapOptions, readOnly, function($app, $sibling) {
+        $sibling.appendChild($app);
+      });
+    };
+    this.insertBefore = function(cssSelectorOrInputElement, mapOptions, readOnly) {
+      return __instantiate(cssSelectorOrInputElement, mapOptions, readOnly, function($app, $sibling) {
+        sp.element.insertBefore($app, $sibling);
+      });
+    };
     this.insertAfter = function(cssSelectorOrInputElement, mapOptions, readOnly) {
-      return __instantiate(cssSelectorOrInputElement, mapOptions, readOnly, function($app, $input) {
-        sp.element.insertAfter($app, $input);
+      return __instantiate(cssSelectorOrInputElement, mapOptions, readOnly, function($app, $sibling) {
+        sp.element.insertAfter($app, $sibling);
       });
     };
   };
+
+  window.MapTargetPointButton = new MapTargetPointComponentStarter('silverpeas-map-target-point-button');
 
   SpVue.component('silverpeas-map-target-point-popin',
       templateRepository.get('target-point-popin', {
@@ -186,7 +199,8 @@
         mixins : [MapTargetPointMixin],
         data : function() {
           return {
-            mapApi : undefined
+            mapApi : undefined,
+            lastMapLonLat : undefined
           }
         },
         mounted : function() {
@@ -199,34 +213,54 @@
                 this.setMapLonLat(new MapLonLat(projection.lon(), projection.lat()));
               }.bind(this));
             }
-            let promise = sp.promise.resolveDirectlyWith();
-            if (this.initialMapLocation) {
-              promise = this.initialMapLocation.promiseLonLat();
-            }
-            promise.then(function(mapLonLat) {
-              if (mapLonLat) {
-                this.setMapLonLat(mapLonLat);
-                setTimeout(function() {
-                  this.mapApi.autoFit();
-                }.bind(this), 0);
-              }
-            }.bind(this));
+            this.setInitialMapLocation(this.initialMapLocation);
           }.bind(this));
         },
         methods : {
+          setInitialMapLocation : function(initialMapLocation) {
+            let promise = sp.promise.resolveDirectlyWith();
+            if (initialMapLocation) {
+              promise = initialMapLocation.promiseLonLat();
+            }
+            promise.then(function(mapLonLat) {
+              if (mapLonLat) {
+                if (!this.isEqualsToLastMapLonLat(mapLonLat)) {
+                  this.setMapLonLat(mapLonLat);
+                  setTimeout(function() {
+                    this.mapApi.autoFit();
+                  }.bind(this), 0);
+                }
+              } else {
+                this.mapApi.clearMarkers();
+              }
+            }.bind(this));
+          },
           setMapLonLat : function(mapLonLat) {
+            this.lastMapLonLat = mapLonLat;
             this.mapApi.clearMarkers();
             __createMarker(this.mapApi, this.adapter.createInfoPoint(mapLonLat)).then(function() {
               this.$emit('map-lon-lat-target', mapLonLat);
             }.bind(this));
+          },
+          isEqualsToLastMapLonLat : function(mapLonLat) {
+            return this.lastMapLonLat
+                && this.lastMapLonLat.getLatitude() === mapLonLat.getLatitude()
+                && this.lastMapLonLat.getLongitude() === mapLonLat.getLongitude();
           }
         },
         computed : {
           adapter : function() {
             return new this.adapterClass();
           }
+        },
+        watch : {
+          initialMapLocation : function(value) {
+            this.setInitialMapLocation(value);
+          }
         }
       }));
+
+  window.MapTargetPoint = new MapTargetPointComponentStarter('silverpeas-map-target-point-map');
 
   SpVue.component('silverpeas-map-target-point',
       templateRepository.get('target-point', {

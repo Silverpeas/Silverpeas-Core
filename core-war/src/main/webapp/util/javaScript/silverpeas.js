@@ -2236,6 +2236,12 @@ if (typeof window.sp === 'undefined') {
           element.tabIndex = oldTabIndex;
         }, 0);
       },
+      insertBefore : function(newNode, referenceNodeOrCssSelector) {
+        const referenceNode = typeof referenceNodeOrCssSelector === 'string'
+            ? document.querySelector(referenceNodeOrCssSelector)
+            : referenceNodeOrCssSelector;
+        referenceNode.parentNode.insertBefore(newNode, referenceNode);
+      },
       insertAfter : function(newNode, referenceNodeOrCssSelector) {
         const referenceNode = typeof referenceNodeOrCssSelector === 'string'
             ? document.querySelector(referenceNodeOrCssSelector)
