@@ -35,8 +35,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.selection.SelectionBasket;
-import org.silverpeas.web.AuthId;
-import org.silverpeas.web.ResourceDeletionTest;
+import org.silverpeas.web.test.AuthId;
+import org.silverpeas.web.test.ResourceDeletionTest;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;

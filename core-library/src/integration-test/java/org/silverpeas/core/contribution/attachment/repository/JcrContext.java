@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.jcr.util.SilverpeasJCRSchemaRegister;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;

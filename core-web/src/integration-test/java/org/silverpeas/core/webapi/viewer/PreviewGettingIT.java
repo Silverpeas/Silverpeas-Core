@@ -36,7 +36,7 @@ import org.silverpeas.core.viewer.service.DefaultPreviewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.webapi.attachment.SimpleDocumentEmbedMediaViewProvider;
-import org.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.web.test.ResourceGettingTest;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

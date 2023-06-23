@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.security.SecurityTest;
+import org.silverpeas.core.jcr.util.SilverpeasJCRSchemaRegister;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
 import org.silverpeas.core.test.unit.extention.SystemProperty;
 import org.silverpeas.core.test.unit.extention.TestManagedBeans;
@@ -67,12 +68,12 @@ class SilverpeasJCRSchemaRegisterTest extends SecurityTest {
   @Test
   @DisplayName("Loading the Silverpeas JCR Schema into the JCR should succeed")
   void loadTheSchemaIntoJCR() {
-    assertDoesNotThrow(() -> schemaRegister.init());
+    assertDoesNotThrow(() -> schemaRegister.register());
   }
 
   @Test
   void createANodeAccordingToTheSchema() throws Exception {
-    schemaRegister.init();
+    schemaRegister.register();
     String instanceId = "kmelia42";
 
     assertDoesNotThrow(() -> {

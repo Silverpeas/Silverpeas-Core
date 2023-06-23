@@ -117,6 +117,7 @@ import org.silverpeas.core.security.html.DefaultHtmlSanitizer;
 import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
+import org.silverpeas.core.test.jcr.SilverpeasJcrInitialization;
 import org.silverpeas.core.test.office.OfficeServiceInitializationListener;
 import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.*;
@@ -430,7 +431,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addJcrFeatures() {
-    initJcrSchema();
+    initJcr();
     addJpaPersistenceFeatures();
     addProcessFeatures();
     addSilverpeasExceptionBases();
@@ -442,7 +443,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addPublicationTemplateFeatures();
     addImageToolFeatures();
     addWbeManagementFeatures();
-    addMavenDependencies("org.silverpeas.core:silverpeas-core-jcr");
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrIntegrationIT.class)) {
       addClasses(FormException.class, JcrIntegrationIT.class, JcrContext.class,
@@ -455,6 +455,17 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }
 
+    return this;
+  }
+
+  /**
+   * The test implied code that uses the JCR. So initialize the JCR schema of Silverpeas and adds the required
+   * dependencies.
+   * @return itself.
+   */
+  public WarBuilder4LibCore initJcr() {
+    addMavenDependencies("org.silverpeas.core:silverpeas-core-jcr");
+    addWebListener(SilverpeasJcrInitialization.class);
     return this;
   }
 

@@ -23,9 +23,11 @@
  *
  */
 
-package org.silverpeas.core.jcr;
+package org.silverpeas.core.jcr.util;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.InputStream;
@@ -34,17 +36,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * An initialization service aiming to register the Silverpeas specific schema into the JCR to
- * be used by Silverpeas. The schema is registered only the first time the repository is spawned; it
- * is no more initialized if it already exists in the underlying JCR. The JCR schema for Silverpeas
- * is defined in the file silverpeas-jcr.cnd in the classpath of this library.
+ * Register the Silverpeas specific schema into the JCR to be used by Silverpeas.
+ * The schema should have been registered into the JCR by the installer. This class can be used in peculiar
+ * context like integration or functional tests.
+ *
  * @author mmoquillon
  */
 public class SilverpeasJCRSchemaRegister {
 
   private static final String SILVERPEAS_JCR_SCHEMA = "/silverpeas-jcr.cnd";
 
-  public void init() throws Exception {
+  public void register() {
     SilverLogger.getLogger(this).warn("NOTHING TO DO");
     InputStream schema = getClass().getResourceAsStream(SILVERPEAS_JCR_SCHEMA);
     Objects.requireNonNull(schema, "No file " + SILVERPEAS_JCR_SCHEMA + " found in the classpath!");
@@ -53,6 +55,8 @@ public class SilverpeasJCRSchemaRegister {
          JCRSession session = JCRSession.openSystemSession()) {
       SilverLogger.getLogger(this).info("Silverpeas specific JCR schema registering...");
       CndImporter.registerNodeTypes(reader, session);
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

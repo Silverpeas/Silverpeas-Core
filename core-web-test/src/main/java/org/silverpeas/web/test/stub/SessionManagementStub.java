@@ -23,7 +23,7 @@
  *
  */
 
-package org.silverpeas.web.stub;
+package org.silverpeas.web.test.stub;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;

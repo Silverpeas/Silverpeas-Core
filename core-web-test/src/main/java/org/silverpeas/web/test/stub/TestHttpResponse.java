@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-package org.silverpeas.web.stub;
+package org.silverpeas.web.test.stub;
 
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.Pair;

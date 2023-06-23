@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.test;
 
-import org.silverpeas.core.test.BasicCoreWarBuilder;
 import org.silverpeas.core.test.WarBuilder;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -31,17 +30,14 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
-import org.silverpeas.core.webapi.profile.AuthenticationResource;
-import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
-import org.silverpeas.core.webapi.profile.UserProfileEntity;
-import org.silverpeas.core.webapi.util.UserEntity;
+import org.silverpeas.web.test.WarBuilder4Web;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
  * definition of common archive part definitions.
  * @author Yohann Chastagnier
  */
-public class WarBuilder4WebCore extends BasicCoreWarBuilder {
+public class WarBuilder4WebCore extends WarBuilder4Web {
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
@@ -50,7 +46,7 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    */
   protected <T> WarBuilder4WebCore(final Class<T> test) {
     super(test);
-    initJcrSchema();
+    initJcr();
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");

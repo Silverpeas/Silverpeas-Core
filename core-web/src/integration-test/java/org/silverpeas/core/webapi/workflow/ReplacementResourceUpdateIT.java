@@ -36,7 +36,7 @@ import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
-import org.silverpeas.web.ResourceUpdateTest;
+import org.silverpeas.web.test.ResourceUpdateTest;
 
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;

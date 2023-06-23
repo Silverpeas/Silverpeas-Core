@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.web.environment.SilverpeasTestEnvironment;
+import org.silverpeas.web.test.environment.SilverpeasTestEnvironment;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

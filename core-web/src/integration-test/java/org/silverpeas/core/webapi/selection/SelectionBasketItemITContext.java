@@ -32,7 +32,7 @@ import org.silverpeas.core.webapi.profile.AuthenticationResource;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.webapi.util.UserEntity;
-import org.silverpeas.web.RESTWebServiceTest;
+import org.silverpeas.web.test.RESTWebServiceTest;
 
 import java.net.URI;
 

@@ -35,9 +35,8 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.web.RESTWebServiceTest;
+import org.silverpeas.web.test.RESTWebServiceTest;
 
-import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.Collection;

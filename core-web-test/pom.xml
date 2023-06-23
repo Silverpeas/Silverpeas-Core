@@ -43,13 +43,16 @@
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-rs</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-jcr</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
@@ -105,6 +108,11 @@
     <dependency>
       <groupId>com.ninja-squad</groupId>
       <artifactId>DbSetup</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-container</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>

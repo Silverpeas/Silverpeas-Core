@@ -33,7 +33,7 @@ import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
-import org.silverpeas.web.stub.TestHttpResponse;
+import org.silverpeas.web.test.stub.TestHttpResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -405,7 +405,7 @@ public class MassiveWebSecurityFilterIT {
         }
 
         public HttpRequest createHttpRequest(PARAMETER_CONFIG parameterConfig) {
-            org.silverpeas.web.stub.TestHttpRequest request = new org.silverpeas.web.stub.TestHttpRequest("GET", parameterName + " -> " + parameterValue);
+            org.silverpeas.web.test.stub.TestHttpRequest request = new org.silverpeas.web.test.stub.TestHttpRequest("GET", parameterName + " -> " + parameterValue);
             switch (parameterConfig) {
                 case SECOND_PARAMETER_SECOND_VALUE:
                     request.addParameter("otherParameterName", "tata")

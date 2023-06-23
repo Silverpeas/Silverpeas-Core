@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.jcr.impl.RepositorySettings;
 import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.security.SecurityTest;
+import org.silverpeas.core.jcr.util.SilverpeasJCRSchemaRegister;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
 import org.silverpeas.core.test.unit.extention.SystemProperty;
 import org.silverpeas.core.test.unit.extention.TestManagedBeans;
@@ -108,7 +109,7 @@ class JCRNodeHandlingTest extends SecurityTest {
   @BeforeEach
   public void initSilverpeasJCRSchema() throws Exception {
     SilverpeasJCRSchemaRegister register = new SilverpeasJCRSchemaRegister();
-    register.init();
+    register.register();
   }
 
   @BeforeEach

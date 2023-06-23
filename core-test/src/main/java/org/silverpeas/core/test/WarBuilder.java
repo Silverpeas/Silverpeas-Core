@@ -35,20 +35,13 @@ import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.test.integration.SilverpeasJcrInitializationListener;
 import org.silverpeas.core.test.integration.SilverpeasLoggerInitializationListener;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -278,15 +271,6 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   public WarBuilder<T> addAsWebInfResource(final Asset resource, final String target)
       throws IllegalArgumentException {
     war.addAsWebInfResource(resource, target);
-    return this;
-  }
-
-  /**
-   * The test implied code that uses the JCR. So initialize the JCR schema of Silverpeas.
-   * @return itself.
-   */
-  public WarBuilder<T> initJcrSchema() {
-    addWebListener(SilverpeasJcrInitializationListener.class);
     return this;
   }
 

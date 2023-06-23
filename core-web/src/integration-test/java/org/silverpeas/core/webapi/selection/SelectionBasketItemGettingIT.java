@@ -38,8 +38,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.selection.SelectionBasket;
 import org.silverpeas.core.util.Mutable;
-import org.silverpeas.web.AuthId;
-import org.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.web.test.AuthId;
+import org.silverpeas.web.test.ResourceGettingTest;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;

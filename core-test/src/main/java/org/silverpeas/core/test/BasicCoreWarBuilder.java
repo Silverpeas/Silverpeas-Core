@@ -40,8 +40,6 @@ public class BasicCoreWarBuilder extends BasicWarBuilder {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
-    addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
 
     // Bundles & Settings
     addAsResource("org/silverpeas/util/attachment/mime_types.properties");

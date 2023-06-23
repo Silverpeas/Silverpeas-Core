@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web;
+package org.silverpeas.web.test;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Before;
@@ -39,7 +39,7 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
-import org.silverpeas.web.environment.SilverpeasTestEnvironment;
+import org.silverpeas.web.test.environment.SilverpeasTestEnvironment;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -80,11 +80,11 @@ public abstract class RESTWebServiceTest {
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
-          "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
-          "/org/silverpeas/web/environment/create-table-space-component.sql",
-          "/org/silverpeas/web/environment/create-table-profile.sql",
-          "/org/silverpeas/web/environment/create-table-token.sql",
-          "/org/silverpeas/web/environment/create-table-notification.sql", getTableCreationScript())
+          "/org/silverpeas/web/test/environment/create-table-domain-user-group.sql",
+          "/org/silverpeas/web/test/environment/create-table-space-component.sql",
+          "/org/silverpeas/web/test/environment/create-table-profile.sql",
+          "/org/silverpeas/web/test/environment/create-table-token.sql",
+          "/org/silverpeas/web/test/environment/create-table-notification.sql", getTableCreationScript())
       .loadInitialDataSetFrom(getDataSetScript());
 
   @Before

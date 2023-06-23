@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.core.workflow.api.user.Replacement;
-import org.silverpeas.web.ResourceDeletionTest;
+import org.silverpeas.web.test.ResourceDeletionTest;
 
 import javax.ws.rs.core.Response;
 
