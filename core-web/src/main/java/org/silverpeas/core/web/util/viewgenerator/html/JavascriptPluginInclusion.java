@@ -1062,6 +1062,7 @@ public class JavascriptPluginInclusion {
         .add("v.c.d.lat", settings.getFloat("view.coordinates.default.lat", 45.1667f))
         .add("xyz.p", settings.getString("jsonXyzProviders", EMPTY))
         .add("bm.p", settings.getString("jsonBmProvider", EMPTY))
+        .add("wmts.c.p", settings.getString("jsonWmtsCapabilityProviders", EMPTY))
         .add("g.d.c", settings.getString("groups.default.color", "#FFF"))
         .add("g.d.o", settings.getFloat("groups.default.opacity", 1f))
         .add("g.d.tc", settings.getString("groups.default.textColor", "#000"))

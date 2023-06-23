@@ -52,6 +52,12 @@
       return json ? JSON.parse(json) : undefined;
     }
   });
+  Object.defineProperty(MapSettings, 'getWmtsCapabilityProviders', {
+    enumerable : false, value : function() {
+      const json = this.get('wmts.c.p');
+      return json ? JSON.parse(json) : [];
+    }
+  });
 
   const Projection = {
     fromLonLat : function(lon, lat) {
@@ -217,7 +223,7 @@
         }
       }.bind(this), 0);
     }.bind(this);
-    setTimeout(function() {
+    this.addEventListener('rendered', function() {
       __map.on('click', function(e) {
         ((__clusterLayer && __clusterLayer.__groupLayer) || __markerLayer).getFeatures(e.pixel).then(function(clickedFeatures) {
           if (clickedFeatures.length === 1) {
@@ -243,7 +249,7 @@
         const hit = __map.hasFeatureAtPixel(pixel);
         __map.getTarget().style.cursor = hit ? 'pointer' : '';
       });
-    }.bind(this), 0);
+    }.bind(this));
 
     /**
      * Removes all the registered markers.
@@ -506,52 +512,54 @@
         this.getOptions = function() {
           return options;
         };
-        // layers
-        const layers = [];
-        Array.prototype.push.apply(layers, __layerApi.__layers);
-        if (options.clusters.enabled) {
-          __clusterLayer = __createClusterLayer();
-          layers.push(__clusterLayer);
-          layers.push(__clusterLayer.__groupLayer);
-        } else {
-          layers.push(__markerLayer);
-        }
-        // initializing the map
-        __map = new ol.Map({
-          controls : ol.control.defaults.defaults({
-            zoomOptions : {
-              zoomInTipLabel : sp.i18n.get("m.z.i"),
-              zoomOutTipLabel : sp.i18n.get("m.z.o")
-            }
-          }),
-          view : new ol.View({
-            center : options.center,
-            zoom : options.defaultZoom,
-            minZoom : options.minZoom,
-            maxZoom : options.maxZoom
-          }),
-          layers : layers,
-          loadTilesWhileAnimating : true,
-          loadTilesWhileInteracting : true,
-          target : $target
-        });
-        __createRightContainer(this);
-        __createLayerButtons(this);
-        this.dispatchEvent('rendered');
-        // controls
-        __map.addControl(new ol.control.ZoomSlider());
-        const fullScreenCtrl = new ol.control.FullScreen({
-          source : __map.getTargetElement().id,
-          tipLabel : sp.i18n.get("m.f.m")
-        });
-        fullScreenCtrl.on('enterfullscreen', function() {
-          window.addEventListener('beforeunload', spFscreen.exitFullscreen);
-        });
-        fullScreenCtrl.on('leavefullscreen', function() {
-          window.removeEventListener('beforeunload', spFscreen.exitFullscreen);
-        });
-        __map.addControl(fullScreenCtrl);
-        resolve(this);
+        __layerApi.promiseLayers().then(function(__layers) {
+          // layers
+          const layers = [];
+          Array.prototype.push.apply(layers, __layers);
+          if (options.clusters.enabled) {
+            __clusterLayer = __createClusterLayer();
+            layers.push(__clusterLayer);
+            layers.push(__clusterLayer.__groupLayer);
+          } else {
+            layers.push(__markerLayer);
+          }
+          // initializing the map
+          __map = new ol.Map({
+            controls : ol.control.defaults.defaults({
+              zoomOptions : {
+                zoomInTipLabel : sp.i18n.get("m.z.i"),
+                zoomOutTipLabel : sp.i18n.get("m.z.o")
+              }
+            }),
+            view : new ol.View({
+              center : options.center,
+              zoom : options.defaultZoom,
+              minZoom : options.minZoom,
+              maxZoom : options.maxZoom
+            }),
+            layers : layers,
+            loadTilesWhileAnimating : true,
+            loadTilesWhileInteracting : true,
+            target : $target
+          });
+          __createRightContainer(this);
+          __createLayerButtons(this);
+          this.dispatchEvent('rendered');
+          // controls
+          __map.addControl(new ol.control.ZoomSlider());
+          const fullScreenCtrl = new ol.control.FullScreen({
+            source : __map.getTargetElement().id,
+            tipLabel : sp.i18n.get("m.f.m")
+          });
+          fullScreenCtrl.on('enterfullscreen', function() {
+            window.addEventListener('beforeunload', spFscreen.exitFullscreen);
+          });
+          fullScreenCtrl.on('leavefullscreen', function() {
+            window.removeEventListener('beforeunload', spFscreen.exitFullscreen);
+          });
+          __map.addControl(fullScreenCtrl);
+          resolve(this);
+        }.bind(this));
       }.bind(this));
     };
     this.enableInitialViewControl = function() {
@@ -579,70 +587,105 @@
    */
   const MapLayerApi = function() {
     const __preload = 4;
-    let __layerNames;
+    const __layerRegistry = [];
+    __layerRegistry.register = function(name, tile, order) {
+      order = typeof order === 'undefined' ? -1 : order;
+      __layerRegistry[name] = tile;
+      __layerRegistry.push({name: name, order : order});
+    };
     const osm = new ol.layer.Tile({
       visible : true,
       preload : __preload,
       source : new ol.source.OSM()
     });
-    this.__layers = [osm];
-    __layerNames = ['Open Street Map'];
-    const __xyzProviders = this.settings.getXyzProviders();
-    if (__xyzProviders && __xyzProviders.length > 0) {
-      function createXyzUrl(provider, description) {
-        let url = provider.template.url;
-        provider.template.descriptionVars.forEach(function(varName) {
-          url = url.replace('{' + varName + '}', description[varName]);
-        });
-        return url;
+    __layerRegistry.register('Open Street Map', osm, -2);
+    this.promiseLayers = function() {
+      const promises = [];
+      const __xyzProviders = this.settings.getXyzProviders();
+      if (__xyzProviders && __xyzProviders.length > 0) {
+        function createXyzUrl(provider, description) {
+          let url = provider.template.url;
+          provider.template.descriptionVars.forEach(function(varName) {
+            url = url.replace('{' + varName + '}', description[varName]);
+          });
+          return url;
+        }
+        __xyzProviders.forEach(function(xyzProvider) {
+          xyzProvider.descriptions.forEach(function(xyzDescription) {
+            const tile = new ol.layer.Tile({
+              visible : false,
+              preload : __preload,
+              source : new ol.source.XYZ({
+                url : createXyzUrl(xyzProvider, xyzDescription),
+                attributions : xyzProvider.attribution.replace('{year}', new Date().getFullYear())
+              })
+            });
+            __layerRegistry.register(xyzDescription.name, tile, xyzDescription.order);
+          }.bind(this));
+        }.bind(this));
       }
-      __xyzProviders.forEach(function(xyzProvider) {
-        xyzProvider.descriptions.forEach(function(xyzDescription) {
+      const __wmtsCapabilitiesProviders = this.settings.getWmtsCapabilityProviders();
+      if (__wmtsCapabilitiesProviders && __wmtsCapabilitiesProviders.length > 0) {
+        __wmtsCapabilitiesProviders.forEach(function(wmtsCapabilityProvider) {
+          promises.push(sp.ajaxRequest(wmtsCapabilityProvider.url).send().then(function(request) {
+            const parser = new ol.format.WMTSCapabilities();
+            const result = parser.read(request.responseText)
+            wmtsCapabilityProvider.descriptions.forEach(function(wmtsDescription) {
+              const options = ol.source.WMTS.optionsFromCapabilities(result, extendsObject({}, wmtsDescription.config));
+              if (options) {
+                if (!options.attributions) {
+                  options.attributions = wmtsCapabilityProvider.attribution.replace('{year}', new Date().getFullYear())
+                }
+                const tile = new ol.layer.Tile({
+                  visible : false,
+                  preload : __preload,
+                  source : new ol.source.WMTS(options)
+                });
+                __layerRegistry.register(wmtsDescription.name, tile, wmtsDescription.order);
+              }
+            }.bind(this));
+          }.bind(this)));
+        }.bind(this));
+      }
+      const __bmProvider = this.settings.getBmProviders();
+      if (__bmProvider) {
+        __bmProvider.descriptions.forEach(function(bmDescription) {
           const tile = new ol.layer.Tile({
             visible : false,
             preload : __preload,
-            source : new ol.source.XYZ({
-              url : createXyzUrl(xyzProvider, xyzDescription),
-              attributions : xyzProvider.attribution.replace('{year}', new Date().getFullYear())
+            source : new ol.source.BingMaps({
+              imagerySet : bmDescription['scheme'],
+              key : __bmProvider['apiKey']
             })
           });
-          __layerNames.push(xyzDescription.name);
-          this.__layers.push(tile);
+          __layerRegistry.register(bmDescription.name, tile, bmDescription.order);
         }.bind(this));
-      }.bind(this));
-    }
-    const __bmProvider = this.settings.getBmProviders();
-    if (__bmProvider) {
-      __bmProvider.descriptions.forEach(function(bmDescription) {
-        const tile = new ol.layer.Tile({
-          visible : false,
-          preload : __preload,
-          source : new ol.source.BingMaps({
-            imagerySet : bmDescription['scheme'],
-            key : __bmProvider['apiKey']
-          })
+      }
+      return sp.promise.whenAllResolvedOrRejected(promises).then(function(a) {
+        __layerRegistry.sort(function(lA, lB) {
+          return lA.order - lB.order;
         });
-        __layerNames.push(bmDescription.name);
-        this.__layers.push(tile);
+        return __layerRegistry.map(function(l) {
+          return __get(l.name);
+        });
       }.bind(this));
-    }
+    };
 
     const __get = function(layerName) {
-      const layerIndex = __layerNames.indexOf(layerName);
-      return this.__layers[layerIndex];
+      return __layerRegistry[layerName];
     }.bind(this);
     this.getNames = function() {
-      return __layerNames;
+      return __layerRegistry.map(function(l) {
+        return l.name;
+      });
     };
     this.select = function(layerName) {
-      let layerIndex = __layerNames.indexOf(layerName);
-      if (layerIndex < 0) {
-        layerIndex = 0;
-      }
-      for(let i = 0 ; i < this.__layers.length ; i++) {
-        this.__layers[i].setVisible(i === layerIndex);
-      }
-      return __layerNames[layerIndex];
+      layerName = !__get(layerName) ? __layerRegistry[0].name : layerName;
+      __layerRegistry.forEach(function(l) {
+        const tileLayer = __get(l.name);
+        tileLayer.setVisible(l.name === layerName);
+      });
+      return layerName;
     };
     this.isSelected = function(layerName) {
       return __get(layerName).getVisible();
