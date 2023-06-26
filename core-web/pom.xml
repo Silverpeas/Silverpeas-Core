@@ -89,6 +89,12 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-jcr</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
