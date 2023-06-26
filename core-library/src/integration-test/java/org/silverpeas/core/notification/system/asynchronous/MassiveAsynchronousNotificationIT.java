@@ -230,7 +230,7 @@ public class MassiveAsynchronousNotificationIT {
     private final long base;
 
     WaitDuration(int nbSend) {
-      this.base = 1001 + (nbSend * 10);
+      this.base = 2000 + (nbSend * 10L);
     }
 
     private Duration delay() {
