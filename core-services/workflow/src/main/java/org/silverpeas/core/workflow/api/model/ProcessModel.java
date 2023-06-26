@@ -385,6 +385,11 @@ public interface ProcessModel {
   RecordTemplate getRowTemplate(String role, String lang);
 
   /**
+   * Returns the RecordTemplate which describes a process instance in a row.
+   */
+  RecordTemplate getRowTemplate(String role, String lang, boolean isProcessIdVisible);
+
+  /**
    * Returns an empty DataRecord which must be filled in order to process the
    * named action. Returns null if no form is required to process this action. Throws a
    * WorkflowException if the action is unknown.

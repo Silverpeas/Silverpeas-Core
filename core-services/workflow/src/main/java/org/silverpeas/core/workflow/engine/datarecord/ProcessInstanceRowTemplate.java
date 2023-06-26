@@ -39,6 +39,7 @@ public class ProcessInstanceRowTemplate extends ProcessInstanceTemplate {
 
   private static final String PROCESS_INSTANCE_RECORD_TEMPLATE = "ProcessInstanceRecordTemplate";
   private static final String FORM_EXP_UNKNOWN_FIELD = "form.EXP_UNKNOWN_FIELD";
+  private boolean isProcessIdVisible = false;
 
   /**
    * Builds the record template of the process instance rows.
@@ -48,6 +49,15 @@ public class ProcessInstanceRowTemplate extends ProcessInstanceTemplate {
     this.processModel = processModel;
     this.role = role;
     this.lang = lang;
+    init();
+  }
+
+  public ProcessInstanceRowTemplate(ProcessModel processModel, String role,
+                                    String lang, boolean isProcessIdVisible) {
+    this.processModel = processModel;
+    this.role = role;
+    this.lang = lang;
+    this.isProcessIdVisible = isProcessIdVisible;
     init();
   }
 
@@ -122,6 +132,9 @@ public class ProcessInstanceRowTemplate extends ProcessInstanceTemplate {
    * Inits the fields
    */
   private void init() {
+    if (isProcessIdVisible) {
+      addField(new ProcessIdTemplate("instance.id", lang));
+    }
     addField(new TitleTemplate("title", role, lang));
     addField(new StateTemplate("instance.state", processModel, role, lang));
 
