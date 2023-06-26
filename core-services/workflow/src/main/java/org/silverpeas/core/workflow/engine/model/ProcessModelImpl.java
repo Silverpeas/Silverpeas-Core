@@ -690,6 +690,9 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
    * Returns an empty DataRecord which must be filled in order to process the
    * named action. Returns null if no form is required to process this action. Throws a
    * WorkflowException if the action is unknown.
+   * @param actionName Name of the action
+   * @param roleName  Role of the current user
+   * @param lang Lang of the current user
    */
   public DataRecord getNewActionRecord(String actionName, String roleName, String lang,
       DataRecord data) throws WorkflowException {
@@ -703,6 +706,8 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
   /**
    * Returns an empty DataRecord which must be filled in order to fill the user
    * information Throws a WorkflowException if problem encountered.
+   * @param roleName Role of the current user
+   * @param lang Lang of the current user
    */
   public DataRecord getNewUserInfosRecord(String roleName, String lang) throws WorkflowException {
     try {
@@ -746,6 +751,8 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
   /**
    * Returns the recordTemplate which describes the data record of the process instance built from
    * this model.
+   * @param role Role of the current user
+   * @param lang Lang of the current user
    */
   public RecordTemplate getAllDataTemplate(String role, String lang) {
     RecordTemplate template = instanceDataTemplates.get(role + "\n" + lang);
@@ -762,6 +769,8 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
   /**
    * Returns the recordTemplate which describes the data record used to show process instance as a
    * row in list.
+   * @param role Role of the current user
+   * @param lang Lang of the current user
    */
   public RecordTemplate getRowTemplate(String role, String lang) {
     RecordTemplate template = rowTemplates.get(role + "\n" + lang);
@@ -772,6 +781,46 @@ public class ProcessModelImpl implements ProcessModel, Serializable {
               lang);
       rowTemplates.put(role + "\n" + lang, template);
     }
+    return template;
+  }
+
+  /**
+   * Returns the recordTemplate which describes the data record used to show process instance as a
+   * row in list.
+   * @param role Role of the current user
+   * @param lang Lang of the current user
+   * @param isProcessIdVisible Case if id is deplayed or not
+   */
+  public RecordTemplate getRowTemplate(String role, String lang, boolean isProcessIdVisible) {
+    RecordTemplate template = rowTemplates.get(role + "\n" + lang);
+    if (template == null) {
+      template = initRowTemplate(role, lang, isProcessIdVisible);
+    }
+    else {
+      FieldTemplate instanceIdField = null;
+      try {
+        instanceIdField = template.getFieldTemplate("instance.id");
+      } catch (FormException e) {
+        //Do nothing
+      }
+      boolean isProcessIdVisibleField = instanceIdField!=null;
+      if ((!isProcessIdVisibleField && isProcessIdVisible) || (isProcessIdVisibleField && !isProcessIdVisible)) {
+        template = initRowTemplate(role, lang, isProcessIdVisible);
+      }
+    }
+    return template;
+  }
+
+  /**
+   * Init a new row Template
+   * @param role Role of the current user
+   * @param lang Lang of the current user
+   * @param isProcessIdVisible Case if id is deplayed or not
+   * */
+  private RecordTemplate initRowTemplate(String role, String lang, boolean isProcessIdVisible) {
+    RecordTemplate template = new ProcessInstanceRowTemplate(this, role,
+            lang, isProcessIdVisible);
+    rowTemplates.put(role + "\n" + lang, template);
     return template;
   }
 
