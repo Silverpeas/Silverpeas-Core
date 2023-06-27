@@ -2,6 +2,7 @@ package org.silverpeas.web.test;
 
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
+import org.silverpeas.core.jcr.util.SilverpeasJCRIndexation;
 import org.silverpeas.core.jcr.util.SilverpeasJCRSchemaRegister;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -19,7 +20,7 @@ import java.util.function.Predicate;
  * </p>
  * <p>
  * By default, this listener is added onto the war archive used in the integration tests by the
- * {@link org.silverpeas.core.test.BasicWarBuilder} object.
+ * {@link WarBuilder4Web} object.
  * </p>
  * @author silveryocha
  */
@@ -39,6 +40,8 @@ public class SilverpeasJcrInitialization implements ServletContextListener {
 
     SilverpeasJCRSchemaRegister register = new SilverpeasJCRSchemaRegister();
     register.register();
+    SilverpeasJCRIndexation indexation = SilverpeasJCRIndexation.get();
+    indexation.initialize();
   }
 
   @Override

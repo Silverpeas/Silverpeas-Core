@@ -48,6 +48,8 @@ import javax.jcr.Repository;
  */
 public class OakRepository extends SilverpeasRepository {
 
+  private final NodeStore nodeStore;
+
   /**
    * Creates a repository with as backend the specified node store.
    * @param store the node store to use to store all the content of the JCR tree.
@@ -55,22 +57,27 @@ public class OakRepository extends SilverpeasRepository {
    */
   static OakRepository create(final NodeStore store) {
     if (store != null) {
-      Repository jcr = new Jcr(new Oak(store)).with(new SilverpeasSecurityProvider())
-          .with("silverpeas")
-          .createRepository();
-      return new OakRepository(jcr);
+      return new OakRepository(store);
     }
     return null;
   }
 
-  private OakRepository(final Repository repository) {
-    super(repository);
+  private OakRepository(final NodeStore nodeStore) {
+    super(new Jcr(new Oak(nodeStore))
+        .with(new SilverpeasSecurityProvider())
+        .with("silverpeas")
+        .createRepository());
+    this.nodeStore = nodeStore;
   }
 
-  void shutdown() {
+  public void shutdown() {
     Repository repository = getRepository();
     if (repository instanceof JackrabbitRepository) {
       ((JackrabbitRepository) repository).shutdown();
     }
+  }
+
+  public NodeStore getNodeStore() {
+    return nodeStore;
   }
 }

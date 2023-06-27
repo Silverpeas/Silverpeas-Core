@@ -30,9 +30,9 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.attachment.process.SimpleDocumentDummyHandledFileConverter;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
-import org.silverpeas.core.test.unit.extention.SettingBundleStub;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.unit.extention.SettingBundleStub;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -44,6 +44,7 @@ public abstract class JcrIntegrationIT {
       "org/silverpeas/core/admin/create_space_components_database.sql";
   public static final String DATASET_SCRIPT =
       "org/silverpeas/core/admin/test-spaces_and_components-dataset.sql";
+
   protected SettingBundleStub attachmentSettings;
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
 
