@@ -512,7 +512,7 @@ public class SessionManager implements SessionManagement, Initialization {
 
   @Override
   public SessionInfo openSession(User user, HttpServletRequest request) {
-    SessionInfo si = createUserSessionInfo(user, request);
+    SessionInfo si = createUserSessionInfo(user, request, false);
     try {
       registerSession(si);
     } catch (Exception ex) {
@@ -523,9 +523,7 @@ public class SessionManager implements SessionManagement, Initialization {
 
   @Override
   public SessionInfo openOneShotSession(final User user, final HttpServletRequest request) {
-    SessionInfo sessionInfo = createUserSessionInfo(user, request);
-    sessionInfo.setAsOneShot();
-    return sessionInfo;
+    return createUserSessionInfo(user, request, true);
   }
 
   @Override
@@ -554,7 +552,8 @@ public class SessionManager implements SessionManagement, Initialization {
   }
 
   @Nonnull
-  private SessionInfo createUserSessionInfo(final User user, final HttpServletRequest request) {
+  private SessionInfo createUserSessionInfo(final User user, final HttpServletRequest request,
+      final boolean isOneShot) {
     if (user.isAnonymous()) {
       throw new IllegalArgumentException("Connection with anonymous access is invoked here!");
     }
@@ -573,6 +572,9 @@ public class SessionManager implements SessionManagement, Initialization {
       anIP = requestRemoteHost;
     }
 
+    if (isOneShot) {
+      return new OneShotSessionInfo(anIP, user);
+    }
     HttpSession session = request.getSession();
     return new HTTPSessionInfo(session, anIP, user);
   }
