@@ -34,30 +34,20 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.jcr.util.SilverpeasJCRSchemaRegister;
+import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.jcr.JCRSession;
 
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
+import javax.jcr.*;
+import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -87,10 +77,12 @@ public class JcrContext implements TestRule {
 
   private void clearJcrRepository() throws RepositoryException {
     try (JCRSession session = JCRSession.openSystemSession()) {
+      System.out.println("CLEAR JCR REPOSITORY CONTENT...");
       NodeIterator i =  session.getRootNode().getNodes();
       while(i.hasNext()) {
         Node node = i.nextNode();
-        if (!"jcr:system".equals(node.getName())) {
+        if (node.getPrimaryNodeType().isNodeType(NodeType.NT_FOLDER)) {
+          System.out.println("REMOVE NODE " + node.getName());
           node.remove();
         }
       }

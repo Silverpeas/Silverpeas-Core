@@ -9,7 +9,10 @@ INSERT INTO st_domain (id, name, propFilename, className, authenticationServer, 
  * users
  */
 INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, state, stateSaveDate)
-    VALUES (1, 0, '1', 'Administrateur', 'SilverAdmin', 'A', 'VALID', '2012-01-01 00:00:00.000');
+    VALUES (0, 0, '0', 'Administrateur', 'SilverAdmin', 'A', 'VALID', '2012-01-01 00:00:00.000');
+
+INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, state, stateSaveDate)
+    VALUES (1, 0, '1', 'Toto', 'toto', 'U', 'VALID', '2012-01-01 00:00:00.000');
 
 INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, state, stateSaveDate)
     VALUES (2, 0, '2', 'SimpleUser', 'SimpleUser', 'U', 'VALID', '2012-01-01 00:00:00.000');
@@ -28,7 +31,8 @@ INSERT INTO st_group (id, domainId, specificId, name, state, stateSaveDate)
 /**
  * users in the default Silverpeas domain
  */
-INSERT INTO domainsp_user (id, lastName, login) VALUES (1, 'Administrateur', 'SilverAdmin');
+INSERT INTO domainsp_user (id, lastName, login) VALUES (0, 'Administrateur', 'SilverAdmin');
+INSERT INTO domainsp_user (id, lastName, login) VALUES (1, 'Toto', 'toto');
 INSERT INTO domainsp_user (id, lastName, login) VALUES (2, 'SimpleUser', 'SimpleUser');
 INSERT INTO domainsp_user (id, lastName, login) VALUES (3, 'Hetfield', 'Hetfield');
 

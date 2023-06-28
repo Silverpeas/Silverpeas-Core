@@ -70,7 +70,7 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
+public class HistorizedAttachmentServiceIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia974";
   private SimpleDocumentPK existingFrDoc;
@@ -82,7 +82,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(HistorisedAttachmentServiceIT.class)
+    return WarBuilder4LibCore.onWarForTestClass(HistorizedAttachmentServiceIT.class)
         .addJcrFeatures()
         .addPublicationTemplateFeatures()
         .addSchedulerFeatures()

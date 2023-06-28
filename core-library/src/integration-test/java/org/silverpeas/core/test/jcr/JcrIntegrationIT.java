@@ -30,6 +30,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.attachment.process.SimpleDocumentDummyHandledFileConverter;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
+import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.unit.extention.SettingBundleStub;

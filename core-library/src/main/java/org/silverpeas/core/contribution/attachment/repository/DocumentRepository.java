@@ -926,11 +926,11 @@ public class DocumentRepository {
       final String slvPropertyDate, final Date date) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    Calendar expiry = Calendar.getInstance();
-    expiry.setTime(DateUtil.getBeginOfDay(date));
+    Calendar calendarDate = Calendar.getInstance();
+    calendarDate.setTime(DateUtil.getBeginOfDay(date));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     return getNodeIteratorByProperty(factory, source, slvPropertyDate,
-        session.getValueFactory().createValue(expiry));
+        session.getValueFactory().createValue(calendarDate));
   }
 
   private NodeIterator getNodeIteratorByProperty(final QueryObjectModelFactory factory,
@@ -981,12 +981,12 @@ public class DocumentRepository {
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    Comparison foreignIdComparison = getComparison(factory, SLV_PROPERTY_EXPIRY_DATE,
+    Comparison expiryDateComparison = getComparison(factory, SLV_PROPERTY_EXPIRY_DATE,
         QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN,
         session.getValueFactory().createValue(expiry));
     Ordering order = factory.ascending(
         factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
+    QueryObjectModel query = factory.createQuery(source, expiryDateComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
     return result.getNodes();

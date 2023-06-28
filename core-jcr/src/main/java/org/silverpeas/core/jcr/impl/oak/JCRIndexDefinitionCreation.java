@@ -33,6 +33,7 @@ import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.jcr.SilverpeasRepository;
 import org.silverpeas.core.jcr.util.SilverpeasJCRIndexation;
 import org.silverpeas.core.jcr.util.SilverpeasProperty;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -55,6 +56,7 @@ public class JCRIndexDefinitionCreation implements SilverpeasJCRIndexation {
   @Override
   public void initialize() {
     if (repository instanceof OakRepository) {
+      SilverLogger.getLogger(this).info("Initialize indexation in JCR...");
       NodeBuilder indexRoot = getIndexRoot();
       Properties indexDefs = loadIndexDefinitions();
       indexDefs.forEach((key, value) -> {
@@ -62,8 +64,13 @@ public class JCRIndexDefinitionCreation implements SilverpeasJCRIndexation {
         String properties = (String) value;
         String[] np = Arrays.stream(properties.split(" ")).map(String::trim).toArray(String[]::new);
         if (!indexRoot.hasChildNode(name)) {
-          IndexUtils.createIndexDefinition(indexRoot, name, true, false, Arrays.asList(np),
+          String prop = np.length > 1 ? "properties " : "property ";
+          SilverLogger.getLogger(this).info("Create index " + name + " on " + prop +
+              String.join(" and ", np));
+          IndexUtils.createIndexDefinition(indexRoot, name, false, false, Arrays.asList(np),
               List.of(SilverpeasProperty.SLV_SIMPLE_DOCUMENT));
+        } else {
+          SilverLogger.getLogger(this).info("Index " + name + " already created");
         }
       });
     }
