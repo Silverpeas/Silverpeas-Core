@@ -235,7 +235,7 @@
               const ev = {'type' : e.type.endsWith('blur') ? "blur" : "focus"};
               if (__lastBlurOrFocus && ev.type !== __lastBlurOrFocus) {
                 sp.log.debug('previous', __lastBlurOrFocus, 'next', ev);
-                _converse.saveWindowState(ev);
+                converse.env.utils.saveWindowState(ev);
               }
               __lastBlurOrFocus = ev.type;
             }, 1000);
@@ -425,6 +425,7 @@
         // END cleaning old data
 
         const initOptions = {
+          'stanza_timeout' : 60000,
           'theme' : 'default',
           'dark_theme' : 'default',
           'prune_messages_above' : __settings.nbMsgMaxCachedPerRoom,
@@ -432,8 +433,8 @@
           'view_mode' : __settings.viewMode,
           'loglevel' : __settings.debug ? 'debug' : 'error',
           'i18n' : __settings.language,
-          'assets_path' : '/silverpeas/chat/converse/',
-          'sounds_path' : '/silverpeas/chat/converse/',
+          'assets_path' : webContext + '/chat/converse/',
+          'sounds_path' : webContext + '/chat/converse/sounds/',
           'play_sounds' : false,
           'allow_logout' : false,
           'auto_login' : true,
