@@ -36,16 +36,16 @@
       <p>
         <img align="right" src="images/bus_silverpeas.png" alt="" />
       </p>
-      <p>Silverpeas Core is the fondation of the Silverpeas Collaborative Portal. It defines the
+      <p>Silverpeas Core is the foundation of the Silverpeas Collaborative Portal. It defines the
         technical architecture and it provides the business services to build collaborative-oriented
         applications.</p>
-      <p>The fondation is made up of two layers:</p>
+      <p>The foundation is made up of two layers:</p>
       <ul>
         <li>A business service layer (atop of a persistence engine) that provides all the objects and
           transversal APIs to manage information, content and social events for applications;</li>
         <li>A Web layer that provides reusable building blocks to facilitate the writing of an integrated Web GUI.</li>
       </ul>
-      <p>Above this fondation, the main Web Collaborative Portal application is also included in Silverpeas Core.</p>
+      <p>Above this foundation, the main Web Collaborative Portal application is also included in Silverpeas Core.</p>
       <p>Among the business services and APIs, you will find:</p>
       <ul>
         <li>a comments engine,</li>

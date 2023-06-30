@@ -92,7 +92,7 @@
         <item name="Source Repository" href="../../source-repository.html"/>
         <item name="Continuous Integration" href="../../ci-management.html"/>
       </item>
-      <item name="Sivlerpeas Core" href="../../docs/core/index.html"/>
+      <item name="Silverpeas Core" href="../../docs/core/index.html"/>
       <item name="Silverpeas Applications" href="../../docs/components/index.html"/>
     </menu>
     <menu name="How to contribute" inherit="none">
