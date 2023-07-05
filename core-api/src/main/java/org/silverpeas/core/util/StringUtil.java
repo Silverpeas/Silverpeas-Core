@@ -26,8 +26,6 @@ package org.silverpeas.core.util;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.SilverpeasException;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
@@ -43,7 +41,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Utility class providing useful operations on {@link String}.
  */
-public class StringUtil extends StringUtils {
+public class StringUtil {
 
   public static final String EMPTY = StringUtils.EMPTY;
   public static final String NEWLINE = System.getProperty("line.separator");
@@ -51,12 +49,11 @@ public class StringUtil extends StringUtils {
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
-  private static final String EMAIL_PATTERN
-      = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
   private static final String HOUR_PATTERN = "^([0-1]?\\d|2[0-4]):([0-5]\\d)(:[0-5]\\d)?$";
 
   /**
    * Gets an empty string as a constant (reusable empty string).
+   *
    * @return an empty string.
    */
   public static String emptyString() {
@@ -76,10 +73,10 @@ public class StringUtil extends StringUtils {
    * StringUtils.startsWithIgnoreCase("abcdef", "abc") = true
    * StringUtils.startsWithIgnoreCase("ABCDEF", "abc") = true
    * </pre>
-   * @param str the text to check, may be null
+   *
+   * @param str    the text to check, may be null
    * @param prefix the text to find, may be null
-   * @return {@code true} if the CharSequence starts with the prefix, case-insensitive, or both
-   * {@code null}
+   * @return {@code true} if the CharSequence starts with the prefix, case-insensitive, or both {@code null}
    * @see java.lang.String#startsWith(String)
    */
   public static boolean startsWithIgnoreCase(final String str, final String prefix) {
@@ -87,62 +84,12 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * <p>Joins the elements of the provided array into a single String
-   * containing the provided list of elements.</p>
-   *
-   * <p>No delimiter is added before or after the list.
-   * Null objects or empty strings within the array are represented by empty strings.</p>
-   *
-   * <pre>
-   * StringUtils.join(null, *)               = null
-   * StringUtils.join([], *)                 = ""
-   * StringUtils.join([null], *)             = ""
-   * StringUtils.join(["a", "b", "c"], ';')  = "a;b;c"
-   * StringUtils.join(["a", "b", "c"], null) = "abc"
-   * StringUtils.join([null, "", "a"], ';')  = ";;a"
-   * </pre>
-   * @param array the array of values to join together, may be null
-   * @param separator the separator character to use
-   * @return the joined String, {@code null} if null array input
-   * @since 2.0
-   */
-  public static String join(final Object[] array, final char separator) {
-    return StringUtils.join(array, separator);
-  }
-
-  /**
-   * <p>Joins the elements of the provided array into a single String
-   * containing the provided list of elements.</p>
-   *
-   * <p>No delimiter is added before or after the list.
-   * A {@code null} separator is the same as an empty String (""). Null objects or empty strings
-   * within the array are represented by empty strings.</p>
-   *
-   * <pre>
-   * StringUtils.join(null, *)                = null
-   * StringUtils.join([], *)                  = ""
-   * StringUtils.join([null], *)              = ""
-   * StringUtils.join(["a", "b", "c"], "--")  = "a--b--c"
-   * StringUtils.join(["a", "b", "c"], null)  = "abc"
-   * StringUtils.join(["a", "b", "c"], "")    = "abc"
-   * StringUtils.join([null, "", "a"], ',')   = ",,a"
-   * </pre>
-   * @param array the array of values to join together, may be null
-   * @param delimiter the separator character to use, null treated as ""
-   * @return the joined String, {@code null} if null array input
-   */
-  public static String join(Object[] array, String delimiter) {
-    return StringUtils.join(array, delimiter);
-  }
-
-  /**
    * <p>Abbreviates a String using ellipses. This will turn
    * "Now is the time for all good men" into "...is the time for..."</p>
    *
    * <p>Works like {@code abbreviate(String, int)}, but allows you to specify
-   * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost
-   * character in the result, or the first character following the ellipses, but it will appear
-   * somewhere in the result.
+   * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost character in the
+   * result, or the first character following the ellipses, but it will appear somewhere in the result.
    *
    * <p>In no case will it return a String of length greater than
    * {@code maxWidth}.</p>
@@ -162,8 +109,9 @@ public class StringUtil extends StringUtils {
    * StringUtils.abbreviate("abcdefghij", 0, 3)        = IllegalArgumentException
    * StringUtils.abbreviate("abcdefghij", 5, 6)        = IllegalArgumentException
    * </pre>
-   * @param str the String to check, may be null
-   * @param offset left edge of source String
+   *
+   * @param str      the String to check, may be null
+   * @param offset   left edge of source String
    * @param maxWidth maximum length of result String, must be at least 4
    * @return abbreviated String, {@code null} if null String input
    * @throws IllegalArgumentException if the width is too small
@@ -173,10 +121,96 @@ public class StringUtil extends StringUtils {
   }
 
   /**
+   * <p>Abbreviates a String using ellipses. This will turn
+   * "Now is the time for all good men" into "Now is the time for..."</p>
+   *
+   * <p>Specifically:</p>
+   * <ul>
+   *   <li>If the number of characters in {@code str} is less than or equal to
+   *       {@code maxWidth}, return {@code str}.</li>
+   *   <li>Else abbreviate it to {@code (substring(str, 0, max-3) + "...")}.</li>
+   *   <li>If {@code maxWidth} is less than {@code 4}, throw an
+   *       {@code IllegalArgumentException}.</li>
+   *   <li>In no case will it return a String of length greater than
+   *       {@code maxWidth}.</li>
+   * </ul>
+   *
+   * <pre>
+   * StringUtils.abbreviate(null, *)      = null
+   * StringUtils.abbreviate("", 4)        = ""
+   * StringUtils.abbreviate("abcdefg", 6) = "abc..."
+   * StringUtils.abbreviate("abcdefg", 7) = "abcdefg"
+   * StringUtils.abbreviate("abcdefg", 8) = "abcdefg"
+   * StringUtils.abbreviate("abcdefg", 4) = "a..."
+   * StringUtils.abbreviate("abcdefg", 3) = IllegalArgumentException
+   * </pre>
+   *
+   * @param str  the String to check, may be null
+   * @param maxWidth  maximum length of result String, must be at least 4
+   * @return abbreviated String, {@code null} if null String input
+   * @throws IllegalArgumentException if the width is too small
+   */
+  public static String abbreviate(final String str, final int maxWidth) {
+    return StringUtils.abbreviate(str, maxWidth);
+  }
+
+  /**
+   * <p>Left pad a String with a specified String.</p>
+   *
+   * <p>Pad to a size of {@code size}.</p>
+   *
+   * <pre>
+   * StringUtils.leftPad(null, *, *)      = null
+   * StringUtils.leftPad("", 3, "z")      = "zzz"
+   * StringUtils.leftPad("bat", 3, "yz")  = "bat"
+   * StringUtils.leftPad("bat", 5, "yz")  = "yzbat"
+   * StringUtils.leftPad("bat", 8, "yz")  = "yzyzybat"
+   * StringUtils.leftPad("bat", 1, "yz")  = "bat"
+   * StringUtils.leftPad("bat", -1, "yz") = "bat"
+   * StringUtils.leftPad("bat", 5, null)  = "  bat"
+   * StringUtils.leftPad("bat", 5, "")    = "  bat"
+   * </pre>
+   *
+   * @param str  the String to pad out, may be null
+   * @param size  the size to pad to
+   * @param padStr  the String to pad with, null or empty treated as single space
+   * @return left padded String or original String if no padding is necessary,
+   *  {@code null} if null String input
+   */
+  public static String leftPad(final String str, final int size, String padStr) {
+    return StringUtils.leftPad(str, size, padStr);
+  }
+
+  /**
+   * <p>Returns either the passed in CharSequence, or if the CharSequence is
+   * whitespace, empty ("") or {@code null}, the value of {@code defaultStr}.</p>
+   *
+   * <p>Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
+   *
+   * <pre>
+   * StringUtils.defaultIfBlank(null, "NULL")  = "NULL"
+   * StringUtils.defaultIfBlank("", "NULL")    = "NULL"
+   * StringUtils.defaultIfBlank(" ", "NULL")   = "NULL"
+   * StringUtils.defaultIfBlank("bat", "NULL") = "bat"
+   * StringUtils.defaultIfBlank("", null)      = null
+   * </pre>
+   * @param <T> the specific kind of CharSequence
+   * @param str the CharSequence to check, may be null
+   * @param defaultStr  the default CharSequence to return
+   *  if the input is whitespace, empty ("") or {@code null}, may be null
+   * @return the passed in CharSequence, or the default
+   * @see StringUtils#defaultString(String, String)
+   */
+  public static <T extends CharSequence> T defaultIfBlank(final T str, final T defaultStr) {
+    return StringUtils.defaultIfBlank(str, defaultStr);
+  }
+
+  /**
    * Is the specified string is well-defined?
+   *
    * @param str a string to check.
-   * @return true if the given string isn't null, nor empty and doesn't contain any space
-   * characters. False otherwise. The "null" string is considered as a non-defined string.
+   * @return true if the given string isn't null, nor empty and doesn't contain any space characters. False otherwise.
+   * The "null" string is considered as a non-defined string.
    */
   public static boolean isDefined(String str) {
     return (str != null && !str.trim().isEmpty() &&
@@ -185,9 +219,10 @@ public class StringUtil extends StringUtils {
 
   /**
    * Is the specified string is not defined?
+   *
    * @param str the string to check.
-   * @return true if the string is either null, an empty string, or a string containing only space
-   * characters. False otherwise. The "null" string is considered as a non-defined string.
+   * @return true if the string is either null, an empty string, or a string containing only space characters. False
+   * otherwise. The "null" string is considered as a non-defined string.
    * @implNote it is the reverse of the {@link StringUtil#isDefined(String)} method.
    * @see StringUtil#isDefined(String)
    */
@@ -197,6 +232,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Requires the specified string to be defined, otherwise an {@link AssertionError} is thrown.
+   *
    * @param str the string to check.
    */
   public static void requireDefined(final String str) {
@@ -206,9 +242,9 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Requires the specified string to be defined, otherwise an {@link AssertionError} is thrown with
-   * the given message.
-   * @param str the string to check.
+   * Requires the specified string to be defined, otherwise an {@link AssertionError} is thrown with the given message.
+   *
+   * @param str     the string to check.
    * @param message the message to pass if the string doesn't satisfy the requirement.
    */
   public static void requireDefined(final String str, final String message) {
@@ -219,11 +255,12 @@ public class StringUtil extends StringUtils {
 
   /**
    * Requires the specified string to be defined, otherwise throws the supplied exception.
-   * @param str the string to check.
+   *
+   * @param str               the string to check.
    * @param exceptionSupplier a supplier of the Silverpeas exception to throw if the string isn't defined.
    */
   public static <T extends SilverpeasException> void requireDefined(final String str,
-          final Supplier<T> exceptionSupplier) throws T {
+                                                                    final Supplier<T> exceptionSupplier) throws T {
     if (isNotDefined(str)) {
       throw exceptionSupplier.get();
     }
@@ -242,10 +279,10 @@ public class StringUtil extends StringUtils {
    * StringUtils.startsWith("abcdef", "abc") = true
    * StringUtils.startsWith("ABCDEF", "abc") = false
    * </pre>
-   * @param str the CharSequence to check, may be null
+   *
+   * @param str    the CharSequence to check, may be null
    * @param prefix the prefix to find, may be null
-   * @return {@code true} if the CharSequence starts with the prefix, case-sensitive, or both
-   * {@code null}
+   * @return {@code true} if the CharSequence starts with the prefix, case-sensitive, or both {@code null}
    * @see java.lang.String#startsWith(String)
    */
   public static boolean startsWith(final CharSequence str, final CharSequence prefix) {
@@ -269,9 +306,9 @@ public class StringUtil extends StringUtils {
    * StringUtils.splitByWholeSeparator("ab:cd:ef", ":")       = ["ab", "cd", "ef"]
    * StringUtils.splitByWholeSeparator("ab-!-cd-!-ef", "-!-") = ["ab", "cd", "ef"]
    * </pre>
-   * @param str the String to parse, may be null
-   * @param separator String containing the String to be used as a delimiter, {@code null} splits on
-   * whitespace
+   *
+   * @param str       the String to parse, may be null
+   * @param separator String containing the String to be used as a delimiter, {@code null} splits on whitespace
    * @return an array of parsed Strings, {@code null} if null String was input
    */
   public static String[] splitByWholeSeparator(final String str, final String separator) {
@@ -283,8 +320,7 @@ public class StringUtil extends StringUtils {
    * This is an alternative to using StringTokenizer.</p>
    *
    * <p>The separator is not included in the returned String array.
-   * Adjacent separators are treated as one separator. For more control over the split use the
-   * StrTokenizer class.</p>
+   * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class.</p>
    *
    * <p>A {@code null} input String returns {@code null}.</p>
    *
@@ -296,7 +332,8 @@ public class StringUtil extends StringUtils {
    * StringUtils.split("a:b:c", '.')    = ["a:b:c"]
    * StringUtils.split("a b c", ' ')    = ["a", "b", "c"]
    * </pre>
-   * @param str the String to parse, may be null
+   *
+   * @param str           the String to parse, may be null
    * @param separatorChar the character used as the delimiter
    * @return an array of parsed Strings, {@code null} if null String input
    * @since 2.0
@@ -310,8 +347,7 @@ public class StringUtil extends StringUtils {
    * This is an alternative to using StringTokenizer.</p>
    *
    * <p>The separator is not included in the returned String array.
-   * Adjacent separators are treated as one separator. For more control over the split use the
-   * StrTokenizer class.</p>
+   * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class.</p>
    *
    * <p>A {@code null} input String returns {@code null}.
    * A {@code null} separatorChars splits on whitespace.</p>
@@ -324,7 +360,8 @@ public class StringUtil extends StringUtils {
    * StringUtils.split("abc  def", " ") = ["abc", "def"]
    * StringUtils.split("ab:cd:ef", ":") = ["ab", "cd", "ef"]
    * </pre>
-   * @param str the String to parse, may be null
+   *
+   * @param str            the String to parse, may be null
    * @param separatorChars the characters used as the delimiters, {@code null} splits on whitespace
    * @return an array of parsed Strings, {@code null} if null String input
    */
@@ -345,6 +382,7 @@ public class StringUtil extends StringUtils {
    * StringUtils.capitalize("cAt") = "CAt"
    * StringUtils.capitalize("'cat'") = "'cat'"
    * </pre>
+   *
    * @param str the String to capitalize, may be null
    * @return the capitalized String, {@code null} if null String input
    * @see #uncapitalize(String)
@@ -366,6 +404,7 @@ public class StringUtil extends StringUtils {
    * StringUtils.uncapitalize("Cat") = "cat"
    * StringUtils.uncapitalize("CAT") = "cAT"
    * </pre>
+   *
    * @param str the String to uncapitalize, may be null
    * @return the uncapitalized String, {@code null} if null String input
    * @see #capitalize(String)
@@ -375,13 +414,12 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Normalizes the given string (which must be encoded into UTF-8) in order that the result
-   * contains only unified chars.
+   * Normalizes the given string (which must be encoded into UTF-8) in order that the result contains only unified
+   * chars.
    * <p>Indeed, according to the environment of the user, sometimes it is sent data with
-   * combined characters which will make the server have a bad behavior, like throw an error on file
-   * download.</p>
-   * @param string the string to normalize. There is no guarantee when the string is not encoded
-   * into UTF8.
+   * combined characters which will make the server have a bad behavior, like throw an error on file download.</p>
+   *
+   * @param string the string to normalize. There is no guarantee when the string is not encoded into UTF8.
    * @return the normalized string.
    */
   public static String normalize(final String string) {
@@ -393,10 +431,9 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Same treatment as the one of {@link #normalize(String)} but removes also the accented
-   * characters.
-   * @param string the string to normalize. There is no guarantee when the string is not encoded
-   * into UTF8.
+   * Same treatment as the one of {@link #normalize(String)} but removes also the accented characters.
+   *
+   * @param string the string to normalize. There is no guarantee when the string is not encoded into UTF8.
    * @return the normalized string.
    */
   public static String normalizeByRemovingAccent(final String string) {
@@ -420,8 +457,9 @@ public class StringUtil extends StringUtils {
    * StringUtil.defaultStringIfNotDefined("    ") = ""
    * StringUtil.defaultStringIfNotDefined("bat")  = "bat"
    * </pre>
-   * @param string the String to check, may be null, blank or filled by spaces if the input is
-   * {@code not defined}, may be null, blank or filled by spaces
+   *
+   * @param string the String to check, may be null, blank or filled by spaces if the input is {@code not defined}, may
+   *               be null, blank or filled by spaces
    * @return the passed in String, or the default if it was {@code null}
    * @see StringUtil#isNotDefined(String)
    * @see StringUtils#defaultString(String, String)
@@ -441,9 +479,10 @@ public class StringUtil extends StringUtils {
    * StringUtil.defaultStringIfNotDefined("    ", "NULL") = "NULL"
    * StringUtil.defaultStringIfNotDefined("bat", "NULL")  = "bat"
    * </pre>
-   * @param string the String to check, may be null, blank or filled by spaces
-   * @param defaultString the default String to return if the input is {@code not defined}, may be
-   * null, blank or filled by spaces
+   *
+   * @param string        the String to check, may be null, blank or filled by spaces
+   * @param defaultString the default String to return if the input is {@code not defined}, may be null, blank or filled
+   *                      by spaces
    * @return the passed in String, or the default if it was {@code null}
    * @see StringUtil#isNotDefined(String)
    * @see StringUtils#defaultString(String, String)
@@ -453,17 +492,16 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * This method allows the caller to handle the case where a string is not defined in a
-   * functional way.
+   * This method allows the caller to handle the case where a string is not defined in a functional way.
    * <p>
-   *   If the returned optional is present (so not empty), it means that the string given as
-   *   parameter is defined (checked with {@link #isDefined(String)}).
+   * If the returned optional is present (so not empty), it means that the string given as parameter is defined (checked
+   * with {@link #isDefined(String)}).
    * </p>
    * <p>
-   *   If the returned optional is not present (so empty), it means that the string given as
-   *   parameter is not defined. In a such cas, thanks to {@link Optional}, the caller can choose
-   *   the behavior to adopt.
+   * If the returned optional is not present (so empty), it means that the string given as parameter is not defined. In
+   * a such cas, thanks to {@link Optional}, the caller can choose the behavior to adopt.
    * </p>
+   *
    * @param string the String to check, may be null, blank or filled by spaces
    * @return optional with given string if defined
    */
@@ -473,6 +511,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Is the specified value encodes an {@link Integer}?
+   *
    * @param value the textual representation of an integer.
    * @return true if the given value represents an integer. False otherwise.
    */
@@ -487,10 +526,11 @@ public class StringUtil extends StringUtils {
 
   /**
    * Decodes the specified textual value as an integer.
-   * @param value the textual value to decode.
+   *
+   * @param value        the textual value to decode.
    * @param defaultValue the default value to use if the value doesn't encode an integer.
-   * @return either the integer representation of the value or the given default value if it isn't
-   * an integer representation.
+   * @return either the integer representation of the value or the given default value if it isn't an integer
+   * representation.
    */
   public static int asInt(String value, int defaultValue) {
     int integer;
@@ -504,6 +544,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Is the specified value encodes a {@link Long}?
+   *
    * @param value the textual representation of a long integer.
    * @return true if the given value represents a long integer. False otherwise.
    */
@@ -518,9 +559,9 @@ public class StringUtil extends StringUtils {
 
   /**
    * Decodes the specified textual value as a float real.
+   *
    * @param value the textual value to decode.
-   * @return either the float real representation of the value or 0 if it isn't a float real
-   * representation.
+   * @return either the float real representation of the value or 0 if it isn't a float real representation.
    */
   public static float asFloat(String value) {
     if (StringUtil.isFloat(value)) {
@@ -536,6 +577,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Is the specified value encodes a {@link Float}?
+   *
    * @param value the textual representation of a float real.
    * @return true if the given value represents a float real. False otherwise.
    */
@@ -558,6 +600,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Replaces all quotes by spaces.
+   *
    * @param name the original filename.
    * @return a String with all quotes replaced by spaces
    */
@@ -578,11 +621,11 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Format a string by extending the principle of the method format() of the class
-   * java.text.MessageFormat to string arguments. For instance, the string '{key}' contained in the
-   * original string to format will be replaced by the value corresponding to this key contained
-   * into the values map.
-   * @param label The string to format
+   * Format a string by extending the principle of the method format() of the class java.text.MessageFormat to string
+   * arguments. For instance, the string '{key}' contained in the original string to format will be replaced by the
+   * value corresponding to this key contained into the values map.
+   *
+   * @param label  The string to format
    * @param values The values to insert into the string
    * @return The formatted string, filled with values of the map.
    */
@@ -616,11 +659,10 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * @param text The string to truncate if its size is greater than the maximum length given as
-   * parameter.
+   * @param text      The string to truncate if its size is greater than the maximum length given as parameter.
    * @param maxLength The maximum length required.
-   * @return The truncated string followed by '...' if needed. Returns the string itself if its
-   * length is smaller than the required maximum length.
+   * @return The truncated string followed by '...' if needed. Returns the string itself if its length is smaller than
+   * the required maximum length.
    */
   public static String truncate(String text, int maxLength) {
     if (text == null || text.length() <= maxLength) {
@@ -634,8 +676,9 @@ public class StringUtil extends StringUtils {
 
   /**
    * Replace parts of a text by a replacement string. The text to replace is specified by a regex.
-   * @param source the original text
-   * @param regex the regex that permits to identify parts of text to replace
+   *
+   * @param source      the original text
+   * @param regex       the regex that permits to identify parts of text to replace
    * @param replacement the replacement text
    * @return The source text modified
    */
@@ -647,40 +690,10 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Validate the form of an email address.
-   * <p> Returns <tt>true</tt> only if
-   * <ul>
-   * <li><tt>aEmailAddress</tt> can successfully construct an
-   * {@link javax.mail.internet.InternetAddress}</li>
-   * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which
-   * satisfy</li>
-   * </ul>
-   * <p>
-   * The second condition arises since local email addresses, simply of the form "<tt>albert</tt>",
-   * for example, are valid for {@link javax.mail.internet.InternetAddress}, but almost always
-   * undesired.
-   * @param aEmailAddress the address to be validated
-   * @return true is the address is a valid email address - false otherwise.
-   */
-  public static boolean isValidEmailAddress(String aEmailAddress) {
-    if (aEmailAddress == null) {
-      return false;
-    }
-    boolean result;
-    try {
-      new InternetAddress(aEmailAddress);
-      result = Pattern.matches(EMAIL_PATTERN, aEmailAddress);
-    } catch (AddressException ex) {
-      result = false;
-    }
-    return result;
-  }
-
-  /**
    * Is the specified text represents a time in the format expected by Silverpeas.
+   *
    * @param time the textual representation of a time.
-   * @return true if the specified parameter represents a time formatted in the format expected by
-   * Silverpeas.
+   * @return true if the specified parameter represents a time formatted in the format expected by Silverpeas.
    * @see StringUtil#HOUR_PATTERN for the expected format of the time.
    */
   public static boolean isValidHour(final String time) {
@@ -690,8 +703,9 @@ public class StringUtil extends StringUtils {
   /**
    * Converts the given text into the specified charset. If the charset isn't supported, then an
    * {@link UnsupportedEncodingException} exception is thrown.
+   *
    * @param toConvert the text to convert.
-   * @param encoding the charset into which the text has to be converted.
+   * @param encoding  the charset into which the text has to be converted.
    * @return the converted text.
    */
   public static String convertToEncoding(String toConvert, String encoding) {
@@ -704,6 +718,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Evaluate the expression and return true if expression equals "true", "yes", "y", "1" or "oui".
+   *
    * @param expression the expression to be evaluated
    * @return true if expression equals "true", "yes", "y", "1" or "oui".
    */
@@ -715,6 +730,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Indicates if two Strings are equals, managing null.
+   *
    * @param s1 the first String.
    * @param s2 the second String.
    * @return true if the two Strings are equals.
@@ -728,6 +744,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Encodes the specified binary data into a text of Base64 characters.
+   *
    * @param binaryData the binary data to convert in Base64-based String.
    * @return a String representation of the binary data in Base64 characters.
    */
@@ -737,6 +754,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Decodes the specified text with Base64 characters in binary.
+   *
    * @param base64Text the text in Base64.
    * @return the binary representation of the text.
    */
@@ -761,7 +779,8 @@ public class StringUtil extends StringUtils {
    * StringUtils.split("a:b:c", '.')    = ["a:b:c"]
    * StringUtils.split("a b c", ' ')    = ["a", "b", "c"]
    * </pre>
-   * @param str the String to parse, may be null
+   *
+   * @param str           the String to parse, may be null
    * @param separatorChar the character used as the delimiter
    * @return an array of parsed Strings, {@code null} if null String input
    */
@@ -771,6 +790,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Doubles the anti-slash character in a path value.
+   *
    * @param path the String representing a path.
    * @return the path corrected with the anti-slash doubled.
    */
@@ -791,9 +811,9 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Is the actual value is like the expected one? Case-sensitivity isn't taken into account in the
-   * like-matching.
-   * @param actualValue the actual value to compare.
+   * Is the actual value is like the expected one? Case-sensitivity isn't taken into account in the like-matching.
+   *
+   * @param actualValue   the actual value to compare.
    * @param expectedValue the expected value the actual one has to match.
    * @return true if the actual value is like the expected one. False otherwise.
    */
@@ -803,7 +823,8 @@ public class StringUtil extends StringUtils {
 
   /**
    * Is the actual value is like the expected one? Case-sensitivity of the values matters.
-   * @param actualValue the actual value to compare.
+   *
+   * @param actualValue   the actual value to compare.
    * @param expectedValue the expected value the actual one has to match.
    * @return true if the actual value is like the expected one. False otherwise.
    */
@@ -912,11 +933,11 @@ public class StringUtil extends StringUtils {
     }
 
     /**
-     * Moves the cursor on a token in the expected text to the next token that is not a '%'
-     * wildcard.
+     * Moves the cursor on a token in the expected text to the next token that is not a '%' wildcard.
+     *
      * @param ctx the current expected text scanning context.
-     * @return true if a non-wildcard token has been found, false if the expected text has been
-     * fully consumed without finding any non '%' wildcard token.
+     * @return true if a non-wildcard token has been found, false if the expected text has been fully consumed without
+     * finding any non '%' wildcard token.
      */
     private boolean goToNextNonWildcardToken(final ScanContext ctx) {
       // skips all additional wildcard '%'
@@ -934,7 +955,7 @@ public class StringUtil extends StringUtils {
     }
 
     private void subtractExpectedTextToNextWildcard(final ScanContext ctx,
-        StringBuilder expression) {
+                                                    StringBuilder expression) {
       char endChar = ctx.currentToken();
       while (ctx.hasSomeToken() && endChar != '_' && endChar != '%') {
         if (endChar == '\\' && ++ctx.expectedIdx < expected.length()) {
@@ -970,15 +991,15 @@ public class StringUtil extends StringUtils {
        */
       protected int expectedIdx = 0;
       /**
-       * Is the matching between the expected and the actual texts is ok at the current state of the
-       * scanning.
+       * Is the matching between the expected and the actual texts is ok at the current state of the scanning.
        */
       protected boolean matches = true;
 
       /**
        * Can another token in the expected text be consumed?
-       * @return true if there is another token in the expected text and the matching between the
-       * expected and the actual texts is always ok. False otherwise.
+       *
+       * @return true if there is another token in the expected text and the matching between the expected and the
+       * actual texts is always ok. False otherwise.
        */
       public boolean canConsumeAnotherToken() {
         return hasSomeToken() && matches;
@@ -986,6 +1007,7 @@ public class StringUtil extends StringUtils {
 
       /**
        * Is there again one token to consume in the expected text?
+       *
        * @return true if the expected text isn't fully consumed. False otherwise.
        */
       public boolean hasSomeToken() {
@@ -994,6 +1016,7 @@ public class StringUtil extends StringUtils {
 
       /**
        * Is the specified character is at the expected position in the actual text.
+       *
        * @param token a token to check.
        * @return true if the token is at actualIdx position in the actual text.
        */
@@ -1003,8 +1026,8 @@ public class StringUtil extends StringUtils {
 
       /**
        * Is the actual text fully checked with the expected text?
-       * @return true if the matching of the expected text against the actual one has been complete.
-       * False otherwise.
+       *
+       * @return true if the matching of the expected text against the actual one has been complete. False otherwise.
        */
       public boolean isActualFullyChecked() {
         return actualIdx == actual.length();
@@ -1012,6 +1035,7 @@ public class StringUtil extends StringUtils {
 
       /**
        * Gets the current token in the expected text.
+       *
        * @return the token at the expectedIdx position in the expected text.
        */
       public char currentToken() {
@@ -1019,8 +1043,9 @@ public class StringUtil extends StringUtils {
       }
 
       /**
-       * Gets the next token in the expected text. The cursor expectedIdx of the expected text is
-       * incremented before reading the token.
+       * Gets the next token in the expected text. The cursor expectedIdx of the expected text is incremented before
+       * reading the token.
+       *
        * @return the token at the expectedIdx+1 position in the expected text.
        */
       public char nextToken() {
@@ -1028,10 +1053,11 @@ public class StringUtil extends StringUtils {
       }
 
       /**
-       * Gets the next token in the expected text if there is another token to consume. The cursor
-       * expectedIdx of the expected text is incremented to read the next token.
-       * @return the token at the expectedIdx+1 position in the expected text if this text hasn't
-       * been fully consumed. Returns '\0' otherwise.
+       * Gets the next token in the expected text if there is another token to consume. The cursor expectedIdx of the
+       * expected text is incremented to read the next token.
+       *
+       * @return the token at the expectedIdx+1 position in the expected text if this text hasn't been fully consumed.
+       * Returns '\0' otherwise.
        */
       public char safeNextToken() {
         expectedIdx++;

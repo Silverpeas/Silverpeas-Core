@@ -23,7 +23,11 @@
  */
 package org.silverpeas.core.silverstatistics.volume.model;
 
-public interface SilverStatisticsConstants {
+public final class SilverStatisticsConstants {
+
+  private SilverStatisticsConstants() {
+
+  }
 
   public static final String SEPARATOR = "&&&";
 

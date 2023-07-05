@@ -105,38 +105,6 @@ class StringUtilTest {
   }
 
   /**
-   * Test of isValidEmailAddress method, of class StringUtil.
-   */
-  @Test
-  void testIsValidEmailAddress() {
-    // Test variations in the email name
-    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.com"));
-    assertTrue(StringUtil.isValidEmailAddress("steven.haines@javasrc.com"));
-    assertTrue(StringUtil.isValidEmailAddress("steven-haines@javasrc.com"));
-    assertTrue(StringUtil.isValidEmailAddress("steven+haines@javasrc.com"));
-    assertTrue(StringUtil.isValidEmailAddress("steven_haines@javasrc.com"));
-    assertFalse(StringUtil.isValidEmailAddress("steven#haines@javasrc.com"));
-
-    // Test variations in the domain name
-    assertTrue(StringUtil.isValidEmailAddress("steve@java-src.com"));
-    assertTrue(StringUtil.isValidEmailAddress("steve@java.src.com"));
-    assertFalse(StringUtil.isValidEmailAddress("steve@java\\src.com"));
-
-    // Test variations in the domain name
-    assertFalse(StringUtil.isValidEmailAddress("steve@javasrc.a"));
-    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.aa"));
-    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.aaa"));
-    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.aaaa"));
-    assertFalse(StringUtil.isValidEmailAddress("steve@javasrc.aaaaa"));
-
-    // Test that the email address marks the beginning of the string
-    assertFalse(StringUtil.isValidEmailAddress("aaa steve@javasrc.com"));
-
-    // Test that the email address marks the end of the string
-    assertFalse(StringUtil.isValidEmailAddress("steve@javasrc.com aaa"));
-  }
-
-  /**
    * Test of convertToEncoding method, of class StringUtil.
    */
   @Test

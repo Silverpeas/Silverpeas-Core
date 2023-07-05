@@ -1349,7 +1349,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       while (pointsIt.hasNext()) {
         CoordinatePoint point = pointsIt.next();
         try {
-          NodeDetail node = nodeService.getHeader(new NodePK("" + point.getNodeId(), componentId));
+          NodeDetail node = nodeService.getHeader(new NodePK(String.valueOf(point.getNodeId()), componentId));
           point.setName(node.getName());
           point.setLevel(node.getLevel());
           point.setPath(node.getPath());
@@ -1576,7 +1576,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         String[] userIds = StringUtil.split(publication.getTargetValidatorId(), ',');
         String[] newUserIds = ArrayUtil.removeElement(userIds, userId);
         if (newUserIds != null && !ArrayUtil.isEmpty(newUserIds)) {
-          publication.setTargetValidatorId(StringUtil.join(newUserIds, ','));
+          publication.setTargetValidatorId(String.join(",", newUserIds));
         } else {
           publication.setTargetValidatorId(null);
         }

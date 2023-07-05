@@ -2239,7 +2239,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
         if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
           LocalizedWAComponent localizedWAComponent = getLocalizedComponent(currentComponent.getName());
-          componentProfiles = new ComponentProfiles(currentComponent, localizedWAComponent);
+          componentProfiles = new ComponentProfiles(currentComponent);
           SpaceInstLight space = adminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
           componentProfiles.setSpace(space);
           allProfiles.add(componentProfiles);

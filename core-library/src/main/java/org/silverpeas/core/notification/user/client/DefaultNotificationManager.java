@@ -56,6 +56,7 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
+import org.silverpeas.core.util.EmailAddress;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -919,7 +920,7 @@ public class DefaultNotificationManager
   private void setSenderEmail(final NotificationParameters params,
       final Map<String, Object> theExtraParams, final String senderName) {
     String fromEmail = null;
-    if (!StringUtil.isValidEmailAddress(senderName) && params.getFromUserId() >= 0) {
+    if (!EmailAddress.isValid(senderName) && params.getFromUserId() >= 0) {
       fromEmail = getUserEmail(String.valueOf(params.getFromUserId()));
     }
     if (StringUtil.isNotDefined(fromEmail)) {

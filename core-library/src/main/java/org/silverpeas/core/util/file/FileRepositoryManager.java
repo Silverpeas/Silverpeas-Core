@@ -28,7 +28,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
@@ -42,12 +41,7 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -59,11 +53,12 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Provides useful methods to handle files and directories in the Silverpeas specific filesystem.
+ *
  * @author Norbert CHAIX
  */
 public class FileRepositoryManager {
 
-  static String tempPath = "";
+  static String tempPath;
   static String domainPropertiesFolderPath;
   static String domainAuthenticationPropertiesFolderPath;
   static final SettingBundle uploadSettings =
@@ -85,8 +80,8 @@ public class FileRepositoryManager {
   }
 
   /**
-   * Gets the path of the directory in which all the resources related to the security in Silverpeas
-   * are stored.
+   * Gets the path of the directory in which all the resources related to the security in Silverpeas are stored.
+   *
    * @return the path of the Silverpeas security directory.
    */
   public static String getSecurityDirPath() {
@@ -95,8 +90,9 @@ public class FileRepositoryManager {
 
   /**
    * Gets the path of the directory of initialization data with which some
-   * {@link org.silverpeas.core.initialization.Initialization} services can use to persist their
-   * data required for their work.
+   * {@link org.silverpeas.core.initialization.Initialization} services can use to persist their data required for their
+   * work.
+   *
    * @return the path of the directory of initialization data.
    */
   public static String getInitDataDirPath() {
@@ -113,8 +109,7 @@ public class FileRepositoryManager {
   }
 
   /**
-   * Gets the path of the repository into which attachments and other files are uploaded in
-   * Silverpeas.
+   * Gets the path of the repository into which attachments and other files are uploaded in Silverpeas.
    *
    * @return the path of the root repository for uploads.
    */
@@ -123,28 +118,12 @@ public class FileRepositoryManager {
         "uploadsPath") + separatorChar;
   }
 
-  /**
-   * @param componentId
-   * @param directoryName
-   * @return path
-   */
   public static String getAbsolutePath(String componentId, String[] directoryName) {
-    int lg = directoryName.length;
     StringBuilder path = new StringBuilder(getAbsolutePath(componentId));
-    for (int k = 0; k < lg; k++) {
-      path.append(directoryName[k]).append(separatorChar);
+    for (String s : directoryName) {
+      path.append(s).append(separatorChar);
     }
     return path.toString();
-  }
-
-  /**
-   * Construct an OS specific relative path.
-   *
-   * @param directories the names of sub directory. (path1, path2,...)
-   * @return path1/path2/.../
-   */
-  public static String getRelativePath(String... directories) {
-    return StringUtil.join(directories, separatorChar) + separatorChar;
   }
 
   public static String getTemporaryPath() {
@@ -157,10 +136,6 @@ public class FileRepositoryManager {
 
   public static String getDomainAuthenticationPropertiesPath(String domainName) {
     return domainAuthenticationPropertiesFolderPath + "autDomain" + domainName + ".properties";
-  }
-
-  public static String getComponentTemporaryPath(String sComponentId) {
-    return getAbsolutePath(sComponentId) + "Temp" + separatorChar;
   }
 
   public static void createAbsolutePath(String componentId, String directoryName) {
@@ -213,8 +188,8 @@ public class FileRepositoryManager {
   /**
    * Get the size of a file (in bytes)
    *
-   * @param sourceFile
-   * @return int
+   * @param sourceFile the file
+   * @return int the size in bytes
    */
   public static long getFileSize(String sourceFile) {
     return new File(sourceFile).length();
@@ -222,6 +197,7 @@ public class FileRepositoryManager {
 
   /**
    * Computes as fast as possible the size of a given directory list.
+   *
    * @param directories a list of directory.
    * @return the size of given directory list as long.
    */
@@ -247,6 +223,7 @@ public class FileRepositoryManager {
 
   /**
    * Computes as fast as possible the size of a given directory.
+   *
    * @param directory a directory.
    * @return the size of given directory as long.
    */
@@ -278,12 +255,12 @@ public class FileRepositoryManager {
    */
   public static String getFileDownloadTime(long size) {
     int fileSizeReference = Integer.parseInt(uploadSettings.getString("FileSizeReference"));
-    int theoricDownloadTime = Integer.parseInt(uploadSettings.getString("DownloadTime"));
-    long fileDownloadEstimation = ((size * theoricDownloadTime) / fileSizeReference) / 60;
+    int theoreticDownloadTime = Integer.parseInt(uploadSettings.getString("DownloadTime"));
+    long fileDownloadEstimation = ((size * theoreticDownloadTime) / fileSizeReference) / 60;
     if (fileDownloadEstimation < 1) {
       return "t < 1 min";
     }
-    if ((fileDownloadEstimation >= 1) && (fileDownloadEstimation < 5)) {
+    if (fileDownloadEstimation < 5) {
       return "1 < t < 5 mins";
     }
     return " t > 5 mins";
@@ -291,7 +268,8 @@ public class FileRepositoryManager {
 
   /**
    * Gets the file size limit for an upload.
-   * @return
+   *
+   * @return the size limit in bytes
    */
   public static long getUploadMaximumFileSize() {
     return uploadSettings.getLong("MaximumFileSize",
@@ -301,10 +279,10 @@ public class FileRepositoryManager {
   /**
    * Copy a contents from a file to another one
    *
-   * @author Seb
    * @param from The name of the source file, the one to copy.
-   * @param to The name of the destination file, where to paste data.
-   * @throws IOException
+   * @param to   The name of the destination file, where to paste data.
+   * @throws IOException if an error occurs while copying the file.
+   * @author Seb
    */
   public static void copyFile(String from, String to) throws IOException {
     FileUtils.copyFile(new File(from), new File(to));
@@ -324,11 +302,10 @@ public class FileRepositoryManager {
   }
 
   /**
-   * to create the array of the string this array represents the repertories where the files must be
-   * stored.
+   * to create the array of the string this array represents the repertories where the files must be stored.
    *
-   * @param str : type String: the string of repertories
-   * @return
+   * @param str the string of repertories
+   * @return the attachment context
    */
   public static String[] getAttachmentContext(String str) {
 

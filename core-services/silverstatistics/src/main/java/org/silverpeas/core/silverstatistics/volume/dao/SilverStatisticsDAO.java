@@ -23,254 +23,96 @@
  */
 package org.silverpeas.core.silverstatistics.volume.dao;
 
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.util.StringUtil;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Iterator;
+import java.sql.*;
 import java.util.List;
 
 /**
- * This is the alimentation statistics DAO Object
+ * This is the feeding statistics DAO Object
+ *
  * @author sleroux
  */
-public class SilverStatisticsDAO {
+public class SilverStatisticsDAO extends AbstractSilverStatisticsDAO {
+
+  private static final String DECIMAL = "DECIMAL";
+  private static final String INTEGER = "INTEGER";
+
+  private SilverStatisticsDAO() {
+  }
 
   /**
    * Insert data into statistic table
-   * @param con the database connection
-   * @param type the statistic type
-   * @param valueKeys
-   * @param conf
-   * @throws SQLException
+   *
+   * @param con       the database connection
+   * @param type      the statistic type
+   * @param valueKeys a list of values
+   * @param conf      the statistics configuration
+   * @throws SQLException if an error occurs.
    */
   static void insertDataStats(Connection con, StatType type, List<String> valueKeys,
-      StatisticsConfig conf) throws SQLException {
-    StringBuilder insertStatementBuf = new StringBuilder("INSERT INTO ");
-    insertStatementBuf.append(conf.getTableName(type)).append("(");
-    PreparedStatement prepStmt = null;
-    int i = 0;
-
-    Collection<String> theKeys = conf.getAllKeys(type);
-    insertStatementBuf.append(StringUtil.join(theKeys, ','));
-    insertStatementBuf.append(") ");
-
-    insertStatementBuf.append("VALUES(?");
-    for (int j = 0; j < conf.getNumberOfKeys(type) - 1; j++) {
-      insertStatementBuf.append(",?");
-    }
-    insertStatementBuf.append(")");
-    String insertStatement = insertStatementBuf.toString();
-
-    try {
-
-      prepStmt = con.prepareStatement(insertStatement);
-      for (String currentKey : theKeys) {
-        i++;
-        String currentType = conf.getKeyType(type, currentKey);
-        if (currentType.equals("DECIMAL")) {
-          long tmpLong;
-          try {
-            String tmpString = valueKeys.get(i - 1);
-            if (!StringUtil.isDefined(tmpString)) {
-              if (!conf.isCumulKey(type, currentKey)) {
-                prepStmt.setNull(i, java.sql.Types.DECIMAL);
-              } else {
-                prepStmt.setLong(i, 0);
-              }
-            } else {
-              tmpLong = Long.parseLong(tmpString);
-              prepStmt.setLong(i, tmpLong);
-            }
-          } catch (NumberFormatException e) {
-            prepStmt.setLong(i, 0);
-          }
-        }
-        if (currentType.equals("INTEGER")) {
-          int tmpInt;
-          try {
-            String tmpString = valueKeys.get(i - 1);
-            if (!StringUtil.isDefined(tmpString)) {
-              if (!conf.isCumulKey(type, currentKey)) {
-                prepStmt.setNull(i, java.sql.Types.INTEGER);
-              } else {
-                prepStmt.setInt(i, 0);
-              }
-            } else {
-              tmpInt = Integer.parseInt(tmpString);
-              prepStmt.setInt(i, tmpInt);
-            }
-          } catch (NumberFormatException e) {
-            prepStmt.setInt(i, 0);
-          }
-        }
-        if (currentType.equals("VARCHAR")) {
-          String tmpString = valueKeys.get(i - 1);
-          if (!StringUtil.isDefined(tmpString)) {
-            prepStmt.setNull(i, java.sql.Types.VARCHAR);
-          } else {
-            prepStmt.setString(i, valueKeys.get(i - 1));
-          }
-        }
-      }
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+                              StatisticsConfig conf) throws SQLException {
+    insertData(con, conf.getTableName(type), type, valueKeys, conf);
   }
 
   /**
    * Update or insert statistic inside statistic table defined inside conf parameter
-   * @param con the database connection
-   * @param type the statistic type
-   * @param valueKeys
-   * @param conf
-   * @throws SQLException
-   * @throws IOException
+   *
+   * @param con       the database connection
+   * @param type      the statistic type
+   * @param valueKeys the value keys
+   * @param conf      the statistics configuration
+   * @throws SQLException if error occurs with the datasource
    */
   public static void putDataStats(Connection con, StatType type, List<String> valueKeys,
-      StatisticsConfig conf) throws SQLException {
-    StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
-    StringBuilder updateStatementBuf = new StringBuilder("UPDATE ");
+                                  StatisticsConfig conf) throws SQLException {
+
     String tableName = conf.getTableName(type);
-    Statement stmt;
-    ResultSet rs = null;
+    Statements statements = computeStatements(tableName, type, valueKeys, conf);
+
+    if (statements.isStopStatOp()) {
+      return;
+    }
+
+    String selectStatement = statements.getSelectStatement();
+    String updateStatement = statements.getUpdateStatement();
+    List<String> theKeys = statements.getKeys();
     boolean rowExist = false;
-    boolean firstKeyInWhere = true;
-    boolean STOPPUTSTAT = false;
-    int k = 0;
-    int countCumulKey;
-    int intToAdd;
-    long longToAdd;
-    PreparedStatement pstmt = null;
-    updateStatementBuf.append(tableName);
-    updateStatementBuf.append(" SET ");
-
-    Collection<String> theKeys = conf.getAllKeys(type);
-    Iterator<String> iteratorKeys = theKeys.iterator();
-    while (iteratorKeys.hasNext()) {
-      String keyNameCurrent = iteratorKeys.next();
-      selectStatementBuf.append(keyNameCurrent);
-      if (iteratorKeys.hasNext()) {
-        selectStatementBuf.append(",");
-      }
-      if (conf.isCumulKey(type, keyNameCurrent)) {
-        updateStatementBuf.append(keyNameCurrent);
-        updateStatementBuf.append("=").append(keyNameCurrent).append("+? ,");
-      }
-    }
-
-    updateStatementBuf.deleteCharAt(updateStatementBuf.length() - 1);
-    selectStatementBuf.append(" FROM ").append(tableName).append(" WHERE ");
-    updateStatementBuf.append(" WHERE ");
-    iteratorKeys = theKeys.iterator();
-    while (iteratorKeys.hasNext()) {
-      String keyNameCurrent = iteratorKeys.next();
-      if (!conf.isCumulKey(type, keyNameCurrent)) {
-        if (!firstKeyInWhere) {
-          selectStatementBuf.append(" AND ");
-          updateStatementBuf.append(" AND ");
-        }
-        selectStatementBuf.append(keyNameCurrent);
-        updateStatementBuf.append(keyNameCurrent);
-        String currentType = conf.getKeyType(type, keyNameCurrent);
-        if ("DECIMAL".equals(currentType)) {
-          try {
-            Long.parseLong(valueKeys.get(k));
-          } catch (Exception e) {
-            STOPPUTSTAT = true;
-          }
-          if (!StringUtil.isDefined(valueKeys.get(k))) {
-            selectStatementBuf.append("=" + "NULL");
-            updateStatementBuf.append("=" + "NULL");
-          } else {
-            selectStatementBuf.append("=").append(valueKeys.get(k));
-            updateStatementBuf.append("=").append(valueKeys.get(k));
-          }
-        } else if ("INTEGER".equals(currentType)) {
-          try {
-            Integer.valueOf(valueKeys.get(k));
-          } catch (Exception e) {
-            STOPPUTSTAT = true;
-          }
-          if (!StringUtil.isDefined(valueKeys.get(k))) {
-            selectStatementBuf.append("=" + "NULL");
-            updateStatementBuf.append("=" + "NULL");
-          } else {
-            selectStatementBuf.append("=").append(valueKeys.get(k));
-            updateStatementBuf.append("=").append(valueKeys.get(k));
-          }
-        } else if ("VARCHAR".equals(currentType)) {
-          if (!StringUtil.isDefined(valueKeys.get(k))) {
-            selectStatementBuf.append("=" + "NULL");
-            updateStatementBuf.append("=" + "NULL");
-          } else {
-            selectStatementBuf.append("='").append(valueKeys.get(k)).append("'");
-            updateStatementBuf.append("='").append(valueKeys.get(k)).append("'");
-          }
-        }
-        firstKeyInWhere = false;
-      }
-      k++;
-    }
-
-    String selectStatement = selectStatementBuf.toString();
-    String updateStatement = updateStatementBuf.toString();
-    stmt = con.createStatement();
-
-    try {
-      if (!STOPPUTSTAT) {
-        rs = stmt.executeQuery(selectStatement);
-
-        while (rs.next()) {
-          countCumulKey = 0;
-          if (pstmt != null) {
-            pstmt.close();
-          }
-          pstmt = con.prepareStatement(updateStatement);
-
+    try (Statement stmt = con.createStatement();
+         ResultSet rs = stmt.executeQuery(selectStatement)) {
+      while (rs.next()) {
+        try (PreparedStatement pstmt = con.prepareStatement(updateStatement)) {
           rowExist = true;
-          iteratorKeys = theKeys.iterator();
-          while (iteratorKeys.hasNext()) {
-            String keyNameCurrent = iteratorKeys.next();
-
-            if (conf.isCumulKey(type, keyNameCurrent)) {
-              countCumulKey++;
-              String currentType = conf.getKeyType(type, keyNameCurrent);
-              if (currentType.equals("INTEGER")) {
-                try {
-                  intToAdd = Integer.parseInt(valueKeys.get(conf.indexOfKey(type, keyNameCurrent)));
-                } catch (NumberFormatException e) {
-                  intToAdd = 0;
-                }
-                pstmt.setInt(countCumulKey, intToAdd);
-              }
-              if (currentType.equals("DECIMAL")) {
-                try {
-                  longToAdd = Long.parseLong(valueKeys.get(conf.indexOfKey(type, keyNameCurrent)));
-                } catch (NumberFormatException e) {
-                  longToAdd = 0;
-                }
-                pstmt.setLong(countCumulKey, longToAdd);
-              }
-            }
-          }
+          initUpdateStatement(pstmt, theKeys, valueKeys, type, conf);
           pstmt.executeUpdate();
         }
       }
     } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(pstmt);
-      if ((!STOPPUTSTAT) && (!rowExist)) {
+      if (!rowExist) {
         insertDataStats(con, type, valueKeys, conf);
+      }
+    }
+  }
+
+  private static void initUpdateStatement(PreparedStatement pstmt, List<String> theKeys, List<String> valueKeys,
+                                          StatType type, StatisticsConfig conf) throws SQLException {
+    int countCumulKey = 0;
+    for (String keyNameCurrent : theKeys) {
+      if (!conf.isCumulKey(type, keyNameCurrent)) {
+        continue;
+      }
+      countCumulKey++;
+      String currentType = conf.getKeyType(type, keyNameCurrent);
+      String currentValue = valueKeys.get(conf.indexOfKey(type, keyNameCurrent));
+      if (currentType.equals(INTEGER)) {
+        int intToAdd = StringUtil.isInteger(currentValue) ? Integer.parseInt(currentValue) : 0;
+        pstmt.setInt(countCumulKey, intToAdd);
+      }
+      if (currentType.equals(DECIMAL)) {
+        long longToAdd = StringUtil.isLong(currentValue) ? Long.parseLong(currentValue) : 0;
+        pstmt.setLong(countCumulKey, longToAdd);
       }
     }
   }

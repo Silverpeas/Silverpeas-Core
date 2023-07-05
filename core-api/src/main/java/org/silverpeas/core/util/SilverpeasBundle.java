@@ -86,7 +86,7 @@ public interface SilverpeasBundle {
    * isn't set, then an empty string is set in the array.
    * @throws MissingResourceException if the bundle doesn't exist.
    */
-  default SilverpeasBundleList getStringList(String list, String property)
+  default PropertyValuesList getStringList(String list, String property)
       throws MissingResourceException {
     return getStringList(list, property, -1);
   }
@@ -116,10 +116,10 @@ public interface SilverpeasBundle {
    * string is set in the array.
    * @throws MissingResourceException if the bundle doesn't exist.
    */
-  default SilverpeasBundleList getStringList(String list, String property, int max)
+  default PropertyValuesList getStringList(String list, String property, int max)
       throws MissingResourceException {
     int i = 1;
-    SilverpeasBundleList finalList = SilverpeasBundleList.with();
+    PropertyValuesList finalList = PropertyValuesList.with();
     while ((i <= max) || (max == -1)) {
       try {
         String key = list + "_" + Integer.toString(i) + "." + property;

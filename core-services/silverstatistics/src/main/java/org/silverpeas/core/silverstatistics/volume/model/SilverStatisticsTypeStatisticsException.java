@@ -23,39 +23,21 @@
  */
 package org.silverpeas.core.silverstatistics.volume.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class SilverStatisticsTypeStatisticsException extends SilverpeasException {
 
   private static final long serialVersionUID = 4115554367067396762L;
-  private String typeStats;
+  private final String typeStats;
 
-  public SilverStatisticsTypeStatisticsException(String callingClass, int errorLevel,
-      String message, String typeStats) {
-    super(callingClass, errorLevel, message);
+  public SilverStatisticsTypeStatisticsException(String message, String typeStats) {
+    super(message);
     this.typeStats = typeStats;
   }
 
-  public SilverStatisticsTypeStatisticsException(String callingClass, int errorLevel,
-      String message, String typeStats, String extraParams) {
-    super(callingClass, errorLevel, message + " TYPE STATS = " + typeStats, extraParams);
+  public SilverStatisticsTypeStatisticsException(String message, String typeStats, String extraParams) {
+    super(message + " TYPE STATS = " + typeStats, extraParams);
     this.typeStats = typeStats;
-  }
-
-  public SilverStatisticsTypeStatisticsException(String callingClass, int errorLevel,
-      String message, String typeStats, Exception nested) {
-    super(callingClass, errorLevel, message + " TYPE STATS = " + typeStats, nested);
-    this.typeStats = typeStats;
-  }
-
-  public SilverStatisticsTypeStatisticsException(String callingClass, int errorLevel,
-      String message, String typeStats, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message + " TYPE STATS = " + typeStats, extraParams, nested);
-    this.typeStats = typeStats;
-  }
-
-  public String getModule() {
-    return "SilverStatistic";
   }
 
   public String getTypeStats() {

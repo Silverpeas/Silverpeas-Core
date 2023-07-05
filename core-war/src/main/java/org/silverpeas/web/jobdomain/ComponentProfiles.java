@@ -24,25 +24,20 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.LocalizedProfile;
-import org.silverpeas.core.admin.component.model.LocalizedWAComponent;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentProfiles {
 
-  private ComponentInstLight component;
-  private LocalizedWAComponent localizedWAComponent;
+  private final ComponentInstLight component;
   private SpaceInstLight space;
-  private List<String> profilesName = new ArrayList<>();
+  private final List<String> profilesName = new ArrayList<>();
 
-  public ComponentProfiles(ComponentInstLight component, LocalizedWAComponent localizedWAComponent) {
+  public ComponentProfiles(ComponentInstLight component) {
     this.component = component;
-    this.localizedWAComponent = localizedWAComponent;
   }
 
   public ComponentInstLight getComponent() {
@@ -61,43 +56,5 @@ public class ComponentProfiles {
     if (!profilesName.contains(profile.getName())) {
       profilesName.add(profile.getName());
     }
-  }
-
-  public String getLocalizedProfilesName() {
-    List<String> localizedProfilesName = new ArrayList<>();
-    if (localizedWAComponent != null) {
-      for (String profileName : profilesName) {
-        LocalizedProfile localizedProfile = localizedWAComponent.getProfile(profileName);
-        if (localizedProfile != null) {
-          localizedProfilesName.add(localizedProfile.getLabel());
-        } else {
-          localizedProfilesName.add(profileName);
-        }
-      }
-    } else {
-      localizedProfilesName = profilesName;
-    }
-    return StringUtil.join(localizedProfilesName, ", ");
-  }
-
-  public String getLocalizedSpaceLabel() {
-    if (localizedWAComponent != null) {
-      return space.getName(localizedWAComponent.getLanguage());
-    }
-    return space.getName();
-  }
-
-  public String getLocalizedInstanceLabel() {
-    if (localizedWAComponent != null) {
-      return component.getLabel(localizedWAComponent.getLanguage());
-    }
-    return "";
-  }
-
-  public String getLocalizedComponentLabel() {
-    if (localizedWAComponent != null) {
-      return localizedWAComponent.getLabel();
-    }
-    return "";
   }
 }

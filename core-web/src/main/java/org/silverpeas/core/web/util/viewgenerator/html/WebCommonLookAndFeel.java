@@ -121,7 +121,7 @@ class WebCommonLookAndFeel {
   }
 
   private boolean isDefined(String[] context) {
-    return StringUtil.isDefined(StringUtil.join(context));
+    return context != null && StringUtil.isDefined(String.join("", context));
   }
 
   private String getCommonHeader(HttpRequest request, MainSessionController controller,
@@ -142,7 +142,7 @@ class WebCommonLookAndFeel {
     code.append(charset);
     code.append("\"/>\n");
 
-    code.append(includeJQueryCss(new ElementContainer()).toString());
+    code.append(includeJQueryCss(new ElementContainer()));
 
     // append default global CSS
     code.append(getCSSLinkTag(contextPath + STANDARD_CSS));

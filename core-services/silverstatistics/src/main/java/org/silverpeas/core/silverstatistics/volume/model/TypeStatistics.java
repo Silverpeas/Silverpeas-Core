@@ -24,7 +24,6 @@
 package org.silverpeas.core.silverstatistics.volume.model;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,9 +39,9 @@ public class TypeStatistics {
   private String name;
   private String tableName;
   private int purgeInMonth;
-  private List<String> allKeysName;
-  private List<StatDataType> allKeysValue;
-  private List<String> cumulKeysName;
+  private final List<String> allKeysName;
+  private final List<StatDataType> allKeysValue;
+  private final List<String> cumulKeysName;
   private boolean isRun;
   private boolean isAsynchron;
   private StatisticMode modeCumul;
@@ -65,8 +64,7 @@ public class TypeStatistics {
 
   public void setName(String name) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(name)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
-          "silverstatistics.MSG_NAME_STATS_EMPTY", name);
+      throw new SilverStatisticsTypeStatisticsException("Statistics name empty", name);
     }
     this.name = name;
   }
@@ -101,8 +99,7 @@ public class TypeStatistics {
 
   public void setPurge(int purgeInMonth) throws SilverStatisticsTypeStatisticsException {
     if (purgeInMonth <= 0) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.ERROR,
-          "silverstatistics.MSG_PURGE_BAD_VALUE", name);
+      throw new SilverStatisticsTypeStatisticsException("Purge bad value", name);
     }
     this.purgeInMonth = purgeInMonth;
   }
@@ -113,13 +110,12 @@ public class TypeStatistics {
 
   public void setTableName(String tableName) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(tableName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
-          "silverstatistics.MSG_TABLE_NAME_STATS_EMPTY", tableName);
+      throw new SilverStatisticsTypeStatisticsException("The statistics table name is empty", tableName);
     }
     this.tableName = tableName;
   }
 
-  public Collection<String> getAllKeys() {
+  public List<String> getAllKeys() {
     return allKeysName;
   }
 
@@ -130,12 +126,10 @@ public class TypeStatistics {
   public void addKey(String keyName, StatDataType keyType)
       throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
-          "silverstatistics.MSG_KEY_NAME_STATS_EMPTY", name);
+      throw new SilverStatisticsTypeStatisticsException("The statistics key name is empty", name);
     }
     if (keyType == null) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
-          "silverstatistics.MSG_TYPE_NAME_STATS_EMPTY", name);
+      throw new SilverStatisticsTypeStatisticsException("The statistics type name is empty", name);
     }
     allKeysName.add(keyName);
     allKeysValue.add(keyType);
@@ -143,12 +137,10 @@ public class TypeStatistics {
 
   public void addCumulKey(String keyName) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
-          "silverstatistics.MSG_CUMULKEY_NAME_STATS_EMPTY", name);
+      throw new SilverStatisticsTypeStatisticsException("The statistics cumulative key name is empty", name);
     }
     if (!hasACumulType(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
-          "silverstatistics.MSG_CUMULKEY_TYPE_STATS_BAD_VALUE", name, keyName);
+      throw new SilverStatisticsTypeStatisticsException("The statistics cumulative type name is empty", name, keyName);
     }
     cumulKeysName.add(keyName);
   }
@@ -163,15 +155,6 @@ public class TypeStatistics {
 
   public boolean isDateStatKeyExist() {
     return allKeysName.contains(STATISTIC_DATE_KEY);
-  }
-
-  public boolean isAGoodType(String typeName) {
-    try {
-      StatDataType.valueOf(typeName);
-      return true;
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
   }
 
   public boolean hasACumulType(String cumulKeyName) {

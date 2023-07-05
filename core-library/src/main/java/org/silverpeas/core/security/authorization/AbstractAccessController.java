@@ -29,7 +29,9 @@ import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -99,7 +101,9 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     }
     EnumSet<AccessControlOperation> orderedOperations = EnumSet.copyOf(context.getOperations());
     cacheKey.append("@#@").append("OPERATIONS")
-        .append(StringUtil.join(orderedOperations.toArray(), "|"));
+        .append(String.join("|", orderedOperations.stream()
+            .map(o -> Objects.toString(o, StringUtil.EMPTY))
+            .collect(Collectors.toSet())));
     return cacheKey.toString();
   }
 }

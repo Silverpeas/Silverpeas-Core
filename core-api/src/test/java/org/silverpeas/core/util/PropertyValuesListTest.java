@@ -32,11 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * @author Yohann Chastagnier
  */
-public class SilverpeasBundleListTest {
+class PropertyValuesListTest {
 
   @Test
-  public void fromEmptyList() {
-    SilverpeasBundleList list = SilverpeasBundleList.with();
+  void fromEmptyList() {
+    PropertyValuesList list = PropertyValuesList.with();
     assertThat(list.asStringArray(), emptyArray());
     assertThat(list.asStringArray("defaultValue"), emptyArray());
     assertThat(list.asIntegerArray(), emptyArray());
@@ -44,41 +44,39 @@ public class SilverpeasBundleListTest {
   }
 
   @Test
-  public void asStringArray() {
-    SilverpeasBundleList list = SilverpeasBundleList.with("A", null, "", "1");
+  void asStringArray() {
+    PropertyValuesList list = PropertyValuesList.with("A", null, "", "1");
     assertThat(list.asStringArray(), arrayContaining("A", null, "", "1"));
   }
 
   @Test
-  public void asStringArrayWithDefaultValue() {
-    SilverpeasBundleList list = SilverpeasBundleList.with("A", null, "", "1");
+  void asStringArrayWithDefaultValue() {
+    PropertyValuesList list = PropertyValuesList.with("A", null, "", "1");
     assertThat(list.asStringArray("defaultValue"),
         arrayContaining("A", "defaultValue", "defaultValue", "1"));
   }
 
   @Test
-  public void asIntegerList() {
-    SilverpeasBundleList list = SilverpeasBundleList.with("1", null, "", "4");
+  void asIntegerList() {
+    PropertyValuesList list = PropertyValuesList.with("1", null, "", "4");
     assertThat(list.asIntegerList(), contains(1, null, null, 4));
   }
 
   @Test
-  public void asIntegerArray() {
-    SilverpeasBundleList list = SilverpeasBundleList.with("1", null, "", "4");
+  void asIntegerArray() {
+    PropertyValuesList list = PropertyValuesList.with("1", null, "", "4");
     assertThat(list.asIntegerArray(), arrayContaining(1, null, null, 4));
   }
 
   @Test
-  public void asIntegerArrayWithDefaultValue() {
-    SilverpeasBundleList list = SilverpeasBundleList.with("1", null, "", "4");
+  void asIntegerArrayWithDefaultValue() {
+    PropertyValuesList list = PropertyValuesList.with("1", null, "", "4");
     assertThat(list.asIntegerArray(26), arrayContaining(1, 26, 26, 4));
   }
 
   @Test
-  public void asIntegerArrayFromNotParsableIntegerValue() {
-    assertThrows(NumberFormatException.class, () -> {
-      SilverpeasBundleList list = SilverpeasBundleList.with("1", "A");
-      list.asIntegerArray();
-    });
+  void asIntegerArrayFromNotParsableIntegerValue() {
+    PropertyValuesList list = PropertyValuesList.with("1", "A");
+    assertThrows(NumberFormatException.class, list::asIntegerArray);
   }
 }

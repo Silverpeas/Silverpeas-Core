@@ -255,8 +255,8 @@ public class StatisticsConfigIT {
     dataArray.add(RandomStringUtils.random(32, true, true));
     dataArray.add(RandomStringUtils.random(32, true, true));
     assertThat("Should not have only 3 data elements",
-        instance.isGoodDatas(typeOfStats, dataArray), is(false));
+        instance.areGoodData(typeOfStats, dataArray), is(false));
     typeOfStats = StatType.Connexion;
-    assertThat(instance.isGoodDatas(typeOfStats, dataArray), is(true));
+    assertThat(instance.areGoodData(typeOfStats, dataArray), is(true));
   }
 }
