@@ -42,16 +42,14 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static org.silverpeas.core.admin.service.RightAssignationContext.MODE.COPY;
@@ -568,7 +566,7 @@ public class AssignRightIT  {
       if (!leavingCurrentLines.isEmpty()) {
         Collections.sort(leavingCurrentLines);
         message += "Current lines that are not in expected ones:\n" +
-            StringUtil.join(leavingCurrentLines, "\n");
+            String.join("\n", leavingCurrentLines);
       }
       if (!leavingExpectedLines.isEmpty()) {
         if (StringUtil.isDefined(message)) {
@@ -576,7 +574,7 @@ public class AssignRightIT  {
         }
         Collections.sort(leavingExpectedLines);
         message += "Expected lines that are not in current ones:\n" +
-            StringUtil.join(leavingExpectedLines, "\n");
+            String.join("\n", leavingExpectedLines);
       }
       if (!areContentEquals) {
         fail("\n" + message);
@@ -647,7 +645,7 @@ public class AssignRightIT  {
 
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
-      return StringUtil.join(IOUtils.readLines(fileStream), '\n');
+      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

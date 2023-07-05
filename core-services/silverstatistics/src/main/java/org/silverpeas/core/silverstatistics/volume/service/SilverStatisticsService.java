@@ -41,16 +41,11 @@ import java.util.List;
 
 import static org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants.SEPARATOR;
 
-/**
- * Class declaration
- *
- * @author SLR
- */
 @Service
 @Singleton
 public class SilverStatisticsService implements SilverStatistics {
 
-  private StatisticsConfig myStatsConfig;
+  private final StatisticsConfig myStatsConfig;
 
   /**
    * @param type the statistic type (Access, Size, Volume, Connexion)
@@ -60,7 +55,7 @@ public class SilverStatisticsService implements SilverStatistics {
   public void putStats(StatType type, String data) {
     StringTokenizer stData = new StringTokenizer(data, SEPARATOR);
     List<String> dataArray = stData.getTokenList();
-    if (myStatsConfig.isGoodDatas(type, dataArray)) {
+    if (myStatsConfig.areGoodData(type, dataArray)) {
       try(Connection myCon = DBUtil.openConnection()) {
 
         SilverStatisticsDAO.putDataStats(myCon, type, dataArray, myStatsConfig);
@@ -86,11 +81,6 @@ public class SilverStatisticsService implements SilverStatistics {
     SilverStatisticsManagerDAO.makeStatAllCumul(myStatsConfig);
   }
 
-  /**
-   * Constructor declaration
-   *
-   *
-   */
   public SilverStatisticsService() {
     myStatsConfig = new StatisticsConfig();
     try {

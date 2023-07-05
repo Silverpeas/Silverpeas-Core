@@ -30,6 +30,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.EmailAddress;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
@@ -173,7 +174,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
       String[] externalAddressesArray = externalAddressesStr.split(COMMA_CHARACTER);
       for (String externalAddress : externalAddressesArray) {
         externalAddress = externalAddress.trim();
-        if (StringUtil.isValidEmailAddress(externalAddress)) {
+        if (EmailAddress.isValid(externalAddress)) {
           externalAddresses.add(externalAddress);
         }
       }
