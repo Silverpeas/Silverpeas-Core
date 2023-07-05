@@ -669,18 +669,18 @@ class ICal4JExporterTest {
    * <p>
    * The mechanism is the following:<br>
    * <p/>
-   * the first parameter represent the list of calendar events to export and the second one is the
-   * name of the file that contains the expected result.<br> Each lines starting with '#' character
-   * is ignored.<br> If the file content is equal to the result of export, the test is successfully
-   * verified.<br> If not, the different lines between the file content and the export result are
-   * logged to the console.<br> Only event parts are verified from the contents.
+   * the first parameter represent the list of calendar events to export and the second one is the name of the file that
+   * contains the expected result.<br> Each lines starting with '#' character is ignored.<br> If the file content is
+   * equal to the result of export, the test is successfully verified.<br> If not, the different lines between the file
+   * content and the export result are logged to the console.<br> Only event parts are verified from the contents.
    * </p>
-   * @param descriptor descriptor about the iCal export process
+   *
+   * @param descriptor               descriptor about the iCal export process
    * @param fileNameOfExpectedResult the name of the file that contains the expected export result.
    */
   @SuppressWarnings("Duplicates")
   private void exportAndVerifyResult(final ExportDescriptor descriptor,
-      List<CalendarEvent> calendarEvents, String fileNameOfExpectedResult) throws ExportException {
+                                     List<CalendarEvent> calendarEvents, String fileNameOfExpectedResult) throws ExportException {
     try {
 
       ByteArrayOutputStream emptyExportResult = new ByteArrayOutputStream();
@@ -709,8 +709,8 @@ class ICal4JExporterTest {
       final List<String> expectedContentLines = IOUtils.readLines(expected);
       expectedContentLines.removeIf(currentExpectedLine -> currentExpectedLine.startsWith("#"));
 
-      String currentContent = StringUtil.join(currentContentLines, "\n");
-      String expectedContent = StringUtil.join(expectedContentLines, "\n");
+      String currentContent = String.join("\n", currentContentLines);
+      String expectedContent = String.join("\n", expectedContentLines);
 
       // Removing DTSTAMP
       currentContent = currentContent.replaceAll("DTSTAMP.+\n",
@@ -733,8 +733,7 @@ class ICal4JExporterTest {
 
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
-      return StringUtil.join(IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8),
-          '\n');
+      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

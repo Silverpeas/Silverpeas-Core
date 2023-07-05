@@ -1185,7 +1185,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
             if (!clipObject.isCutted()) {
               String[] componentIds = getOrganisationController().getAllComponentIdsRecur(space.getId());
               for (String componentId : componentIds) {
-                String componentName = StringUtil.splitByCharacterType(componentId)[0];
+                String componentName = ComponentInst.getComponentName(componentId);
                 copiedComponents.add(componentName);
               }
             }

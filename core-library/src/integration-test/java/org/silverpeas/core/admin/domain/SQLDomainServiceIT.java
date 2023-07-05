@@ -208,9 +208,22 @@ public class SQLDomainServiceIT extends DataSetTest {
    */
   private void asserTechnicalDomainName(final String technicalDomainName, String domainId,
       String normalizedDomainName) {
-    String expectedTechnicalDomainName = StringUtil
-        .left(domainId + normalizedDomainName, SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - 21);
+    String expectedTechnicalDomainName = left(domainId + normalizedDomainName,
+        SQLSettings.DATABASE_TABLE_NAME_MAX_LENGTH - 21);
     assertThat(technicalDomainName, is(expectedTechnicalDomainName));
+  }
+
+  private static String left(final String str, final int len) {
+    if (str == null) {
+      return null;
+    }
+    if (len < 0) {
+      return "";
+    }
+    if (str.length() <= len) {
+      return str;
+    }
+    return str.substring(0, len);
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -239,7 +252,7 @@ public class SQLDomainServiceIT extends DataSetTest {
     assertThat("domain authentication properties files has not been generated",
         autDomainPropertyFiles[0].getName(), is("autDomain3TestCrea.properties"));
     assertThat(FileUtils
-        .contentEquals(autDomainPropertyFiles[0], expectedDomainAuthenticationPropertiesFile),
+            .contentEquals(autDomainPropertyFiles[0], expectedDomainAuthenticationPropertiesFile),
         is(true));
 
     // Performs checks on generated tables
