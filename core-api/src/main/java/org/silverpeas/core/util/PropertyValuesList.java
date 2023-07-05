@@ -29,18 +29,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class permits to handle the result of property value list search.
+ * Represents a list of a given property values.
  * @author Yohann Chastagnier
  */
-public class SilverpeasBundleList extends ArrayList<String> {
+public class PropertyValuesList extends ArrayList<String> {
 
   /**
    * Initializes a list with the given string values if any.
    * @param values none, one or several string values.
    * @return the initialized list.
    */
-  public static SilverpeasBundleList with(String... values) {
-    SilverpeasBundleList list = new SilverpeasBundleList();
+  public static PropertyValuesList with(String... values) {
+    PropertyValuesList list = new PropertyValuesList();
     Collections.addAll(list, values);
     return list;
   }
@@ -48,7 +48,7 @@ public class SilverpeasBundleList extends ArrayList<String> {
   /**
    * Hidden constructor
    */
-  private SilverpeasBundleList() {
+  private PropertyValuesList() {
   }
 
   /**

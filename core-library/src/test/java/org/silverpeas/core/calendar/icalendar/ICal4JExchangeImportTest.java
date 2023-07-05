@@ -496,16 +496,16 @@ class ICal4JExchangeImportTest {
    * <p>
    * The mechanism is the following:<br>
    * <p/>
-   * the first parameter represent the name of the file that contains events to import and the
-   * second one is the list of expected calendar events.<br>
-   * Each lines starting with '#' character is ignored.
+   * the first parameter represent the name of the file that contains events to import and the second one is the list of
+   * expected calendar events.<br> Each lines starting with '#' character is ignored.
    * </p>
+   *
    * @param fileNameOfImport the name of the file that contains events to import.
    */
   @SuppressWarnings("Duplicates")
   private void importAndVerifyResult(String fileNameOfImport, List<CalendarEvent> expectedEvents,
-      BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
-          List<CalendarEventOccurrence>>> assertConsumer) throws ImportException {
+                                     BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
+                                         List<CalendarEventOccurrence>>> assertConsumer) throws ImportException {
 
     Map<String, Pair<CalendarEvent, List<CalendarEventOccurrence>>> result = new HashedMap<>();
 
@@ -531,8 +531,8 @@ class ICal4JExchangeImportTest {
   }
 
   private void verify(final CalendarEvent actualEvent, final CalendarEvent expectedEvent,
-      final List<CalendarEventOccurrence> actualOccurrences,
-      final List<CalendarEventOccurrence> expectedOccurrences) {
+                      final List<CalendarEventOccurrence> actualOccurrences,
+                      final List<CalendarEventOccurrence> expectedOccurrences) {
     verify(actualEvent, expectedEvent);
     assertThat(actualOccurrences, hasSize(expectedOccurrences.size()));
     expectedOccurrences.forEach(expected -> {
@@ -582,7 +582,7 @@ class ICal4JExchangeImportTest {
   }
 
   private void verifyComponent(final String parentReason, final CalendarComponent actual,
-      final CalendarComponent expected) {
+                               final CalendarComponent expected) {
     String reason = parentReason + "cmp - ";
     assertThat(reason + "getId", actual.getId(), nullValue());
     assertThat(reason + "getId", actual.getId(), is(expected.getId()));
@@ -601,8 +601,7 @@ class ICal4JExchangeImportTest {
 
   private String getFileContent(String fileName) {
     try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
-      return StringUtil.join(IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8),
-          '\n');
+      return String.join("\n", IOUtils.readLines(Objects.requireNonNull(fileStream), Charsets.UTF_8));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
