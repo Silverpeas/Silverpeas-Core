@@ -95,17 +95,11 @@
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieurs</message>
-        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs créent des publications et valident les publications des
-          rédacteurs.
-        </message>
         <message lang="en">Publisher create publication and validate writer's publications.
         </message>
-        <message lang="de">Herausgeber</message>
       </help>
       <spaceMapping>
         <profile>publisher</profile>

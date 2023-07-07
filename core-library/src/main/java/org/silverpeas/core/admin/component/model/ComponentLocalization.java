@@ -31,8 +31,9 @@ import java.util.MissingResourceException;
 import java.util.Objects;
 
 import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.ui.DisplayI18NHelper.getDefaultLanguage;
+import static org.silverpeas.core.ui.DisplayI18NHelper.getLanguages;
 import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
 
 /**
@@ -139,8 +140,14 @@ abstract class ComponentLocalization {
           if (messages.containsKey(lang)) {
             return messages.get(lang);
           }
-          return ofNullable(messages.get(getDefaultLanguage()))
+          if (messages.containsKey(getDefaultLanguage())) {
+            return messages.get(getDefaultLanguage());
+          }
+          return getLanguages().stream()
+              .filter(not(lang::equals).and(not(getDefaultLanguage()::equals)))
+              .map(messages::get)
               .filter(Objects::nonNull)
+              .findFirst()
               .orElseThrow(() -> new MissingResourceException(String.format(
                   "Can't find localization into %s with key %s, or into %s XML descriptor",
                   bundle.getBaseBundleName() + "_" + getLanguage() + ".properties", bundleKey,

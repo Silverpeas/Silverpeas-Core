@@ -125,7 +125,7 @@ class ComponentLocalizationTest {
   void localizedProfile() {
     final LocalizedProfile frAdmin = getLocalizedWAComponent(FR_LOCALE).getProfile("admin");
     final LocalizedProfile esAdmin = getLocalizedWAComponent(ES_LOCALE).getProfile("admin");
-    final LocalizedProfile itAdmin = getLocalizedWAComponent(FR_LOCALE).getProfile("admin");
+    final LocalizedProfile itAdmin = getLocalizedWAComponent(IT_LOCALE).getProfile("admin");
     assertThat(frAdmin, notNullValue());
     assertThat(esAdmin, notNullValue());
     assertThat(itAdmin, notNullValue());
@@ -135,6 +135,23 @@ class ComponentLocalizationTest {
     assertThat(frAdmin.getHelp(), startsWith("Les gestionnaires créent des dossiers"));
     assertThat(esAdmin.getHelp(), startsWith("Los gestores crean archivos"));
     assertThat(itAdmin.getHelp(), startsWith("Les gestionnaires créent des dossiers"));
+  }
+
+  @Test
+  @DisplayName("Verifying the LocalizedProfile implementation when missing some translation into XML descriptor")
+  void localizedProfileWhenMissingSomeTranslationsIntoXmlDescriptor() {
+    final LocalizedProfile frAdmin = getLocalizedWAComponent(FR_LOCALE).getProfile("publisher");
+    final LocalizedProfile esAdmin = getLocalizedWAComponent(ES_LOCALE).getProfile("publisher");
+    final LocalizedProfile itAdmin = getLocalizedWAComponent(IT_LOCALE).getProfile("publisher");
+    assertThat(frAdmin, notNullValue());
+    assertThat(esAdmin, notNullValue());
+    assertThat(itAdmin, notNullValue());
+    assertThat(frAdmin.getLabel(), is("Herausgeber"));
+    assertThat(esAdmin.getLabel(), is("Herausgeber"));
+    assertThat(itAdmin.getLabel(), is("Herausgeber"));
+    assertThat(frAdmin.getHelp(), startsWith("Publisher create publication and validate"));
+    assertThat(esAdmin.getHelp(), startsWith("Publisher create publication and validate"));
+    assertThat(itAdmin.getHelp(), startsWith("Publisher create publication and validate"));
   }
 
   private LocalizedWAComponent getLocalizedWAComponent(final String locale) {
