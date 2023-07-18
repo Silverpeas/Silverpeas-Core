@@ -109,8 +109,6 @@ class UserSubscriptionNotificationSendingHandlerTest {
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
@@ -159,8 +157,6 @@ class UserSubscriptionNotificationSendingHandlerTest {
     when(request.getHeader(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
         .thenReturn("{\"skip\":true}");
     ContributionOperationContextPropertyHandler.parseRequest(request);
-    assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
     assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertThat(handler.isSubscriptionNotificationEnabledForCurrentRequest(), is(true));

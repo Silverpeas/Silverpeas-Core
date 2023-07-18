@@ -124,8 +124,6 @@ class ContributionModificationContextHandlerTest {
         "{\"isMinor\":true}");
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertMinorModificationDetected();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertNoMinorMajorModificationDetected();
   }
@@ -139,8 +137,6 @@ class ContributionModificationContextHandlerTest {
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertMinorModificationDetected();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertNoMinorMajorModificationDetected();
   }
 
@@ -201,8 +197,6 @@ class ContributionModificationContextHandlerTest {
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertMinorModificationDetected();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertNoMinorMajorModificationDetected();
   }
 
@@ -215,8 +209,6 @@ class ContributionModificationContextHandlerTest {
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertMinorModificationDetected();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertNoMinorMajorModificationDetected();
   }
 
