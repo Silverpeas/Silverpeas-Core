@@ -22,8 +22,8 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion" %>
-<%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.normalizeWebResourceUrl" %>
+<%@ page import="static org.silverpeas.core.util.URLUtil.getApplicationURL" %>
 <%@ include file="head.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -40,8 +40,9 @@
 <c:set var="defaultEditorImage" value="${resources.getSetting('ddwe.editor.img.src.default')}" />
 <c:set var="specificJsPath" value="${resources.getSetting('ddwe.editor.specific.js.path', '')}" />
 <c:set var="specificCssPath" value="${resources.getSetting('ddwe.editor.specific.css.path', '')}" />
-<c:set var="componentCssUrl" value='<%=JavascriptPluginInclusion.normalizeWebResourceUrl(URLUtil.getApplicationURL() + "/ddwe/jsp/styleSheets/silverpeas-grapes-canvas.css")%>'/>
-<c:set var="componentAddonCssUrl" value='<%=JavascriptPluginInclusion.normalizeWebResourceUrl(URLUtil.getApplicationURL() + "/ddwe/jsp/styleSheets/silverpeas-ddwe-canvas-addon.css")%>'/>
+<c:set var="ckeditorSrc" value='<%=normalizeWebResourceUrl(getApplicationURL() + "/wysiwyg/jsp/ckeditor/ckeditor.js")%>'/>
+<c:set var="componentCssUrl" value='<%=normalizeWebResourceUrl(getApplicationURL() + "/ddwe/jsp/styleSheets/silverpeas-grapes-canvas.css")%>'/>
+<c:set var="componentAddonCssUrl" value='<%=normalizeWebResourceUrl(getApplicationURL() + "/ddwe/jsp/styleSheets/silverpeas-ddwe-canvas-addon.css")%>'/>
 
 <fmt:message key="ddwe.webBrowser.seeInto" var="seeIntoWebBrowserLabel" />
 <fmt:message key="ddwe.mail.sendToMe" var="sendToMeLabel" />
@@ -71,11 +72,11 @@
 <fmt:message key="ddwe.editor.component.event.content" var="eventBlockDescription" />
 <fmt:message key="ddwe.editor.component.event.content.open" var="eventBlockOpen" />
 <fmt:message key="ddwe.editor.component.imageWithLink.title" var="imageWithLinkBlockTitle" />
-<fmt:message key="ddwe.editor.component.toolbar.fa-arrow-up" var="fa_arrow_up_Label" />
-<fmt:message key="ddwe.editor.component.toolbar.fa-arrows" var="fa_arrows_Label" />
-<fmt:message key="ddwe.editor.component.toolbar.fa-clone" var="fa_clone_Label" />
-<fmt:message key="ddwe.editor.component.toolbar.fa-trash-o" var="fa_trash_o_Label" />
-<fmt:message key="ddwe.editor.component.toolbar.fa-sp-basket-selector" var="fa_sp_basket_selector_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.selectParent" var="selectParent_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.tlb-move" var="tlb_move_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.tlb-clone" var="tlb_clone_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.tlb-delete" var="tlb_delete_Label" />
+<fmt:message key="ddwe.editor.component.toolbar.tlb-sp-basket-selector" var="tlb_sp_basket_selector_Label" />
 
 <fmt:message key="ddwe.menu.action" var="editionLabel" />
 
@@ -110,7 +111,6 @@
     <view:script src="/ddwe/jsp/javaScript/silverpeas-ddwe-components.js"/>
     <view:script src="/ddwe/jsp/javaScript/silverpeas-ddwe-addon.js"/>
     <view:link href="/ddwe/jsp/grapesjs/css/grapes.min.css"/>
-    <view:link href="/ddwe/jsp/grapesjs/css/grapesjs-preset-newsletter.min.css"/>
     <view:link href="/ddwe/jsp/styleSheets/silverpeas-grapes.css"/>
     <view:link href="/ddwe/jsp/styleSheets/silverpeas-ddwe-addon.css"/>
     <view:script src="/ddwe/jsp/grapesjs/i18n/locale/${currentUserLanguage}.js"/>
@@ -146,11 +146,11 @@
         'eventBlockDescription' : '${silfn:escapeJs(eventBlockDescription)}',
         'eventBlockOpen' : '${silfn:escapeJs(eventBlockOpen)}',
         'imageWithLinkBlockTitle' : '${silfn:escapeJs(imageWithLinkBlockTitle)}',
-        'fa_arrow_up_Label' : '${silfn:escapeJs(fa_arrow_up_Label)}',
-        'fa_arrows_Label' : '${silfn:escapeJs(fa_arrows_Label)}',
-        'fa_clone_Label' : '${silfn:escapeJs(fa_clone_Label)}',
-        'fa_trash_o_Label' : '${silfn:escapeJs(fa_trash_o_Label)}',
-        'fa_sp_basket_selector_Label' : '${silfn:escapeJs(fa_sp_basket_selector_Label)}'
+        'selectParent_Label' : '${silfn:escapeJs(selectParent_Label)}',
+        'tlb_move_Label' : '${silfn:escapeJs(tlb_move_Label)}',
+        'tlb_clone_Label' : '${silfn:escapeJs(tlb_clone_Label)}',
+        'tlb_delete_Label' : '${silfn:escapeJs(tlb_delete_Label)}',
+        'tlb_sp_basket_selector_Label' : '${silfn:escapeJs(tlb_sp_basket_selector_Label)}'
       });
       function __applyRequestCommonParams(request) {
         return request.withParam("access_token", '${user.accessToken}')
@@ -269,6 +269,7 @@
             }
             whenSilverpeasReady(function() {
               this.editorManager = new DragAndDropWebEditorManager({
+                ckeditorSrc : '${ckeditorSrc}',
                 componentCssUrl : ['${componentCssUrl}', '${componentAddonCssUrl}'],
                 defaultEditorImageSrc : '${defaultEditorImage}',
                 imageSelectorApi : this.imageSelectorApi,
