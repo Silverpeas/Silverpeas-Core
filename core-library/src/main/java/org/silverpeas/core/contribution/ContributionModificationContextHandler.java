@@ -104,7 +104,7 @@ public class ContributionModificationContextHandler
 
   /**
    * Indicates from current request if the current user made a minor modification.
-   * @return true if minor, false otherwise.
+   * @return either true if minor, false otherwise, or nothing if the handle hasn't parsed any request.
    */
   public Optional<Boolean> isMinorModification() {
     return getContext().map(Context::isMinor);
