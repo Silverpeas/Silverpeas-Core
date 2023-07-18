@@ -46,16 +46,13 @@
   });
 
   const __addPickupBasketElementMenu = function(commandToAdd) {
-    const commandIcon = 'fa fa-sp-basket-selector';
     const defaultToolbar = this.get('toolbar');
     const commandExists = defaultToolbar.some(function(item) {
       return item.command === commandToAdd;
     });
     if (!commandExists) {
       defaultToolbar.push({
-        attributes : {
-          'class' : commandIcon
-        },
+        label : '<svg viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>',
         command : commandToAdd
       });
     }
@@ -236,9 +233,7 @@
     });
     editor.BlockManager.add(componentType, {
       label : sp.i18n.get('contributionBlockTitle'),
-      attributes : {
-        'class' : 'fa fa-sp-contribution'
-      },
+      media : '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 5L20 19L4 19L4 5H20M20 3H4C2.89 3 2 3.89 2 5V19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V5C22 3.89 21.11 3 20 3M18 15H6V17H18V15M10 7H6V13H10V7M12 9H18V7H12V9M18 11H12V13H18V11Z" /></path></svg>',
       category: sp.i18n.get('silverpeasCategoryLabel'),
       content: {
         type : componentType
@@ -423,9 +418,7 @@
     });
     editor.BlockManager.add(componentType, {
       label : sp.i18n.get('eventBlockTitle'),
-      attributes : {
-        'class' : 'fa fa-sp-event'
-      },
+      media : '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 11H9V13H7V11M21 5V19C21 20.11 20.11 21 19 21H5C3.89 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H6V1H8V3H16V1H18V3H19C20.11 3 21 3.9 21 5M5 7H19V5H5V7M19 19V9H5V19H19M15 13V11H17V13H15M11 13V11H13V13H11M7 15H9V17H7V15M15 17V15H17V17H15M11 17V15H13V17H11Z" /></path></svg>',
       category: sp.i18n.get('silverpeasCategoryLabel'),
       content: {
         type : componentType
@@ -539,9 +532,7 @@
     });
     editor.BlockManager.add(componentType, {
       label : sp.i18n.get('imageWithLinkBlockTitle'),
-      attributes : {
-        'class' : 'fa fa-sp-image-link'
-      },
+      media : '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21,3H3C2,3 1,4 1,5V19A2,2 0 0,0 3,21H21C22,21 23,20 23,19V5C23,4 22,3 21,3M5,17L8.5,12.5L11,15.5L14.5,11L19,17H5Z"></path></svg>',
       category: sp.i18n.get('silverpeasCategoryLabel'),
       content: {
         type : componentType
@@ -593,8 +584,9 @@
     });
     editor.BlockManager.add(componentType, {
       label : sp.i18n.get('simpleBlockTitle'),
+      media: '<svg viewBox="0 0 24 24"> <path fill="currentColor" d="M2 20h20V4H2v16Zm-1 0V4a1 1 0 0 1 1-1h20a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1Z"/> </svg>',
       attributes : {
-        'class' : 'gjs-fonts gjs-f-b1 fa-sp-simple-bloc'
+        'class' : 'sp-panel-btn-simple-bloc'
       },
       content: {
         type : componentType

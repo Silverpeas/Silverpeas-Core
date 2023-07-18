@@ -150,50 +150,29 @@ body div.hautFrame {
   background-color: #FFF;
 }
 
-.fa-sp-contribution::before {
-  content: '\f1ea'
-}
-
-.fa-sp-event::before {
-  content: '\f073';
-  font-family: FontAwesome, Verdana, Arial, sans-serif;
-  font-size: 24px;
-}
-
-.fa-sp-image-link::before {
-  content: '\f1c5'
-}
-
 .gjs-block-label {
   font-size: 0.9rem;
 }
 
-.gjs-blocks-no-cat .gjs-f-image {
+.gjs-blocks-no-cat .sp-panel-btn-image {
+  order: -5;
+}
+
+.gjs-blocks-no-cat .sp-panel-btn-text,
+.gjs-blocks-no-cat .sp-panel-btn-simple-bloc  {
   order: -4;
 }
 
-.gjs-blocks-no-cat .gjs-f-text {
+.gjs-blocks-no-cat .sp-panel-btn-link  {
   order: -3;
 }
 
-.gjs-blocks-no-cat .fa-sp-simple-bloc {
-  order: -3;
-}
-
-.gjs-blocks-no-cat .gjs-blocks-c div:nth-child(11) {
+.gjs-blocks-no-cat .sp-panel-btn-button {
   order: -2;
 }
 
-.gjs-blocks-no-cat .gjs-f-button {
-  order: -1;
-}
-
-.gjs-blocks-no-cat .fa-quote-right {
+.gjs-blocks-no-cat .sp-panel-btn-quote {
   display: none;
-}
-
-.fa-sp-basket-selector::before {
-  content: '\f040';
 }
 
 #gjs-sm-border-top-left-radius, #gjs-sm-border-top-right-radius, #gjs-sm-border-bottom-left-radius, #gjs-sm-border-bottom-right-radius, #gjs-sm-margin-top, #gjs-sm-margin-bottom, #gjs-sm-margin-right, #gjs-sm-margin-left, #gjs-sm-padding-top, #gjs-sm-padding-bottom, #gjs-sm-padding-right, #gjs-sm-padding-left {

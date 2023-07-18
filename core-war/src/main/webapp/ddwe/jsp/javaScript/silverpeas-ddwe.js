@@ -28,6 +28,7 @@
     applyReadyBehaviorOn(this);
     applyEventDispatchingBehaviorOn(this);
     const __options = extendsObject({
+      ckeditorSrc : '',
       componentCssUrl : '',
       defaultEditorImageSrc : '',
       imageSelectorApi : undefined,
@@ -118,7 +119,7 @@
       } else if (spLayout.getFooter().isShown()) {
         bottomOffset -= spLayout.getFooter().getContainer().offsetHeight;
       }
-      const plugins = ['gjs-preset-newsletter', 'gjs-plugin-ckeditor'];
+      const plugins = ['grapesjs-preset-newsletter', 'grapesjs-plugin-ckeditor'];
       document.dispatchEvent(new CustomEvent('ddwe-editor-plugins', {
         detail : {
           plugins : plugins,
@@ -129,11 +130,16 @@
         cancelable : true
       }));
       const pluginOptions = {
-        'gjs-preset-newsletter' : {
-          cmdBtnDesktopLabel : gI18n.deviceManager.devices.desktop,
-          cmdBtnTabletLabel : gI18n.deviceManager.devices.tablet,
-          cmdBtnMobileLabel : gI18n.deviceManager.devices.mobilePortrait,
-          cmtTglImagesLabel : sp.i18n.get('cmtTglImagesLabel'),
+        'grapesjs-preset-newsletter' : {
+          useCustomTheme : false,
+          showStylesOnChange : false,
+          block : function(blockId) {
+            return {
+              attributes : {
+                class : 'sp-panel-btn-' + blockId
+              }
+            }
+          },
           tableStyle : {
             'min-height': '35px',
             margin: '0 auto 10px auto',
@@ -141,9 +147,10 @@
             width: '100%'
           }
         },
-        'gjs-plugin-ckeditor': {
+        'grapesjs-plugin-ckeditor': {
           position: 'center',
-          options: ckConfig
+          options: ckConfig,
+          ckeditor : __options.ckeditorSrc
         }
       };
       const initOptions = {
@@ -200,12 +207,48 @@
         },
         storageManager: {
           type: 'remote',
-          urlStore: webContext + '/Rddwe/jsp/store',
-          urlLoad: webContext + '/Rddwe/jsp/load',
-          headers: {
-            access_token : __options.userToken,
-            file_id : __options.fileId,
-            initialization : _context.initialization
+          options : {
+            remote : {
+              urlStore: webContext + '/Rddwe/jsp/store',
+              urlLoad: webContext + '/Rddwe/jsp/load',
+              headers: {
+                access_token : __options.userToken,
+                file_id : __options.fileId,
+                initialization : _context.initialization
+              },
+              onLoad : function(data) {
+                if (_context.initialization) {
+                  _context.initialization = false;
+                  gEditor.StorageManager.getConfig().options.remote.headers.initialization = false;
+                  if (data['tmp-inlinedHtml']) {
+                    const confirmationUrl = webContext + '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
+                    const url = sp.url.format(confirmationUrl);
+                    const deferredOpen = sp.promise.deferred();
+                    jQuery.popup.load(url).show('confirmation', {
+                      openPromise : deferredOpen.promise,
+                      callback : function() {
+                        setTimeout(function() {
+                          gEditor.load();
+                        }, 0);
+                      },
+                      alternativeCallback : function() {
+                        setTimeout(function() {
+                          gEditor.store();
+                        }, 0);
+                      }
+                    }).then(function() {
+                      document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML = data['tmp-inlinedHtml'];
+                      deferredOpen.resolve();
+                    }.bind(this));
+                  }
+                }
+                return sp.promise.resolveDirectlyWith(data);
+              },
+              onStore : function(data) {
+                data['gjs-inlinedHtml'] = gEditor.runCommand('gjs-get-inlined-html');
+                return sp.promise.resolveDirectlyWith(data);
+              }
+            }
           }
         },
         plugins: plugins,
@@ -217,7 +260,7 @@
       applyTokenSecurity($div);
       const tkn = $form.querySelector('input');
       if (tkn) {
-        initOptions.storageManager.headers[tkn.name] = tkn.value;
+        initOptions.storageManager.options.remote.headers[tkn.name] = tkn.value;
       }
       if (__options.componentCssUrl) {
         initOptions.canvas = {
@@ -227,78 +270,46 @@
         };
       }
       const gEditor = grapesjs.init(initOptions);
-      gEditor.on('storage:start:store', function(data) {
-        if (__options.store.deferred) {
-          __options.store.deferred.reject();
-        }
-        __options.store.deferred = sp.promise.deferred();
-        data.inlinedHtml = gEditor.runCommand('gjs-get-inlined-html');
-      });
-      gEditor.on('storage:end:store', function(data) {
-        if (data && data.status === 'stored') {
-          __options.store.error = false;
-          __options.store.deferred.resolve();
-        } else {
-          SilverpeasError.add(sp.i18n.get('storeErrorMsg')).show();
-          __options.store.error = true;
-          __options.store.deferred.reject();
-        }
-        __options.store.deferred = undefined;
-      });
-      window.addEventListener('beforeunload', function(e) {
-        if (__options.store.error) {
-          e.preventDefault();
-          spProgressMessage.hide();
-          return e.returnValue = sp.i18n.get('storeWarningMsg');
-        }
-      }, {capture: true});
-      gEditor.on('storage:end:load', function(data) {
-        if (_context.initialization) {
-          _context.initialization = false;
-          gEditor.StorageManager.getConfig().headers.initialization = false;
-          if (data['tmp-inlinedHtml']) {
-            const confirmationUrl = webContext + '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
-            const url = sp.url.format(confirmationUrl);
-            const deferredOpen = sp.promise.deferred();
-            jQuery.popup.load(url).show('confirmation', {
-              openPromise : deferredOpen.promise,
-              callback : function() {
-                setTimeout(function() {
-                  gEditor.load();
-                }, 0);
-              },
-              alternativeCallback : function() {
-                setTimeout(function() {
-                  gEditor.store();
-                }, 0);
-              }
-            }).then(function() {
-              document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML = data['tmp-inlinedHtml'];
-              deferredOpen.resolve();
-            }.bind(this));
-          }
-        }
-      });
       const pnm = gEditor.Panels;
+      // Complete button data
+      pnm.getButton('devices-c', 'set-device-desktop').set('attributes', {
+        title : gI18n.deviceManager.devices.desktop
+      });
+      pnm.getButton('devices-c', 'set-device-tablet').set('attributes', {
+        title : gI18n.deviceManager.devices.tablet
+      });
+      pnm.getButton('devices-c', 'set-device-mobile').set('attributes', {
+        title : gI18n.deviceManager.devices.mobilePortrait
+      });
       // Removes presets button
       pnm.removeButton('options', 'gjs-open-import-template');
+      pnm.removeButton('options', 'canvas-clear');
+      pnm.removeButton('options', 'undo');
+      pnm.removeButton('options', 'redo');
+      pnm.removeButton('options', 'preview');
+      pnm.removeButton('options', 'fullscreen');
+      // Complete button data & states
+      pnm.getButton('options', 'sw-visibility').set('active', true);
+      pnm.getButton('options', 'gjs-toggle-images').set('attributes', {
+        class : 'sp-panel-top-toggle-image',
+        title : sp.i18n.get('cmtTglImagesLabel')
+      });
       // Add info command
       pnm.addButton('options', [{
         id: 'undo',
-        className: 'fa fa-undo',
+        label : '<svg viewBox="0 0 24 24"><path d="M20 13.5C20 17.09 17.09 20 13.5 20H6V18H13.5C16 18 18 16 18 13.5S16 9 13.5 9H7.83L10.91 12.09L9.5 13.5L4 8L9.5 2.5L10.92 3.91L7.83 7H13.5C17.09 7 20 9.91 20 13.5Z" /></svg>',
         attributes: {title: sp.i18n.get('cmdBtnUndoLabel')},
-        command: function(){ gEditor.runCommand('core:undo') }
+        command: 'core:undo'
       },{
         id: 'redo',
-        className: 'fa fa-repeat',
+        label : '<svg viewBox="0 0 24 24"><path d="M10.5 18H18V20H10.5C6.91 20 4 17.09 4 13.5S6.91 7 10.5 7H16.17L13.08 3.91L14.5 2.5L20 8L14.5 13.5L13.09 12.09L16.17 9H10.5C8 9 6 11 6 13.5S8 18 10.5 18Z" /></svg>',
         attributes: {title: sp.i18n.get('cmdBtnRedoLabel')},
-        command: function(){ gEditor.runCommand('core:redo') }
+        command: 'core:redo'
       },{
         id: 'clear-all',
-        className: 'fa fa-trash icon-blank',
-        attributes : {
-          title : sp.i18n.get('clearCanvas')
-        },
+        label : '<svg viewBox="0 0 24 24"><path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M9,8H11V17H9V8M13,8H15V17H13V8Z" /></svg>',
+        className: 'sp-panel-top-trash',
+        attributes : {title : sp.i18n.get('clearCanvas')},
         command: {
           run: function(editor, sender) {
             sender && sender.set('active', false);
@@ -329,10 +340,10 @@
           });
         }, 0);
       };
+      __setupLeavingPage(gEditor, __options);
       __adjustComponentToolbars(gEditor);
       __adjustStyles(gEditor);
       __setupImageManagement(gEditor, options);
-      __addRichTextEditorPositionHandler(gEditor);
       __addConnectorButtons(gEditor, options);
       __extendHtmlSrcExport(gEditor);
       __addHtmlSrcEdition(gEditor);
@@ -360,37 +371,32 @@
   }
 
   function __adjustComponentToolbars(editor) {
-    let labelTitleMapping;
+    let labelTitleCommandMapping;
     editor.on('component:selected', function(model) {
-      if (!labelTitleMapping) {
-        labelTitleMapping = {};
-        [{a:'arrowUp',c:'fa-arrow-up'},
-          {a:'move',c:'fa-arrows'},
-          {a:'copy',c:'fa-clone'},
-          {a:'delete',c:'fa-trash-o'}].forEach(function(mapping) {
-            labelTitleMapping[model.em.getIcon(mapping.a)] = sp.i18n.get(mapping.c.replace(/[-]/g, '_') + '_Label');
+      if (!labelTitleCommandMapping) {
+        labelTitleCommandMapping = {};
+        ['tlb-move',
+         'tlb-clone',
+         'tlb-delete',
+         'tlb-sp-basket-selector'].forEach(function(command) {
+           labelTitleCommandMapping[command] = sp.i18n.get(command.replace(/[-]/g, '_') + '_Label');
         });
       }
       const defaultToolbar = model.get('toolbar');
-      defaultToolbar.forEach(function(menu) {
+      defaultToolbar.forEach(function(menu, index) {
         let attr = menu.attributes;
         if (!attr) {
           attr = {
-            'title' : labelTitleMapping[menu.label]
+            'title' : index === 0 ? sp.i18n.get('selectParent_Label') : labelTitleCommandMapping[menu.command]
           };
           menu.attributes = attr;
         }
-        if (!attr.title) {
-          if (menu.label) {
-            attr.title = labelTitleMapping[menu.label];
-          } else if (attr['class']) {
-            attr['class'].split(' ').forEach(function(aClass) {
-              const key = aClass.replace(/[-]/g, '_') + '_Label';
-              const label = sp.i18n.get(key);
-              if (label.indexOf(key) < 0) {
-                attr.title = label;
-              }
-            });
+        if (!attr.title && typeof menu.command === 'string') {
+          let cmd = menu.command;
+          attr.title = labelTitleCommandMapping[cmd];
+          while(!attr.title && cmd.indexOf('-') > 0) {
+            cmd = cmd.replace(/-[^-]*$/, '');
+            attr.title = labelTitleCommandMapping[cmd];
           }
         }
       });
@@ -403,31 +409,43 @@
     };
   }
 
-  function __addRichTextEditorPositionHandler(editor) {
-    const __posUpdate = function() {
-      const $toolbarEl = editor.RichTextEditor.getToolbarEl();
-      $toolbarEl.style.display = '';
-      const $frameEl = editor.Canvas.getElement();
-      const rteOffsets = sp.element.offset($toolbarEl);
-      const hiddenRteWidth = rteOffsets.left + $toolbarEl.offsetWidth - $frameEl.offsetWidth;
-      if (hiddenRteWidth > 0) {
-        $toolbarEl.style.left = (0 - hiddenRteWidth) + 'px';
+  function __setupLeavingPage(editor, completedOtions) {
+    editor.on('storage:start:store', function(data) {
+      if (completedOtions.store.deferred) {
+        completedOtions.store.deferred.reject();
       }
-    };
-    editor.on('rteToolbarPosUpdate', function() {
-      const $toolbarEl = editor.RichTextEditor.getToolbarEl();
-      $toolbarEl.style.display = 'none';
-      setTimeout(__posUpdate, 0);
+      completedOtions.store.deferred = sp.promise.deferred();
     });
+    editor.on('storage:end:store', function(data) {
+      if (data && StringUtil.isDefined(data['gjs-inlinedHtml'])) {
+        completedOtions.store.error = false;
+        completedOtions.store.deferred.resolve();
+      } else {
+        SilverpeasError.add(sp.i18n.get('storeErrorMsg')).show();
+        completedOtions.store.error = true;
+        completedOtions.store.deferred.reject();
+      }
+      completedOtions.store.deferred = undefined;
+    });
+    window.addEventListener('beforeunload', function(e) {
+      if (completedOtions.store.error) {
+        e.preventDefault();
+        spProgressMessage.hide();
+        return e.returnValue = sp.i18n.get('storeWarningMsg');
+      }
+    }, {capture: true});
   }
 
   function __adjustButtonOrder(instance) {
     const manualOrders = [{
-      'classSelector' : 'fa-edit',
-      order : 45
+      'classSelector' : 'sp-panel-top-edit-html',
+      order : 25
     }, {
-      'classSelector' : 'fa-warning',
+      'classSelector' : 'sp-panel-top-toggle-image',
       order : 65
+    }, {
+      'classSelector' : 'sp-panel-top-trash',
+      order : 70
     }];
     const elements = [];
     Array.prototype.push.apply(elements, instance.Panels.getPanelsEl().querySelectorAll('.gjs-pn-options .gjs-pn-buttons span'));
@@ -446,7 +464,7 @@
     if (typeof plgOptions.connectors.validate === 'function') {
       buttons.push({
         id: 'sp-validate',
-        className: 'fa fa-validate sp_button',
+        className: 'sp_button',
         label: sp.i18n.get('validate'),
         command: {
           run : function() {
@@ -458,7 +476,7 @@
     if (plgOptions.connectors.cancel) {
       buttons.push({
         id: 'sp-cancel',
-        className: 'fa fa-cancel sp_button',
+        className: 'sp_button',
         label: sp.i18n.get('cancel'),
         command: {
           run : function() {
@@ -514,7 +532,8 @@
     });
     instance.Panels.addButton('options', [{
       id : 'edit',
-      className : 'fa fa-edit',
+      label : '<svg viewBox="0 0 24 24"><path d="M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19H5V5H12V3H5M17.78,4C17.61,4 17.43,4.07 17.3,4.2L16.08,5.41L18.58,7.91L19.8,6.7C20.06,6.44 20.06,6 19.8,5.75L18.25,4.2C18.12,4.07 17.95,4 17.78,4M15.37,6.12L8,13.5V16H10.5L17.87,8.62L15.37,6.12Z" /></svg>',
+      className : 'sp-panel-top-edit-html',
       command : 'html-edit',
       attributes : {
         title : sp.i18n.get('editHtml')
