@@ -35,12 +35,13 @@ import org.silverpeas.core.cache.model.SimpleCache;
  */
 public class ThreadCacheService implements CacheService {
 
-  private ThreadCache cache = new ThreadCache();
+  private final ThreadCache cache = new ThreadCache();
 
   protected ThreadCacheService() {
 
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public SimpleCache getCache() {
     return cache;
