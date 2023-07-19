@@ -45,9 +45,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.silverpeas.core.util.CollectionUtil.asSet;
 import static org.silverpeas.core.util.ImageUtil.*;
 import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 
 /**
@@ -123,7 +125,9 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         // 1 - convert it into JPG resized image.
         else {
           resultFile = toImage(viewerContext.getOriginalSourceFile(),
-              generateTmpFile(viewerContext, JPG_IMAGE_EXTENSION));
+              generateTmpFile(viewerContext, defaultStringIfNotDefined(
+                  getExtension(viewerContext.getOriginalSourceFile().getName()),
+                  JPG_IMAGE_EXTENSION)));
         }
 
         // Returning the result
