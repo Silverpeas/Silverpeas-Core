@@ -185,6 +185,14 @@ body div.hautFrame {
   font: inherit;
 }
 
+.gjs-block__media {
+  height: 40px;
+}
+
+.gjs-block svg {
+  height: inherit;
+}
+
 .calendar-event.gjs-highlighter,
 .contribution-header.gjs-highlighter {
   outline: 1px solid #EC9C01;
