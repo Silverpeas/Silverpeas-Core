@@ -136,5 +136,13 @@ const gI18n = {
         }
       }
     }
+  },
+  richTextEditor : {
+    actions : {
+      bold : 'Bold (Ctrl+B)',
+      italic : 'Italic (Ctrl+I)',
+      underline : 'Underline (Ctrl+U)',
+      strikethrough : 'Strike-through'
+    }
   }
 };

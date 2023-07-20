@@ -126,7 +126,7 @@ body div.hautFrame {
   right: calc(50% + 150px);
 }
 
-.gjs-rte-toolbar {
+.gjs-rte-toolbar.sp-custom-rte {
   min-width: 637px;
 }
 

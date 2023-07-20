@@ -111,6 +111,7 @@
 }
 
 .image-selector-container .fileUpload-container {
+  position: relative;
   margin: 0;
 }
 
@@ -156,4 +157,13 @@
   position: absolute;
   right: 5px;
   top: 5px;
+}
+
+.image-selector-container .fileUpload-container .delete-all {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-decoration: underline;
+  color: #1c94d4;
+  font-size: 11px;
 }

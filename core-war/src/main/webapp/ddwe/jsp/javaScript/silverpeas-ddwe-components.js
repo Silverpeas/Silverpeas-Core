@@ -45,6 +45,20 @@
     })
   });
 
+  const UTILS = new function() {
+    this.setupRunCommandOnEvent = function(componentType, command, editor, model) {
+      const models = Array.isArray(model)
+          ? model
+          : (model ? [model] : [])
+      models.forEach(function(m) {
+        if (m.get('type') === componentType) {
+          editor.select(m);
+          editor.runCommand(command);
+        }
+      });
+    };
+  };
+
   const __addPickupBasketElementMenu = function(commandToAdd) {
     const defaultToolbar = this.get('toolbar');
     const commandExists = defaultToolbar.some(function(item) {
@@ -181,10 +195,7 @@
       }
     });
     editor.on('block:drag:stop', function(model) {
-      if (model && model.get('type') === componentType) {
-        editor.select(model);
-        editor.runCommand('tlb-sp-basket-selector-contribution');
-      }
+      UTILS.setupRunCommandOnEvent(componentType, 'tlb-sp-basket-selector-contribution', editor, model);
     });
     editor.Commands.add('tlb-sp-basket-selector-contribution', {
       run : function(ed, sender, opts) {
@@ -365,10 +376,7 @@
       }
     });
     editor.on('block:drag:stop', function(model) {
-      if (model && model.get('type') === componentType) {
-        editor.select(model);
-        editor.runCommand('tlb-sp-basket-selector-event');
-      }
+      UTILS.setupRunCommandOnEvent(componentType, 'tlb-sp-basket-selector-event', editor, model);
     });
     editor.Commands.add('tlb-sp-basket-selector-event', {
       run : function(ed, sender, opts) {
