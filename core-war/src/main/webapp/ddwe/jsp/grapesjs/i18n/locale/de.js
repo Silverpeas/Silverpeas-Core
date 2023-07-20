@@ -219,5 +219,13 @@ const gI18n = {
         }
       }
     }
+  },
+  richTextEditor : {
+    actions : {
+      bold : 'Fett (Strg+B)',
+      italic : 'Kursiv (Strg+I)',
+      underline : 'Unterstrichen (Strg+U)',
+      strikethrough : 'Durchgestrichen'
+    }
   }
 };

@@ -87,6 +87,7 @@ public class WysiwygEditorConfigResource extends RESTWebService {
       WysiwygEditorConfig config = WysiwygEditorConfigRegistry.get().get(getConfigName());
       config.setComponentId(getComponentId());
       config.setObjectId(resourceId);
+      config.setLanguage(getUserPreferences().getLanguage());
       setWysiwygEditorSessionContext(resourceType, resourceId, config);
       return Response.ok(params.applyOn(config).toJSON()).build();
     }).lowestAccessRole(SilverpeasRole.WRITER).execute();

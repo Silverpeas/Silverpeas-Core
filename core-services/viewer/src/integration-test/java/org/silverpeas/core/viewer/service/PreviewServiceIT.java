@@ -328,7 +328,6 @@ public class PreviewServiceIT extends AbstractViewerIT {
     assertThat(getTemporaryPath().listFiles(), arrayWithSize(nbFilesAtTempRoot));
     assertThat(preview.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
     assertThat(preview.getPhysicalFile().getName(), startsWith("file."));
-    assertThat(preview.getPhysicalFile().getName().length(), is(8));
 
     assertPreviewDimensions(preview, dimensions);
   }

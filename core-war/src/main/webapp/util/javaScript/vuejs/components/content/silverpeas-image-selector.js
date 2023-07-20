@@ -30,7 +30,7 @@
   SpVue.component('silverpeas-image-selector',
       templateRepository.get('main', {
         inject : ['context'],
-        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin, VuejsProgressMessageMixin],
         provide : function() {
           return {
             imageService: this.service
@@ -98,16 +98,29 @@
           },
           loadImageAttachments : function() {
             const contributionId = this.contributionId;
-            return this.service.getAllImageAttachmentsByContributionId(contributionId).then(function(attachments) {
-              this.imgAttachments = attachments;
-            }.bind(this));
+            return this.service.getAllImageAttachmentsByContributionId(contributionId).then(
+                function(attachments) {
+                  this.imgAttachments = attachments;
+                  this.hideProgressMessage();
+                }.bind(this), function() {
+                  this.hideProgressMessage();
+                }.bind(this));
           },
           deleteImageAttachment : function(attachment) {
             jQuery.popup.confirm(this.messages.confirmDeleteMsg, function() {
               this.service.deleteImageAttachment(attachment).then(function() {
                 this.loadImageAttachments();
               }.bind(this));
-            }.bind(this))
+            }.bind(this));
+          },
+          deleteAllImageAttachments : function() {
+            jQuery.popup.confirm(this.messages.confirmDeleteAllMsg, function() {
+              this.showProgressMessage();
+              const contributionId = this.contributionId;
+              this.service.deleteAllImageAttachments(contributionId).then(function() {
+                this.loadImageAttachments();
+              }.bind(this));
+            }.bind(this));
           },
           backToCurrentImage : function() {
             this.selectedAttachment = undefined;
