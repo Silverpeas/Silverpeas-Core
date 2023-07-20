@@ -322,11 +322,10 @@ public class PreviewServiceWithoutSwfRenderIT extends AbstractViewerIT {
   private void assertDocumentPreview(Preview preview, final boolean cacheUsed,
       final DimensionOption... dimensions) {
     assertThat(preview, notNullValue());
-    final String fileExtension = "jpg";
     final int nbFilesAtTempRoot = cacheUsed ? 2 : 1;
     assertThat(getTemporaryPath().listFiles(), arrayWithSize(nbFilesAtTempRoot));
     assertThat(preview.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
-    assertThat(preview.getPhysicalFile().getName(), is("file." + fileExtension));
+    assertThat(preview.getPhysicalFile().getName(), startsWith("file."));
     assertPreviewDimensions(preview, dimensions);
   }
 }

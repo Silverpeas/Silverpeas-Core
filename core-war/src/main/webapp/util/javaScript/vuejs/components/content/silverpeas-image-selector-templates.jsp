@@ -34,6 +34,7 @@
 <fmt:message var="dragAndDropFilesLabel" key="GML.upload.dragAndDrop.files"/>
 <fmt:message var="browseLabel" key="GML.upload.choose.browse"/>
 <fmt:message key="GML.delete" var="deleteLabel"/>
+<fmt:message key="GML.deleteAll" var="deleteAllLabel"/>
 <fmt:message key="GML.or" var="orLabel"/>
 <fmt:message key="image.selector.title" var="popinTitle"/>
 <fmt:message key="image.selector.noImage" var="noImageMessage"/>
@@ -44,13 +45,15 @@
 <fmt:message key="image.selector.section.mediaBanks" var="mediaBanksSectionTitle"/>
 
 <c:set var="confirmDeleteMsg"><fmt:message key='image.selector.section.attachments.delete.confirm'/></c:set>
+<c:set var="confirmDeleteAllMsg"><fmt:message key='image.selector.section.attachments.deleteAll.confirm'/></c:set>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="main">
   <div>
     <div v-sp-init>
       {{addMessages({
-      confirmDeleteMsg : '${silfn:escapeJs(confirmDeleteMsg)}'
+      confirmDeleteMsg : '${silfn:escapeJs(confirmDeleteMsg)}',
+      confirmDeleteAllMsg : '${silfn:escapeJs(confirmDeleteAllMsg)}'
     })}}
     </div>
     <silverpeas-popin v-on:api="popinApi = $event" title="${popinTitle}" minWidth="650">
@@ -68,6 +71,9 @@
           <h3 class="section-title">${selectImageTitle}</h3>
           <silverpeas-fade-transition v-if="!imgAttachments.length" duration-type="fast">
             <span>${noImageMessage}</span>
+          </silverpeas-fade-transition>
+          <silverpeas-fade-transition v-if="imgAttachments.length" duration-type="fast">
+            <a href="javascript:void(0)" class="delete-all" v-on:click="deleteAllImageAttachments">${deleteAllLabel}</a>
           </silverpeas-fade-transition>
           <silverpeas-fade-transition-group v-if="imgAttachments.length" duration-type="fast" class="list">
             <image-attachment v-for="imgAttachment in imgAttachments" v-bind:key="imgAttachment.id"

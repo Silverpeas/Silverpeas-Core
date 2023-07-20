@@ -46,6 +46,15 @@
     }
 
     /**
+     * Deletes all the image attachments linked to a contribution.
+     * @param contributionId a contribution identifier.
+     * @returns {*}
+     */
+    this.deleteAllImageAttachments = function(contributionId) {
+      return attachmentRepository.deleteAllAttachments(contributionId);
+    }
+
+    /**
      * Gets all image attachments linked to a contribution.
      * @param contributionId a contribution identifier.
      * @returns {*}
@@ -87,6 +96,24 @@
         instanceId : attachment.instanceId,
         localId : attachment.id
       });
+    }
+
+    /**
+     * Deletes all image attachments linked to a contribution.
+     * @param contributionId a contribution identifier.
+     * @returns {*}
+     */
+    this.deleteAllAttachments = function(contributionId) {
+      return this.getAllByContributionId(contributionId).then(function(attachements) {
+        const __queue = sp.promise.newQueue();
+        let promise = sp.promise.resolveDirectlyWith();
+        attachements.forEach(function(attachment) {
+          promise = __queue.push(function() {
+            return this.deleteAttachment(attachment);
+          }.bind(this));
+        }.bind(this))
+        return promise;
+      }.bind(this));
     }
 
     /**

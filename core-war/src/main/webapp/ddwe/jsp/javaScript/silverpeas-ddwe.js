@@ -136,7 +136,7 @@
           block : function(blockId) {
             return {
               attributes : {
-                class : 'sp-panel-btn-' + blockId
+                'class' : 'sp-panel-btn-' + blockId
               }
             }
           },
@@ -150,7 +150,10 @@
         'grapesjs-plugin-ckeditor': {
           position: 'center',
           options: ckConfig,
-          ckeditor : __options.ckeditorSrc
+          ckeditor : __options.ckeditorSrc,
+          customRte : {
+            parseContent: false
+          }
         }
       };
       const initOptions = {
@@ -291,7 +294,7 @@
       // Complete button data & states
       pnm.getButton('options', 'sw-visibility').set('active', true);
       pnm.getButton('options', 'gjs-toggle-images').set('attributes', {
-        class : 'sp-panel-top-toggle-image',
+        'class' : 'sp-panel-top-toggle-image',
         title : sp.i18n.get('cmtTglImagesLabel')
       });
       // Add info command
@@ -340,6 +343,7 @@
           });
         }, 0);
       };
+      __adjustRichTextEditor(gEditor);
       __setupLeavingPage(gEditor, __options);
       __adjustComponentToolbars(gEditor);
       __adjustStyles(gEditor);
@@ -352,15 +356,70 @@
     });
   };
 
+  function __adjustRichTextEditor(editor) {
+    const rte = editor.RichTextEditor;
+    const __customRte = rte.customRte;
+    const __enable = rte.enable;
+    const __getContent = rte.getContent;
+    const __disable = rte.disable;
+    rte.get('bold').attributes.title = gI18n.richTextEditor.actions.bold;
+    rte.get('italic').attributes.title = gI18n.richTextEditor.actions.italic;
+    rte.get('underline').attributes.title = gI18n.richTextEditor.actions.underline;
+    rte.get('strikethrough').attributes.title = gI18n.richTextEditor.actions.strikethrough;
+    rte.remove('link');
+    rte.remove('wrap');
+    const __fallBackOnGlobalRte = function() {
+      const view = arguments[0];
+      view.__sp_fallback = true;
+      __setupCustomRte.apply(this, arguments);
+    };
+    const __setupCustomRte = function() {
+      const view = arguments[0];
+      if (view.__sp_fallback) {
+        if (this.customRte) {
+          this.globalRte = undefined;
+        }
+        this.getToolbarEl().classList.remove('sp-custom-rte');
+        this.customRte = undefined;
+        for(let eId in CKEDITOR.instances) {
+          CKEDITOR.instances[eId].destroy();
+        }
+      } else {
+        this.getToolbarEl().classList.add('sp-custom-rte');
+        this.customRte = __customRte;
+      }
+    };
+    rte.enable = function() {
+      const __arguments = arguments;
+      __setupCustomRte.apply(this, __arguments);
+      return __enable.apply(this, __arguments)['catch'](function() {
+        __fallBackOnGlobalRte.apply(this, __arguments);
+        return __enable.apply(this, __arguments);
+      }.bind(this));
+    }.bind(rte)
+    rte.getContent = function() {
+      const __arguments = arguments;
+      __setupCustomRte.apply(this, __arguments);
+      return __getContent.apply(this, __arguments)['catch'](function() {
+        __fallBackOnGlobalRte.apply(this, __arguments);
+        return __getContent.apply(this, __arguments);
+      }.bind(this));
+    }.bind(rte)
+    rte.disable = function() {
+      __setupCustomRte.apply(this, arguments);
+      __disable.apply(this, arguments);
+    }.bind(rte)
+  }
+
   function __adjustStyles(editor) {
     const sms = editor.StyleManager.getSectors();
     const sms_super_reset = sms.reset;
     const sms_super_add = sms.add;
     sms.reset = function() {
-      // avoid the use be plugin
+      // avoid the use by plugin
     };
     sms.add = function() {
-      // avoid the use be plugin
+      // avoid the use by plugin
     };
     editor.on('load', function() {
       setTimeout(function() {
