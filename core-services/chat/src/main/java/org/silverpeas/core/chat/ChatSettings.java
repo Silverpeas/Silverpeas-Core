@@ -107,6 +107,29 @@ public class ChatSettings {
   }
 
   /**
+   * If truthy, Converse will automatically register a user’s nickname upon entering a groupchat.
+   * <p>
+   *   If set to 'unregister', then the user’s nickname will be registered (because it’s a truthy
+   *   value) and also be unregistered when the user permanently leaves the MUC by closing it.
+   * </p>
+   * <p>
+   *   Sometimes, nicknames into a group are not well handled, and playing with this value can
+   *   restore a better behavior. Please see
+   *   <a href="https://conversejs.org/docs/html/configuration.html#auto-register-muc-nickname">auto-register-muc-nickname</a> for more
+   *   information
+   * </p>
+   * <p>
+   *   This method returns a string, but into JS sources, no quotation marks is necessary.
+   * </p>
+   * @return a string value (false, true, 'unregister').
+   */
+  public String autoRegisterMucNickname() {
+    return settings.getString(
+        CHAT_CLIENT_PREFIX + getSilverpeasChatClientId() + ".autoRegisterMucNickname",
+        Boolean.FALSE.toString());
+  }
+
+  /**
    * Indicates if the 'reply to' message is enabled.
    * @return true of enabled, false otherwise.
    */

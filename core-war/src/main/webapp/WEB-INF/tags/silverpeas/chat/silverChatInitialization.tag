@@ -81,6 +81,7 @@
             notificationLogo : (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
             nbMsgMaxCachedPerRoom : ${chatSettings.maxCachedMsgThresholdPerRoom},
             clearMessagesOnReconnection : ${chatSettings.clearMessagesOnReconnection()},
+            autoRegisterMucNickname : ${chatSettings.autoRegisterMucNickname()},
             replyToEnabled : ${chatSettings.replyToEnabled},
             reactionToEnabled : ${chatSettings.reactionToEnabled},
             visioEnabled : ${chatSettings.visioEnabled},

@@ -450,7 +450,7 @@
           'muc_disable_slash_commands' : true,
           'locked_muc_nickname' : true,
           'nickname' : __settings.vcard.fn,
-          'auto_register_muc_nickname' : true,
+          'auto_register_muc_nickname' : __settings.autoRegisterMucNickname,
           'notify_all_room_messages' : true,
           'auto_join_on_invite' : false,
           'roster_groups' : false,
