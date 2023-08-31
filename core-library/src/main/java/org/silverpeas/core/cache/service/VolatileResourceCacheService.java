@@ -40,7 +40,7 @@ import static org.silverpeas.core.contribution.model.CoreContributionType.VOLATI
 
 /**
  * <p>
- * This cache permits to reference some volatile resources (an entity that is being registered into
+ * This cache allows to reference some volatile resources (an entity that is being registered into
  * persistence, but not yet validated by the user).<br>
  * Elements registered with volatile resource are cleared just after the ending of a user session.
  * </p>
@@ -81,7 +81,7 @@ import static org.silverpeas.core.contribution.model.CoreContributionType.VOLATI
  */
 public class VolatileResourceCacheService {
 
-  private List<ContributionIdentifier> componentVolatileIds = new ArrayList<>();
+  private final List<ContributionIdentifier> componentVolatileIds = new ArrayList<>();
   private Integer currentIntId = Integer.MAX_VALUE;
   private Long currentLongId = Long.MAX_VALUE;
 

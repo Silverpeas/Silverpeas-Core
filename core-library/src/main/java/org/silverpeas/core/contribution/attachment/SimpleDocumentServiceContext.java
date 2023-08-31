@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * This class permits to handles complex cases into document update into context of a request.
@@ -45,7 +45,7 @@ class SimpleDocumentServiceContext {
    */
   static void unlockMustNotNotifyUpdateIntoRequestContext(final SimpleDocument document) {
     final String cacheKey = String.format(UNLOCK_DOC_UPDATE_KEY_PATTERN, document.getId());
-    getRequestCacheService().getCache().put(cacheKey, Boolean.TRUE);
+    getThreadCacheAccessor().getCache().put(cacheKey, Boolean.TRUE);
   }
 
   /**
@@ -56,6 +56,6 @@ class SimpleDocumentServiceContext {
    */
   static boolean canUnlockNotifyUpdateFromRequestContext(final SimpleDocument document) {
     final String cacheKey = String.format(UNLOCK_DOC_UPDATE_KEY_PATTERN, document.getId());
-    return Boolean.TRUE != getRequestCacheService().getCache().remove(cacheKey, Boolean.class);
+    return Boolean.TRUE != getThreadCacheAccessor().getCache().remove(cacheKey, Boolean.class);
   }
 }

@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInst
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.calendar.notification.CalendarLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
@@ -253,7 +253,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public String getTitle() {
     if (isMain()) {
-      SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+      SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
       final String cacheKey = MAIN_TITLE_REF + getId();
       Mutable<String> mainTitle = Mutable.ofNullable(cache.get(cacheKey, String.class));
       if (!mainTitle.isPresent()) {

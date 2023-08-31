@@ -30,7 +30,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.TestBeanContainer;
 
@@ -64,7 +64,7 @@ public class CalendarEventAccessTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     userTest = aUser();
     when(userTest.getId()).thenReturn(USER_TEST_ID);
     calendar = mock(Calendar.class);

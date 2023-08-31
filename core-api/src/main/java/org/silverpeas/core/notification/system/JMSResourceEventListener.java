@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.system;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.jms.Message;
@@ -94,7 +94,7 @@ public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
    */
   @Override
   public void onMessage(final Message message) {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     try {
       T event = message.getBody(getResourceEventClass());
       dispatchEvent(event);

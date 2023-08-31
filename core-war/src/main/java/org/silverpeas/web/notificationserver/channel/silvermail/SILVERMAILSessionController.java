@@ -56,7 +56,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -159,7 +159,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     final Mutable<String> source = Mutable.empty();
     if (isDefined(componentId)) {
       final String componentCacheKey = PREFIX_CACHE_KEY + componentId;
-      final String cachedValue = getRequestCacheService().getCache()
+      final String cachedValue = getThreadCacheAccessor().getCache()
           .computeIfAbsent(componentCacheKey, String.class, () -> {
             final Optional<SilverpeasComponentInstance> optionalComponentInstance =
                 SilverpeasComponentInstance.getById(componentId).filter(i -> !i.isPersonal());
@@ -168,7 +168,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
             }
             final SilverpeasComponentInstance componentInstance = optionalComponentInstance.get();
             final String spaceCacheKey = PREFIX_SPACE_CACHE_KEY + componentInstance.getSpaceId();
-            final String spaceLabel = getRequestCacheService().getCache()
+            final String spaceLabel = getThreadCacheAccessor().getCache()
                 .computeIfAbsent(spaceCacheKey, String.class, () -> {
                   final SpaceInstLight space = OrganizationController.get()
                       .getSpaceInstLightById(componentInstance.getSpaceId());

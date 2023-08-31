@@ -68,7 +68,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
@@ -1373,7 +1373,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       // Deletes all persisted occurrences belonging to this event to reset any changes in some
       // of the event's occurrences
       if(deleteAllOccurrencesFromPersistence() > 0) {
-        getThreadCacheService().getCache()
+        getThreadCacheAccessor().getCache()
             .put("CalendarEvent@dateOrRecurrenceChanged@deleteAllOccurrences" + getId(), true);
       }
     }
@@ -1396,7 +1396,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @return true means this full deletion has been performed, false otherwise.
    */
   boolean hasDeletedAllOccurrencesBecauseOfDateOrRecurrenceChange() {
-    return Boolean.TRUE.equals(getThreadCacheService().getCache()
+    return Boolean.TRUE.equals(getThreadCacheAccessor().getCache()
         .get("CalendarEvent@dateOrRecurrenceChanged@deleteAllOccurrences" + getId()));
   }
 

@@ -27,14 +27,17 @@ package org.silverpeas.core.io.temp;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,7 +51,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class TemporaryWorkspaceTranslationTest {
+class TemporaryWorkspaceTranslationTest {
 
   private static final String TRANSLATION_ID_KEY = "__sptrans_id=";
   private static final String SILVERPEAS_TRANSLATION_PREFIX = "__sptrans_";
@@ -63,20 +66,19 @@ public class TemporaryWorkspaceTranslationTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     tempPath = new File(getTemporaryPath());
   }
 
   @Test
-  public void testWorkspaceCreateAndExist() throws Exception {
+  void testWorkspaceCreateAndExist() throws Exception {
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     assertThat(test.getRootPath().exists(), is(false));
     assertThat(test.exists(), is(false));
-    assertThat(test.lastModified(), is(0l));
+    assertThat(test.lastModified(), is(0L));
 
     long createTime = System.currentTimeMillis() / 1000;
-    Thread.sleep(1001);
+    await(1001);
     test.create();
 
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
@@ -86,7 +88,8 @@ public class TemporaryWorkspaceTranslationTest {
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
     assertThat(test.lastModified() / 1000, greaterThanOrEqualTo(createTime));
-    assertThat(readFileToString(descriptor), is(TRANSLATION_ID_KEY + workspace.getName()));
+    assertThat(readFileToString(descriptor, Charsets.UTF_8),
+        is(TRANSLATION_ID_KEY + workspace.getName()));
 
     test.create();
     test.create();
@@ -95,15 +98,17 @@ public class TemporaryWorkspaceTranslationTest {
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
     assertThat(test.lastModified() / 1000, greaterThanOrEqualTo(createTime));
-    assertThat(readFileToString(descriptor), is(TRANSLATION_ID_KEY + workspace.getName()));
+    assertThat(readFileToString(descriptor, Charsets.UTF_8),
+        is(TRANSLATION_ID_KEY + workspace.getName()));
   }
 
   @Test
-  public void testWorkspaceExist() throws Exception {
+  void testWorkspaceExist() throws Exception {
     File descriptorSrc = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     File workspaceSrc = new File(tempPath, "totototototototototototototototototototototo");
     FileUtils.writeStringToFile(descriptorSrc,
-        TRANSLATION_ID_KEY + "totototototototototototototototototototototo");
+        TRANSLATION_ID_KEY + "totototototototototototototototototototototo", Charsets.UTF_8);
+    //noinspection ResultOfMethodCallIgnored
     workspaceSrc.mkdirs();
 
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
@@ -116,13 +121,15 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspaceExistWithAdditionalData() throws Exception {
+  void testWorkspaceExistWithAdditionalData() throws Exception {
     File descriptorSrc = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     File workspaceSrc = new File(tempPath, "titititititititititititititititititititititi");
     FileUtils.writeStringToFile(descriptorSrc,
-        TRANSLATION_ID_KEY + "titititititititititititititititititititititi");
+        TRANSLATION_ID_KEY + "titititititititititititititititititititititi", Charsets.UTF_8);
     FileUtils.writeStringToFile(descriptorSrc,
-        "\nkey=" + Base64.encodeBase64String(SerializationUtils.serialize("value")), true);
+        "\nkey=" + Base64.encodeBase64String(SerializationUtils.serialize("value")),
+        Charsets.UTF_8, true);
+    //noinspection ResultOfMethodCallIgnored
     workspaceSrc.mkdirs();
 
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
@@ -135,20 +142,21 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspaceNotExistBecauseDescriptorDoesNotExist() throws Exception {
+  void testWorkspaceNotExistBecauseDescriptorDoesNotExist() {
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
-    Thread.sleep(1);
+    await(1);
     test.create();
 
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     File workspace = test.getRootPath();
     assertThat(descriptor, not(is(workspace)));
 
+    //noinspection ResultOfMethodCallIgnored
     descriptor.delete();
 
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(false));
-    assertThat(test.lastModified(), is(0l));
+    assertThat(test.lastModified(), is(0L));
 
     long createTime = System.currentTimeMillis() / 1000;
     test.create();
@@ -156,28 +164,29 @@ public class TemporaryWorkspaceTranslationTest {
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified(), greaterThan(0l));
+    assertThat(test.lastModified(), greaterThan(0L));
     assertThat(test.lastModified() / 1000, greaterThanOrEqualTo(createTime));
   }
 
   @Test
-  public void testWorkspaceNotExistBecauseRootWorkspaceDoesNotExist() throws Exception {
+  void testWorkspaceNotExistBecauseRootWorkspaceDoesNotExist() {
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     System.currentTimeMillis();
-    Thread.sleep(1);
+    await(1);
     test.create();
 
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     File workspace = test.getRootPath();
 
+    //noinspection ResultOfMethodCallIgnored
     workspace.delete();
 
     assertThat(test.getRootPath().exists(), is(false));
     assertThat(test.exists(), is(false));
-    assertThat(test.lastModified(), is(0l));
+    assertThat(test.lastModified(), is(0L));
 
     long createTime = System.currentTimeMillis() / 1000;
-    Thread.sleep(1001);
+    await(1001);
     test.create();
 
     assertThat(descriptor, not(is(workspace)));
@@ -188,9 +197,9 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspaceRemove() throws Exception {
+  void testWorkspaceRemove() {
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
-    Thread.sleep(1);
+    await(1);
     test.create();
 
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
@@ -203,13 +212,13 @@ public class TemporaryWorkspaceTranslationTest {
     assertThat(tempPath.listFiles(), emptyArray());
     assertThat(test.getRootPath().exists(), is(false));
     assertThat(test.exists(), is(false));
-    assertThat(test.lastModified(), is(0l));
+    assertThat(test.lastModified(), is(0L));
   }
 
   @Test
-  public void testWorkspaceRemoveAndCreateAgain() throws Exception {
+  void testWorkspaceRemoveAndCreateAgain() {
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
-    Thread.sleep(1);
+    await(1);
     test.create();
 
     String workspaceName = test.getRootPath().getName();
@@ -223,7 +232,7 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testStartWithTranslationDescriptorPrefix() {
+  void testStartWithTranslationDescriptorPrefix() {
     assertThat(startWithTranslationDescriptorPrefix(null), is(false));
     assertThat(startWithTranslationDescriptorPrefix(""), is(false));
     assertThat(startWithTranslationDescriptorPrefix(" "), is(false));
@@ -242,13 +251,13 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspacePutKeyValueOnNotCreatedWorkspace() throws Exception {
+  void testWorkspacePutKeyValueOnNotCreatedWorkspace() {
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     Serializable serializable = new SerializableClass();
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     test.put("key", "value");
     test.put("otherKey", serializable);
-    assertThat((String) test.get("key"), is("value"));
+    assertThat(test.get("key"), is("value"));
     assertThat(test.get("otherKey"), not(sameInstance(serializable)));
     assertThat(test.get("otherKey").toString(), is(serializable.toString()));
     assertThat(descriptor.exists(), is(false));
@@ -260,7 +269,7 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspacePutKeyValueOnNotCreateWorkspaceAndReload() throws Exception {
+  void testWorkspacePutKeyValueOnNotCreateWorkspaceAndReload() throws Exception {
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     Serializable serializable = new SerializableClass();
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
@@ -273,9 +282,10 @@ public class TemporaryWorkspaceTranslationTest {
     assertThat(test.get("otherKey"), not(sameInstance(serializable)));
     assertThat(test.get("otherKey").toString(), is(serializable.toString()));
 
-    assertThat(FileUtils.readFileToString(descriptor), containsString(TRANSLATION_ID_KEY));
-    assertThat(FileUtils.readFileToString(descriptor), containsString("key="));
-    assertThat(FileUtils.readFileToString(descriptor), containsString("otherKey="));
+    assertThat(FileUtils.readFileToString(descriptor, Charsets.UTF_8),
+        containsString(TRANSLATION_ID_KEY));
+    assertThat(FileUtils.readFileToString(descriptor, Charsets.UTF_8), containsString("key="));
+    assertThat(FileUtils.readFileToString(descriptor, Charsets.UTF_8), containsString("otherKey="));
 
     test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     assertThat(test.get("key"), notNullValue());
@@ -286,7 +296,7 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspacePutNullObject() throws Exception {
+  void testWorkspacePutNullObject() {
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     test.create();
@@ -302,12 +312,16 @@ public class TemporaryWorkspaceTranslationTest {
   }
 
   @Test
-  public void testWorkspaceGetObjectThatDoesNotExist() throws Exception {
+  void testWorkspaceGetObjectThatDoesNotExist() {
     File descriptor = new File(tempPath, (SILVERPEAS_TRANSLATION_PREFIX + TEST_WORKSPACE_ID));
     TemporaryWorkspaceTranslation test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     test.create();
     assertThat(descriptor.exists(), is(true));
     assertThat(test.get("otherKey"), nullValue());
+  }
+
+  private static void await(long timeInMillis) {
+    Awaitility.await().pollDelay(timeInMillis, TimeUnit.MILLISECONDS).until(() -> true);
   }
 
   /**
@@ -316,8 +330,8 @@ public class TemporaryWorkspaceTranslationTest {
   public static class SerializableClass implements Serializable {
     private static final long serialVersionUID = 6097050519496876662L;
 
-    private String stringValue = "serializedString";
-    private File fileValue = new File("test/serializedFile");
+    private static final String stringValue = "serializedString";
+    private final File fileValue = new File("test/serializedFile");
 
     @Override
     public String toString() {

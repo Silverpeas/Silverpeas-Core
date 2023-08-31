@@ -44,7 +44,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 
@@ -111,7 +111,7 @@ public class PreparedDownload implements Serializable {
     if (StringUtil.isNotDefined(preparedDownloadId)) {
       throw new IllegalArgumentException("identifier of prepared download MUST exists");
     }
-    final SimpleCache cache = getSessionCacheService().getCache();
+    final SimpleCache cache = getSessionCacheAccessor().getCache();
     final PreparedDownload preparedDownload = cache.remove(PREPARED_DOWNLOAD + preparedDownloadId, PreparedDownload.class);
     if (preparedDownload == null) {
       throw new IllegalArgumentException(
@@ -150,7 +150,7 @@ public class PreparedDownload implements Serializable {
     response.setContentType(MediaType.APPLICATION_JSON);
     response.setCharacterEncoding(Charsets.UTF_8.name());
     response.getWriter().append(jsonToSend);
-    final SimpleCache cache = getSessionCacheService().getCache();
+    final SimpleCache cache = getSessionCacheAccessor().getCache();
     cache.put(PREPARED_DOWNLOAD + id, this);
   }
 

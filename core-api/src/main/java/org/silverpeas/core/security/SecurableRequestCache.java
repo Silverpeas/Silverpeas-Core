@@ -26,7 +26,7 @@ package org.silverpeas.core.security;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -63,7 +63,7 @@ public class SecurableRequestCache {
    */
   private static boolean handle(final User user, final String uniqueIdentifier,
       Predicate<User> authorization, final String keySuffix) {
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     String cacheKey = getCacheKey(user, uniqueIdentifier, keySuffix);
     synchronized (ALL_KEYS) {
       Boolean result = cache.get(cacheKey, Boolean.class);
@@ -79,7 +79,7 @@ public class SecurableRequestCache {
   @SuppressWarnings("unchecked")
   private static Set<String> getHandledKeys() {
     synchronized (ALL_KEYS) {
-      SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+      SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
       Set<String> handledKeys = (Set) cache.get(ALL_KEYS, Set.class);
       if (handledKeys == null) {
         handledKeys = new HashSet<>(DEFAULT_NB_HANDLED_KEYS);
@@ -131,7 +131,7 @@ public class SecurableRequestCache {
    */
   public static void clear(String uniqueIdentifier) {
     final String keyPart = "@@@" + uniqueIdentifier + "@@@" + CAN_BE;
-    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     synchronized (ALL_KEYS) {
       getHandledKeys().removeIf(handledKey -> {
         boolean hasToBeRemoved = handledKey.contains(keyPart);

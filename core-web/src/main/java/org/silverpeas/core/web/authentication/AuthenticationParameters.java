@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.Cache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
@@ -234,7 +234,7 @@ public class AuthenticationParameters {
   private UserDetail getUserByInternalAuthToken(HttpServletRequest request) {
     String internalAuthToken = (String) request.getAttribute("internalAuthToken");
     if (StringUtil.isDefined(internalAuthToken)) {
-      Cache cache = CacheServiceProvider.getApplicationCacheService().getCache();
+      Cache cache = CacheAccessorProvider.getApplicationCacheAccessor().getCache();
       if (cache.get(internalAuthToken) instanceof UserDetail) {
         return (UserDetail) cache.remove(internalAuthToken);
       }

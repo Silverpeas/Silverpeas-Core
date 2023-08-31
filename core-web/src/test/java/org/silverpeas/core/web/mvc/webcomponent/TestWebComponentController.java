@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -336,7 +336,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
 
   @Override
   protected void onInstantiation(final TestWebComponentRequestContext context) {
-    Object called = CacheServiceProvider.getSessionCacheService().getCache().get("onInstantiationCalled");
+    Object called = CacheAccessorProvider.getSessionCacheAccessor().getCache().get("onInstantiationCalled");
     if (called == null) {
       context.getNavigationContext()
           .addListener(new AbstractNavigationContextListener<TestWebComponentRequestContext>() {
@@ -409,7 +409,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
               }
             }
           });
-      CacheServiceProvider.getSessionCacheService().getCache().put("onInstantiationCalled", true);
+      CacheAccessorProvider.getSessionCacheAccessor().getCache().put("onInstantiationCalled", true);
     }
   }
 
