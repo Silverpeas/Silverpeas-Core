@@ -44,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
 /**
@@ -69,7 +69,7 @@ class TestUploadSession {
 
     // Test
     FileUtils.deleteQuietly(new File(getTemporaryPath()));
-    SimpleCache cache = getSessionCacheService().getCache();
+    SimpleCache cache = getSessionCacheAccessor().getCache();
     if (cache != null) {
       cache.remove(SESSION_CACHE_KEY);
     }
@@ -85,12 +85,12 @@ class TestUploadSession {
   @SuppressWarnings("unchecked")
   @Test
   void verifySessionCache() {
-    assertThat(getSessionCacheService().getCache().get(SESSION_CACHE_KEY), nullValue());
+    assertThat(getSessionCacheAccessor().getCache().get(SESSION_CACHE_KEY), nullValue());
 
     UploadSession uploadSession1 = UploadSession.from("   ");
-    assertThat((Set<String>) getSessionCacheService().getCache().get(SESSION_CACHE_KEY, Set.class),
+    assertThat((Set<String>) getSessionCacheAccessor().getCache().get(SESSION_CACHE_KEY, Set.class),
         containsInAnyOrder(uploadSession1.getId()));
-    assertThat(getSessionCacheService().getCache()
+    assertThat(getSessionCacheAccessor().getCache()
             .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession1.getId(), UploadSession.class),
         sameInstance(uploadSession1));
 
@@ -99,29 +99,29 @@ class TestUploadSession {
     assertThat(new File(getTemporaryPath(), uploadSession2.getId()).exists(), is(true));
 
     Set<String> uploadSessionIds =
-        getSessionCacheService().getCache().get(SESSION_CACHE_KEY, Set.class);
+        getSessionCacheAccessor().getCache().get(SESSION_CACHE_KEY, Set.class);
     assertThat(uploadSessionIds, notNullValue());
     assertThat(uploadSessionIds, containsInAnyOrder(uploadSession1.getId(), "anId"));
-    assertThat(getSessionCacheService().getCache()
+    assertThat(getSessionCacheAccessor().getCache()
             .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + "anId", UploadSession.class),
         sameInstance(uploadSession2));
 
     uploadSession1.getUploadSessionFile("newPath/newTest/newName");
     assertThat(new File(getTemporaryPath(), uploadSession1.getId()).exists(), is(true));
 
-    uploadSessionIds = getSessionCacheService().getCache().get(SESSION_CACHE_KEY, Set.class);
+    uploadSessionIds = getSessionCacheAccessor().getCache().get(SESSION_CACHE_KEY, Set.class);
     assertThat(uploadSessionIds, notNullValue());
     assertThat(uploadSessionIds, containsInAnyOrder("anId", uploadSession1.getId()));
 
     UploadSession.clearFrom(si);
 
-    assertThat(getSessionCacheService().getCache().get(SESSION_CACHE_KEY), nullValue());
+    assertThat(getSessionCacheAccessor().getCache().get(SESSION_CACHE_KEY), nullValue());
     assertThat(new File(getTemporaryPath(), uploadSession1.getId()).exists(), is(false));
-    assertThat(getSessionCacheService().getCache()
+    assertThat(getSessionCacheAccessor().getCache()
             .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession1.getId(), UploadSession.class),
         nullValue());
     assertThat(new File(getTemporaryPath(), uploadSession2.getId()).exists(), is(false));
-    assertThat(getSessionCacheService().getCache()
+    assertThat(getSessionCacheAccessor().getCache()
             .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + "anId", UploadSession.class),
         nullValue());
   }

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.mvc;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.util.URLUtil;
@@ -78,14 +78,14 @@ public class SilverListener
   @Override
   public void requestDestroyed(final ServletRequestEvent sre) {
     // Clearing cache at this level avoids memory leaks
-    clearRequestCache();
+    clearThreadCache();
   }
 
   @Override
   public void requestInitialized(final ServletRequestEvent sre) {
     // Clearing cache at this level ensures that it is cleared before that all treatments behind the
     // request are performed.
-    clearRequestCache();
+    clearThreadCache();
     // Managing the session cache.
     ServletRequest request = sre.getServletRequest();
     // Check an http servlet request
@@ -105,8 +105,8 @@ public class SilverListener
     }
 
     // Setting the context according to the Silverpeas session state
-    final SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+    final SessionCacheAccessor sessionCacheAccessor =
+        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
     final SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
     final Runnable setupSessionCache;
     if (sessionInfo.isDefined()) {
@@ -114,7 +114,7 @@ public class SilverListener
         // a non-anonymous HTTP session
         ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
       }
-      setupSessionCache = () -> sessionCacheService.setCurrentSessionCache(sessionInfo.getCache());
+      setupSessionCache = () -> sessionCacheAccessor.setCurrentSessionCache(sessionInfo.getCache());
     } else {
       // Anonymous management
       MainSessionController mainSessionController = MainSessionController.getInstance(httpSession);
@@ -122,7 +122,7 @@ public class SilverListener
           mainSessionController.getCurrentUserDetail().isAnonymous()) {
         // In that case of anonymous access, session cache is handled as a request one in order
         // to avoid concurrency access.
-        setupSessionCache = () -> sessionCacheService.newSessionCache(mainSessionController.getCurrentUserDetail());
+        setupSessionCache = () -> sessionCacheAccessor.newSessionCache(mainSessionController.getCurrentUserDetail());
       } else {
         // shouldn't be executed
         SilverLogger.getLogger(this)
@@ -150,7 +150,7 @@ public class SilverListener
   /**
    * Clears the cache associated to the request.
    */
-  private void clearRequestCache() {
-    CacheServiceProvider.clearAllThreadCaches();
+  private void clearThreadCache() {
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 }

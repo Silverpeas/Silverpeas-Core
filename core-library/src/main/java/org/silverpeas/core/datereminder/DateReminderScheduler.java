@@ -25,7 +25,7 @@ package org.silverpeas.core.datereminder;
 
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
@@ -80,7 +80,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
    * Schedule the date reminder process
    */
   public void doScheduledDateReminder() throws DateReminderException {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
     calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
     calendar.set(java.util.Calendar.MINUTE, 0);

@@ -36,7 +36,7 @@ import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -968,7 +968,7 @@ class NodeAccessControllerTest {
     }
 
     private void initializeMocks() {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       Mockito.reset(componentAccessController, organizationController, nodeService);
       when(organizationController.getComponentParameterValue(anyString(), eq("rightsOnTopics")))
           .then(new Returns("false"));

@@ -26,7 +26,7 @@ package org.silverpeas.core.jcr.webdav;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.Cache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import java.text.MessageFormat;
@@ -73,7 +73,7 @@ public class WebDavTokenGenerator {
    */
   public String generateToken(String documentId) {
     String token = generateToken();
-    Cache cache = getCacheService();
+    Cache cache = getCache();
     cache.put(token, user); // 12h by default of TTL
     String documentTokenKey =
         MessageFormat.format(DOCUMENT_TOKEN_PATTERN, user.getId(), documentId);
@@ -90,7 +90,7 @@ public class WebDavTokenGenerator {
    * document.
    */
   public void deleteToken(String documentId) throws IllegalArgumentException {
-    Cache cache = getCacheService();
+    Cache cache = getCache();
     String documentTokenKey =
         MessageFormat.format(DOCUMENT_TOKEN_PATTERN, user.getId(), documentId);
     String token = (String) cache.get(documentTokenKey);
@@ -111,7 +111,7 @@ public class WebDavTokenGenerator {
     return StringUtil.asBase64(parts[parts.length - 1].getBytes());
   }
 
-  private static Cache getCacheService() {
-    return CacheServiceProvider.getApplicationCacheService().getCache();
+  private static Cache getCache() {
+    return CacheAccessorProvider.getApplicationCacheAccessor().getCache();
   }
 }

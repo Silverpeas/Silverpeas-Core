@@ -37,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * @author Yohann Chastagnier
@@ -64,7 +64,7 @@ public class SecurableRequestCacheTest {
 
   @AfterEach
   public void clear() {
-    getRequestCacheService().clearAllCaches();
+    getThreadCacheAccessor().getCache().clear();
   }
 
   @Test
@@ -177,6 +177,6 @@ public class SecurableRequestCacheTest {
   }
 
   private SimpleCache getRequestCache() {
-    return getRequestCacheService().getCache();
+    return getThreadCacheAccessor().getCache();
   }
 }

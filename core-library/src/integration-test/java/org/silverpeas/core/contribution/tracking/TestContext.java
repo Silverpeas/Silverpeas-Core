@@ -25,8 +25,8 @@
 package org.silverpeas.core.contribution.tracking;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
@@ -85,10 +85,10 @@ public class TestContext {
    * Sets up a user requester of the current test.
    */
   public void setUpUserRequester() {
-    SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+    SessionCacheAccessor sessionCacheAccessor =
+        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
     User currentUser = User.getById("1");
-    sessionCacheService.newSessionCache(currentUser);
+    sessionCacheAccessor.newSessionCache(currentUser);
   }
 
   /**

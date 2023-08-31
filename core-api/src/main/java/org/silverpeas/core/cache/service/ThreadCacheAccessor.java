@@ -26,18 +26,18 @@ package org.silverpeas.core.cache.service;
 import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
- * A service that uses the local thread to store a cache.
+ * An accessor that uses {@link ThreadLocal} to store a cache.
  * <br>
- * BE VERY VERY CAREFULLY: into web application with thread pool management, the thread is never
+ * BE VERY CAREFULLY: into web application with thread pool management, the thread is never
  * killed and the cache is then never cleared. So you have to clear explicitly the cache with
- * the {©ode ThreadCacheService#clearAllCaches()} method.
+ * the {@code ThreadCacheAccessor#getCache().getClear()} method.
  * @author mmoquillon
  */
-public class ThreadCacheService implements CacheService {
+public class ThreadCacheAccessor implements CacheAccessor {
 
   private final ThreadCache cache = new ThreadCache();
 
-  protected ThreadCacheService() {
+  protected ThreadCacheAccessor() {
 
   }
 
@@ -45,10 +45,5 @@ public class ThreadCacheService implements CacheService {
   @Override
   public SimpleCache getCache() {
     return cache;
-  }
-
-  @Override
-  public void clearAllCaches() {
-    cache.clear();
   }
 }

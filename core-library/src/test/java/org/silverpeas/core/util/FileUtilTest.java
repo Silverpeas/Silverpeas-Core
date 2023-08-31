@@ -29,7 +29,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileUtil;
@@ -55,8 +55,8 @@ class FileUtilTest {
 
   @BeforeEach
   public void cleanUPCaches() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   @BeforeEach

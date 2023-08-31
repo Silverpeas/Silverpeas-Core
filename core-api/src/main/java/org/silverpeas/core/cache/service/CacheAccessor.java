@@ -26,22 +26,22 @@ package org.silverpeas.core.cache.service;
 import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
- * A service working on caches.
+ * An accessor to a specific kind of cache. In Silverpeas, several caches can be handled, each of
+ * them with a different life-cycle scope. Each of those caches can be got with a specific accessor
+ * that implements this interface. An accessor references only one cache and this is by the accessor
+ * Silverpeas can get and use the cache.
+ *
  * @author mmoquillon
  */
-public interface CacheService {
+public interface CacheAccessor {
 
   /**
-   * Gets a cache from this service.
+   * Gets the cache referred by this accessor.
+   *
    * @param <T> the concrete type of {@link SimpleCache}
    * @return either a new cache or a single one according to the policy of the service about the
    * cache(s) on which it works.
    */
   <T extends SimpleCache> T getCache();
-
-  /**
-   * Clears all the caches on which this service works.
-   */
-  void clearAllCaches();
 
 }

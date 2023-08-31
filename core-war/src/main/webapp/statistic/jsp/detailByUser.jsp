@@ -28,7 +28,7 @@
 <%@ page import="org.apache.commons.lang3.tuple.Pair" %>
 <%@ page import="org.silverpeas.core.admin.PaginationPage" %>
 <%@ page import="org.silverpeas.core.cache.model.SimpleCache" %>
-<%@ page import="org.silverpeas.core.cache.service.CacheServiceProvider" %>
+<%@ page import="org.silverpeas.core.cache.service.CacheAccessorProvider" %>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY" %>
 <%@ page import="org.silverpeas.core.util.SilverpeasList" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
@@ -69,7 +69,7 @@
 <c:set var="routingAddress" value="detailByUser.jsp?id=${id}&componentId=${componentId}&objectType=${objectType}&userId=${userId}&userName=${userName}"/>
 
 <%
-  final SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
+  final SimpleCache sessionCache = CacheAccessorProvider.getSessionCacheAccessor().getCache();
   final Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> ORDER_BIES = sessionCache
       .computeIfAbsent("statistic_readingControl_byUser_orderBies", Map.class, () -> {
         Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> mapping = new HashMap<>();

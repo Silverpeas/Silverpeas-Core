@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.text.MessageFormat.format;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -131,7 +131,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
   @SuppressWarnings("unchecked")
   private List<String> getUserSpecificIds(String lds, LDAPEntry groupEntry) {
-    final Set<String> processedGroups = getThreadCacheService().getCache().computeIfAbsent(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY, Set.class, HashSet::new);
+    final Set<String> processedGroups = getThreadCacheAccessor().getCache().computeIfAbsent(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY, Set.class, HashSet::new);
     final boolean isFirstCall = processedGroups.isEmpty();
     final List<String> users = new ArrayList<>();
     try {
@@ -164,7 +164,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
     } finally {
       if (isFirstCall) {
-        getThreadCacheService().getCache().remove(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY);
+        getThreadCacheAccessor().getCache().remove(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY);
       }
     }
     return users;

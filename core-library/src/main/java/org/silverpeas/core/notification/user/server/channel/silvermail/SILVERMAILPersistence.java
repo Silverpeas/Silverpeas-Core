@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.UserNotificationServerEvent;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY;
@@ -112,7 +112,7 @@ public class SILVERMAILPersistence {
    * @return a login as string.
    */
   private static String getUserLogin(long userId) {
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     final String cacheKey = CACHE_KEY + userId;
     String login = cache.get(cacheKey, String.class);
     if (login == null) {

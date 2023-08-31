@@ -25,7 +25,7 @@
 package org.silverpeas.web.directory.control;
 
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.web.directory.model.UserItem;
 
 import java.util.Collections;
@@ -43,7 +43,7 @@ import java.util.Set;
 public class DirectoryUserFullRequestCache {
 
   public static DirectoryUserFullRequestCache get() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .computeIfAbsent(DirectoryUserFullRequestCache.class.getName(),
             DirectoryUserFullRequestCache.class, DirectoryUserFullRequestCache::new);

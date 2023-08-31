@@ -31,8 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
@@ -83,8 +83,8 @@ public class VariablesManagementIT {
   public void setUpTest() {
     UserDetail user = new UserDetail();
     user.setId("26");
-    CacheServiceProvider.clearAllThreadCaches();
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
     OperationContext.fromUser(user);
   }
 

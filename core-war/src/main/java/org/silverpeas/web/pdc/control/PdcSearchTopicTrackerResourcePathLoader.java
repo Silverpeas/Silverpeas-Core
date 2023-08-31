@@ -26,7 +26,7 @@ package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.admin.component.model.ComponentBehavior;
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -57,7 +57,7 @@ class PdcSearchTopicTrackerResourcePathLoader {
   private final Map<Location, Optional<String>> locationPaths = new HashMap<>();
 
   static PdcSearchTopicTrackerResourcePathLoader get() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .computeIfAbsent(CACHE_KEY, PdcSearchTopicTrackerResourcePathLoader.class,
             PdcSearchTopicTrackerResourcePathLoader::new);

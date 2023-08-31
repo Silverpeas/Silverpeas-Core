@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -94,7 +94,7 @@ public class WebComponentManager {
 
     // If the request is already managed, then bypassing the treatment of this method. This
     // avoids to override the context of subcalls of HTTP servlet methods.
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     if (cache.get(WebComponentRequestContext.class.getName()) == null) {
 
       // Getting the manager associated to the type of the given resource.
@@ -330,7 +330,7 @@ public class WebComponentManager {
       T webComponentController, String path) throws Exception {
 
     // Retrieving the web component request context
-    R webComponentRequestContext = (R) CacheServiceProvider.getRequestCacheService().getCache()
+    R webComponentRequestContext = (R) CacheAccessorProvider.getThreadCacheAccessor().getCache()
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 

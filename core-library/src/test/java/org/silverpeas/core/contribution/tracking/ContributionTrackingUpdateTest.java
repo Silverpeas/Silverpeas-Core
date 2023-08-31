@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.component.service.DefaultSilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -78,8 +78,8 @@ class ContributionTrackingUpdateTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     context.initMocks();
     contributionSettings.put("contribution.modification.behavior.minor.componentNames", "kmelia");
   }

@@ -27,14 +27,14 @@ import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.util.ResourceLocator;
 
 /**
- * A service to handle a cache whose lifetime is over the whole application runtime.
+ * An accessor to a cache whose lifetime is over the whole application runtime.
  * @author mmoquillon
  */
-public class ApplicationCacheService implements CacheService {
+public class ApplicationCacheAccessor implements CacheAccessor {
 
   private Cache cache;
 
-  protected ApplicationCacheService() {
+  protected ApplicationCacheAccessor() {
 
   }
 
@@ -49,10 +49,5 @@ public class ApplicationCacheService implements CacheService {
       cache = new EhCache(nbMaxElements);
     }
     return cache;
-  }
-
-  @Override
-  public void clearAllCaches() {
-    getCache().clear();
   }
 }

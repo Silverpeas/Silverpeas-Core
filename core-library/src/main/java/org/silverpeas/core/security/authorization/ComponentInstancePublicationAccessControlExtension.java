@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.Base;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
@@ -85,7 +85,7 @@ public interface ComponentInstancePublicationAccessControlExtension {
    */
   @SuppressWarnings("serial")
   static ComponentInstancePublicationAccessControlExtension getByInstanceId(final String instanceId) {
-    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     final String cacheKey = ComponentInstancePublicationAccessControlExtension.class.getName() + "###" + instanceId;
 
     final Mutable<ComponentInstancePublicationAccessControlExtension> accessControlExtension =

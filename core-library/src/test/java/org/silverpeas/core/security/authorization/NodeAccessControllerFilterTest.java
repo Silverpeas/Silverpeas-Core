@@ -38,8 +38,8 @@ import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -235,7 +235,7 @@ class NodeAccessControllerFilterTest {
     private TestVerifyResults testVerifyResults;
 
     public void clear() {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       Mockito.reset(user, organizationController, nodeService);
       componentAccessController = mock(ComponentAccessControl.class);
       testInstance = new NodeAccessController(componentAccessController);
@@ -298,7 +298,7 @@ class NodeAccessControllerFilterTest {
           a -> ((Collection<String>) a.getArgument(0)).stream()
               .flatMap(i -> ALL_NODES.stream().filter(l -> l.getNodePK().getInstanceId().equals(i)))
               .collect(Collectors.toList()));
-      ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
     }
 
     public TestVerifyResults results() {

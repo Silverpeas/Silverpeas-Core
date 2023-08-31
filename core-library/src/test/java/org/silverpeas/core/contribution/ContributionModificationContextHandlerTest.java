@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.TestedBean;
 import org.silverpeas.core.util.StringUtil;
@@ -56,8 +56,8 @@ class ContributionModificationContextHandlerTest {
   @BeforeEach
   public void setup() {
     request = mock(HttpServletRequest.class);
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   @Test
@@ -124,7 +124,7 @@ class ContributionModificationContextHandlerTest {
         "{\"isMinor\":true}");
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertNoMinorMajorModificationDetected();
   }
 
@@ -136,7 +136,7 @@ class ContributionModificationContextHandlerTest {
         StringUtil.asBase64("{\"isMinor\":true}".getBytes()));
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertNoMinorMajorModificationDetected();
   }
 
@@ -196,7 +196,7 @@ class ContributionModificationContextHandlerTest {
         "{\"isMinor\":true}");
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertNoMinorMajorModificationDetected();
   }
 
@@ -208,7 +208,7 @@ class ContributionModificationContextHandlerTest {
         StringUtil.asBase64("{\"isMinor\":true}".getBytes()));
     ContributionOperationContextPropertyHandler.parseRequest(request);
     assertMinorModificationDetected();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertNoMinorMajorModificationDetected();
   }
 

@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
@@ -91,7 +91,7 @@ public class BasketSelectionUI {
    * @return true if it can be displayed, false otherwise.
    */
   public static boolean displayPutIntoBasketSelectionShortcut() {
-    final SimpleCache cache = CacheServiceProvider.getSessionCacheService().getCache();
+    final SimpleCache cache = CacheAccessorProvider.getSessionCacheAccessor().getCache();
     final String key = "displayPutIntoBasketSelectionShortcut@" + User.getCurrentUser().getId();
     return cache.computeIfAbsent(key, Boolean.class,
         BasketSelectionUI::computeDisplayPutIntoBasketSelectionShortcut);

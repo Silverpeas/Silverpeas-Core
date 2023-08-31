@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag;
@@ -93,7 +93,7 @@ public class NavigationContext<C extends WebComponentRequestContext> {
   public static <T extends WebComponentRequestContext> NavigationContext<T> get(T context) {
     String cacheKey = "NavigationContext@" + context.getComponentUriBase();
     SimpleCache sessionCache =
-        CacheServiceProvider.getSessionCacheService().getCache();
+        CacheAccessorProvider.getSessionCacheAccessor().getCache();
     NavigationContext<T> navigationContext =
         sessionCache.get(cacheKey, NavigationContext.class);
     if (navigationContext == null) {

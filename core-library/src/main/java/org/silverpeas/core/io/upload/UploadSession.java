@@ -25,7 +25,7 @@ package org.silverpeas.core.io.upload;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.StringUtil;
@@ -278,7 +278,7 @@ public class UploadSession {
    * @return an upload session instance if any, null otherwise.
    */
   private static UploadSession getSessionFromCache(String uploadSessionId) {
-    return CacheServiceProvider.getSessionCacheService().getCache()
+    return CacheAccessorProvider.getSessionCacheAccessor().getCache()
         .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSessionId, UploadSession.class);
   }
 
@@ -289,17 +289,17 @@ public class UploadSession {
    */
   @SuppressWarnings("unchecked")
   private static void registerSessionInCache(UploadSession uploadSession) {
-    Set<String> sessionIds = CacheServiceProvider.getSessionCacheService()
+    Set<String> sessionIds = CacheAccessorProvider.getSessionCacheAccessor()
         .getCache()
         .get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds == null) {
       sessionIds = new HashSet<>();
-      CacheServiceProvider.getSessionCacheService()
+      CacheAccessorProvider.getSessionCacheAccessor()
           .getCache()
           .put(SESSION_CACHE_KEY, sessionIds);
     }
     sessionIds.add(uploadSession.uploadSessionId);
-    CacheServiceProvider.getSessionCacheService().getCache()
+    CacheAccessorProvider.getSessionCacheAccessor().getCache()
         .put(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession.getId(), uploadSession);
   }
 
@@ -310,12 +310,12 @@ public class UploadSession {
    */
   @SuppressWarnings("unchecked")
   private static void removeSessionFromCache(UploadSession uploadSession) {
-    Set<String> sessionIds = CacheServiceProvider.getSessionCacheService()
+    Set<String> sessionIds = CacheAccessorProvider.getSessionCacheAccessor()
         .getCache()
         .get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds != null) {
       sessionIds.remove(uploadSession.getId());
-      CacheServiceProvider.getSessionCacheService().getCache()
+      CacheAccessorProvider.getSessionCacheAccessor().getCache()
           .remove(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession.getId());
     }
   }

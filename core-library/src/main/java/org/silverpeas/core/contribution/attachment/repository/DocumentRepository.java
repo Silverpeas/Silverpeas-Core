@@ -59,7 +59,7 @@ import java.util.*;
 
 import static java.util.Optional.*;
 import static javax.jcr.nodetype.NodeType.MIX_VERSIONABLE;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
@@ -1519,7 +1519,7 @@ public class DocumentRepository {
     }
 
     private static SimpleCache getThreadCache() {
-      return getThreadCacheService().getCache();
+      return getThreadCacheAccessor().getCache();
     }
   }
 

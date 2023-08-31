@@ -30,7 +30,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.io.File;
@@ -63,8 +63,8 @@ public class TemporaryWorkspaceTranslationTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     tempPath = new File(getTemporaryPath());
   }
 

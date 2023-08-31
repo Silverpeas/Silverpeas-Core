@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.export;
 
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.html.HtmlCleaner;
@@ -70,7 +70,7 @@ public class ExportServlet extends HttpServlet {
     ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     if (StringUtil.isDefined(name)) {
       // Retrieve ArrayPane data in session cache
-      SimpleCache cache = CacheServiceProvider.getSessionCacheService().getCache();
+      SimpleCache cache = CacheAccessorProvider.getSessionCacheAccessor().getCache();
       final List<ArrayColumn> columns =
           (List<ArrayColumn>) cache.get(name + ArrayPane.CACHE_COLUMNS_KEY_SUFFIX);
 

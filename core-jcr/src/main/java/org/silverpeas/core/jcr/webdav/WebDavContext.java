@@ -26,7 +26,7 @@ package org.silverpeas.core.jcr.webdav;
 
 import org.apache.jackrabbit.webdav.util.EncodeUtil;
 import org.silverpeas.core.cache.model.Cache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +60,7 @@ public class WebDavContext {
    * access a document by WebDAV.
    */
   public static void clearWebDavContext(final String token) {
-    getCacheService().remove(WEBDAV_JCR_URL_SUFFIX + token);
+    getCache().remove(WEBDAV_JCR_URL_SUFFIX + token);
   }
 
   /**
@@ -79,7 +79,7 @@ public class WebDavContext {
     // Cache the real path of the document in the JCR
     String webdavUrlSuffix =
         documentUrl.replaceFirst("^.*" + WEBDAV, "").replaceFirst("[^/]*$", "") + fileName;
-    getCacheService().put(WEBDAV_JCR_URL_SUFFIX + token, webdavUrlSuffix);
+    getCache().put(WEBDAV_JCR_URL_SUFFIX + token, webdavUrlSuffix);
 
     // Compute a small url for the WebDAV access of the document in the JCR.
     String webdavUrl =
@@ -109,7 +109,7 @@ public class WebDavContext {
       clearedWebdavUrl = clearedWebdavUrl.replace(WEBDAV + token, "/webdav");
       boolean webdavUrlContainsFileName = clearedWebdavUrl.matches(".*" + WEBDAV + ".+");
       clearedWebdavUrl = clearedWebdavUrl.replaceFirst("/webdav.*$", WEBDAV) +
-          getCacheService().get(WEBDAV_JCR_URL_SUFFIX + token, String.class);
+          getCache().get(WEBDAV_JCR_URL_SUFFIX + token, String.class);
       if (!webdavUrlContainsFileName) {
         clearedWebdavUrl = clearedWebdavUrl.replaceFirst("/[^/]*$", "");
         if (webDavUrl.endsWith("/")) {
@@ -158,7 +158,7 @@ public class WebDavContext {
     return token;
   }
 
-  private static Cache getCacheService() {
-    return CacheServiceProvider.getApplicationCacheService().getCache();
+  private static Cache getCache() {
+    return CacheAccessorProvider.getApplicationCacheAccessor().getCache();
   }
 }

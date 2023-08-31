@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -239,9 +239,9 @@ public abstract class RESTWebServiceTest {
       String sessionKey = authResponse.getHeaderString(UserPrivilegeValidation.HTTP_SESSIONKEY);
       SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
-      SessionCacheService cacheService =
-          (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-      cacheService.setCurrentSessionCache(sessionInfo.getCache());
+      SessionCacheAccessor cacheAccessor =
+          (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+      cacheAccessor.setCurrentSessionCache(sessionInfo.getCache());
 
       return sessionKey;
     }
