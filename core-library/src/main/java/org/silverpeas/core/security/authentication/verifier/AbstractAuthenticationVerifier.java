@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.MissingResourceException;
 import java.util.Optional;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * Common use or treatments in relation to user verifier.
@@ -87,7 +87,7 @@ class AbstractAuthenticationVerifier {
       return null;
     }
     final String cacheKey = cacheKey(credential.getLogin(), credential.getDomainId());
-    return getRequestCacheService().getCache().computeIfAbsent(cacheKey, User.class, () -> {
+    return getThreadCacheAccessor().getCache().computeIfAbsent(cacheKey, User.class, () -> {
         final User user = UserProvider.get().getUserByLoginAndDomainId(credential.getLogin(),
             credential.getDomainId());
         return Optional.ofNullable(user)
@@ -105,7 +105,7 @@ class AbstractAuthenticationVerifier {
   static void removeFromRequestCache(final User user) {
     if (user != null) {
       final String cacheKey = cacheKey(user.getLogin(), user.getDomainId());
-      getRequestCacheService().getCache().remove(cacheKey);
+      getThreadCacheAccessor().getCache().remove(cacheKey);
     }
   }
 

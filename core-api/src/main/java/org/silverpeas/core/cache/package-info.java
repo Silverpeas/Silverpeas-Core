@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /**
- * Provides an API to manage a common cache for the application.
+ * Provides an API to manage common caches in Silverpeas.
  * Please be careful about the use of cache especially on the key definition.
  */
 package org.silverpeas.core.cache;

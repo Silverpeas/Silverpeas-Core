@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
@@ -254,7 +254,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   @SuppressWarnings("unchecked")
   static <T> T computeDataUserSessionIfAbsent(final HttpServletRequest request, final String cacheKey,
       final Supplier<T> valueSupplier) {
-    final SimpleCache sessionCache = getSessionCacheService().getCache();
+    final SimpleCache sessionCache = getSessionCacheAccessor().getCache();
     if (request.getParameter("ajaxRequest") == null) {
       sessionCache.remove(cacheKey);
     }

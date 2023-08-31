@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.message;
 
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -64,11 +64,11 @@ import org.silverpeas.core.util.logging.SilverLogger;
 public class MessageManager {
 
   private static SimpleCache applicationCache =
-      CacheServiceProvider.getApplicationCacheService().getCache();
+      CacheAccessorProvider.getApplicationCacheAccessor().getCache();
 
   public static String initialize() {
     String registeredKey = applicationCache.add(new MessageContainer());
-    CacheServiceProvider.getRequestCacheService()
+    CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .put(MessageManager.class, registeredKey);
     return registeredKey;
@@ -78,7 +78,7 @@ public class MessageManager {
    * Clear out the thread cache the registered key referenced.
    */
   public static void destroy() {
-    CacheServiceProvider.getRequestCacheService().getCache().remove(MessageManager.class);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().remove(MessageManager.class);
   }
 
   public static void addListener(MessageListener listener) {
@@ -125,7 +125,7 @@ public class MessageManager {
   }
 
   public static String getRegistredKey() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(MessageManager.class, String.class);
   }

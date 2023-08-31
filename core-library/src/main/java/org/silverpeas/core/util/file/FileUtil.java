@@ -55,7 +55,7 @@ import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.MimeTypes.*;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -87,7 +87,7 @@ public class FileUtil {
 
     // Request caching in order to increase significantly the performance about file parsing
     String cacheKey = MIME_TYPE_CACHE_KEY_PREFIX + fileName;
-    String cachedMimeType = getRequestCacheService().getCache().get(cacheKey, String.class);
+    String cachedMimeType = getThreadCacheAccessor().getCache().get(cacheKey, String.class);
     if (StringUtil.isDefined(cachedMimeType)) {
       return cachedMimeType;
     }
@@ -95,7 +95,7 @@ public class FileUtil {
     String mimeType = computeMimeType(fileName);
 
     // The computed mime type is put into the request cache (performance)
-    getRequestCacheService().getCache().put(cacheKey, mimeType);
+    getThreadCacheAccessor().getCache().put(cacheKey, mimeType);
     return mimeType;
   }
 

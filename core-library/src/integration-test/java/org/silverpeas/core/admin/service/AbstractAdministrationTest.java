@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
@@ -202,7 +202,7 @@ public abstract class AbstractAdministrationTest {
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
     PersonalComponentRegistry.get().init();
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   @After

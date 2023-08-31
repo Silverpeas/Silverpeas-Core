@@ -26,8 +26,8 @@
 package org.silverpeas.core.web.rs;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.security.session.SessionInfo;
 
@@ -71,7 +71,7 @@ public interface WebAuthenticationValidation {
     if (currentUser != null) {
       MessageManager.setLanguage(currentUser.getUserPreferences().getLanguage());
       if (User.getCurrentRequester() == null && !session.isAnonymous()) {
-        ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
             .setCurrentSessionCache(session.getCache());
       }
     }

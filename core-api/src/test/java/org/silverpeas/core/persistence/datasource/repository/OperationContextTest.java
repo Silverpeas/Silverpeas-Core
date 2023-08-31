@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,8 +51,7 @@ public class OperationContextTest {
 
   @Before
   public void clearCacheData() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertThat(OperationContext.statesOf(IMPORT), is(false));
     assertThat(OperationContext.statesOf(EXPORT), is(false));
   }

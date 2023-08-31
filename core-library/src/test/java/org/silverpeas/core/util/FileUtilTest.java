@@ -29,7 +29,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileUtil;
@@ -55,8 +55,7 @@ class FileUtilTest {
 
   @BeforeEach
   public void cleanUPCaches() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   @BeforeEach
@@ -65,7 +64,7 @@ class FileUtilTest {
     if (rootFolder.exists()) {
       FileUtils.deleteQuietly(rootFolder);
       rootFolder =
-          new File(FileUtils.getTempDirectory(), "rootFolder_" + UUID.randomUUID().toString());
+          new File(FileUtils.getTempDirectory(), "rootFolder_" + UUID.randomUUID());
     }
     rootFolder.mkdirs();
     FileUtils.touch(new File(rootFolder, "atRoot.txt"));
@@ -89,7 +88,7 @@ class FileUtilTest {
         "/SubFolderB/SubFolderBSubFolderA/atSubFolderBSubFolderA_2.txt",
         "/SubFolderB/SubFolderBSubFolderA/sameName.txt"};
 
-    List<String> actualFiles = new ArrayList<String>();
+    List<String> actualFiles = new ArrayList<>();
     int substringIndex = rootFolder.getPath().length();
     for (File file : FileUtils.listFiles(rootFolder, FileFilterUtils.trueFileFilter(),
         FileFilterUtils.trueFileFilter())) {
@@ -235,7 +234,7 @@ class FileUtilTest {
             "/atSubFolderB_1.txt", "/atSubFolderBSubFolderA_1.txt", "/atSubFolderBSubFolderA_2.txt",
             "/sameName.txt"};
 
-    List<String> actualFiles = new ArrayList<String>();
+    List<String> actualFiles = new ArrayList<>();
     int substringIndex = rootFolder.getPath().length();
     for (File file : FileUtils.listFiles(rootFolder, FileFilterUtils.trueFileFilter(),
         FileFilterUtils.trueFileFilter())) {

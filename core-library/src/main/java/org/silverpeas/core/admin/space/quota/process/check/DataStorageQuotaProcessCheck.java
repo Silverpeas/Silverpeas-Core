@@ -56,7 +56,7 @@ import java.util.Set;
 
 import static org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset.from;
 import static org.silverpeas.core.admin.space.quota.process.check.SpaceDataStorageQuotaCountingOffset.from;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * @author Yohann Chastagnier
@@ -98,7 +98,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
       // Checking data storage quota on each space detected
       final Collection<SpaceInst> spaces = identifyHandledSpaces(processExecutionContext, fileHandler);
       final Map<String, SimpleQuotaCountingOffset> previousSpaceOffsets =
-          getRequestCacheService().getCache()
+          getThreadCacheAccessor().getCache()
           .computeIfAbsent(PREVIOUS_CACHE_KEY, Map.class, () -> new HashMap<>(spaces.size()));
       for (final SpaceInst space : spaces) {
         try {

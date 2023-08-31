@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -678,7 +678,7 @@ public class CalendarResource extends AbstractCalendarResource {
    */
   public CalendarEventEntity asEventWebEntity(CalendarEvent event) {
     assertEntityIsDefined(event.asCalendarComponent());
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
       entity = CalendarEventEntity

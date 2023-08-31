@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.service.UserSpaceAvailabilityChecker;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.TestManagedMock;
@@ -76,7 +76,7 @@ class SpaceAccessControllerFilterTest {
 
   @BeforeEach
   void setup() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     when(controller.getUserSpaceAvailabilityChecker(USER_ID)).thenReturn(checker);
     when(controller.getUserManageableSpaceIds(USER_ID)).thenReturn(new String[0]);
     user = mock(User.class);
@@ -131,7 +131,7 @@ class SpaceAccessControllerFilterTest {
     private SpaceAccessControllerFilterTest.TestVerifyResults testVerifyResults;
 
     public void clear() {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       Mockito.reset(user, controller);
       spaceAccessController = mock(SpaceAccessControl.class);
       testInstance = new SpaceAccessController();

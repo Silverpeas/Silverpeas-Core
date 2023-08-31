@@ -36,8 +36,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
@@ -126,7 +126,7 @@ public class SilverpeasJpaEntityRepositoryIT {
 
   @Before
   public void setup() {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     jpaEntityServiceTest = ServiceProvider.getSingleton(JpaEntityServiceTest.class);
     OperationContext.fromUser("0");
   }
@@ -562,7 +562,7 @@ public class SilverpeasJpaEntityRepositoryIT {
     // Putting a current requester for the next actions of this test.
     UserDetail user = new UserDetail();
     user.setId("400");
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(user);
     OperationContext.fromUser(user);
 

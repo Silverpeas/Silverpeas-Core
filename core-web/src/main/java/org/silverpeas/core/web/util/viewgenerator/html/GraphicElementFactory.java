@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -259,12 +259,12 @@ public class GraphicElementFactory implements Serializable {
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
-    CacheServiceProvider.getRequestCacheService().getCache()
+    CacheAccessorProvider.getThreadCacheAccessor().getCache()
         .put(REQUEST_EXTERNAL_STYLESHEET, externalStylesheet);
   }
 
   public String getExternalStylesheet() {
-    return CacheServiceProvider.getRequestCacheService().getCache()
+    return CacheAccessorProvider.getThreadCacheAccessor().getCache()
         .get(REQUEST_EXTERNAL_STYLESHEET, String.class);
   }
 
@@ -653,11 +653,11 @@ public class GraphicElementFactory implements Serializable {
   }
 
   public void setComponentIdForCurrentRequest(String componentId) {
-    CacheServiceProvider.getRequestCacheService().getCache().put(REQUEST_COMPONENT_ID, componentId);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().put(REQUEST_COMPONENT_ID, componentId);
   }
 
   public String getComponentIdOfCurrentRequest() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(REQUEST_COMPONENT_ID, String.class);
   }
@@ -675,26 +675,26 @@ public class GraphicElementFactory implements Serializable {
     final boolean isComponentMainPage = (requestURI.endsWith("/Main") && !requestURI.endsWith("/jsp/Main"))
         || request.getParameterAsBoolean("ComponentMainPage");
     final boolean isPortletMainPage = requestURI.toLowerCase().contains("/portlet");
-    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     cache.put(REQUEST_IS_SPACE_HOME_PAGE, isFromSpaceHomePage);
     cache.put(REQUEST_IS_COMPONENT_MAIN_PAGE, isComponentMainPage);
     cache.put(REQUEST_IS_PORTLET_MAIN_PAGE, isPortletMainPage);
   }
 
   public boolean isCurrentRequestFromSpaceHomepage() {
-    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+    return Boolean.TRUE.equals(CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(REQUEST_IS_SPACE_HOME_PAGE, Boolean.class));
   }
 
   public boolean isComponentMainPage() {
-    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+    return Boolean.TRUE.equals(CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(REQUEST_IS_COMPONENT_MAIN_PAGE, Boolean.class));
   }
 
   public boolean isPortletMainPage() {
-    return Boolean.TRUE.equals(CacheServiceProvider.getRequestCacheService()
+    return Boolean.TRUE.equals(CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(REQUEST_IS_PORTLET_MAIN_PAGE, Boolean.class));
   }
@@ -703,7 +703,7 @@ public class GraphicElementFactory implements Serializable {
    * @return the space identifier
    */
   public String getSpaceIdOfCurrentRequest() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(REQUEST_SPACE_ID, String.class);
   }
@@ -712,7 +712,7 @@ public class GraphicElementFactory implements Serializable {
    * @param spaceId the space identifier to set (full identifier with WA + number)
    */
   public void setSpaceIdForCurrentRequest(String spaceId) {
-    CacheServiceProvider.getRequestCacheService().getCache().put(REQUEST_SPACE_ID, spaceId);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().put(REQUEST_SPACE_ID, spaceId);
   }
 
   /**

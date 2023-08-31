@@ -28,7 +28,7 @@ package org.silverpeas.core;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -78,7 +78,7 @@ public class ApplicationServiceProvider {
    */
   public Optional<ApplicationService> getApplicationServiceById(
       final String appId) {
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     String appName = SilverpeasComponentInstance.getComponentName(appId);
     if (StringUtil.isNotDefined(appName)) {
       return Optional.empty();

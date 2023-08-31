@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 import static java.text.MessageFormat.format;
 import static java.util.Optional.empty;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.WebdavServiceProvider.getWebdavService;
 import static org.silverpeas.core.util.file.FileUtil.getMimeType;
 
@@ -152,7 +152,7 @@ public class WebdavWbeFile extends WbeFile {
   }
 
   private SimpleDocument getDocument() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     final String key = DOC_CACHE_KEY_PREFIX + docId;
     return cache.computeIfAbsent(key, SimpleDocument.class, () -> Optional.ofNullable(
         AttachmentService.get().searchDocumentById(new SimpleDocumentPK(docId), docLanguage))
@@ -161,7 +161,7 @@ public class WebdavWbeFile extends WbeFile {
   }
 
   private WebdavContentDescriptor getContentDescriptor() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     final String key = DESC_CACHE_KEY_PREFIX + docId;
     return cache.computeIfAbsent(key, WebdavContentDescriptor.class,
         () -> getWebdavContentDescriptor().orElseThrow(
@@ -177,7 +177,7 @@ public class WebdavWbeFile extends WbeFile {
   }
 
   private void clearCaches() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     Stream.of(DOC_CACHE_KEY_PREFIX, DESC_CACHE_KEY_PREFIX)
         .map(p -> p + docId)
         .forEach(cache::remove);

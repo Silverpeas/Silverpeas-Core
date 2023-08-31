@@ -28,8 +28,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.test.extension.EnableSilverTestEnv;
 import org.silverpeas.core.test.extension.RequesterProvider;
@@ -58,9 +58,9 @@ class SelectionBasketTest {
   @BeforeEach
   void prepareSessionCache() {
     User user = User.getCurrentRequester();
-    SessionCacheService cacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    cacheService.newSessionCache(user);
+    SessionCacheAccessor sessionCacheAccessor =
+        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+    sessionCacheAccessor.newSessionCache(user);
   }
 
   @Test

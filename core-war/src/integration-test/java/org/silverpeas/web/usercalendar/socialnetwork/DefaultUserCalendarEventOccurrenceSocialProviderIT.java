@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.DefaultPersonalizationService;
@@ -117,7 +117,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProviderIT {
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     WAComponentRegistry.get().init();
     PersonalComponentRegistry.get().init();
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   /*

@@ -25,7 +25,7 @@ package org.silverpeas.core.web.filter;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -333,7 +333,7 @@ public class MassiveWebSecurityFilter implements Filter {
    */
   private synchronized Pattern getSqlTableNamesPattern() {
     Pattern pattern = (sqlSelectPatternInspectDeeplyCacheKey != null) ?
-        CacheServiceProvider.getApplicationCacheService()
+        CacheAccessorProvider.getApplicationCacheAccessor()
             .getCache()
             .get(sqlSelectPatternInspectDeeplyCacheKey, Pattern.class) :
         null;
@@ -349,7 +349,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
       pattern = Pattern.compile("(?i)" + sbPattern);
       sqlSelectPatternInspectDeeplyCacheKey =
-          CacheServiceProvider.getApplicationCacheService().getCache().add(pattern);
+          CacheAccessorProvider.getApplicationCacheAccessor().getCache().add(pattern);
     }
     return pattern;
   }

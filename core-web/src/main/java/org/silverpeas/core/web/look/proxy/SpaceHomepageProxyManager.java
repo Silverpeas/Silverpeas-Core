@@ -35,7 +35,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 
 /**
  * The space homepage proxy allows to set a {@link SpaceHomepageProxy} into context of a request.
@@ -75,7 +75,7 @@ public class SpaceHomepageProxyManager {
   public String setParameterForUrlRedirect(final String url) {
     if (spaceHomePageProxy != null && spaceHomePageProxy.isEffective()) {
       final String cacheKey = UUID.randomUUID().toString();
-      getSessionCacheService().getCache().put(cacheKey, spaceHomePageProxy);
+      getSessionCacheAccessor().getCache().put(cacheKey, spaceHomePageProxy);
       return UriBuilder.fromUri(url).queryParam(URL_PARAM_NAME, cacheKey).build().toString();
     }
     return url;
@@ -98,7 +98,7 @@ public class SpaceHomepageProxyManager {
   public SpaceHomepageProxy getProxyOf(final SpaceInst space) {
     if (spaceHomePageProxy == null) {
       spaceHomePageProxy = Optional.ofNullable(request.getParameter(URL_PARAM_NAME))
-          .map(k -> getSessionCacheService().getCache().remove(k, SpaceHomepageProxy.class))
+          .map(k -> getSessionCacheAccessor().getCache().remove(k, SpaceHomepageProxy.class))
           .orElse(null);
     }
     if (spaceHomePageProxy == null || !spaceHomePageProxy.getSpace().equals(space)) {
