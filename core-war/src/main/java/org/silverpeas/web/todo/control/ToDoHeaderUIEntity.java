@@ -26,7 +26,7 @@ package org.silverpeas.web.todo.control;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.personalorganizer.model.Attendee;
@@ -94,7 +94,7 @@ public class ToDoHeaderUIEntity extends SelectableUIEntity<ToDoHeader> {
     if (isDefined(getData().getExternalId())) {
       final String cacheKey =
           getClass().getSimpleName() + "###comp###" + getData().getComponentId();
-      final String componentPath = CacheServiceProvider.getRequestCacheService().getCache()
+      final String componentPath = CacheAccessorProvider.getThreadCacheAccessor().getCache()
           .computeIfAbsent(cacheKey, String.class, () -> {
             final StringBuilder subSb = new StringBuilder();
             subSb.append(getData().getComponentId());
@@ -172,7 +172,7 @@ public class ToDoHeaderUIEntity extends SelectableUIEntity<ToDoHeader> {
    */
   private String getUserLabelById(final String id) {
     final String cacheKey = getClass().getSimpleName() + "###user-label###" + id;
-    return CacheServiceProvider.getRequestCacheService().getCache()
+    return CacheAccessorProvider.getThreadCacheAccessor().getCache()
         .computeIfAbsent(cacheKey, String.class, () -> {
           User user = getUserByIdFromCache(getData().getDelegatorId());
           if (user != null) {

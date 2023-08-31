@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ArrayUtil;
@@ -416,7 +416,7 @@ public abstract class AbstractWindow implements Window {
       result.append("<div class=\"sp_goToTop\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
           "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     } else {
-      SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+      SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
       Object includePopupResizeJsDone = cache.get("@includePopupResizeJsDone@");
       if (includePopupResizeJsDone == null) {
         StringBuilder popupResizeJs = new StringBuilder();

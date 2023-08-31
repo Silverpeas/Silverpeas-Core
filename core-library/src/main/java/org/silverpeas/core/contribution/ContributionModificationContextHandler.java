@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Optional;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.StringUtil.fromBase64;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -85,7 +85,7 @@ public class ContributionModificationContextHandler
     final String parameter = request.getParameter(HTTP_PARAM);
     final String header = request.getHeader(HTTP_PARAM);
     final Context context = getMergedContext(parameter, header);
-    getRequestCacheService().getCache().put(CACHE_KEY, context);
+    getThreadCacheAccessor().getCache().put(CACHE_KEY, context);
   }
 
   /**
@@ -138,11 +138,11 @@ public class ContributionModificationContextHandler
   }
 
   private Optional<Context> getContext() {
-    return Optional.ofNullable(getRequestCacheService().getCache().get(CACHE_KEY, Context.class));
+    return Optional.ofNullable(getThreadCacheAccessor().getCache().get(CACHE_KEY, Context.class));
   }
 
   private Context getOrCreateContext() {
-    return getRequestCacheService().getCache()
+    return getThreadCacheAccessor().getCache()
         .computeIfAbsent(CACHE_KEY, Context.class, Context::new);
   }
 

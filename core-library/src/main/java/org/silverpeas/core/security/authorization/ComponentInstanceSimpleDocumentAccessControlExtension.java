@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authorization;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.annotation.Base;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -83,7 +83,7 @@ public interface ComponentInstanceSimpleDocumentAccessControlExtension {
    */
   @SuppressWarnings("serial")
   static ComponentInstanceSimpleDocumentAccessControlExtension getByInstanceId(final String instanceId) {
-    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     final String cacheKey = ComponentInstanceSimpleDocumentAccessControlExtension.class.getName() + "###" + instanceId;
 
     final Mutable<ComponentInstanceSimpleDocumentAccessControlExtension> accessControlExtension =

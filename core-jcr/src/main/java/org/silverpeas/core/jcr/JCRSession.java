@@ -28,7 +28,7 @@ package org.silverpeas.core.jcr;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.jcr.security.JCRUserCredentialsProvider;
@@ -103,7 +103,7 @@ public class JCRSession implements Session, Closeable {
    * @return optionally a {@link JCRSession} instance.
    */
   private static Optional<JCRSession> getCurrent() {
-    SimpleCache cache = CacheServiceProvider.getThreadCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     return Optional.ofNullable(cache.get(SESSION_KEY_CACHE, JCRSession.class));
   }
 
@@ -390,7 +390,7 @@ public class JCRSession implements Session, Closeable {
   @Override
   public void logout() {
     if (opened <= 1) {
-      SimpleCache cache = CacheServiceProvider.getThreadCacheService().getCache();
+      SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
       cache.remove(SESSION_KEY_CACHE);
       session.logout();
     } else {
@@ -453,7 +453,7 @@ public class JCRSession implements Session, Closeable {
    */
   private JCRSession open() {
     getCurrent().ifPresentOrElse(s -> opened++, () -> {
-      SimpleCache cache = CacheServiceProvider.getThreadCacheService().getCache();
+      SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
       cache.put(SESSION_KEY_CACHE, this);
     });
     return this;

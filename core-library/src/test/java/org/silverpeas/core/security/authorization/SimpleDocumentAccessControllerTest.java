@@ -33,8 +33,8 @@ import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -89,7 +89,7 @@ class SimpleDocumentAccessControllerTest {
     when(checker.resetWithCacheSizeOf(any(Integer.class))).thenReturn(checker);
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
     testContext = new TestContext();
     testContext.clear();
   }
@@ -1904,7 +1904,7 @@ class SimpleDocumentAccessControllerTest {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       reset(user, componentAccessController, organizationController, nodeAccessController,
           publicationService);
       final PublicationAccessControl publicationAccessController =
@@ -2063,7 +2063,7 @@ class SimpleDocumentAccessControllerTest {
         }
         return allLocations;
       });
-      ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
     }
   }
 

@@ -25,7 +25,7 @@
 package org.silverpeas.web.pdcsubscription.control;
 
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.subscription.SubscriptionContributionType;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionFactory;
@@ -64,7 +64,7 @@ public class SubscriptionCategoryWebManager {
    */
   @SuppressWarnings("unchecked")
   List<SubscriptionCategory> getCategories(final PdcSubscriptionSessionController ctrl) {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .computeIfAbsent(CATEGORY_LIST_CACHE_KEY, List.class, () -> loadCategories(ctrl));
   }

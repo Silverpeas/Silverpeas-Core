@@ -35,8 +35,8 @@ import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.test.unit.UnitTest;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.TestManagedMock;
@@ -185,7 +185,7 @@ class ComponentAccessControllerFilterTest {
     private TestVerifyResults testVerifyResults;
 
     public void clear() {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       Mockito.reset(user, organizationController);
       componentAccessController = mock(ComponentAccessControl.class);
       testInstance = new ComponentAccessController(organizationController);
@@ -230,7 +230,7 @@ class ComponentAccessControllerFilterTest {
       });
       when(organizationController.getAvailableComponentsByUser(anyString()))
           .thenAnswer(a -> Arrays.asList(KMELIA_38, KMELIA_83));
-      ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
     }
 
     public TestVerifyResults results() {

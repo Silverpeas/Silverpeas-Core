@@ -27,7 +27,7 @@ package org.silverpeas.core.web.http;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
@@ -83,7 +83,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return an HttpRequest instance decorating the specified request.
    */
   public static HttpRequest decorate(final HttpServletRequest request) {
-    CacheServiceProvider.getRequestCacheService()
+    CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .put(SECURE_PROPERTY, request.isSecure());
     return request instanceof HttpRequest ? (HttpRequest) request : new HttpRequest(request);
@@ -104,7 +104,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return true of the current HTTP request is secure, false otherwise.
    */
   public static boolean isCurrentRequestSecure() {
-    Boolean secure = CacheServiceProvider.getRequestCacheService()
+    Boolean secure = CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(SECURE_PROPERTY, Boolean.class);
     if (secure == null) {

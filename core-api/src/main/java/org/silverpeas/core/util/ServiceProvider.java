@@ -26,6 +26,7 @@ package org.silverpeas.core.util;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.cache.service.ThreadCacheAccessor;
 
 import javax.inject.Named;
 import java.lang.annotation.Annotation;
@@ -33,7 +34,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * A provider of Silverpeas services such as repositories, controllers, transactional services, and
@@ -111,7 +112,7 @@ public final class ServiceProvider {
    * </p>
    * <p>
    *   The advantage of this method over {@link #getService(Class, Annotation...)} is that
-   *   {@link org.silverpeas.core.cache.service.ThreadCacheService} is used in order to perform 
+   *   {@link ThreadCacheAccessor} is used in order to perform
    *   only one time the search into CDI containers per thread execution.
    * </p>
    * @param type the type of the bean.
@@ -127,7 +128,7 @@ public final class ServiceProvider {
     for (final Annotation qualifier : qualifiers) {
       cacheKey.append(":").append(qualifier.annotationType().getName());
     }
-    return getThreadCacheService().getCache().computeIfAbsent(cacheKey.toString(), type,
+    return getThreadCacheAccessor().getCache().computeIfAbsent(cacheKey.toString(), type,
         () -> ServiceProvider.getService(type, qualifiers));
   }
 
@@ -165,7 +166,7 @@ public final class ServiceProvider {
    * </p>
    * <p>
    *   The advantage of this method over {@link #getService(String)} is that
-   *   {@link org.silverpeas.core.cache.service.ThreadCacheService} is used in order to perform 
+   *   {@link ThreadCacheAccessor} is used in order to perform
    *   only one time the search into CDI containers per thread execution.
    * </p>
    * @param name the name of the bean.
@@ -176,7 +177,7 @@ public final class ServiceProvider {
    */
   @SuppressWarnings("unchecked")
   public static <T> T getSingleton(String name) {
-    return (T) getThreadCacheService().getCache()
+    return (T) getThreadCacheAccessor().getCache()
         .computeIfAbsent(CACHE_KEY_PREFIX + name, Object.class,
             () -> ServiceProvider.getService(name));
   }

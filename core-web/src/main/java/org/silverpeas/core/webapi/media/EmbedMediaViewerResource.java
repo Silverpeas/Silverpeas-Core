@@ -49,7 +49,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.nio.file.Paths;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.viewer.ResourceViewProvider.getAuthorizedResourceView;
 
@@ -87,7 +87,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
       getHttpServletRequest().setAttribute("contentUrl", getUri().getRequestUriBuilder().path("content").build());
       setCommonRequestViewerAttributes(resource);
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
-      ((Cache) getApplicationCacheService().getCache()).put(cacheKey, true, 10, 0);
+      ((Cache) getApplicationCacheAccessor().getCache()).put(cacheKey, true, 10, 0);
       return new View("/media/jsp/pdf/viewer.jsp");
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -108,7 +108,7 @@ public class EmbedMediaViewerResource extends RESTWebService {
       @QueryParam("language") final String language) {
     try {
       final String cacheKey = PDF_VIEWER_CACHE_PREFIX + documentId + "@" + language;
-      final boolean playerAccessed = getApplicationCacheService().getCache().remove(cacheKey) != null;
+      final boolean playerAccessed = getApplicationCacheAccessor().getCache().remove(cacheKey) != null;
       if (!playerAccessed) {
         return Response.seeOther(getUri().getAbsoluteWebResourcePathBuilder()
                                          .path("pdf")

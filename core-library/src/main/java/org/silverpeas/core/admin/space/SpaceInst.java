@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getDataStorageSpaceQuotaService;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -659,7 +659,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return the componentSpaceQuota
    */
   public Quota getComponentSpaceQuota() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     return cache.computeIfAbsent(QUOTA_COMPONENT_PREFIX_KEY + getLocalId(), Quota.class, () -> {
       try {
         return getComponentSpaceQuotaService().get(ComponentSpaceQuotaKey.from(this));
@@ -670,7 +670,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public void clearComponentSpaceQuotaCache() {
-    getRequestCacheService().getCache().remove(QUOTA_COMPONENT_PREFIX_KEY + getLocalId());
+    getThreadCacheAccessor().getCache().remove(QUOTA_COMPONENT_PREFIX_KEY + getLocalId());
   }
 
   /**
@@ -687,7 +687,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return the componentSpaceQuota
    */
   private Quota getReachedComponentSpaceQuota() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     return cache.computeIfAbsent(QUOTA_COMPONENT_REACHED_PREFIX_KEY + getLocalId(), Quota.class,
         () -> getComponentSpaceQuotaService()
             .getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey.from(this)));
@@ -717,7 +717,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return the dataStorageQuota
    */
   public Quota getDataStorageQuota() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     return cache.computeIfAbsent(QUOTA_STORAGE_PREFIX_KEY + getLocalId(), Quota.class, () -> {
       try {
         return getDataStorageSpaceQuotaService().get(DataStorageSpaceQuotaKey.from(this));
@@ -728,7 +728,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public void clearDataStorageQuotaCache() {
-    getRequestCacheService().getCache().remove(QUOTA_STORAGE_PREFIX_KEY + getLocalId());
+    getThreadCacheAccessor().getCache().remove(QUOTA_STORAGE_PREFIX_KEY + getLocalId());
   }
 
   /**
@@ -745,7 +745,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return the dataStorageQuota
    */
   private Quota getReachedDataStorageQuota() {
-    final SimpleCache cache = getRequestCacheService().getCache();
+    final SimpleCache cache = getThreadCacheAccessor().getCache();
     return cache.computeIfAbsent(QUOTA_STORAGE_REACHED_PREFIX_KEY + getLocalId(), Quota.class,
         () -> getDataStorageSpaceQuotaService()
             .getQuotaReachedFromSpacePath(DataStorageSpaceQuotaKey.from(this)));

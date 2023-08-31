@@ -26,11 +26,10 @@ package org.silverpeas.core.test.jcr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.attachment.process.SimpleDocumentDummyHandledFileConverter;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
-import org.silverpeas.core.jcr.JCRSession;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.unit.extention.SettingBundleStub;
@@ -67,7 +66,7 @@ public abstract class JcrIntegrationIT {
 
   @Before
   public void setup() throws Exception {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     ServiceProvider.getService(SimpleDocumentDummyHandledFileConverter.class).init();
     attachmentSettings = new SettingBundleStub(AttachmentSettings.class, "settings");
     attachmentSettings.beforeEach(null);

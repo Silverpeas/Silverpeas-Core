@@ -33,8 +33,8 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.unit.extention.TestManagedBeans;
@@ -91,7 +91,7 @@ public abstract class WebComponentRequestRouterTest {
     user = new UserDetail();
     user.setId("400");
     WebComponentManager.managedWebComponentRouters.clear();
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   private OrganizationController getOrganisationController() {
@@ -234,15 +234,15 @@ public abstract class WebComponentRequestRouterTest {
 
     @SuppressWarnings("unchecked")
     public TestResult<R> perform() throws Exception {
-      SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
-      CacheServiceProvider.getRequestCacheService().clearAllCaches();
+      SimpleCache sessionCache = CacheAccessorProvider.getSessionCacheAccessor().getCache();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       if (sessionCache != null) {
         // Session cache is not trashed
-        ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
+        ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).setCurrentSessionCache(
             sessionCache);
       } else {
         // Putting a current requester for the next actions of this test.
-        ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+        ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
       }
 
       WebComponentRequestRouter<?, ?> routerInstance =
@@ -262,7 +262,7 @@ public abstract class WebComponentRequestRouterTest {
         routerInstance.doDelete(
             mockRequest("/componentName26/" + suffixPath, controller.highestUserRole), response);
       }
-      R requestContext = (R) CacheServiceProvider.getRequestCacheService()
+      R requestContext = (R) CacheAccessorProvider.getThreadCacheAccessor()
           .getCache()
           .get(WebComponentRequestContext.class.getName());
       assertThat(requestContext, notNullValue());

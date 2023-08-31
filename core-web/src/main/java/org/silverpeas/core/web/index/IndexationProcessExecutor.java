@@ -25,7 +25,7 @@ package org.silverpeas.core.web.index;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.cache.model.Cache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -60,7 +60,7 @@ public class IndexationProcessExecutor {
    */
   @SuppressWarnings("unchecked")
   public boolean isCurrentExecution() {
-    final Cache cache = CacheServiceProvider.getApplicationCacheService().getCache();
+    final Cache cache = CacheAccessorProvider.getApplicationCacheAccessor().getCache();
     Pair<IndexationProcess, Future<Void>> process =
         cache.get(INDEXATION_PROCESS_EXECUTOR_KEY, Pair.class);
     return process != null && !process.getRight().isDone();
@@ -72,7 +72,7 @@ public class IndexationProcessExecutor {
    */
   @SuppressWarnings({"unchecked", "WeakerAccess", "unused"})
   public void stopCurrentExecutionIfAny() {
-    final Cache cache = CacheServiceProvider.getApplicationCacheService().getCache();
+    final Cache cache = CacheAccessorProvider.getApplicationCacheAccessor().getCache();
     Pair<IndexationProcess, Future<Void>> process =
         cache.get(INDEXATION_PROCESS_EXECUTOR_KEY, Pair.class);
     final Future<Void> task = (process != null) ? process.getRight() : null;
@@ -93,7 +93,7 @@ public class IndexationProcessExecutor {
    * @param indexationProcess the indexation process to execute.
    */
   public void execute(IndexationProcess indexationProcess) {
-    final Cache cache = CacheServiceProvider.getApplicationCacheService().getCache();
+    final Cache cache = CacheAccessorProvider.getApplicationCacheAccessor().getCache();
     try {
       if (isCurrentExecution()) {
         SilverLogger.getLogger(this).warn(

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +50,7 @@ public class UIUserCacheTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     aUser = mock(User.class);
     when(aUser.getId()).thenReturn(USER_ID);
     when(aUser.getFirstName()).thenReturn("Yo");

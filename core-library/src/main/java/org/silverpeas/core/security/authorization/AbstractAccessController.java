@@ -103,7 +103,7 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     cacheKey.append("@#@").append("OPERATIONS")
         .append(String.join("|", orderedOperations.stream()
             .map(o -> Objects.toString(o, StringUtil.EMPTY))
-            .collect(Collectors.toSet())));
+            .collect(Collectors.toList())));
     return cacheKey.toString();
   }
 }

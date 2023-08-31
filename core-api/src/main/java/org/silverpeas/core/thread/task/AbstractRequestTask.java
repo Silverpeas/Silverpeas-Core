@@ -24,7 +24,7 @@
 package org.silverpeas.core.thread.task;
 
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.concurrent.Callable;
@@ -78,7 +78,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
     // The loop condition must be verified on a private attribute of run method (not on the static
     // running attribute) in order to avoid concurrent access.
     while (currentRequest != null) {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
 
       /*
        * Each request is processed out of the synchronized block so the others threads (which put

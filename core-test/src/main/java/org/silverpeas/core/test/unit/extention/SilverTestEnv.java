@@ -36,7 +36,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.test.unit.TestBeanContainer;
 import org.silverpeas.core.test.util.MavenTestEnv;
@@ -134,7 +134,7 @@ public class SilverTestEnv
   public void postProcessTestInstance(final Object testInstance, final ExtensionContext context)
       throws Exception {
     reset(TestBeanContainer.getMockedBeanContainer());
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     mockCommonBeans(testInstance);
 
     SystemProperty[] systemProperties =

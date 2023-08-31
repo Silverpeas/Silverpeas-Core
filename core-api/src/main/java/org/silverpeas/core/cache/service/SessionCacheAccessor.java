@@ -27,14 +27,14 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
- * Service to manage session caches.
+ * Accessor to a session scoped cache.
  * <p>
  * A session cache is a cache whose lifetime span over the session of a user in Silverpeas. As
  * such,
  * a session cache belongs to a given user and should be initialized at the user session opening.
  * @author mmoquillon
  */
-public class SessionCacheService implements CacheService {
+public class SessionCacheAccessor implements CacheAccessor {
 
   private static final String CURRENT_REQUESTER_KEY = User.class.getName() + "_CURRENT_REQUESTER";
   private static final String CURRENT_SESSION_KEY = "@SessionCache@";
@@ -65,7 +65,7 @@ public class SessionCacheService implements CacheService {
       throw new IllegalArgumentException(
           "Attempt to set a non session cache as the current session cache");
     }
-    CacheServiceProvider.getRequestCacheService().getCache().put(CURRENT_SESSION_KEY, sessionCache);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().put(CURRENT_SESSION_KEY, sessionCache);
   }
 
   /**
@@ -73,7 +73,7 @@ public class SessionCacheService implements CacheService {
    * @return the current session cache.
    */
   public SimpleCache getCurrentSessionCache() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(CURRENT_SESSION_KEY, InMemoryCache.class);
   }
@@ -96,17 +96,11 @@ public class SessionCacheService implements CacheService {
   /**
    * Gets the cache mapped with the current user session.
    * @return the current session cache.
-   * @see SessionCacheService#getCurrentSessionCache()
+   * @see SessionCacheAccessor#getCurrentSessionCache()
    */
   @SuppressWarnings("unchecked")
   @Override
   public SimpleCache getCache() {
     return getCurrentSessionCache();
-  }
-
-  @Override
-  public void clearAllCaches() {
-    throw new UnsupportedOperationException(
-        "clearing explicitly all session caches isn't supported");
   }
 }

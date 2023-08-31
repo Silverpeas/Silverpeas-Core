@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 
 import java.util.Optional;
 
@@ -59,7 +59,7 @@ public class SilverpeasComponentInstanceRoleProvider {
    */
   public static SilverpeasRole getHighestOfCurrentUserOn(String componentInstanceId) {
     String cacheKey = HIGHEST_USER_ROLE_PREFIX + componentInstanceId;
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     SilverpeasRole highestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
     if (highestOfCurrentUser == null) {
       Optional<SilverpeasComponentInstance> silverpeasComponentInstance =

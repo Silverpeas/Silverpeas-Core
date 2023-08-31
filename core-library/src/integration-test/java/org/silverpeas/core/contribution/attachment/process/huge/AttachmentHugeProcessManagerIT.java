@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.thread.ManagedThreadPool;
@@ -81,7 +81,7 @@ public class AttachmentHugeProcessManagerIT {
 
   @Before
   public void setup() throws Exception {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertThat(manager.isOneRunningOnInstance(APP_A.getInstanceId()), is(false));
     assertThat(manager.isOneRunningOnInstance(PK_B.getInstanceId()), is(false));
     assertThat(manager.isOneRunningOnInstance(REF_C.getInstanceId()), is(false));

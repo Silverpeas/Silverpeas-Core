@@ -29,7 +29,7 @@ import org.apache.jackrabbit.server.CredentialsProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserReference;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.jcr.security.JCRUserCredentialsProvider;
 import org.silverpeas.core.jcr.security.WebDavAccessContext;
 import org.silverpeas.core.security.token.exception.TokenException;
@@ -60,7 +60,7 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
     final WebDavContext webdavContext = WebDavContext.getWebDavContext(request.getPathInfo());
     final String accessToken = webdavContext.getToken();
     if (!accessToken.isEmpty()) {
-      User user = CacheServiceProvider.getApplicationCacheService()
+      User user = CacheAccessorProvider.getApplicationCacheAccessor()
           .getCache()
           .get(accessToken, User.class);
       if (user != null) {

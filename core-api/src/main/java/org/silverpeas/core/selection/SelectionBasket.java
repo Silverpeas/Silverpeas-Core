@@ -25,7 +25,7 @@
 package org.silverpeas.core.selection;
 
 import org.silverpeas.core.SilverpeasResource;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 
 import java.io.Serializable;
 import java.util.List;
@@ -61,7 +61,7 @@ public class SelectionBasket implements Serializable {
    * user.
    */
   public static SelectionBasket get() {
-    return CacheServiceProvider.getSessionCacheService()
+    return CacheAccessorProvider.getSessionCacheAccessor()
         .getCache()
         .computeIfAbsent(CACHE_KEY, SelectionBasket.class, SelectionBasket::new);
   }

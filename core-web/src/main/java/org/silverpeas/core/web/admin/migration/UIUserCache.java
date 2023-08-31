@@ -26,7 +26,7 @@ package org.silverpeas.core.web.admin.migration;
 
 import org.silverpeas.core.admin.user.model.User;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * Handles a cache of user dedicated to the UI.<br>
@@ -48,7 +48,7 @@ public class UIUserCache {
    */
   public static User getById(final String id) {
     final String cacheKey = CACHE_KEY_PREFIX + id;
-    return getRequestCacheService().getCache()
+    return getThreadCacheAccessor().getCache()
         .computeIfAbsent(cacheKey, User.class, () -> id != null ? User.getById(id) : null);
   }
 }

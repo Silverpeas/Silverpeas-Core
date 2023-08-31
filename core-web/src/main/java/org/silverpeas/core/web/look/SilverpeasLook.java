@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -171,7 +171,7 @@ public class SilverpeasLook {
 
   @SuppressWarnings("unchecked")
   private List<SpaceInstLight> getCachedSpaceReversedPath(final String spaceId) {
-    return getRequestCacheService().getCache().computeIfAbsent(REVERSED_SPACE_PATH_CACHE_PREFIX + spaceId, List.class, () -> {
+    return getThreadCacheAccessor().getCache().computeIfAbsent(REVERSED_SPACE_PATH_CACHE_PREFIX + spaceId, List.class, () -> {
       final List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
       Collections.reverse(path);
       return path;

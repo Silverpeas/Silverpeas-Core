@@ -25,7 +25,7 @@
 package org.silverpeas.core.workflow.engine.user;
 
 import org.mockito.invocation.InvocationOnMock;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.unit.JpaMocker;
 import org.silverpeas.core.test.unit.TestBeanContainerInjector;
@@ -64,7 +64,7 @@ public class TestContext {
 
   public void init() {
     try {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       mockUserManager();
       mockReplacementPersistence();
     } catch (Exception e) {

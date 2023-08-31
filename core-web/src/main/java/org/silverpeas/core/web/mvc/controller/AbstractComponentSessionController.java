@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -314,13 +314,13 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   public Collection<SilverpeasRole> getSilverpeasUserRoles() {
     String currentKey = getComponentId() + "_user_roles";
     Collection<SilverpeasRole> roles =
-        (Collection<SilverpeasRole>) CacheServiceProvider.getRequestCacheService()
+        (Collection<SilverpeasRole>) CacheAccessorProvider.getThreadCacheAccessor()
             .getCache()
             .get(currentKey);
     if (roles == null) {
       roles = SilverpeasRole.fromStrings(context.getCurrentProfile());
       roles.remove(SilverpeasRole.MANAGER);
-      CacheServiceProvider.getRequestCacheService().getCache().put(currentKey, roles);
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().put(currentKey, roles);
     }
     return roles;
   }

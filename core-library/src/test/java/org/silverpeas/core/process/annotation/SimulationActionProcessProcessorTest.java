@@ -31,7 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
@@ -72,7 +72,7 @@ class SimulationActionProcessProcessorTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   @DisplayName("Process is executed without any simulation when no source and no target specified")
@@ -269,7 +269,7 @@ class SimulationActionProcessProcessorTest {
   }
 
   private boolean isSimulationProcessPerformed() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(SIMULATION_PROCESS_PERFORMED) != null;
   }

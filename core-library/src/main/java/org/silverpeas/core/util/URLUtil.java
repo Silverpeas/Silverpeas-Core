@@ -47,8 +47,8 @@ import java.util.regex.Pattern;
 
 import static java.time.ZoneId.systemDefault;
 import static java.time.temporal.ChronoField.*;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
 import static org.silverpeas.core.util.StringUtil.*;
 
@@ -122,11 +122,11 @@ public class URLUtil {
   }
 
   private static Cache getAppCache() {
-    return getApplicationCacheService().getCache();
+    return getApplicationCacheAccessor().getCache();
   }
 
   private static SimpleCache getRequestCache() {
-    return getRequestCacheService().getCache();
+    return getThreadCacheAccessor().getCache();
   }
 
   /**

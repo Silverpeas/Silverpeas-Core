@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
@@ -532,7 +532,7 @@ public class SessionManager implements SessionManagement, Initialization {
     if (!sessionInfo.isDefined()) {
       throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
     }
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).setCurrentSessionCache(
         sessionInfo.getCache());
     anonymousSessions.put(sessionInfo.getId(), sessionInfo);
     return sessionInfo;

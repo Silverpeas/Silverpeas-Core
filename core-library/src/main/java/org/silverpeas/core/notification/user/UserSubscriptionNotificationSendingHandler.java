@@ -38,8 +38,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
@@ -82,7 +81,7 @@ public class UserSubscriptionNotificationSendingHandler implements
           UserSubscriptionNotificationBehavior
               .SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM);
       final Confirmation confirmation = getMergedConfirmations(parameter, header);
-      getRequestCacheService().getCache().put(SENDING_NOT_ENABLED_KEY, confirmation);
+      getThreadCacheAccessor().getCache().put(SENDING_NOT_ENABLED_KEY, confirmation);
     }
   }
 
@@ -146,16 +145,16 @@ public class UserSubscriptionNotificationSendingHandler implements
 
   private Confirmation getConfirmation() {
     Confirmation confirmation =
-        getRequestCacheService().getCache().get(SENDING_NOT_ENABLED_KEY, Confirmation.class);
+        getThreadCacheAccessor().getCache().get(SENDING_NOT_ENABLED_KEY, Confirmation.class);
     if (confirmation == null) {
-      confirmation = getThreadCacheService().getCache()
+      confirmation = getThreadCacheAccessor().getCache()
           .get(SENDING_NOT_ENABLED_JMS_WAY_KEY, Confirmation.class);
     }
     return confirmation == null ? new Confirmation() : confirmation;
   }
 
   private Confirmation getOrCreateConfirmation() {
-    return getRequestCacheService().getCache()
+    return getThreadCacheAccessor().getCache()
         .computeIfAbsent(SENDING_NOT_ENABLED_KEY, Confirmation.class, Confirmation::new);
   }
 

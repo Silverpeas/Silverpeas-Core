@@ -25,7 +25,7 @@ package org.silverpeas.core.persistence.datasource;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.lang.annotation.Annotation;
@@ -110,7 +110,7 @@ public class OperationContext {
    * @return the current {@link OperationContext} instance from the cache.
    */
   public static OperationContext getFromCache() {
-    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    final SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     OperationContext context = cache.get(CACHE_KEY, OperationContext.class);
     if (context == null) {
       context = new OperationContext();

@@ -27,8 +27,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.integration.DataSetTest;
 import org.silverpeas.core.test.integration.SQLRequester.ResultLine;
@@ -69,14 +69,14 @@ public abstract class BaseCalendarTest extends DataSetTest {
   @Before
   public void setUp() throws Exception {
     user.setId("26");
-    CacheServiceProvider.clearAllThreadCaches();
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(user);
   }
 
   @After
   public void tearDown() throws Exception {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 
   protected User getUser() {

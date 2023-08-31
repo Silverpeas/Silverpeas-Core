@@ -29,7 +29,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor.SourceSupplier.Sources;
@@ -88,7 +88,7 @@ public class SimulationActionProcessProcessor {
    * @return true if a simulation is performing
    */
   public boolean isSimulationProcessPerforming() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(SIMULATION_PROCESS_PROCESSING) != null;
   }
@@ -127,12 +127,12 @@ public class SimulationActionProcessProcessor {
    */
   public <T> T execute(final Process<T> process) {
     // Simulation is processed only if no simulation is already working
-    if (CacheServiceProvider.getRequestCacheService()
+    if (CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(SIMULATION_PROCESS_PERFORMED) == null) {
       try {
         // Indicating that a functional check is processing
-        CacheServiceProvider.getRequestCacheService()
+        CacheAccessorProvider.getThreadCacheAccessor()
             .getCache()
             .put(SIMULATION_PROCESS_PROCESSING, true);
         try {
@@ -142,7 +142,7 @@ public class SimulationActionProcessProcessor {
         } finally {
           // Removing the flag indicating that a functional check is processing (out of the
           // service)
-          CacheServiceProvider.getRequestCacheService()
+          CacheAccessorProvider.getThreadCacheAccessor()
               .getCache()
               .remove(SIMULATION_PROCESS_PROCESSING);
         }
@@ -156,7 +156,7 @@ public class SimulationActionProcessProcessor {
       } finally {
         // Removing the flag indicating that a functional check has been performed (out of the
         // service)
-        CacheServiceProvider.getRequestCacheService()
+        CacheAccessorProvider.getThreadCacheAccessor()
             .getCache()
             .remove(SIMULATION_PROCESS_PERFORMED);
       }
@@ -204,7 +204,7 @@ public class SimulationActionProcessProcessor {
                 new ProcessExecutionContext(targetPK.getInstanceId()));
 
         // Indicating that a functional check has been performed
-        CacheServiceProvider.getRequestCacheService()
+        CacheAccessorProvider.getThreadCacheAccessor()
             .getCache()
             .put(SIMULATION_PROCESS_PERFORMED, true);
       }

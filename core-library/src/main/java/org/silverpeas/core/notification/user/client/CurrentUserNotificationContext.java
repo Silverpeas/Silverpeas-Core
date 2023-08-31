@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.notification.NotificationException;
 
 /**
@@ -39,12 +39,12 @@ public class CurrentUserNotificationContext {
    * instance associated to the current request.
    */
   public static CurrentUserNotificationContext getCurrentUserNotificationContext() {
-    CurrentUserNotificationContext current = CacheServiceProvider.getRequestCacheService()
+    CurrentUserNotificationContext current = CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(CurrentUserNotificationContext.class.getName(), CurrentUserNotificationContext.class);
     if (current == null) {
       current = new CurrentUserNotificationContext();
-      CacheServiceProvider.getRequestCacheService()
+      CacheAccessorProvider.getThreadCacheAccessor()
           .getCache()
           .put(CurrentUserNotificationContext.class.getName(), current);
     }

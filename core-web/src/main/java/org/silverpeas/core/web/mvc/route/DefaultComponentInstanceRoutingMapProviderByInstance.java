@@ -26,7 +26,7 @@ package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.Mutable;
 
 import javax.annotation.Nonnull;
@@ -43,7 +43,7 @@ class DefaultComponentInstanceRoutingMapProviderByInstance
   @Override
   @Nonnull
   public ComponentInstanceRoutingMapProvider getByInstanceId(final String instanceId) {
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    SimpleCache cache = CacheAccessorProvider.getThreadCacheAccessor().getCache();
     String cacheKey = CACHE_KEY_PREFIX + instanceId;
 
     final Mutable<DefaultComponentInstanceRoutingMapProvider> componentRoutingMap =

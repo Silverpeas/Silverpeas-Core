@@ -35,8 +35,8 @@ import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -3669,7 +3669,7 @@ class PublicationAccessControllerTest {
     private boolean mainOnOtherInstanceId;
 
     public void clear() {
-      CacheServiceProvider.clearAllThreadCaches();
+      CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
       Mockito.reset(user, componentAccessController, organizationController, nodeAccessController, publicationService);
       testInstance = new PublicationAccessController4Test(componentAccessController, nodeAccessController);
       userIsAnonymous = false;
@@ -3910,7 +3910,7 @@ class PublicationAccessControllerTest {
         }
         return allLocations;
       });
-      ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+      ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor()).newSessionCache(user);
     }
 
     private PublicationDetail newPublicationWith(final PublicationPK pubPk) {

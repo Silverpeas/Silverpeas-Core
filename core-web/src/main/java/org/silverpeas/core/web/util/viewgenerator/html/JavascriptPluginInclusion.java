@@ -58,8 +58,8 @@ import java.text.MessageFormat;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
 import static org.silverpeas.core.contribution.ContributionSettings.streamComponentNamesWithMinorModificationBehaviorEnabled;
@@ -219,8 +219,8 @@ public class JavascriptPluginInclusion {
    */
   public static Element script(String src) {
     String key = "$jsPlugin$script$" + src;
-    if (getRequestCacheService().getCache().get(key) == null) {
-      getRequestCacheService().getCache().put(key, true);
+    if (getThreadCacheAccessor().getCache().get(key) == null) {
+      getThreadCacheAccessor().getCache().put(key, true);
       return new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
     } else {
       return new ElementContainer();
@@ -270,7 +270,7 @@ public class JavascriptPluginInclusion {
   private static String generateDynamicPluginLoading(String src, String jqPluginName,
       String jsCallbackContentOnSuccessfulLoad, String jsCallback) {
     String key = "$jsDynamicPlugin$script$" + src;
-    SimpleCache cache = getRequestCacheService().getCache();
+    SimpleCache cache = getThreadCacheAccessor().getCache();
     if (cache.get(key) == null) {
       cache.put(key, true);
       StringBuilder sb = new StringBuilder();
@@ -306,7 +306,7 @@ public class JavascriptPluginInclusion {
   public static Element scriptContent(String content) {
     String key =
         "$jsPlugin$scriptContent$" + StringUtil.truncate(content, SCRIPT_CONTENT_KEY_LENGTH);
-    SimpleCache cache = getRequestCacheService().getCache();
+    SimpleCache cache = getThreadCacheAccessor().getCache();
     if (cache.get(key) == null) {
       cache.put(key, true);
       return new script().setType(JAVASCRIPT_TYPE).addElement(content);
@@ -335,7 +335,7 @@ public class JavascriptPluginInclusion {
    */
   public static Element link(String href) {
     String key = "$jsPlugin$css$" + href;
-    SimpleCache cache = getRequestCacheService().getCache();
+    SimpleCache cache = getThreadCacheAccessor().getCache();
     if (cache.get(key) == null) {
       cache.put(key, true);
       return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
@@ -839,7 +839,7 @@ public class JavascriptPluginInclusion {
     includeJQueryCss(xhtml);
     final String spJQueryScriptName = "silverpeas-jquery.js";
     final Element spJQueryScript = script(JAVASCRIPT_PATH + spJQueryScriptName);
-    final boolean minifiedVersion = getApplicationCacheService().getCache()
+    final boolean minifiedVersion = getApplicationCacheAccessor().getCache()
         .computeIfAbsent(spJQueryScriptName, Boolean.class,
             () -> !spJQueryScript.toString().contains(spJQueryScriptName));
     xhtml.addElement(script(JQUERY_PATH + "jquery-3.3.1.min.js"));

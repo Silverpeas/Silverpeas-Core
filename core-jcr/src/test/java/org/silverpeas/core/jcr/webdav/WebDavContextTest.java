@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheService;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessor;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.unit.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,27 +53,27 @@ class WebDavContextTest {
       "toto&é'()@ç+^i=¨*µ%ù!§:;.,?&&&?{}][`.doc";
   public static final String WEBDAV_DOCUMENT = "/webdav/document/";
 
-  private final CacheService cacheService = CacheServiceProvider.getApplicationCacheService();
+  private final CacheAccessor cacheAccessor = CacheAccessorProvider.getApplicationCacheAccessor();
 
   @BeforeEach
   public void setup() {
-    cacheService.clearAllCaches();
-    cacheService.getCache().put(WebDavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", "dummy");
+    cacheAccessor.getCache().clear();
+    cacheAccessor.getCache().put(WebDavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", "dummy");
   }
 
   @AfterEach
   public void tearDown() {
     assertThat(
-        cacheService.getCache().get(WebDavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", String.class),
+        cacheAccessor.getCache().get(WebDavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", String.class),
         is("dummy"));
-    cacheService.clearAllCaches();
+    cacheAccessor.getCache().clear();
   }
 
   @Test
   @DisplayName("Create a WebDAV context should put data in the cache and that cache should be " +
       "emptied once the context cleared")
   void shouldClearTheCache() {
-    SimpleCache cache = cacheService.getCache();
+    SimpleCache cache = cacheAccessor.getCache();
     assertThat(cache.get(WebDavContext.WEBDAV_JCR_URL_SUFFIX + AUTH_TOKEN), nullValue());
 
     WebDavContext context =
