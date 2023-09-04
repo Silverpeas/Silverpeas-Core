@@ -224,34 +224,43 @@
       return label;
     }
 
-    jQuery.popup.load(url).show('validation', {
-      title: __getI18nDialogContributionTitle(),
-      callback : function() {
-        // initializing a user response
-        const userValidation = new function() {
-          this.data = {};
-          this.applyOnAjaxOptions = function(ajaxOptions) {
-            const notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
-            extendsObject(notEmptyAjaxOptions, {
-              headers : {
-                'CONTRIBUTION_MODIFICATION_CONTEXT' : sp.base64.encode(this.getJsonEntityAsString())
-              }
-            });
-            return notEmptyAjaxOptions;
-          };
-          this.getJsonEntityAsString = function() {
-            return JSON.stringify(this.data);
-          };
+    const userResponseHandler = function(isMajor) {
+      $settings.$this.find('input[name=modificationLevelType]').prop( "checked", isMajor);
+      // initializing a user response
+      const userValidation = new function() {
+        this.data = {};
+        this.applyOnAjaxOptions = function(ajaxOptions) {
+          const notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
+          extendsObject(notEmptyAjaxOptions, {
+            headers : {
+              'CONTRIBUTION_MODIFICATION_CONTEXT' : sp.base64.encode(this.getJsonEntityAsString())
+            }
+          });
+          return notEmptyAjaxOptions;
         };
-        // perform handlers
-        handlers.forEach(function(handler) {
-          promises.push(handler.perform(userValidation));
-        });
-        // ending the process when all promises resolved or at least one rejected
-        sp.promise.whenAllResolved(promises).then(function() {
-          setFormParams.call(this, userValidation);
-          $settings.callback.call(this, userValidation);
-        }.bind(this), __callbackOnClose);
+        this.getJsonEntityAsString = function() {
+          return JSON.stringify(this.data);
+        };
+      };
+      // perform handlers
+      handlers.forEach(function(handler) {
+        promises.push(handler.perform(userValidation));
+      });
+      // ending the process when all promises resolved or at least one rejected
+      sp.promise.whenAllResolved(promises).then(function() {
+        setFormParams.call(this, userValidation);
+        $settings.callback.call(this, userValidation);
+      }.bind(this), __callbackOnClose);
+    };
+
+    jQuery.popup.load(url).show('confirmation', {
+      title: __getI18nDialogContributionTitle(),
+      buttonTextYes : sp.i18n.get('contribution.modification.minor.importants'),
+      callback : function() {
+        userResponseHandler(true);
+      },
+      alternativeCallback : function() {
+        userResponseHandler(false);
       },
       callbackOnClose : function() {
         sp.promise.whenAllResolved(promises).then(__callbackOnClose, __callbackOnClose);
