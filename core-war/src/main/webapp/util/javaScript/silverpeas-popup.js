@@ -203,6 +203,18 @@
                 }
                 $popup.remove();
               };
+              const openPromise = options.openPromise;
+              options.openPromise = new Promise(function(resolveOpen) {
+                const __whenDisplayed = function() {
+                  jQuery.popup.hideWaiting();
+                  setTimeout(resolveOpen, 0);
+                }
+                if (sp.promise.isOne(openPromise)) {
+                  openPromise.then(__whenDisplayed);
+                } else {
+                  __whenDisplayed();
+                }
+              });
               $popup.popup(type, options);
               resolve(data);
               if (sp.promise.isOne(options.openPromise)) {
@@ -457,11 +469,17 @@
       }
 
       // Internal settings
-      $.extend(settings, __buildInternalSettings({
+      const confirmationDefaultOptions = {
         buttonTextYes: __getLabel('GML.yes'),
         buttonTextNo: __getLabel('GML.no'),
         isMaxWidth: true
-      }));
+      };
+      $.extend(settings, __buildInternalSettings(confirmationDefaultOptions));
+      for(let key in confirmationDefaultOptions) {
+        if (typeof options[key] !== 'undefined') {
+          settings[key] = options[key];
+        }
+      }
 
       // Dialog
       return __openPopup($(this), settings);

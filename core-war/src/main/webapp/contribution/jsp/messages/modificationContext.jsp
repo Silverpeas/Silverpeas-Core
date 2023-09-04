@@ -47,7 +47,7 @@
         <div>
             ${minorHelpMessage}
         </div>
-        <div class="field">
+        <div class="field" style="display: none">
           <label>
             <input name="modificationLevelType" type="checkbox" value="major" checked> ${minorImportantsLabel}
           </label>
