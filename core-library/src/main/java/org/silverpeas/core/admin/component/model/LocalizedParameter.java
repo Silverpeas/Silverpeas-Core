@@ -57,6 +57,15 @@ public class LocalizedParameter extends ComponentLocalization {
     this.localizedGroupPrefixKey = StringUtil.EMPTY;
   }
 
+  /**
+   * This static method is useful into JSTL context.
+   * @see silverFunction.tld
+   */
+  public static LocalizedParameter toLocalizedParameter(SilverpeasComponent component,
+      Parameter parameter, String lang) {
+    return new LocalizedParameter(component, parameter, lang);
+  }
+
   protected String getBundleKeyPrefix() {
     return localizedGroupPrefixKey + "parameter." + getName();
   }
