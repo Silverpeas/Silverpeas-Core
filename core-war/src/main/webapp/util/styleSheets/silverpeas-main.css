@@ -7215,6 +7215,12 @@ silverpeas-button {
   margin-right:0;
 }
 
+.silverpeas-button.sp_icon,
+.operation a {
+  display: inline-block;
+  margin-left: 6px;
+}
+
 /**
  * AngularJS silverpeas-color-picker component.
  */
