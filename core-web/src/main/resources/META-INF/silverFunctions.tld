@@ -400,4 +400,13 @@
       java.lang.String formatForDomId(java.lang.Object))
     </function-signature>
   </function>
+  <!-- Localization -->
+  <function>
+    <description>Gets a localized parameter instance.</description>
+    <name>toLocalizedParameter</name>
+    <function-class>org.silverpeas.core.admin.component.model.LocalizedParameter</function-class>
+    <function-signature>org.silverpeas.core.admin.component.model.LocalizedParameter
+      toLocalizedParameter(org.silverpeas.core.admin.component.model.SilverpeasComponent,org.silverpeas.core.admin.component.model.Parameter,java.lang.String)
+    </function-signature>
+  </function>
 </taglib>
