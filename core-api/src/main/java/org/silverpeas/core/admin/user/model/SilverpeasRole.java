@@ -29,10 +29,8 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import java.util.*;
 
 /**
  * The core predefined user roles in Silverpeas. Each role has a name and is attached to a
@@ -196,8 +194,8 @@ public enum SilverpeasRole {
     if (CollectionUtil.isEmpty(roles)) {
       return null;
     }
-    @SuppressWarnings("unchecked") EnumSet<SilverpeasRole> givenRoles =
-        (roles instanceof EnumSet) ? (EnumSet) roles : EnumSet.copyOf(roles);
+    EnumSet<SilverpeasRole> givenRoles =
+        (roles instanceof EnumSet) ? (EnumSet<SilverpeasRole>) roles : EnumSet.copyOf(roles);
 
     // For now, the highest is the first of the EnumSet
     return givenRoles.iterator().next();
@@ -219,7 +217,8 @@ public enum SilverpeasRole {
    * @param role a {@link SilverpeasRole} instance.
    * @return true if this role is greater than the specified one.
    */
-  public boolean isGreaterThan(SilverpeasRole role) {
+  public boolean isGreaterThan(@Nonnull SilverpeasRole role) {
+    Objects.requireNonNull(role);
     // For now, ordinal value is used ...
     return ordinal() < role.ordinal();
   }
@@ -230,7 +229,8 @@ public enum SilverpeasRole {
    * @param role a {@link SilverpeasRole} instance.
    * @return true if this role is greater or equal than the specified one.
    */
-  public boolean isGreaterThanOrEquals(SilverpeasRole role) {
+  public boolean isGreaterThanOrEquals(@Nonnull SilverpeasRole role) {
+    Objects.requireNonNull(role);
     // For now, ordinal value is used ...
     return ordinal() <= role.ordinal();
   }
