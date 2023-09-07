@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 /*
  * Copyright (C) 2000 - 2022 Silverpeas
  *
@@ -21,19 +23,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-<!--
 //
-// Gestion des evenements et des liste de checkbox
+// Management of the events and of the checkbox lists
 //
 //
 
-var nav4 = window.Event ? true : false;
-var gControlKeyDown, gShiftKeyDown, gAltKeyDown;
+const nav4 = !!window.Event;
 
 
 //-------------------------------------------------------------------------------------isAltKeyDown
 function isAltKeyDown (e) {
-	var isDown;
+	let isDown;
   if (nav4) {
      isDown = e.modifiers & Event.ALT_MASK;
   } else {
@@ -44,7 +44,7 @@ function isAltKeyDown (e) {
 
 //-------------------------------------------------------------------------------------isControlKeyDown
 function isControlKeyDown (e) {
-  var isDown;
+  let isDown;
   if (nav4) {
      isDown = e.modifiers & Event.CONTROL_MASK;
   } else {
@@ -55,7 +55,7 @@ function isControlKeyDown (e) {
 
 //-------------------------------------------------------------------------------------isShiftKeyDown
 function isShiftKeyDown (e) {
-  var isDown;
+  let isDown;
   if (nav4) {
      isDown = e.modifiers & Event.SHIFT_MASK;
   } else {
@@ -85,32 +85,34 @@ function isShiftKeyDown (e) {
 //       onClick="return false" >all</A>
 //
 function SwitchSelection (theForm, itemName, e) {
-	var max = theForm.elements.length;
-	var L = itemName.length;
-	//status = "";
 	if (isControlKeyDown (e)) {
-		for (var i = 0; i < max; i++) {
-			var elt = theForm.elements[i];
-			//status = status + ", " + elt.name.substring (0,L);
-			if ((elt.type == "checkbox")&& (elt.name.substring (0,L) == itemName))
-				elt.checked = !elt.checked;
-		}
+		inverseIndividualCheckedState(theForm, itemName);
 	} else {
-		var allChecked = true
-		for (i = 0; i < max; i++) {
-			elt = theForm.elements[i];
-			if ((elt.type == "checkbox")&& (elt.name.substring (0,L) == itemName))
-				allChecked = allChecked && elt.checked;
-		}
-		//status = allChecked
-		for (i = 0; i < max; i++) {
-			elt = theForm.elements[i];
-			if ((elt.type == "checkbox")&& (elt.name.substring (0,L) == itemName))
-				elt.checked = !allChecked;
-		}
+		inverseGlobalCheckedState(theForm, itemName);
 	}
 	return false;
 }
 
+function inverseIndividualCheckedState(theForm, itemName) {
+	const itemNameLength = itemName.length;
+	theForm.elements.forEach(function(elt) {
+		if ((elt.type === "checkbox") && (elt.name.substring(0, itemNameLength) === itemName)) {
+			elt.checked = !elt.checked;
+		}
+	});
+}
 
-//-->
+function inverseGlobalCheckedState(theForm, itemName) {
+	const itemNameLength = itemName.length;
+	let allChecked = true
+	theForm.elements.forEach(function(elt) {
+		if ((elt.type === "checkbox") && (elt.name.substring(0, itemNameLength) === itemName)) {
+			allChecked = allChecked && elt.checked;
+		}
+	});
+	theForm.elements.forEach(function(elt) {
+		if ((elt.type === "checkbox") && (elt.name.substring(0, itemNameLength) === itemName)) {
+			elt.checked = !allChecked;
+		}
+	});
+}
