@@ -705,18 +705,19 @@ var dragAndDropUploadEnabled = window.File;
    */
   function __performSendFromEvent(event, uploadSession) {
     if (!(event.target && event.target.files) && !event.files) {
-      var items = (event.dataTransfer ? event.dataTransfer.items :
+      const items = (event.dataTransfer ? event.dataTransfer.items :
           event.originalEvent.dataTransfer.items);
 
       if (items) {
-        var len = items.length, i, entry;
+        const fileFallbacks = [];
+        let len = items.length, i, entry;
         for (i = 0; i < len; i++) {
           entry = items[i];
 
-          if (entry.getAsEntry) {
+          if (typeof entry.getAsEntry === 'function') {
             //Standard HTML5 API
             entry = entry.getAsEntry();
-          } else if (entry.webkitGetAsEntry) {
+          } else if (typeof entry.webkitGetAsEntry === 'function') {
             //WebKit implementation of HTML5 API.
             entry = entry.webkitGetAsEntry();
           }
@@ -729,15 +730,24 @@ var dragAndDropUploadEnabled = window.File;
               uploadSession.existsAtLeastOneFolder = true;
               __readFileTree(entry, uploadSession);
             }
+          } else {
+            entry = items[i];
+            if (entry.kind === 'file' && typeof entry.getAsFile === 'function') {
+              // fallback
+              fileFallbacks.push(entry.getAsFile());
+            }
           }
+        }
+        if (fileFallbacks.length > 0) {
+          __performFileFromOldWay(uploadSession, fileFallbacks);
         }
         internalQueue.push(function() {
           uploadSession.consume();
         });
       } else {
-        var files = (event.dataTransfer ? event.dataTransfer.files :
+        const files = (event.dataTransfer ? event.dataTransfer.files :
             event.originalEvent.dataTransfer.files);
-        __performFileFromOldWay(uploadSession, files)
+        __performFileFromOldWay(uploadSession, files);
       }
     } else if (event.target && event.target.files) {
       __performFileFromOldWay(uploadSession, event.target.files)
