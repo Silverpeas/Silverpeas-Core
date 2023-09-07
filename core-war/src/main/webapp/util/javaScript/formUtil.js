@@ -95,24 +95,24 @@ function SwitchSelection (theForm, itemName, e) {
 
 function inverseIndividualCheckedState(theForm, itemName) {
 	const itemNameLength = itemName.length;
-	for (const elt of theForm.elements) {
+	theForm.elements.forEach(function(elt) {
 		if ((elt.type === "checkbox") && (elt.name.substring(0, itemNameLength) === itemName)) {
 			elt.checked = !elt.checked;
 		}
-	}
+	});
 }
 
 function inverseGlobalCheckedState(theForm, itemName) {
 	const itemNameLength = itemName.length;
 	let allChecked = true
-	for (const elt of theForm.elements) {
+	theForm.elements.forEach(function(elt) {
 		if ((elt.type === "checkbox") && (elt.name.substring(0, itemNameLength) === itemName)) {
 			allChecked = allChecked && elt.checked;
 		}
-	}
-	for (const elt of theForm.elements) {
+	});
+	theForm.elements.forEach(function(elt) {
 		if ((elt.type === "checkbox") && (elt.name.substring(0, itemNameLength) === itemName)) {
 			elt.checked = !allChecked;
 		}
-	}
+	});
 }
