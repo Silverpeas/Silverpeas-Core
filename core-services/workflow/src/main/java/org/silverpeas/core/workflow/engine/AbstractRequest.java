@@ -101,6 +101,7 @@ public abstract class AbstractRequest
 
   protected void processProcessInstance(final String id, final GenericEvent event,
       final UpdatableHistoryStep step) {
+    SilverLogger.getLogger(this).info("processProcessInstance() - instanceId = {0}",id);
     Transaction.performInOne(() -> {
       ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
       ProcessInstanceImpl processInstance = getProcessInstanceRepository().getById(id);
