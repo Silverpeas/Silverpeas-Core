@@ -2,6 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
 import org.silverpeas.core.workflow.api.instance.ActionStatus;
@@ -38,6 +39,8 @@ class TaskSavedRequest extends AbstractRequest {
   @Override
   protected boolean processEvent(UpdatableProcessInstance instance, String stepId)
       throws WorkflowException {
+    SilverLogger.getLogger(this).info("processEvent() - instanceId = {0} stepId = {1}",instance.getInstanceId(), stepId);
+
     TaskSavedEvent event = getEvent();
 
     // only to set the current step of instance to that step
