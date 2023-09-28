@@ -3,6 +3,7 @@ package org.silverpeas.core.workflow.engine;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
@@ -33,6 +34,7 @@ class TimeoutRequest extends AbstractRequest {
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
     String id = instance.getInstanceId();
+    SilverLogger.getLogger(this).info("process() - instanceId = {0}",id);
 
     UpdatableHistoryStep step = Transaction.performInOne(() -> createHistoryNewStep(
         new HistoryStepDescriptor().withUserRoleName("supervisor")
