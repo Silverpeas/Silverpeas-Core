@@ -21,6 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+//# sourceURL=/util/javaScript/lookV5/navigation.js
+
 var currentSpaceId = "-1";
 var currentSpaceLevel = 0;
 var currentSpacePath = "";
@@ -1409,19 +1412,28 @@ whenSilverpeasReady(function() {
 
   displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
 
-  var __scrollListener = function() {
-    var $activeItem = currentComponentId && document.getElementById(currentComponentId);
-    if (!$activeItem) {
-      $activeItem = currentSpaceId && document.getElementById(currentSpaceId);
-      $activeItem = $activeItem ? sp.element.querySelector('.spaceURL', $activeItem) : $activeItem;
+  const __scrollListener = function() {
+    let $activeItem = document.getElementById(currentComponentId);
+    if (!__isDOM($activeItem)) {
+      $activeItem = document.getElementById(currentSpaceId);
     }
-    if ($activeItem) {
+    if (__isDOM($activeItem)) {
       sp.element.scrollToIfNotFullyInView($activeItem, spLayout.getBody().getNavigation().getContainer());
     }
   };
+
+  function __isDOM(getElem) {
+    if (getElem === null || typeof getElem === 'undefined') {
+      return false;
+    }
+    const c = getElem.constructor.toString();
+    return c.search('HTML') !== -1 && c.search('Element') !== -1;
+  }
+
   spLayout.getBody().getContent().addEventListener('load', __scrollListener, '__id__navigation-part');
   spLayout.getBody().getNavigation().addEventListener('load', __scrollListener, '__id__navigation-part');
   spLayout.getBody().getNavigation().addEventListener('changeselected', __scrollListener, '__id__navigation-part');
   spLayout.getFooter().addEventListener('pdcshow', __scrollListener, '__id__navigation-part');
   spLayout.getFooter().addEventListener('pdchide', __scrollListener, '__id__navigation-part');
 });
+
