@@ -1410,18 +1410,25 @@ whenSilverpeasReady(function() {
   displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
 
   var __scrollListener = function() {
-    var $activeItem = currentComponentId && document.getElementById(currentComponentId);
-    if (!$activeItem) {
-      $activeItem = currentSpaceId && document.getElementById(currentSpaceId);
-      $activeItem = $activeItem ? sp.element.querySelector('.spaceURL', $activeItem) : $activeItem;
+    var $activeItem = document.getElementById(currentComponentId);
+    if (!isDOM($activeItem)) {
+      $activeItem = document.getElementById(currentSpaceId);
     }
-    if ($activeItem) {
+    if (isDOM($activeItem)) {
       sp.element.scrollToIfNotFullyInView($activeItem, spLayout.getBody().getNavigation().getContainer());
     }
   };
+
+  function isDOM(getElem){
+    if(getElem===null||typeof getElem==="undefined") return false;
+    const c = getElem.constructor.toString();
+    return c.search("HTML")!==-1 && c.search("Element")!==-1;
+  }
+
   spLayout.getBody().getContent().addEventListener('load', __scrollListener, '__id__navigation-part');
   spLayout.getBody().getNavigation().addEventListener('load', __scrollListener, '__id__navigation-part');
   spLayout.getBody().getNavigation().addEventListener('changeselected', __scrollListener, '__id__navigation-part');
   spLayout.getFooter().addEventListener('pdcshow', __scrollListener, '__id__navigation-part');
   spLayout.getFooter().addEventListener('pdchide', __scrollListener, '__id__navigation-part');
 });
+
