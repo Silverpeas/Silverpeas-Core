@@ -38,16 +38,11 @@ import org.silverpeas.core.jcr.impl.ResourcesCloser;
 import org.silverpeas.core.jcr.impl.oak.configuration.OakRepositoryConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.SegmentNodeStoreConfiguration;
 import org.silverpeas.core.jcr.impl.oak.configuration.StorageType;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.ParseException;
-
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Factory of a {@link org.apache.jackrabbit.oak.segment.SegmentNodeStore} instance. This is for the
@@ -116,16 +111,12 @@ public class SegmentNodeStoreFactory implements NodeStoreFactory {
 
   private void initializeCompaction(final Path segmentStore, final FileStore fs,
       final SegmentNodeStoreConfiguration parameters) throws ParseException {
-    // schedule compaction process
+    // initialize compaction process
     if (!parameters.isPauseCompaction()) {
-      final SegmentNodeStoreCleaner cleaner = new SegmentNodeStoreCleaner(segmentStore, fs,
-          parameters);
+      final SegmentNodeStoreCleaner cleaner = SegmentNodeStoreCleaner.get();
       try {
-        cleaner.execute(null);
-        if (isDefined(parameters.getCompactionCRON())) {
-          final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-          scheduler.scheduleJob(cleaner, JobTrigger.triggerAt(parameters.getCompactionCRON()));
-        }
+        cleaner.initializeWith(segmentStore, fs, parameters);
+        cleaner.execute();
       } catch (SilverpeasException e) {
         SilverLogger.getLogger(this).error(e);
       }

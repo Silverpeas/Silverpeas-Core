@@ -25,11 +25,16 @@
 package org.silverpeas.core.jcr.impl.oak.factories;
 
 import org.apache.jackrabbit.oak.segment.file.FileStore;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.RunnableBackgroundProcess;
 import org.silverpeas.core.jcr.impl.oak.configuration.SegmentNodeStoreConfiguration;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
@@ -38,15 +43,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
 
 import static java.text.MessageFormat.format;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * This Job implementation is in charge of cleaning the segment data which is obsolete.
+ * This implementation is in charge of the management of cleaning the segment data which is
+ * obsolete.
  * <p>
- *   In a first time, a full garbage collection is performed (in a JCR meaning):
+ *   {@link SegmentNodeStoreFactory} MUST initialize the manager by calling package method
+ *   {@link #initializeWith(Path, FileStore, SegmentNodeStoreConfiguration)}. Otherwise, the
+ *   cleaning process is not enabled. If a CRON for cleaning operation is specified into
+ *   parameters, then a {@link Job} is scheduled to perform the cleaning process in that context.
+ * </p>
+ * <p>
+ *   This implementation allows also to execute manually a cleaning process by calling
+ *   {@link #execute()} signature.
+ * </p>
+ * <p>
+ *   The cleaning process is decomposed into two phases.
+ * </p>
+ * <p>
+ * In a first time, a full garbage collection is performed (in a JCR meaning):
  *   <ul>
  *     <li>estimation</li>
  *     <li>compaction</li>
@@ -58,39 +79,73 @@ import static java.text.MessageFormat.format;
  * </p>
  * <p>
  *   The processing is performed into a {@link RunnableBackgroundProcess} ensuring to have
- *   only one process at a time.
+ *   only one process at a time (in manual or CRON ways).
  * </p>
  * @author silveryocha
  */
-public class SegmentNodeStoreCleaner extends Job {
+@Service
+public class SegmentNodeStoreCleaner {
 
   private static final String JOB_NAME = SegmentNodeStoreCleaner.class.getSimpleName();
 
-  private final Path segmentPath;
-  private final FileStore fs;
-  private final SegmentNodeStoreConfiguration parameters;
+  private Path segmentPath;
+  private FileStore fs;
+  private SegmentNodeStoreConfiguration parameters;
+
+  public static SegmentNodeStoreCleaner get() {
+    return ServiceProvider.getService(SegmentNodeStoreCleaner.class);
+  }
 
   /**
-   * Creates a new job with the specified name.
+   * Initializing elements needed to perform a cleaning process.
+   * <p>
+   *   Cleaning process is not enabled if no initialization is performed.
+   * </p>
    * @param segmentPath the root {@link Path} of the segment data.
    * @param fs the {@link FileStore} initialized with Silverpeas's configuration.
    * @param parameters a {@link SegmentNodeStoreConfiguration} instance centralizing all segment
-   * store configuration.
+   * @throws ParseException in case of bad CRON format.
+   * @throws SchedulerException in case of scheduling technical error.
    */
-  public SegmentNodeStoreCleaner(final Path segmentPath, final FileStore fs,
-      final SegmentNodeStoreConfiguration parameters) {
-    super(JOB_NAME);
+  void initializeWith(final Path segmentPath, final FileStore fs,
+      final SegmentNodeStoreConfiguration parameters) throws ParseException, SchedulerException {
     this.segmentPath = segmentPath;
     this.fs = fs;
     this.parameters = parameters;
+    if (isDefined(parameters.getCompactionCRON())) {
+      setupCron();
+    }
   }
 
-  @Override
-  public void execute(final JobExecutionContext context) throws SilverpeasException {
-    RunnableBackgroundProcess.register(() -> {
-      fullGC();
-      cleanBackupFiles();
-    });
+  private void setupCron() throws ParseException, SchedulerException {
+    final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+    scheduler.scheduleJob(new SegmentNodeStoreCleanerJob(),
+        JobTrigger.triggerAt(parameters.getCompactionCRON()));
+  }
+
+  /**
+   * Pushes a {@link RunnableBackgroundProcess} in charge of the cleaning process.
+   * <p>
+   * Ignores method call in case a previous background process has not been yet processed or if
+   * the cleaning process is not enabled.
+   * </p>
+   */
+  public void execute() {
+    if (isEnabled()) {
+      RunnableBackgroundProcess.register(JOB_NAME, () -> {
+        fullGC();
+        cleanBackupFiles();
+      });
+    } else {
+      SilverLogger.getLogger(this)
+          .warn(
+              "Trying to start a cleaning background process of the JCR, but the cleaner has not " +
+                  "been initialized");
+    }
+  }
+
+  private boolean isEnabled() {
+    return segmentPath != null && fs != null && parameters != null;
   }
 
   private void fullGC() {
@@ -140,6 +195,21 @@ public class SegmentNodeStoreCleaner extends Job {
 
     public int getDeletionCount() {
       return deletionCount;
+    }
+  }
+
+  private static class SegmentNodeStoreCleanerJob extends Job {
+
+    /**
+     * Creates a new job with the specified name.
+     */
+    public SegmentNodeStoreCleanerJob() {
+      super(JOB_NAME);
+    }
+
+    @Override
+    public void execute(final JobExecutionContext context) {
+      SegmentNodeStoreCleaner.get().execute();
     }
   }
 }
