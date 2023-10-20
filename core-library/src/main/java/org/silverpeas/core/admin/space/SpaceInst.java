@@ -40,8 +40,6 @@ import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.kernel.annotation.NonNull;
-import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -49,12 +47,14 @@ import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.cache.model.SimpleCache;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -798,7 +798,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     }
     SpaceInstLight space = OrganizationControllerProvider.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());
-    final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
+    final SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore(
         "admin/space/quota");
     template.setAttribute("quota", quotaReached);
     if (space.getLocalId() != new SpaceInstLight(this).getLocalId()) {

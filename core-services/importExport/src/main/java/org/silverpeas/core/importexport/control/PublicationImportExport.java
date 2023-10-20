@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -34,23 +33,21 @@ import org.silverpeas.core.mail.extractor.Extractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.mail.extractor.MailExtractor;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplates;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.mail.internet.InternetAddress;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PublicationImportExport {
 
-  final static LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
+  static final LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.importExport.multilang.importExportBundle");
 
   private PublicationImportExport() {
@@ -92,17 +89,15 @@ public class PublicationImportExport {
           }
           attributes.put("fromAddress", address.getAddress());
 
-          // generate title of publication
-          StringTemplate titleST =
-              new StringTemplate(multilang.getString("importExport.import.mail.title"));
-          titleST.setAttributes(attributes);
-          nomPub = titleST.toString();
+          SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnComponents();
+          attributes.forEach(template::setAttribute);
 
+          // generate title of publication
+          nomPub = template.applyStringTemplate(
+              multilang.getString("importExport.import.mail.title"));
           // generate description of publication
-          StringTemplate descriptionST =
-              new StringTemplate(multilang.getString("importExport.import.mail.description"));
-          descriptionST.setAttributes(attributes);
-          description = descriptionST.toString();
+          description = template.applyStringTemplate(
+              multilang.getString("importExport.import.mail.description"));
         } catch (Exception e) {
           SilverLogger.getLogger(PublicationImportExport.class).error(e);
         }

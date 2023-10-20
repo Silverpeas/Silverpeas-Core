@@ -25,10 +25,10 @@ package org.silverpeas.core.util.error;
 
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.UnitUtil;
 
 import javax.ejb.EJBException;
@@ -105,7 +105,7 @@ public class SilverpeasTransverseErrorUtil {
     final DataStorageQuotaException dsqe = retrieveDataStorageQuotaException(exception);
     if (dsqe != null) {
       dsqe.setLanguage(language);
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
+      template = SilverpeasTemplates.createSilverpeasTemplateOnCore("admin/space/quota");
       template
           .setAttribute("maxCountFormated", UnitUtil.formatMemSize(dsqe.getQuota().getMaxCount()));
       template.setAttribute("spaceName", dsqe.getSpace().getName());
@@ -119,7 +119,7 @@ public class SilverpeasTransverseErrorUtil {
     final ComponentFileFilterException cffe = retrieveComponentFileFilterException(exception);
     if (cffe != null) {
       cffe.setLanguage(language);
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/component/error");
+      template = SilverpeasTemplates.createSilverpeasTemplateOnCore("admin/component/error");
       template.setAttribute("fileFilters", cffe.getComponentFileFilterParameter().getFileFilters());
       template.setAttribute("isGloballySet",
           cffe.getComponentFileFilterParameter().isFileFilterGloballySet());

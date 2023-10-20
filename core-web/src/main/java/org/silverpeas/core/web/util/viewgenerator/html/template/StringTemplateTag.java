@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.template;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;
@@ -88,9 +88,9 @@ public class StringTemplateTag extends TagSupport {
 
       // Template location
       if (CORE_NAMESPACE.equals(nameSpace)) {
-        template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(locationBase);
+        template = SilverpeasTemplates.createSilverpeasTemplateOnCore(locationBase);
       } else {
-        template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
+        template = SilverpeasTemplates.createSilverpeasTemplateOnComponents();
       }
 
       // Register in context
