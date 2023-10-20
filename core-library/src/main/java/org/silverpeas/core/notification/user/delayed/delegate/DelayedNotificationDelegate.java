@@ -47,7 +47,7 @@ import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -521,7 +521,7 @@ public class DelayedNotificationDelegate implements NotificationURLProvider {
 
   private SilverpeasTemplate getTemplate() {
     if (template == null) {
-      template = SilverpeasTemplateFactory
+      template = SilverpeasTemplates
           .createSilverpeasTemplateOnCore("notification/delayed")
           .mergeRootWithCustom();
     }
