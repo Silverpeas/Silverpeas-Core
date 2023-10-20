@@ -1,5 +1,1 @@
-$if(end)$
-du <b>$start.dayDate$</b> au <b>$end.dayDate$</b>
-$else$
-le <b>$start.dayDate$</b>
-$endif$
+$if(end)$du <b>$start.dayDate$</b> au <b>$end.dayDate$</b>$else$le <b>$start.dayDate$</b>$endif$

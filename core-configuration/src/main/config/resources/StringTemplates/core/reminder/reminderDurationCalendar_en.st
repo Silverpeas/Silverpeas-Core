@@ -1,17 +1,1 @@
-REMINDER: $contributionTitle;format="toUpperFirstChar"$ will be $if(reminderContributionSeveralDays)$
-$if(reminderContributionStart.timeExisting)$
-from $reminderContributionStart.dayDate$ at $reminderContributionStart.dayTime$ to $reminderContributionEnd.dayDate$ at $reminderContributionEnd.dayTime$
-$else$
-from $reminderContributionStart.dayDate$ to $reminderContributionEnd.dayDate$
-$endif$
-$else$
-$if(reminderContributionStart.timeExisting)$
-on $reminderContributionStart.dayDate$ from $reminderContributionStart.dayTime$ to $reminderContributionEnd.dayTime$
-$else$
-on $reminderContributionStart.dayDate$
-$endif$
-$endif$
-$if(reminderContributionZoneId)$
- ($reminderContributionZoneId$)
-$endif$
-.
+REMINDER: $contributionTitle;format="toUpperFirstChar"$ will be $if(reminderContributionSeveralDays)$$if(reminderContributionStart.timeExisting)$from $reminderContributionStart.dayDate$ at $reminderContributionStart.dayTime$ to $reminderContributionEnd.dayDate$ at $reminderContributionEnd.dayTime$$else$from $reminderContributionStart.dayDate$ to $reminderContributionEnd.dayDate$$endif$$else$$if(reminderContributionStart.timeExisting)$on $reminderContributionStart.dayDate$ from $reminderContributionStart.dayTime$ to $reminderContributionEnd.dayTime$$else$on $reminderContributionStart.dayDate$$endif$$endif$$if(reminderContributionZoneId)$ ($reminderContributionZoneId$)$endif$.

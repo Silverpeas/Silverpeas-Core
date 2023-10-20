@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.SilverpeasBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -64,7 +64,7 @@ public class JavascriptBundleProducer {
   static String fromCoreTemplate(final String pathSuffix, final String templateName,
       final String language) {
     SilverpeasTemplate bundle =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(pathSuffix);
+        SilverpeasTemplates.createSilverpeasTemplateOnCore(pathSuffix);
     return bundle
         .applyFileTemplate(templateName + "_" + DisplayI18NHelper.verifyLanguage(language));
   }

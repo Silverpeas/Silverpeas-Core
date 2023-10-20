@@ -64,7 +64,7 @@ import org.silverpeas.core.security.authentication.password.service.PasswordChec
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
@@ -146,11 +146,10 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   private final Map<String, LocalizedWAComponent> localizedComponents = new HashMap<>();
 
   /**
-   * Standard Session Controller Constructeur
+   * Standard Session Controller constructor.
    *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   *
    */
   public JobDomainPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -481,7 +480,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   private SilverpeasTemplate getTemplate(UserDetail userDetail, String loginURL,
       UserRequestData userRequestData, boolean isNew) {
     Properties configuration = new Properties(templateConfiguration);
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplate(configuration);
     template.setAttribute("userDetail", userDetail);
     template.setAttribute("loginURL", loginURL);
     template.setAttribute("pwd", userRequestData.getPassword());
@@ -492,6 +491,12 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     return template;
   }
 
+  /**
+   * Regroups the targeted user into the specified group (only for SQL domain).
+   * @param properties properties of the regrouping
+   * @param lastGroupId the identifier of the group
+   * @throws JobDomainPeasException if an error occurs
+   */
   private void regroupInGroup(Map<String, String> properties, String lastGroupId)
       throws JobDomainPeasException {
 
@@ -568,6 +573,15 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     }
   }
 
+  /**
+   * Parse the CSV file.
+   *
+   * @param filePart the CSV file
+   * @param data additional information
+   * @param req the current HttpServletRequest
+   * @throws JobDomainPeasTrappedException if an error occurs
+   * @throws PublicationTemplateException if an error occurs
+   */
   public void importCsvUsers(FileItem filePart, UserRequestData data, HttpRequest req)
       throws JobDomainPeasTrappedException, PublicationTemplateException {
     InputStream is;
@@ -983,7 +997,6 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   public void deactivateUser(String userId) {
-
     adminCtrl.deactivateUser(userId);
   }
 
@@ -1677,8 +1690,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       throws JobDomainPeasException, JobDomainPeasTrappedException {
     String newDomainId;
     try {
-      newDomainId = Objects.requireNonNull(DomainServiceProvider.getDomainService(domainType))
-              .createDomain(theNewDomain);
+      newDomainId = Objects.requireNonNull(
+          DomainServiceProvider.getDomainService(domainType)).createDomain(theNewDomain);
       refresh();
     } catch (DomainCreationException e) {
       throw new JobDomainPeasException(e);
@@ -1720,8 +1733,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
         domainToCreate.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
       }
 
-      domainId = Objects.requireNonNull(DomainServiceProvider.getDomainService(DomainType.SQL))
-          .createDomain(domainToCreate);
+      domainId = Objects.requireNonNull(
+          DomainServiceProvider.getDomainService(DomainType.SQL)).createDomain(domainToCreate);
       domainToCreate.setId(domainId);
 
       if (JobDomainSettings.usersInDomainQuotaActivated) {
@@ -1844,8 +1857,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
   public void deleteDomain(final DomainType domainType) throws JobDomainPeasException {
     try {
-      Objects.requireNonNull(DomainServiceProvider.getDomainService(domainType))
-          .deleteDomain(getTargetDomain());
+      Objects.requireNonNull(
+          DomainServiceProvider.getDomainService(domainType)).deleteDomain(getTargetDomain());
     } catch (DomainDeletionException e) {
       throw new JobDomainPeasException(e);
     }
@@ -1853,8 +1866,8 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
 
   public void deleteSQLDomain() throws JobDomainPeasException {
     try {
-      Objects.requireNonNull(DomainServiceProvider.getDomainService(DomainType.SQL))
-          .deleteDomain(getTargetDomain());
+      Objects.requireNonNull(
+          DomainServiceProvider.getDomainService(DomainType.SQL)).deleteDomain(getTargetDomain());
       DomainServiceProvider.getUserDomainQuotaService().remove(
           UserDomainQuotaKey.from(getTargetDomain()));
     } catch (DomainDeletionException e) {
@@ -2300,7 +2313,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       }
     }
     profileIds
-        .map(i -> adminCtrl.getProfileInst(i))
+        .map(adminCtrl::getProfileInst)
         .forEach(p -> {
       Objects.requireNonNull(p);
       LocalizedComponentInstProfiles componentProfiles =

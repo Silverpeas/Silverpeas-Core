@@ -37,7 +37,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -202,7 +202,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
   }
 
   private SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("socialNetwork");
+    return SilverpeasTemplates.createSilverpeasTemplateOnCore("socialNetwork");
   }
 
   private void notifyUser(NotificationMetaData notifMetaData, String componentId)

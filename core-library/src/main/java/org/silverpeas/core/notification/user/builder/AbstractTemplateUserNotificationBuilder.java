@@ -32,9 +32,8 @@ import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.kernel.util.Mutable;
@@ -208,7 +207,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       if (this instanceof FallbackToCoreTemplatePathBehavior) {
         instance
             .map(i -> i.getName() + "/" + templatePath.get())
-            .filter(p -> SilverpeasStringTemplateUtil.isComponentTemplateExist(p, getTemplateFileName()))
+            .filter(p -> SilverpeasTemplates.isComponentTemplateExist(p, getTemplateFileName()))
             .ifPresent(p -> {
               componentRoot.set(true);
               templatePath.set(p);
@@ -226,9 +225,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     final boolean fromComponent = getRootTemplatePath().getFirst();
     final String templatePath = getRootTemplatePath().getSecond();
     if (fromComponent) {
-      return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(templatePath);
+      return SilverpeasTemplates.createSilverpeasTemplateOnComponents(templatePath);
     } else {
-      return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(templatePath);
+      return SilverpeasTemplates.createSilverpeasTemplateOnCore(templatePath);
     }
   }
 

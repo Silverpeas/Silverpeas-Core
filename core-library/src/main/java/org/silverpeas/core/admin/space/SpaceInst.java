@@ -47,7 +47,7 @@ import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
@@ -720,7 +720,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     }
     SpaceInstLight space = OrganizationControllerProvider.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());
-    final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
+    final SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore(
         "admin/space/quota");
     template.setAttribute("quota", quotaReached);
     if (space.getLocalId() != new SpaceInstLight(this).getLocalId()) {

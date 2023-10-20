@@ -23,22 +23,16 @@
  */
 package org.silverpeas.core.template.renderer;
 
-import java.util.Date;
-
-import org.antlr.stringtemplate.AttributeRenderer;
-
 import org.silverpeas.core.util.DateUtil;
+import org.stringtemplate.v4.AttributeRenderer;
 
-public class DateRenderer implements AttributeRenderer {
+import java.util.Date;
+import java.util.Locale;
+
+public class DateRenderer implements AttributeRenderer<Date> {
 
   @Override
-  public String toString(Object o) {
-    return DateUtil.formatDate((Date) o);
+  public String toString(Date value, String pattern, Locale locale) {
+    return DateUtil.formatDate(value, pattern);
   }
-
-  @Override
-  public String toString(Object o, String formatName) {
-    return DateUtil.formatDate((Date) o, formatName);
-  }
-
 }

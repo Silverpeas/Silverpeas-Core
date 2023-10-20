@@ -81,7 +81,7 @@ public class PersistentSchedulerIT {
     return WarBuilder4LibCore.onWarForTestClass(PersistentSchedulerIT.class)
         .addCommonBasicUtilities()
         .addSchedulerFeatures()
-        .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
+        .addMavenDependencies("org.awaitility:awaitility", "org.antlr:ST4")
         .testFocusedOn((warBuilder) ->
             warBuilder.addPackages(true, "org.silverpeas.core.initialization"))
         .build();

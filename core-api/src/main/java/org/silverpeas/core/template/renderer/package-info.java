@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2023 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,36 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.template.renderer;
-
-import org.apache.commons.lang3.StringUtils;
-import org.stringtemplate.v4.AttributeRenderer;
-
-import java.util.Locale;
 
 /**
- * Some useful formatting usable from string templates.
- * <p>
- *   For example:
- *   <code>$title;format="toUpper"$</code>
- * </p>
+ * Custom renderers of Java types to extend the templating language.
+ * @author mmoquillon
  */
-public class StringRenderer implements AttributeRenderer<String> {
-
-  @Override
-  public String toString(String value, String formatName, Locale locale) {
-    if (formatName == null) {
-      return value;
-    } else if ("toUpperFirstChar".equals(formatName)) {
-      return StringUtils.capitalize(value);
-    } else if ("toLowerFirstChar".equals(formatName)) {
-      return StringUtils.uncapitalize(value);
-    } else if ("toUpper".equals(formatName)) {
-      return value.toUpperCase();
-    } else if ("toLower".equals(formatName)) {
-      return value.toLowerCase();
-    } else {
-      throw new IllegalArgumentException("Unsupported format name");
-    }
-  }
-}
+package org.silverpeas.core.template.renderer;

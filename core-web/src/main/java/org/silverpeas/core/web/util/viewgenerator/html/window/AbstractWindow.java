@@ -36,7 +36,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -265,7 +265,7 @@ public abstract class AbstractWindow implements Window {
   }
 
   private SilverpeasTemplate getSilverpeasTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
+    return SilverpeasTemplates.createSilverpeasTemplateOnComponents();
   }
 
   private String getWelcomeMessageScript(SilverpeasComponentInstance component) {
