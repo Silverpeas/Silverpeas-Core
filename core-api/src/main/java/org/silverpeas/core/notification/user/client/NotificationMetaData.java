@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.kernel.util.StringUtil;
@@ -297,7 +297,7 @@ public class NotificationMetaData implements java.io.Serializable {
         .replaceAll(BREAK_LINE_REGEXP, "")
         .contains(extraMessage.replaceAll(BREAK_LINE_REGEXP, ""))) {
       SilverpeasTemplate templateRepository =
-          SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+          SilverpeasTemplates.createSilverpeasTemplateOnCore("notification");
       templateRepository.setAttribute(SENDER_MESSAGE_ATTRIBUTE, extraMessage);
       messageContent.append(
           templateRepository.applyFileTemplate("extraMessage" + '_' + verifyLanguage(language)));
@@ -641,7 +641,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   private SilverpeasTemplate createTemplateMessageFooter(String language) {
     SilverpeasTemplate templateFooter =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+        SilverpeasTemplates.createSilverpeasTemplateOnCore("notification");
     this.templatesMessageFooter.put(language, templateFooter);
     return templateFooter;
   }

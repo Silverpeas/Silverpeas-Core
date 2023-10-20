@@ -35,10 +35,10 @@ import org.silverpeas.core.security.authentication.password.rule.MaxLengthPasswo
 import org.silverpeas.core.security.authentication.password.rule.MinLengthPasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.SequentialForbiddenPasswordRule;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -230,7 +230,7 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
 
   @Override
   public String getExtraRuleMessage(final String language) {
-    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("password").
+    return SilverpeasTemplates.createSilverpeasTemplateOnCore("password").
         applyFileTemplate("extraRules_" + language).trim();
   }
 }

@@ -1,4 +1,4 @@
 <div id="body">
-$first(resources):messageBodyResourceItem_de(resource=it)$
-$rest(resources):{<br/>$messageBodyResourceItem_de(resource=it)$}$
+$first(resources):{ resource | $messageBodyResourceItem_de(resource)$}$
+$rest(resources):{ resource | <br/>$messageBodyResourceItem_de(resource)$}$
 </div><br/>

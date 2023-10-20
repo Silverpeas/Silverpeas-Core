@@ -39,7 +39,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
@@ -757,7 +757,7 @@ public class JobDomainPeasRequestRouter extends
           theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domain");
           theNewDomain.setAuthenticationServer("autDomain");
-          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          theNewDomain.setSilverpeasServerURL(URLUtil.getCurrentServerURL());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
@@ -766,7 +766,7 @@ public class JobDomainPeasRequestRouter extends
           theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domainSCIM");
           theNewDomain.setAuthenticationServer("autDomainSCIM");
-          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          theNewDomain.setSilverpeasServerURL(URLUtil.getCurrentServerURL());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_SCIM_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
@@ -775,13 +775,13 @@ public class JobDomainPeasRequestRouter extends
           theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domainGoogle");
           theNewDomain.setAuthenticationServer("autDomainGoogle");
-          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          theNewDomain.setSilverpeasServerURL(URLUtil.getCurrentServerURL());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_GOOGLE_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
         } else if (function.startsWith("displayDomainSQLCreate")) {
           Domain theNewDomain = new Domain();
-          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          theNewDomain.setSilverpeasServerURL(URLUtil.getCurrentServerURL());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_SQL_CREATE_FCT);
           destination = "domainSQLCreate.jsp";
@@ -831,7 +831,7 @@ public class JobDomainPeasRequestRouter extends
         configuration
             .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
         configuration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
-        SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+        SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplate(configuration);
 
         // setting domains to welcome template
         List<Domain> allDomains = jobDomainSC.getAllDomains();

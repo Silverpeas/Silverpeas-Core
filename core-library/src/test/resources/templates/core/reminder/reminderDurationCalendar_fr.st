@@ -1,17 +1,1 @@
-RAPPEL : $contributionTitle;format="toUpperFirstChar"$ aura lieu $if(reminderContributionSeveralDays)$
-$if(reminderContributionStart.timeExisting)$
-du $reminderContributionStart.dayDate$ à $reminderContributionStart.dayTime$ au $reminderContributionEnd.dayDate$ à $reminderContributionEnd.dayTime$
-$else$
-du $reminderContributionStart.dayDate$ au $reminderContributionEnd.dayDate$
-$endif$
-$else$
-$if(reminderContributionStart.timeExisting)$
-le $reminderContributionStart.dayDate$ de $reminderContributionStart.dayTime$ à $reminderContributionEnd.dayTime$
-$else$
-le $reminderContributionStart.dayDate$
-$endif$
-$endif$
-$if(reminderContributionZoneId)$
- ($reminderContributionZoneId$)
-$endif$
-.
+RAPPEL : $contributionTitle;format="toUpperFirstChar"$ aura lieu $if(reminderContributionSeveralDays)$$if(reminderContributionStart.timeExisting)$du $reminderContributionStart.dayDate$ à $reminderContributionStart.dayTime$ au $reminderContributionEnd.dayDate$ à $reminderContributionEnd.dayTime$$else$du $reminderContributionStart.dayDate$ au $reminderContributionEnd.dayDate$$endif$$else$$if(reminderContributionStart.timeExisting)$le $reminderContributionStart.dayDate$ de $reminderContributionStart.dayTime$ à $reminderContributionEnd.dayTime$$else$le $reminderContributionStart.dayDate$$endif$$endif$$if(reminderContributionZoneId)$ ($reminderContributionZoneId$)$endif$.

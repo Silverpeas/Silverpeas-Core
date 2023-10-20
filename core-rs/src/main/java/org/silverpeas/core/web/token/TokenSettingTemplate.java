@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.token;
 
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +78,7 @@ public class TokenSettingTemplate {
   }
 
   public String apply(List<Parameter> parameters) {
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnCore(
         TokenSettingTemplate.TEMPLATE_PATH);
     for (Parameter parameter : parameters) {
       template.setAttribute(parameter.name(), parameter.value());

@@ -1,5 +1,1 @@
-$if(contributionType_CalendarEvent)$
-$reminderDurationCalendar_en()$
-$else$
-$reminderDurationDefault_en()$
-$endif$
+$if(contributionType_CalendarEvent)$$reminderDurationCalendar_en()$$else$$reminderDurationDefault_en()$$endif$
