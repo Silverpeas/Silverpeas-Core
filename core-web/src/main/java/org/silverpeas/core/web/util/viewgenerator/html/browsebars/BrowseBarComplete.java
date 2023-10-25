@@ -33,7 +33,6 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -241,7 +240,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       breadcrumb.append(" id=\"").append(element.getId()).append("\"");
     }
     breadcrumb.append(">");
-    breadcrumb.append(WebEncodeHelper.javaStringToHtmlString(element.getLabel()));
+    breadcrumb.append(element.getLabel());
     if (StringUtil.isDefined(element.getLink())) {
       breadcrumb.append("</a>");
     } else {

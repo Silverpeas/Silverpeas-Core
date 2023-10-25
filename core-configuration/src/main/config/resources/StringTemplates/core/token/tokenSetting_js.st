@@ -36,7 +36,7 @@ function __stampURL(url, tokenName, tokenValue) {
 
 function setTokens(targetContainerSelector) {
   function hasProtectedWord(hrefLowerCase) {
-    var actions = ['delete','update','create','block','unblock'];
+    var actions = ['delete','update','creat','save','block'];
     for (var i = 0; i < actions.length; i++) {
       if (hrefLowerCase.indexOf(actions[i]) >= 0) {
         return true;

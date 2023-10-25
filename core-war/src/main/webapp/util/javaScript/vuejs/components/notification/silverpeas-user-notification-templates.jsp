@@ -80,7 +80,7 @@
        v-bind:class="mainClasses"
        v-on:mouseover="toggleButtons(true)"
        v-on:mouseleave="toggleButtons(false)">
-    <div class="user-notification-subject">{{notification.subject}}</div>
+    <div class="user-notification-subject" v-html="notification.subject"></div>
     <div class="date-from">
       <span class="user-notification-date">{{notification.date | displayAsDate}}</span>
       <span class="user-notification-from">{{notification.senderName}}</span>

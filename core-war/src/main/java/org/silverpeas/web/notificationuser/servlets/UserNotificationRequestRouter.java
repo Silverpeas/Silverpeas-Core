@@ -25,6 +25,7 @@ package org.silverpeas.web.notificationuser.servlets;
 
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -125,9 +126,10 @@ public class UserNotificationRequestRouter
   private NotificationContext getNotificationContext(final HttpRequest request) {
     final NotificationContext context = new NotificationContext(getCurrentRequester());
     Enumeration<String> parameters = request.getParameterNames();
+    final HtmlSanitizer htmlSanitizer = HtmlSanitizer.get();
     while (parameters.hasMoreElements()) {
       final String name = parameters.nextElement();
-      context.put(name, request.getParameter(name));
+      context.put(name, htmlSanitizer.sanitize(request.getParameter(name)));
     }
     return context;
   }

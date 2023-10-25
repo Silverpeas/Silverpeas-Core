@@ -97,7 +97,7 @@
       </div>
     </c:if>
     <div class="content-notification rich-content">
-        ${msg.body}
+        ${silfn:sanitizeHtml(msg.body)}
     </div>
 
     <view:buttonPane>
