@@ -258,7 +258,7 @@ public class JobDomainPeasRequestRouter extends
           }
 
           destination = DOMAIN_CONTENT_DEST;
-        } else if (function.startsWith("userModify")) {
+        } else if (function.startsWith("userUpdate")) {
           UserRequestData userRequestData =
               RequestParameterDecoder.decode(request, UserRequestData.class);
 
@@ -430,7 +430,7 @@ public class JobDomainPeasRequestRouter extends
               WebEncodeHelper.htmlStringToJavaString(request.getParameter(GROUP_NAME_PARAM)),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
               request.getParameter("groupRule"));
-        } else if (function.startsWith("groupModify")) {
+        } else if (function.startsWith("groupUpdate")) {
           bHaveToRefreshDomain = jobDomainSC.modifyGroup(request.getParameter(IDGROUP_PARAM),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter(GROUP_NAME_PARAM)),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
@@ -634,9 +634,9 @@ public class JobDomainPeasRequestRouter extends
               .getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
                   jobDomainSC.getString("JDP.groupAdd") + "..."));
           destination = "groupCreate.jsp";
-        } else if (function.startsWith("displayGroupModify")) {
+        } else if (function.startsWith("displayGroupUpdate")) {
           request.setAttribute(GROUP_OBJECT_ATTR, jobDomainSC.getTargetGroup());
-          request.setAttribute(ACTION_ATTR, "groupModify");
+          request.setAttribute(ACTION_ATTR, "groupUpdate");
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
               .getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
                   jobDomainSC.getString("JDP.groupUpdate") + "..."));
@@ -679,9 +679,9 @@ public class JobDomainPeasRequestRouter extends
                   jobDomainSC.getString("JDP.csvImport") + "..."));
           request.setAttribute("FieldLabelsToImport", jobDomainSC.getFieldLabelsOfCSVToImport());
           destination = "usersCsvImport.jsp";
-        } else if (function.startsWith("displayUserModify")) {
+        } else if (function.startsWith("displayUserUpdate")) {
           request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());
-          request.setAttribute(ACTION_ATTR, "userModify");
+          request.setAttribute(ACTION_ATTR, "userUpdate");
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
               .getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
                   jobDomainSC.getString("JDP.userUpdate") + "..."));

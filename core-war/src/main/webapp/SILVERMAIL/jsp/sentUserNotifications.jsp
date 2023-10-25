@@ -134,7 +134,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
               <a href="${viewUrl}">${silfn:formatDate(sentUserNotification.data.notifDate, _userLanguage)}</a>
             </view:arrayCellText>
             <view:arrayCellText>
-              <a href="${viewUrl}">${silfn:escapeHtml(sentUserNotification.data.title)}</a>
+              <a href="${viewUrl}">${silfn:sanitizeHtml(sentUserNotification.data.title)}</a>
             </view:arrayCellText>
             <view:arrayCellText>
               <a href="${viewUrl}">${silfn:escapeHtml(sentUserNotification.data.source)}</a>

@@ -116,7 +116,7 @@
     if (isUserFull) {
       operationPane
           .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
-              "displayUserModify?Iduser=" + thisUserId);
+              "displayUserUpdate?Iduser=" + thisUserId);
     }
     updatableUser = true;
     if (userObject.isBlockedState()) {

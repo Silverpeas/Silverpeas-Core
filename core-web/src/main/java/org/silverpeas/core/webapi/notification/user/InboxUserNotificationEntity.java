@@ -27,6 +27,7 @@ package org.silverpeas.core.webapi.notification.user;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.security.html.HtmlSanitizer;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.rs.WebEntity;
 
@@ -142,7 +143,8 @@ public class InboxUserNotificationEntity implements WebEntity {
   protected InboxUserNotificationEntity decorate(final SILVERMAILMessage notification) {
     this.id = notification.getId();
     this.source = notification.getSource();
-    this.subject = notification.getSubject();
+    final HtmlSanitizer htmlSanitizer = HtmlSanitizer.get();
+    this.subject = htmlSanitizer.sanitize(notification.getSubject());
     this.senderName = notification.getSenderName();
     this.date = toLocalDate(notification.getDate()).toString();
     try {
@@ -150,7 +152,7 @@ public class InboxUserNotificationEntity implements WebEntity {
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
     }
-    this.content = notification.getBody();
+    this.content = htmlSanitizer.sanitize(notification.getBody());
     this.read = notification.getReaden() > 0;
     return this;
   }

@@ -40,6 +40,13 @@ public interface HtmlSanitizer {
   }
 
   /**
+   * @see #sanitize(String)
+   */
+  static String ofHtml(final String html) {
+    return HtmlSanitizer.get().sanitize(html);
+  }
+
+  /**
    * Sanitizing the given content by keeping:
    * <ul>
    *   <li>safe formatting</li>
