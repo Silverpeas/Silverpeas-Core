@@ -90,7 +90,7 @@
   List<Group> groups = (List<Group>) request.getAttribute("GroupsManagedByCurrentUser");
 
   boolean userCreation = "userCreate".equals(action);
-  boolean extraInfosUpdatable = userCreation || "userModify".equals(action);
+  boolean extraInfosUpdatable = userCreation || "userUpdate".equals(action);
 
   browseBar.setComponentName(getDomainLabel(domObject, resource),
       "domainContent?Iddomain=" + domObject.getId());
@@ -165,8 +165,8 @@ function ifCorrectBasicFormExecute(callback) {
   <% if (userObject.isPasswordAvailable()) { %>
   if ($('#userPasswordValid:checked').val()) {
     var $pwdInput = $('#userPasswordId');
-    <% if (userCreation || "userModify".equals(action)) { %>
-    <% if ("userModify".equals(action)) { %>
+    <% if (userCreation || "userUpdate".equals(action)) { %>
+    <% if ("userUpdate".equals(action)) { %>
     if ($pwdInput.val()) {
       <% } %>
       var passwordDeferred = sp.promise.deferred();
@@ -183,7 +183,7 @@ function ifCorrectBasicFormExecute(callback) {
       if ($pwdInput.val() != $('#userPasswordAgainId').val()) {
         SilverpeasError.add("<fmt:message key='JDP.confirmPwdError'/>");
       }
-      <% if ("userModify".equals(action)) { %>
+      <% if ("userUpdate".equals(action)) { %>
     }
     <% } %>
     <% } %>

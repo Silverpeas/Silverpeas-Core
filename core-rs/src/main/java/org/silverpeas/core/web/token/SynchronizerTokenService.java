@@ -24,8 +24,7 @@
 package org.silverpeas.core.web.token;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -60,16 +59,18 @@ import java.util.List;
  * </p>
  * @author mmoquillon
  */
-@Technical
-@Bean
+@Service
 public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String UNPROTECTED_URI_RULE =
       "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rselectionpeaswrapper/|rusernotification/|services/usernotifications/|blockingNews|services/password/)).*";
-  private static final String DEFAULT_GET_RULE
-      = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
+  private static final String DEFAULT_GET_RULE_KEYWORDS = "(delete|update|creat|save|block)";
+  private static final String DEFAULT_GET_RULE_ON_KEYWORD =
+      "(?i)^.*" + DEFAULT_GET_RULE_KEYWORDS + ".*$";
+  private static final String DEFAULT_GET_RULE =
+      "(?i)^/\\w+[\\w/]*/jsp/.*" + DEFAULT_GET_RULE_KEYWORDS + ".*$";
   private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
   private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList("POST", "PUT",
       "DELETE");
@@ -143,16 +144,20 @@ public class SynchronizerTokenService {
    * token, that is to say with the token that is set with the user session.
    * </p>
    * @param request the HTTP request to check.
+   * @param onKeywordsOnly true to verify the request URI against predefined keywords without
+   * taking care of the entire request URI. false to verify the keywords into request URI structure.
    * @throws TokenValidationException if the specified request cannot be trusted.
    */
-  public void validate(HttpServletRequest request) throws TokenValidationException {
-    if (SecuritySettings.isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
+  public void validate(HttpServletRequest request, final boolean onKeywordsOnly)
+      throws TokenValidationException {
+    if (SecuritySettings.isWebSecurityByTokensEnabled() &&
+        isAProtectedResource(request, onKeywordsOnly)) {
       logger.debug("Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
       // is there a user session opened?
       if (expectedToken.isDefined()) {
         String actualToken = getTokenInRequest(SESSION_TOKEN_KEY, request);
-        validate(actualToken, expectedToken);
+        validate(request, actualToken, expectedToken);
       }
 
       // is the navigation protected by a token?
@@ -161,7 +166,7 @@ public class SynchronizerTokenService {
       if (expectedToken.isDefined()) {
         logger.debug("Validate the request origin for path {0}", getRequestPath(request));
         String actualToken = getTokenInRequest(NAVIGATION_TOKEN_KEY, request);
-        validate(actualToken, expectedToken);
+        validate(request, actualToken, expectedToken);
       }
     }
   }
@@ -173,16 +178,20 @@ public class SynchronizerTokenService {
    * requested URI is declared as to be protected.
    * </p>
    * @param request the request to a possibly protected resource.
+   * @param onKeywordsOnly true to verify the request URI against predefined keywords without
+   * taking care of the entire request URI. false to verify the keywords into request URI structure.
    * @return true if the requested resource is a protected one and then the request should be
    * validated.
    */
-  public boolean isAProtectedResource(HttpServletRequest request) {
+  public boolean isAProtectedResource(HttpServletRequest request, final boolean onKeywordsOnly) {
     boolean isProtected = false;
     if (request.getRequestURI().matches(UNPROTECTED_URI_RULE)) {
       isProtected = DEFAULT_PROTECTED_METHODS.contains(request.getMethod());
-      if (!isProtected && request.getMethod().equals("GET")) {
+      if (!isProtected && "GET".equals(request.getMethod())) {
         String path = getRequestPath(request);
-        isProtected = path.matches(DEFAULT_GET_RULE);
+        isProtected = onKeywordsOnly ?
+            path.matches(DEFAULT_GET_RULE_ON_KEYWORD) :
+            path.matches(DEFAULT_GET_RULE);
       }
     }
     return isProtected;
@@ -231,16 +240,22 @@ public class SynchronizerTokenService {
     return path;
   }
 
-  private void validate(String actualToken, Token expectedToken) throws TokenValidationException {
+  private void validate(final HttpServletRequest request, String actualToken, Token expectedToken)
+      throws TokenValidationException {
     if (!(StringUtil.isDefined(actualToken) && expectedToken.isDefined()
         && expectedToken.getValue().equals(actualToken))) {
-      throwTokenInvalidException();
+      throwTokenInvalidException(request);
     }
   }
 
-  private void throwTokenInvalidException() throws TokenValidationException {
+  private void throwTokenInvalidException(final HttpServletRequest request)
+      throws TokenValidationException {
     String now = TemporalFormatter.toBaseIso8601(OffsetDateTime.now(), true);
-    throw new TokenValidationException("Attempt of a CSRF attack detected at " + now);
+    final TokenValidationException exception = new TokenValidationException(
+        "Attempt of a CSRF attack detected at " + now);
+    logger.error("The request for path {0} isn''t valid: {1}", request.getRequestURI(),
+        exception.getMessage());
+    throw exception;
   }
 
   private Token getTokenInSession(String tokenId, HttpServletRequest request, boolean pop) {

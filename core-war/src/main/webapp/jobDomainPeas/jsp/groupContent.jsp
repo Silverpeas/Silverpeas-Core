@@ -81,7 +81,7 @@
       showTabs = true;
       // Group operations
       operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"), resource.getString("JDP.groupAdd"), "displayGroupCreate?Idgroup=" + thisGroupId);
-      operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupModify?Idgroup=" + thisGroupId);
+      operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupUpdate?Idgroup=" + thisGroupId);
       operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
       // User operations
       operationPane.addLine();
@@ -103,7 +103,7 @@
       } else {
         //Group operations
         operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"), resource.getString("JDP.groupAdd"), "displayGroupCreate?Idgroup=" + thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupModify?Idgroup=" + thisGroupId);
+        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"), resource.getString("GML.modify"), "displayGroupUpdate?Idgroup=" + thisGroupId);
         if (!isGroupManagerDirectly) {
           operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString("GML.remove"), "javascript:removeGroup()");
         }

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
+import org.silverpeas.core.security.html.HtmlSanitizer;
+
 public class BrowseBarElement {
 
   private String label;
@@ -40,7 +42,7 @@ public class BrowseBarElement {
   }
 
   public String getLabel() {
-    return label;
+    return HtmlSanitizer.get().sanitize(label);
   }
 
   public String getLink() {

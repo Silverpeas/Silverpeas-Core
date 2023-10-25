@@ -223,6 +223,12 @@
   </function>
   <function>
     <description>Function to encode a java String into a HTML String.</description>
+    <name>sanitizeHtml</name>
+    <function-class>org.silverpeas.core.security.html.HtmlSanitizer</function-class>
+    <function-signature>java.lang.String ofHtml(java.lang.String)</function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
     <name>escapeHtml</name>
     <function-class>org.silverpeas.core.util.WebEncodeHelper</function-class>
     <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>

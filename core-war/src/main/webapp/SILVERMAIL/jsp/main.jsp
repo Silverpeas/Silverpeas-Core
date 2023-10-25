@@ -187,7 +187,7 @@
               </c:if>
             </view:arrayCellText>
             <view:arrayCellText>
-              <a href="${viewUrl}">${silfn:escapeHtml(userNotification.data.subject)}</a>
+              <a href="${viewUrl}">${silfn:sanitizeHtml(userNotification.data.subject)}</a>
             </view:arrayCellText>
             <view:arrayCellText>
               <a href="${viewUrl}">${silfn:escapeHtml(userNotification.data.senderName)}</a>

@@ -84,7 +84,7 @@
       </div>
     </c:if>
     <div class="content-notification rich-content">
-        ${notif.body}
+        ${silfn:sanitizeHtml(notif.body)}
     </div>
     <view:buttonPane>
       <fmt:message var="deleteLabel" key="delete"/>
