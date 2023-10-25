@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -205,6 +206,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       return destination;
     }
 
+    validateSecurityTokens(request);
+
     T ctrl = this.getComponentSessionController(session, componentId);
     if (ctrl == null) {
       ctrl = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);
@@ -317,6 +320,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     StringUtil.requireDefined(destination);
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.validateSession(session.getId());
+  }
+
+  private void validateSecurityTokens(final HttpServletRequest request) {
+    try {
+      SynchronizerTokenService.getInstance().validate(request, true);
+    } catch (TokenValidationException ex) {
+      throwHttpForbiddenError();
+    }
   }
 
   // isUserStateValid if the user is allowed to access the required component

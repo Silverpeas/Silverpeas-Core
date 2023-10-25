@@ -53,7 +53,7 @@
     <c:set var="popupMsgId" value="${popupMsg.id}"/>
     <c:set var="popupMsgDate" value="${popupMsg.date}"/>
     <c:set var="popupMsgTime" value="${popupMsg.time}"/>
-    <c:set var="popupMsgBody" value="${popupMsg.body}"/>
+    <c:set var="popupMsgBody" value="${silfn:sanitizeHtml(popupMsg.body)}"/>
     <c:set var="popupMsgUrl" value="${popupMsg.url}"/>
     <c:set var="senderId" value="${popupMsg.senderId}"/>
     <c:set var="senderName" value="${silfn:defaultEmptyString(popupMsg.senderName)}"/>

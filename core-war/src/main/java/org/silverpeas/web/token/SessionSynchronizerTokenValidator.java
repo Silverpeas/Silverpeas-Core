@@ -85,19 +85,17 @@ public class SessionSynchronizerTokenValidator implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
-
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     if (SecuritySettings.isWebSecurityByTokensEnabled() && isProtectedResource(httpRequest)) {
       try {
         checkAuthenticatedRequest(httpRequest);
-        tokenService.validate(httpRequest);
+        tokenService.validate(httpRequest, false);
         chain.doFilter(request, response);
       } catch (TokenValidationException ex) {
-        logger.error("The request for path {0} isn''t valid: {1}", pathOf(request), ex.getMessage());
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
       } catch (UnauthenticatedRequestException ex) {
         logger.error("The request for path {0} isn''t sent within an opened session",
-            pathOf(request));
+            ((HttpServletRequest) request).getRequestURI());
         redirectToAuthenticationPage(request, response);
       }
     } else {
@@ -162,7 +160,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
-    return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request) &&
+    return tokenService.isAProtectedResource(request, false) && !isFileDragAndDrop(request) &&
         !isCredentialManagement(request) && !isSsoAuthentication(request) &&
         !isWebServiceRequested(request) &&
         !isWebBrowserEditionResource(request) && !isCMISResource(request) &&
@@ -198,13 +196,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
     return request.getRequestURI().contains(getApplicationURL() + "/Rddwe/");
   }
 
-  private String pathOf(ServletRequest request) {
-    return ((HttpServletRequest) request).getRequestURI();
-  }
-
   private static class UnauthenticatedRequestException extends Exception {
-
     private static final long serialVersionUID = 9173126171348369053L;
-
   }
 }
