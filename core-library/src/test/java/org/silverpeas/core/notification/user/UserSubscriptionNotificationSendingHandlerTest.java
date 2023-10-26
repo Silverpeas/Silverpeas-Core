@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
@@ -53,6 +54,11 @@ class UserSubscriptionNotificationSendingHandlerTest {
   @BeforeEach
   public void setup() {
     request = mock(HttpServletRequest.class);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
+  }
+
+  @AfterEach
+  public void tearDown() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
   }
 

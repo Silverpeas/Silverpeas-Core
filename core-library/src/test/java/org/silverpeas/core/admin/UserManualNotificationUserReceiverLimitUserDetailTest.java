@@ -28,10 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.NotificationSettingsMocker;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,15 +45,14 @@ class UserManualNotificationUserReceiverLimitUserDetailTest {
   private static final int LIMITED = 5;
 
   @RegisterExtension
-  FieldMocker mocker = new FieldMocker();
+  public NotificationSettingsMocker mocker = new NotificationSettingsMocker();
 
   private SettingBundle mockedSettings;
   private UserDetail currentUser;
 
   @BeforeEach
   public void setup() {
-    mockedSettings = mocker.mockField(NotificationManagerSettings.class,
-        SettingBundle.class, "settings");
+    mockedSettings = mocker.getMockedSettings();
     currentUser = spy(new UserDetail());
     // By default, a user is not an anonymous one
     assertThat(currentUser.isAnonymous(), is(false));
