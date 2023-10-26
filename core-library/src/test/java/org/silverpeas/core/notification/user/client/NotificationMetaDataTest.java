@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
@@ -53,7 +52,8 @@ class NotificationMetaDataTest {
   private static final String USER_SENDER = "2406";
 
   @RegisterExtension
-  FieldMocker mocker = new FieldMocker();
+  public NotificationSettingsMocker mocker = new NotificationSettingsMocker();
+
   @TestManagedMock
   private NotificationManager notificationManager;
   private NotificationMetaData current;
@@ -64,8 +64,7 @@ class NotificationMetaDataTest {
     current = new NotificationMetaData();
 
     // Settings
-    mockedSettings = mocker.mockField(NotificationManagerSettings.class,
-        SettingBundle.class, "settings");
+    mockedSettings = mocker.getMockedSettings();
 
     when(UserProvider.get().getUser(anyString())).thenAnswer(
         invocation -> new UserDetail());
@@ -278,35 +277,7 @@ class NotificationMetaDataTest {
   }
 
   @Test
-  void getAllUserRecipientsInSendContextForVerifyingExclusionWithDefaultSettings()
-      throws Exception {
-    current.setSender(USER_SENDER);
-    current.addUserRecipientToExclude(new UserRecipient("Excluded"));
-    current.addUserRecipient(new UserRecipient(USER_SENDER));
-    current.addUserRecipient(new UserRecipient("26"));
-
-    assertThat(current.getAllUserRecipients(true),
-        Matchers.containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26")));
-    assertThat(current.getUserRecipientsToExclude(),
-        containsInAnyOrder(new UserRecipient("Excluded")));
-  }
-
-  @Test
   void getAllUserRecipientsInSendContextForVerifyingSenderExclusion()
-      throws Exception {
-    current.setSender(USER_SENDER);
-    current.addUserRecipientToExclude(new UserRecipient("Excluded"));
-    current.addUserRecipient(new UserRecipient(USER_SENDER));
-    current.addUserRecipient(new UserRecipient("26"));
-
-    assertThat(current.getAllUserRecipients(true),
-        Matchers.containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26")));
-    assertThat(current.getUserRecipientsToExclude(),
-        containsInAnyOrder(new UserRecipient("Excluded")));
-  }
-
-  @Test
-  void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithForceKeepingSender()
       throws Exception {
     current.setSender(USER_SENDER);
     current.addUserRecipientToExclude(new UserRecipient("Excluded"));
@@ -340,26 +311,26 @@ class NotificationMetaDataTest {
    */
 
   @Test
-  void isManualUserOneWithNoSenderAndNotManualOne() throws Exception {
+  void isManualUserOneWithNoSenderAndNotManualOne() {
     assertThat(current.isManualUserOne(), is(false));
   }
 
   @Test
-  void isManualUserOneWithSenderAndNotManualOne() throws Exception {
+  void isManualUserOneWithSenderAndNotManualOne() {
     current.setSender(USER_SENDER);
 
     assertThat(current.isManualUserOne(), is(false));
   }
 
   @Test
-  void isManualUserOneWithNoSender() throws Exception {
+  void isManualUserOneWithNoSender() {
     current.manualUserNotification();
 
     assertThat(current.isManualUserOne(), is(true));
   }
 
   @Test
-  void isManualUserOneWithSender() throws Exception {
+  void isManualUserOneWithSender() {
     current.manualUserNotification();
     current.setSender(USER_SENDER);
 

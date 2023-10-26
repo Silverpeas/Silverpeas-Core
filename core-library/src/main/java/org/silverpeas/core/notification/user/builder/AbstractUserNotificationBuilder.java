@@ -204,7 +204,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   /**
    * A collection of user identifiers. All the users in this collection will be notified. This
    * method requires to be implemented.
-   * @return
+   * @return the identifier of all the users to notify
    */
   protected abstract Collection<String> getUserIdsToNotify();
 
@@ -381,7 +381,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * Used to stop the treatment at any time
    * @author Yohann Chastagnier
    */
-  private class Stop extends RuntimeException {
+  private static class Stop extends RuntimeException {
     private static final long serialVersionUID = 1L;
     // Nothing to do
   }
