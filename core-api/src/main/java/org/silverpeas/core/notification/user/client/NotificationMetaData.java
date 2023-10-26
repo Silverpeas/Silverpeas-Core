@@ -32,8 +32,8 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.*;

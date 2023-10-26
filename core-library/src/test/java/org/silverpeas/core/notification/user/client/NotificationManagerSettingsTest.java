@@ -29,9 +29,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.FieldMocker;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -41,15 +40,13 @@ import static org.mockito.Mockito.when;
 class NotificationManagerSettingsTest {
 
   @RegisterExtension
-  FieldMocker mocker = new FieldMocker();
+  NotificationSettingsMocker mocker = new NotificationSettingsMocker();
   private SettingBundle mockedSettings;
 
   @BeforeEach
   public void setup() {
     // Settings
-    mockedSettings =
-        mocker.mockField(NotificationManagerSettings.class, SettingBundle.class,
-            "settings");
+    mockedSettings = mocker.getMockedSettings();
     setDefaultChannels("");
     setDelayedNotificationFrequencyChoiceList("");
     setDefaultDelayedNotificationFrequencyChoiceList("");
