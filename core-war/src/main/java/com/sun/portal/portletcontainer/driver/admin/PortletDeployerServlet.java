@@ -23,18 +23,19 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
-import org.silverpeas.web.portlets.portal.DesktopMessages;
-import org.silverpeas.web.portlets.portal.PropertiesContext;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.web.portlets.portal.DesktopMessages;
+import org.silverpeas.web.portlets.portal.PropertiesContext;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and
  * creating of portlet windows.
  */
-public class PortletDeployerServlet extends HttpServlet {
+public class PortletDeployerServlet extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 7041695476364573175L;
 
   private static final Logger logger = Logger.getLogger(PortletDeployerServlet.class
@@ -131,6 +132,9 @@ public class PortletDeployerServlet extends HttpServlet {
 
   public void doGetPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    if (!User.getCurrentRequester().isAccessAdmin()) {
+      throwHttpForbiddenError();
+    }
 
     String language = getLanguage(request);
 

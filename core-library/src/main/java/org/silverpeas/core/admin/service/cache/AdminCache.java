@@ -379,6 +379,7 @@ public class AdminCache {
               .ifPresent(subSpaces::remove);
           subSpaces.add(theSpace);
           f.setSubSpaces(subSpaces);
+          resetManageableSpaceIds();
         });
       }
     }

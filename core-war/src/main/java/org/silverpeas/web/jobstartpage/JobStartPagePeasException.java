@@ -30,75 +30,25 @@
 
 package org.silverpeas.web.jobstartpage;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
- * Class declaration
- * @author
+ * Exception when an error is raised from a Silverpeas space and component related job.
  */
 public class JobStartPagePeasException extends SilverpeasException {
 
   private static final long serialVersionUID = 7820592552517371949L;
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   *
-   */
-  public JobStartPagePeasException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+
+  public JobStartPagePeasException(final String message, String ... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public JobStartPagePeasException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public JobStartPagePeasException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public JobStartPagePeasException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public JobStartPagePeasException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public JobStartPagePeasException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String getModule() {
-    return "jobStartPagePeas";
-  }
-
 }

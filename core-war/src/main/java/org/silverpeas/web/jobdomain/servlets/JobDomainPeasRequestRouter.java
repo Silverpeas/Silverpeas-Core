@@ -52,7 +52,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.web.jobdomain.JobDomainPeasException;
 import org.silverpeas.web.jobdomain.JobDomainSettings;
@@ -72,7 +72,7 @@ import static org.silverpeas.web.jobdomain.servlets.RemovedGroupUIEntity.convert
 import static org.silverpeas.web.jobdomain.servlets.RemovedUserUIEntity.convertRemovedUserList;
 
 public class JobDomainPeasRequestRouter extends
-    ComponentRequestRouter<JobDomainPeasSessionController> {
+    AdminComponentRequestRouter<JobDomainPeasSessionController> {
 
   private static final long serialVersionUID = 1L;
 
@@ -120,6 +120,8 @@ public class JobDomainPeasRequestRouter extends
   private static final String DISPLAY_REMOVED_USERS_DEST = "displayRemovedUsers";
   private static final String DOMAIN_USER_FILTER_MANAGEMENT_DEST = "domainUserFilterManagement.jsp";
   private static final String IS_ONLY_SPACE_MANAGER_ATTR = "isOnlySpaceManager";
+  private static final String WRITE_OPERATION_PARTS =
+      "(?i)^.*(create|update|modify|delete|remove|block|activate|import|synchro).*$";
 
   @Override
   public JobDomainPeasSessionController createComponentSessionController(
@@ -147,15 +149,12 @@ public class JobDomainPeasRequestRouter extends
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, JobDomainPeasSessionController jobDomainSC,
+  public String getAdminDestination(String function, JobDomainPeasSessionController jobDomainSC,
       HttpRequest request) {
     String destination = "";
 
 
     try {
-      if (!jobDomainSC.isAccessGranted()) {
-        throw new JobDomainPeasException("Bad right for user {0}", jobDomainSC.getUserId());
-      }
       // 1) Performs the action
       // ----------------------
       if (function.startsWith("selectUserOrGroup")) {
@@ -176,6 +175,7 @@ public class JobDomainPeasRequestRouter extends
       }
 
       if ("blankUsers".equals(function)) {
+        jobDomainSC.checkCurrentDomainAccessGranted(false);
         final List<String> userIds = new ArrayList<>();
         request.mergeSelectedItemsInto(userIds);
         if (!userIds.isEmpty()) {
@@ -197,6 +197,7 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.setTargetUser(user.getId());
         destination = USER_CONTENT_DEST;
       } else if ("restoreUsers".equals(function)) {
+        jobDomainSC.checkCurrentDomainAccessGranted(false);
         final List<String> userIds = new ArrayList<>();
         request.mergeSelectedItemsInto(userIds);
         for (final String u : userIds) {
@@ -204,6 +205,7 @@ public class JobDomainPeasRequestRouter extends
         }
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if ("deleteUsers".equals(function)) {
+        jobDomainSC.checkCurrentDomainAccessGranted(false);
         final List<String> userIds = new ArrayList<>();
         request.mergeSelectedItemsInto(userIds);
         for (final String u : userIds) {
@@ -211,6 +213,7 @@ public class JobDomainPeasRequestRouter extends
         }
         destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if ("restoreGroups".equals(function)) {
+        jobDomainSC.checkCurrentDomainAccessGranted(false);
         final List<String> groupIds = new ArrayList<>();
         request.mergeSelectedItemsInto(groupIds);
         boolean refreshDomainNav = false;
@@ -222,6 +225,7 @@ public class JobDomainPeasRequestRouter extends
         }
         destination = getDestination(DISPLAY_REMOVED_GROUPS_DEST, jobDomainSC, request);
       } else if ("deleteGroups".equals(function)) {
+        jobDomainSC.checkCurrentDomainAccessGranted(false);
         final List<String> groupIds = new ArrayList<>();
         request.mergeSelectedItemsInto(groupIds);
         for (final String group : groupIds) {
@@ -231,6 +235,14 @@ public class JobDomainPeasRequestRouter extends
       } else if (function.startsWith("user")) {
         // USER Actions --------------------------------------------
         String userId = request.getParameter("Iduser");
+        final boolean readOperation = !function.matches(WRITE_OPERATION_PARTS);
+        if (isDefined(userId)) {
+          jobDomainSC.checkUserAccessGranted(userId, readOperation);
+        } else if (jobDomainSC.getTargetUserDetail() != null) {
+          jobDomainSC.checkUserAccessGranted(jobDomainSC.getTargetUserDetail().getId(), readOperation);
+        } else {
+          jobDomainSC.checkCurrentDomainAccessGranted(readOperation);
+        }
         if (function.startsWith(USER_CONTENT_FCT)) {
           if (isDefined(userId)) {
             jobDomainSC.setTargetUser(userId);
@@ -406,32 +418,43 @@ public class JobDomainPeasRequestRouter extends
         boolean bHaveToRefreshDomain = false;
 
         jobDomainSC.setTargetUser(null);
+        String groupId = request.getParameter(IDGROUP_PARAM);
+        final boolean readOperation = !function.matches(WRITE_OPERATION_PARTS);
+        if (isDefined(groupId)) {
+          jobDomainSC.checkGroupAccessGranted(groupId, readOperation);
+        } else if (jobDomainSC.getTargetGroup() != null) {
+          jobDomainSC.checkGroupAccessGranted(jobDomainSC.getTargetGroup().getId(), readOperation);
+        } else {
+          jobDomainSC.checkCurrentDomainAccessGranted(readOperation);
+        }
 
         // Browse functions
         // ----------------
         if (function.startsWith(GROUP_CONTENT_FCT)) {
-          String groupId = request.getParameter(IDGROUP_PARAM);
           if (isDefined(groupId)) {
             jobDomainSC.goIntoGroup(groupId);
           }
         } else if (function.startsWith("groupExport.txt")) {
-          String groupId = request.getParameter(IDGROUP_PARAM);
           if (isDefined(groupId)) {
-            jobDomainSC.goIntoGroup(request.getParameter(IDGROUP_PARAM));
+            jobDomainSC.goIntoGroup(groupId);
             destination = "exportgroup.jsp";
           }
         } else if (function.startsWith("groupReturn")) {
-          jobDomainSC.returnIntoGroup(request.getParameter(IDGROUP_PARAM));
+          jobDomainSC.returnIntoGroup(groupId);
         } else if (function.startsWith("groupSet")) {
           jobDomainSC.returnIntoGroup(null);
-          jobDomainSC.goIntoGroup(request.getParameter(IDGROUP_PARAM));
+          jobDomainSC.goIntoGroup(groupId);
         } else if (function.startsWith("groupCreate")) {
-          bHaveToRefreshDomain = jobDomainSC.createGroup(request.getParameter("Idparent"),
+          final String parentGroupId = request.getParameter("Idparent");
+          if (isDefined(parentGroupId)) {
+            jobDomainSC.checkGroupAccessGranted(parentGroupId, false);
+          }
+          bHaveToRefreshDomain = jobDomainSC.createGroup(parentGroupId,
               WebEncodeHelper.htmlStringToJavaString(request.getParameter(GROUP_NAME_PARAM)),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
               request.getParameter("groupRule"));
         } else if (function.startsWith("groupUpdate")) {
-          bHaveToRefreshDomain = jobDomainSC.modifyGroup(request.getParameter(IDGROUP_PARAM),
+          bHaveToRefreshDomain = jobDomainSC.modifyGroup(groupId,
               WebEncodeHelper.htmlStringToJavaString(request.getParameter(GROUP_NAME_PARAM)),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
               request.getParameter("groupRule"));
@@ -439,11 +462,11 @@ public class JobDomainPeasRequestRouter extends
           bHaveToRefreshDomain = jobDomainSC
               .updateGroupSubUsers(jobDomainSC.getTargetGroup().getId(), jobDomainSC.getSelectedUsersIds());
         } else if (function.startsWith("groupRemove")) {
-          bHaveToRefreshDomain = jobDomainSC.removeGroup(request.getParameter(IDGROUP_PARAM));
+          bHaveToRefreshDomain = jobDomainSC.removeGroup(groupId);
         } else if (function.startsWith("groupDelete")) {
-          bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter(IDGROUP_PARAM));
+          bHaveToRefreshDomain = jobDomainSC.deleteGroup(groupId);
         } else if (function.startsWith("groupSynchro")) {
-          final Optional<Group> synchronizedGroup = jobDomainSC.synchroGroup(request.getParameter(IDGROUP_PARAM));
+          final Optional<Group> synchronizedGroup = jobDomainSC.synchroGroup(groupId);
           if (synchronizedGroup.isPresent()) {
             final Group group = synchronizedGroup.get();
             if (group.isRemovedState()) {
@@ -453,7 +476,7 @@ public class JobDomainPeasRequestRouter extends
             }
           }
         } else if (function.startsWith("groupUnSynchro")) {
-          bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter(IDGROUP_PARAM));
+          bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(groupId);
         } else if (function.startsWith("groupImport")) {
           bHaveToRefreshDomain = jobDomainSC.importGroup(WebEncodeHelper.htmlStringToJavaString(request.getParameter(
               GROUP_NAME_PARAM)));
@@ -480,7 +503,7 @@ public class JobDomainPeasRequestRouter extends
 
           destination = getDestination("groupManagersView", jobDomainSC, request);
         } else if ("groupOpen".equals(function)) {
-          String groupId = request.getParameter("groupId");
+          groupId = request.getParameter("groupId");
 
           if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
             OrganizationController orgaController = jobDomainSC.getOrganisationController();
@@ -529,6 +552,12 @@ public class JobDomainPeasRequestRouter extends
         // DOMAIN Actions --------------------------------------------
       } else if (function.startsWith(DOMAIN_ATTR)) {
         jobDomainSC.setTargetUser(null);
+        final boolean writeOperation = function.matches(WRITE_OPERATION_PARTS);
+        if (writeOperation) {
+          jobDomainSC.checkAdminAccessOnly();
+        } else if (jobDomainSC.getTargetDomain() != null) {
+          jobDomainSC.checkCurrentDomainAccessGranted(true);
+        }
         if (function.startsWith("domainModifyUserFilter")) {
           destination = handleUserFilterModification(jobDomainSC, request);
         } else if (function.startsWith("domainGoTo")) {
@@ -811,6 +840,7 @@ public class JobDomainPeasRequestRouter extends
       } else if ("SelectRightsUserOrGroup".equals(function)) {
         destination = jobDomainSC.initSelectionRightsUserOrGroup();
       } else if ("AssignSameRights".equals(function)) {
+        jobDomainSC.checkAdminAccessOnly();
         if (!jobDomainSC.isRightCopyReplaceEnabled()) {
           throwHttpForbiddenError();
         }

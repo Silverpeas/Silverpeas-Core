@@ -34,7 +34,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.web.pdc.control.PdcSessionController;
 
@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionController> {
+public class PdcRequestRouter extends AdminComponentRequestRouter<PdcSessionController> {
 
   private static final long serialVersionUID = -1233766141114104308L;
 
@@ -85,7 +85,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, PdcSessionController pdcSC,
+  public String getAdminDestination(String function, PdcSessionController pdcSC,
       HttpRequest request) {
     String destination = "";
     try {

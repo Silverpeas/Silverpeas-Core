@@ -55,8 +55,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:set var="currentUser" value="${silfn:currentUser()}"/>
-<c:if test="${currentUser == null or !currentUser.accessAdmin}">
-  <c:redirect url="/Login.jsp"/>
+<c:if test="${currentUser == null or not currentUser.accessAdmin}">
+  <c:redirect url="/Login"/>
 </c:if>
 
 <html>

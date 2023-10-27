@@ -32,6 +32,7 @@ import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.inject.Inject;
@@ -40,6 +41,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -119,6 +121,13 @@ public class CipherKeyResource extends RESTWebService {
 
   private ContentEncryptionService getContentEncryptionService() {
     return contentEncryptionService;
+  }
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    if (!getUser().isAccessAdmin()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
   }
 
   private static String formatMessage(String pattern, String value) {

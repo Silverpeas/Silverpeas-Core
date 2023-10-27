@@ -25,12 +25,11 @@ package org.silverpeas.web.workflowdesigner.servlets;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.*;
@@ -51,7 +50,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 public class WorkflowDesignerRequestRouter extends
-    ComponentRequestRouter<WorkflowDesignerSessionController> {
+    AdminComponentRequestRouter<WorkflowDesignerSessionController> {
 
   private static final long serialVersionUID = -6747786008527861783L;
   static private Map<String, FunctionHandler> mapHandler; // mapping of functions to their handlers
@@ -90,15 +89,11 @@ public class WorkflowDesignerRequestRouter extends
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
+  @Override
+  public String getAdminDestination(String function,
       WorkflowDesignerSessionController workflowDesignerSC, HttpRequest request) {
     String destination = null;
     FunctionHandler handler = getHandler(function);
-
-    // Check access rights
-    if (!workflowDesignerSC.getUserDetail().isAccessAdmin()) {
-      return ResourceLocator.getGeneralSettingBundle().getString("accessForbidden");
-    }
 
     try {
       if (handler != null) {

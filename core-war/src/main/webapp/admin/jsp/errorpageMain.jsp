@@ -46,6 +46,10 @@ if (response.isCommitted() == false) {
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil" %>
 <%@ page import="java.io.PrintWriter" %>
+<%@ page import="org.silverpeas.core.security.authorization.ForbiddenRuntimeException" %>
+<%@ page import="javax.ws.rs.WebApplicationException" %>
+<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
+<%@ page import="org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet" %>
 
 <%@ include file="import.jsp" %>
 
@@ -64,6 +68,19 @@ if (exception instanceof SilverpeasTrappedException) {
   extraInfos = StringUtil.defaultStringIfNotDefined(ste.getExtraInfos(), null);
   // Trace the exception
   HomePageUtil.traceException(exception);
+} else if (exception instanceof ForbiddenRuntimeException) {
+  SilverLogger.getLogger(SilverpeasHttpServlet.class).error(exception.getMessage());
+  response.sendError(HttpServletResponse.SC_FORBIDDEN, exception.getMessage());
+  return;
+} else if (exception instanceof WebApplicationException) {
+  final WebApplicationException wae = (WebApplicationException) exception;
+  if (wae.getResponse().getStatus() == HttpServletResponse.SC_FORBIDDEN) {
+    SilverLogger.getLogger(SilverpeasHttpServlet.class).error(wae.getMessage());
+  }
+  if (!response.isCommitted()) {
+    response.sendError(wae.getResponse().getStatus(), exception.getMessage());
+  }
+  return;
 } else {
   // Trace the exception
   HomePageUtil.traceException(toDisplayException);

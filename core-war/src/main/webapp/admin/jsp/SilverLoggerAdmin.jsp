@@ -58,16 +58,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<c:set var="currentUser" value="${silfn:currentUser()}"/>
+<c:if test="${currentUser == null or not currentUser.accessAdmin}">
+  <c:redirect url="/Login"/>
+</c:if>
+
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
-
-  UserDetail currentUser = UserDetail.getCurrentRequester();
-  if (currentUser == null || !currentUser.isAccessAdmin()) {
-    request.getRequestDispatcher("../../Login.jsp").forward(request, response);
-  }
 
   List<String> loggingLevels = new ArrayList<>();
   for (Level level : Level.values()) {
