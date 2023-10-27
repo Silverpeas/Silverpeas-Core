@@ -23,42 +23,39 @@
  */
 package org.silverpeas.web.templatedesigner.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.pdc.form.fieldtype.PdcField;
+import org.silverpeas.core.contribution.content.form.field.PublicationsPickerField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.Label;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.content.form.record.ParameterValue;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
+import org.silverpeas.core.pdc.form.fieldtype.PdcField;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
+import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 
 public class TemplateDesignerRequestRouter extends
-    ComponentRequestRouter<TemplateDesignerSessionController> {
+    AdminComponentRequestRouter<TemplateDesignerSessionController> {
 
   private static final long serialVersionUID = 1117593114737219878L;
 
@@ -96,7 +93,7 @@ public class TemplateDesignerRequestRouter extends
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
+  public String getAdminDestination(String function,
       TemplateDesignerSessionController templateDesignerSC,
       HttpRequest request) {
     String destination = "";

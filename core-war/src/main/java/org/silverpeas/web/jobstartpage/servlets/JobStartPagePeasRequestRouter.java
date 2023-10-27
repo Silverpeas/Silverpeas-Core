@@ -44,7 +44,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.web.jobstartpage.NavBarJsonEncoder;
@@ -62,7 +62,8 @@ import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
-public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
+public class JobStartPagePeasRequestRouter extends
+    AdminComponentRequestRouter<JobStartPagePeasSessionController> {
 
   private static final long serialVersionUID = 3751632991093466433L;
   private static final String WELCOME_SPACE_ADMIN_TEMPLATE_FILE = "/space/welcome_space_admin_";
@@ -100,6 +101,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   private static final String ROLE_INSTANCE_FULL_DEST = "/jobStartPagePeas/jsp/roleInstance.jsp";
   private static final String ROLE_ITEMS_PREFIX = "roleItems";
   private static final String SPACE_TYPE = "Space";
+  private static final String WRITE_OPERATION_PARTS =
+      "(?i)^.*(create|update|modify|delete|remove|effective).*$";
 
   @Override
   public JobStartPagePeasSessionController createComponentSessionController(
@@ -192,10 +195,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       }
       destination = "/jobStartPagePeas/jsp/welcome.jsp";
     } else if (VIEW_BIN_FCT.equals(function)) {
+      jobStartPageSC.checkAdminAccessOnly();
       request.setAttribute("Spaces", jobStartPageSC.getRemovedSpaces());
       request.setAttribute("Components", jobStartPageSC.getRemovedComponents());
       destination = "/jobStartPagePeas/jsp/bin.jsp";
     } else if ("RestoreFromBin".equals(function) || "RemoveDefinitely".equals(function)) {
+      jobStartPageSC.checkAdminAccessOnly();
       final List<String> spaceIds;
       final List<String> componentIds;
       final String itemId = request.getParameter("ItemId");
@@ -263,13 +268,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           COMPONENT_INFO_FULL_DEST;
     } else if ("SetupComponent".equals(function)) {
       String compoId = request.getParameter(COMPONENT_ID_PARAM);
-      if (jobStartPageSC.isComponentManageable(compoId)) {
-        jobStartPageSC.setManagedInstanceId(compoId,
-            JobStartPagePeasSessionController.SCOPE_FRONTOFFICE);
-        destination = getDestination("UpdateInstance", jobStartPageSC, request);
-      } else {
-        destination = "/admin/jsp/accessForbidden.jsp";
-      }
+      jobStartPageSC.setManagedInstanceId(compoId,
+          JobStartPagePeasSessionController.SCOPE_FRONTOFFICE);
+      destination = getDestination("UpdateInstance", jobStartPageSC, request);
     } else if (GO_TO_CURRENT_COMPONENT_FCT.equals(function)) {
       destination = COMPONENT_INFO_FULL_DEST;
     } else if ("ListComponent".equals(function)) {
@@ -425,15 +426,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         destination = getDestination(WELCOME_FCT, jobStartPageSC, request);
       }
     } else if (function.equals("OpenComponent")) {
-      // check if user can update it
-      String id = request.getParameter(COMPONENT_ID_PARAM);
-      if (!jobStartPageSC.isComponentManageable(id)) {
-        destination = "/admin/jsp/accessForbidden.jsp";
-      } else {
-        jobStartPageSC.init(true);
-        request.setAttribute("PopupMode", true);
-        destination = getDestination(GO_TO_COMPONENT_FCT, jobStartPageSC, request);
-      }
+      jobStartPageSC.init(true);
+      request.setAttribute("PopupMode", true);
+      destination = getDestination(GO_TO_COMPONENT_FCT, jobStartPageSC, request);
     }
 
     return destination;
@@ -678,8 +673,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
+  public String getAdminDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
       HttpRequest request) {
+    if (function.matches(WRITE_OPERATION_PARTS)) {
+      final String spaceId = jobStartPageSC.getManagedSpaceId();
+      final String instanceId = jobStartPageSC.getManagedInstanceId();
+      jobStartPageSC.checkAccessGranted(spaceId, instanceId, false);
+    }
     if (request.getParameterAsBoolean(HAVE_TO_REFRESH_NAV_BAR_ATTR)) {
       request.setAttribute(HAVE_TO_REFRESH_NAV_BAR_ATTR, Boolean.TRUE);
     }

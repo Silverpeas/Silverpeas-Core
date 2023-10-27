@@ -32,7 +32,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
@@ -41,7 +41,8 @@ import java.util.List;
 /**
  * @author neysseri
  */
-public class ImportExportSessionController extends AbstractComponentSessionController {
+public class ImportExportSessionController extends AbstractAdminComponentSessionController {
+  private static final long serialVersionUID = -6252741698097859228L;
 
   ExportTask exportTask = null;
   Exception errorOccured = null;
@@ -54,6 +55,11 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   public ImportExportSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle, String iconBundle) {
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
+  }
+
+  @Override
+  public boolean isAccessGranted() {
+    return true;
   }
 
   public ImportReport processImport(String xmlFileName,
