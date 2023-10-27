@@ -68,7 +68,7 @@ import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.look.SilverpeasLook;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
@@ -100,7 +100,7 @@ import static org.silverpeas.core.admin.component.model.ComponentInst.getCompone
  *
  * @author
  */
-public class JobStartPagePeasSessionController extends AbstractComponentSessionController {
+public class JobStartPagePeasSessionController extends AbstractAdminComponentSessionController {
 
   public static final int SCOPE_BACKOFFICE = 0;
   public static final int SCOPE_FRONTOFFICE = 1;
@@ -137,6 +137,16 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         JobStartPagePeasSettings.CUSTOMERS_TEMPLATE_PATH);
   }
 
+  /**
+   * Dedicated for tests
+   */
+  public JobStartPagePeasSessionController(final MainSessionController controller,
+      final ComponentContext context, final String localizedMessagesBundleName,
+      final String iconFileName, final String settingsFileName) {
+    super(controller, context, localizedMessagesBundleName, iconFileName, settingsFileName);
+    adminController = null;
+  }
+
   // Init at first entry
   public void init(final boolean force) {
     if (force || !m_NavBarMgr.hasBeenInitialized()) {
@@ -144,8 +154,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
   }
 
-  public boolean isUserAdmin() {
-    return getUserDetail().isAccessAdmin();
+  @Override
+  public boolean isAccessGranted() {
+    return isAccessGranted(getManagedSpaceId(), getManagedInstanceId(), true);
   }
 
   // method du spaceInst
@@ -158,6 +169,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public void setManagedSpaceId(String sId, boolean isManagedSpaceRoot) {
     String spaceId = getShortSpaceId(sId);
+    checkAccessGranted(spaceId, null, true);
     m_ManagedSpaceId = spaceId;
     m_isManagedSpaceRoot = isManagedSpaceRoot;
 
@@ -259,6 +271,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void setManagedInstanceId(String sId) {
+    checkAccessGranted(null, sId, true);
     m_ManagedInstanceId = sId;
     setScope(SCOPE_BACKOFFICE);
   }
@@ -270,10 +283,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public String getManagedInstanceId() {
     return m_ManagedInstanceId;
-  }
-
-  public boolean isComponentManageable(String componentId) {
-    return getOrganisationController().isComponentManageable(componentId, getUserId());
   }
 
   public void setManagedProfile(ProfileInst sProfile) {
@@ -361,25 +370,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     Arrays.sort(m_BrothersSpaces, Comparator.comparing(SpaceInst::getOrderNum));
     return m_BrothersSpaces;
-  }
-
-  // Get spaces "manageable" by the current user (ie spaces in maintenance or current space)
-  public SpaceInst[] getUserManageableSpacesIds() {
-    List<SpaceInst> vManageableSpaces = new ArrayList<>();
-    String[] sids = getUserManageableSpaceIds();
-    SpaceInst currentSpace = getSpaceInstById();
-    String currentSpaceId = (currentSpace == null) ? "-1" : currentSpace.getId();
-
-    for (String sid : sids) {
-      if (isSpaceInMaintenance(sid.substring(2)) || sid.equals(currentSpaceId)) {
-        vManageableSpaces.add(adminController.getSpaceInstById(sid));
-      }
-    }
-
-    SpaceInst[] aManageableSpaces = vManageableSpaces.toArray(
-        new SpaceInst[vManageableSpaces.size()]);
-    Arrays.sort(aManageableSpaces, Comparator.comparing(SpaceInst::getOrderNum));
-    return aManageableSpaces;
   }
 
   public void setSpacePlace(String idSpaceBefore) {
@@ -1094,6 +1084,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   private void copyOrCutComponent(String id, boolean cut) throws ClipboardException {
+    checkAccessGranted(null, id, false);
     ComponentInst componentInst = getComponentInst(id);
     ComponentSelection compoSelect = new ComponentSelection(componentInst);
     compoSelect.setCutted(cut);
@@ -1109,6 +1100,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   private void copyOrCutSpace(String id, boolean cut) throws ClipboardException {
+    checkAccessGranted(id, null, false);
     SpaceInst space = getSpaceInstById(id);
     SpaceSelection spaceSelect = new SpaceSelection(space);
     spaceSelect.setCutted(cut);
@@ -1122,6 +1114,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @throws JobStartPagePeasException
    */
   public void paste(Map<String, String> options) throws ClipboardException, JobStartPagePeasException {
+    checkAccessGranted(getManagedSpaceId(), getManagedInstanceId(), false);
     try {
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       boolean refreshCache = false;
@@ -1157,8 +1150,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       m_NavBarMgr.resetAllCache();
-      throw new JobStartPagePeasException("JobStartPagePeasSessionController.paste()",
-          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
+      throw new JobStartPagePeasException(e);
     }
     clipboardPasteDone();
   }
@@ -1193,8 +1185,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         }
       }
     } catch (Exception e) {
-      throw new JobStartPagePeasException("JobStartPagePeasSessionController.getCopiedComponents()",
-          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
+      throw new JobStartPagePeasException(e);
     }
     return copiedComponents;
   }
@@ -1215,8 +1206,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         refreshCurrentSpaceCache();
       }
     } catch (Exception e) {
-      throw new JobStartPagePeasException("JobStartPagePeasSessionController.pasteComponent()",
-          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
+      throw new JobStartPagePeasException(
           "componentId = " + pasteDetail.getFromComponentId() + " in space " + getManagedSpaceId(),
           e);
     }
@@ -1239,8 +1229,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       throw new JobStartPagePeasException(
-          "JobStartPagePeasSessionController.pasteSpace()",
-          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
           "spaceId = " + pasteDetail.getFromSpaceId() + " in space " + getManagedSpaceId(), e);
     }
   }

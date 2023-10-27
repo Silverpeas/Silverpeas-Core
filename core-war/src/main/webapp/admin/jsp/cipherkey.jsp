@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.admin.user.model.User" %><%--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -26,8 +26,14 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<c:set var="currentUser" value="${silfn:currentUser()}"/>
+<c:if test="${currentUser == null or not currentUser.accessAdmin}">
+  <c:redirect url="/welcome.jsp"/>
+</c:if>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.crypto.multilang.cryptoBundle" />

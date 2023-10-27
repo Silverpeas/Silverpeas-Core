@@ -88,7 +88,7 @@ import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.authentication.LoginServlet;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
@@ -116,6 +116,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
 import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -123,7 +124,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  *
  * @author
  */
-public class JobDomainPeasSessionController extends AbstractComponentSessionController {
+public class JobDomainPeasSessionController extends AbstractAdminComponentSessionController {
 
   public static final String REPLACE_RIGHTS = "1";
   public static final String ADD_RIGHTS = "2";
@@ -179,6 +180,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         .getString("customersTemplatePath"));
   }
 
+  /**
+   * Dedicated for tests
+   */
+  protected JobDomainPeasSessionController(final MainSessionController controller,
+      final ComponentContext context, final String localizedMessagesBundleName,
+      final String iconFileName, final String settingsFileName) {
+    super(controller, context, localizedMessagesBundleName, iconFileName, settingsFileName);
+  }
+
   public int getMinLengthLogin() {
     return JobDomainSettings.m_MinLengthLogin;
   }
@@ -187,9 +197,93 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return JobDomainSettings.m_UserAddingAllowedForGroupManagers;
   }
 
+  @Override
   public boolean isAccessGranted() {
     return getUserDetail().isAccessAdmin() || getUserDetail().isAccessDomainManager() ||
         isOnlySpaceManager() || !getUserManageableGroupIds().isEmpty();
+  }
+
+  public void checkDomainAccessGranted(final String domainId) {
+    checkDomainAccessGranted(domainId, true);
+  }
+
+  public void checkCurrentDomainAccessGranted(final boolean readOnly) {
+    final String domainId = Optional.ofNullable(getTargetDomain()).map(Domain::getId).orElse(null);
+    checkDomainAccessGranted(domainId, readOnly);
+  }
+
+  void checkDomainAccessGranted(final String domainId, final boolean readOnly) {
+    checkAccessGranted(domainId, new DomainAccessContext(), readOnly);
+  }
+
+  public void checkUserAccessGranted(final String userId, final boolean readOnly) {
+    final User user = getUserDetail(userId);
+    if (user == null || getTargetDomain() == null ||
+        !getTargetDomain().getId().equals(user.getDomainId()) ||
+        getTargetDomain().getId().equals(Domain.MIXED_DOMAIN_ID)) {
+      throwForbiddenError();
+    } else {
+      checkAccessGranted(user.getDomainId(), new UserAccessContext(user), readOnly);
+    }
+  }
+
+  public void checkGroupAccessGranted(final String groupId, final boolean readOnly) {
+    final Group group = getOrganisationController().getGroup(groupId);
+    if (group == null) {
+      throwForbiddenError();
+    } else {
+      final String domainId = defaultStringIfNotDefined(group.getDomainId(), Domain.MIXED_DOMAIN_ID);
+      if (getTargetDomain() == null || !getTargetDomain().getId().equals(domainId)) {
+        throwForbiddenError();
+      } else {
+        checkAccessGranted(domainId, new GroupAccessContext(group), readOnly);
+      }
+    }
+  }
+
+  private <T> void checkAccessGranted(final String domainId, final AccessContext<T> accessContext,
+      final boolean readOnly) {
+    final UserDetail ud = getUserDetail();
+    final boolean granted = ud.isAccessAdmin() || isAccessGrantedOnNotFullAdminAccess(
+        defaultStringIfNotDefined(domainId, Domain.MIXED_DOMAIN_ID), accessContext, readOnly);
+    if (!granted) {
+      throwForbiddenError();
+    }
+  }
+
+  private <T> boolean isAccessGrantedOnNotFullAdminAccess(final String domainId,
+      final AccessContext<T> accessContext, final boolean readOnly) {
+    final UserDetail ud = getUserDetail();
+    final boolean equalsUserDomain = domainId.equals(ud.getDomainId());
+    boolean granted = ud.isAccessDomainManager() && equalsUserDomain;
+    if (!granted && (readOnly || accessContext.getType().isGroup())) {
+      Stream<Pair<Group, String>> groupStream = getUserManageableGroups().stream()
+          .map(g -> Pair.of(g, defaultStringIfNotDefined(g.getDomainId(), Domain.MIXED_DOMAIN_ID)))
+          .filter(p -> !ud.isDomainAdminRestricted() ||
+              p.getSecond().equals(Domain.MIXED_DOMAIN_ID) ||
+              p.getSecond().equals(ud.getDomainId()));
+      if (!readOnly && accessContext.getType().isGroup()) {
+        final Group aimedGroup = (Group) accessContext.getResource();
+        if (aimedGroup == null) {
+          groupStream = groupStream.filter(g -> false);
+        } else {
+          final List<String> aimedGroupPath = Stream.concat(
+              Stream.of(aimedGroup.getId()),
+              Optional.of(aimedGroup)
+                  .filter(g -> isDefined(g.getSuperGroupId()))
+                  .stream()
+                  .flatMap(g -> getOrganisationController().getPathToGroup(g.getId()).stream()))
+              .collect(toList());
+          groupStream = groupStream.filter(p -> aimedGroupPath.contains(p.getFirst().getId()));
+        }
+      }
+      granted = groupStream.map(Pair::getSecond).anyMatch(domainId::equals);
+      if (!granted && readOnly) {
+        granted = (equalsUserDomain || Domain.MIXED_DOMAIN_ID.equals(domainId)) &&
+            (isOnlySpaceManager() || isCommunityManager());
+      }
+    }
+    return granted;
   }
 
   public void setRefreshDomain(boolean refreshDomain) {
@@ -200,6 +294,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * USER functions
    */
   public void setTargetUser(String userId) {
+    if (isDefined(userId)) {
+      checkUserAccessGranted(userId, true);
+    }
     targetUserId = userId;
     processIndex(targetUserId);
   }
@@ -1455,6 +1552,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       targetDomain = null;
       targetDomainId = "";
     } else {
+      checkDomainAccessGranted(domainId);
       List<String> manageableGroupIds = null;
       targetDomainId = domainId;
       if (isOnlyGroupManager()) {
@@ -2408,5 +2506,64 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return !getUserDetail().isAccessAdmin() && !getUserDetail().isAccessDomainManager() &&
         !isOnlyGroupManager() && !isManagerOfCurrentDomain() &&
         ArrayUtil.isNotEmpty(getUserManageableSpaceIds());
+  }
+
+  /**
+   * In order to check the user granted access to domain services, the context of use MUST be set.
+   * <p>
+   *   This context is an implementation of this abstraction.
+   * </p>
+   * @param <T>
+   */
+  private static abstract class AccessContext<T> {
+    private final AccessContextType type;
+    private final T resource;
+
+    private AccessContext(final AccessContextType accessContext, final T resource) {
+      this.type = accessContext;
+      this.resource = resource;
+    }
+
+    public AccessContextType getType() {
+      return type;
+    }
+
+    public T getResource() {
+      return resource;
+    }
+
+    enum AccessContextType {
+      DOMAIN, GROUP, USER;
+      boolean isGroup() {
+        return this == GROUP;
+      }
+    }
+  }
+
+  /**
+   * Context of a domain access.
+   */
+  private static class DomainAccessContext extends AccessContext<Void> {
+    private DomainAccessContext() {
+      super(AccessContextType.DOMAIN, null);
+    }
+  }
+
+  /**
+   * Context of user services access.
+   */
+  private static class UserAccessContext extends AccessContext<User> {
+    private UserAccessContext(final User user) {
+      super(AccessContextType.USER, user);
+    }
+  }
+
+  /**
+   * Context of group services access.
+   */
+  private static class GroupAccessContext extends AccessContext<Group> {
+    private GroupAccessContext(final Group group) {
+      super(AccessContextType.GROUP, group);
+    }
   }
 }

@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.URLUtil.getCurrentServerURL;
 
 /**
@@ -136,8 +137,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
     } catch (WebSecurityException wse) {
 
-      logger.error("The request for path {0} isn''t valid: {1}", pathOf(httpRequest),
-          wse.getMessage());
+      logger.error("The request for path {0} (uid={1}) isn''t valid: {2}", pathOf(httpRequest),
+          ofNullable(User.getCurrentRequester()).map(User::getId).orElse("N/A"), wse.getMessage());
 
       // An HTTP error is sended to the client
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, wse.getMessage());
