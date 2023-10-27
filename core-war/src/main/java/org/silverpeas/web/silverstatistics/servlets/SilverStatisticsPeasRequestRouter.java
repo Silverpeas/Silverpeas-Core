@@ -23,35 +23,39 @@
  */
 package org.silverpeas.web.silverstatistics.servlets;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.chart.period.PeriodChart;
+import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasSessionController;
 import org.silverpeas.web.silverstatistics.vo.AxisStatsFilter;
 import org.silverpeas.web.silverstatistics.vo.CrossAxisStatsFilter;
 import org.silverpeas.web.silverstatistics.vo.CrossStatisticVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticVO;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.chart.period.PeriodChart;
-import org.silverpeas.core.chart.pie.PieChart;
-import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * Class declaration
  * @author
  */
 public class SilverStatisticsPeasRequestRouter extends
-    ComponentRequestRouter<SilverStatisticsPeasSessionController> {
+    AdminComponentRequestRouter<SilverStatisticsPeasSessionController> {
 
   private static final long serialVersionUID = -7422373100761515806L;
   private final SilverStatisticsActionAccessController actionAccessController =
       new SilverStatisticsActionAccessController();
+  private static final String PDC_FUNCTION = "(?i)^.*(pdc).*$";
+  private static final String SPACE_MANAGER_FUNCTION = "(?i)^.*(access|volume).*$";
 
   /**
    * Method declaration
@@ -87,7 +91,7 @@ public class SilverStatisticsPeasRequestRouter extends
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, SilverStatisticsPeasSessionController statsSC,
+  public String getAdminDestination(String function, SilverStatisticsPeasSessionController statsSC,
       HttpRequest request) {
     String destination = "";
     UserAccessLevel userProfile = statsSC.getUserProfile();
@@ -96,6 +100,14 @@ public class SilverStatisticsPeasRequestRouter extends
       request.setAttribute("UserProfile", userProfile);
     } else {
       return null;
+    }
+
+    if (function.matches(SPACE_MANAGER_FUNCTION) && !function.matches(PDC_FUNCTION)) {
+      final String accessSpaceId = StringUtil.defaultStringIfNotDefined(
+          request.getParameter("SpaceId"), statsSC.getAccessSpaceId());
+      statsSC.checkAccessGranted(accessSpaceId, null, isNotDefined(accessSpaceId));
+    } else {
+      statsSC.checkAdminAccessOnly();
     }
 
     Calendar calendar = Calendar.getInstance();

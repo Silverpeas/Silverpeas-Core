@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -40,7 +41,7 @@ import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
@@ -54,7 +55,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class PdcSessionController extends AbstractComponentSessionController {
+public class PdcSessionController extends AbstractAdminComponentSessionController {
+  private static final long serialVersionUID = -7993993070048344281L;
 
   private String currentView = "P";
   private Axis currentAxis = null;
@@ -74,6 +76,15 @@ public class PdcSessionController extends AbstractComponentSessionController {
       String iconBundle) {
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
     currentLanguage = getLanguage();
+  }
+
+  @Override
+  public boolean isAccessGranted() {
+    try {
+      return isPDCAdmin() || getPdcBm().isUserManager(getUserId());
+    } catch (PdcException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   private PdcManager getPdcBm() {

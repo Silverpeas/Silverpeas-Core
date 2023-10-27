@@ -58,7 +58,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
@@ -85,7 +85,8 @@ import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBun
  * Class declaration
  * @author
  */
-public class SilverStatisticsPeasSessionController extends AbstractComponentSessionController {
+public class SilverStatisticsPeasSessionController extends AbstractAdminComponentSessionController {
+  private static final long serialVersionUID = -8394342857531676676L;
 
   public static final int INDICE_VALUE = 0;
   public static final int INDICE_LIB = 1;
@@ -172,6 +173,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         "org.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
     setComponentRootName(URLUtil.CMP_SILVERSTATISTICSPEAS);
     initYears();
+  }
+
+  @Override
+  public boolean isAccessGranted() {
+    return isAccessGranted(null, null, true);
   }
 
   public UserAccessLevel getUserProfile() {

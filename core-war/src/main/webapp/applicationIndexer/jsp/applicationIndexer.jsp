@@ -36,7 +36,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
-<%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
 
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
@@ -49,6 +48,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib prefix="fmy" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -92,14 +92,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   }
 %>
 
+<c:set var="currentUser" value="${silfn:currentUser()}"/>
+<c:if test="${currentUser == null or not currentUser.accessAdmin}">
+  <c:redirect url="/welcome.jsp"/>
+</c:if>
+
 <%
 final MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-if (mainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(mainSessionCtrl.getUserAccessLevel())) {
-    // No session controller in the request -> security exception
-    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
-    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
-    return;
-}
 %>
 
 <c:set var="_userLanguage" value="<%=mainSessionCtrl.getFavoriteLanguage()%>" scope="request"/>

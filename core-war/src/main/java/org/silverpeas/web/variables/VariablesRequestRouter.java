@@ -23,15 +23,16 @@
  */
 package org.silverpeas.web.variables;
 
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 
-public class VariablesRequestRouter extends ComponentRequestRouter<VariablesSessionController> {
+public class VariablesRequestRouter
+    extends AdminComponentRequestRouter<VariablesSessionController> {
+  private static final long serialVersionUID = 880659914133424280L;
 
   private static final String SESSION_BEAN_NAME = "Variables";
 
@@ -41,12 +42,8 @@ public class VariablesRequestRouter extends ComponentRequestRouter<VariablesSess
   }
 
   @Override
-  public String getDestination(final String action, final VariablesSessionController sc,
+  public String getAdminDestination(final String action, final VariablesSessionController sc,
       final HttpRequest request) {
-
-    if (!User.getCurrentRequester().isAccessAdmin()) {
-      throwHttpForbiddenError();
-    }
 
     String destination = "/variables/jsp/variables.jsp";
 
