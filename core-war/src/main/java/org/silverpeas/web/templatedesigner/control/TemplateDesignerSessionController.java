@@ -45,7 +45,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
@@ -64,7 +64,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class TemplateDesignerSessionController extends AbstractComponentSessionController {
+public class TemplateDesignerSessionController extends AbstractAdminComponentSessionController {
+  private static final long serialVersionUID = -6869148156113542542L;
 
   private static final String VIEW_HTML = "view.html";
   private static final String UPDATE_HTML = "update.html";

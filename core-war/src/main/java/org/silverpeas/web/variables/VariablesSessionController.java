@@ -24,7 +24,7 @@
 package org.silverpeas.web.variables;
 
 import org.silverpeas.core.variables.Variable;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.variables.VariablesWebManager;
@@ -34,7 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class VariablesSessionController extends AbstractComponentSessionController {
+public class VariablesSessionController extends AbstractAdminComponentSessionController {
+  private static final long serialVersionUID = -6077929073402709139L;
 
   private final Set<String> selectedValueIds = new HashSet<>();
   private Variable currentVariable;

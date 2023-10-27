@@ -23,23 +23,20 @@
  */
 package org.silverpeas.web.importexport.servlets;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.importexport.report.ExportPDFReport;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.importexport.report.ImportReport;
-import org.silverpeas.web.importexport.control.ImportExportSessionController;
-
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.WAAttributeValuePair;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
-
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.node.model.NodePK;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.importexport.control.ImportExportSessionController;
 
 import java.io.File;
 import java.util.List;
@@ -83,8 +80,10 @@ public class ImportExportRequestRouter extends
     String destination = "";
     try {
       if (function.startsWith("Main")) {
+        importExportSC.checkAdminAccessOnly();
         destination = "/importExportPeas/jsp/welcome.jsp";
       } else if ("Import".equals(function)) {
+        importExportSC.checkAdminAccessOnly();
         File file = null;
         List<FileItem> items = request.getFileItems();
         for (FileItem item : items) {

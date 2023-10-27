@@ -26,7 +26,7 @@ package org.silverpeas.web.jobmanager.servlets;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.AdminComponentRequestRouter;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.control.JobManagerPeasSessionController;
 
@@ -40,7 +40,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * @author
  */
 public class JobManagerPeasRequestRouter extends
-    ComponentRequestRouter<JobManagerPeasSessionController> {
+    AdminComponentRequestRouter<JobManagerPeasSessionController> {
 
   private static final long serialVersionUID = -2003485584890163789L;
   private static final String OPERATION_ACTION = "Operation";
@@ -78,7 +78,8 @@ public class JobManagerPeasRequestRouter extends
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, JobManagerPeasSessionController jobManagerSC,
+  @Override
+  public String getAdminDestination(String function, JobManagerPeasSessionController jobManagerSC,
       HttpRequest request) {
     String destination;
     try {
