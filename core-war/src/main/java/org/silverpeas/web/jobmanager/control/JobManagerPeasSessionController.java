@@ -29,7 +29,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.wbe.WbeSettings;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.jobmanager.JobManagerService;
@@ -48,7 +48,7 @@ import static org.silverpeas.web.jobmanager.JobManagerService.LEVEL_SERVICE;
  * Web Controller for all administrative tasks in the backoffice
  * @author Emmanuel Hugonnet
  */
-public class JobManagerPeasSessionController extends AbstractComponentSessionController {
+public class JobManagerPeasSessionController extends AbstractAdminComponentSessionController {
 
   private static final String DEFAULT_SERVICE_ID = "1";
   private static final String MAIN_OWN_BODY_LAYOUT = "Main?ownBodyLayout=true";
@@ -83,22 +83,21 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   private void initServices() {
     services = new HashMap<>(100);
     String webContext = getApplicationURL();
-    boolean kmServiceAllowed = false;
+    boolean pdcServicesAdded = false;
     int jDesignerServicesCounter = 0;
 
     JobManagerSettings jobManagerSettings = JobManagerSettings.get();
     if (getUserDetail().isAccessAdmin()) {
-      kmServiceAllowed =
-          setAdminLevelServices(webContext, jobManagerSettings);
+      pdcServicesAdded = setAdminLevelServices(webContext, jobManagerSettings);
     } else if (isManager) {
-      kmServiceAllowed = setManagerLevelServices(webContext, jobManagerSettings);
+      pdcServicesAdded = setManagerLevelServices(webContext, jobManagerSettings);
       jDesignerServicesCounter++;
     } else if (getUserDetail().isAccessPdcManager() && jobManagerSettings.isKMVisible()) {
       JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
           + getURL(CMP_PDC, null, null) + "Main", null, false);
       JobManagerService jKM2 = new JobManagerService("22", "JKM2", LEVEL_OPERATION, webContext
           + getURL(CMP_THESAURUS, null, null) + "Main", null, false);
-      kmServiceAllowed = setJKMServices(DEFAULT_SERVICE_ID, jKM1, jKM2);
+      pdcServicesAdded = setJKMServices(DEFAULT_SERVICE_ID, jKM1, jKM2);
     } else if (getUserDetail().isAccessDomainManager() || !getUserManageableGroupIds().isEmpty()) {
       JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION,
           webContext + getURL(CMP_JOBDOMAINPEAS, null, null) + MAIN_OWN_BODY_LAYOUT, null,
@@ -112,14 +111,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       setServices(jdp);
     }
 
-    boolean isPDCManager = false;
+    boolean isPDCManager = isPDCManager();
 
-    try {
-      isPDCManager = PdcManager.get().isUserManager(getUserId());
-    } catch (PdcException e) {
-      SilverLogger.getLogger(this).error(e);
-    }
-    if (!kmServiceAllowed && isPDCManager) {
+    if (!pdcServicesAdded && isPDCManager) {
       JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
           + getURL(CMP_PDC, null, null) + "Main", null, false);
       String[] id1 = {jKM1.getId()};
@@ -131,7 +125,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   private boolean setManagerLevelServices(final String webContext,
       final JobManagerSettings jobManagerSettings) {
-    boolean kmServiceAllowed = false;
+    boolean pdcServicesAdded = false;
 
     JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION,
         webContext + getURL(CMP_JOBDOMAINPEAS, null, null) + MAIN_OWN_BODY_LAYOUT, null,
@@ -165,11 +159,11 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     JobManagerService jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, id2, false);
 
     if (getUserDetail().isAccessPdcManager() && jobManagerSettings.isKMVisible()) {
-      kmServiceAllowed = setJKMServices("2", jKM1, jKM2);
+      pdcServicesAdded = setJKMServices("2", jKM1, jKM2);
     }
 
     setServices(jSTAT, jSTAT2, jSTAT3);
-    return kmServiceAllowed;
+    return pdcServicesAdded;
   }
 
   private boolean setAdminLevelServices(final String webContext,
@@ -177,7 +171,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     JobManagerService jTools;
     JobManagerService jDesigner;
     JobManagerService jSTAT;
-    boolean kmServiceAllowed = false;
+    boolean pdcServicesAdded = false;
 
     JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION,
         webContext + getURL(CMP_JOBDOMAINPEAS, null, null) + MAIN_OWN_BODY_LAYOUT, null,
@@ -241,7 +235,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, jSTATFunctions, false);
 
     if (jobManagerSettings.isKMVisible()) {
-      kmServiceAllowed = setJKMServices("2", jKM1, jKM2);
+      pdcServicesAdded = setJKMServices("2", jKM1, jKM2);
     }
 
     if (jobManagerSettings.isToolSpecificAuthentVisible() ||
@@ -279,7 +273,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     }
 
     setServices(jDesigner, jdp, jspp, jsp, jSTAT, jSTAT1, jSTAT2, jSTAT3, jSTAT4);
-    return kmServiceAllowed;
+    return pdcServicesAdded;
   }
 
   private boolean setJKMServices(final String id, final JobManagerService jKM1,
@@ -302,6 +296,32 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       ids.add(service.getId());
       services.put(service.getId(), service);
     }
+  }
+  @Override
+  public boolean isAccessGranted() {
+    boolean accessGranted =
+        getUserDetail().isAccessAdmin() || getUserManageableSpaceIds().length != 0;
+    if (!accessGranted) {
+      accessGranted =
+          getUserDetail().isAccessDomainManager() || !getUserManageableGroupIds().isEmpty();
+    }
+    if (!accessGranted) {
+      JobManagerSettings jobManagerSettings = JobManagerSettings.get();
+      accessGranted = jobManagerSettings.isKMVisible() &&
+          (getUserDetail().isAccessPdcManager() || isPDCManager());
+    }
+    return accessGranted;
+  }
+
+  private boolean isPDCManager() {
+    boolean isPDCManager = false;
+
+    try {
+      isPDCManager = PdcManager.get().isUserManager(getUserId());
+    } catch (PdcException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return isPDCManager;
   }
 
   // retourne les services de niveau level

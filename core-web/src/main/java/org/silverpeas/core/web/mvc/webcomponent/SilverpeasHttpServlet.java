@@ -58,7 +58,14 @@ public class SilverpeasHttpServlet extends HttpServlet {
       super.service(request, response);
 
     } catch (HttpError httpError) {
-      SilverLogger.getLogger(this).debug("http error " + httpError.errorCode, httpError);
+      final String msg = String.format("http error %s [%s] -> %s", httpError.errorCode,
+          request.getRequestURI(), httpError.message);
+      final SilverLogger logger = SilverLogger.getLogger(this);
+      if (HttpServletResponse.SC_FORBIDDEN == httpError.errorCode) {
+        logger.error(msg);
+      } else {
+        logger.debug(msg);
+      }
       httpError.performResponse(response);
     }
   }

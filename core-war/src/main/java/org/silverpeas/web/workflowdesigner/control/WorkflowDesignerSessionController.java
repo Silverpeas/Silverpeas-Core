@@ -39,7 +39,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
@@ -62,7 +62,7 @@ import java.util.function.Consumer;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
-public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
+public class WorkflowDesignerSessionController extends AbstractAdminComponentSessionController {
 
   public static final String TYPE_USER = "user";
   public static final String FORMS = "forms";
