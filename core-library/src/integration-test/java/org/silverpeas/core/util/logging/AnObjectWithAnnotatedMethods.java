@@ -52,4 +52,12 @@ public class AnObjectWithAnnotatedMethods {
     Objects.requireNonNull(param3);
     await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
+
+  @Log(message = "I''d like to do {0} {1} times for you at {2}")
+  public void doAnotherThing(String param1, double param2, Date param3) {
+    assert param2 > 0.0;
+    Objects.requireNonNull(param1);
+    Objects.requireNonNull(param3);
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+  }
 }

@@ -129,6 +129,14 @@ public class LogAnnotationIT {
     assertThatLogContainsTheExpectedRecordWith("I love to do anything for you");
   }
 
+  @Test
+  public void invokeALogAnnotatedMethodWithAMessageExpectingParameters() {
+    Date today = new Date();
+    anObjectWithAnnotatedMethods.doAnotherThing("foo", 42.0, today);
+    String msg = "I'd like to do foo 42.0 times for you at " + today;
+    assertThatLogContainsTheExpectedRecordWith(msg);
+  }
+
   private void assertThatLogContainsTheDefaultRecordsFor(String clazz, String method) {
     String record1 =
         MessageFormat.format(LogAnnotationProcessor.SYSTEM_DEFAULT_BEFORE_PATTERN, clazz, method);

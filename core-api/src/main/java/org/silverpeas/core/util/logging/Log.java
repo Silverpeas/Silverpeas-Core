@@ -38,9 +38,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * An annotation applicable to methods and types for which you wish to trace the invocation of the
  * method. Only DI managed bean are taken in charge by the processor of this annotation.
  * <p>
- * With this annotation, for each invocation of a method two log records will be generated:
- * one for the start of the method execution and the second for its end with as information
- * at least the method's name and the user behind the invocation (if any).
+ * With this annotation, for each invocation of a method, by default, two log records will be
+ * generated: one before the method execution and the second just after its completion with as
+ * information at least the user identifier behind the invocation (if any), the simple class name,
+ * and the name with the values of the parameters (if any) of the invoked method. It is possible to
+ * override the default message by passing as value to the annotation either a custom message or a
+ * pattern of a custom message with the method parameters. For latter, the pattern has to follow the
+ * rules in the {@link java.text.MessageFormat} class. If a custom message or a pattern of a
+ * custom message is specified, then only one record will be written and this before the method
+ * execution.
+ *
  * @author mmoquillon
  */
 @InterceptorBinding
@@ -51,10 +58,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Log {
 
   /**
-   * A message to record into the log. If not set, a default message will be used from the class
-   * simple name and the invoked method name. It set, this message will be used and only one
-   * log record will be written before the method invocation (no log record after the invocation).
-   * @return a message to record or an empty string to use the default one.
+   * A message to record into the log. If not set, a default message will be computed from the class
+   * simple name, the name and the value of the parameters of the invoked method. It set, this
+   * message will be used instead and only one log record will be written before the method
+   * invocation (no log record after the invocation). In order to write the message with the method
+   * parameters, a pattern of such a message can be provided here. For doing, the pattern has to
+   * follow the pattern rules of {@link java.text.MessageFormat}. Hence, for example, a pattern like
+   * {@code "Process instance {1} for {0}"} expects to be injected into the resulting message the
+   * value of the second parameter of the method followed by the value of the first one.
+   *
+   * @return a message or a pattern of a message to record or an empty string to use the default
+   * message.
    */
   @Nonbinding String message() default "";
 }
