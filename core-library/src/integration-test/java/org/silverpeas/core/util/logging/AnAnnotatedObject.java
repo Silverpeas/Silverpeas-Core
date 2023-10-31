@@ -25,11 +25,25 @@ package org.silverpeas.core.util.logging;
 
 import org.silverpeas.core.annotation.Bean;
 
+import java.util.Date;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.awaitility.Awaitility.await;
+
 @Log
 @Bean
 public class AnAnnotatedObject {
 
-  public void doSomething() throws InterruptedException {
-    Thread.sleep(100);
+  public void doSomething() {
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+  }
+
+  public void doSomething(String param1, double param2, Date param3) {
+    assert param2 > 0.0;
+    Objects.requireNonNull(param1);
+    Objects.requireNonNull(param3);
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 }
