@@ -25,11 +25,16 @@ package org.silverpeas.core.util.logging;
 
 import org.silverpeas.core.annotation.Bean;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.awaitility.Awaitility.await;
+
 @Bean
 @Log(message = "I love to do anything for you")
 public class AnAnnotatedObjectWithAMessage {
 
-  public void doSomething() throws InterruptedException {
-    Thread.sleep(100);
+  public void doSomething() {
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 }

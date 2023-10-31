@@ -32,6 +32,8 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import java.lang.reflect.Method;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
@@ -47,9 +49,9 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 @Priority(APPLICATION)
 public class LogAnnotationProcessor {
 
-  protected static final String SYSTEM_DEFAULT_BEFORE_PATTERN = "[SILVERPEAS] Invocation of {0}#{1}";
+  protected static final String SYSTEM_DEFAULT_BEFORE_PATTERN = "[SYSTEM] Invocation of {0}#{1}";
   protected static final String SYSTEM_DEFAULT_AFTER_PATTERN =
-      "[SILVERPEAS] Invocation of {0}#{1} done in {2}ms";
+      "[SYSTEM] Invocation of {0}#{1} done in {2}ms";
   protected static final String USER_DEFAULT_BEFORE_PATTERN = "[{0} ({1})] Invocation of {2}#{3}";
   protected static final String USER_DEFAULT_AFTER_PATTERN =
       "[{0} ({1})] Invocation of {2}#{3} done in {4}ms";
@@ -77,20 +79,20 @@ public class LogAnnotationProcessor {
       if (currentUser == null) {
         logger.debug(SYSTEM_DEFAULT_BEFORE_PATTERN,
             context.getMethod().getDeclaringClass().getSimpleName(),
-            context.getMethod().getName());
+            computeDefaultMessage(context));
         long start = System.currentTimeMillis();
         result = context.proceed();
         long duration = System.currentTimeMillis() - start;
         logger.debug(SYSTEM_DEFAULT_AFTER_PATTERN,
             context.getMethod().getDeclaringClass().getSimpleName(),
-            context.getMethod().getName(),
+            computeDefaultMessage(context),
             duration);
       } else {
         logger.debug(USER_DEFAULT_BEFORE_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
             context.getMethod().getDeclaringClass().getSimpleName(),
-            context.getMethod().getName());
+            computeDefaultMessage(context));
         long start = System.currentTimeMillis();
         result = context.proceed();
         long duration = System.currentTimeMillis() - start;
@@ -98,7 +100,7 @@ public class LogAnnotationProcessor {
             currentUser.getDisplayedName(),
             currentUser.getId(),
             context.getMethod().getDeclaringClass().getSimpleName(),
-            context.getMethod().getName(),
+            computeDefaultMessage(context),
             duration);
       }
     }
@@ -114,4 +116,11 @@ public class LogAnnotationProcessor {
     return (log != null ? log.message():null);
   }
 
+  private String computeDefaultMessage(InvocationContext context) {
+    Object[] parameters = context.getParameters();
+    String p = Stream.of(parameters)
+        .map(Object::toString)
+        .collect(Collectors.joining(", "));
+    return context.getMethod().getName() + "(" + p + ")";
+  }
 }
