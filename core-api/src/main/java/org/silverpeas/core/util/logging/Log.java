@@ -36,17 +36,24 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * An annotation applicable to methods and types for which you wish to trace the invocation of the
- * method. Only DI managed bean are taken in charge by the processor of this annotation.
+ * method(s). Only DI managed bean are taken in charge by the processor of this annotation.
  * <p>
- * With this annotation, for each invocation of a method, by default, two log records will be
- * generated: one before the method execution and the second just after its completion with as
- * information at least the user identifier behind the invocation (if any), the simple class name,
- * and the name with the values of the parameters (if any) of the invoked method. It is possible to
- * override the default message by passing as value to the annotation either a custom message or a
- * pattern of a custom message with the method parameters. For latter, the pattern has to follow the
- * rules in the {@link java.text.MessageFormat} class. If a custom message or a pattern of a
- * custom message is specified, then only one record will be written and this before the method
- * execution.
+ * With this annotation, for each invocation of a method, by default, one log record will be
+ * generated with either a default message or the one specified with this annotation. The default
+ * message is generated from the simple class name, the name of the invoked method, and the values
+ * of the arguments passed to the method (if any). With the {@link Log#dualRecord()} property you
+ * can indicate to write two log records instead of one for each invocation of a method. In this
+ * case the first one will be written before the method execution and the second one just after its
+ * completion. The last record will have along the message (the default or the specified one) the
+ * time spent by the execution of the method.
+ * </p>
+ * <p>
+ * A custom message or a pattern of a custom message can be specified with the {@link Log#message()}
+ * property. In the case of a pattern, it has to satisfy the templating rules of a
+ * {@link java.text.MessageFormat} pattern. With a pattern, the values of the method parameters can
+ * be injected into the resulting message: {0} designates the first parameter, {1} the second one,
+ * and so one.
+ * </p>
  *
  * @author mmoquillon
  */
@@ -71,4 +78,19 @@ public @interface Log {
    * message.
    */
   @Nonbinding String message() default "";
+
+  /**
+   * Is the message (the default or the custom one) concerned by a dual record? A dual record
+   * consists to split the message in two records: one before the method execution and the second
+   * after its completion. In other words, to write the message two times, wrapping the execution of
+   * the method. In this case, the time spent by the execution of the method will be indicated along
+   * the second record. For a simple record, the message will be written only before the execution
+   * of the method.
+   *
+   * @return true if the message is concerned by a dual record into the log: one before the method
+   * execution and the second after its completion. Otherwise, only one message will be written and
+   * this before the execution of the method. In the case of a dual record, the time spent by the
+   * method execution will be indicated along with the second record.
+   */
+  @Nonbinding boolean dualRecord() default false;
 }

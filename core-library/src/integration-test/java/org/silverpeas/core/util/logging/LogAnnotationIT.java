@@ -162,7 +162,7 @@ public class LogAnnotationIT {
   }
 
   private void assertThatLogContainsTheExpectedRecordWith(String message) {
-    String record = format(LogAnnotationProcessor.SYSTEM_PATTERN, message);
+    String record = format(LogAnnotationProcessor.SYSTEM_BEFORE_PATTERN, message);
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
