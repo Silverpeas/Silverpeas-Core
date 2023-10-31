@@ -35,7 +35,7 @@ import static org.awaitility.Awaitility.await;
 @Bean
 public class AnObjectWithAnnotatedMethods {
 
-  @Log
+  @Log(dualRecord = true)
   public void doSomething() {
     await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
@@ -45,7 +45,7 @@ public class AnObjectWithAnnotatedMethods {
     await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
   }
 
-  @Log
+  @Log(dualRecord = true)
   public void doSomething(String param1, double param2, Date param3) {
     assert param2 > 0.0;
     Objects.requireNonNull(param1);

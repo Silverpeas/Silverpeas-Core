@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
 
-@Log
+@Log(dualRecord = true)
 @Bean
 public class AnAnnotatedObject {
 

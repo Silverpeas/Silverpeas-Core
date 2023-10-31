@@ -56,65 +56,99 @@ public class LogAnnotationProcessor {
   protected static final String USER_DEFAULT_BEFORE_PATTERN = "[{0} ({1})] Invocation of {2}#{3}";
   protected static final String USER_DEFAULT_AFTER_PATTERN =
       "[{0} ({1})] Invocation of {2}#{3} done in {4}ms";
-  protected static final String SYSTEM_PATTERN = "[SILVERPEAS] {0}";
-  protected static final String USER_PATTERN = "[{0} ({1})] {2}";
+  protected static final String SYSTEM_BEFORE_PATTERN = "[SILVERPEAS] {0}";
+  protected static final String SYSTEM_AFTER_PATTERN = "[SILVERPEAS] {0}. Done in {1}ms";
+  protected static final String USER_BEFORE_PATTERN = "[{0} ({1})] {2}";
+  protected static final String USER_AFTER_PATTERN = "[{0} ({1})] {2}. Done in {3}ms";
 
   @AroundInvoke
   public Object produceLogRecords(InvocationContext context) throws Exception {
     Object result;
-    SilverLogger logger = SilverLogger.getLogger(context.getTarget());
-    UserDetail currentUser = UserDetail.getCurrentRequester();
-    String message = getAnyLogMessageFor(context.getMethod());
-    if (StringUtil.isDefined(message)) {
-      if (currentUser == null) {
-        logger.debug(SYSTEM_PATTERN,
-            computeCustomMessage(message, context));
-      } else {
-        logger.debug(USER_PATTERN,
-            currentUser.getDisplayedName(),
-            currentUser.getId(),
-            computeCustomMessage(message, context));
-      }
-      result = context.proceed();
+    var logProps = getLogProperties(context);
+    if (StringUtil.isDefined(logProps.getMessage())) {
+      result = logCustomMessage(logProps, context);
     } else {
-      if (currentUser == null) {
-        logger.debug(SYSTEM_DEFAULT_BEFORE_PATTERN,
-            context.getMethod().getDeclaringClass().getSimpleName(),
-            computeDefaultMessage(context));
-        long start = System.currentTimeMillis();
-        result = context.proceed();
-        long duration = System.currentTimeMillis() - start;
-        logger.debug(SYSTEM_DEFAULT_AFTER_PATTERN,
-            context.getMethod().getDeclaringClass().getSimpleName(),
-            computeDefaultMessage(context),
-            duration);
-      } else {
-        logger.debug(USER_DEFAULT_BEFORE_PATTERN,
-            currentUser.getDisplayedName(),
-            currentUser.getId(),
-            context.getMethod().getDeclaringClass().getSimpleName(),
-            computeDefaultMessage(context));
-        long start = System.currentTimeMillis();
-        result = context.proceed();
-        long duration = System.currentTimeMillis() - start;
-        logger.debug(USER_DEFAULT_AFTER_PATTERN,
-            currentUser.getDisplayedName(),
-            currentUser.getId(),
-            context.getMethod().getDeclaringClass().getSimpleName(),
-            computeDefaultMessage(context),
-            duration);
-      }
+      result = logDefaultMessage(logProps, context);
     }
 
     return result;
   }
 
-  private String getAnyLogMessageFor(Method method) {
+  private Object logCustomMessage(LogProperties logProps, InvocationContext context)
+      throws Exception {
+    SilverLogger logger = SilverLogger.getLogger(context.getTarget());
+    UserDetail currentUser = UserDetail.getCurrentRequester();
+    Result result;
+    String message = computeCustomMessage(logProps.getMessage(), context);
+    if (currentUser == null) {
+      logger.debug(SYSTEM_BEFORE_PATTERN, message);
+      result = executeMethod(context);
+      if (logProps.isDualRecord()) {
+        logger.debug(SYSTEM_AFTER_PATTERN, message, result.getTime());
+      }
+    } else {
+      logger.debug(USER_BEFORE_PATTERN,
+          currentUser.getDisplayedName(),
+          currentUser.getId(),
+          message);
+      result = executeMethod(context);
+      if (logProps.isDualRecord()) {
+        logger.debug(USER_AFTER_PATTERN,
+            currentUser.getDisplayedName(),
+            currentUser.getId(),
+            message,
+            result.getTime());
+      }
+    }
+    return result.getValue();
+  }
+
+  private Object logDefaultMessage(LogProperties logProps, InvocationContext context)
+      throws Exception {
+    SilverLogger logger = SilverLogger.getLogger(context.getTarget());
+    UserDetail currentUser = UserDetail.getCurrentRequester();
+    Result result;
+    String className = context.getMethod().getDeclaringClass().getSimpleName();
+    String message = computeDefaultMessage(context);
+    if (currentUser == null) {
+      logger.debug(SYSTEM_DEFAULT_BEFORE_PATTERN,
+          className,
+          message);
+      result = executeMethod(context);
+      if (logProps.isDualRecord()) {
+        logger.debug(SYSTEM_DEFAULT_AFTER_PATTERN,
+            className,
+            message,
+            result.getTime());
+      }
+    } else {
+      logger.debug(USER_DEFAULT_BEFORE_PATTERN,
+          currentUser.getDisplayedName(),
+          currentUser.getId(),
+          className,
+          message);
+      result = executeMethod(context);
+      if (logProps.isDualRecord()) {
+        logger.debug(USER_DEFAULT_AFTER_PATTERN,
+            currentUser.getDisplayedName(),
+            currentUser.getId(),
+            className,
+            message,
+            result.getTime());
+      }
+    }
+    return result.getValue();
+  }
+
+  private LogProperties getLogProperties(InvocationContext context) {
+    Method method = context.getMethod();
     Log log = method.getAnnotation(Log.class);
     if (log == null) {
       log = method.getDeclaringClass().getAnnotation(Log.class);
     }
-    return (log != null ? log.message() : null);
+    String msg = log != null ? log.message().trim() : "";
+    boolean dual = log != null && log.dualRecord();
+    return new LogProperties(msg, dual);
   }
 
   private String computeDefaultMessage(InvocationContext context) {
@@ -131,5 +165,48 @@ public class LogAnnotationProcessor {
         .map(Object::toString)
         .toArray(String[]::new);
     return MessageFormat.format(messagePattern, parameters);
+  }
+
+  private Result executeMethod(InvocationContext context) throws Exception {
+    long start = System.currentTimeMillis();
+    Object result = context.proceed();
+    long duration = System.currentTimeMillis() - start;
+    return new Result(duration, result);
+  }
+
+  private static class LogProperties {
+    private final String message;
+    private final boolean dualRecord;
+
+    public LogProperties(String message, boolean dualRecord) {
+      this.message = message;
+      this.dualRecord = dualRecord;
+    }
+
+    public String getMessage() {
+      return message;
+    }
+
+    public boolean isDualRecord() {
+      return dualRecord;
+    }
+  }
+
+  private static class Result {
+    private final long time;
+    private final Object value;
+
+    public Result(long time, Object value) {
+      this.time = time;
+      this.value = value;
+    }
+
+    public long getTime() {
+      return time;
+    }
+
+    public Object getValue() {
+      return value;
+    }
   }
 }
