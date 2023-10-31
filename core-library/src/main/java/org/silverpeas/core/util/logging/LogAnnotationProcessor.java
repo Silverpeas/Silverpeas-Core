@@ -30,18 +30,19 @@ import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
- * A processor of {@code org.silverpeas.core.util.logging.Log} annotations. Each time a method annotated
- * with this annotation is invoked, this processor will produce a log record with as information
- * the user behind the invocation and another log record at the method execution end with as
- * additional information the time spent at the method execution.
+ * A processor of {@code org.silverpeas.core.util.logging.Log} annotations. Each time a method
+ * annotated with this annotation is invoked, this processor will produce a log record with as
+ * information the user behind the invocation and another log record at the method execution end
+ * with as additional information the time spent at the method execution.
+ *
  * @author mmoquillon
  */
 @Interceptor
@@ -67,12 +68,12 @@ public class LogAnnotationProcessor {
     if (StringUtil.isDefined(message)) {
       if (currentUser == null) {
         logger.debug(SYSTEM_PATTERN,
-            message);
+            computeCustomMessage(message, context));
       } else {
         logger.debug(USER_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
-            message);
+            computeCustomMessage(message, context));
       }
       result = context.proceed();
     } else {
@@ -113,7 +114,7 @@ public class LogAnnotationProcessor {
     if (log == null) {
       log = method.getDeclaringClass().getAnnotation(Log.class);
     }
-    return (log != null ? log.message():null);
+    return (log != null ? log.message() : null);
   }
 
   private String computeDefaultMessage(InvocationContext context) {
@@ -122,5 +123,13 @@ public class LogAnnotationProcessor {
         .map(Object::toString)
         .collect(Collectors.joining(", "));
     return context.getMethod().getName() + "(" + p + ")";
+  }
+
+  @SuppressWarnings("ConfusingArgumentToVarargsMethod")
+  private String computeCustomMessage(String messagePattern, InvocationContext context) {
+    String[] parameters = Stream.of(context.getParameters())
+        .map(Object::toString)
+        .toArray(String[]::new);
+    return MessageFormat.format(messagePattern, parameters);
   }
 }
