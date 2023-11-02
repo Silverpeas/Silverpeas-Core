@@ -38,11 +38,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * An annotation applicable to methods and types for which you wish to trace the invocation of the
  * method(s). Only DI managed bean are taken in charge by the processor of this annotation.
  * <p>
- * With this annotation, for each invocation of a method, by default, one log record will be
+ * With this annotation, for each invocation of the method, by default, one log record will be
  * generated with either a default message or the one specified with this annotation. The default
  * message is generated from the simple class name, the name of the invoked method, and the values
  * of the arguments passed to the method (if any). With the {@link Log#dualRecord()} property you
- * can indicate to write two log records instead of one for each invocation of a method. In this
+ * can indicate to write two log records instead of one for each invocation of the method. In this
  * case the first one will be written before the method execution and the second one just after its
  * completion. The last record will have along the message (the default or the specified one) the
  * time spent by the execution of the method.
@@ -93,4 +93,10 @@ public @interface Log {
    * method execution will be indicated along with the second record.
    */
   @Nonbinding boolean dualRecord() default false;
+
+  /**
+   * The logging level to use with this annotation. By default {@link Level#INFO}.
+   * @return the level used when logging a message at each annotated method invocation.
+   */
+  @Nonbinding Level level() default Level.INFO;
 }
