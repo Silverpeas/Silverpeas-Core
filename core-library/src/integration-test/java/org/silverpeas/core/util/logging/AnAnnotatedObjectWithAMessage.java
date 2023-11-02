@@ -29,9 +29,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
+import static org.silverpeas.core.util.logging.Level.DEBUG;
 
 @Bean
-@Log(message = "I love to do anything for you")
+@Log(message = "I love to do anything for you", level = DEBUG)
 public class AnAnnotatedObjectWithAMessage {
 
   public void doSomething() {

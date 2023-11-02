@@ -31,8 +31,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
+import static org.silverpeas.core.util.logging.Level.DEBUG;
 
-@Log(dualRecord = true)
+@Log(dualRecord = true, level = DEBUG)
 @Bean
 public class AnAnnotatedObject {
 

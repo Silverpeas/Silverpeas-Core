@@ -32,6 +32,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,19 +82,19 @@ public class LogAnnotationProcessor {
     Result result;
     String message = computeCustomMessage(logProps.getMessage(), context);
     if (currentUser == null) {
-      logger.debug(SYSTEM_BEFORE_PATTERN, message);
+      logger.log(logProps.getLevel(), SYSTEM_BEFORE_PATTERN, message);
       result = executeMethod(context);
       if (logProps.isDualRecord()) {
-        logger.debug(SYSTEM_AFTER_PATTERN, message, result.getTime());
+        logger.log(logProps.getLevel(), SYSTEM_AFTER_PATTERN, message, result.getTime());
       }
     } else {
-      logger.debug(USER_BEFORE_PATTERN,
+      logger.log(logProps.getLevel(), USER_BEFORE_PATTERN,
           currentUser.getDisplayedName(),
           currentUser.getId(),
           message);
       result = executeMethod(context);
       if (logProps.isDualRecord()) {
-        logger.debug(USER_AFTER_PATTERN,
+        logger.log(logProps.getLevel(), USER_AFTER_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
             message,
@@ -111,25 +112,25 @@ public class LogAnnotationProcessor {
     String className = context.getMethod().getDeclaringClass().getSimpleName();
     String message = computeDefaultMessage(context);
     if (currentUser == null) {
-      logger.debug(SYSTEM_DEFAULT_BEFORE_PATTERN,
+      logger.log(logProps.getLevel(), SYSTEM_DEFAULT_BEFORE_PATTERN,
           className,
           message);
       result = executeMethod(context);
       if (logProps.isDualRecord()) {
-        logger.debug(SYSTEM_DEFAULT_AFTER_PATTERN,
+        logger.log(logProps.getLevel(), SYSTEM_DEFAULT_AFTER_PATTERN,
             className,
             message,
             result.getTime());
       }
     } else {
-      logger.debug(USER_DEFAULT_BEFORE_PATTERN,
+      logger.log(logProps.getLevel(), USER_DEFAULT_BEFORE_PATTERN,
           currentUser.getDisplayedName(),
           currentUser.getId(),
           className,
           message);
       result = executeMethod(context);
       if (logProps.isDualRecord()) {
-        logger.debug(USER_DEFAULT_AFTER_PATTERN,
+        logger.log(logProps.getLevel(), USER_DEFAULT_AFTER_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
             className,
@@ -146,9 +147,8 @@ public class LogAnnotationProcessor {
     if (log == null) {
       log = method.getDeclaringClass().getAnnotation(Log.class);
     }
-    String msg = log != null ? log.message().trim() : "";
-    boolean dual = log != null && log.dualRecord();
-    return new LogProperties(msg, dual);
+    Objects.requireNonNull(log);
+    return new LogProperties(log);
   }
 
   private String computeDefaultMessage(InvocationContext context) {
@@ -177,10 +177,12 @@ public class LogAnnotationProcessor {
   private static class LogProperties {
     private final String message;
     private final boolean dualRecord;
+    private final Level level;
 
-    public LogProperties(String message, boolean dualRecord) {
-      this.message = message;
-      this.dualRecord = dualRecord;
+    public LogProperties(Log log) {
+      this.message = log.message().trim();
+      this.dualRecord = log.dualRecord();
+      this.level = log.level();
     }
 
     public String getMessage() {
@@ -189,6 +191,10 @@ public class LogAnnotationProcessor {
 
     public boolean isDualRecord() {
       return dualRecord;
+    }
+
+    public Level getLevel() {
+      return level;
     }
   }
 

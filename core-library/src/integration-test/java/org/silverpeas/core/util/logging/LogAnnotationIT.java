@@ -106,7 +106,7 @@ public class LogAnnotationIT {
   @Test
   public void invokeMethodOfALogAnnotatedObjectWithAMessage() {
     anAnnotatedObjectWithAMessage.doSomething();
-    assertThatLogContainsTheExpectedRecordWith("I love to do anything for you");
+    assertThatLogContainsTheExpectedRecordWith("I love to do anything for you", 1);
   }
 
   @Test
@@ -126,7 +126,7 @@ public class LogAnnotationIT {
   @Test
   public void invokeALogAnnotatedMethodWithAMessage() {
     anObjectWithAnnotatedMethods.doAnotherThing();
-    assertThatLogContainsTheExpectedRecordWith("I love to do anything for you");
+    assertThatLogContainsTheExpectedRecordWith("I love to do anything for you", 1);
   }
 
   @Test
@@ -134,7 +134,7 @@ public class LogAnnotationIT {
     Date today = new Date();
     anObjectWithAnnotatedMethods.doAnotherThing("foo", 42.0, today);
     String msg = "I'd like to do foo 42.0 times for you at " + today;
-    assertThatLogContainsTheExpectedRecordWith(msg);
+    assertThatLogContainsTheExpectedRecordWith(msg, 2);
   }
 
   private void assertThatLogContainsTheDefaultRecordsFor(String clazz, String method) {
@@ -158,7 +158,7 @@ public class LogAnnotationIT {
     }
   }
 
-  private void assertThatLogContainsTheExpectedRecordWith(String message) {
+  private void assertThatLogContainsTheExpectedRecordWith(String message, long recordsCount) {
     String record = format(LogAnnotationProcessor.SYSTEM_BEFORE_PATTERN, message);
     try {
       // the log file can contains more than this record as the tests can be ran several
@@ -169,7 +169,7 @@ public class LogAnnotationIT {
       final List<String> lines = IOUtils.readLines(loggerReaderRule.getReader());
       assertThat(format("Searching {0} into \n{1}", record, lines),
           lines.stream().filter(line -> line.contains(record)).count(),
-          is(greaterThanOrEqualTo(1L)));
+          is(greaterThanOrEqualTo(recordsCount)));
     } catch (IOException e) {
       fail(e.getMessage());
     }
