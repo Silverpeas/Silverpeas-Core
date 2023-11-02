@@ -66,18 +66,19 @@ public class LogAnnotationProcessor {
   public Object produceLogRecords(InvocationContext context) throws Exception {
     Object result;
     var logProps = getLogProperties(context);
+    SilverLogger logger = SilverLogger.getLogger(context.getTarget());
     if (StringUtil.isDefined(logProps.getMessage())) {
-      result = logCustomMessage(logProps, context);
+      result = logCustomMessage(logger, logProps, context);
     } else {
-      result = logDefaultMessage(logProps, context);
+      result = logDefaultMessage(logger, logProps, context);
     }
 
     return result;
   }
 
-  private Object logCustomMessage(LogProperties logProps, InvocationContext context)
+  private Object logCustomMessage(SilverLogger logger, LogProperties logProps,
+      InvocationContext context)
       throws Exception {
-    SilverLogger logger = SilverLogger.getLogger(context.getTarget());
     UserDetail currentUser = UserDetail.getCurrentRequester();
     Result result;
     String message = computeCustomMessage(logProps.getMessage(), context);
@@ -104,9 +105,9 @@ public class LogAnnotationProcessor {
     return result.getValue();
   }
 
-  private Object logDefaultMessage(LogProperties logProps, InvocationContext context)
+  private Object logDefaultMessage(SilverLogger logger, LogProperties logProps,
+      InvocationContext context)
       throws Exception {
-    SilverLogger logger = SilverLogger.getLogger(context.getTarget());
     UserDetail currentUser = UserDetail.getCurrentRequester();
     Result result;
     String className = context.getMethod().getDeclaringClass().getSimpleName();

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.annotation.Bean;
 
 import java.util.concurrent.TimeUnit;
@@ -33,9 +34,15 @@ import static org.silverpeas.core.util.logging.Level.DEBUG;
 
 @Bean
 @Log(message = "I love to do anything for you", level = DEBUG)
+@Error(message = "Oops, an error occurred!")
 public class AnAnnotatedObjectWithAMessage {
 
   public void doSomething() {
     await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+  }
+
+  public void raiseAnError() throws SilverpeasException {
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    throw new SilverpeasException("A failure!");
   }
 }

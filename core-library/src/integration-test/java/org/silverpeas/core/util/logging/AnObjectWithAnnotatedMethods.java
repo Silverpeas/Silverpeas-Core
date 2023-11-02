@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.annotation.Bean;
 
 import java.util.Date;
@@ -59,5 +60,36 @@ public class AnObjectWithAnnotatedMethods {
     Objects.requireNonNull(param1);
     Objects.requireNonNull(param3);
     await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+  }
+
+  @Error
+  public void raiseAnError() throws SilverpeasException {
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    throw new SilverpeasException("A failure!");
+  }
+
+  @Error
+  public void raiseAnError(String param1, double param2, Date param3) throws SilverpeasException {
+    assert param2 > 0.0;
+    Objects.requireNonNull(param1);
+    Objects.requireNonNull(param3);
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    throw new SilverpeasException("A failure!");
+  }
+
+  @Error(message = "Oops, an error occurred!")
+  public void raiseAnotherError() throws SilverpeasException {
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    throw new SilverpeasException("A failure!");
+  }
+
+  @Error(message = "Oops, an error occurred for {0}: {m}. {e}")
+  public void raiseAnotherError(String param1, double param2, Date param3)
+      throws SilverpeasException {
+    assert param2 > 0.0;
+    Objects.requireNonNull(param1);
+    Objects.requireNonNull(param3);
+    await().atLeast(100, TimeUnit.MICROSECONDS).untilTrue(new AtomicBoolean(true));
+    throw new SilverpeasException("A failure!");
   }
 }

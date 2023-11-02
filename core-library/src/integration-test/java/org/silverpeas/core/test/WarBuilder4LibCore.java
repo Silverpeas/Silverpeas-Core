@@ -127,6 +127,7 @@ import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.ErrorAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.core.wbe.StubbedWbeHostManager;
@@ -154,7 +155,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("org.apache.tika:tika-core");
     addMavenDependencies("org.apache.tika:tika-parsers-standard-package");
     addMavenDependencies("com.drewnoakes:metadata-extractor");
-    addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
+    addClasses(ErrorAnnotationProcessor.class, LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
         "META-INF/services/org.silverpeas.core.util.logging.SilverLoggerFactory");
     addAsResource("maven.properties");

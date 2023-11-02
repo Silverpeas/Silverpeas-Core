@@ -66,7 +66,7 @@ public @interface Log {
 
   /**
    * A message to record into the log. If not set, a default message will be computed from the class
-   * simple name, the name and the value of the parameters of the invoked method. It set, this
+   * simple name, the name and the value of the parameters of the invoked method. If set, this
    * message will be used instead and only one log record will be written before the method
    * invocation (no log record after the invocation). In order to write the message with the method
    * parameters, a pattern of such a message can be provided here. For doing, the pattern has to
