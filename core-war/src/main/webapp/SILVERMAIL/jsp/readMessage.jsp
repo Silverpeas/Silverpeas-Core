@@ -34,7 +34,7 @@
 <c:set var="componentId" value="${requestScope.componentId}"/>
 <c:set var="sessionController" value="${requestScope.SILVERMAIL}"/>
 <c:set var="from" value="${param.from}"/>
-<c:set var="msg" value="${sessionController.currentMessage}"/>
+<c:set var="msg" value="${requestScope.currentMessage}"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>

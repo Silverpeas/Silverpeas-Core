@@ -25,7 +25,6 @@ package org.silverpeas.core.webapi.notification.user;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.rs.RESTWebService;
@@ -86,7 +85,9 @@ public class InboxUserNotificationResource extends RESTWebService {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public InboxUserNotificationEntity get(@PathParam("id") long id) {
-    return asWebEntity(getMessage(id));
+    return process(() -> asWebEntity(getMessage(getUser().getId(), id)))
+        .lowestAccessRole(null)
+        .execute();
   }
 
   /**
@@ -96,11 +97,11 @@ public class InboxUserNotificationResource extends RESTWebService {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response delete(@PathParam("id") long id) {
-    try {
-      deleteMessage(id, getUser().getId());
-    } catch (SILVERMAILException e) {
-      throw new WebApplicationException(e);
-    }
+    process(() -> {
+      deleteMessage(getUser().getId(), id);
+      return null;
+    }).lowestAccessRole(null)
+      .execute();
     return Response.ok().build();
   }
 
@@ -115,11 +116,9 @@ public class InboxUserNotificationResource extends RESTWebService {
   @Path("{id}/read")
   @Produces(MediaType.APPLICATION_JSON)
   public InboxUserNotificationEntity markAsRead(@PathParam("id") long id) {
-    try {
-      return asWebEntity(getMessageAndMarkAsRead(id));
-    } catch (SILVERMAILException e) {
-      throw new WebApplicationException(e);
-    }
+    return process(() -> asWebEntity(getMessageAndMarkAsRead(getUser().getId(), id)))
+        .lowestAccessRole(null)
+        .execute();
   }
 
   /**
