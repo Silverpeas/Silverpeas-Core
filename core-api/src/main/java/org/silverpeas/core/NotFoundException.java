@@ -29,6 +29,7 @@ package org.silverpeas.core;
  * @author mmoquillon
  */
 public class NotFoundException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 4337528679207374468L;
 
   public NotFoundException(final String message) {
     super(message);

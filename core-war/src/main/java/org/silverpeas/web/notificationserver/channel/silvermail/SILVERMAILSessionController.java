@@ -34,7 +34,6 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY;
@@ -149,9 +148,9 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   public SentNotificationDetail getSentNotification(String notifId) throws NotificationException {
-    SentNotificationDetail sentNotification = null;
-      sentNotification = getNotificationInterface().getNotification(Integer.parseInt(notifId));
-      sentNotification.setSource(getSource(sentNotification.getComponentId()));
+    SentNotificationDetail sentNotification = getNotificationInterface().getNotification(
+        getUserId(), Integer.parseInt(notifId));
+    sentNotification.setSource(getSource(sentNotification.getComponentId()));
     return sentNotification;
   }
 
@@ -193,20 +192,19 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    * @throws NotificationException
    */
   public void deleteSentNotif(String notifId) throws NotificationException {
-      getNotificationInterface().deleteNotif(Integer.parseInt(notifId), getUserId());
+      getNotificationInterface().deleteNotif(getUserId(), Integer.parseInt(notifId));
   }
 
   public void deleteAllSentNotif() throws NotificationException {
       getNotificationInterface().deleteNotifByUser(getUserId());
   }
 
-  private SentNotificationInterface getNotificationInterface() throws NotificationException {
+  private SentNotificationInterface getNotificationInterface() {
     return SentNotificationInterface.get();
   }
 
-  public SILVERMAILMessage getMessage(long messageId)
-      throws SILVERMAILException {
-    return SILVERMAILPersistence.getMessageAndMarkAsRead(messageId);
+  public SILVERMAILMessage getMessage(long messageId) {
+    return SILVERMAILPersistence.getMessageAndMarkAsRead(getUserId(), messageId);
   }
 
   /**
@@ -229,23 +227,17 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     currentMessageId = value;
   }
 
-  public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
+  public SILVERMAILMessage getCurrentMessage() {
     return getMessage(currentMessageId);
   }
 
   /**
    * Delete the message notification
-   *
    * @param notifId
-   * @throws SILVERMAILException
    */
-  public void deleteMessage(String notifId) throws SILVERMAILException {
-    try {
-      long notificationId = Long.parseLong(notifId);
-      SILVERMAILPersistence.deleteMessage(notificationId, getUserId());
-    } catch (SILVERMAILException e) {
-      throw new SILVERMAILException(e);
-    }
+  public void deleteMessage(String notifId) {
+    long notificationId = Long.parseLong(notifId);
+    SILVERMAILPersistence.deleteMessage(getUserId(), notificationId);
   }
 
   static {
