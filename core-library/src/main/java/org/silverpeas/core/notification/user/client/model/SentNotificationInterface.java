@@ -46,9 +46,10 @@ public interface SentNotificationInterface {
   List<SentNotificationDetail> getAllNotifByUser(String userId)
       throws NotificationException;
 
-  SentNotificationDetail getNotification(int notifId) throws NotificationException;
+  SentNotificationDetail getNotification(final String userId, int notifId)
+      throws NotificationException;
 
-  void deleteNotif(int notifId, String userId) throws NotificationException;
+  void deleteNotif(String userId, int notifId) throws NotificationException;
 
   void deleteNotifByUser(String userId) throws NotificationException;
 }

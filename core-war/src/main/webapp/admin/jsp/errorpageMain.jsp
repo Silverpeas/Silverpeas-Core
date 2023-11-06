@@ -50,6 +50,7 @@ if (response.isCommitted() == false) {
 <%@ page import="javax.ws.rs.WebApplicationException" %>
 <%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
 <%@ page import="org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet" %>
+<%@ page import="org.silverpeas.core.NotFoundException" %>
 
 <%@ include file="import.jsp" %>
 
@@ -71,6 +72,10 @@ if (exception instanceof SilverpeasTrappedException) {
   extraInfos = StringUtil.defaultStringIfNotDefined(ste.getExtraInfos(), null);
   // Trace the exception
   HomePageUtil.traceException(exception);
+} else if (exception instanceof NotFoundException) {
+  SilverLogger.getLogger(SilverpeasHttpServlet.class).error(exception.getMessage());
+  response.sendError(HttpServletResponse.SC_NOT_FOUND, exception.getMessage());
+  return;
 } else if (exception instanceof ForbiddenRuntimeException) {
   SilverLogger.getLogger(SilverpeasHttpServlet.class).error(exception.getMessage());
   response.sendError(HttpServletResponse.SC_FORBIDDEN, exception.getMessage());

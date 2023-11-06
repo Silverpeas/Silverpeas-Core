@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client.model;
 
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
@@ -80,27 +81,33 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
   }
 
   @Override
-  public SentNotificationDetail getNotification(int notifId) throws NotificationException {
+  public SentNotificationDetail getNotification(final String userId, int notifId)
+      throws NotificationException {
+    final SentNotificationDetail notif;
     try (Connection con = openConnection()) {
-      return SentNotificationDAO.getNotif(con, notifId);
+      notif = SentNotificationDAO.getNotif(con, notifId);
     } catch (Exception e) {
       throw new NotificationException(e);
     }
+    if (notif == null) {
+      throw new NotFoundException(
+          String.format("Sent notification %s not found for user %s", notifId, userId));
+    } else if (Integer.parseInt(userId) != notif.getUserId()) {
+      throw new ForbiddenRuntimeException(
+          String.format("Forbidden access to the sent notification %s for user %s", notifId,
+              userId));
+    }
+    return notif;
   }
 
   @Transactional
   @Override
-  public void deleteNotif(int notifId, String userId) throws NotificationException {
+  public void deleteNotif(String userId, int notifId) throws NotificationException {
     try (Connection con = openConnection()) {
-      SentNotificationDetail toDel = getNotification(notifId);
-
-      //check rights : check that the current user has the rights to delete the notification
-      if(Integer.parseInt(userId) == toDel.getUserId()) {
-        SentNotificationDAO.deleteNotif(con, notifId);
-      } else {
-        throw new ForbiddenRuntimeException(
-            "Unauthorized to delete the notification " + notifId + " for user " + userId);
-      }
+      SentNotificationDetail toDel = getNotification(userId, notifId);
+      SentNotificationDAO.deleteNotif(con, toDel.getNotifId());
+    } catch (NotFoundException | ForbiddenRuntimeException e) {
+      throw e;
     } catch (Exception e) {
       throw new NotificationException(e);
     }

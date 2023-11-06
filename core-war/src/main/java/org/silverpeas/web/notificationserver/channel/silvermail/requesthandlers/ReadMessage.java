@@ -42,11 +42,12 @@ public class ReadMessage implements SILVERMAILRequestHandler {
   @Override
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) {
+    SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
     try {
       String sId = request.getParameter("ID");
       long id = Long.parseLong(sId);
-
-      ((SILVERMAILSessionController) componentSC).setCurrentMessageId(id);
+      silvermailScc.setCurrentMessageId(id);
+      request.setAttribute("currentMessage", silvermailScc.getCurrentMessage());
     } catch (NumberFormatException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
