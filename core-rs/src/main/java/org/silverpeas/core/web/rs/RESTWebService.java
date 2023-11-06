@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.web.rs;
 
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -336,6 +338,10 @@ public abstract class RESTWebService implements ProtectedWebResource {
           throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
         return webTreatment.execute();
+      } catch (final NotFoundException ex) {
+        throw new WebApplicationException(ex, Response.Status.NOT_FOUND);
+      } catch (final ForbiddenRuntimeException ex) {
+        throw new WebApplicationException(ex, Response.Status.FORBIDDEN);
       } catch (final WebApplicationException ex) {
         throw ex;
       } catch (final Exception ex) {

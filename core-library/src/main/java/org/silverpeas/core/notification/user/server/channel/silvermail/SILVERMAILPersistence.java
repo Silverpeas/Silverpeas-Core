@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
@@ -62,19 +63,14 @@ public class SILVERMAILPersistence {
   private SILVERMAILPersistence() {
   }
 
-  private static void markMessageAsRead(SILVERMAILMessageBean smb)
-      throws SILVERMAILException {
-    try {
-      boolean hasToUpdate = smb.getReaden() != 1;
-      if (hasToUpdate) {
-        smb.setReaden(1);
-        Transaction.performInOne(() -> getRepository().save(smb));
-        DefaultServerEventNotifier.get().notify(UserNotificationServerEvent
-            .readOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(), smb
-                .getSenderName()));
-      }
-    } catch (Exception e) {
-      throw new SILVERMAILException("Cannot mark the message " + smb.getId() + " as read", e);
+  private static void markMessageAsRead(SILVERMAILMessageBean smb) {
+    boolean hasToUpdate = smb.getReaden() != 1;
+    if (hasToUpdate) {
+      smb.setReaden(1);
+      Transaction.performInOne(() -> getRepository().save(smb));
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent
+          .readOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(), smb
+              .getSenderName()));
     }
   }
 
@@ -166,50 +162,66 @@ public class SILVERMAILPersistence {
 
   /**
    * Gets a message by its identifier.
+   * @param userId the identifier of the user owning the message.
    * @param msgId the message identifier.
+   * @throws NotFoundException if message with given identifier does not exist.
+   * @throws ForbiddenRuntimeException if message with given identifier is not owned by the user
+   * with the given identifier.
    */
-  public static SILVERMAILMessage getMessage(long msgId) {
-    return findByCriteria(SilvermailCriteria.get().byId(msgId)).stream().findFirst().orElse(null);
+  public static SILVERMAILMessage getMessage(final String userId, long msgId) {
+    final SILVERMAILMessage message = findByCriteria(SilvermailCriteria.get().byId(msgId)).stream()
+        .findFirst()
+        .orElseThrow(() -> new NotFoundException(
+            String.format("Message %s not found for user %s", msgId, userId)));
+    if (message.getUserId() != Long.parseLong(userId)) {
+      throw new ForbiddenRuntimeException(
+          String.format("Forbidden access to message %s for user %s", msgId, userId));
+    }
+    return message;
   }
 
   /**
    * Gets a message by its identifier and mark it as read.
+   * @param userId the identifier of the user owning the message.
    * @param msgId the message identifier.
+   * @throws NotFoundException if message with given identifier does not exist.
+   * @throws ForbiddenRuntimeException if message with given identifier is not owned by the user
+   * with the given identifier.
    */
-  public static SILVERMAILMessage getMessageAndMarkAsRead(long msgId) throws SILVERMAILException {
-    final SILVERMAILMessage silverMailMessage = getMessage(msgId);
-    if (silverMailMessage != null) {
-      final SILVERMAILMessageBean smb = getRepository().getById(String.valueOf(msgId));
-      markMessageAsRead(smb);
-    }
+  public static SILVERMAILMessage getMessageAndMarkAsRead(final String userId, long msgId) {
+    final SILVERMAILMessage silverMailMessage = getMessage(userId, msgId);
+    final SILVERMAILMessageBean smb = getRepository().getById(String.valueOf(msgId));
+    markMessageAsRead(smb);
     return silverMailMessage;
   }
 
   /**
-   *
+   * Deletes a message by its identifier.
+   * @param userId the identifier of the user owning the message.
+   * @param msgId the identifier of the message to delete.
+   * @throws NotFoundException if message with given identifier does not exist.
+   * @throws ForbiddenRuntimeException if message with given identifier is not owned by the user
+   * with the given identifier.
    */
-  public static void deleteMessage(long msgId, String userId) throws SILVERMAILException {
-    try {
-      Transaction.performInOne(() -> {
-        SILVERMAILMessageBeanRepository repository = getRepository();
-        SILVERMAILMessageBean toDel = repository.getById(String.valueOf(msgId));
-
-        //check rights : check that the current user has the rights to delete the message
-        // notification
-        if (Long.parseLong(userId) == toDel.getUserId()) {
-          BackgroundProcessTask.push(new LongTextDeletionRequest(toDel.getBody()));
-          repository.delete(toDel);
-        } else {
-          throw new ForbiddenRuntimeException(
-              "Unauthorized deletion of message " + msgId + " for user " + userId);
-        }
-        return null;
-      });
-      DefaultServerEventNotifier.get()
-          .notify(UserNotificationServerEvent.deletionOf(userId, String.valueOf(msgId)));
-    } catch (Exception e) {
-      throw new SILVERMAILException("Cannot delete the message " + msgId, e);
-    }
+  public static void deleteMessage(String userId, long msgId) {
+    Transaction.performInOne(() -> {
+      SILVERMAILMessageBeanRepository repository = getRepository();
+      SILVERMAILMessageBean toDel = repository.getById(String.valueOf(msgId));
+      if (toDel == null) {
+        throw new NotFoundException(
+            String.format("Error when deleting message %s (not found) for user %s", msgId, userId));
+      }
+      if (Long.parseLong(userId) == toDel.getUserId()) {
+        BackgroundProcessTask.push(new LongTextDeletionRequest(toDel.getBody()));
+        repository.delete(toDel);
+      } else {
+        throw new ForbiddenRuntimeException(
+            "Unauthorized deletion of message " + msgId + " for user " + userId);
+      }
+      return null;
+    });
+    DefaultServerEventNotifier.get()
+        .notify(UserNotificationServerEvent.deletionOf(userId, String.valueOf(msgId)));
   }
 
   public static void deleteAllMessagesInFolder(String currentUserId) {

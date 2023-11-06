@@ -141,9 +141,7 @@ public class SentNotificationDAO {
 
   public static SentNotificationDetail getNotif(Connection con, int notifId)
       throws SQLException {
-
-    SentNotificationDetail notif = new SentNotificationDetail();
-
+    SentNotificationDetail notif = null;
     String query = "select " + COLUMNS + " from ST_NotifSended where notifId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -151,11 +149,11 @@ public class SentNotificationDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, notifId);
       rs = prepStmt.executeQuery();
-      while (rs.next()) {
+      if (rs.next()) {
         notif = convertFrom(rs);
+        // récupérer les destinataires
+        notif.setUsers(getReceivers(con, notifId));
       }
-      // récupérer les destinataires
-      notif.setUsers(getReceivers(con, notifId));
     } finally {
       DBUtil.close(rs, prepStmt);
     }
