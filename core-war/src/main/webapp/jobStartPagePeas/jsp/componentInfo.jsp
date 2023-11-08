@@ -241,7 +241,8 @@ out.println(tabbedPane.print());
       <h2 class="title-principal"><%=WebEncodeHelper.javaStringToHtmlString(compoInst.getLabel(resource.getLanguage()))%></h2>
       <div class="general-info">
         <img class="icons-application" alt="" src="../../util/icons/component/<%=compoInst.getName()%>Big.png" />
-        <div class="general-info-type">
+		  <div class="applicationInfo-resume">
+		  <div class="general-info-type">
           <b>Type : </b><%=m_JobPeas.getLabel(resource.getLanguage())%>
           <% if (descDefined) { %>
           <img class="applicationInfo" src="../../util/icons/info.gif" title="<%=WebEncodeHelper.javaStringToHtmlString(m_JobPeas.getDescription(resource.getLanguage()))%>"/>
@@ -257,7 +258,8 @@ out.println(tabbedPane.print());
           <% } %>
         </div>
 		<div class="general-info-id">
-			<b>Id : </b><%=compoInst.getId() %>
+			<b><%=resource.getString("GML.Id") %> : </b><%=compoInst.getId() %>
+		</div>
 		</div>
         <% } %>
       </div>

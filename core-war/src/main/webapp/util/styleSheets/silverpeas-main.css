@@ -6540,6 +6540,9 @@ iframe.embed {
   height:12px;
   vertical-align:baseline;
 }
+.general-info applicationInfo-resume {
+  display: inline-block;
+}
 .general-info div{
   padding:0.4em 0;
 }
