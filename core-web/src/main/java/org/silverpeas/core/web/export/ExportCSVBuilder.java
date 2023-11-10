@@ -103,7 +103,11 @@ public class ExportCSVBuilder {
   }
 
   private void writeTo(final Writer out) throws IOException {
-    if (header != null && !header.isEmpty()) {
+    final boolean isHeader = header != null && !header.isEmpty();
+    if (isHeader || !rows.isEmpty()) {
+      out.write("\uFEFF");
+    }
+    if (isHeader) {
       out.append(buildCSVRow(header)).append(LINE_SEPARATOR);
     }
     for (final CSVRow row : rows) {
