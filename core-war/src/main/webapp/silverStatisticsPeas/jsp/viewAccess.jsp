@@ -151,7 +151,7 @@
 		browseBar.setPath(path);
 	}
 
-	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoGenExcel"),resources.getString("silverStatisticsPeas.export"),"javascript:openSPWindow('ExportAccess.txt','')");
+	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoGenExcel"),resources.getString("silverStatisticsPeas.export"),"javascript:sp.preparedDownloadRequest('ExportAccess').download()");
 
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
