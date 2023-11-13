@@ -56,8 +56,10 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractAdminComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -80,6 +82,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -1174,6 +1177,30 @@ public class SilverStatisticsPeasSessionController extends AbstractAdminComponen
    */
   public void clearCurrentStats() {
     this.currentStats.clear();
+  }
+
+  public ExportCSVBuilder exportCurrentDataAsCSV() {
+    final ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+    final boolean isFilterIdGroup = isDefined(getAccessFilterIdGroup());
+    final boolean isFilterIdUser = isDefined(getAccessFilterIdUser());
+    final List<String[]> vStatsData = getCurrentStats();
+    final CSVRow header = new CSVRow();
+    header.add(getString("silverStatisticsPeas.organisation"));
+    header.add(getString("GML.allMP"));
+    header.add(getString("silverStatisticsPeas.group"));
+    header.add(getString("GML.user"));
+    csvBuilder.setHeader(header);
+    if (vStatsData != null) {
+      vStatsData.stream().map(a -> {
+        final CSVRow row = new CSVRow();
+        row.add(a[2]);
+        row.add(a[3]);
+        row.add(isFilterIdGroup ? a[4] : StringUtil.EMPTY);
+        row.add(isFilterIdUser ? a[5] : StringUtil.EMPTY);
+        return row;
+      }).forEach(csvBuilder::addLine);
+    }
+    return csvBuilder;
   }
 
   /**
